@@ -36,6 +36,9 @@
 
 (luna-define-class shimbun-mainichi (shimbun-japanese-newspaper shimbun) ())
 
+(defvar shimbun-mainichi-prefer-text-plain nil
+  "*Non-nil means prefer text/plain articles rather than html articles.")
+
 (defvar shimbun-mainichi-top-level-domain "mainichi-msn.co.jp"
   "Name of the top level domain for the MSN-Mainichi INTERACTIVE.")
 
@@ -192,8 +195,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 	 url urls numbers subgroup header topnews headers date)
     (setq numbers (cdr regexp)
 	  regexp (car regexp))
-    (while (search-forward "\r" nil t)
-      (delete-backward-char 1))
+    (shimbun-strip-cr)
     (goto-char (point-min))
     (while (and (not (eobp))
 		(or whole
@@ -263,56 +265,83 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
   (shimbun-mainichi-get-headers shimbun))
 
 (defun shimbun-mainichi-prepare-article (shimbun header)
-  (let ((case-fold-search t))
-    (while (search-forward "\r" nil t)
-      (delete-backward-char 1))
-    (goto-char (point-min))
-    ;; Remove the subject lines.
-    (when (re-search-forward "<\\([0-9a-z]+\\)[\t\n ]+class=\"m-title" nil t)
-      (let ((start (match-beginning 0)))
-	(when (search-forward (concat "</" (match-string 1) ">") nil t)
-	  (delete-region start (point)))))
-    ;; Fix the Date header.
-    (when (re-search-forward
-	   (eval-when-compile
-	     (let ((s0 "[\t\n 　]*")
-		   (s1 "[\t\n 　]+"))
-	       (concat "<span" s1 "class=\"m-txt[^>]+>" s0 "毎日新聞" s1
-		       ;; 1. year
-		       "\\(20[0-9][0-9]\\)"
-		       s0 "年" s0
-		       ;; 2. month
-		       "\\([01]?[0-9]\\)"
-		       s0 "月" s0
-		       ;; 3. day
-		       "\\([0-3]?[0-9]\\)"
-		       s0 "日" s0
-		       ;; 4. hour
-		       "\\([012]?[0-9]\\)"
-		       s0 "時" s0
-		       ;; 5. minute
-		       "\\([0-5]?[0-9]\\)"
-		       s0 "分" s0 "</span>")))
-	   nil t)
-      (shimbun-header-set-date
-       header
-       (shimbun-make-date-string
-	(string-to-number (match-string 1))
-	(string-to-number (match-string 2))
-	(string-to-number (match-string 3))
-	(format "%02d:%02d"
-		(string-to-number (match-string 4))
-		(string-to-number (match-string 5))))))
-    ;; Break continuous lines.
-    (when (or (string-equal "column.yoroku"
-			    (shimbun-current-group-internal shimbun))
-	      (string-match "\\`余録：" (shimbun-header-subject header
-								'no-encode)))
-      (goto-char (point-min))
-      (while (search-forward "▲" nil t)
-	(replace-match "。<br>\\&<br>")))
-    ;; Break long lines.
-    (shimbun-break-long-japanese-lines shimbun)))
+  (shimbun-with-narrowed-article
+   shimbun
+   ;; Remove the subject lines.
+   (when (re-search-forward "<\\([0-9a-z]+\\)[\t\n ]+class=\"m-title" nil t)
+     (let ((start (match-beginning 0)))
+       (when (search-forward (concat "</" (match-string 1) ">") nil t)
+	 (delete-region start (point)))))
+   ;; Fix the Date header.
+   (when (re-search-forward
+	  (eval-when-compile
+	    (let ((s0 "[\t\n 　]*")
+		  (s1 "[\t\n 　]+"))
+	      (concat "<span" s1 "class=\"m-txt[^>]+>" s0 "毎日新聞" s1
+		      ;; 1. year
+		      "\\(20[0-9][0-9]\\)"
+		      s0 "年" s0
+		      ;; 2. month
+		      "\\([01]?[0-9]\\)"
+		      s0 "月" s0
+		      ;; 3. day
+		      "\\([0-3]?[0-9]\\)"
+		      s0 "日" s0
+		      ;; 4. hour
+		      "\\([012]?[0-9]\\)"
+		      s0 "時" s0
+		      ;; 5. minute
+		      "\\([0-5]?[0-9]\\)"
+		      s0 "分" s0 "</span>")))
+	  nil t)
+     (shimbun-header-set-date
+      header
+      (shimbun-make-date-string
+       (string-to-number (match-string 1))
+       (string-to-number (match-string 2))
+       (string-to-number (match-string 3))
+       (format "%02d:%02d"
+	       (string-to-number (match-string 4))
+	       (string-to-number (match-string 5))))))
+   ;; Break continuous lines.
+   (when (or (string-equal "column.yoroku"
+			   (shimbun-current-group-internal shimbun))
+	     (string-match "\\`余録：" (shimbun-header-subject header
+							       'no-encode)))
+     (goto-char (point-min))
+     (while (search-forward "▲" nil t)
+       (replace-match "。<br><br>　")))
+   (if (shimbun-prefer-text-plain-internal shimbun)
+       (let (footer)
+	 ;; Open paragraphs.
+	 (goto-char (point-min))
+	 (while (re-search-forward
+		 "[\t\n ]*</p>[\t\n ]*<p[\t\n ]+class=\"article\">[\t\n ]*"
+		 nil t)
+	   (replace-match "<br><br>"))
+	 ;; Fix the position of the footer.
+	 (require 'sb-text) ;; `shimbun-fill-column'
+	 (goto-char (point-min))
+	 (when (re-search-forward
+		(eval-when-compile
+		  (let ((s0 "[\t\n 　]*")
+			(s1 "[\t\n 　]+"))
+		    (concat s0 "\\(?:<[^>]+>" s0 "\\)*"
+			    "<span" s1 "class=\"m-txt1\">" s0
+			    "\\([^<]+\\)"
+			    "\\(?:" s0 "</span>" s0
+			    "\\(?:<[^!>]+>" s0 "\\)*\\)?")))
+		nil t)
+	   (setq footer (match-string 1))
+	   (delete-region (match-beginning 0) (match-end 0))
+	   (insert "<br><br>"
+		   (make-string (max (- (symbol-value 'shimbun-fill-column)
+					(string-width footer))
+				     0)
+				? )
+		   footer "<br>")))
+     ;; Break long lines.
+     (shimbun-break-long-japanese-lines))))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-mainichi)
 						   header)

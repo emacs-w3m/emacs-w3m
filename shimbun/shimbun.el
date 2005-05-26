@@ -1222,6 +1222,28 @@ it considers the buffer has already been narrowed to an article."
 	(insert "\n"))))
   (goto-char (point-min)))
 
+(defmacro shimbun-with-narrowed-article (shimbun &rest forms)
+  "Narrow to the article in the buffer and evaluate FORMS."
+  `(progn
+     (shimbun-strip-cr)
+     (goto-char (point-min))
+     (let ((case-fold-search t)
+	   start)
+       (when (re-search-forward (shimbun-content-start-internal ,shimbun)
+				nil t)
+	 (setq start (match-end 0))
+	 (when (re-search-forward (shimbun-content-end-internal ,shimbun)
+				  nil t)
+	   (narrow-to-region start (match-beginning 0))
+	   (goto-char (point-min))
+	   ;; Remove trailing whitespace.
+	   (while (re-search-forward "[\t ]+$" nil t)
+	     (delete-region (match-beginning 0) (match-end 0)))
+	   (goto-char (point-min))
+	   ,@forms
+	   (widen))
+	 (goto-char (point-min))))))
+
 (provide 'shimbun)
 
 ;;; shimbun.el ends here

@@ -177,94 +177,86 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
 ;;
 ;;(defun shimbun-yahoo-prepare-article (shimbun header)
 ;;;</DEBUG>
-  (let ((case-fold-search t)
-	start year footer)
-    (when (and (re-search-forward (shimbun-content-start-internal shimbun)
-				  nil t)
-	       (progn
-		 (setq start (match-end 0))
-		 (re-search-forward (shimbun-content-end-internal shimbun)
-				    nil t)))
-      (narrow-to-region start (match-beginning 0))
-      (goto-char (point-min))
-      ;; Fix the picture tag.
-      (cond ((re-search-forward "[\t\n\r ]*<center>[\t\n\r ]*<font[^>]+>\
-\[\t\n\r ]*拡大写真[\t\n\\r ]*\\(?:<[^>]+>[\t\n\r ]*\\)+"
-				nil t)
-	     (delete-region (match-beginning 0) (match-end 0))
-	     (when (and (shimbun-prefer-text-plain-internal shimbun)
-			(looking-at "[^<>]+"))
-	       (replace-match "(写真: \\&)<br>"))
-	     (goto-char (point-min)))
-	    ((and (shimbun-prefer-text-plain-internal shimbun)
-		  (re-search-forward "<img[\t\n ]+[^>]+>\
+  (shimbun-with-narrowed-article
+   shimbun
+   ;; Fix the picture tag.
+   (cond ((re-search-forward "[\t\n ]*<center>[\t\n ]*<font[^>]+>\
+\[\t\n ]*拡大写真[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)+"
+			     nil t)
+	  (delete-region (match-beginning 0) (match-end 0))
+	  (when (and (shimbun-prefer-text-plain-internal shimbun)
+		     (looking-at "[^<>]+"))
+	    (replace-match "(写真: \\&)<br>"))
+	  (goto-char (point-min)))
+	 ((and (shimbun-prefer-text-plain-internal shimbun)
+	       (re-search-forward "<img[\t\n ]+[^>]+>\
 \\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<font[\t\n ]+[^>]+>[\t\n 　]*\
 \\([^<>]+\\)[\t\n ]*</font>"
-				     nil t))
-	     (replace-match "(写真: \\1)<br>")))
-      (if (shimbun-prefer-text-plain-internal shimbun)
-	  (require 'sb-text) ;; `shimbun-fill-column'
-	;; Open paragraphs.
-	(while (re-search-forward "。<br>[\t ]*\n　" nil t)
-	  (replace-match "。<br><br>\n　"))
-	(goto-char (point-min)))
-      ;; Correct the Date header and the position of the footer.
-      (when (and
-	     (setq year (shimbun-header-date header))
-	     (string-match " \\(20[0-9][0-9]\\) " year)
-	     (progn
-	       (setq year (string-to-number (match-string 1 year)))
-	       (re-search-forward
-		(eval-when-compile
-		  (let ((s0 "[\t\n ]*")
-			(s1 "[\t\n ]+"))
-		    (concat
-		     "[\t\n 　]*<div" s1 "align=right>" s0
-		     ;; 1. footer
-		     "\\("
-		     "（[^）]+）" s1 "-" s1
-		     ;; 2. month
-		     "\\([01]?[0-9]\\)"
-		     s0 "月" s0
-		     ;; 3. day
-		     "\\([0-3]?[0-9]\\)"
-		     s0 "日" s0
-		     ;; 4. hour
-		     "\\([012]?[0-9]\\)"
-		     s0 "時" s0
-		     ;; 5. minute
-		     "\\([0-5]?[0-9]\\)"
-		     s0 "分" s0 "更新"
-		     "\\)"
-		     s0 "</div>\\(?:" s0 "<br>\\)*")))
-		nil t)))
-	(shimbun-header-set-date
-	 header
-	 (shimbun-make-date-string
-	  year
-	  (string-to-number (match-string 2))
-	  (string-to-number (match-string 3))
-	  (format "%02d:%02d"
-		  (string-to-number (match-string 4))
-		  (string-to-number (match-string 5)))))
-	(setq footer (match-string 1))
-	(delete-region (match-beginning 0) (match-end 0))
-	(if (shimbun-prefer-text-plain-internal shimbun)
-	    (insert "<br><br>"
-		    (make-string (max (- (symbol-value 'shimbun-fill-column)
-					 (string-width footer))
-				      0)
-				 ? )
-		    footer "<br>")
-	  (insert "<br><br><div align=right>" footer "</div>")
-	  ;; Break long Japanese lines.
-	  (goto-char (point-min))
-	  (while (re-search-forward "<p[^>]*>\\|</p>\\|[、。）」]+" nil t)
-	    (unless (eolp)
-	      (insert "\n"))))
-	(goto-char (point-min)))
-      (widen)))
-  (goto-char (point-min)))
+				  nil t))
+	  (if (string-equal (match-string 1) "写真")
+	      (replace-match "(写真)<br>")
+	    (replace-match "(写真: \\1)<br>"))))
+   (if (shimbun-prefer-text-plain-internal shimbun)
+       (require 'sb-text) ;; `shimbun-fill-column'
+     ;; Open paragraphs.
+     (while (re-search-forward "。<br>[\t ]*\n　" nil t)
+       (replace-match "。<br><br>\n　"))
+     (goto-char (point-min)))
+   ;; Correct the Date header and the position of the footer.
+   (let (year footer)
+     (when (and
+	    (setq year (shimbun-header-date header))
+	    (string-match " \\(20[0-9][0-9]\\) " year)
+	    (progn
+	      (setq year (string-to-number (match-string 1 year)))
+	      (re-search-forward
+	       (eval-when-compile
+		 (let ((s0 "[\t\n ]*")
+		       (s1 "[\t\n ]+"))
+		   (concat
+		    "[\t\n 　]*<div" s1 "align=right>" s0
+		    ;; 1. footer
+		    "\\("
+		    "（[^）]+）" s1 "-" s1
+		    ;; 2. month
+		    "\\([01]?[0-9]\\)"
+		    s0 "月" s0
+		    ;; 3. day
+		    "\\([0-3]?[0-9]\\)"
+		    s0 "日" s0
+		    ;; 4. hour
+		    "\\([012]?[0-9]\\)"
+		    s0 "時" s0
+		    ;; 5. minute
+		    "\\([0-5]?[0-9]\\)"
+		    s0 "分" s0 "更新"
+		    "\\)"
+		    s0 "</div>\\(?:" s0 "<br>\\)*")))
+	       nil t)))
+       (shimbun-header-set-date
+	header
+	(shimbun-make-date-string
+	 year
+	 (string-to-number (match-string 2))
+	 (string-to-number (match-string 3))
+	 (format "%02d:%02d"
+		 (string-to-number (match-string 4))
+		 (string-to-number (match-string 5)))))
+       (setq footer (match-string 1))
+       (delete-region (match-beginning 0) (match-end 0))
+       (if (shimbun-prefer-text-plain-internal shimbun)
+	   (insert "<br><br>"
+		   (make-string (max (- (symbol-value 'shimbun-fill-column)
+					(string-width footer))
+				     0)
+				? )
+		   footer "<br>")
+	 (insert "<br><br><div align=right>" footer "</div>")
+	 ;; Break long Japanese lines.
+	 (goto-char (point-min))
+	 (while (re-search-forward "<p[^>]*>\\|</p>\\|[、。）」]+" nil t)
+	   (unless (eolp)
+	     (insert "\n"))))))))
 
 (provide 'sb-yahoo)
 

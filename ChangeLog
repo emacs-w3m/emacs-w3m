@@ -1,3 +1,23 @@
+2005-05-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-prefer-text-plain): New
+	variable.
+	(shimbun-mainichi-get-headers): Use shimbun-strip-cr.
+	(shimbun-mainichi-prepare-article): Use
+	shimbun-with-narrowed-article; remove the paragraph separators in
+	the column.yoroku group; open paragraphs and fix the position of
+	the footer in text/plain articles.
+
+	* shimbun/sb-yahoo.el (shimbun-make-contents): Use
+	shimbun-with-narrowed-article; fix the picture tag.
+
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-get-top-header): Fix
+	message-id.
+	(shimbun-yomiuri-prepare-article): Use
+	shimbun-with-narrowed-article.
+
+	* shimbun/shimbun.el (shimbun-with-narrowed-article): New macro.
+
 2005-05-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi-html.el: Don't require shimbun.
