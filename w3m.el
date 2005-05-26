@@ -8642,7 +8642,7 @@ non-nil when an article pointed by the URL is found.")
 This command is quite similar to `w3m-view-this-url' without three
 differences: (1) this command accepts no arguments, (2) this command
 does not handle forms, and (3) this command does not consider URL-like
-strings under the cursor.  When a unsecure page which may contain
+strings under the cursor.  When an insecure page which may contain
 vicious forms is viewed, this command should be used instead of
 `w3m-view-this-url'.
 
@@ -8685,7 +8685,7 @@ security problem."
   (interactive "P")
   (let ((w3m-safe-url-regexp (unless (and force
 					  (yes-or-no-p "\
-Are you sure you really want to show this image (maybe unsecure)? "))
+Are you sure you really want to show this image (maybe insecure)? "))
 			       "\\`cid:")))
     (w3m-toggle-inline-image force no-cache)))
 
@@ -8698,7 +8698,7 @@ the prefix argument if you don't mind it may cause a security problem."
   (interactive "P")
   (let ((w3m-safe-url-regexp (unless (and force
 					  (yes-or-no-p "\
-Are you sure you really want to show all images (maybe unsecure)? "))
+Are you sure you really want to show all images (maybe insecure)? "))
 			       "\\`cid:")))
     (w3m-toggle-inline-images force no-cache)))
 

@@ -1,3 +1,9 @@
+2005-05-26  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* w3m.el (w3m-safe-view-this-url): `unsecure' -> `insecure'.
+	(w3m-safe-toggle-inline-image): Ditto.
+	(w3m-safe-toggle-inline-images): Ditto.
+
 2005-05-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-text.el (shimbun-fill-line): Make it work correctly
