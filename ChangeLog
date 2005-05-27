@@ -1,5 +1,9 @@
 2005-05-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-mainichi.el (shimbun-mainichi-make-date-string):
+	Don't modify the date if it is one given temporarily.
+	(shimbun-mainichi-prepare-article): Fix regexp for fixing the date.
+
 	* w3m-util.el (w3m-truncate-string): Autoload mule-util for
 	truncate-string-to-width.
 

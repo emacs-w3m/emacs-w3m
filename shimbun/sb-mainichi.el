@@ -161,25 +161,28 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
   "Run `shimbun-make-date-string' with ARGS and fix a day if needed.
 
 \(shimbun-mainichi-make-date-string YEAR MONTH DAY &optional TIME TIMEZONE)"
-  (save-match-data
-    (let* ((ctime (current-time))
-	   (date (apply 'shimbun-make-date-string args))
-	   (time (shimbun-time-parse-string date))
-	   (ms (car time))
-	   (ls (cadr time))
-	   (system-time-locale "C"))
-      (if (or (> ms (car ctime))
-	      (and (= ms (car ctime))
-		   (> ls (cadr ctime))))
-	  ;; It should be yesterday's same time.
-	  (progn
-	    (setq ms (1- ms))
-	    (when (< (setq ls (- ls (eval-when-compile (- (* 60 60 24) 65536))))
-		     0)
-	      (setq ms (1- ms)
-		    ls (+ ls 65536)))
-	    (format-time-string "%a, %d %b %Y %R +0900" (list ms ls)))
-	date))))
+  (if (equal (nth 3 args) "23:59:59")
+      (apply 'shimbun-make-date-string args)
+    (save-match-data
+      (let* ((ctime (current-time))
+	     (date (apply 'shimbun-make-date-string args))
+	     (time (shimbun-time-parse-string date))
+	     (ms (car time))
+	     (ls (cadr time))
+	     (system-time-locale "C"))
+	(if (or (> ms (car ctime))
+		(and (= ms (car ctime))
+		     (> ls (cadr ctime))))
+	    ;; It should be yesterday's same time.
+	    (progn
+	      (setq ms (1- ms))
+	      (when (< (setq ls (- ls (eval-when-compile
+					(- (* 60 60 24) 65536))))
+		       0)
+		(setq ms (1- ms)
+		      ls (+ ls 65536)))
+	      (format-time-string "%a, %d %b %Y %R +0900" (list ms ls)))
+	  date)))))
 
 (defun shimbun-mainichi-get-headers (shimbun)
   (let* ((group (shimbun-current-group-internal shimbun))
@@ -277,7 +280,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 	  (eval-when-compile
 	    (let ((s0 "[\t\n 　]*")
 		  (s1 "[\t\n 　]+"))
-	      (concat "<span" s1 "class=\"m-txt[^>]+>" s0 "毎日新聞" s1
+	      (concat "<span" s1 "class=\"m-txt[^>]+\">" s0 "毎日新聞" s1
 		      ;; 1. year
 		      "\\(20[0-9][0-9]\\)"
 		      s0 "年" s0
@@ -292,7 +295,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 		      s0 "時" s0
 		      ;; 5. minute
 		      "\\([0-5]?[0-9]\\)"
-		      s0 "分" s0 "</span>")))
+		      s0 "分")))
 	  nil t)
      (shimbun-header-set-date
       header
