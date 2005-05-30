@@ -833,6 +833,12 @@ multibyteness of the buffer."
 	  (setq value (cdr value))))
     (custom-initialize-set symbol value)))
 
+(defun w3m-run-mode-hooks (&rest funcs)
+  "Run `run-mode-hooks' if it is available, otherwise `run-hooks'."
+  (if (fboundp 'run-mode-hooks)
+      (apply 'run-mode-hooks funcs)
+    (apply 'run-hooks funcs)))
+
 (defmacro w3m-keep-region-active ()
   "Keep the region active after evaluating this current command.
 In XEmacs, `zmacs-region-stays' is set to nil everywhen a command is

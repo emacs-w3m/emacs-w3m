@@ -1,3 +1,12 @@
+2005-05-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-run-mode-hooks): New function.
+
+	* w3m-form.el (w3m-form-input-select-mode): Use it.
+	(w3m-form-input-map-mode): Use it.
+
+	* w3m.el (w3m-mode): Use it.
+
 2005-05-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-mainichi.el (shimbun-mainichi-make-date-string):

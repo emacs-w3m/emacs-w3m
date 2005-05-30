@@ -6795,7 +6795,7 @@ closed.  See also `w3m-quit'."
   (w3m-setup-toolbar)
   (w3m-setup-menu)
   (run-hooks 'w3m-mode-setup-functions)
-  (run-hooks 'w3m-mode-hook))
+  (w3m-run-mode-hooks 'w3m-mode-hook))
 
 (defun w3m-scroll-up-or-next-url (arg)
   "Scroll the current window up ARG lines, or go to the next page."
@@ -8398,7 +8398,7 @@ buffer list.  The following command keys are available:
 	truncate-lines t
 	buffer-read-only t)
   (use-local-map w3m-select-buffer-mode-map)
-  (run-hooks 'w3m-select-buffer-mode-hook))
+  (w3m-run-mode-hooks 'w3m-select-buffer-mode-hook))
 
 (defun w3m-select-buffer-recheck ()
   "Do the roll call to all emacs-w3m buffers and regenerate the menu."
