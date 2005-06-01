@@ -5559,9 +5559,9 @@ fml mailing list server/manager.  詳細
 事と @samp{text/html} の記事を切り替えることができることです。
 
 それが未定義である場合、変数 @code{shimbun-foobar-prefer-text-plain} の
-デフォルト値は @code{nil} です。したがって、@file{sb-asahi.el}、
-@file{sb-yahoo.el} および @file{sb-yomiuri.el} 以外のあらゆ
-る @samp{shimbun} モジュールにおいて、そのデフォルト値は @code{nil} です。
+デフォルト値は @code{nil} です。したがって、@file{sb-asahi.el} およ
+び @file{sb-yomiuri.el} 以外のあらゆる @samp{shimbun} モジュールにおいて、
+そのデフォルト値は @code{nil} です。
 
 加えて、web ページから意味のあるテキストを切り出すために、変
 数 @code{shimbun-foobar-content-start} およ

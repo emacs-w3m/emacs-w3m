@@ -1,3 +1,80 @@
+2005-06-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/shimbun.el (shimbun-content-start-internal): Don't
+	redefine it.
+	Suggested by Hiroya Murata <lapis-lazuli@pop06.odn.ne.jp>.
+	(shimbun-content-end-internal): Ditto.
+	(shimbun-content-start): New inline function.
+	(shimbun-content-end): Ditto.
+	(shimbun-clear-contents): Use shimbun-content-start instead of
+	shimbun-content-start-internal; use shimbun-content-end instead of
+	shimbun-content-end-internal.
+	(shimbun-break-long-japanese-lines): Ditto.
+	(shimbun-with-narrowed-article): Ditto.
+
+	* shimbun/sb-chalow.el: Don't inherit shimbun-text, which was mis-
+	applied and ineffective.
+	(shimbun-make-contents): Use shimbun-content-start instead of
+	shimbun-content-start-internal; use shimbun-content-end instead of
+	shimbun-content-end-internal.
+
+	* shimbun/sb-f1fan.el: Don't require sb-text, though this back end
+	still generates text/plain articles as before.
+
+	* shimbun/sb-japantimes.el: Don't inherit shimbun-text, which was
+	mis-applied and ineffective.
+
+	* shimbun/sb-kantei.el (shimbun-clear-contents): Use
+	shimbun-content-start instead of shimbun-content-start-internal;
+	use shimbun-content-end instead of shimbun-content-end-internal.
+
+	* shimbun/sb-makanai.el: Don't inherit shimbun-text, which was
+	mis-applied and ineffective.
+
+	* shimbun/sb-msports-nifty.el: Don't require sb-text, though this
+	back end still generates text/plain articles as before.
+	(shimbun-make-contents): Specify clearly the 4th arg of
+	shimbun-header-insert-and-buffer-string.
+
+	* shimbun/sb-pcweb-column.el: Don't inherit shimbun-text, which
+	was mis-applied and ineffective.
+
+	* shimbun/sb-sankei.el (shimbun-clear-contents): Use
+	shimbun-content-start instead of shimbun-content-start-internal.
+
+	* shimbun/sb-tdiary.el: Don't inherit shimbun-text, which was mis-
+	applied and ineffective.
+	(shimbun-make-contents): Use shimbun-content-start instead of
+	shimbun-content-start-internal; use shimbun-content-end instead of
+	shimbun-content-end-internal.
+
+	* shimbun/sb-welt-de.el (shimbun-clear-contents): Use
+	shimbun-content-start instead of shimbun-content-start-internal.
+
+	* shimbun/sb-x51.el (shimbun-x51-prepare-article): Use
+	shimbun-content-start instead of shimbun-content-start-internal;
+	use shimbun-content-end instead of shimbun-content-end-internal.
+
+	* shimbun/sb-yahoo-auctions.el (shimbun-make-contents): Use
+	shimbun-content-start instead of shimbun-content-start-internal;
+	use shimbun-content-end instead of shimbun-content-end-internal.
+
+	* shimbun/sb-yahoo-sports.el: Don't inherit shimbun-text, which
+	was mis-applied and ineffective.
+
+	* shimbun/sb-yahoo.el (shimbun-yahoo-prefer-text-plain): Default
+	to nil so as to generate html articles as before.
+
+	* shimbun/sb-zeit-de.el (shimbun-make-contents): Use
+	shimbun-content-start instead of shimbun-content-start-internal;
+	use shimbun-content-end instead of shimbun-content-end-internal.
+
+	* shimbun/(sb-cnet-jp.el, sb-emacswiki.el, sb-excite.el,
+	sb-exconn.el, sb-geocrawler.el, sb-impress.el, sb-jpo.el,
+	sb-marc-aims.el, sb-mhonarc.el, sb-nikkei.el, sb-pocketgames.el,
+	sb-slashdot-jp.el, sb-squeak-dev.el, sb-squeak-ja.el,
+	sb-wired-jp.el, sb-wired.el, sb-zdnet-jp.el): Don't require cl.
+
 2005-05-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-run-mode-hooks): New function.

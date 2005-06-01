@@ -5517,7 +5517,7 @@ this way is that users can easily switch @samp{text/plain} articles and
 The default value for the @code{shimbun-foobar-prefer-text-plain}
 variable is @code{nil} if it is not defined.  So, it defaults to
 @code{nil} in every @samp{shimbun} module except for the modules
-@file{sb-asahi.el}, @file{sb-yahoo.el} and @file{sb-yomiuri.el}.
+@file{sb-asahi.el} and @file{sb-yomiuri.el}.
 
 In addition, you can use the variables
 @code{shimbun-foobar-text-content-start} and
