@@ -75,18 +75,18 @@ URL is the URL for category or search result."
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-yahoo-auctions)
 					   header)
-  (let ((case-fold-search t))
+  (let ((start (shimbun-content-start shimbun))
+	(end (shimbun-content-end shimbun))
+	(case-fold-search t))
     (goto-char (point-min))
-    (when (and (stringp (shimbun-content-start-internal shimbun))
-	       (re-search-forward (shimbun-content-start-internal shimbun)
-				  nil t))
+    (when (and (stringp start)
+	       (re-search-forward start nil t))
       (delete-region (point-min) (point))
       (insert "<html>\n<head>\n<base href=\""
 	      (shimbun-article-url shimbun header)
 	      "\">\n</head>\n<body>\n"))
-    (when (and (stringp (shimbun-content-end-internal shimbun))
-	       (re-search-forward (shimbun-content-end-internal shimbun)
-				  nil t))
+    (when (and (stringp end)
+	       (re-search-forward end nil t))
       (delete-region (match-beginning 0) (point-max))
       (insert (shimbun-footer shimbun header t)
 	      "\n</body>\n</html>\n")))
@@ -94,4 +94,5 @@ URL is the URL for category or search result."
   (buffer-string))
 
 (provide 'sb-yahoo-auctions)
+
 ;;; sb-yahoo-auctions.el ends here

@@ -25,11 +25,6 @@
 
 ;;; Commentary:
 
-;; If you'd like to read html articles, put the following line in your
-;; init file.
-;;
-;;(setq shimbun-yahoo-prefer-text-plain nil)
-;;
 ;; Original code was sb-asahi.el which is written by
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org> and
 ;; Yuuichi Teranishi <teranisi@gohome.org>
@@ -40,7 +35,7 @@
 
 (luna-define-class shimbun-yahoo (shimbun) ())
 
-(defvar shimbun-yahoo-prefer-text-plain t
+(defvar shimbun-yahoo-prefer-text-plain nil
   "*Non-nil means prefer text/plain articles rather than html articles.")
 
 (defvar shimbun-yahoo-url "http://headlines.yahoo.co.jp/")

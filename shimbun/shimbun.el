@@ -88,37 +88,7 @@
 			  expiration-days server-name
 			  prefer-text-plain
 			  text-content-start text-content-end))
-  (luna-define-internal-accessors 'shimbun)
-
-  ;; Modify the accessors for `content-start' and `content-end'.
-  (let* ((class (luna-find-class 'shimbun))
-	 (html (luna-class-slot-index class 'content-start))
-	 (text (luna-class-slot-index class 'text-content-start)))
-    (eval
-     `(defmacro shimbun-content-start-internal (shimbun)
-	"Return the `content-start' value according to SHIMBUN."
-	(list 'if (list 'shimbun-prefer-text-plain-internal shimbun)
-	      (list 'or
-		    (list 'aref shimbun ,text)
-		    (list 'aref shimbun ,html))
-	      (list 'or
-		    (list 'aref shimbun ,html)
-		    (list 'aref shimbun ,text)))))
-    (setq html (luna-class-slot-index class 'content-end)
-	  text (luna-class-slot-index class 'text-content-end))
-    (eval
-     `(defmacro shimbun-content-end-internal (shimbun)
-	"Return the `content-end' value according to SHIMBUN."
-	(list 'if (list 'shimbun-prefer-text-plain-internal shimbun)
-	      (list 'or
-		    (list 'aref shimbun ,text)
-		    (list 'aref shimbun ,html))
-	      (list 'or
-		    (list 'aref shimbun ,html)
-		    (list 'aref shimbun ,text))))))
-  ;; Remove useless accessors.
-  (fmakunbound 'shimbun-text-content-start-internal)
-  (fmakunbound 'shimbun-text-content-end-internal))
+  (luna-define-internal-accessors 'shimbun))
 
 (defgroup shimbun nil
   "shimbun - the backend library to read web newspapers."
@@ -880,6 +850,22 @@ Return nil if all pages should be retrieved."
 Return nil when articles are not expired."
   (shimbun-expiration-days-internal shimbun))
 
+(defsubst shimbun-content-start (shimbun)
+  "Return the `content-start' value according to SHIMBUN."
+  (if (shimbun-prefer-text-plain-internal shimbun)
+      (or (shimbun-text-content-start-internal shimbun)
+	  (shimbun-content-start-internal shimbun))
+    (or (shimbun-content-start-internal shimbun)
+	(shimbun-text-content-start-internal shimbun))))
+
+(defsubst shimbun-content-end (shimbun)
+  "Return the `content-end' value according to SHIMBUN."
+  (if (shimbun-prefer-text-plain-internal shimbun)
+      (or (shimbun-text-content-end-internal shimbun)
+	  (shimbun-content-end-internal shimbun))
+    (or (shimbun-content-end-internal shimbun)
+	(shimbun-text-content-end-internal shimbun))))
+
 (luna-define-generic shimbun-from-address (shimbun)
   "Make a From address like \"SERVER (GROUP) <ADDRESS>\".")
 
@@ -946,15 +932,16 @@ HEADER is a header structure obtained via `shimbun-headers'.")
 Return nil, unless a content is cleared successfully.")
 
 (luna-define-method shimbun-clear-contents ((shimbun shimbun) header)
-  (let ((case-fold-search t) start)
+  (let ((start (shimbun-content-start shimbun))
+	(end (shimbun-content-end shimbun))
+	(case-fold-search t))
     (goto-char (point-min))
-    (when (and (stringp (shimbun-content-start-internal shimbun))
-	       (re-search-forward (shimbun-content-start-internal shimbun)
-				  nil t)
-	       (setq start (point))
-	       (stringp (shimbun-content-end-internal shimbun))
-	       (re-search-forward (shimbun-content-end-internal shimbun)
-				  nil t))
+    (when (and (stringp start)
+	       (re-search-forward start nil t)
+	       (progn
+		 (setq start (point))
+		 (stringp end))
+	       (re-search-forward end nil t))
       (delete-region (match-beginning 0) (point-max))
       (delete-region (point-min) start)
       t)))
@@ -1214,11 +1201,9 @@ it considers the buffer has already been narrowed to an article."
       (goto-char (point-min))
       (let ((case-fold-search t)
 	    start)
-	(when (and (re-search-forward (shimbun-content-start-internal shimbun)
-				      nil t)
+	(when (and (re-search-forward (shimbun-content-start shimbun) nil t)
 		   (setq start (point))
-		   (re-search-forward (shimbun-content-end-internal shimbun)
-				      nil t))
+		   (re-search-forward (shimbun-content-end shimbun) nil t))
 	  (narrow-to-region start (match-beginning 0)))))
     (goto-char (point-min))
     (while (re-search-forward "<p[^>]*>\\|</p>\\|[、。）」]+" nil t)
@@ -1233,11 +1218,9 @@ it considers the buffer has already been narrowed to an article."
      (goto-char (point-min))
      (let ((case-fold-search t)
 	   start)
-       (when (re-search-forward (shimbun-content-start-internal ,shimbun)
-				nil t)
+       (when (re-search-forward (shimbun-content-start ,shimbun) nil t)
 	 (setq start (match-end 0))
-	 (when (re-search-forward (shimbun-content-end-internal ,shimbun)
-				  nil t)
+	 (when (re-search-forward (shimbun-content-end ,shimbun) nil t)
 	   (narrow-to-region start (match-beginning 0))
 	   (goto-char (point-min))
 	   ;; Remove trailing whitespace.

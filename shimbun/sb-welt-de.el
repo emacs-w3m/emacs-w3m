@@ -64,7 +64,7 @@
 
     (when javascript-image
       (goto-char (point-min))
-      (re-search-forward (shimbun-content-start-internal shimbun))
+      (re-search-forward (shimbun-content-start shimbun))
       (insert (concat "<img src=\"" javascript-image
 		      "_onlineBild.jpg\">")))))
 

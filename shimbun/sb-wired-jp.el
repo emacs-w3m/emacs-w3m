@@ -26,8 +26,6 @@
 
 (require 'shimbun)
 (require 'sb-rss)
-(eval-when-compile
-  (require 'cl))
 
 (luna-define-class shimbun-wired-jp (shimbun-rss shimbun) ())
 

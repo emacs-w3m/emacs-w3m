@@ -26,9 +26,6 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
 (require 'shimbun)
 
 (luna-define-class shimbun-marc-aims (shimbun) ())

@@ -26,9 +26,8 @@
 ;;; Commentary:
 
 ;;; Code:
+
 (require 'shimbun)
-(eval-when-compile
-  (require 'cl))
 
 (luna-define-class shimbun-impress (shimbun) ())
 

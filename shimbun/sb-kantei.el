@@ -1,6 +1,7 @@
 ;;; sb-kantei.el --- shimbun backend for kantei mail magazine backnumber -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2003, 2003, 2004 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2003, 2003, 2004, 2005
+;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
 ;; Keywords: news
@@ -83,7 +84,7 @@ x6?mU-q=0}mTK5@\"-bFGuD}2Y/(lR/V#'?HRc2Jh2UrR,oIR~NL!})|^%kw")))
 	    "\
 <A HREF=\"\\([^\">]+\\)\">\
 \\(\
-【\\(20[0-9][0-9]\\)/\\([01][0-9]\\)/\\([0-3][0-9]\\)】\
+\【\\(20[0-9][0-9]\\)/\\([01][0-9]\\)/\\([0-3][0-9]\\)】\
 \\|\
 \\[\\([01][0-9]\\)/\\([0-3][0-9]\\)/\\(20[0-9][0-9]\\)\\]\
 \\)\
@@ -111,11 +112,9 @@ x6?mU-q=0}mTK5@\"-bFGuD}2Y/(lR/V#'?HRc2Jh2UrR,oIR~NL!})|^%kw")))
 
 (luna-define-method shimbun-clear-contents ((shimbun shimbun-kantei) header)
   (let ((case-fold-search t) start)
-    (when (and (re-search-forward (shimbun-content-start-internal shimbun)
-				  nil t)
+    (when (and (re-search-forward (shimbun-content-start shimbun) nil t)
 	       (setq start (match-beginning 0))
-	       (re-search-forward (shimbun-content-end-internal shimbun)
-				  nil t))
+	       (re-search-forward (shimbun-content-end shimbun) nil t))
       (delete-region (or (match-end 1) (match-end 2)) (point-max))
       (delete-region (point-min) start)
       t)))

@@ -31,9 +31,8 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-text)
 
-(luna-define-class shimbun-yahoo-sports (shimbun shimbun-text) ())
+(luna-define-class shimbun-yahoo-sports (shimbun) ())
 
 (defvar shimbun-yahoo-sports-url "http://sports.yahoo.co.jp/")
 

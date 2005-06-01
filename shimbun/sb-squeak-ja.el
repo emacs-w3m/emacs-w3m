@@ -26,9 +26,6 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
 (require 'shimbun)
 (require 'sb-mailman)
 
@@ -40,4 +37,5 @@
 (defvar shimbun-squeak-ja-groups '("main"))
 
 (provide 'sb-squeak-ja)
+
 ;;; sb-squeak-ja.el ends here

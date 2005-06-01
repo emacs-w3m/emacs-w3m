@@ -26,9 +26,6 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
 (require 'shimbun)
 (require 'sb-mailman)
 (require 'sendmail)
@@ -58,4 +55,5 @@
   (buffer-string))
 
 (provide 'sb-squeak-dev)
+
 ;;; sb-squeak-dev.el ends here

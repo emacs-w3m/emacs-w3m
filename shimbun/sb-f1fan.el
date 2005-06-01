@@ -25,15 +25,17 @@
 
 ;;; Commentary:
 
+;; This back end generates text/plain articles unless failing to
+;; extract contents.
+
 ;; Original code was nnshimbun.el written by
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>.
 
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-text)
 
-(luna-define-class shimbun-f1fan (shimbun shimbun-text) ())
+(luna-define-class shimbun-f1fan (shimbun) ())
 
 (defvar shimbun-f1fan-url "http://www.ksky.ne.jp/~tahara/f1/")
 (defvar shimbun-f1fan-server-name "F1ファン")

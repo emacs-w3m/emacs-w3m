@@ -27,9 +27,6 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
 (require 'shimbun)
 (require 'sb-rss)
 

@@ -1,6 +1,6 @@
 ;;; sb-chalow.el --- shimbun backend for chalow
 
-;; Copyright (C) 2003, 2004 OHASHI Akira <bg66@koka-in.org>
+;; Copyright (C) 2003, 2004, 2005 OHASHI Akira <bg66@koka-in.org>
 
 ;; Author: OHASHI Akira <bg66@koka-in.org>
 ;; Keywords: news
@@ -30,9 +30,8 @@
   (require 'cl))
 
 (require 'shimbun)
-(require 'sb-text)
 
-(luna-define-class shimbun-chalow (shimbun shimbun-text) ())
+(luna-define-class shimbun-chalow (shimbun) ())
 
 (defvar shimbun-chalow-content-start "</span>")
 (defvar shimbun-chalow-content-end "</div>")
@@ -111,11 +110,9 @@ ADDRESS is the e-mail address for the diary owner."
     (when (string-match "\\([-0-9]+\\)\." id)
       (setq id (substring id (match-beginning 1) (match-end 1)))
       (re-search-forward (concat "<a name=\"" id) nil t))
-    (when (and (re-search-forward (shimbun-content-start-internal shimbun)
-				  nil t)
+    (when (and (re-search-forward (shimbun-content-start shimbun) nil t)
 	       (setq start (point))
-	       (re-search-forward (shimbun-content-end-internal shimbun)
-				  nil t))
+	       (re-search-forward (shimbun-content-end shimbun) nil t))
       (delete-region (match-beginning 0) (point-max))
       (delete-region (point-min) start))
     (goto-char (point-min))

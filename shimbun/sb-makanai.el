@@ -31,10 +31,10 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-text)
+(require 'sb-text) ;; For `shimbun-shallow-rendering'.
 
 (eval-and-compile
-  (luna-define-class shimbun-makanai (shimbun shimbun-text) (content-hash))
+  (luna-define-class shimbun-makanai (shimbun) (content-hash))
   (luna-define-internal-accessors 'shimbun-makanai))
 
 (defvar shimbun-makanai-url "http://www.makanai.com/")

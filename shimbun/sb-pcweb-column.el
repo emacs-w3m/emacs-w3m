@@ -1,6 +1,6 @@
 ;;; sb-pcweb-column.el --- shimbun backend for PC WEB COLUMN Square
 
-;; Copyright (C) 2002, 2003, 2004 OHASHI Akira <bg66@koka-in.org>
+;; Copyright (C) 2002, 2003, 2004, 2005 OHASHI Akira <bg66@koka-in.org>
 
 ;; Author: OHASHI Akira <bg66@koka-in.org>
 ;; Keywords: news
@@ -27,9 +27,8 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-text)
 
-(luna-define-class shimbun-pcweb-column (shimbun shimbun-text) ())
+(luna-define-class shimbun-pcweb-column (shimbun) ())
 
 (defvar shimbun-pcweb-column-url "http://pcweb.mycom.co.jp/column/")
 (defvar shimbun-pcweb-column-groups

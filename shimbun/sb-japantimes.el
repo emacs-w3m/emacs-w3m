@@ -29,9 +29,8 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-text)
 
-(luna-define-class shimbun-japantimes (shimbun shimbun-text) ())
+(luna-define-class shimbun-japantimes (shimbun) ())
 
 (defvar shimbun-japantimes-url "http://www.japantimes.co.jp/")
 (defvar shimbun-japantimes-groups

@@ -24,15 +24,18 @@
 
 ;;; Commentary:
 
+;; This back end generates text/plain articles unless failing to
+;; extract contents.
+
 ;; Original code was nnshimbun.el written by
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>.
 
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-text)
+(require 'sb-text) ;; For `shimbun-shallow-rendering'.
 
-(luna-define-class shimbun-msports-nifty (shimbun shimbun-text) ())
+(luna-define-class shimbun-msports-nifty (shimbun) ())
 
 (defvar shimbun-msports-nifty-url "http://forum.nifty.com/fmotor/")
 (defvar shimbun-msports-nifty-server-name "@nifty:モータースポーツ")
@@ -89,15 +92,14 @@
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-msports-nifty)
 					   header)
-  (let ((id (shimbun-header-id header))
-	start)
+  (let ((id (shimbun-header-id header)))
     (setq id (substring id 9 20))	; extract anchor
     (re-search-forward (format "<a id=\"%s\"></a>" id) nil t)
     (delete-region (point-min) (point))
     (shimbun-header-insert-and-buffer-string
      shimbun header "UTF-8"
      (if (shimbun-clear-contents shimbun header)
-	 (shimbun-shallow-rendering)
+	 (progn (shimbun-shallow-rendering) nil)
        t))))
 
 (provide 'sb-msports-nifty)
