@@ -3814,6 +3814,11 @@ gnus-group-make-shimbun-group}.
 @c Otherwise, you can also see articles by browsing the back end using
 @c @kbd{B nnshimbun RET asahi RET}.
 
+@findex gnus-group-make-shimbun-groups
+@noindent
+Besides this, you can use the @code{gnus-group-make-shimbun-groups}
+command in order to make all groups for the specified server.
+
 @samp{Nnshimbun} simply fetches HTML contents from the web server and
 displays them as an article, but it will never save articles in the
 local file system, except if you use persistent articles
@@ -3844,6 +3849,12 @@ prefetched articles.
 @vindex nnshimbun-directory
 Directory where @samp{nnshimbun} saves @acronym{NOV} files.  The default
 value is @samp{~/News/shimbun/}.
+
+@item nnshimbun-default-group-level
+@vindex nnshimbun-default-group-level
+The default group level overriding @code{gnus-level-default-subscribed}.
+It will be applied to newly created @samp{nnshimbun} groups.  The
+default value is @code{nil}.
 @end table
 
 @cindex group parameters

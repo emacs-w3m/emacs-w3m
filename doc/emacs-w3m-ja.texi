@@ -3891,6 +3891,11 @@ Lisp プログラムを書くことができる必要があります)。
 @c または @kbd{B nnshimbun RET asahi RET} でバックエンドをブラウズすること
 @c によっても記事を読むことができます。
 
+@findex gnus-group-make-shimbun-groups
+@noindent
+この他に、@code{gnus-group-make-shimbun-groups} コマンドを使って、指定し
+たサーバーのすべてのグループを作ることができます。
+
 @samp{Nnshimbun} は単にウェブサーバから HTML コンテンツを取り寄せて、そ
 れを記事として表示しますが、永続記
 事 (@pxref{Persistent Articles, ,Persistent Articles, gnus, The Gnus
@@ -3921,6 +3926,12 @@ Manual}) を作る場合を除いて、ローカルファイルに記事をセーブすることはあ
 @vindex nnshimbun-directory
 @samp{Nnshimbun} が @acronym{NOV} ファイルを保存するディレクトリです。デ
 フォルト値は @samp{~/News/shimbun/} です。
+
+@item nnshimbun-default-group-level
+@vindex nnshimbun-default-group-level
+@code{gnus-level-default-subscribed} を上書きする、デフォルトのグループ
+レベルです。新たに作られた @samp{nnshimbun} グループに適用されます。デフォ
+ルト値は @code{nil} です。
 @end table
 
 @cindex group parameters

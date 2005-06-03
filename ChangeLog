@@ -1,3 +1,10 @@
+2005-06-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/nnshimbun.el (nnshimbun-default-group-level): New option.
+	(gnus-group-make-shimbun-group): Use it; don't bind
+	nnshimbun-pre-fetch-article.
+	(gnus-group-make-shimbun-groups): New command.
+
 2005-06-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-content-start-internal): Don't
