@@ -65,13 +65,24 @@
        (signal (car err) (cdr err))))))
 
 (require 'shimbun)
+
 (eval-and-compile
   (autoload 'gnus-declare-backend "gnus-start")
   (autoload 'gnus-group-make-group "gnus-group")
   (autoload 'gnus-group-short-name "gnus")
+  (autoload 'gnus-group-goto-group "gnus-group")
+  (autoload 'gnus-group-remove-mark "gnus-group")
+  (autoload 'gnus-group-change-level "gnus-start")
+  (autoload 'gnus-group-group-level "gnus-group")
+  (autoload 'gnus-group-update-group-line "gnus-group")
+  (autoload 'gnus-group-insert-group-line-info "gnus-group")
   (autoload 'gnus-summary-refer-article "gnus-sum")
   (autoload 'message-make-date "message")
   (autoload 'parse-time-string "parse-time"))
+
+(eval-when-compile
+  (defvar gnus-level-default-subscribed)
+  (defvar gnus-level-killed))
 
 (defgroup nnshimbun nil
   "Reading web contents with Gnus."
@@ -101,6 +112,13 @@ since nnshimbun uses the backlog to keep the prefetched articles."
 *If non-nil, nnshimbun won't expire the articles of which the date is unknown."
   :group 'nnshimbun
   :type 'boolean)
+
+(defcustom nnshimbun-default-group-level nil
+  "Integer specifies the default nnshimbun group level or nil.
+It is applied when an nnshimbun group is newly created.  If it is nil,
+the value of `gnus-level-default-subscribed' will be used."
+  :group 'nnshimbun
+  :type '(radio (const :format "%v  " nil) (integer :value 3)))
 
 
 ;; The nnshimbun group parameter:
@@ -925,7 +943,9 @@ The user will be prompted for a SERVER name and a GROUP name."
       (if (gnus-gethash (format "nnshimbun+%s:%s" server group)
 			gnus-newsrc-hashtb)
 	  (error "Group nnshimbun+%s:%s already exists" server group)
-	(let (nnshimbun-pre-fetch-article)
+	(let ((gnus-level-default-subscribed
+	       (or nnshimbun-default-group-level
+		   gnus-level-default-subscribed)))
 	  (gnus-group-make-group
 	   (if (mm-coding-system-p 'utf-8)
 	       (mm-encode-coding-string group 'utf-8)
@@ -933,6 +953,56 @@ The user will be prompted for a SERVER name and a GROUP name."
 	   (list 'nnshimbun server))))
     (error "Can't find group")))
 
+;;;###autoload
+(defun gnus-group-make-shimbun-groups (server)
+  "Create all nnshimbun groups prepared for SERVER."
+  (interactive
+   (let ((minibuffer-setup-hook (append minibuffer-setup-hook
+					'(beginning-of-line))))
+     (unless (eq major-mode 'gnus-group-mode)
+       (error "Command invoked outside of a Gnus group buffer"))
+     (list (completing-read
+	    "Shimbun server address [Hit TAB to see candidates]: "
+	    (shimbun-servers-alist) nil t))))
+  (unless (string-equal server "")
+    (let ((gnus-level-default-subscribed (or nnshimbun-default-group-level
+					     gnus-level-default-subscribed))
+	  (gnus-verbose 0)
+	  (utf8 (mm-coding-system-p 'utf-8))
+	  (grps (nreverse (shimbun-groups (shimbun-open server))))
+	  (inhibit-read-only t)
+	  grp group)
+      (if grps
+	  (when (or (= (length grps) 1)
+		    (prog1 (yes-or-no-p (format "\
+Are you sure you want to make %d groups for nnshimbun+%s:? "
+						(length grps) server))
+		      (message "")))
+	    (while grps
+	      (setq grp (pop grps)
+		    group (format "nnshimbun+%s:%s" server grp))
+	      (if (gnus-gethash group gnus-newsrc-hashtb)
+		  (progn
+		    (save-excursion
+		      (unless (gnus-group-goto-group group)
+			(gnus-group-update-group group)
+			(gnus-group-goto-group group))
+		      (gnus-group-remove-mark group)
+		      (gnus-group-change-level
+		       group
+		       gnus-level-default-subscribed
+		       (or (gnus-group-group-level) gnus-level-killed))
+		      (gnus-group-update-group-line)
+		      (delete-region (point-at-bol)
+				     (progn (forward-line 1) (point))))
+		    (gnus-group-insert-group-line-info group)
+		    (forward-line -1))
+		(gnus-group-make-group
+		 (if utf8
+		     (mm-encode-coding-string grp 'utf-8)
+		   grp)
+		 (list 'nnshimbun server)))))
+	(message "No group is found in nnshimbun+%s:" server)))))
 
 (provide 'nnshimbun)
 
