@@ -1,3 +1,30 @@
+2005-06-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/nnshimbun.el: Changes to enable a nnshimbun group to
+	work as an ephemeral group, and several clean ups.
+	(nnshimbun-server-directory): Removed.
+	(nnshimbun-current-directory): Removed.
+	(nnshimbun-group-prefixed-name): New inline function.
+	(nnshimbun-find-parameter, nnshimbun-request-expire-articles): Use
+	the above.
+	(nnshimbun-group-ephemeral-p): New inline function.
+	(nnshimbun-possibly-change-group): Do not make directories.
+	(nnshimbun-open-server): Use `nnshimbun-address' parameter as its
+	shimbun server name.  Do not make directories.
+	(nnshimbun-request-group): Retrieve headers if a specified group
+	is ephemeral.
+	(nnshimbun-close-group): Notify that an error occurs when closing
+	a group, if `nnshimbun-write-nov' returns nil.
+	(nnshimbun-nov-directory): New inline function.
+	(nnshimbun-nov-file-name, nnshimbun-request-delete-group): Use the
+	above.
+	(nnshimbun-write-nov): Do not write NOV database to a file, if a
+	specified group is ephemeral.  Returns nil if an error occurs when
+	writing NOV database to a file.
+	(nnshimbun-generate-nov-database): Ignore group parameters,
+	`prefetch-articles' and `index-range', if a specified group is
+	ephemeral.
+
 2005-06-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/nnshimbun.el (nnshimbun-default-group-level): New option.
