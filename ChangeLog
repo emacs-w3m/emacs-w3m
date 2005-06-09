@@ -2,6 +2,11 @@
 
 	* shimbun/nnshimbun.el (nnshimbun-request-group): Avoid multiple
 	retrieving of headers.
+	(gnus-group-make-shimbun-group): Remove an ephemeral group
+	information before making an ordinary group, if it is required.
+	(gnus-group-make-shimbun-groups): Call `gnus-group-entry' instead
+	of calling `gnus-gethash' which requires Gnus internal variable
+	`gnus-newsrc-hashtb'.
 
 2005-06-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 

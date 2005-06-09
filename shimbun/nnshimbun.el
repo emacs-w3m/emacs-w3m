@@ -921,16 +921,20 @@ shimbun group."
        (setq server nil))
      (list server group current-prefix-arg)))
   (if (and server group)
-      (progn
+      (let (name)
 	(setq server (list 'nnshimbun server)
 	      group (if (mm-coding-system-p 'utf-8)
 			(mm-encode-coding-string group 'utf-8)
-		      group))
+		      group)
+	      name (gnus-group-prefixed-name group server))
 	(if ephemeral
-	    (gnus-group-read-ephemeral-group
-	     (gnus-group-prefixed-name group server) server t
-	     (cons (current-buffer)
-		   (if (eq major-mode 'gnus-summary-mode) 'summary 'group)))
+	    (gnus-group-read-ephemeral-group name server t
+					     (cons (current-buffer)
+						   (if (eq major-mode
+							   'gnus-summary-mode)
+						       'summary 'group)))
+	  (when (gnus-ephemeral-group-p name)
+	    (gnus-kill-ephemeral-group name))
 	  (let ((gnus-level-default-subscribed
 		 (or nnshimbun-default-group-level
 		     gnus-level-default-subscribed)))
@@ -965,7 +969,7 @@ Are you sure you want to make %d groups for nnshimbun+%s:? "
 	    (while grps
 	      (setq grp (pop grps)
 		    group (format "nnshimbun+%s:%s" server grp))
-	      (if (gnus-gethash group gnus-newsrc-hashtb)
+	      (if (gnus-group-entry group)
 		  (progn
 		    (save-excursion
 		      (unless (gnus-group-goto-group group)
