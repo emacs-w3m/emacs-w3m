@@ -2767,13 +2767,7 @@ CODING-SYSTEM is used to read FILE which defaults to the value of
     (with-temp-buffer
       (when (condition-case nil
 		(let ((coding-system-for-read
-		       (or coding-system
-			   w3m-file-coding-system-for-read))
-		      (file-coding-system-for-read
-		       (or coding-system
-			   w3m-file-coding-system-for-read
-			   (if (boundp 'file-coding-system-for-read)
-			       (symbol-value 'file-coding-system-for-read)))))
+		       (or coding-system w3m-file-coding-system-for-read)))
 		  (insert-file-contents file))
 	      (error
 	       (message "Error while loading %s" file)
@@ -2795,8 +2789,7 @@ value of `w3m-file-coding-system'.  Optional ESCAPE-CTL-CHARS if it is
 non-nil, control chars will be represented with ^ as `cat -v' does."
   (when (and list (file-writable-p file))
     (with-temp-buffer
-      (let ((file-coding-system (or coding-system w3m-file-coding-system))
-	    (coding-system-for-write (or coding-system w3m-file-coding-system))
+      (let ((coding-system-for-write (or coding-system w3m-file-coding-system))
 	    (standard-output (current-buffer))
 	    (print-fn (if escape-ctl-chars
 			  'w3m-prin1
@@ -4098,11 +4091,9 @@ retrieval is successful."
     (when (file-readable-p file)
       (if (file-directory-p file)
 	  (w3m-local-dirlist-cgi url)
-	(let ((coding-system-for-read 'binary)
-	      (file-coding-system-for-read 'binary))
+	(let ((coding-system-for-read 'binary))
 	  (if no-decode
 	      (let (jka-compr-compression-info-list
-		    jam-zcat-filename-list
 		    format-alist)
 		(insert-file-contents file))
 	    (insert-file-contents file))))
@@ -4826,10 +4817,8 @@ POST-DATA and REFERER will be sent to the web server with a request."
 		  (w3m-retrieve url t no-cache nil nil handler)))
 	(if type
 	    (let ((buffer-file-coding-system 'binary)
-		  (file-coding-system 'binary)
 		  (coding-system-for-write 'binary)
 		  jka-compr-compression-info-list
-		  jam-zcat-filename-list
 		  format-alist)
 	      (when (or (not (file-exists-p filename))
 			(y-or-n-p
@@ -6155,7 +6144,6 @@ a page in a new buffer with the correct width."
       (set-buffer buffer)
       (setq url (or w3m-current-url
 		    (car (w3m-history-element (cadar w3m-history))))
-	    coding w3m-current-coding-system
 	    images w3m-display-inline-images
 	    init-frames (when (w3m-popup-frame-p)
 			  (copy-sequence w3m-initial-frames)))

@@ -413,11 +413,10 @@ a list of the results."
 	    (incf index)
 	    (funcall function
 		     element
-		     (let ((var (make-symbol "tmpvar")))
-		       (cons `(lambda (x)
-				(aset ,table ,index x)
-				(w3m-antenna-mapcar-after ,table ,buffer))
-			     handler)))))
+		     (cons `(lambda (x)
+			      (aset ,table ,index x)
+			      (w3m-antenna-mapcar-after ,table ,buffer))
+			   handler))))
     (w3m-antenna-mapcar-after (symbol-value table) (symbol-value buffer))))
 
 (defun w3m-antenna-mapcar-after (result buffer)

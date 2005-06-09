@@ -162,8 +162,7 @@ exist, returns (0 . 0)."
 				(w3m-bookmark-file-modtime))))
 	  (when (file-readable-p w3m-bookmark-file)
 	    (erase-buffer)
-	    (let ((coding-system-for-read 'binary)
-		  (file-coding-system-for-read 'binary))
+	    (let ((coding-system-for-read 'binary))
 	      (insert-file-contents w3m-bookmark-file))
 	    (w3m-decode-buffer
 	     (w3m-expand-file-name-as-url w3m-bookmark-file))

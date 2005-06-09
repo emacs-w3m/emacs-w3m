@@ -1,5 +1,44 @@
 2005-06-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/nnshimbun.el (nnshimbun-open-server): Remove
+	pathname-coding-system.
+	(nnshimbun-open-nov): Ditto.
+	(nnshimbun-write-nov): Ditto.
+
+	* shimbun/sb-heise.el (shimbun-heise-wash-newsticker-article)
+	Remove unused temp var.
+
+	* shimbun/sb-x51.el (shimbun-x51-prepare-article): Specify the
+	boundary to search date.
+
+	* w3m-antenna.el (w3m-antenna-mapcar): Remove unused temp var.
+
+	* w3m-bookmark.el (w3m-bookmark-buffer): Remove
+	file-coding-system-for-read.
+
+	* w3m-form.el (w3m-form-input-textarea-save): Remove
+	file-coding-system.
+	(w3m-form-input-textarea): Ditto.
+
+	* w3m-image.el (w3m-imagick-convert-buffer): Remove
+	file-coding-system.
+	(w3m-imagick-start-convert-buffer): Remove
+	file-coding-system and jam-zcat-filename-list.
+
+	* w3m.el (w3m-load-list): Remove file-coding-system-for-read.
+	(w3m-save-list): Remove file-coding-system.
+	(w3m-local-retrieve): Remove file-coding-system-for-read and
+	jam-zcat-filename-list.
+	(w3m-download): Remove file-coding-system and
+	jam-zcat-filename-list.
+	(w3m-copy-buffer): Remove unused temp var.
+
+	* w3mhack.el (w3mhack-byte-optimize-letX): Remove
+	file-coding-system, file-coding-system-for-read and
+	pathname-coding-system.
+
+2005-06-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-util.el (w3m-replace-in-string): Don't use eval-and-compile.
 	(w3m-compare-strings): Ditto.
 	(w3m-force-window-update): Alias to ignore if it is not defined.

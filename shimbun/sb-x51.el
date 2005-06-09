@@ -196,7 +196,7 @@
 \\([0-9]*\\)\\(&#26376;\\|月\\)\
 \\([0-9]*\\)\\(&#26085;\\|日\\)\
  ?\\([012][0-9]:[0-5][0-9]\\)"
-	   nil t)
+	   end t)
       (shimbun-header-set-date
        header
        (shimbun-make-date-string

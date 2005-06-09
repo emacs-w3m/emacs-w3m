@@ -388,8 +388,7 @@ If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
 (deffoo nnshimbun-open-server (server &optional defs)
   (or (nnshimbun-server-opened server)
       (let ((file-name-coding-system nnmail-pathname-coding-system)
-	    (pathname-coding-system nnmail-pathname-coding-system)
-	    (shimbun))
+	    shimbun)
 	(when (condition-case err
 		  (setq shimbun
 			(shimbun-open (or (cadr (assq 'nnshimbun-address defs))
@@ -725,7 +724,6 @@ allowed for each string."
       (with-current-buffer (gnus-get-buffer-create buffer)
 	(erase-buffer)
 	(let ((file-name-coding-system nnmail-pathname-coding-system)
-	      (pathname-coding-system nnmail-pathname-coding-system)
 	      (nov (nnshimbun-nov-file-name group)))
 	  (when (file-exists-p nov)
 	    (nnheader-insert-file-contents nov)))
@@ -736,8 +734,7 @@ allowed for each string."
   (let ((buffer (nnshimbun-nov-buffer-name group)))
     (prog1 (or (nnshimbun-group-ephemeral-p group)
 	       (not (gnus-buffer-live-p buffer))
-	       (let ((file-name-coding-system nnmail-pathname-coding-system)
-		     (pathname-coding-system nnmail-pathname-coding-system))
+	       (let ((file-name-coding-system nnmail-pathname-coding-system))
 		 (when (let ((dir (nnshimbun-nov-directory group)))
 			 (or (file-directory-p dir)
 			     (ignore-errors

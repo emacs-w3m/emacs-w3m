@@ -506,30 +506,19 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
     "Byte optimize `let' or `let*' FORM in the source level
 to remove some obsolete variables in the first argument VARLIST.
 
-Examples of the optimization:
+Here's an example showing how of it works for XEmacs.
 
 ;;From
-  (let ((coding-system-for-read 'binary)
-	(file-coding-system-for-read *noconv*))
-    (insert-file-contents FILE))
+  (let* ((pop-up-frames t)
+	 (pop-up-frame-alist PARAMETERS)
+	 (pop-up-frame-plist pop-up-frame-alist))
+    (pop-to-buffer BUFFER))
 ;;To
-  (let ((coding-system-for-read 'binary))
-    (insert-file-contents FILE))
-
-;;From
-  (let* ((codesys 'utf-8)
-	 (file-coding-system codesys)
-	 (coding-system-for-write file-coding-system))
-    (save-buffer))
-;;To
-  (let* ((codesys 'utf-8)
-	 (coding-system-for-write codesys))
-    (save-buffer))
+  (let* ((pop-up-frames t)
+	 (pop-up-frame-plist PARAMETERS))
+    (pop-to-buffer BUFFER))
 "
-    (let ((obsoletes '(file-coding-system
-		       file-coding-system-for-read
-		       pathname-coding-system
-		       pop-up-frame-alist))
+    (let ((obsoletes '(pop-up-frame-alist))
 	  (varlist (copy-sequence (cadr form)))
 	  obsolete elements element value)
       (while (setq obsolete (pop obsoletes))

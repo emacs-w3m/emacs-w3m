@@ -176,7 +176,7 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
     (let ((regexp-ad-begin "<!-- Meldung -->\\|<HEISETEXT>")
 	  (regexp-ad-end "<!-- untere News-Navigation -->")
 	  (regexp-ad "<!--OAS AD=\"Middle[0-9]*\"-->")
-	  (tmp-point) (bound-min) (bound-max))
+	  (bound-min) (bound-max))
       (when (setq bound-min (re-search-forward regexp-ad-begin nil t nil))
 	(when (setq bound-max (re-search-forward regexp-ad-end nil t nil))
 	  (goto-char bound-min)

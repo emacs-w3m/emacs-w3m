@@ -1076,9 +1076,10 @@ character."
 	(when (or w3m-form-use-textarea-backup-p
 		  (and (eq this-command 'w3m-form-input-textarea-save)
 		       (y-or-n-p "Really save this buffer? ")))
-	  (let ((buffer-file-coding-system w3m-form-input-textarea-coding-system)
-		(file-coding-system w3m-form-input-textarea-coding-system)
-		(coding-system-for-write w3m-form-input-textarea-coding-system))
+	  (let ((buffer-file-coding-system
+		 w3m-form-input-textarea-coding-system)
+		(coding-system-for-write
+		 w3m-form-input-textarea-coding-system))
 	    (write-region (point-min) (point-max) file nil 'nomsg)))
       (when w3m-form-use-textarea-backup-p
 	(when (file-exists-p file)
@@ -1219,7 +1220,6 @@ textarea")))
       (when (and backup-p (file-exists-p file) (file-readable-p file))
 	(with-temp-buffer
 	  (let ((buffer-file-coding-system coding)
-		(file-coding-system coding)
 		(coding-system-for-read coding))
 	    (insert-file-contents file))
 	  (let ((before (buffer-string)))
