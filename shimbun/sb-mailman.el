@@ -2,11 +2,11 @@
 
 ;; Copyright (C) 2002, 2003 NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Copyright (C) 2002       Katsumi Yamaoka <yamaoka@jpl.org>
-;; Copyright (C) 2005       Tsuyoshi CHO <cho@namazu.org>
+;; Copyright (C) 2005       Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Authors: NAKAJIMA Mikio  <minakaji@namazu.org>,
 ;;          Katsumi Yamaoka <yamaoka@jpl.org>,
-;;          Tsuyoshi CHO    <cho@namazu.org>
+;;          Tsuyoshi CHO    <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.

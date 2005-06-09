@@ -1,3 +1,14 @@
+2005-06-09  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-cnet-jp.el (shimbun-cnet-jp-group-alist): Add
+	"blog.sakamoto" entry.
+
+	* shimbun/(sb-x51.el, sb-wikimedia.el, sb-w3m-dev.el, sb-tigris.el,
+	sb-mailman.el, sb-excite.el, sb-cnn-jp.el, sb-arch-bluegate.el): Mail
+	address renew.
+	
+	* w3m.el: Ditto.
+
 2005-06-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/nnshimbun.el (nnshimbun-request-group): Avoid multiple

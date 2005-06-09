@@ -4522,7 +4522,7 @@ cnet.perspectives
 
 @item @uref{http://japan.cnet.com/, CNET Japan}
 cnet-jp.news cnet-jp.blog.kenn cnet-jp.blog.lessig cnet-jp.blog.watanabe
-cnet-jp.blog.editors
+cnet-jp.blog.sakamoto cnet-jp.blog.editors
 
 @item @uref{http://www.cnn.co.jp/, CNN Japan}
 cnn-jp.business cnn-jp.fringe cnn-jp.science cnn-jp.showbiz

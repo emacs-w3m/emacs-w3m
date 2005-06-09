@@ -1,8 +1,8 @@
 ;;; sb-excite.el --- shimbun backend for excite -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2004, 2005 Tsuyoshi CHO <mfalcon21@hotmail.com>
+;; Copyright (C) 2004, 2005 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
-;; Author: Tsuyoshi CHO <mfalcon21@hotmail.com>
+;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: news
 ;; Created: Dec 24, 2004
 

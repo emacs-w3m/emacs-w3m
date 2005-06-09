@@ -38,6 +38,7 @@
 (defvar shimbun-cnet-jp-group-alist
   '(("news"	     . "http://japan.cnet.com/rss/index.rdf")
     ("blog.kenn"     . "http://blog.japan.cnet.com/kenn/index.rdf")
+    ("blog.sakamoto" . "http://blog.japan.cnet.com/sakamoto/index.rdf")
     ("blog.lessig"   . "http://blog.japan.cnet.com/lessig/index.rdf")
     ("blog.watanabe" . "http://blog.japan.cnet.com/watanabe/index.rdf")
     ("blog.editors"  . "http://blog.japan.cnet.com/editors/index.rdf")))

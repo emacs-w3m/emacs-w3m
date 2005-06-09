@@ -1,8 +1,8 @@
 ;;; sb-arch-bluegate.el --- shimbun backend for arch.bluegate.org
 
-;; Copyright (C) 2005 Tsuyoshi CHO <mfalcon_sky@emailuser.net>
+;; Copyright (C) 2005 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
-;; Author: Tsuyoshi CHO <mfalcon_sky@emailuser.net>
+;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.

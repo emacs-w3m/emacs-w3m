@@ -1,8 +1,8 @@
 ;;; sb-wikimedia.el --- shimbun backend for Wikimedia Mailing list -*- coding: utf-8; -*-
 
-;; Copyright (C) 2004, 2005 Tsuyoshi CHO <mfalcon21@hotmail.com>
+;; Copyright (C) 2004, 2005 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
-;; Author: Tsuyoshi CHO <mfalcon21@hotmail.com>
+;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.
