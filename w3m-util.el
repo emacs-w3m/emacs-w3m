@@ -862,39 +862,55 @@ deactivated after evaluating the current command."
       (list 'region-active-p)
     (list 'and 'transient-mark-mode 'mark-active)))
 
-(eval-and-compile
-  (cond
-   ((fboundp 'replace-in-string)
-    (defalias 'w3m-replace-in-string 'replace-in-string))
-   (t
-    (defun w3m-replace-in-string  (string regexp newtext &optional literal)
-      ;;(replace-regexp-in-string regexp newtext string nil literal)))
-      ;;
-      ;; Don't call the symbol function `replace-regexp-in-string' directly
-      ;; in order to silence the byte-compiler when an Emacs which doesn't
-      ;; provide it is used.  The following form generates exactly the same
-      ;; byte-code.
-      (funcall (symbol-function 'replace-regexp-in-string)
-	       regexp newtext string nil literal)))))
+(cond
+ ((fboundp 'replace-in-string)
+  (defalias 'w3m-replace-in-string 'replace-in-string))
+ (t
+  (defun w3m-replace-in-string  (string regexp newtext &optional literal)
+    ;;(replace-regexp-in-string regexp newtext string nil literal)))
+    ;;
+    ;; Don't call the symbol function `replace-regexp-in-string' directly
+    ;; in order to silence the byte-compiler when an Emacs which doesn't
+    ;; provide it is used.  The following form generates exactly the same
+    ;; byte-code.
+    (funcall (symbol-function 'replace-regexp-in-string)
+	     regexp newtext string nil literal))))
+
+(if (fboundp 'compare-strings)
+    (defalias 'w3m-compare-strings 'compare-strings)
+  (defun w3m-compare-strings (string1 start1 end1 string2 start2 end2)
+    "Compare the contents of two strings."
+    (let* ((str1 (substring string1 start1 end1))
+	   (str2 (substring string2 start2 end2))
+	   (len (min (length str1) (length str2)))
+	   (i 0))
+      (if (string= str1 str2)
+	  t
+	(setq i (catch 'ignore
+		  (while (< i len)
+		    (when (not (eq (aref str1 i) (aref str2 i)))
+		      (throw 'ignore i))
+		    (setq i (1+ i)))
+		  i))
+	(1+ i)))))
 
 (eval-and-compile
-  (if (fboundp 'compare-strings)
-      (defalias 'w3m-compare-strings 'compare-strings)
-    (defun w3m-compare-strings (string1 start1 end1 string2 start2 end2)
-      "Compare the contents of two strings."
-      (let* ((str1 (substring string1 start1 end1))
-	     (str2 (substring string2 start2 end2))
-	     (len (min (length str1) (length str2)))
-	     (i 0))
-	(if (string= str1 str2)
-	    t
-	  (setq i (catch 'ignore
-		    (while (< i len)
-		      (when (not (eq (aref str1 i) (aref str2 i)))
-			(throw 'ignore i))
-		      (setq i (1+ i)))
-		    i))
-	  (1+ i))))))
+  ;; This function will be redefined in w3m-e21.el.
+  (unless (fboundp 'w3m-force-window-update)
+    (defalias 'w3m-force-window-update 'ignore)))
+
+(if (boundp 'header-line-format)
+    (defun w3m-force-window-update-later (buffer &optional seconds)
+      "Update the header-line appearance in BUFFER after SECONDS.
+If SECONDS is omitted, it defaults to 0.5."
+      (run-at-time (or seconds 0.5) nil
+		   (lambda (buffer)
+		     (when (and (buffer-live-p buffer)
+				(eq (get-buffer-window buffer t)
+				    (selected-window)))
+		       (w3m-force-window-update)))
+		   buffer))
+  (defalias 'w3m-force-window-update-later 'ignore))
 
 (provide 'w3m-util)
 

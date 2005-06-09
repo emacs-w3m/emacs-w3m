@@ -738,6 +738,7 @@ italic font in the modeline."
 			 "  "
 			 'display (create-image file 'xpm nil :ascent 'center)
 			 'local-map keymap
+			 'mouse-face 'mode-line-highlight
 			 'help-echo "mouse-2 reloads this page"))
 	      (put icon 'risky-local-variable t)
 	      (put status 'risky-local-variable t))

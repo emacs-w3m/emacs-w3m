@@ -1,3 +1,26 @@
+2005-06-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-replace-in-string): Don't use eval-and-compile.
+	(w3m-compare-strings): Ditto.
+	(w3m-force-window-update): Alias to ignore if it is not defined.
+	(w3m-force-window-update-later): New function.
+
+	* w3m-favicon.el (w3m-favicon-retrieve): Use
+	w3m-force-window-update-later.
+
+	* w3m-proc.el (w3m-process-stop): Use
+	w3m-force-window-update-later.
+
+	* w3m.el (w3m-retrieve-and-render): Use
+	w3m-force-window-update-later.
+	(w3m-select-buffer-show-this-line): Always run
+	w3m-force-window-update.
+
+2005-06-09  Masatake YAMATO  <jet@gyve.org>
+
+	* w3m-e21.el (w3m-initialize-graphic-icons): Highlight icon under
+	mouse.
+
 2005-06-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/nnshimbun.el (nnshimbun-request-group): Fix message.

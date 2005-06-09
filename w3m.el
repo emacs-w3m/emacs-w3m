@@ -5075,6 +5075,7 @@ called with t as an argument.  Otherwise, it will be called with nil."
 					    (w3m-arrived-content-charset url)
 					    (w3m-content-charset url))
 					page-buffer)
+		  (w3m-force-window-update-later page-buffer)
 		  (unless (get-buffer-window page-buffer)
 		    (w3m-message "The content (%s) has been retrieved in %s"
 				 url (buffer-name page-buffer)))))
@@ -7219,9 +7220,7 @@ frequently, set by the function itself and cleared by a timer.")
 
 (eval-when-compile
   (unless (fboundp 'format-mode-line)
-    (defalias 'format-mode-line 'ignore))
-  (unless (fboundp 'w3m-force-window-update)
-    (defalias 'w3m-force-window-update 'ignore)))
+    (defalias 'format-mode-line 'ignore)))
 
 (defun w3m-modeline-title ()
   "Return a truncated title not to cut the right end of the mode line.
@@ -8438,9 +8437,7 @@ buffer list.  The following command keys are available:
       (save-selected-window
 	(pop-to-buffer buffer)
 	(w3m-scroll-up-or-next-url nil)))
-    ;; FIXME: we should use a hook variable for this, maybe.
-    (w3m-static-when (boundp 'header-line-format)
-      (w3m-force-window-update w3m-select-buffer-window))
+    (w3m-force-window-update w3m-select-buffer-window)
     (w3m-message w3m-select-buffer-message)
     buffer))
 

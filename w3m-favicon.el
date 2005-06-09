@@ -265,15 +265,8 @@ stored in the `w3m-favicon-image' buffer-local variable."
 	      (w3m-favicon-set-image image)
 	      (push (list url idata (current-time) w3m-favicon-image)
 		    w3m-favicon-cache-data)))))))
-  (w3m-static-when (boundp 'header-line-format)
-    ;; Emacs frame needs to be redisplayed to make favicon come out.
-    (run-at-time 1 nil
-		 (lambda (buffer)
-		   (if (and (buffer-live-p buffer)
-			    (eq (get-buffer-window buffer t)
-				(selected-window)))
-		       (w3m-force-window-update)))
-		 target)))
+  ;; Emacs frame needs to be redisplayed to make favicon come out.
+  (w3m-force-window-update-later target 1))
 
 (defun w3m-favicon-save-cache-file ()
   "Save the cached favicon data into the local file."

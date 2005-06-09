@@ -50,10 +50,6 @@
 
 (require 'w3m-util)
 
-(eval-and-compile
-  (w3m-static-when (boundp 'header-line-format)
-    (autoload 'w3m-force-window-update "w3m")))
-
 (eval-when-compile
   ;; Variable(s) which are used in the following inline functions.
   ;; They should be defined in the other module at run-time.
@@ -309,15 +305,7 @@ which have no handler."
     (with-current-buffer buffer
       (setq w3m-current-process nil)))
   (w3m-process-start-queued-processes)
-  (w3m-static-when (boundp 'header-line-format)
-    ;; Redisplay the header-line.
-    (run-at-time 0.5 nil
-		 (lambda (buffer)
-		   (if (and (buffer-live-p buffer)
-			    (eq (get-buffer-window buffer t)
-				(selected-window)))
-		       (w3m-force-window-update)))
-		 buffer)))
+  (w3m-force-window-update-later buffer))
 
 (defun w3m-process-shutdown ()
   (let ((list w3m-process-queue))
