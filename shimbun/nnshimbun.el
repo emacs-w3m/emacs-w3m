@@ -78,7 +78,6 @@
   (autoload 'gnus-group-remove-mark "gnus-group")
   (autoload 'gnus-group-short-name "gnus")
   (autoload 'gnus-group-update-group-line "gnus-group")
-  (autoload 'gnus-kill-ephemeral-group "gnus")
   (autoload 'gnus-summary-refer-article "gnus-sum")
   (autoload 'message-make-date "message")
   (autoload 'parse-time-string "parse-time"))
@@ -922,20 +921,17 @@ shimbun group."
        (setq server nil))
      (list server group current-prefix-arg)))
   (if (and server group)
-      (let (name)
-	(setq server (list 'nnshimbun server)
-	      group (if (mm-coding-system-p 'utf-8)
+      (progn
+	(setq group (if (mm-coding-system-p 'utf-8)
 			(mm-encode-coding-string group 'utf-8)
 		      group)
-	      name (gnus-group-prefixed-name group server))
+	      server (list 'nnshimbun server))
 	(if ephemeral
-	    (gnus-group-read-ephemeral-group name server t
+	    (gnus-group-read-ephemeral-group group server t
 					     (cons (current-buffer)
 						   (if (eq major-mode
 							   'gnus-summary-mode)
 						       'summary 'group)))
-	  (when (gnus-ephemeral-group-p name)
-	    (gnus-kill-ephemeral-group name))
 	  (let ((gnus-level-default-subscribed
 		 (or nnshimbun-default-group-level
 		     gnus-level-default-subscribed)))
