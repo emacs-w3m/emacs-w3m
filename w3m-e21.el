@@ -478,6 +478,13 @@ Buffer string between BEG and END are replaced with IMAGE."
   "*Face to fontify background of tab line."
   :group 'w3m-face)
 
+(defface w3m-tab-mouse-face
+  '((((type x w32 mac) (class color))
+     :background "Gray65" :foreground "white"
+     :box (:line-width -1 :style released-button)))
+  "*Face used to highlight tabs under the mouse."
+  :group 'w3m-face)
+
 (defvar w3m-modeline-spinner-map nil
   "Keymap used on the spinner in the mode-line.")
 
@@ -493,12 +500,14 @@ Buffer string between BEG and END are replaced with IMAGE."
 		(propertize
 		 "Location: "
 		 'face 'w3m-header-line-location-title-face)
-		'(:eval
+		`(:eval
 		  (propertize
 		   (if (stringp w3m-current-url)
 		       (replace-regexp-in-string "%" "%%" w3m-current-url)
 		     "")
 		   'face 'w3m-header-line-location-content-face
+		   'mouse-face '(highlight :foreground
+					   ,(face-foreground 'default))
 		   'local-map (let ((map (make-sparse-keymap)))
 				(define-key map [header-line mouse-2]
 				  'w3m-goto-url)
@@ -707,6 +716,7 @@ cleared by a timer.")
 		    breadth nil ?.)
 		 (truncate-string-to-width title breadth nil ?\ ))))
 	     'face face
+	     'mouse-face 'w3m-tab-mouse-face
 	     'local-map keymap
 	     'help-echo title)
 	    w3m-tab-separator)

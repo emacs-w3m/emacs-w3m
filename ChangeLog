@@ -1,3 +1,14 @@
+2005-06-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-e21.el (w3m-tab-mouse-face): New face.
+	(w3m-setup-header-line): Use highlight face for bg color.
+	(w3m-tab-line): Use w3m-tab-mouse-face.
+
+2005-06-08  Masatake YAMATO  <jet@gyve.org>
+
+	* w3m-e21.el (w3m-setup-header-line): Highlight url under mouse.
+	(w3m-tab-line): Highlight tab under mouse.
+
 2005-06-08  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/nnshimbun.el: Changes to enable a nnshimbun group to
