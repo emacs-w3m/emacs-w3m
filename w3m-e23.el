@@ -440,9 +440,12 @@ Buffer string between BEG and END are replaced with IMAGE."
 				map)
 		   'help-echo "mouse-2 prompts to input URL")))))))
 
-(defun w3m-force-window-update (&optional window)
-  "Force redisplay of WINDOW which defaults to the selected window."
-  (force-window-update (or window (selected-window))))
+;; Use `defalias' instead of `defun' in order to avoid a compile warning
+;; which is issued because w3m-util.el defines it as `ignore' in advance.
+(defalias 'w3m-force-window-update
+  (lambda (&optional window)
+    "Force redisplay of WINDOW which defaults to the selected window."
+    (force-window-update (or window (selected-window)))))
 
 (defun w3m-tab-drag-mouse-function (event buffer)
   (let ((window (posn-window (event-end event)))
