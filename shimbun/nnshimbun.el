@@ -69,14 +69,15 @@
 (eval-and-compile
   (autoload 'gnus-declare-backend "gnus-start")
   (autoload 'gnus-ephemeral-group-p "gnus")
-  (autoload 'gnus-group-make-group "gnus-group")
-  (autoload 'gnus-group-short-name "gnus")
-  (autoload 'gnus-group-goto-group "gnus-group")
-  (autoload 'gnus-group-remove-mark "gnus-group")
   (autoload 'gnus-group-change-level "gnus-start")
+  (autoload 'gnus-group-goto-group "gnus-group")
   (autoload 'gnus-group-group-level "gnus-group")
-  (autoload 'gnus-group-update-group-line "gnus-group")
   (autoload 'gnus-group-insert-group-line-info "gnus-group")
+  (autoload 'gnus-group-make-group "gnus-group")
+  (autoload 'gnus-group-read-ephemeral-group "gnus-group")
+  (autoload 'gnus-group-remove-mark "gnus-group")
+  (autoload 'gnus-group-short-name "gnus")
+  (autoload 'gnus-group-update-group-line "gnus-group")
   (autoload 'gnus-summary-refer-article "gnus-sum")
   (autoload 'message-make-date "message")
   (autoload 'parse-time-string "parse-time"))
@@ -472,7 +473,7 @@ If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
 (deffoo nnshimbun-request-group (group &optional server dont-check)
   (setq group (nnshimbun-decode-group-name group))
   (if (not (nnshimbun-possibly-change-group group server))
-      (nnheader-report 'nnshimbun "Invalid group (no such directory)")
+      (nnheader-report 'nnshimbun "Invalid group")
     (or dont-check
 	(not (nnshimbun-group-ephemeral-p group))
 	(nnshimbun-generate-nov-database group))
@@ -889,9 +890,11 @@ Other files in the directory are also deleted."
 (defvar nnshimbun-server-history nil)
 
 ;;;###autoload
-(defun gnus-group-make-shimbun-group (server group)
+(defun gnus-group-make-shimbun-group (server group &optional ephemeral)
   "Create a new nnshimbun group.
-The user will be prompted for a SERVER name and a GROUP name."
+The user will be prompted for a SERVER name and a GROUP name.  When
+this command is called with a prefix argument, it makes an ephemeral
+shimbun group."
   (interactive
    (let ((minibuffer-setup-hook
 	  (append minibuffer-setup-hook '(beginning-of-line)))
@@ -918,19 +921,22 @@ The user will be prompted for a SERVER name and a GROUP name."
 	   (unless (shimbun-group-p shimbun group)
 	     (setq group nil)))
        (setq server nil))
-     (list server group)))
+     (list server group current-prefix-arg)))
   (if (and server group)
-      (if (gnus-gethash (format "nnshimbun+%s:%s" server group)
-			gnus-newsrc-hashtb)
-	  (error "Group nnshimbun+%s:%s already exists" server group)
-	(let ((gnus-level-default-subscribed
-	       (or nnshimbun-default-group-level
-		   gnus-level-default-subscribed)))
-	  (gnus-group-make-group
-	   (if (mm-coding-system-p 'utf-8)
-	       (mm-encode-coding-string group 'utf-8)
-	     group)
-	   (list 'nnshimbun server))))
+      (progn
+	(setq server (list 'nnshimbun server)
+	      group (if (mm-coding-system-p 'utf-8)
+			(mm-encode-coding-string group 'utf-8)
+		      group))
+	(if ephemeral
+	    (gnus-group-read-ephemeral-group
+	     (gnus-group-prefixed-name group server) server t
+	     (cons (current-buffer)
+		   (if (eq major-mode 'gnus-summary-mode) 'summary 'group)))
+	  (let ((gnus-level-default-subscribed
+		 (or nnshimbun-default-group-level
+		     gnus-level-default-subscribed)))
+	    (gnus-group-make-group group server))))
     (error "Can't find group")))
 
 ;;;###autoload

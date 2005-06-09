@@ -1,3 +1,9 @@
+2005-06-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/nnshimbun.el (nnshimbun-request-group): Fix message.
+	(gnus-group-make-shimbun-group): Create an ephemeral group when it
+	is called with the 3rd `ephemeral'argument.
+
 2005-06-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (w3m-tab-mouse-face): New face.
