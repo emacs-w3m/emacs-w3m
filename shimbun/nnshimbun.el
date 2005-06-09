@@ -78,6 +78,7 @@
   (autoload 'gnus-group-remove-mark "gnus-group")
   (autoload 'gnus-group-short-name "gnus")
   (autoload 'gnus-group-update-group-line "gnus-group")
+  (autoload 'gnus-kill-ephemeral-group "gnus")
   (autoload 'gnus-summary-refer-article "gnus-sum")
   (autoload 'message-make-date "message")
   (autoload 'parse-time-string "parse-time"))
