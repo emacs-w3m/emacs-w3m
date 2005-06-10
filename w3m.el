@@ -7480,23 +7480,16 @@ Cannot run two w3m processes simultaneously \
 	     w3m-profile-directory))
        w3m-profile-directory))))
 
-;; Alias to meet `run-at-time' bug of XEmacs.  It runs the timer
-;; function almost immediately, so we use the emulated version
-;; instead.
-(eval-and-compile
-  (unless (fboundp 'w3m-run-at-time)
-    (defalias 'w3m-run-at-time 'run-at-time)))
-
 (defun w3m-refresh-at-time ()
   (when (and w3m-use-refresh w3m-current-refresh)
     (if (= (car w3m-current-refresh) 0)
 	(w3m-goto-url-with-timer (cdr w3m-current-refresh) (current-buffer))
       (setq w3m-refresh-timer
-	    (w3m-run-at-time (car w3m-current-refresh)
-			     nil
-			     'w3m-goto-url-with-timer
-			     (cdr w3m-current-refresh)
-			     (current-buffer))))))
+	    (run-at-time (car w3m-current-refresh)
+			 nil
+			 'w3m-goto-url-with-timer
+			 (cdr w3m-current-refresh)
+			 (current-buffer))))))
 
 (defun w3m-goto-url-with-timer (url buffer)
   "Run the `w3m-goto-url' function by the refresh timer."

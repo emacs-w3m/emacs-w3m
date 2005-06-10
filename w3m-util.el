@@ -62,8 +62,7 @@
 (eval-and-compile
   (when (featurep 'xemacs)
     (require 'poe)
-    (require 'poem)
-    (autoload 'cancel-timer "w3m-xmas")))
+    (require 'poem)))
 
 ;;; Things should be defined in advance:
 
@@ -747,7 +746,9 @@ Otherwise return nil."
     (with-current-buffer (or buffer (current-buffer))
       (setq w3m-current-refresh nil)
       (when w3m-refresh-timer
-	(cancel-timer w3m-refresh-timer)
+	(w3m-static-if (featurep 'xemacs)
+	    (delete-itimer w3m-refresh-timer)
+	  (cancel-timer w3m-refresh-timer))
 	(setq w3m-refresh-timer nil)))))
 
 (cond ((featurep 'xemacs)

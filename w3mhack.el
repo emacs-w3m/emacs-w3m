@@ -503,17 +503,26 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 	(delq 'unused-vars (copy-sequence byte-compile-default-warnings)))
 
   (defun w3mhack-byte-optimize-letX (form)
-    "Byte optimize `let' or `let*' FORM in the source level
-to remove some obsolete variables in the first argument VARLIST.
+    "Do the source level optimization for the `let' and `let*' forms.
+This function removes some obsolete variables in the 1st arg VARLIST.
+Here are examples showing how of it works.
 
-Here's an example showing how of it works for XEmacs.
+  (let ((pop-up-frames t)
+	(pop-up-frame-alist PARAMETERS)
+	(pop-up-frame-plist PARAMETERS))
+    (pop-to-buffer BUFFER))
+	|
+	V
+  (let ((pop-up-frames t)
+	(pop-up-frame-plist PARAMETERS))
+    (pop-to-buffer BUFFER))
 
-;;From
   (let* ((pop-up-frames t)
 	 (pop-up-frame-alist PARAMETERS)
 	 (pop-up-frame-plist pop-up-frame-alist))
     (pop-to-buffer BUFFER))
-;;To
+	|
+	V
   (let* ((pop-up-frames t)
 	 (pop-up-frame-plist PARAMETERS))
     (pop-to-buffer BUFFER))

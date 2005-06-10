@@ -59,7 +59,29 @@ AC_DEFUN(AC_PATH_EMACS,
   AC_MSG_CHECKING([what a flavor does ${EMACS} have])
   AC_EMACS_LISP(flavor,
     (if (featurep (quote xemacs))\
-	\"XEmacs\"\
+	(if (condition-case nil\
+		(progn\
+		  (unless (or itimer-process itimer-timer)\
+		    (itimer-driver-start))\
+		  (let* ((inhibit-quit t)\
+			 (ctime (current-time))\
+			 (itimer-timer-last-wakeup\
+			  (prog1\
+			      ctime\
+			    (setcar ctime (1- (car ctime)))))\
+			 (itimer-list nil)\
+			 (itimer (start-itimer \"*testing*\"\
+					       (function ignore) 5)))\
+		    (sleep-for 0.1)\
+		    (prog1\
+			(> (itimer-value itimer) 0)\
+		      (delete-itimer itimer))))\
+	      (error nil))\
+	    \"XEmacs\"\
+	  (let ((v (emacs-version)))\
+	    (if (string-match (char-to-string 41) v)\
+		(substring v 0 (match-end 0))\
+	      \"Old XEmacs\")))\
       (format \"Emacs %d.%d\" emacs-major-version emacs-minor-version)),
     noecho)
   case "${flavor}" in
