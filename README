@@ -41,6 +41,11 @@
       No additional packages are required.
 
    b) XEmacs 21.x
+      First of all, you should note that emacs-w3m supports only XEmacs
+      21.4.17 and later and XEmacs 21.5-b19 and later.  In addition, you
+      need to have installed the latest xemacs-base package including
+      the timer-funcs.el module.
+
       APEL package is required.  It is available at:
 
           ftp://ftp.m17n.org/pub/mule/apel/apel-10.6.tar.gz

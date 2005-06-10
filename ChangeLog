@@ -1,3 +1,22 @@
+2005-06-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make emacs-w3m not support the XEmacs versions older than 21.4.17
+	or 21.5-b19.
+
+	* aclocal.m4 (AC_PATH_EMACS): Check whether XEmacs runs the timer
+	functions correctly.
+
+	* w3m-util.el (w3m-cancel-refresh-timer): Use delete-itimer
+	instead of cancel-timer under XEmacs.
+
+	* w3m-xmas.el (call-process-region): Don't advise it.
+	(w3m-run-at-time): Remove.
+
+	* w3m.el (w3m-refresh-at-time): Use run-at-time instead of
+	w3m-run-at-time.
+
+	* w3mhack.el (w3mhack-byte-optimize-letX): Doc fix.
+
 2005-06-09  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-cnet-jp.el (shimbun-cnet-jp-group-alist): Add
@@ -6,7 +25,7 @@
 	* shimbun/(sb-x51.el, sb-wikimedia.el, sb-w3m-dev.el, sb-tigris.el,
 	sb-mailman.el, sb-excite.el, sb-cnn-jp.el, sb-arch-bluegate.el): Mail
 	address renew.
-	
+
 	* w3m.el: Ditto.
 
 2005-06-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>

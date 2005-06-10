@@ -266,6 +266,10 @@ Emacs-w3m Functions
 ることを確かめて下さい。
 
 @item XEmacs 21.x
+第一に、emacs-w3m は XEmacs 21.4.17 以上、および XEmacs 21.5-b19 以上だ
+けをサポートすることに注意して下さい。加えて、@file{timer-funcs.el} を含
+む最新の xemacs-base パッケージをインストールしておく必要があります。
+
 @acronym{APEL} パッケージと @samp{gifsicle} プログラムが必要で
 す (@pxref{Other Requirements})。最も安定している最新の XEmacs 21.4 を使
 うことを推奨します。
@@ -3539,8 +3543,8 @@ Q. 動作する Emacs は?
 @itemize @bullet
 @item Emacs 21
 @item Emacs 22
-@item XEmacs 21.4 with/without Mule
-@item XEmacs 21.5 with/without Mule
+@item XEmacs 21.4.17 以上、Mule 有り/無し
+@item XEmacs 21.5-b19 以上、Mule 有り/無し
 @item Meadow
 @end itemize
 

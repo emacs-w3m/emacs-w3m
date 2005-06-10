@@ -234,6 +234,11 @@ of Emacs 22 (such as versions 21.3.50 or 22.0), make sure it is newer
 than March 2004.
 
 @item XEmacs 21.x
+First of all, you should note that emacs-w3m supports only XEmacs
+21.4.17 and later and XEmacs 21.5-b19 and later.  In addition, you need
+to have installed the latest xemacs-base package including the
+@file{timer-funcs.el} module.
+
 The @acronym{APEL} package and the @samp{gifsicle} program are required
 (@pxref{Other Requirements}).  We recommend using the latest XEmacs 21.4
 which seems stable.
@@ -3450,8 +3455,8 @@ The following Emacsen have been checked for emacs-w3m support:
 @itemize @bullet
 @item Emacs 21
 @item Emacs 22
-@item XEmacs 21.4 with/without Mule
-@item XEmacs 21.5 with/without Mule
+@item XEmacs 21.4.17 and later with/without Mule
+@item XEmacs 21.5-b19 and later with/without Mule
 @item Meadow
 @end itemize
 
