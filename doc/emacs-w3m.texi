@@ -228,10 +228,10 @@ You can run emacs-w3m in various versions of Emacsen listed below:
 @item Emacs 21.x
 No additional packages are required.
 
-@item Emacs 22.x
-No additional packages are required.  If you're using a prerelease version
-of Emacs 22 (such as versions 21.3.50 or 22.0), make sure it is newer
-than March 2004.
+@c @item Emacs 22.x
+@c No additional packages are required.  If you're using a prerelease version
+@c of Emacs 22 (such as versions 21.3.50 or 22.0), make sure it is newer
+@c than March 2004.
 
 @item XEmacs 21.x
 First of all, you should note that emacs-w3m supports only XEmacs
