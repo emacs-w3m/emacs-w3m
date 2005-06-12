@@ -1,3 +1,7 @@
+2005-06-12  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
+
+	* shimbun/sb-muchy.el: Removed.
+
 2005-06-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make emacs-w3m not support the XEmacs versions older than 21.4.17

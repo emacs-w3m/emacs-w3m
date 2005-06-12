@@ -5085,9 +5085,6 @@ jpo.news jpo.revision jpo.lawguide jpo.details
 ibm-dev.autonomic ibm-dev.java ibm-dev.linux ibm-dev.opensource
 ibm-dev.webservices ibm-dev.xml
 
-@item @uref{http://muchy.com/, Muchy's Palmware Review!}
-muchy.review
-
 @item @uref{http://www.pocketgames.jp/, Pocketgames}
 pocketgames.news
 
@@ -5315,8 +5312,7 @@ Message-ID として表示されます。例えば、下記の
 @w{@code{(match-string 2)}} の値を加工すれば良いでしょう。Subject は
 @w{@code{(match-string 3)}} で取得できますね。From は
 @w{@code{(match-string 4)}} を加工すれば良いでしょう。これらの値
-は MUA で見易いように更に加工しても構いません。@file{sb-muchy.el} では結
-構凝った Subject を作っていますので一度見て下さい。
+は MUA で見易いように更に加工しても構いません。
 
 上記のように記事の URL が相対パス表示されている場合は、
 @code{shimbun-expand-url} を使用し、絶対パス表示に変更してからヘッダに収

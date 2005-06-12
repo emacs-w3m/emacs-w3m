@@ -5024,9 +5024,6 @@ jpo.news jpo.revision jpo.lawguide jpo.details
 ibm-dev.autonomic ibm-dev.java ibm-dev.linux ibm-dev.opensource
 ibm-dev.webservices ibm-dev.xml
 
-@item @uref{http://muchy.com/, Muchy's Palmware Review!}
-muchy.review
-
 @item @uref{http://www.pocketgames.jp/, Pocketgames}
 pocketgames.news
 
@@ -5270,8 +5267,7 @@ a value of
 @w{@code{(match-string 2)}}.  Subject by
 @w{@code{(match-string 3)}} and From from
 @w{@code{(match-string 4)}}.  You can modify them further for showing
-additional information in MUA.  See the @file{sb-muchy.el} file which
-makes its original subject form from a web page source.
+additional information in MUA.
 
 If URL of an article is a relative path like above, use
 @code{shimbun-expand-url} to expand it before putting information to
