@@ -124,13 +124,15 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAWAgMAAAD7mfc/AAAABGdBTUEAALGPC/xhBQAAAAx
 
 ;; date normalize
 (defun shimbun-cnn-jp-prepare-article (shimbun header)
-  "Prepare an article: adjusting a date header if there is a correct
-information available."
-  (let ((case-fold-search t))
+  "Prepare an article:
+ adjusting a date header if there is a correct information available;
+ move a photograph to the top."
+  (let ((case-fold-search t)
+	photo)
     (when (re-search-forward
 	   ">\\(20[0-9][0-9]\\).\\([01][0-9]\\).\\([0-3][0-9]\\)<br>\n\
-Web\\(\\s \\|&nbsp;\\)+posted\\(\\s \\|&nbsp;\\)+at:[^0-9]*\
-\\([0-9][0-9]:[0-9][0-9]\\)\\(\\s \\|&nbsp;\\)*\\([A-Z]+\\)<br>"
+Web\\(?:\\s \\|&nbsp;\\)+posted\\(?:\\s \\|&nbsp;\\)+at:[^0-9]*\
+\\([0-9][0-9]:[0-9][0-9]\\)\\(?:\\s \\|&nbsp;\\)*\\([A-Z]+\\)<br>"
 	   ;; <p class="date">2005.02.10<br>
 	   ;; Web&nbsp;posted&nbsp;at:&nbsp;
 	   ;; 10:23
@@ -142,8 +144,29 @@ Web\\(\\s \\|&nbsp;\\)+posted\\(\\s \\|&nbsp;\\)+at:[^0-9]*\
 	(string-to-number (match-string-no-properties 1))
 	(string-to-number (match-string-no-properties 2))
 	(string-to-number (match-string-no-properties 3))
-	(match-string-no-properties 6)
-	(match-string-no-properties 8)))
+	(match-string-no-properties 4)
+	(match-string-no-properties 5)))
+      (goto-char (point-min)))
+
+    (when (and (not (shimbun-prefer-text-plain-internal shimbun))
+	       (re-search-forward "<div[\t\n ]+class=\"ImgC\">[\t\n ]*\
+\\(<img[\t\n ]+[^>]+>\\)[\t\n ]*</div>\
+\\(?:[\t\n ]*<div[\t\n ]+class=\"pCaption\">[\t\n ]*\
+<p>\\([^<]+\\)</p>[\t\n ]*</div>\\)"
+				  nil t)
+	       (progn
+		 (setq photo (if (match-beginning 2)
+				 (concat (match-string 1) "<br>\n"
+					 (match-string 2) "<br>\n")
+			       (concat (match-string 1) "<br>\n")))
+		 (goto-char (point-min))
+		 (re-search-forward (shimbun-content-start shimbun) nil t)))
+      (if (looking-at "[\t\n ]*\\(-[\t\n ]+[A-Z]+\\(?:/[A-Z]+\\)*\\)\
+\[\t\n ]*</p>[\t\n ]*<p>")
+	  (replace-match (concat "\\1<br>\n" photo "<p>"))
+	(when (looking-at "[\t\n ]+")
+	  (delete-region (match-beginning 0) (match-end 0)))
+	(insert photo))
       (goto-char (point-min)))))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-cnn-jp)

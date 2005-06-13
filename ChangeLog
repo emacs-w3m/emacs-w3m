@@ -1,5 +1,10 @@
 2005-06-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-cnn-jp.el (shimbun-cnn-jp-prepare-article): Enable
+	displaying of photographs.
+
+2005-06-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* aclocal.m4 (AC_PATH_EMACS): Check whether XEmacs works with the
 	shy group regexp and runs call-process-region correctly.
 
