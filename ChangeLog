@@ -1,5 +1,7 @@
 2005-06-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-kantei.el (shimbun-get-headers): Improve regexp.
+
 	* shimbun/sb-cnn-jp.el (shimbun-cnn-jp-prepare-article): Enable
 	displaying of photographs.
 

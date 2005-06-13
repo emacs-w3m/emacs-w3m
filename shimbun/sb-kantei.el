@@ -71,42 +71,95 @@ x6?mU-q=0}mTK5@\"-bFGuD}2Y/(lR/V#'?HRc2Jh2UrR,oIR~NL!})|^%kw")))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-kantei)
 					 &optional range)
-  (let (year month mday id url subject headers)
-    (while (re-search-forward
-	    ;; 1. url
-	    ;; 3. year (ja)
-	    ;; 4. month (ja)
-	    ;; 5. mday (ja)
-	    ;; 6. month (en)
-	    ;; 7. mday (en)
-	    ;; 8. year (en)
-	    ;; 9. subject
-	    "\
-<A HREF=\"\\([^\">]+\\)\">\
-\\(\
-\【\\(20[0-9][0-9]\\)/\\([01][0-9]\\)/\\([0-3][0-9]\\)】\
-\\|\
-\\[\\([01][0-9]\\)/\\([0-3][0-9]\\)/\\(20[0-9][0-9]\\)\\]\
-\\)\
-\[\t ]*\\([^<]+\\)"
-	    nil t)
-      (setq year (string-to-number (or (match-string 3) (match-string 8)))
-	    month (string-to-number (or (match-string 4) (match-string 6)))
-	    mday (string-to-number (or (match-string 5) (match-string 7)))
-	    url (match-string 1)
-	    id (format "<%d%02d%02d%s@www.kantei.or.jp>"
-		       year month mday
-		       (shimbun-current-group-internal shimbun))
-	    subject (match-string 9))
+;;;<DEBUG>
+;;  (shimbun-kantei-get-headers shimbun range))
+;;
+;;(defun shimbun-kantei-get-headers (shimbun range)
+;;;</DEBUG>
+  (let* ((group (shimbun-current-group-internal shimbun))
+	 (enp (equal group "m-magazine-en"))
+	 (regexp (if enp
+		     (eval-when-compile
+		       (concat "\\["
+			       ;; 1. month
+			       "\\([01][0-9]\\)"
+			       "/"
+			       ;; 2. day of month
+			       "\\([0-3][0-9]\\)"
+			       "/"
+			       ;; 3. year
+			       "\\(20[0-9][0-9]\\)"
+			       "\\][\t\n ]*"
+			       ;; 4. serial number
+			       "\\(No\\. [0-9]+:\\)?"
+			       "\\(?:[\t\n ]*<[^A][^>]+>\\)+[\t\n ]*"
+			       "<A[\t\n ]+HREF=\""
+			       ;; 5. url
+			       "\\([^\"]+\\)"
+			       "\"[^>]*>[\t\n ]*"
+			       ;; 6. subject
+			       "\\([^<]+\\)"))
+		   (eval-when-compile
+		     (concat "<A[\t\n ]+HREF=\""
+			     ;; 1. url
+			     "\\("
+			     ;; 2. year
+			     "\\(20[0-9][0-9]\\)"
+			     "/"
+			     ;; 3. month
+			     "\\([01][0-9]\\)"
+			     ;; 4. day of month
+			     "\\([0-3][0-9]\\)"
+			     ;; 5. revision e.g., 2005/0602b.html
+			     "\\([^.]+\\)?"
+			     "\\.html\\)"
+			     "\"[^>]*>[\t\n ]*【[^】]+】[\t\n ]*"
+			     ;; 6. subject
+			     "\\([^<]+\\)"))))
+	 (parent (shimbun-index-url shimbun))
+	 (from (shimbun-from-address shimbun))
+	 year month mday url subject id headers)
+    (while (re-search-forward regexp nil t)
+      (if enp
+	  (progn
+	    (setq year (match-string 3)
+		  month (match-string 1)
+		  mday (match-string 2)
+		  url (match-string 5)
+		  subject (if (match-beginning 4)
+			      (concat (match-string 4) " " (match-string 6))
+			    (match-string 6)))
+	    (if (string-match "\
+\\`\\(20[0-9][0-9]\\)/\\(\\([01][0-9]\\)\\([0-3][0-9]\\)[^.]*\\)\\.html\\'"
+			      url)
+		(setq year (string-to-number (match-string 1 url))
+		      month (string-to-number (match-string 3 url))
+		      mday (string-to-number (match-string 4 url))
+		      id (format "<%d%s%s@www.kantei.or.jp>"
+				 year (match-string 2 url) group))
+	      (setq year (string-to-number year)
+		    month (string-to-number month)
+		    mday (string-to-number mday)
+		    id (format "<%d%02d%02d%s@www.kantei.or.jp>"
+			       year month mday group)))
+	    (when (string-match "[\t ]+\\'" subject)
+	      (setq subject (substring subject 0 (match-beginning 0)))))
+	(setq year (string-to-number (match-string 2))
+	      month (string-to-number (match-string 3))
+	      mday (string-to-number (match-string 4))
+	      url (match-string 1)
+	      subject (match-string 6)
+	      id (format "<%d%02d%02d%s%s@www.kantei.or.jp>"
+			 year month mday
+			 (or (match-string 5) "")
+			 group)))
       (push (shimbun-create-header
-	     0
-	     (or subject "")
-	     (shimbun-from-address shimbun)
+	     0 subject from
 	     (shimbun-make-date-string year month mday)
 	     id "" 0 0
 	     (if (string-match "\\`http:" url)
 		 url
-	       (concat (shimbun-index-url shimbun) url)))
+	       (shimbun-expand-url url parent)))
 	    headers))
     headers))
 
