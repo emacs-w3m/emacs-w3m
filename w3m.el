@@ -3922,8 +3922,6 @@ It supports the encoding types of gzip, bzip2, deflate, etc."
 	      (coding-system-for-read 'binary)
 	      (default-process-coding-system (cons 'binary 'binary)))
 	  (w3m-process-with-environment w3m-command-environment
-	    (w3m-static-if (featurep 'xemacs)
-		(goto-char (point-max)))
 	    (zerop (apply 'call-process-region
 			  (point-min) (point-max)
 			  (w3m-which-command (car x))
@@ -4024,8 +4022,6 @@ for decoding when the cdr that the data specify is not available.")
 	    (append args (list "-o" "-cs" (symbol-name w3m-coding-system))))
       (setq charset w3m-coding-system))
     (w3m-process-with-environment w3m-command-environment
-      (w3m-static-if (featurep 'xemacs)
-	  (goto-char (point-max)))
       (apply 'call-process-region (point-min) (point-max)
 	     w3m-mbconv-command t t nil args))
     charset))
@@ -4973,13 +4969,6 @@ be displayed especially in shimbun articles."
 	 (default-process-coding-system
 	   (cons coding-system-for-read coding-system-for-write)))
     (w3m-process-with-environment w3m-command-environment
-      ;; `call-process-region' provided by XEmacs of versions 21.5.7
-      ;; through 21.5.17 is evil.  It requires the point to have to be
-      ;; in the beginning or the end of the region when the 4th arg is t.
-      ;; The problem has been reported with an example as:
-      ;; <URL:http://list-archive.xemacs.org/xemacs-beta/200311/msg00253.html>
-      (w3m-static-if (featurep 'xemacs)
-	  (goto-char (point-max)))
       (apply 'call-process-region
 	     (point-min)
 	     (point-max)

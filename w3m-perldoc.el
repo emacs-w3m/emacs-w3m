@@ -1,6 +1,7 @@
 ;;; w3m-perldoc.el --- The add-on program to view Perl documents.
 
-;; Copyright (C) 2001, 2002, 2003 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, perldoc
@@ -93,8 +94,6 @@
 				  nil t nil "-u" docname)))
 	   (let ((coding-system-for-write w3m-perldoc-input-coding-system)
 		 (coding-system-for-read w3m-perldoc-input-coding-system))
-	     (w3m-static-if (featurep 'xemacs)
-		 (goto-char (point-max)))
 	     (zerop (apply (function call-process-region)
 			   (point-min) (point-max)
 			   w3m-perldoc-pod2html-command

@@ -149,7 +149,7 @@ It has already been fixed in XEmacs since 1999-12-06."
 
 (when (and (not (featurep 'xemacs))
 	   (= emacs-major-version 21)
-	   (= emacs-minor-version 3)
+	   (>= emacs-minor-version 3)
 	   (condition-case code
 	       (let ((byte-compile-error-on-warn t))
 		 (byte-optimize-form (quote (pop x)) t)
@@ -183,24 +183,6 @@ than subr.el."
 		ad-do-it
 	      (put 'car 'side-effect-free tmp)))
 	ad-do-it))))
-
-;; Fix an XEmacs 21.5 bug in `call-process-region'.  It has been reported
-;; as <URL:http://news.gmane.org/group/gmane.emacs.xemacs.beta/thread=16564>.
-(when (and (featurep 'xemacs)
-	   (executable-find "cat")
-	   (with-temp-buffer
-	     (insert "bar")
-	     (backward-char)
-	     (call-process-region (1- (point)) (point) "cat" t t)
-	     (goto-char (point-min))
-	     (not (looking-at "bar"))))
-  (defadvice call-process-region (around fix-xemacs-bug activate)
-    "Narrow to the specified region while running the original function.
-It fixes an XEmacs 21.5 bug."
-    (save-restriction
-      (narrow-to-region (ad-get-arg 0) (ad-get-arg 1))
-      (goto-char (point-max))
-      ad-do-it)))
 
 ;; Add `configure-package-path' to `load-path' for XEmacs.  Those paths
 ;; won't appear in `load-path' when XEmacs starts with the `-vanilla'

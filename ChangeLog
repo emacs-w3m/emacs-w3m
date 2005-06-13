@@ -1,7 +1,21 @@
 2005-06-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* aclocal.m4 (AC_PATH_EMACS): Check whether XEmacs works with the
-	shy group regexp.
+	shy group regexp and runs call-process-region correctly.
+
+	* w3m-perldoc.el (w3m-about-perldoc): Don't relieve buggy XEmacs
+	21.5 for call-process-region.
+
+	* w3m-xmas.el (w3m-fix-gif): Ditto.
+	(w3m-initialize-graphic-icons): Ditto.
+
+	* w3m.el (w3m-decode-encoded-contents): Ditto.
+	(w3m-x-moe-decode-buffer): Ditto.
+	(w3m-rendering-half-dump): Ditto.
+
+	* w3mhack.el: Advise byte-optimize-form-code-walker to avoid the
+	``...called for effect'' warnings for Emacs 21.4 as well as 21.3;
+	don't relieve buggy XEmacs 21.5 for call-process-region.
 
 2005-06-12  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 

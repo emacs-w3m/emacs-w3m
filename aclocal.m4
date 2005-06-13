@@ -61,26 +61,33 @@ AC_DEFUN(AC_PATH_EMACS,
     (if (featurep (quote xemacs))\
 	(if (and\
 	     (condition-case nil\
-		(progn\
-		  (unless (or itimer-process itimer-timer)\
-		    (itimer-driver-start))\
-		  (let* ((inhibit-quit t)\
-			 (ctime (current-time))\
-			 (itimer-timer-last-wakeup\
-			  (prog1\
-			      ctime\
-			    (setcar ctime (1- (car ctime)))))\
-			 (itimer-list nil)\
-			 (itimer (start-itimer \"*testing*\"\
-					       (function ignore) 5)))\
-		    (sleep-for 0.1)\
-		    (prog1\
-			(> (itimer-value itimer) 0)\
-		      (delete-itimer itimer))))\
-	      (error nil))\
+		 (progn\
+		   (unless (or itimer-process itimer-timer)\
+		     (itimer-driver-start))\
+		   (let* ((inhibit-quit t)\
+			  (ctime (current-time))\
+			  (itimer-timer-last-wakeup\
+			   (prog1\
+			       ctime\
+			     (setcar ctime (1- (car ctime)))))\
+			  (itimer-list nil)\
+			  (itimer (start-itimer \"*testing*\"\
+						(function ignore) 5)))\
+		     (sleep-for 0.1)\
+		     (prog1\
+			 (> (itimer-value itimer) 0)\
+		       (delete-itimer itimer))))\
+	       (error nil))\
 	     (string-match\
 	      (concat (vector 94 92 40 63 58 32 43 92 41 42 92 91 92 93))\
-	      (concat (vector 32 91 93))))\
+	      (concat (vector 32 91 93)))\
+	     (or (not (executable-find \"cat\"))\
+		 (with-temp-buffer\
+		   (insert \"foo\")\
+		   (backward-char)\
+		   (call-process-region (1- (point)) (point) \"cat\" t t)\
+		   (goto-char (point-min))\
+		   (looking-at \"foo\"))))\
 	    \"XEmacs\"\
 	  (let ((v (emacs-version)))\
 	    (if (string-match (char-to-string 41) v)\

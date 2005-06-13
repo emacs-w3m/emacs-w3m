@@ -274,7 +274,6 @@ new glyph image.  See also the documentation for the variable
 		(coding-system-for-write 'binary)
 		should-be-non-interlaced should-unoptimize size1 size2 glyph)
 	    (insert data)
-	    (goto-char (point-min))
 	    (when (looking-at "GIF8[79]")
 	      (call-process-region (point-min) (point-max)
 				   w3m-gifsicle-program
@@ -797,7 +796,6 @@ italic font in the modeline."
 			   format-alist)
 		       (with-temp-buffer
 			 (insert-file-contents file)
-			 (goto-char (point-max))
 			 (call-process-region
 			  (point-min) (point-max) w3m-gifsicle-program t t nil
 			  "--careful" "--delay" "10" "--loopcount=forever"
