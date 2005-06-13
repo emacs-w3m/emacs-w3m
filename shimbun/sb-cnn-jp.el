@@ -152,7 +152,7 @@ Web\\(?:\\s \\|&nbsp;\\)+posted\\(?:\\s \\|&nbsp;\\)+at:[^0-9]*\
 	       (re-search-forward "<div[\t\n ]+class=\"ImgC\">[\t\n ]*\
 \\(<img[\t\n ]+[^>]+>\\)[\t\n ]*</div>\
 \\(?:[\t\n ]*<div[\t\n ]+class=\"pCaption\">[\t\n ]*\
-<p>\\([^<]+\\)</p>[\t\n ]*</div>\\)"
+<p>\\([^<]+\\)</p>[\t\n ]*</div>\\)?"
 				  nil t)
 	       (progn
 		 (setq photo (if (match-beginning 2)
