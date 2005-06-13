@@ -59,7 +59,8 @@ AC_DEFUN(AC_PATH_EMACS,
   AC_MSG_CHECKING([what a flavor does ${EMACS} have])
   AC_EMACS_LISP(flavor,
     (if (featurep (quote xemacs))\
-	(if (condition-case nil\
+	(if (and\
+	     (condition-case nil\
 		(progn\
 		  (unless (or itimer-process itimer-timer)\
 		    (itimer-driver-start))\
@@ -77,6 +78,9 @@ AC_DEFUN(AC_PATH_EMACS,
 			(> (itimer-value itimer) 0)\
 		      (delete-itimer itimer))))\
 	      (error nil))\
+	     (string-match\
+	      (concat (vector 94 92 40 63 58 32 43 92 41 42 92 91 92 93))\
+	      (concat (vector 32 91 93))))\
 	    \"XEmacs\"\
 	  (let ((v (emacs-version)))\
 	    (if (string-match (char-to-string 41) v)\

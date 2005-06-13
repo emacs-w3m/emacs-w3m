@@ -1,3 +1,8 @@
+2005-06-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_PATH_EMACS): Check whether XEmacs works with the
+	shy group regexp.
+
 2005-06-12  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* shimbun/sb-muchy.el: Removed.
