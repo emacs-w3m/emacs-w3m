@@ -1,4 +1,4 @@
-;;; sb-cnn-jp.el --- shimbun backend for CNN Japan -*- coding: iso-2022-7bit; -*-
+;;; sb-cnn-jp.el --- shimbun backend for CNN Japan
 
 ;; Copyright (C) 2003, 2004, 2005 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
