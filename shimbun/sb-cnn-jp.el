@@ -75,54 +75,54 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAWAgMAAAD7mfc/AAAABGdBTUEAALGPC/xhBQAAAAx
 (luna-define-method shimbun-get-headers ((shimbun shimbun-cnn-jp)
 					 &optional range)
   (let ((case-fold-search t)
-	(beg (point-min)) (end (point-max))
-	headers)
-    (goto-char (point-min))
-    (when (re-search-forward
-	   "FULL STORY" nil t)
-      (setq beg (match-end 0)))
-    (when (re-search-forward
-	   "<!-- *ＣＮＮ *ラージタイル *[0-9]+\\*[0-9]+ *★? *ここから *-->"
-	   nil t)
-      (setq end (match-beginning 0)))
-    (save-excursion
-      (narrow-to-region beg end)
-      (goto-char (point-min))
-      (let (title url date id str)
-	(while (re-search-forward
-		"<a href=\"\\([^\"]*\\)\">\\([^<]*\\)</a>"
-		nil t)
-	  (setq title (match-string-no-properties 2))
-	  (setq str   (substring (match-string-no-properties 1) 1))
-	  (setq url   (shimbun-expand-url (concat shimbun-cnn-jp-url str)))
-	  (let ((year 0) (month 0) (day 0))
-	    (when (string-match
-		   "\\([^/]*\\)/\\([^0-9]*\\)\\([0-9][0-9][0-9][0-9]\\)\
-\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9]*\\)"
-		   str)
-	      (setq year  (match-string-no-properties 3 str)
-		    month (match-string-no-properties 4 str)
-		    day   (match-string-no-properties 5 str)))
-	    (setq id (format "<%s%s%s%s%s%%%s@%s>"
-			     (match-string-no-properties 2 str)	; news provider
-			     year month day ; date
-			     (match-string-no-properties 6 str)	; number
-			     (match-string-no-properties 1 str)	; category
-			     shimbun-cnn-jp-top-level-domain)) ; domain
-	    (setq date (shimbun-make-date-string
-			(string-to-number year)
-			(string-to-number month)
-			(string-to-number day)))
-	    (push (shimbun-create-header
-		   0
-		   title
-		   (shimbun-from-address shimbun)
-		   date
-		   id "" 0 0 url)
-		  headers)))))
+	(from (shimbun-from-address shimbun))
+	year month day id ids headers)
+    (while (re-search-forward
+	    (eval-when-compile
+	      (concat "<a href=\"/"
+		      ;; 1. url
+		      "\\("
+		      ;; 2. category
+		      "\\([^/]+\\)"
+		      "/"
+		      ;; 3. news provider
+		      "\\([^./0-9]+\\)"
+		      ;; 4. year
+		      "\\(20[0-9][0-9]\\)"
+		      ;; 5. month
+		      "\\([01][0-9]\\)"
+		      ;; 6. day
+		      "\\([0-3][0-9]\\)"
+		      ;; 7. number
+		      "\\([0-9]+\\)"
+		      "\\.html\\)"
+		      "\">"
+		      ;; 8. title
+		      "\\([^>]+\\)"
+		      "</a>"))
+	    nil t)
+      (setq year (string-to-number (match-string 4))
+	    month (string-to-number (match-string 5))
+	    day (string-to-number (match-string 6))
+	    id (format "<%s%d%02d%02d%s%%%s@%s>"
+		       (match-string 3)
+		       year month day
+		       (match-string 7)
+		       (match-string 2)
+		       shimbun-cnn-jp-top-level-domain))
+      (unless (or (member id ids) ;; Avoid duplications.
+		  (shimbun-search-id shimbun id))
+	(push id ids)
+	(push (shimbun-create-header
+	       0
+	       (match-string 8)
+	       from
+	       (shimbun-make-date-string year month day)
+	       id "" 0 0
+	       (shimbun-expand-url (match-string 1) shimbun-cnn-jp-url))
+	      headers)))
     headers))
 
-;; date normalize
 (defun shimbun-cnn-jp-prepare-article (shimbun header)
   "Prepare an article:
  adjusting a date header if there is a correct information available;

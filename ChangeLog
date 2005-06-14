@@ -1,3 +1,7 @@
+2005-06-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-cnn-jp.el (shimbun-get-headers): Rewrite.
+
 2005-06-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-kantei.el (shimbun-get-headers): Improve regexp.
