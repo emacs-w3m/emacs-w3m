@@ -456,7 +456,7 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 	      (string-match " \\(?:よみうり寸評\\|編集手帳\\)\\'"
 			    (shimbun-header-subject header 'no-encode)))
      (while (search-forward "◆" nil t)
-       (replace-match "。<br><br>　")))))
+       (replace-match "。<br><br>\n　")))))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-yomiuri)
 						   header)

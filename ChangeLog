@@ -1,3 +1,8 @@
+2005-06-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-prepare-article): Break
+	long lines in the editorial group.
+
 2005-06-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-cnn-jp.el (shimbun-get-headers): Rewrite.
