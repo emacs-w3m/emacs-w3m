@@ -1,3 +1,8 @@
+2005-06-18  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
+
+	* w3m-search.el (w3m-search-engine-alist): Search Google News in
+	US by "google news-en".
+
 2005-06-17  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
 
 	* w3m-search.el (w3m-search-engine-alist): Add "google news" entry.

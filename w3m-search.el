@@ -69,7 +69,7 @@
 	       "http://news.google.co.jp/news?hl=ja&ie=Shift_JIS&q=%s"
 	       shift_jis)
 	      ("google news-en"
-	       "http://news.google.com/news?q=%s"))
+	       "http://news.google.com/news?hl=en&q=%s"))
 	  '(("google news"
 	     "http://news.google.com/news?q=%s")
 	    ("google news-ja"
