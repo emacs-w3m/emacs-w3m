@@ -47,7 +47,7 @@
     ("USA" . "usa")))
 (defvar shimbun-msports-nifty-from-address "motorsports_post@nifty.com")
 (defvar shimbun-msports-nifty-content-start
-  "^<div class=\"entry-body-text\">\n<p><FONT[^>]+>.*\n?.*</FONT>.*\n<img[^>]+>")
+  "^<div class=\"entry-body-text\">\n\\(\\(.\\|\n\\)+\n<img[^>]+>\\)?")
 (defvar shimbun-msports-nifty-content-end
   "^</div>\n</div>\n+<div class=\"entry-body-bottom\">")
 
@@ -65,7 +65,7 @@
   (let ((case-fold-search t) headers)
     (goto-char (point-min))
     (while (re-search-forward
-	    "<A HREF='\\(http://.*/\\([0-9]+\\)/\\([0-9][0-9]\\)/index\.html#\\(.*\\)\\)'[^>]*>☆　\\([^<]+\\)<" nil t)
+	    "<A HREF=\"\\(http://.*/\\([0-9]+\\)/\\([0-9][0-9]\\)/.*_\\(.*\\)\.html\\)\"[^>]*>☆　\\([^<]+\\)<" nil t)
       (let ((url (match-string 1))
 	    (year (match-string 2))
 	    (month (match-string 3))

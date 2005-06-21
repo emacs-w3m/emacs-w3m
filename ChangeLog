@@ -1,3 +1,9 @@
+2005-06-22  MIYOSHI Masanori  <miyoshi@meadowy.org>
+
+	* shimbun/sb-msports-nifty.el (shimbun-get-headers): Follow the
+	changes of the site.
+	(shimbun-msports-nifty-content-start): Ditto.
+
 2005-06-18  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
 
 	* w3m-search.el (w3m-search-engine-alist): Search Google News in
