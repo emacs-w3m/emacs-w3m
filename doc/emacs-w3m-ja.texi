@@ -4587,9 +4587,6 @@ weeklyworldnews.news
 welt-de.news
 
 @item @uref{http://hotwired.goo.ne.jp/, HotWired Japan}
-wired.business wired.culture wired.technology
-
-@item @uref{http://hotwired.goo.ne.jp/, HotWired Japan} (Experimental Module)
 wired-jp.news wired-jp.business wired-jp.culture wired-jp.technology
 wired-jp.blog.ogura wired-jp.blog.sasaki wired-jp.blog.takahashi
 
