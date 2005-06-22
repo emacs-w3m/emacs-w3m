@@ -1,5 +1,7 @@
 2005-06-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-wired.el: Removed.
+
 	* shimbun/sb-wired-jp.el (shimbun-wired-jp-get-headers): Fix the
 	order of retrieved headers.
 
