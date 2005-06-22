@@ -106,7 +106,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAQBAMAAACigOGCAAAABGdBTUEAALGPC/xhBQAAADB
 	       (shimbun-wired-jp-build-message-id shimbun url)
 	       "" 0 0 url)
 	      headers)))
-    (nreverse headers)))
+    headers))
 
 (luna-define-method shimbun-article-url ((shimbun shimbun-wired-jp) header)
   (let ((url (shimbun-article-base-url shimbun header)))
