@@ -53,6 +53,9 @@
 	    ("yahoo-ja"
 	     "http://search.yahoo.co.jp/bin/search?p=%s"
 	     euc-japan)))
+      ("yahoo beta"
+       "http://beta.search.yahoo.co.jp/search?p=%s&ei=UTF-8&eo=UTF-8"
+       utf-8)
       ,@(if ja
 	    '(("google"
 	       "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=Shift_JIS"
