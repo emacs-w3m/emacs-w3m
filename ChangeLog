@@ -1,3 +1,14 @@
+2005-06-26  Andreas Seltenreich  <seltenreich@gmx.de>
+
+	* shimbun/sb-zeit-de.el (shimbun-get-headers): Append
+	"?page=all" to the URLs to get complete articles again.
+
+2005-06-26  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
+
+	* w3m.el (w3m-relationship-estimate-rules): Improve regexp for
+	Google in order to make the scroll-to-next-page feature work on
+	Google News as well.
+
 2005-06-26  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
 	    TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 

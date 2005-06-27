@@ -46,6 +46,15 @@
 (luna-define-method shimbun-groups ((shimbun shimbun-zeit-de))
   shimbun-zeit-de-groups)
 
+(luna-define-method shimbun-get-headers :around ((shimbun shimbun-zeit-de)
+						 &optional range)
+  (mapcar
+   (lambda (header)
+     (let ((url (shimbun-header-xref header)))
+       (when (string-match "^http://www\\.zeit\\.de" url)
+	 (shimbun-header-set-xref header (concat url "?page=all"))) header))
+  (luna-call-next-method)))
+
 (luna-define-method shimbun-rss-build-message-id
   ((shimbun shimbun-zeit-de) url date)
   (if (string-match "http://\\([^/]+\\)\\(/\\(.+\\)\\)?" url)
