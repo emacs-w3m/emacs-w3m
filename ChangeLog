@@ -1,6 +1,6 @@
 2005-06-26  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
 
-	* w3m.el (w3m-relationship-estimate-rules): Add an rule for Yahoo
+	* w3m.el (w3m-relationship-estimate-rules): Add a rule for Yahoo
 	Search Beta.
 
 2005-06-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
