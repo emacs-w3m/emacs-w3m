@@ -1749,6 +1749,13 @@ Here are some predefined functions which can be used for those ways:
 	      "><img src=\\(?:/intl/[^/]+/\\)?nav_previous\\.gif")
      nil nil)
     (w3m-relationship-simple-estimate
+     "\\`http://beta\\.search\\.yahoo\\.co\\.jp/"
+     ,(concat "<a href=" w3m-html-string-regexp
+	      "><img src=http://i\\.yimg\\.jp/images/common/ar_next\\.gif")
+     ,(concat "<a href=" w3m-html-string-regexp
+	      "><img src=http://i\\.yimg\\.jp/images/common/ar_prev\\.gif")
+     nil nil)
+    (w3m-relationship-simple-estimate
      "\\`http://www\\.zdnet\\.co\\.jp/news/"
      ,(concat "<a href=" w3m-html-string-regexp ">次のページ</a>")
      ,(concat "<a href=" w3m-html-string-regexp ">前のページ</a>")
