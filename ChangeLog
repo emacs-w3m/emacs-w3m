@@ -1,3 +1,19 @@
+2005-06-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/nnshimbun.el: Changes to support an ephemeral group.
+	(TOPLEVEL): Add autoloads for `gnus-group-prefixed-name' and
+	`gnus-kill-ephemeral-group'.
+	(nnshimbun-group-prefixed-name): Accept an optional argument,
+	`server'.
+	(nnshimbun-group-ephemeral-p): Use the above function.
+	(nnshimbun-request-group): Ignore `dont-check' argument when
+	requesting an ephemeral group.
+	(nnshimbun-close-group): Close a NOV buffer for an ephemeral
+	group.
+	(gnus-group-make-shimbun-group): Use a prefixed name as an
+	ephemeral group.  Kill an ephemeral group before making it an
+	ordinary group.
+
 2005-06-26  Andreas Seltenreich  <seltenreich@gmx.de>
 
 	* shimbun/sb-zeit-de.el (shimbun-get-headers): Append

@@ -74,10 +74,12 @@
   (autoload 'gnus-group-group-level "gnus-group")
   (autoload 'gnus-group-insert-group-line-info "gnus-group")
   (autoload 'gnus-group-make-group "gnus-group")
+  (autoload 'gnus-group-prefixed-name "gnus")
   (autoload 'gnus-group-read-ephemeral-group "gnus-group")
   (autoload 'gnus-group-remove-mark "gnus-group")
   (autoload 'gnus-group-short-name "gnus")
   (autoload 'gnus-group-update-group-line "gnus-group")
+  (autoload 'gnus-kill-ephemeral-group "gnus")
   (autoload 'gnus-summary-refer-article "gnus-sum")
   (autoload 'message-make-date "message")
   (autoload 'parse-time-string "parse-time"))
@@ -308,14 +310,14 @@ default value for all the nnshimbun groups.  You can use the
 (defmacro nnshimbun-current-group ()
   '(shimbun-current-group nnshimbun-shimbun))
 
-(defsubst nnshimbun-group-prefixed-name (group)
-  (concat "nnshimbun+" (nnshimbun-current-server) ":"
-	  (or group (nnshimbun-current-group))))
+(defsubst nnshimbun-group-prefixed-name (group &optional server)
+  (gnus-group-prefixed-name (or group (nnshimbun-current-group))
+			    (list 'nnshimbun
+				  (or server (nnshimbun-current-server)))))
 
 (defsubst nnshimbun-group-ephemeral-p (group)
-  (gnus-ephemeral-group-p (concat "nnshimbun+"
-				  (shimbun-server nnshimbun-shimbun) ":"
-				  (or group (nnshimbun-current-group)))))
+  (gnus-ephemeral-group-p (nnshimbun-group-prefixed-name
+			   group (shimbun-server nnshimbun-shimbun))))
 
 (defmacro nnshimbun-backlog (&rest form)
   `(let ((gnus-keep-backlog nnshimbun-keep-backlog)
@@ -475,8 +477,7 @@ If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
       (nnheader-report 'nnshimbun "Invalid group")
     (let (beg end lines)
       (with-current-buffer (nnshimbun-open-nov group)
-	(when (and (not dont-check)
-		   (nnshimbun-group-ephemeral-p group)
+	(when (and (nnshimbun-group-ephemeral-p group)
 		   (zerop (buffer-size)))
 	  (nnshimbun-generate-nov-database group))
 	(goto-char (point-min))
@@ -499,7 +500,7 @@ If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
 
 (deffoo nnshimbun-close-group (group &optional server)
   (setq group (nnshimbun-decode-group-name group))
-  (nnshimbun-write-nov group))
+  (nnshimbun-write-nov group (nnshimbun-group-ephemeral-p group)))
 
 (deffoo nnshimbun-request-list (&optional server)
   (when (nnshimbun-possibly-change-group nil server)
@@ -927,11 +928,14 @@ shimbun group."
 		      group)
 	      server (list 'nnshimbun server))
 	(if ephemeral
-	    (gnus-group-read-ephemeral-group group server t
+	    (gnus-group-read-ephemeral-group (gnus-group-prefixed-name group
+								       server)
+					     server t
 					     (cons (current-buffer)
 						   (if (eq major-mode
 							   'gnus-summary-mode)
 						       'summary 'group)))
+	  (gnus-kill-ephemeral-group (gnus-group-prefixed-name group server))
 	  (let ((gnus-level-default-subscribed
 		 (or nnshimbun-default-group-level
 		     gnus-level-default-subscribed)))
