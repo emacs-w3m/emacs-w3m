@@ -3685,6 +3685,33 @@ w3m on cygwin}} is applied to the w3m command which some Linux
 distribution (e.g. Gentoo Linux) contains.  It is useful when using w3m
 barefoot, however it might make emacs-w3m hang.  If it is suspected, we
 recommend you reinstall the w3m command from the original source.
+
+@item
+Q. Why doesn't the emacs-w3m frame pop up to the front?
+
+It is quite convenient that the @kbd{M-x w3m RET} command makes the
+emacs-w3m frame pop to the front even if it is hidden under the other
+frames.  However, it was reported that it does not work in some
+platforms, e.g., Fedora Core 4.  In those systems, other features which
+raise the Emacs frames will not work, either.  If you are in such a
+miserable circumstance, it might be worth trying the following advice:
+
+@lisp
+(defadvice raise-frame
+  (after make-it-work (&optional frame) activate)
+  "Make it work."
+  (call-process
+   "wmctrl" nil nil nil "-i" "-R"
+   (frame-parameter (or frame (selected-frame))
+                    'outer-window-id)))
+@end lisp
+
+Where @samp{wmctrl} is the external command which you can get from:
+
+@uref{http://sweb.cz/tripie/utils/wmctrl/}
+
+Note that you have to install the @samp{wmctrl} command before putting
+the advice into the @file{~/.emacs} file.
 @end itemize
 
 @node Shimbun FAQ
