@@ -733,11 +733,11 @@ Otherwise return nil."
       (catch 'found-command
 	(let (bin)
 	  (dolist (dir exec-path)
-	    (when (or (file-executable-p
-		       (setq bin (expand-file-name command dir)))
-		      (file-executable-p
-		       (setq bin (expand-file-name (concat command ".exe")
-						   dir))))
+	    (setq bin (expand-file-name command dir))
+	    (when (or (and (file-executable-p bin)
+			   (not (file-directory-p bin)))
+		      (and (file-executable-p (setq bin (concat bin ".exe")))
+			   (not (file-directory-p bin))))
 	      (throw 'found-command bin))))))))
 
 (defun w3m-cancel-refresh-timer (&optional buffer)
