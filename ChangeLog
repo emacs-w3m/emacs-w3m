@@ -1,3 +1,10 @@
+2005-07-03  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-cnn-jp.el (shimbun-cnn-jp-prefer-text-plain): Add new
+	variable, set as text type.
+
+	* shimbun/sb-engadget-ja.el: New file.
+
 2005-07-02  David Hansen  <david.hansen@physik.fu-berlin.de>
 
 	* shimbun/sb-heise.el: (shimbun-heise-wash-telepolis-article):

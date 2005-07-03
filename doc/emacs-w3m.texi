@@ -4505,6 +4505,9 @@ cnet-jp.blog.sakamoto cnet-jp.blog.editors
 cnn-jp.business cnn-jp.fringe cnn-jp.science cnn-jp.showbiz
 cnn-jp.sports cnn-jp.top cnn-jp.usa cnn-jp.world
 
+@item @uref{http://japanese.engadget.com/, Engadget Japanese}
+engadget-ja.top
+
 @item @uref{http://www.excite.co.jp/, Excite News}
 excite.bit-koneta excite.world-odd
 

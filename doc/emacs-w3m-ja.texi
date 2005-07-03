@@ -4559,6 +4559,9 @@ cnet-jp.blog.sakamoto cnet-jp.blog.editors
 cnn-jp.business cnn-jp.fringe cnn-jp.science cnn-jp.showbiz
 cnn-jp.sports cnn-jp.top cnn-jp.usa cnn-jp.world
 
+@item @uref{http://japanese.engadget.com/, Engadget Japanese}
+engadget-ja.top
+
 @item @uref{http://www.excite.co.jp/, エキサイト ニュース}
 excite.bit-koneta excite.world-odd
 
@@ -4577,6 +4580,9 @@ itmedia.anchordesk itmedia.bursts itmedia.enterprise itmedia.games
 itmedia.lifestyle itmedia.mobile itmedia.news itmedia.pcupdate
 itmedia.technology
 
+@item @uref{http://www.japantimes.co.jp/, Japan Times}
+japantimes.general japantimes.business
+
 @item @uref{http://www.laut.de/, LAUT AG}
 laut-de.news laut-de.platten laut-de.platten_alternative
 laut-de.platten_dance laut-de.platten_hiphop platten_jazz
@@ -4586,9 +4592,6 @@ laut-de.platten_rock
 @item @uref{http://japan.linux.com/, japan.linux.com}
 linux-ja.news linux-ja.desktop linux-ja.enterprise linux-ja.kernel
 linux-ja.opensource linux-ja.security
-
-@item @uref{http://www.japantimes.co.jp/, Japan Times}
-japantimes.general japantimes.business
 
 @item @uref{http://www.n24.de/, N24}
 n24-de.boerse n24-de.boulevard n24-de.nachrichten n24-de.netnews
