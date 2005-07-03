@@ -92,6 +92,22 @@
 	    ("All the Web-ja"
 	     "http://www.alltheweb.com/search?web&_sb_lang=ja&cs=euc-jp&q=%s"
 	     euc-japan)))
+      ,@(if ja
+	    '(("technorati"
+	       "http://www.technorati.jp/search/search.html?query=%s&language=ja"
+	       utf-8)
+	      ("technorati-en"
+	       "http://www.technorati.com/search/%s"
+	       utf-8))
+	  '(("technorati"
+	     "http://www.technorati.com/search/%s"
+	     utf-8)
+	    ("technorati-ja"
+	     "http://www.technorati.jp/search/search.html?query=%s&language=ja"
+	     utf-8)))
+      ("technorati-tag"
+       "http://www.technorati.com/tag/%s"
+       utf-8)
       ("goo-ja"
        "http://www.goo.ne.jp/default.asp?MT=%s"
        euc-japan)

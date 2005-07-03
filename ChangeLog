@@ -1,3 +1,8 @@
+2005-07-04  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
+
+	* w3m-search.el (w3m-search-engine-alist): Add "technorati-*"
+	entries.
+
 2005-07-03  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-cnn-jp.el (shimbun-cnn-jp-prefer-text-plain): Add new
