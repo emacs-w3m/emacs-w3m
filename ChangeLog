@@ -1,4 +1,4 @@
-2005-07-04  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
+2005-07-03  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
 
 	* w3m-search.el (w3m-search-engine-alist): Add "technorati-*"
 	entries.
