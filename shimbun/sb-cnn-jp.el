@@ -65,8 +65,6 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAWAgMAAAD7mfc/AAAABGdBTUEAALGPC/xhBQAAAAx
  ja+gQ2erKHwYlGlMUH/FhSE3EEAdg1KDXakqlZ9LCii6J5DB7CROp4iPbnmrk8JWgOgAAAAd0SU1
  FB9QGBAQGEAm9iVAAAAAASUVORK5CYII=")))
 
-(defvar shimbun-cnn-jp-prefer-text-plain t)
-
 (luna-define-method shimbun-groups ((shimbun shimbun-cnn-jp))
   (mapcar 'car shimbun-cnn-jp-group-alist))
 

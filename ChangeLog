@@ -1,3 +1,8 @@
+2005-07-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-cnn-jp.el (shimbun-cnn-jp-prefer-text-plain): Remove
+	it temporarily (cf. http://emacs-w3m.namazu.org/ml/msg08121.html).
+
 2005-07-03  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
 
 	* w3m-search.el (w3m-search-engine-alist): Add "technorati-*"
