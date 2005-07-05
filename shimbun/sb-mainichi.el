@@ -351,13 +351,16 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
        (format "%02d:%02d"
 	       (string-to-number (or (match-string 8) (match-string 4)))
 	       (string-to-number (or (match-string 9) (match-string 5)))))))
-   (let ((group (shimbun-current-group-internal shimbun)))
-     (cond ((string-equal "eye.kinji" group)
+   (let ((group (shimbun-current-group-internal shimbun))
+	 (subject (shimbun-header-subject header 'no-encode)))
+     (cond ((or (string-equal "eye.kinji" group)
+		(string-match "\\`近事片々：" subject))
 	    ;; Shorten paragraph separators.
 	    (goto-char (point-min))
 	    (while (search-forward "</p><p>　　　◇</p><p>" nil t)
 	      (replace-match "<br>　　　◇<br>")))
-	   ((string-equal "eye.yoroku" group)
+	   ((or (string-equal "eye.yoroku" group)
+		(string-match "\\`余録：" subject))
 	    ;; Break continuous lines.
 	    (goto-char (point-min))
 	    (while (search-forward "▲" nil t)
