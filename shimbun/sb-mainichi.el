@@ -170,7 +170,7 @@ value of `shimbun-mainichi-header-regexp-default' is used by default.")
 
 (defvar shimbun-mainichi-content-end
   (let ((s0 "[\t\n ]*"))
-    (concat "\\(:?" s0 "</[^>]+>\\)*" s0
+    (concat "\\(?:" s0 "</[^>]+>\\)*" s0
 	    "<!--" s0 "||" s0 "/todays_topics" s0 "||-->")))
 
 (defvar shimbun-mainichi-x-face-alist
