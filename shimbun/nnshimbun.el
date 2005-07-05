@@ -827,8 +827,9 @@ Other files in the directory are also deleted."
 	(unless subdir
 	  (delete-directory dir)))
       (setq dir (expand-file-name ".." dir))
-      (unless (directory-files
-	       dir t "^\\([^.]\\|\\.\\([^.]\\|\\..\\)\\).*")
+      (when (and (file-directory-p dir)
+		 (not (directory-files
+		       dir t "^\\([^.]\\|\\.\\([^.]\\|\\..\\)\\).*")))
 	(delete-directory dir))
       (when (gnus-buffer-live-p nov)
 	(kill-buffer nov)))

@@ -46,87 +46,132 @@
   (concat "http://www." shimbun-mainichi-top-level-domain "/")
   "Name of the parent url.")
 
+(defvar shimbun-mainichi-header-regexp-default
+  (let ((s0 "[\t\n ]*")
+	(s1 "[\t\n ]+"))
+    (list
+     (concat
+      "<a" s1 "href=\"/"
+      ;; 1. url
+      "\\("
+      "\\(?:[^\t\n \"/]+/\\)+news/"
+      ;; 2. serial number
+      "\\("
+      ;; 3. year
+      "\\(20[0-9][0-9]\\)"
+      ;; 4. month
+      "\\([01][0-9]\\)"
+      ;; 5. day
+      "\\([0-3][0-9]\\)"
+      "\\(?:[^\t\n \"./]\\)+\\)"
+      "\\.html\\)"
+      "[^>]*>" s0
+      ;; 6 subject
+      "\\([^<]+\\)"
+      s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>"
+      "\\(?:" s0 "</td>" s0 "<td" s1 "class=\"time\">"
+      s0 "<span" s1 "[^>]+>" s0
+      ;; 7?. hour
+      "\\([012]?[0-9]\\)"
+      ":"
+      ;; 8?. minute
+      "\\([0-5]?[0-9]\\)"
+      "\\)?")
+     1 2 3 4 5 6 7 8))
+  "List of the default regexp used to extract headers and matching numbers.")
+
 (defvar shimbun-mainichi-group-table
-  (let* ((s0 "[\t\n ]*")
-	 (s1 "[\t\n ]+")
-	 (column (list
-		  (concat
-		   "<a" s1 "href=\"/"
-		   ;; 1. url
-		   "\\(column/[^/]+/news/"
-		   ;; 2. serial number
-		   "\\("
-		   ;; 3. year
-		   "\\(20[0-9][0-9]\\)"
-		   ;; 4. month
-		   "\\([01][0-9]\\)"
-		   ;; 5. day
-		   "\\([0-3][0-9]\\)"
-		   "[^.]+\\)"
-		   "\\.html\\)"
-		   "\"[^>]*>" s0
-		   ;; 6. subject
-		   "\\([^<]+\\)"
-		   s0 "<")
-		  1 nil 2 3 4 5 6))
-	 (default (list
-		   (concat
-		    "<a" s1 "href=\"/"
-		    ;; 1. url
-		    "\\([^/]+/"
-		    "\\(?:"
-		    ;; 2. subgroup
-		    "\\([^/]+\\)"
-		    "/\\)?news/"
-		    ;; 3. serial number
-		    "\\("
-		    ;; 4. year
-		    "\\(20[0-9][0-9]\\)"
-		    ;; 5. month
-		    "\\([01][0-9]\\)"
-		    ;; 6. day
-		    "\\([0-3][0-9]\\)"
-		    "[0-9a-z]+\\)"
-		    "\\.html\\)"
-		    "[^>]*>\\(?:" s0 "<[^>]+>\\)*" s0
-		    ;; 7+8. subject
-		    "\\([^<]+\\)\\(?:<br[^>]+>\\)?\\([^<]+\\)"
-		    "\\(?:\\(?:" s0 "<[^>]+>\\)+" s0
-		    ;; 9. hour
-		    "\\([012]?[0-9]\\)"
-		    ":"
-		    ;; 10. minute
-		    "\\([0-5]?[0-9]\\)"
-		    "\\)?")
-		   1 2 3 4 5 6 7 8 9 10)))
-    `(("column.hassinbako" "発信箱" "column/hassinbako/" ,@column)
-      ("column.hito" "ひと" "column/hito/" ,@column)
-      ("column.kishanome" "記者の目" "column/kishanome/" ,@column)
-      ("column.shasetsu" "社説" "column/shasetsu/" ,@column)
-      ("column.yoroku" "余録" "column/yoroku/" ,@column)
-      ("geinou" "芸能" nil ,@default)
-      ("it" "IT" nil ,@default)
-      ("kagaku.env" "環境" nil ,@default)
-      ("kagaku.medical" "医学" nil ,@default)
-      ("kagaku.science" "科学" nil ,@default)
-      ("keizai" "経済" nil ,@default)
-      ("kokusai" "国際" nil ,@default)
-      ("kurashi" "暮らし" nil ,@default)
-      ("seiji" "政治" nil ,@default)
-      ("shakai" "社会" nil ,@default)
-      ("shakai.edu" "教育" nil ,@default)
-      ("sports" "スポーツ" nil ,@default)))
-  "Alist of group names, their Japanese translations, index pages,
-regexps and numbers.  Where numbers point to the regexp search result
-in order of [0]a url, [1]a subgroup, [2]a serial number, [3]a year,
-\[4]a month, [5]a day, [6,7]a subject, [8]an hour and [9]a minute.")
+  '(("entertainment" "エンターテインメント")
+    ("entertainment.car" "車")
+    ("entertainment.cinema" "映画")
+    ("entertainment.game" "ゲーム")
+    ("entertainment.geinou" "芸能")
+    ("entertainment.igo" "碁")
+    ("entertainment.manga" "アニメ・マンガ")
+    ("entertainment.music" "音楽")
+    ("entertainment.shougi" "将棋")
+    ("entertainment.tv" "テレビ")
+    ("eye.closeup" "クローズアップ")
+    ("eye.hassinbako" "発信箱")
+    ("eye.hito" "ひと")
+    ("eye.kinji" "近事片々")
+    ("eye.kishanome" "記者の目")
+    ("eye.shasetsu" "社説")
+    ("eye.tenbou" "ニュース展望")
+    ("eye.yoroku" "余録")
+    ("eye.yuuraku" "憂楽帳")
+    ("keizai" "経済")
+    ("keizai.it" "IT")
+    ("keizai.kaigai" "経済・海外")
+    ("keizai.kigyou" "企業")
+    ("keizai.kigyou.info" "企業情報")
+    ("keizai.kinyu" "金融・株")
+    ("keizai.seisaku" "経済・政策")
+    ("keizai.wadai" "経済・話題")
+    ("kokusai" "国際")
+    ("kokusai.afro-ocea" "アフリカ・オセアニア")
+    ("kokusai.america" "南北アメリカ")
+    ("kokusai.asia" "アジア")
+    ("kokusai.europe" "ヨーロッパ")
+    ("kokusai.mideast" "中近東・ロシア")
+    ("kurashi" "暮らし")
+    ("kurashi.bebe" "子育て")
+    ("kurashi.fashion" "ファッション")
+    ("kurashi.katei" "家庭")
+    ("kurashi.kenko" "健康")
+    ("kurashi.kokoro" "こころ")
+    ("kurashi.shoku" "食")
+    ("kurashi.shumi" "趣味")
+    ("kurashi.travel" "旅")
+    ("kurashi.women" "女と男")
+    ("science" "サイエンス")
+    ("science.env" "環境")
+    ("science.kagaku" "科学")
+    ("science.medical" "医療")
+    ("science.rikei" "理系白書")
+    ("seiji" "政治")
+    ("seiji.feature" "政治・その他")
+    ("seiji.gyousei" "行政")
+    ("seiji.kokkai" "国会")
+    ("seiji.seitou" "政党")
+    ("seiji.senkyo" "選挙")
+    ("shakai" "社会")
+    ("shakai.edu" "教育")
+    ("shakai.fu" "訃報")
+    ("shakai.gakugei" "学芸")
+    ("shakai.ji" "人事")
+    ("shakai.jiken" "事件")
+    ("shakai.koushitsu" "皇室")
+    ("shakai.tenki" "天気")
+    ("shakai.wadai" "社会・話題")
+    ("sports" "スポーツ")
+    ("sports.ama" "アマ野球")
+    ("sports.battle" "格闘技")
+    ("sports.feature" "スポーツ・その他")
+    ("sports.field" "陸上競技")
+    ("sports.keiba" "競馬")
+    ("sports.major" "大リーグ")
+    ("sports.pro" "野球")
+    ("sports.soccer" "サッカー"))
+  "Alist of group names, their Japanese translations, regexps and numbers.
+Where numbers point to the regexp search result in order of [0]a url,
+\[1]a serial number, [2]a year, [3]a month, [4]a day, [5]a subject,
+\[6]an hour and [7]a minute.  If regexps and numbers are omitted, the
+value of `shimbun-mainichi-header-regexp-default' is used by default.")
 
 (defvar shimbun-mainichi-server-name "毎日新聞")
+
 (defvar shimbun-mainichi-from-address "nobody@example.com")
+
 (defvar shimbun-mainichi-content-start
-  "<!--[\t\n ]+START[\t\n ]+Article[\t\n ]+-->[\t\n ]*")
+  (let ((s0 "[\t\n ]*"))
+    (concat "</div>" s0
+	    "\\(?:<div" s0 "class=\"img_[^\"]+\"" s0 ">" s0 "\\|<p>\\)")))
+
 (defvar shimbun-mainichi-content-end
-  "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<!--[\t\n ]+END[\t\n ]+Article[\t\n ]+-->")
+  (let ((s0 "[\t\n ]*"))
+    (concat "\\(:?" s0 "</[^>]+>\\)*" s0
+	    "<!--" s0 "||" s0 "/todays_topics" s0 "||-->")))
 
 (defvar shimbun-mainichi-x-face-alist
   '(("default" . "\
@@ -150,11 +195,9 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-mainichi))
   (shimbun-expand-url
-   (or (nth 2 (assoc (shimbun-current-group-internal shimbun)
-		     shimbun-mainichi-group-table))
-       (concat (shimbun-subst-char-in-string
-		?. ?/ (shimbun-current-group-internal shimbun))
-	       "/"))
+   (concat (shimbun-subst-char-in-string
+	    ?. ?/ (shimbun-current-group-internal shimbun))
+	   "/")
    (shimbun-url-internal shimbun)))
 
 (defun shimbun-mainichi-make-date-string (&rest args)
@@ -184,171 +227,149 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 	      (format-time-string "%a, %d %b %Y %R +0900" (list ms ls)))
 	  date)))))
 
+(luna-define-method shimbun-get-headers ((shimbun shimbun-mainichi)
+					 &optional range)
+  (shimbun-mainichi-get-headers shimbun))
+
 (defun shimbun-mainichi-get-headers (shimbun)
   (let* ((group (shimbun-current-group-internal shimbun))
-	 (hierarchy (when (string-match "\\." group)
-		      (mapconcat 'identity
-				 (nreverse (split-string group "\\."))
-				 ".")))
-	 (regexp (nthcdr 3 (assoc group shimbun-mainichi-group-table)))
-	 (whole (string-match "\\`column\\." group))
+	 (regexp (or (nthcdr 2 (assoc group shimbun-mainichi-group-table))
+		     shimbun-mainichi-header-regexp-default))
 	 (from (concat (shimbun-server-name shimbun)
 		       " (" (shimbun-current-group-name shimbun) ")"))
 	 (case-fold-search t)
-	 url urls numbers subgroup header topnews headers date)
+	 numbers start subject month day url urls subjects id headers
+	 header date)
     (setq numbers (cdr regexp)
 	  regexp (car regexp))
     (shimbun-strip-cr)
-    (goto-char (point-min))
-    (while (and (not (eobp))
-		(or whole
-		    (re-search-forward "\
-<!--[\t\n ]*MEROS[\t\n ]+START[\t\n ]+Module=[^>]+>"
-				       nil t)))
-      (narrow-to-region (point)
-			(if whole
-			    (point-max)
-			  (or (re-search-forward "\
-<!--[\t\n ]*MEROS[\t\n ]+END[\t\n ]+Module[^>]+>"
-						 nil t)
-			      (point-max))))
-      (goto-char (point-min))
-      (while (re-search-forward regexp nil t)
-	(unless ;; Exclude duplications.
-	    (member (setq url (file-name-nondirectory
-			       (match-string (nth 0 numbers))))
-		    urls)
-	  (push url urls)
-	  (setq subgroup (when (nth 1 numbers)
-			   (match-string (nth 1 numbers))))
-	  (setq header
-		(shimbun-create-header
-		 0
-		 (concat (match-string (nth 6 numbers))
-			 (when (nth 7 numbers)
-			   (match-string (nth 7 numbers))))
-		 from
-		 (shimbun-mainichi-make-date-string
-		  (string-to-number (match-string (nth 3 numbers)))
-		  (string-to-number (match-string (nth 4 numbers)))
-		  (string-to-number (match-string (nth 5 numbers)))
-		  (if (and (nth 9 numbers)
-			   (match-beginning (nth 9 numbers)))
-		      (format
-		       "%02d:%02d"
-		       (string-to-number (match-string (nth 8 numbers)))
-		       (string-to-number (match-string (nth 9 numbers))))
-		    (when (and (nth 1 numbers)
-			       (not subgroup))
-		      ;; It may be a top news.
-		      "23:59:59")))
-		 (concat "<" (match-string (nth 2 numbers)) "%"
-			 (or hierarchy
-			     (concat (or subgroup "top") "." group))
-			 "." shimbun-mainichi-top-level-domain ">")
-		 "" 0 0
-		 (concat shimbun-mainichi-url (match-string (nth 0 numbers)))))
-	  (unless subgroup
-	    (push header topnews))
-	  (push header headers)))
+
+    ;; Ignore headline news.
+    (if (and (not (string-equal "eye.shasetsu" group))
+	     (string-match "\\`eye\\." group))
+	(progn
+	  (goto-char (point-min))
+	  (re-search-forward "<td[\t\n ]+class=\"date_md\">" nil t))
       (goto-char (point-max))
-      (widen))
+      (when (re-search-backward "<!--[\t\n ]*||[\t\n ]*\
+\\(?:todays_topics\\|/movie_news\\|/photo_news\\|/top_navi\\)[\t\n ]*||-->"
+				nil 'move)))
+    (delete-region (point-min) (point))
+
+    ;; Remove special sections.
+    (while (and (re-search-forward "\
+\[\t\n ]*\\(<!--[\t\n ]*|[\t\n ]*\\)\\(special[\t\n ]*|-->\\)"
+				   nil t)
+		(progn
+		  (setq start (match-beginning 0))
+		  (re-search-forward (concat (regexp-quote (match-string 1))
+					     "/"
+					     (regexp-quote (match-string 2))
+					     "[\t\n ]*")
+				     nil t)))
+      (delete-region start (match-end 0)))
+
+    ;; Rearrange the group name so as to be the reverse order.
+    (when (string-match "\\." group)
+      (setq group (mapconcat 'identity
+			     (nreverse (split-string group "\\."))
+			     ".")))
+
+    (goto-char (point-min))
+    (while (re-search-forward regexp nil t)
+      (setq subject nil month nil day nil)
+      (unless ;; Exclude duplications.
+	  (or (member (setq url (match-string (nth 0 numbers))) urls)
+	      (and (string-equal "shasetsu.eye" group)
+		   (or (member
+			(setq subject
+			      (format "%02d/%02d %s"
+				      (setq month
+					    (string-to-number
+					     (match-string (nth 3 numbers))))
+				      (setq day
+					    (string-to-number
+					     (match-string (nth 4 numbers))))
+				      (match-string (nth 5 numbers))))
+			subjects)
+		       (prog1
+			   nil
+			 (push subject subjects)))))
+	(push url urls)
+	(unless ;; Exclude duplications.
+	    (shimbun-search-id
+	     shimbun
+	     (setq id (concat "<" (match-string (nth 1 numbers)) "%" group
+			      "." shimbun-mainichi-top-level-domain ">")))
+	  (push
+	   (shimbun-create-header
+	    0
+	    (or subject (match-string (nth 5 numbers)))
+	    from
+	    (shimbun-mainichi-make-date-string
+	     (string-to-number (match-string (nth 2 numbers)))
+	     (or month (string-to-number (match-string (nth 3 numbers))))
+	     (or day (string-to-number (match-string (nth 4 numbers))))
+	     (when (nth 7 numbers)
+	       (if (match-beginning (nth 7 numbers))
+		   (format "%02d:%02d"
+			   (string-to-number (match-string (nth 6 numbers)))
+			   (string-to-number (match-string (nth 7 numbers))))
+		 "23:59:59")))
+	    id "" 0 0
+	    (shimbun-expand-url url shimbun-mainichi-url))
+	   headers))))
     (prog1
-	(shimbun-sort-headers headers)
-      ;; Fix date headers for top news.
-      (while topnews
-	(setq header (pop topnews)
+	(setq headers (shimbun-sort-headers headers))
+      (while headers
+	(setq header (pop headers)
 	      date (shimbun-header-date header))
 	(when (string-match "23:59:59" date)
 	  (shimbun-header-set-date header
 				   (replace-match "00:00" nil nil date)))))))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-mainichi)
-					 &optional range)
-  (shimbun-mainichi-get-headers shimbun))
+(luna-define-method shimbun-make-contents :before ((shimbun shimbun-mainichi)
+						   header)
+  (shimbun-mainichi-prepare-article shimbun header))
 
 (defun shimbun-mainichi-prepare-article (shimbun header)
   (shimbun-with-narrowed-article
    shimbun
-   ;; Remove the subject lines.
-   (when (re-search-forward "<\\([0-9a-z]+\\)[\t\n ]+class=\"m-title" nil t)
-     (let ((start (match-beginning 0)))
-       (when (search-forward (concat "</" (match-string 1) ">") nil t)
-	 (delete-region start (point)))))
    ;; Fix the Date header.
-   (when (re-search-forward
-	  (eval-when-compile
-	    (let ((s0 "[\t\n 　]*")
-		  (s1 "[\t\n 　]+"))
-	      (concat "<span" s1 "class=\"m-txt[^>]+\">" s0 "毎日新聞" s1
-		      ;; 1. year
-		      "\\(20[0-9][0-9]\\)"
-		      s0 "年" s0
-		      ;; 2. month
-		      "\\([01]?[0-9]\\)"
-		      s0 "月" s0
-		      ;; 3. day
-		      "\\([0-3]?[0-9]\\)"
-		      s0 "日" s0
-		      ;; 4. hour
-		      "\\([012]?[0-9]\\)"
-		      s0 "時" s0
-		      ;; 5. minute
-		      "\\([0-5]?[0-9]\\)"
-		      s0 "分")))
-	  nil t)
+   (when (re-search-forward "<p>毎日新聞　\
+\\(20[0-9][0-9]\\)年\\([01]?[0-9]\\)月\\([0-3]?[0-9]\\)日　\
+\\([012]?[0-9]\\)時\\([0-5]?[0-9]\\)分\\(?:　（最終更新時間　\
+\\([01]?[0-9]\\)月\\([0-3]?[0-9]\\)日　\
+\\([012]?[0-9]\\)時\\([0-5]?[0-9]\\)分）\\)?\\'"
+			    nil t)
      (shimbun-header-set-date
       header
       (shimbun-make-date-string
        (string-to-number (match-string 1))
-       (string-to-number (match-string 2))
-       (string-to-number (match-string 3))
+       (string-to-number (or (match-string 6) (match-string 2)))
+       (string-to-number (or (match-string 7) (match-string 3)))
        (format "%02d:%02d"
-	       (string-to-number (match-string 4))
-	       (string-to-number (match-string 5))))))
-   ;; Break continuous lines.
-   (when (or (string-equal "column.yoroku"
-			   (shimbun-current-group-internal shimbun))
-	     (string-match "\\`余録：" (shimbun-header-subject header
-							       'no-encode)))
-     (goto-char (point-min))
-     (while (search-forward "▲" nil t)
-       (replace-match "。<br><br>　")))
+	       (string-to-number (or (match-string 8) (match-string 4)))
+	       (string-to-number (or (match-string 9) (match-string 5)))))))
+   (let ((group (shimbun-current-group-internal shimbun)))
+     (cond ((string-equal "eye.kinji" group)
+	    ;; Shorten paragraph separators.
+	    (goto-char (point-min))
+	    (while (search-forward "</p><p>　　　◇</p><p>" nil t)
+	      (replace-match "<br>　　　◇<br>")))
+	   ((string-equal "eye.yoroku" group)
+	    ;; Break continuous lines.
+	    (goto-char (point-min))
+	    (while (search-forward "▲" nil t)
+	      (replace-match "。<br><br>　")))))
    (if (shimbun-prefer-text-plain-internal shimbun)
-       (let (footer)
-	 ;; Open paragraphs.
+       (progn
+	 ;; Replace images with text.
 	 (goto-char (point-min))
-	 (while (re-search-forward
-		 "[\t\n ]*</p>[\t\n ]*<p[\t\n ]+class=\"article\">[\t\n ]*"
-		 nil t)
-	   (replace-match "<br><br>"))
-	 ;; Fix the position of the footer.
-	 (require 'sb-text) ;; `shimbun-fill-column'
-	 (goto-char (point-min))
-	 (when (re-search-forward
-		(eval-when-compile
-		  (let ((s0 "[\t\n 　]*")
-			(s1 "[\t\n 　]+"))
-		    (concat s0 "\\(?:<[^>]+>" s0 "\\)*"
-			    "<span" s1 "class=\"m-txt1\">" s0
-			    "\\([^<]+\\)"
-			    "\\(?:" s0 "</span>" s0
-			    "\\(?:<[^!>]+>" s0 "\\)*\\)?")))
-		nil t)
-	   (setq footer (match-string 1))
-	   (delete-region (match-beginning 0) (match-end 0))
-	   (insert "<br><br>"
-		   (make-string (max (- (symbol-value 'shimbun-fill-column)
-					(string-width footer))
-				     0)
-				? )
-		   footer "<br>")))
+	 (while (re-search-forward "[\t\n ]*<img[\t\n ]+[^>]+>[\t\n ]*" nil t)
+	   (replace-match "(写真)")))
      ;; Break long lines.
      (shimbun-break-long-japanese-lines))))
-
-(luna-define-method shimbun-make-contents :before ((shimbun shimbun-mainichi)
-						   header)
-  (shimbun-mainichi-prepare-article shimbun header))
 
 (provide 'sb-mainichi)
 
