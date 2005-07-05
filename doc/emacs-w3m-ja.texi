@@ -46,13 +46,13 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License along
 with this document; if not, you can either send email to this document's
-maintainer or write to: The Free Software Foundation, Inc.; 59 Temple
-Place, Suite 330; Boston, MA 02111-1307, USA.
+maintainer or write to: The Free Software Foundation, Inc.; 51 Franklin
+Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 あなたは, この文書と一緒に GNU 一般公有使用許諾の写しを受け取っているは
 ずです. そうでない場合は, 文書の管理者にメールを送るか、または、フリーソ
-フトウェア財団 (675 Mass Ave, Cambridge, MA 02139, USA) に手紙を書いてく
-ださい。
+フトウェア財団 (51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
+USA.) に手紙を書いてください。
 @end ifinfo
 
 @titlepage
@@ -89,13 +89,13 @@ General Public License for more details.
 
 You should have received a copy of the GNU General Public License along
 with this document; if not, you can either send email to this document's
-maintainer or write to: The Free Software Foundation, Inc.; 59 Temple
-Place, Suite 330; Boston, MA 02111-1307, USA.
+maintainer or write to: The Free Software Foundation, Inc.; 51 Franklin
+Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 あなたは, この文書と一緒に GNU 一般公有使用許諾の写しを受け取っているは
 ずです. そうでない場合は, 文書の管理者にメールを送るか、または、フリーソ
-フトウェア財団 (675 Mass Ave, Cambridge, MA 02139, USA) に手紙を書いてく
-ださい。
+フトウェア財団 (51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
+USA.) に手紙を書いてください。
 @end titlepage
 
 @ifnottex
