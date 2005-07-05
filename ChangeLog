@@ -1,3 +1,14 @@
+2005-07-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-mainichi.el: Rewrite.
+	(shimbun-mainichi-header-regexp-default): New variable.
+
+	* shimbun/sb-text.el (shimbun-shallow-rendering): Handle <br /> as
+	well as <br>.
+
+	* shimbun/nnshimbun.el (nnshimbun-request-delete-group): Make sure
+	the parent directory exists.
+
 2005-07-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-cnn-jp.el (shimbun-cnn-jp-prefer-text-plain): Remove
