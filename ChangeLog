@@ -1,3 +1,7 @@
+2005-07-06  David Hansen  <david.hansen@gmx.net>
+
+	* shimbun/sb-infoshop.el: New file.
+
 2005-07-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-mainichi.el (shimbun-mainichi-header-regexp-default):

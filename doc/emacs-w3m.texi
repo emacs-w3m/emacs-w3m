@@ -4546,6 +4546,9 @@ fau.news
 @item @uref{http://www.heise.de/, Heise Online}
 heise.news heise.telepolis
 
+@item @uref{http://news.infoshop.org/, Infoshop News}
+infoshop.news
+
 @item @uref{http://www.watch.impress.co.jp/, Impress}
 impress.enterprise impress.pc impress.dc impress.akiba impress.av impress.game
 impress.k-tai impress.internet impress.bb impress.forest
