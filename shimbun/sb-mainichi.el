@@ -54,7 +54,7 @@
       "<a" s1 "href=\"/"
       ;; 1. url
       "\\("
-      "\\(?:[^\t\n \"/]+/\\)+news/"
+      "\\(?:[^\t\n \"/]+/\\)+news/\\(?:20[0-9][0-9]/[01]?[0-9]/\\)?"
       ;; 2. serial number
       "\\("
       ;; 3. year
@@ -97,6 +97,7 @@
     ("eye.kinji" "近事片々")
     ("eye.kishanome" "記者の目")
     ("eye.shasetsu" "社説")
+    ("eye.shasetsu.archive" "社説アーカイブ")
     ("eye.tenbou" "ニュース展望")
     ("eye.yoroku" "余録")
     ("eye.yuuraku" "憂楽帳")
@@ -237,23 +238,30 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 		     shimbun-mainichi-header-regexp-default))
 	 (from (concat (shimbun-server-name shimbun)
 		       " (" (shimbun-current-group-name shimbun) ")"))
+	 (editorial (string-match "\\`eye\\.shasetsu" group))
 	 (case-fold-search t)
-	 numbers start subject month day url urls subjects id headers
-	 header date)
+	 numbers start url urls id month day subject headers header date)
     (setq numbers (cdr regexp)
 	  regexp (car regexp))
     (shimbun-strip-cr)
 
-    ;; Ignore headline news.
-    (if (and (not (string-equal "eye.shasetsu" group))
-	     (string-match "\\`eye\\." group))
-	(progn
-	  (goto-char (point-min))
-	  (re-search-forward "<td[\t\n ]+class=\"date_md\">" nil t))
-      (goto-char (point-max))
-      (when (re-search-backward "<!--[\t\n ]*||[\t\n ]*\
+    ;; Ignore unwanted links.
+    (cond ((string-equal "eye.shasetsu" group)
+	   (goto-char (point-min))
+	   (when (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
+<a[\t\n ]+href=\"/eye/shasetsu/archive/\">"
+				    nil t)
+	     (delete-region (match-beginning 0) (point-max)))
+	   (goto-char (point-min))
+	   (re-search-forward "<div[\t\n ]+class=\"blocks\">[\t\n ]*" nil t))
+	  ((string-match "\\`eye\\." group)
+	   (goto-char (point-min))
+	   (re-search-forward "<td[\t\n ]+class=\"date_md\">" nil t))
+	  (t
+	   (goto-char (point-max))
+	   (when (re-search-backward "<!--[\t\n ]*||[\t\n ]*\
 \\(?:todays_topics\\|/movie_news\\|/photo_news\\|/top_navi\\)[\t\n ]*||-->"
-				nil 'move)))
+				     nil 'move))))
     (delete-region (point-min) (point))
 
     ;; Remove special sections.
@@ -277,48 +285,37 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 
     (goto-char (point-min))
     (while (re-search-forward regexp nil t)
-      (setq subject nil month nil day nil)
       (unless ;; Exclude duplications.
 	  (or (member (setq url (match-string (nth 0 numbers))) urls)
-	      (and (string-equal "shasetsu.eye" group)
-		   (or (member
-			(setq subject
-			      (format "%02d/%02d %s"
-				      (setq month
-					    (string-to-number
-					     (match-string (nth 3 numbers))))
-				      (setq day
-					    (string-to-number
-					     (match-string (nth 4 numbers))))
-				      (match-string (nth 5 numbers))))
-			subjects)
-		       (prog1
-			   nil
-			 (push subject subjects)))))
-	(push url urls)
-	(unless ;; Exclude duplications.
-	    (shimbun-search-id
-	     shimbun
-	     (setq id (concat "<" (match-string (nth 1 numbers)) "%" group
-			      "." shimbun-mainichi-top-level-domain ">")))
-	  (push
-	   (shimbun-create-header
-	    0
-	    (or subject (match-string (nth 5 numbers)))
-	    from
-	    (shimbun-mainichi-make-date-string
-	     (string-to-number (match-string (nth 2 numbers)))
-	     (or month (string-to-number (match-string (nth 3 numbers))))
-	     (or day (string-to-number (match-string (nth 4 numbers))))
-	     (when (nth 7 numbers)
-	       (if (match-beginning (nth 7 numbers))
-		   (format "%02d:%02d"
-			   (string-to-number (match-string (nth 6 numbers)))
-			   (string-to-number (match-string (nth 7 numbers))))
-		 "23:59:59")))
-	    id "" 0 0
-	    (shimbun-expand-url url shimbun-mainichi-url))
-	   headers))))
+	      (progn
+		(push url urls)
+		(shimbun-search-id
+		 shimbun
+		 (setq id (concat
+			   "<" (match-string (nth 1 numbers)) "%" group
+			   "." shimbun-mainichi-top-level-domain ">")))))
+	(setq month (string-to-number (match-string (nth 3 numbers)))
+	      day (string-to-number (match-string (nth 4 numbers)))
+	      subject (match-string (nth 5 numbers)))
+	(push
+	 (shimbun-create-header
+	  0
+	  (if editorial
+	      (format "%02d/%02d %s" month day subject)
+	    subject)
+	  from
+	  (shimbun-mainichi-make-date-string
+	   (string-to-number (match-string (nth 2 numbers)))
+	   month day
+	   (when (nth 7 numbers)
+	     (if (match-beginning (nth 7 numbers))
+		 (format "%02d:%02d"
+			 (string-to-number (match-string (nth 6 numbers)))
+			 (string-to-number (match-string (nth 7 numbers))))
+	       "23:59:59")))
+	  id "" 0 0
+	  (shimbun-expand-url url shimbun-mainichi-url))
+	 headers)))
     (prog1
 	(setq headers (shimbun-sort-headers headers))
       (while headers
