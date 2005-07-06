@@ -1,3 +1,11 @@
+2005-07-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-header-regexp-default):
+	Make it match to headers also in the eye.shasetsu.archive group.
+	(shimbun-mainichi-group-table): Add the eye.shasetsu.archive group.
+	(shimbun-mainichi-get-headers): Make it work with the eye.shasetsu
+	group and the eye.shasetsu.archive group.
+
 2005-07-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-mainichi.el (shimbun-mainichi-prepare-article):

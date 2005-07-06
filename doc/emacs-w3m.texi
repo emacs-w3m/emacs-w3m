@@ -4437,26 +4437,26 @@ mainichi.entertainment.manga mainichi.entertainment.music
 mainichi.entertainment.shougi mainichi.entertainment.tv
 mainichi.eye.closeup mainichi.eye.hassinbako mainichi.eye.hito
 mainichi.eye.kinji mainichi.eye.kishanome mainichi.eye.shasetsu
-mainichi.eye.tenbou mainichi.eye.yoroku mainichi.eye.yuuraku
-mainichi.keizai mainichi.keizai.it mainichi.keizai.kaigai
-mainichi.keizai.kigyou mainichi.keizai.kigyou.info
-mainichi.keizai.kinyu mainichi.keizai.seisaku mainichi.keizai.wadai
-mainichi.kokusai mainichi.kokusai.afro-ocea mainichi.kokusai.america
+mainichi.eye.shasetsu.archive mainichi.eye.tenbou mainichi.eye.yoroku
+mainichi.eye.yuuraku mainichi.keizai mainichi.keizai.it
+mainichi.keizai.kaigai mainichi.keizai.kigyou
+mainichi.keizai.kigyou.info mainichi.keizai.kinyu
+mainichi.keizai.seisaku mainichi.keizai.wadai mainichi.kokusai
+mainichi.kokusai.afro-ocea mainichi.kokusai.america
 mainichi.kokusai.asia mainichi.kokusai.europe mainichi.kokusai.mideast
 mainichi.kurashi mainichi.kurashi.bebe mainichi.kurashi.fashion
 mainichi.kurashi.katei mainichi.kurashi.kenko mainichi.kurashi.kokoro
 mainichi.kurashi.shoku mainichi.kurashi.shumi mainichi.kurashi.travel
 mainichi.kurashi.women mainichi.science mainichi.science.env
-mainichi.science.kagaku mainichi.science.medical
-mainichi.science.rikei mainichi.seiji mainichi.seiji.feature
-mainichi.seiji.gyousei mainichi.seiji.kokkai mainichi.seiji.seitou
-mainichi.seiji.senkyo mainichi.shakai mainichi.shakai.edu
-mainichi.shakai.fu mainichi.shakai.gakugei mainichi.shakai.ji
-mainichi.shakai.jiken mainichi.shakai.koushitsu mainichi.shakai.tenki
-mainichi.shakai.wadai mainichi.sports mainichi.sports.ama
-mainichi.sports.battle mainichi.sports.feature mainichi.sports.field
-mainichi.sports.keiba mainichi.sports.major mainichi.sports.pro
-mainichi.sports.soccer
+mainichi.science.kagaku mainichi.science.medical mainichi.science.rikei
+mainichi.seiji mainichi.seiji.feature mainichi.seiji.gyousei
+mainichi.seiji.kokkai mainichi.seiji.seitou mainichi.seiji.senkyo
+mainichi.shakai mainichi.shakai.edu mainichi.shakai.fu
+mainichi.shakai.gakugei mainichi.shakai.ji mainichi.shakai.jiken
+mainichi.shakai.koushitsu mainichi.shakai.tenki mainichi.shakai.wadai
+mainichi.sports mainichi.sports.ama mainichi.sports.battle
+mainichi.sports.feature mainichi.sports.field mainichi.sports.keiba
+mainichi.sports.major mainichi.sports.pro mainichi.sports.soccer
 
 Those groups generate HTML articles containing photographs by default.
 If you would like to make them generate articles that contain only text,
