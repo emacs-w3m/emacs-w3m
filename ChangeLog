@@ -1,3 +1,8 @@
+2005-07-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-check-current-position): Bind deactivate-mark.  (cf.
+	http://news.gmane.org/group/gmane.emacs.pretest.bugs/thread=8335).
+
 2005-07-06  David Hansen  <david.hansen@gmx.net>
 
 	* shimbun/sb-infoshop.el: New file.

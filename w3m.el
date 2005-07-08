@@ -7147,7 +7147,11 @@ function is designed as the hook function which is registered to
 This function is designed as the hook function which is registered to
 `post-command-hook' by `w3m-buffer-setup'."
   (when (/= (point) (car w3m-current-position))
-    (run-hooks 'w3m-after-cursor-move-hook)))
+    ;; To bind `deactivate-mark' to nil protects the mark from being
+    ;; deactivated.  `deactivate-mark' is set when any function modifies
+    ;; a buffer, and it causes the deactivation of the mark.
+    (let ((deactivate-mark nil))
+      (run-hooks 'w3m-after-cursor-move-hook))))
 
 (defun w3m-buffer-setup ()
   "Generate a new buffer, select it and set it up for emacs-w3m.
