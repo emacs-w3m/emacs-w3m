@@ -1,3 +1,8 @@
+2005-07-08  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-print-current-url): Bind deactivate-mark.
+	(w3m-print-this-url): Ditto.
+
 2005-07-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-check-current-position): Bind deactivate-mark.  (cf.

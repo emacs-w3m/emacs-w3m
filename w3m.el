@@ -5770,13 +5770,15 @@ of the url currently displayed.  The browser is defined in
   "Display the current url in the echo area and put it into `kill-ring'."
   (interactive)
   (when w3m-current-url
-    (kill-new w3m-current-url)
-    (w3m-message "%s" (w3m-url-readable-string w3m-current-url))))
+    (let ((deactivate-mark nil))
+      (kill-new w3m-current-url)
+      (w3m-message "%s" (w3m-url-readable-string w3m-current-url)))))
 
 (defun w3m-print-this-url (&optional interactive-p)
   "Display the url under point in the echo area and put it into `kill-ring'."
   (interactive (list t))
-  (let ((url (if interactive-p
+  (let ((deactivate-mark nil)
+	(url (if interactive-p
 		 (or (w3m-anchor) (w3m-image))
 	       (or (w3m-anchor (point)) (w3m-image (point))))))
     (when (or url interactive-p)
