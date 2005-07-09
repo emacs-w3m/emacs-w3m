@@ -156,6 +156,7 @@
   (autoload 'w3m-form-set-number "w3m-form")
   (autoload 'w3m-filter "w3m-filter")
   (autoload 'w3m-setup-tab-menu "w3m-tabmenu")
+  (autoload 'w3m-setup-bookmark-menu "w3m-bookmark")
   (autoload 'w3m-switch-buffer "w3m-tabmenu")
   (autoload 'w3m-cookie-set "w3m-cookie")
   (autoload 'w3m-cookie-get "w3m-cookie")
@@ -2236,11 +2237,10 @@ nil value means it has not been initialized.")
     ["Go to Home Page" w3m-gohome w3m-home-page]
     ["Go to..." w3m-goto-url t]
     "----" ;; separator
-    ["View Bookmark" w3m-bookmark-view t]
     ("History"
      ["Show a Visited URLs Tree" w3m-history t]
      ["Show an Arrived URLs List" w3m-db-history t]
-     )
+     ) ;; end history
     ["Weather Forecast" w3m-weather t]
     ["Investigate with Antenna" w3m-antenna t]
     ("Resource"
@@ -3160,6 +3160,7 @@ For example:
 	(let ((map (make-sparse-keymap (car w3m-menubar))))
 	  (define-key w3m-mode-map [menu-bar] (make-sparse-keymap))
 	  (when w3m-use-tab-menubar (w3m-setup-tab-menu))
+	  (w3m-setup-bookmark-menu)
 	  (define-key w3m-mode-map [menu-bar w3m] (cons (car w3m-menubar) map))
 	  (require 'easymenu)
 	  (easy-menu-define

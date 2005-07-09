@@ -65,7 +65,8 @@
   (autoload 'update-tab-in-gutter "gutter-items")
   (autoload 'w3m-image-type "w3m")
   (autoload 'w3m-retrieve "w3m")
-  (autoload 'w3m-setup-tab-menu "w3m-tabmenu"))
+  (autoload 'w3m-setup-tab-menu "w3m-tabmenu")
+  (autoload 'w3m-setup-bookmark-menu "w3m-bookmark"))
 
 ;; Dummies to shut some XEmacs variants up.
 (eval-when-compile
@@ -544,6 +545,7 @@ A buffer string between BEG and END are replaced with IMAGE."
 	     current-menubar
 	     (not (assoc (car w3m-menubar) current-menubar)))
     (when w3m-use-tab-menubar (w3m-setup-tab-menu))
+    (w3m-setup-bookmark-menu)
     (set-buffer-menubar (cons w3m-menubar current-menubar))))
 
 ;;; Widget:

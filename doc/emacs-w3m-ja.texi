@@ -3043,7 +3043,30 @@ Non-@code{nil} means enable emacs-w3m to use cookies.
 
 @node Bookmark Variables
 @section ブックマークに関連した変数
+@cindex ブックマークに関連した変数
 
+@table @code
+@item w3m-bookmark-file
+@vindex w3m-bookmark-file
+Bookmark file of w3m.
+
+@item w3m-bookmark-file-coding-system
+@vindex w3m-bookmark-file-coding-system
+Coding system for a created bookmark file.
+This option is used when a new bookmark file is created, or when an
+existing bookmark file includes ASCII characters only.  If the coding
+system which is used to encode your using bookmark file is different
+from the value of this option, emacs-w3m does not change the encoding
+of your bookmark file.
+
+@item w3m-bookmark-default-section
+@vindex w3m-bookmark-default-section
+Default section to add new entry.
+
+@item w3m-bookmark-menu-open-new-session
+@vindex w3m-bookmark-menu-open-new-session
+If non-@code{nil}, ``Bookmark'' menu item open new session.
+@end table
 
 @node Search Variables
 @section ウェブ検索に関連した変数
@@ -3140,6 +3163,10 @@ by the @code{w3m-mode} function.
 @item w3m-select-buffer-hook
 @vindex w3m-select-buffer-hook
 Hook run when a different emacs-w3m buffer is selected.
+
+@item w3m-bookmark-mode-hook
+@vindex w3m-bookmark-mode-hook
+Hook run at the end of function `w3m-bookmark-mode'.
 @end table
 
 @node Other Variables

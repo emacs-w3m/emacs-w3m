@@ -1,3 +1,25 @@
+2005-07-09  Tsuyoshi CHO  <tsuyoshi_cho@yahoo.co.jp>
+
+	* w3m-xmas.el (top): Add `w3m-setup-bookmark-menu' to autoload
+	list at compiled time.
+	(w3m-setup-menu): Append bookmark menu setup calling.
+
+	* w3m-bookmark.el (top): Add requirement `easymenu' and
+	`easy-menu-remove-item' autoload at compiled time.
+	(w3m-bookmark-menu-open-new-session): Add new customize variable.
+	(w3m-bookmark-menu-dummy-item): Add new const variable.
+	(w3m-bookmark-menubar-dummy): Ditto.
+	(w3m-bookmark-menu-items): Ditto, Define Bookmark const menu items.
+	(w3m-setup-bookmark-menu): Add new autoload function.
+	(w3m-bookmark-menubar-update): Add new function.
+	(w3m-bookmark-iterator): Ditto.
+	(w3m-bookmark-menu-open-item): Ditto.
+	(w3m-bookmark-make-menu-items): Ditto.
+
+	* w3m.el (top): Add `w3m-setup-bookmark-menu' to autoload list at
+	compiled time.
+	(w3m-menubar): Remove "Bookmark" menu item.
+
 2005-07-08  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-print-current-url): Bind deactivate-mark.

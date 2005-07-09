@@ -38,6 +38,7 @@
 (eval-when-compile (require 'cl))
 (require 'w3m-util)
 (require 'w3m)
+(require 'easymenu)
 
 (defcustom w3m-bookmark-file
   (expand-file-name "bookmark.html" w3m-profile-directory)
@@ -66,6 +67,11 @@ of your bookmark file."
   "*Hook run at the end of function `w3m-bookmark-mode'."
   :group 'w3m
   :type 'hook)
+
+(defcustom w3m-bookmark-menu-open-new-session nil
+  "If non-nil, \"Bookmark\" menu item open new session."
+  :group 'w3m
+  :type 'boolean)
 
 (eval-and-compile
   (defconst w3m-bookmark-section-delimiter
@@ -413,6 +419,105 @@ With prefix argument, kill that many entries from point."
   (interactive)
   (w3m-edit-url (w3m-expand-file-name-as-url w3m-bookmark-file)))
 
+;; Bookmark menu
+(eval-when-compile
+  (autoload 'easy-menu-remove-item "easymenu"))
+
+(defconst w3m-bookmark-menu-dummy-item
+  ["(empty)" ignore nil])
+
+(defconst w3m-bookmark-menubar-dummy
+  (list "Bookmark"
+	w3m-bookmark-menu-dummy-item))
+    
+(defconst w3m-bookmark-menu-items
+  '(["View Bookmark" w3m-bookmark-view t]
+    ["Edit Bookmark" w3m-bookmark-edit t]
+    "----"
+    ["Add Current URL to Bookmark" w3m-bookmark-add-current-url t]
+    ["Add These URLs to Bookmark" w3m-bookmark-add-current-url-group t]
+    ["Add This URL to Bookmark" w3m-bookmark-add-this-url t]
+    ))
+
+;;;###autoload
+(defun w3m-setup-bookmark-menu ()
+  "Setup w3m bookmark items in menubar."
+  (unless (lookup-key w3m-mode-map [menu-bar w3m-bookmark])
+    (w3m-static-if (featurep 'xemacs)
+	(progn
+	  (set-buffer-menubar (cons w3m-bookmark-menubar-dummy current-menubar))
+	  (add-hook 'activate-menubar-hook 'w3m-bookmark-menubar-update))
+      (define-key w3m-mode-map [menubar w3m-bookmark] w3m-bookmark-menubar-dummy)
+      (add-hook 'menu-bar-update-hook 'w3m-bookmark-menubar-update))))
+
+(defun w3m-bookmark-menubar-update ()
+  "Update w3m bookmark menubar."
+  (when (and (boundp 'iswitchb-global-map)
+	     (keymapp (symbol-value 'iswitchb-global-map)))
+    ;; Don't let iswitchb manage the w3m bookmark menubar.
+    (easy-menu-remove-item (symbol-value 'iswitchb-global-map)
+			   '(menu-bar)
+			   (car w3m-bookmark-menubar-dummy)))
+  (when (and (eq major-mode 'w3m-mode)
+	     (w3m-static-if (featurep 'xemacs)
+		 (frame-property (selected-frame) 'menubar-visible-p)
+	       menu-bar-mode))
+    (easy-menu-change nil
+		      (car w3m-bookmark-menubar-dummy)
+		      (append w3m-bookmark-menu-items
+			      '("----")
+			      (or (w3m-bookmark-make-menu-items)
+				  (list w3m-bookmark-menu-dummy-item))))))
+
+(defun w3m-bookmark-iterator ()
+  "Iteration bookmark groups/entries.
+Format as (list (\"Group name\" . (\"Entry URL\" . \"Entry name\")* )* )."
+  (let ((entries nil))
+    (save-excursion
+      (set-buffer (w3m-bookmark-buffer))
+      (goto-char (point-min))
+      (let (group entry beg end)
+	(while (re-search-forward "<h2>\\([^<]+\\)</h2>" nil t)
+	  (setq group (match-string-no-properties 1))
+	  (setq beg (match-beginning 0))
+	  (setq end (re-search-forward "</ul>" nil t))
+	  (save-excursion
+	    (let (urls)
+	      (narrow-to-region beg end)
+	      (goto-char (point-min))
+	      (while (re-search-forward "<a href=\"\\([^\"]+\\)\">\\([^<]+\\)</a>" nil t)
+		(push (cons (match-string-no-properties 1) (match-string-no-properties 2)) urls))
+	      (setq entry (cons group (nreverse urls)))
+	      (push entry entries)
+	      (widen)))
+	  (goto-char (match-end 0))))
+      (nreverse entries))))
+
+(defun w3m-bookmark-menu-open-item (url)
+  "Open URL at current/new buffer"
+  (if w3m-bookmark-menu-open-new-session
+      (w3m-goto-url-new-session url)
+    (w3m-goto-url url)))
+
+(defun w3m-bookmark-make-menu-items (&optional nomenu)
+  "Create w3m bookmark menu items."
+  (when (not nomenu)
+    (let ((entries (w3m-bookmark-iterator)))
+      (and entries
+	   (mapcar
+	    (lambda (entry)
+	      (let ((group (car entry))
+		    (items (cdr entry)))
+		(cons group
+		      (or (and items
+			       (mapcar
+				(lambda (item)
+				  (vector 
+				   (cdr item)
+				   `(w3m-bookmark-menu-open-item ,(car item))))
+				items))
+			  (list w3m-bookmark-menu-dummy-item)))))
+	    entries)))))
 
 (provide 'w3m-bookmark)
 
