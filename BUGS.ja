@@ -74,7 +74,9 @@ $Date$
 (4) プロセスが同時に大量に呼び出されてエラーになることがある．
     [emacs-w3m:06896], [emacs-w3m:06901]
 
+■ Known LIMITATIONs
 
+(1) w3m の制限により Del/Strikeの打ち消し線がテーブルを跨がる．
 
 ■ Wishlist and Idea Notes
 
