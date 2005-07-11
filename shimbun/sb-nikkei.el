@@ -69,24 +69,30 @@
     ("kansai" "関西" ,(concat shimbun-nikkei-url "kansai/")
      shimbun-nikkei-get-headers-kansai
      shimbun-nikkei-prepare-article-kansai)
-    ("it" "IT" "http://it.nikkei.co.jp/it/news/"
-     shimbun-nikkei-get-headers-it
+    ("it.business" "ITビジネス"
+     "http://it.nikkei.co.jp/business/news/index.aspx"
+     shimbun-nikkei-get-headers-it-business
      shimbun-nikkei-prepare-article-default2)
-    ("it.zensen" "IT最前線"
-     "http://it.nikkei.co.jp/it/column/zensen.cfm?ichiran=true"
-     shimbun-nikkei-get-headers-it-zensen
-     shimbun-nikkei-prepare-article-default)
-    ("it.manage" "ITニュースの焦点"
-     "http://it.nikkei.co.jp/it/manage/foc.cfm?ichiran=true"
-     shimbun-nikkei-get-headers-it-manage
-     shimbun-nikkei-prepare-article-default)
-    ("it.seisaku" "IT政策" "http://it.nikkei.co.jp/it/news/seisaku.cfm"
-     shimbun-nikkei-get-headers-it-seisaku
-     shimbun-nikkei-prepare-article-default)
-    ("it.digicore" "デジタルコア・レポート"
-     "http://it.nikkei.co.jp/it/column/digicore.cfm?ichiran=true"
-     shimbun-nikkei-get-headers-it-digicore
-     shimbun-nikkei-prepare-article-default)
+    ("it.internet" "インターネット"
+     "http://it.nikkei.co.jp/internet/news/index.aspx"
+     shimbun-nikkei-get-headers-it-internet
+     shimbun-nikkei-prepare-article-default2)
+    ("it.mobile" "モバイル"
+     "http://it.nikkei.co.jp/it/mobile/news/index.aspx"
+     shimbun-nikkei-get-headers-it-mobile
+     shimbun-nikkei-prepare-article-default2)
+    ("it.security" "セキュリティ"
+     "http://it.nikkei.co.jp/security/news/index.aspx"
+     shimbun-nikkei-get-headers-it-security
+     shimbun-nikkei-prepare-article-default2)
+    ("it.digital" "デジタル家電＆エンタメ"
+     "http://it.nikkei.co.jp/digital/news/index.aspx"
+     shimbun-nikkei-get-headers-it-digital
+     shimbun-nikkei-prepare-article-default2)
+    ("it.pc" "PC＆デジタルカメラ"
+     "http://it.nikkei.co.jp/pc/news/index.aspx"
+     shimbun-nikkei-get-headers-it-pc
+     shimbun-nikkei-prepare-article-default2)
     ("kokunai" "市場概況" "http://markets.nikkei.co.jp/kokunai/summary.cfm"
      shimbun-nikkei-get-headers-kawase
      shimbun-nikkei-prepare-article-default3)
@@ -142,6 +148,210 @@
     ("release" "プレスリリース" "http://release.nikkei.co.jp/"
      shimbun-nikkei-get-headers-release
      shimbun-nikkei-prepare-article-release)
+    ("release.it.comp" "プレスリリース(ＩＴ；コンピューター)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=1&sindID=1"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.it.peri" "プレスリリース(ＩＴ；周辺機器)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=1&sindID=2"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.it.sys" "プレスリリース(ＩＴ；システム・ソフト開発)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=1&sindID=3"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.it.cont" "プレスリリース(ＩＴ；情報・コンテンツ)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=1&sindID=4"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.it.net" "プレスリリース(ＩＴ；通信・インターネット)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=1&sindID=4"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.it.lsi" "プレスリリース(ＩＴ；半導体)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=1&sindID=6"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.it.game" "プレスリリース(ＩＴ；ゲーム・娯楽)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=1&sindID=7"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.it.etc" "プレスリリース(ＩＴ；その他ＩＴ関連)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=1&sindID=8"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.dist.depart" "プレスリリース(流通；百貨店・スーパー)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=9"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.dist.ryohan" "プレスリリース(流通；量販店)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=10"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.dist.zakka" "プレスリリース(流通；生活雑貨)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=11"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.dist.cosme" "プレスリリース(流通；医薬品・化粧品)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=12"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.dist.car" "プレスリリース(流通；自動車)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=13"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.dist.book" "プレスリリース(流通；書籍)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=14"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.dist.record" "プレスリリース(流通；レコード・ゲーム)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=15"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.dist.food" "プレスリリース(流通；食品・飲料)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=16"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.dist.mercha" "プレスリリース(流通；商社・卸売業)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=17"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.dist.mail" "プレスリリース(流通；通信・訪問販売)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=18"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.dist.netshop" "プレスリリース(流通；ネットショッピング)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=19"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.dist.etc" "プレスリリース(流通；その他商業)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=20"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.money.bank" "プレスリリース(金融；銀行・信金)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=3&sindID=57"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.money.sec" "プレスリリース(金融；証券会社)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=3&sindID=58"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.money.am" "プレスリリース(金融；投資信託運用会社)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=3&sindID=59"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.money.insu" "プレスリリース(金融；保険会社)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=3&sindID=60"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.money.etc" "プレスリリース(金融；その他金融)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=3&sindID=61"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.maker.chemi" "プレスリリース(メーカー；化学・医薬品)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=4&sindID=31"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.maker.mecha" "プレスリリース(メーカー；機械・金属)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=4&sindID=32"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.maker.car" "プレスリリース(メーカー；自動車・自動車部品)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=4&sindID=33"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.maker.elec" "プレスリリース(メーカー；家電・電機)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=4&sindID=34"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.maker.food" "プレスリリース(メーカー；食品・飲料)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=4&sindID=35"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.maker.sports" "プレスリリース(メーカー；スポーツ・娯楽用品)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=4&sindID=36"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.maker.apparel" "プレスリリース(メーカー；アパレル・生活用品)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=4&sindID=37"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.maker.commu" "プレスリリース(メーカー；通信機器・精密機械)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=4&sindID=38"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.maker.etc" "プレスリリース(メーカー；その他メーカー)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=4&sindID=39"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.service.medic" "プレスリリース(サービス；医療・福祉)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=40"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.service.rest" "プレスリリース(サービス；飲食)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=41"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.service.trans" "プレスリリース(サービス；運輸・運送)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=42"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.service.energy" "プレスリリース(サービス；エネルギー)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=43"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.service.enter" "プレスリリース(サービス；エンターテインメント)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=44"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.service.env" "プレスリリース(サービス；環境)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=45"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.service.consul" "プレスリリース(サービス；コンサルティング)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=46"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.service.edu" "プレスリリース(サービス；教育・研修)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=47"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.service.haken" "プレスリリース(サービス；人材派遣)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=48"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.service.life" "プレスリリース(サービス；生活関連)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=49"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.service.media" "プレスリリース(サービス；メディア)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=50"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.service.lease" "プレスリリース(サービス；リース)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=51"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.service.travel" "プレスリリース(サービス；旅行・ホテル)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=52"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.service.etc" "プレスリリース(サービス；その他サービス業)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=53"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.const.const" "プレスリリース(サービス；建設・土木)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=6&sindID=54"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.const.house" "プレスリリース(サービス；住宅)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=6&sindID=56"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
+    ("release.const.etc" "プレスリリース(サービス；その他建設関連)"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=53"
+     shimbun-nikkei-get-headers-release2
+     shimbun-nikkei-prepare-article-release2)
     ("shasetsu" "社説・春秋" ,(concat shimbun-nikkei-url "news/shasetsu/")
      shimbun-nikkei-get-headers-shasetsu
      shimbun-nikkei-prepare-article-default)
@@ -496,16 +706,16 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	    headers))
     headers))
 
-(defun shimbun-nikkei-get-headers-it (group folder)
-  "Function used to fetch headers for the it group."
+(defun shimbun-nikkei-get-headers-it-business (group folder)
+  "Function used to fetch headers for the it-business group."
   (let (headers)
     (while (re-search-forward
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"\\./"
+		(concat "<a" s1 "href=\"/"
 			;; 1. url
-			"\\(index\\.cfm\\?i="
+			"\\(business/news/index\\.aspx\\?i="
 			;; 2. serial number
 			"\\("
 			;; 3. year
@@ -533,20 +743,21 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	     (concat "<" (match-string 2) "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
-	     (shimbun-nikkei-expand-url (match-string 1) folder))
+	     (shimbun-nikkei-expand-url
+	      (concat "http://it.nikkei.co.jp/" (match-string 1)) folder))
 	    headers))
     headers))
 
-(defun shimbun-nikkei-get-headers-it-zensen (group folder)
-  "Function used to fetch headers for the it.zensen group."
+(defun shimbun-nikkei-get-headers-it-internet (group folder)
+  "Function used to fetch headers for the it-internet group."
   (let (headers)
     (while (re-search-forward
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"\\./zensen\\.cfm"
+		(concat "<a" s1 "href=\"/"
 			;; 1. url
-			"\\(\\?i="
+			"\\(internet/news/index\\.aspx\\?i="
 			;; 2. serial number
 			"\\("
 			;; 3. year
@@ -555,9 +766,10 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			"\\([01][0-9]\\)"
 			;; 5. day
 			"\\([0-3][0-9]\\)"
-			"[0-9a-z]+\\)"
+			"[0-9a-z]+"
 			"\\)"
-			"\"" s0 ">" s0 "\\(?:([01]?[0-9]/[0-3]?[0-9])\\)?" s0
+			"\\)"
+			s0 "\">" s0
 			;; 6. subject
 			"\\([^<]+\\)"
 			"</a>")))
@@ -574,21 +786,20 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
 	     (shimbun-nikkei-expand-url
-	      (concat "http://it.nikkei.co.jp/it/column/zensen.cfm"
-		      (match-string 1)) folder))
+	      (concat "http://it.nikkei.co.jp/" (match-string 1)) folder))
 	    headers))
     headers))
 
-(defun shimbun-nikkei-get-headers-it-manage (group folder)
-  "Function used to fetch headers for the it.manage group."
+(defun shimbun-nikkei-get-headers-it-security (group folder)
+  "Function used to fetch headers for the it-security group."
   (let (headers)
     (while (re-search-forward
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"\\./foc\\.cfm"
+		(concat "<a" s1 "href=\"/"
 			;; 1. url
-			"\\(\\?i="
+			"\\(security/news/index\\.aspx\\?i="
 			;; 2. serial number
 			"\\("
 			;; 3. year
@@ -597,9 +808,10 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			"\\([01][0-9]\\)"
 			;; 5. day
 			"\\([0-3][0-9]\\)"
-			"[0-9a-z]+\\)"
+			"[0-9a-z]+"
 			"\\)"
-			"\"" s0 ">" s0
+			"\\)"
+			s0 "\">" s0
 			;; 6. subject
 			"\\([^<]+\\)"
 			"</a>")))
@@ -616,21 +828,20 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
 	     (shimbun-nikkei-expand-url
-	      (concat "http://it.nikkei.co.jp/it/manage/foc.cfm"
-		      (match-string 1)) folder))
+	      (concat "http://it.nikkei.co.jp/" (match-string 1)) folder))
 	    headers))
     headers))
 
-(defun shimbun-nikkei-get-headers-it-seisaku (group folder)
-  "Function used to fetch headers for the it.seisaku group."
+(defun shimbun-nikkei-get-headers-it-mobile (group folder)
+  "Function used to fetch headers for the it-mobile group."
   (let (headers)
     (while (re-search-forward
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"\\./seisaku\\.cfm"
+		(concat "<a" s1 "href=\"/"
 			;; 1. url
-			"\\(\\?i="
+			"\\(mobile/news/index\\.aspx\\?i="
 			;; 2. serial number
 			"\\("
 			;; 3. year
@@ -639,49 +850,10 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			"\\([01][0-9]\\)"
 			;; 5. day
 			"\\([0-3][0-9]\\)"
-			"[0-9a-z]+\\)"
+			"[0-9a-z]+"
 			"\\)"
-			"\"" s0 ">" s0
-			;; 6. subject
-			"\\([^<]+\\)"
-			"</a>")))
-	    nil t)
-      (push (shimbun-create-header
-	     0
-	     (match-string 6)
-	     shimbun-nikkei-from-address
-	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 3))
-	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 5)))
-	     (concat "<" (match-string 2) "%" group "."
-		     shimbun-nikkei-top-level-domain ">")
-	     "" 0 0
-	     (shimbun-nikkei-expand-url (match-string 1) folder))
-	    headers))
-    headers))
-
-(defun shimbun-nikkei-get-headers-it-digicore (group folder)
-  "Function used to fetch headers for the it.digicore group."
-  (let (headers)
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((s0 "[\t\n ]*")
-		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"\\./digicore\\.cfm"
-			;; 1. url
-			"\\(\\?i="
-			;; 2. serial number
-			"\\("
-			;; 3. year
-			"\\(20[0-9][0-9]\\)"
-			;; 4. month
-			"\\([01][0-9]\\)"
-			;; 5. day
-			"\\([0-3][0-9]\\)"
-			"[0-9a-z]+\\)"
 			"\\)"
-			"\"" s0 ">" s0 "\\(?:([01]?[0-9]/[0-3]?[0-9])\\)?" s0
+			s0 "\">" s0
 			;; 6. subject
 			"\\([^<]+\\)"
 			"</a>")))
@@ -698,8 +870,91 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
 	     (shimbun-nikkei-expand-url
-	      (concat "http://it.nikkei.co.jp/it/column/digicore.cfm"
-		      (match-string 1)) folder))
+	      (concat "http://it.nikkei.co.jp/" (match-string 1)) folder))
+	    headers))
+    headers))
+
+(defun shimbun-nikkei-get-headers-it-digital (group folder)
+  "Function used to fetch headers for the it-digital group."
+  (let (headers)
+    (while (re-search-forward
+	    (eval-when-compile
+	      (let ((s0 "[\t\n ]*")
+		    (s1 "[\t\n ]+"))
+		(concat "<a" s1 "href=\"/"
+			;; 1. url
+			"\\(digital/news/index\\.aspx\\?i="
+			;; 2. serial number
+			"\\("
+			;; 3. year
+			"\\(20[0-9][0-9]\\)"
+			;; 4. month
+			"\\([01][0-9]\\)"
+			;; 5. day
+			"\\([0-3][0-9]\\)"
+			"[0-9a-z]+"
+			"\\)"
+			"\\)"
+			s0 "\">" s0
+			;; 6. subject
+			"\\([^<]+\\)"
+			"</a>")))
+	    nil t)
+      (push (shimbun-create-header
+	     0
+	     (match-string 6)
+	     shimbun-nikkei-from-address
+	     (shimbun-nikkei-make-date-string
+	      (string-to-number (match-string 3))
+	      (string-to-number (match-string 4))
+	      (string-to-number (match-string 5)))
+	     (concat "<" (match-string 2) "%" group "."
+		     shimbun-nikkei-top-level-domain ">")
+	     "" 0 0
+	     (shimbun-nikkei-expand-url
+	      (concat "http://it.nikkei.co.jp/" (match-string 1)) folder))
+	    headers))
+    headers))
+
+(defun shimbun-nikkei-get-headers-it-pc (group folder)
+  "Function used to fetch headers for the it-pc group."
+  (let (headers)
+    (while (re-search-forward
+	    (eval-when-compile
+	      (let ((s0 "[\t\n ]*")
+		    (s1 "[\t\n ]+"))
+		(concat "<a" s1 "href=\"/"
+			;; 1. url
+			"\\(pc/news/index\\.aspx\\?i="
+			;; 2. serial number
+			"\\("
+			;; 3. year
+			"\\(20[0-9][0-9]\\)"
+			;; 4. month
+			"\\([01][0-9]\\)"
+			;; 5. day
+			"\\([0-3][0-9]\\)"
+			"[0-9a-z]+"
+			"\\)"
+			"\\)"
+			s0 "\">" s0
+			;; 6. subject
+			"\\([^<]+\\)"
+			"</a>")))
+	    nil t)
+      (push (shimbun-create-header
+	     0
+	     (match-string 6)
+	     shimbun-nikkei-from-address
+	     (shimbun-nikkei-make-date-string
+	      (string-to-number (match-string 3))
+	      (string-to-number (match-string 4))
+	      (string-to-number (match-string 5)))
+	     (concat "<" (match-string 2) "%" group "."
+		     shimbun-nikkei-top-level-domain ">")
+	     "" 0 0
+	     (shimbun-nikkei-expand-url
+	      (concat "http://it.nikkei.co.jp/" (match-string 1)) folder))
 	    headers))
     headers))
 
@@ -1315,6 +1570,47 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	(goto-char sub-end)))
     headers))
 
+(defun shimbun-nikkei-get-headers-release2 (group folder)
+  "Function used to fetch headers for the release-in-detail group."
+  (let (url id subject sub-end year month day headers)
+    (while (re-search-forward
+	    (eval-when-compile
+	      (let ((s0 "[\t\n ]*")
+		    (s1 "[\t\n ]+"))
+		(concat "<a" s1 "href=\""
+			;; 1. url
+			"\\(detail\\.cfm\\?relID="
+			;; 2. serial number
+			"\\([^\"]+\\)"
+			"\\)"
+			"\"" s0 ">" s0
+			;; 3. subject
+			"\\([^<]+\\)")))
+	    nil t)
+      (setq url (match-string 1)
+	    id (match-string 2)
+	    subject (match-string 3)
+	    sub-end (point))
+      (when (re-search-backward "\
+>[\t\n ]*\\(20[0-9][0-9]\\)/\\([01][0-9]\\)/\\([0-3][0-9]\\)[^0-9]"
+				nil t)
+	(push (shimbun-create-header
+	       0
+	       subject
+	       shimbun-nikkei-from-address
+	       (shimbun-nikkei-make-date-string
+		(setq year (string-to-number (match-string 1)))
+		(setq month (string-to-number (match-string 2)))
+		(setq day (string-to-number (match-string 3))))
+	       (format "<%d%02d%02d.%s%%%s.%s>"
+		       year month day id group shimbun-nikkei-top-level-domain)
+	       "" 0 0
+	       (shimbun-nikkei-expand-url 
+                 (concat "http://release.nikkei.co.jp/" url) folder))
+	      headers)
+	(goto-char sub-end)))
+    headers))
+
 (defun shimbun-nikkei-get-headers-shasetsu (group folder)
   "Function used to fetch headers for the shasetsu group."
   (let (headers)
@@ -1448,7 +1744,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			   nil t)
     (insert shimbun-nikkei-content-start)
     (when (re-search-forward "\
-<!--[\t\n ]*FJZONE[\t\n ]*END[\t\n ]*NAME=\"HONBUN\"[\t\n ]+-->"
+<a[\t\n ]+name=\"newslist\"></a>\n"
 			     nil t)
       (goto-char (match-beginning 0))
       (insert shimbun-nikkei-content-end))))
@@ -1461,7 +1757,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
     (insert shimbun-nikkei-content-start)
     (when (re-search-forward "\
 <table[\t\n ]+border=\"0\"[\t\n ]+cellspacing=\
-\"0\"[\t\n ]+cellpadding=\"0\"[\t\n ]+width=\"100%\">"
+\"0\"[\t\n ]+cellpadding=\"0\"[\t\n ]+width=\"720\">"
 			     nil t)
       (goto-char (match-beginning 0))
       (insert shimbun-nikkei-content-end))))
@@ -1526,6 +1822,15 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
   (when (re-search-forward "<[\t\n ]*TD[\t\n ]+colspan=\"3\">" nil t)
     (insert shimbun-nikkei-content-start)
     (when (re-search-forward "[\t\n ]*<div[\t\n ]+class=\"tokushu\">" nil t)
+      (goto-char (match-beginning 0))
+      (insert shimbun-nikkei-content-end))))
+
+(defun shimbun-nikkei-prepare-article-release2 (&rest args)
+  "Function used to prepare contents of an article for some groups."
+  (when (re-search-forward "</h1>\n"
+			   nil t)
+    (insert shimbun-nikkei-content-start)
+    (when (re-search-forward "[\t\n ]*</a></li>\n" nil t)
       (goto-char (match-beginning 0))
       (insert shimbun-nikkei-content-end))))
 
