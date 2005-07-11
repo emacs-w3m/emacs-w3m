@@ -124,6 +124,9 @@
     ("gyoseki" "海外企業業績" "http://markets.nikkei.co.jp/kaigai/gyoseki.cfm"
      shimbun-nikkei-get-headers-gyoseki
      shimbun-nikkei-prepare-article-default3)
+    ("china" "中国ビジネス事情" ,(concat shimbun-nikkei-url "china/news/")
+     shimbun-nikkei-get-headers-china
+     shimbun-nikkei-prepare-article-okuyami)
     ("market" "株・為替" ,(concat shimbun-nikkei-url "news/market/")
      shimbun-nikkei-get-headers-market
      shimbun-nikkei-prepare-article-market)
@@ -1391,6 +1394,47 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 		headers))
 	(setq start end))
       (shimbun-sort-headers headers))))
+
+(defun shimbun-nikkei-get-headers-china (group folder)
+  "Function used to fetch headers for the china group."
+  (let (headers)
+    (while (re-search-forward
+	    (eval-when-compile
+	      (let ((s0 "[\t\n ]*")
+		    (s1 "[\t\n ]+"))
+		(concat "<a" s1 "href=\""
+			;; 1. url
+			"\\("
+			;; 2. serial number
+			"\\("
+			;; 3. year
+			"\\(20[0-9][0-9]\\)"
+			;; 4. month
+			"\\([01][0-9]\\)"
+			;; 5. day
+			"\\([0-3][0-9]\\)"
+			"[0-9_a-z]+"
+			"\\)"
+			"\\.html\\)"
+			"\"" s0 ">" s0 "\\(?:([01]?[0-9]/[0-3]?[0-9])\\)?" s0
+			;; 7. subject
+			"\\([^<]+\\)"
+			"</a>")))
+	    nil t)
+      (push (shimbun-create-header
+	     0
+	     (match-string 6)
+	     shimbun-nikkei-from-address
+	     (shimbun-nikkei-make-date-string
+	      (string-to-number (match-string 3))
+	      (string-to-number (match-string 4))
+	      (string-to-number (match-string 5)))
+	     (concat "<" (match-string 2) "%" group "."
+		     shimbun-nikkei-top-level-domain ">")
+	     "" 0 0
+	     (shimbun-nikkei-expand-url (match-string 1) folder))
+	    headers))
+    headers))
 
 (defun shimbun-nikkei-get-headers-retto (group folder)
   "Function used to fetch headers for the retto group."

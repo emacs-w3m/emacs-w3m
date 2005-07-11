@@ -4504,7 +4504,7 @@ nikkansports.horseracing nikkansports.entertainment
 nikkansports.society nikkansports.leisure
 
 @item @uref{http://www.nikkei.co.jp/, Nihon Keizai Shimbun}
-nikkei.top nikkei.main nikkei.keizai nikkei.sangyo nikkei.tento
+nikkei.top nikkei.main nikkei.keizai nikkei.sangyo nikkei.tento nikkei.china
 nikkei.zinzi nikkei.report nikkei.kansai nikkei.kokunai nikkei.it.pc
 nikkei.it.business nikkei.it.peri  nikkei.it.digital  nikkei.it.security
 nikkei.it.mobile nikkei.markets nikkei.kawase nikkei.kinri nikkei.ft

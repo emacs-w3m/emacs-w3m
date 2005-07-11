@@ -4590,7 +4590,7 @@ nikkei.release.service.haken nikkei.release.service.life
 nikkei.release.service.media nikkei.release.service.lease
 nikkei.release.service.travel nikkei.release.service.etc
 nikkei.release.const.const nikkei.release.const.house
-nikkei.release.const.etc nikkei.shasetsu nikkei.okuyami
+nikkei.release.const.etc nikkei.china nikkei.shasetsu nikkei.okuyami
 
 @item @uref{http://www.sponichi.co.jp/, スポニチ}
 sponichi.baseball sponichi.soccer sponichi.usa sponichi.others
