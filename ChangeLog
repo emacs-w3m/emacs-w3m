@@ -1,3 +1,12 @@
+2005-07-11  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-bookmark.el (w3m-bookmark-buffer): Disable undo before
+	modify the buffer.
+	(w3m-bookmark-menu-items-pre): New variable.
+	(w3m-bookmark-menu-items-time): Ditto.
+	(w3m-bookmark-make-menu-items): Use previous items if it
+	available.
+
 2005-07-11 Masaru Nomiya <nomiyac360@mg.point.ne.jp>
 
 	* shimbun/sb-nikkei.el: 

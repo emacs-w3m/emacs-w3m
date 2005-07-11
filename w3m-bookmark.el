@@ -167,6 +167,7 @@ exist, returns (0 . 0)."
 			 (equal (visited-file-modtime)
 				(w3m-bookmark-file-modtime))))
 	  (when (file-readable-p w3m-bookmark-file)
+	    (buffer-disable-undo)
 	    (erase-buffer)
 	    (let ((coding-system-for-read 'binary))
 	      (insert-file-contents w3m-bookmark-file))
@@ -499,26 +500,37 @@ Format as (list (\"Group name\" . (\"Entry URL\" . \"Entry name\")* )* )."
       (w3m-goto-url-new-session url)
     (w3m-goto-url url)))
 
+(defvar w3m-bookmark-menu-items-pre nil)
+(defvar w3m-bookmark-menu-items-time nil)
+
 (defun w3m-bookmark-make-menu-items (&optional nomenu)
   "Create w3m bookmark menu items."
   (when (not nomenu)
-    (let ((entries (w3m-bookmark-iterator)))
-      (and entries
-	   (mapcar
-	    (lambda (entry)
-	      (let ((group (car entry))
-		    (items (cdr entry)))
-		(cons group
-		      (or (and items
-			       (mapcar
-				(lambda (item)
-				  (vector 
-				   (cdr item)
-				   `(w3m-bookmark-menu-open-item ,(car item))))
-				items))
-			  (list w3m-bookmark-menu-dummy-item)))))
-	    entries)))))
-
+    (if (and w3m-bookmark-menu-items-pre
+	     w3m-bookmark-menu-items-time
+	     (equal w3m-bookmark-menu-items-time
+		    (w3m-bookmark-file-modtime)))
+	w3m-bookmark-menu-items-pre
+      (setq w3m-bookmark-menu-items-time (w3m-bookmark-file-modtime))
+      (let ((entries (w3m-bookmark-iterator)))
+	(setq w3m-bookmark-menu-items-pre
+	      (and entries
+		   (mapcar
+		    (lambda (entry)
+		      (let ((group (car entry))
+			    (items (cdr entry)))
+			(cons group
+			      (or (and items
+				       (mapcar
+					(lambda (item)
+					  (vector 
+					   (cdr item)
+					   `(w3m-bookmark-menu-open-item
+					     ,(car item))))
+					items))
+				  (list w3m-bookmark-menu-dummy-item)))))
+		    entries)))))))
+  
 (provide 'w3m-bookmark)
 
 ;;; w3m-bookmark.el ends here
