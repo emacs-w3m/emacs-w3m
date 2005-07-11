@@ -1764,8 +1764,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 
 (defun shimbun-nikkei-prepare-article-default3 (&rest args)
   "Function used to prepare contents of an article for some groups."
-  (when (re-search-forward "\
-\[\t\n ]<div[\t\n ]+class=\"news\"[\t\n ]+id=\"report\">"
+  (when (re-search-forward "</h1>\n"
 			   nil t)
     (insert shimbun-nikkei-content-start)
     (when (re-search-forward "[\t\n ]<ul[\t\n ]+id=\"tool\">" nil t)
