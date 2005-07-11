@@ -40,19 +40,21 @@
 (require 'w3m)
 (require 'easymenu)
 
-(defvar w3m-tab-menubar-dummy
-  '("TAB"
-    ["dummy" w3m-switch-buffer t]))
-
 (defun w3m-setup-tab-menu ()
   "Setup w3m tab menubar."
   (when w3m-use-tab-menubar
-    (unless (lookup-key w3m-mode-map [menu-bar w3m-tab])
-      (w3m-static-if (featurep 'xemacs)
-	  (progn
-	    (set-buffer-menubar (cons w3m-tab-menubar-dummy current-menubar))
-	    (add-hook 'activate-menubar-hook 'w3m-tab-menubar-update))
-	(define-key w3m-mode-map [menubar w3m-tab] w3m-tab-menubar-dummy)
+    (w3m-static-if (featurep 'xemacs)
+	(unless (car (find-menu-item current-menubar '("Tab")))
+	  (easy-menu-define w3m-tab-menu w3m-mode-map
+	    "" '("Tab" ["dummy" w3m-switch-buffer t]))
+	  (easy-menu-add w3m-tab-menu)
+	  (setq current-menubar
+		(cons w3m-tab-menu
+		      (delq (assoc "Tab" current-menubar) current-menubar)))
+	  (add-hook 'activate-menubar-hook 'w3m-tab-menubar-update))
+      (unless (lookup-key w3m-mode-map [menu-bar Tab])
+	(easy-menu-define w3m-tab-menu w3m-mode-map "" '("Tab"))
+	(easy-menu-add w3m-tab-menu)
 	(add-hook 'menu-bar-update-hook 'w3m-tab-menubar-update)))))
 
 (defun w3m-switch-buffer ()
@@ -93,28 +95,20 @@
   (when (get-buffer buf)
     (switch-to-buffer buf)))
 
-;;; w3m-tabmenu.el ends here
-;; Silence the byte compiler.  `w3m-tab-menubar-update' uses it to
-;; disable the iswitchb keymap, but it will never be used in Emacs 19
-;; since the Emacs version in which iswitchb.el appeared is 20.1.
-(eval-when-compile
-  (autoload 'easy-menu-remove-item "easymenu"))
-
 (defun w3m-tab-menubar-update ()
   "Update w3m tab menubar."
-  (when (and (boundp 'iswitchb-global-map)
-	     (keymapp (symbol-value 'iswitchb-global-map)))
-    ;; Don't let iswitchb manage the w3m tab menubar.
-    (easy-menu-remove-item (symbol-value 'iswitchb-global-map)
-			   '(menu-bar)
-			   (car w3m-tab-menubar-dummy)))
   (when (and (eq major-mode 'w3m-mode)
 	     (w3m-static-if (featurep 'xemacs)
 		 (frame-property (selected-frame) 'menubar-visible-p)
 	       menu-bar-mode))
-    (easy-menu-change nil
-		      (car w3m-tab-menubar-dummy)
-		      (w3m-tab-menubar-make-items))))
+    (easy-menu-define w3m-tab-menu w3m-mode-map
+      "The menu kepmap for the emacs-w3m tab."
+      (cons "Tab" (w3m-tab-menubar-make-items)))
+    (w3m-static-when (featurep 'xemacs)
+      (let ((items (car (find-menu-item current-menubar '("Tab")))))
+	(when items
+	  (setcdr items (cdr w3m-tab-menu))
+	  (set-buffer-menubar current-menubar))))))
 
 (defun w3m-tab-menubar-make-items (&optional nomenu)
   "Create w3m tab menu items."

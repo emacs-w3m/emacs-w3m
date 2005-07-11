@@ -314,7 +314,8 @@ Optional argument TITLE is title of link."
       (message "No anchor")		; nothing to do
     (let ((url (w3m-anchor))
 	  (title (buffer-substring-no-properties
-		  (previous-single-property-change (1+ (point)) 'w3m-href-anchor)
+		  (previous-single-property-change (1+ (point))
+						   'w3m-href-anchor)
 		  (next-single-property-change (point) 'w3m-href-anchor))))
       (w3m-bookmark-add url title))
     (message "Added")))
@@ -421,54 +422,58 @@ With prefix argument, kill that many entries from point."
   (w3m-edit-url (w3m-expand-file-name-as-url w3m-bookmark-file)))
 
 ;; Bookmark menu
-(eval-when-compile
-  (autoload 'easy-menu-remove-item "easymenu"))
-
-(defconst w3m-bookmark-menu-dummy-item
-  ["(empty)" ignore nil])
-
-(defconst w3m-bookmark-menubar-dummy
-  (list "Bookmark"
-	w3m-bookmark-menu-dummy-item))
-    
-(defconst w3m-bookmark-menu-items
-  '(["View Bookmark" w3m-bookmark-view t]
-    ["Edit Bookmark" w3m-bookmark-edit t]
-    "----"
-    ["Add Current URL to Bookmark" w3m-bookmark-add-current-url t]
-    ["Add These URLs to Bookmark" w3m-bookmark-add-current-url-group t]
-    ["Add This URL to Bookmark" w3m-bookmark-add-this-url t]
-    ))
+(defvar w3m-bookmark-menu-items
+  '((["View Bookmark" w3m-bookmark-view t]
+     ["Edit Bookmark" w3m-bookmark-edit t]
+     "----"
+     ["Add Current URL to Bookmark" w3m-bookmark-add-current-url t]
+     ["Add These URLs to Bookmark" w3m-bookmark-add-current-url-group t]
+     ["Add This URL to Bookmark" w3m-bookmark-add-this-url t])
+    .
+    (["Kill Current Entry" w3m-bookmark-kill-entry
+      (text-property-not-all (point-at-bol) (point-at-eol)
+			     'w3m-href-anchor nil)]
+     ["Undo" w3m-bookmark-undo t]
+     ["Edit Bookmark" w3m-bookmark-edit t]))
+  "*List of the bookmark menu items.
+The car is used if `w3m-bookmark-mode' is nil, otherwise the cdr is used.")
 
 ;;;###autoload
 (defun w3m-setup-bookmark-menu ()
   "Setup w3m bookmark items in menubar."
-  (unless (lookup-key w3m-mode-map [menu-bar w3m-bookmark])
-    (w3m-static-if (featurep 'xemacs)
-	(progn
-	  (set-buffer-menubar (cons w3m-bookmark-menubar-dummy current-menubar))
-	  (add-hook 'activate-menubar-hook 'w3m-bookmark-menubar-update))
-      (define-key w3m-mode-map [menubar w3m-bookmark] w3m-bookmark-menubar-dummy)
+  (w3m-static-if (featurep 'xemacs)
+      (unless (car (find-menu-item current-menubar '("Bookmark")))
+	(easy-menu-define w3m-bookmark-menu w3m-mode-map
+	  "" '("Bookmark" ["(empty)" ignore nil]))
+	(easy-menu-add w3m-bookmark-menu)
+	(setq current-menubar
+	      (cons w3m-bookmark-menu
+		    (delq (assoc "Bookmark" current-menubar) current-menubar)))
+	(add-hook 'activate-menubar-hook 'w3m-bookmark-menubar-update))
+    (unless (lookup-key w3m-mode-map [menu-bar Bookmark])
+      (easy-menu-define w3m-bookmark-menu w3m-mode-map "" '("Bookmark"))
+      (easy-menu-add w3m-bookmark-menu)
       (add-hook 'menu-bar-update-hook 'w3m-bookmark-menubar-update))))
 
 (defun w3m-bookmark-menubar-update ()
   "Update w3m bookmark menubar."
-  (when (and (boundp 'iswitchb-global-map)
-	     (keymapp (symbol-value 'iswitchb-global-map)))
-    ;; Don't let iswitchb manage the w3m bookmark menubar.
-    (easy-menu-remove-item (symbol-value 'iswitchb-global-map)
-			   '(menu-bar)
-			   (car w3m-bookmark-menubar-dummy)))
   (when (and (eq major-mode 'w3m-mode)
 	     (w3m-static-if (featurep 'xemacs)
 		 (frame-property (selected-frame) 'menubar-visible-p)
 	       menu-bar-mode))
-    (easy-menu-change nil
-		      (car w3m-bookmark-menubar-dummy)
-		      (append w3m-bookmark-menu-items
-			      '("----")
-			      (or (w3m-bookmark-make-menu-items)
-				  (list w3m-bookmark-menu-dummy-item))))))
+    (let ((items (if w3m-bookmark-mode
+		     (cdr w3m-bookmark-menu-items)
+		   (car w3m-bookmark-menu-items)))
+	  (pages (w3m-bookmark-make-menu-items)))
+      (easy-menu-define w3m-bookmark-menu w3m-mode-map
+	"The menu kepmap for the emacs-w3m bookmark."
+	(cons "Bookmark" (if pages
+			     (append items '("----") pages)
+			   items)))
+      (w3m-static-when (featurep 'xemacs)
+	(when (setq items (car (find-menu-item current-menubar '("Bookmark"))))
+	  (setcdr items (cdr w3m-bookmark-menu))
+	  (set-buffer-menubar current-menubar))))))
 
 (defun w3m-bookmark-iterator ()
   "Iteration bookmark groups/entries.
@@ -486,8 +491,12 @@ Format as (list (\"Group name\" . (\"Entry URL\" . \"Entry name\")* )* )."
 	    (let (urls)
 	      (narrow-to-region beg end)
 	      (goto-char (point-min))
-	      (while (re-search-forward "<a href=\"\\([^\"]+\\)\">\\([^<]+\\)</a>" nil t)
-		(push (cons (match-string-no-properties 1) (match-string-no-properties 2)) urls))
+	      (while (re-search-forward
+		      "<a href=\"\\([^\"]+\\)\">\\([^<]+\\)</a>"
+		      nil t)
+		(push (cons (match-string-no-properties 1)
+			    (match-string-no-properties 2))
+		      urls))
 	      (setq entry (cons group (nreverse urls)))
 	      (push entry entries)
 	      (widen)))
@@ -520,17 +529,16 @@ Format as (list (\"Group name\" . (\"Entry URL\" . \"Entry name\")* )* )."
 		      (let ((group (car entry))
 			    (items (cdr entry)))
 			(cons group
-			      (or (and items
-				       (mapcar
-					(lambda (item)
-					  (vector 
-					   (cdr item)
-					   `(w3m-bookmark-menu-open-item
-					     ,(car item))))
-					items))
-				  (list w3m-bookmark-menu-dummy-item)))))
+			      (and items
+				   (mapcar
+				    (lambda (item)
+				      (vector
+				       (cdr item)
+				       `(w3m-bookmark-menu-open-item
+					 ,(car item))))
+				    items)))))
 		    entries)))))))
-  
+
 (provide 'w3m-bookmark)
 
 ;;; w3m-bookmark.el ends here
