@@ -1,5 +1,20 @@
 2005-07-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Fix index url
+	for the it.mobile group.
+	(shimbun-nikkei-x-face-alist): Use regexp for the release groups.
+	(shimbun-nikkei-get-headers-report): Remove useless regexp pattern.
+	(shimbun-nikkei-get-headers-kansai): Ditto.
+	(shimbun-nikkei-get-headers-it-business): Ditto.
+	(shimbun-nikkei-get-headers-it-internet): Ditto.
+	(shimbun-nikkei-get-headers-it-security): Ditto.
+	(shimbun-nikkei-get-headers-it-mobile): Ditto.
+	(shimbun-nikkei-get-headers-it-digital): Ditto.
+	(shimbun-nikkei-get-headers-it-pc): Ditto.
+	(shimbun-nikkei-prepare-article-default2): Remove unwanted images.
+
+	* shimbun/shimbun.el (shimbun-x-face): Allow regexp in group names.
+
 	* shimbun/sb-mainichi.el (shimbun-mainichi-get-headers): Ignore
 	ranking sections.
 

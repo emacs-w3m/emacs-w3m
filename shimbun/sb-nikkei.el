@@ -78,7 +78,7 @@
      shimbun-nikkei-get-headers-it-internet
      shimbun-nikkei-prepare-article-default2)
     ("it.mobile" "モバイル"
-     "http://it.nikkei.co.jp/it/mobile/news/index.aspx"
+     "http://it.nikkei.co.jp/mobile/news/index.aspx"
      shimbun-nikkei-get-headers-it-mobile
      shimbun-nikkei-prepare-article-default2)
     ("it.security" "セキュリティ"
@@ -381,7 +381,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAWAgMAAAD7mfc/AAAABGdBTUEAALGPC/xhBQAAAAx
  LuLFJ6wMVrjsWRgvOPYFEBqEvjSuAcwJK55uVuv7Qs7n6xzYlSWrYoNHn6YV1cJ06Gh2LvCOs5Eo
  jZ9Gph5VYg57fTN0Q/I1Gx+bDw9BZcP22ZQ8WPBKVadTs6xiKlaIaOdv70SssB7/oy7JbxPXlcqJ
  +AFOYhEr5ENrbAAAAB3RJTUUH1AQGFzot7I86fAAAAABJRU5ErkJggg==")
-    ("release" . "\
+    ("\\`release" . "\
 Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAATBAMAAAAkFJMsAAAABGdBTUEAALGPC/xhBQAAABJ
  QTFRFAAAAZI9jnMGYtNiv1+3U////kl1YDAAAAC90RVh0U29mdHdhcmUAWFYgVmVyc2lvbiAzLjE
  wYStGTG1hc2sgIFJldjogMTIvMjkvOTQbx6p8AAABM0lEQVR4nDVRQZKEIAwMg97DoHddnTsI3NG
@@ -632,7 +632,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			;; 2. serial number
 			"\\([^\t\n ]+\\)"
 			"\\.html\\)"
-			s0 "\">" s0
+			"\">" s0
 			;; 3. subject
 			"\\([^<]+\\)"
 			s0 "<")))
@@ -691,7 +691,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			"\\([^\t\n ]+\\)"
 			"\\)"
 			s0 "-frame" s0 "\\.html"
-			s0 "\">" s0
+			"\">" s0
 			;; 3. subject
 			"\\([^<]+\\)"
 			s0 "<")))
@@ -710,7 +710,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
     headers))
 
 (defun shimbun-nikkei-get-headers-it-business (group folder)
-  "Function used to fetch headers for the it-business group."
+  "Function used to fetch headers for the it.business group."
   (let (headers)
     (while (re-search-forward
 	    (eval-when-compile
@@ -730,7 +730,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			"[0-9a-z]+"
 			"\\)"
 			"\\)"
-			s0 "\">" s0
+			"\">" s0
 			;; 6. subject
 			"\\([^<]+\\)"
 			"</a>")))
@@ -752,7 +752,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
     headers))
 
 (defun shimbun-nikkei-get-headers-it-internet (group folder)
-  "Function used to fetch headers for the it-internet group."
+  "Function used to fetch headers for the it.internet group."
   (let (headers)
     (while (re-search-forward
 	    (eval-when-compile
@@ -772,7 +772,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			"[0-9a-z]+"
 			"\\)"
 			"\\)"
-			s0 "\">" s0
+			"\">" s0
 			;; 6. subject
 			"\\([^<]+\\)"
 			"</a>")))
@@ -794,7 +794,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
     headers))
 
 (defun shimbun-nikkei-get-headers-it-security (group folder)
-  "Function used to fetch headers for the it-security group."
+  "Function used to fetch headers for the it.security group."
   (let (headers)
     (while (re-search-forward
 	    (eval-when-compile
@@ -814,7 +814,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			"[0-9a-z]+"
 			"\\)"
 			"\\)"
-			s0 "\">" s0
+			"\">" s0
 			;; 6. subject
 			"\\([^<]+\\)"
 			"</a>")))
@@ -836,7 +836,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
     headers))
 
 (defun shimbun-nikkei-get-headers-it-mobile (group folder)
-  "Function used to fetch headers for the it-mobile group."
+  "Function used to fetch headers for the it.mobile group."
   (let (headers)
     (while (re-search-forward
 	    (eval-when-compile
@@ -856,7 +856,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			"[0-9a-z]+"
 			"\\)"
 			"\\)"
-			s0 "\">" s0
+			"\">" s0
 			;; 6. subject
 			"\\([^<]+\\)"
 			"</a>")))
@@ -878,7 +878,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
     headers))
 
 (defun shimbun-nikkei-get-headers-it-digital (group folder)
-  "Function used to fetch headers for the it-digital group."
+  "Function used to fetch headers for the it.digital group."
   (let (headers)
     (while (re-search-forward
 	    (eval-when-compile
@@ -898,7 +898,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			"[0-9a-z]+"
 			"\\)"
 			"\\)"
-			s0 "\">" s0
+			"\">" s0
 			;; 6. subject
 			"\\([^<]+\\)"
 			"</a>")))
@@ -920,7 +920,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
     headers))
 
 (defun shimbun-nikkei-get-headers-it-pc (group folder)
-  "Function used to fetch headers for the it-pc group."
+  "Function used to fetch headers for the it.pc group."
   (let (headers)
     (while (re-search-forward
 	    (eval-when-compile
@@ -940,7 +940,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			"[0-9a-z]+"
 			"\\)"
 			"\\)"
-			s0 "\">" s0
+			"\">" s0
 			;; 6. subject
 			"\\([^<]+\\)"
 			"</a>")))
@@ -1066,7 +1066,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
     (shimbun-sort-headers headers)))
 
 (defun shimbun-nikkei-get-headers-bunkatsu2 (group folder)
-  "Function used to fetch headers for the kawase group."
+  "Function used to fetch headers for the gyosuuchi group."
   (let (headers)
     (while (re-search-forward
 	    (eval-when-compile
@@ -1615,7 +1615,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
     headers))
 
 (defun shimbun-nikkei-get-headers-release2 (group folder)
-  "Function used to fetch headers for the release-in-detail group."
+  "Function used to fetch headers for the release-in-detail groups."
   (let (url id subject sub-end year month day headers)
     (while (re-search-forward
 	    (eval-when-compile
@@ -1649,8 +1649,8 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	       (format "<%d%02d%02d.%s%%%s.%s>"
 		       year month day id group shimbun-nikkei-top-level-domain)
 	       "" 0 0
-	       (shimbun-nikkei-expand-url 
-                 (concat "http://release.nikkei.co.jp/" url) folder))
+	       (shimbun-nikkei-expand-url
+		(concat "http://release.nikkei.co.jp/" url) folder))
 	      headers)
 	(goto-char sub-end)))
     headers))
@@ -1783,6 +1783,19 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 
 (defun shimbun-nikkei-prepare-article-default2 (&rest args)
   "Function used to prepare contents of an article for some groups."
+  ;; Remove unwanted images.
+  (let (start end)
+    (while (re-search-forward "[\t\n ]*<div[\t\n ]+[^>]+>[\t\n ]*<img[\t\n ]+\
+\[^>]+>[\t\n ]*</div>[\t\n ]*"
+			      nil t)
+      (setq start (match-beginning 0)
+	    end (match-end 0))
+      (goto-char start)
+      (when (re-search-forward
+	     "src=\"http://parts\\.nikkei\\.co\\.jp/parts/s\\.gif\""
+	     end t)
+	(delete-region start end))))
+  (goto-char (point-min))
   (when (re-search-forward "\
 <!--[\t\n ]*FJZONE[\t\n ]+START[\t\n ]+NAME=\"HONBUN\"[\t\n ]+-->"
 			   nil t)
@@ -1794,7 +1807,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
       (insert shimbun-nikkei-content-end))))
 
 (defun shimbun-nikkei-prepare-article-kansai (&rest args)
-  "Function used to prepare contents of an article for some groups."
+  "Function used to prepare contents of an article for the kansai group."
   (when (re-search-forward "\
 <td[\t\n ]+colspan=\"2\"[\t\n ]+class=\"textm\">"
 			   nil t)
@@ -1816,7 +1829,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
       (insert shimbun-nikkei-content-end))))
 
 (defun shimbun-nikkei-prepare-article-bunkatsu2 (&rest args)
-  "Function used to prepare contents of an article for some groups."
+  "Function used to prepare contents of an article for the gyosuuchi group."
   (when (re-search-forward "[\t\n ]<div[\t\n ]+class=\"bg_gray\">" nil t)
     (insert shimbun-nikkei-content-start)
     (when (re-search-forward "[\t\n ]<div[\t\n ]+class=\"column\">" nil t)
@@ -1869,7 +1882,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
       (insert shimbun-nikkei-content-end))))
 
 (defun shimbun-nikkei-prepare-article-release2 (&rest args)
-  "Function used to prepare contents of an article for some groups."
+  "Function used to prepare contents of an article for the release groups."
   (when (re-search-forward "</h1>\n"
 			   nil t)
     (insert shimbun-nikkei-content-start)

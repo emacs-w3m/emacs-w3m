@@ -835,10 +835,16 @@ Return nil if all pages should be retrieved."
 (luna-define-method shimbun-x-face ((shimbun shimbun))
   (shimbun-set-x-face-internal
    shimbun
-   (or (cdr (assoc (shimbun-current-group-internal shimbun)
-		   (shimbun-x-face-alist-internal shimbun)))
-       (cdr (assoc "default" (shimbun-x-face-alist-internal shimbun)))
-       shimbun-x-face)))
+   (let ((group (shimbun-current-group-internal shimbun))
+	 (alist (shimbun-x-face-alist-internal shimbun)))
+     (or (cdr (assoc group alist))
+	 (catch 'face
+	   (dolist (elem alist)
+	     (when (and (string-match "[]$*+\\^[]" (car elem))
+			(string-match (car elem) group))
+	       (throw 'face (cdr elem)))))
+	 (cdr (assoc "default" alist))
+	 shimbun-x-face))))
 
 (defun shimbun-search-id (shimbun id)
   "Return non-nil when MUA found a message structure which corresponds to ID."
