@@ -1,5 +1,12 @@
 2005-07-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Remove book
+	group; add 15 book.* groups; don't specify index urls which are
+	the same as group names.
+	(shimbun-index-url): Make index url based on group name.
+	(shimbun-asahi-get-headers): Make it work with book.* groups.
+	(shimbun-asahi-prepare-article): Collect images in book.* groups.
+
 	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Fix index url
 	for the it.mobile group.
 	(shimbun-nikkei-x-face-alist): Use regexp for the release groups.

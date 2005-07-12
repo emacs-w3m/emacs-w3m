@@ -4409,8 +4409,12 @@ These are newspapers that are supported by @samp{shimbun} library.
 
 @table @asis
 @item @uref{http://www.asahi.com/, Asahi Shimbun}
-asahi.book asahi.business asahi.business.column asahi.car
-asahi.car.italycolumn asahi.car.motorsports asahi.car.newcar
+asahi.book.author asahi.book.bestseller asahi.book.bunko
+asahi.book.comic asahi.book.hondana asahi.book.navi asahi.book.news
+asahi.book.paperback asahi.book.pocket asahi.book.ranking
+asahi.book.review asahi.book.shinsho asahi.book.special
+asahi.book.topics asahi.book.watch asahi.business asahi.business.column
+asahi.car asahi.car.italycolumn asahi.car.motorsports asahi.car.newcar
 asahi.car.newcarbywebcg asahi.culture asahi.culture.column asahi.digital
 asahi.digital.apc asahi.digital.bcnnews asahi.digital.column01
 asahi.digital.hotwired asahi.digital.internet asahi.digital.mobile
