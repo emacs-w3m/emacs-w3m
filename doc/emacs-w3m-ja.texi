@@ -4525,9 +4525,9 @@ mainichi.eye.closeup mainichi.eye.hassinbako mainichi.eye.hito
 mainichi.eye.kinji mainichi.eye.kishanome mainichi.eye.shasetsu
 mainichi.eye.shasetsu.archive mainichi.eye.tenbou mainichi.eye.yoroku
 mainichi.eye.yuuraku mainichi.keizai mainichi.keizai.it
-mainichi.it.net.archive mainichi.keizai.kaigai mainichi.keizai.kigyou
-mainichi.keizai.kigyou.info mainichi.keizai.kinyu
-mainichi.keizai.seisaku mainichi.keizai.wadai 
+mainichi.keizai.it.net.archive mainichi.keizai.kaigai
+mainichi.keizai.kigyou mainichi.keizai.kigyou.info mainichi.keizai.kinyu
+mainichi.keizai.seisaku mainichi.keizai.wadai
 mainichi.keizai.wadai.kansoku.archive
 mainichi.keizai.wadai.seika.archive mainichi.kokusai
 mainichi.kokusai.afro-ocea mainichi.kokusai.america
@@ -4540,14 +4540,14 @@ mainichi.science.kagaku mainichi.science.medical mainichi.science.rikei
 mainichi.seiji mainichi.seiji.feature mainichi.seiji.gyousei
 mainichi.seiji.kokkai mainichi.seiji.seitou mainichi.seiji.senkyo
 mainichi.shakai mainichi.shakai.edu mainichi.shakai.edu.mori
-shakai.edu.elearningschool.nyushi.archive shakai.edu.net.archive
-shakai.edu.manabito.archive mainichi.shakai.fu mainichi.shakai.gakugei
-mainichi.shakai.ji mainichi.shakai.jiken mainichi.shakai.koushitsu
-mainichi.shakai.tenki mainichi.shakai.wadai mainichi.sokuho
-mainichi.sports mainichi.sports.ama mainichi.sports.battle
-mainichi.sports.feature mainichi.sports.field mainichi.sports.keiba
-mainichi.sports.major mainichi.sports.pro mainichi.sports.soccer
-mainichi.yougo
+mainichi.shakai.edu.elearningschool.nyushi.archive
+mainichi.shakai.edu.net.archive mainichi.shakai.edu.manabito.archive
+mainichi.shakai.fu mainichi.shakai.gakugei mainichi.shakai.ji
+mainichi.shakai.jiken mainichi.shakai.koushitsu mainichi.shakai.tenki
+mainichi.shakai.wadai mainichi.sokuhou mainichi.sports
+mainichi.sports.ama mainichi.sports.battle mainichi.sports.feature
+mainichi.sports.field mainichi.sports.keiba mainichi.sports.major
+mainichi.sports.pro mainichi.sports.soccer mainichi.yougo
 
 これらのグループは、デフォルトで写真をも含む HTML の記事を作ります。それ
 らに、テキストだけの記事を生成させたいならば、以下の行
@@ -4565,36 +4565,37 @@ nikkansports.society nikkansports.leisure
 
 @item @uref{http://www.nikkei.co.jp/, 日本経済新聞}
 nikkei.top nikkei.main nikkei.keizai nikkei.sangyo nikkei.tento
-nikkei.zinzi nikkei.report nikkei.kansai nikkei.it.pc nikkei.kokunai
-nikkei.it.business nikkei.it.internet nikkei.it.mobile nikkei.it.digital
-nikkei.it.security nikkei.markets nikkei.kawase nikkei.kinri nikkei.ft
-nikkei.dj nikkei.ngyoseki nikkei.gyosuuchi nikkei.gyoseki nikkei.market
-nikkei.kaigai nikkei.seiji nikkei.shakai nikkei.sports nikkei.newpro
-nikkei.release nikkei.release.it.comp nikkei.release.it.peri
-nikkei.release.it.sys nikkei.it.release.it.cont nikkei.release.it.net
-nikkei.release.it.lsi nikkei.release.it.game nikkei.release.it.etc
-nikkei.release.dist.depart nikkei.release.dist.ryohan 
-nikkei.release.dist.zakka nikkei.release.dist.cosme
-nikkei.release.dist.car nikkei.release.dist.book nikkei.release.dist.etc
-nikkei.release.dist.record nikkei.release.dist.food
-nikkei.release.dist.mercha nikkei.release.dist.mail
-nikkei.release.dist.netshop nikkei.release.money.bank
-nikkei.release.money.sec nikkei.release.money.sec
-nikkei.release.money.am nikkei.release.money.insu
-nikkei.release.money.etc nikkei.release.maker.chemi
-nikkei.release.maker.mecha nikkei.release.maker.car
-nikkei.release.maker.elec nikkei.release.maker.food
-nikkei.release.maker.sports nikkei.release.maker.apparel
-nikkei.release.maker.commu nikkei.release.maker.etc
-nikkei.release.service.medic nikkei.release.service.rest
-nikkei.release.service.trans nikkei.release.service.energy
-nikkei.release.service.enter nikkei.release.service.env
-nikkei.release.service.consul nikkei.release.service.edu
-nikkei.release.service.haken nikkei.release.service.life
-nikkei.release.service.media nikkei.release.service.lease
-nikkei.release.service.travel nikkei.release.service.etc
-nikkei.release.const.const nikkei.release.const.house
-nikkei.release.const.etc nikkei.china nikkei.shasetsu nikkei.okuyami
+nikkei.zinzi nikkei.report nikkei.kansai nikkei.it.business
+nikkei.it.internet nikkei.it.mobile nikkei.it.security nikkei.it.digital
+nikkei.it.pc nikkei.kokunai nikkei.markets nikkei.kawase nikkei.kinri
+nikkei.ft nikkei.dj nikkei.ngyoseki nikkei.gyosuuchi nikkei.gyoseki
+nikkei.china nikkei.market nikkei.kaigai nikkei.seiji nikkei.shakai
+nikkei.retto nikkei.sports nikkei.newpro nikkei.release
+nikkei.release.it.comp nikkei.release.it.peri nikkei.release.it.sys
+nikkei.release.it.cont nikkei.release.it.net nikkei.release.it.lsi
+nikkei.release.it.game nikkei.release.it.etc nikkei.release.dist.depart
+nikkei.release.dist.ryohan nikkei.release.dist.zakka
+nikkei.release.dist.cosme nikkei.release.dist.car
+nikkei.release.dist.book nikkei.release.dist.record
+nikkei.release.dist.food nikkei.release.dist.mercha
+nikkei.release.dist.mail nikkei.release.dist.netshop
+nikkei.release.dist.etc nikkei.release.money.bank
+nikkei.release.money.sec nikkei.release.money.am
+nikkei.release.money.insu nikkei.release.money.etc
+nikkei.release.maker.chemi nikkei.release.maker.mecha
+nikkei.release.maker.car nikkei.release.maker.elec
+nikkei.release.maker.food nikkei.release.maker.sports
+nikkei.release.maker.apparel nikkei.release.maker.commu
+nikkei.release.maker.etc nikkei.release.service.medic
+nikkei.release.service.rest nikkei.release.service.trans
+nikkei.release.service.energy nikkei.release.service.enter
+nikkei.release.service.env nikkei.release.service.consul
+nikkei.release.service.edu nikkei.release.service.haken
+nikkei.release.service.life nikkei.release.service.media
+nikkei.release.service.lease nikkei.release.service.travel
+nikkei.release.service.etc nikkei.release.const.const
+nikkei.release.const.house nikkei.release.const.etc nikkei.shasetsu
+nikkei.okuyami
 
 @item @uref{http://www.sponichi.co.jp/, スポニチ}
 sponichi.baseball sponichi.soccer sponichi.usa sponichi.others
