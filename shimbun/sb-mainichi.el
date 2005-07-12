@@ -286,6 +286,20 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 				     nil t)))
       (delete-region start (match-end 0)))
 
+    ;; Remove ranking sections.
+    (goto-char (point-min))
+    (while (and (re-search-forward "\
+\[\t\n ]*\\(<!--[\t\n ]*|[\t\n ]*\\)\\(ranking[\t\n ]*|-->\\)"
+				   nil t)
+		(progn
+		  (setq start (match-beginning 0))
+		  (re-search-forward (concat (regexp-quote (match-string 1))
+					     "/"
+					     (regexp-quote (match-string 2))
+					     "[\t\n ]*")
+				     nil t)))
+      (delete-region start (match-end 0)))
+
     ;; Rearrange the group name so as to be the reverse order.
     (when (string-match "\\." group)
       (setq group (mapconcat 'identity

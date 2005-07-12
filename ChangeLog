@@ -1,8 +1,13 @@
-2005-07-11 Masaru Nomiya <nomiyac360@mg.point.ne.jp>
+2005-07-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-get-headers): Ignore
+	ranking sections.
+
+2005-07-11  Masaru Nomiya  <nomiyac360@mg.point.ne.jp>
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Add
-	nikkei.china
-		
+	nikkei.china.
+
 2005-07-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bookmark.el (w3m-bookmark-menu-dummy-item): Remove.
@@ -28,43 +33,43 @@
 	(w3m-bookmark-make-menu-items): Use previous items if it
 	available.
 
-2005-07-11 Masaru Nomiya <nomiyac360@mg.point.ne.jp>
+2005-07-11  Masaru Nomiya  <nomiyac360@mg.point.ne.jp>
 
-	* shimbun/sb-nikkei.el: 
-	(shimbun-nikkei-prepare-article-default3) Improve regexp. 
-	
-2005-07-11 Masaru Nomiya < nomiyac360@mg.point.ne.jp>
+	* shimbun/sb-nikkei.el: (shimbun-nikkei-prepare-article-default3)
+	Improve regexp.
+
+2005-07-11  Masaru Nomiya  <nomiyac360@mg.point.ne.jp>
 
 	* shimbun/sb-mainichi.el (shimbun-mainichi-group-table): Add
-	keizai.it.net.archive keizai.wadai.kansoku.archive 
-	keizai.wadai.seika.archive shakai.edu.mori 
-	shakai.edu.elearningschool.nyushi.archive
-	shakai.edu.net.archive shakai.edu.manabito.archive
-	sokuhou yougo
+	keizai.it.net.archive, keizai.wadai.kansoku.archive,
+	keizai.wadai.seika.archive, shakai.edu.mori,
+	shakai.edu.elearningschool.nyushi.archive, shakai.edu.net.archive,
+	shakai.edu.manabito.archive, sokuhou and yougo.
 
-	* shimbun/sb-nikkei.el 
-	(shimbun-nikkei-group-table): Remove it it,zensen it.manage
-	it.seisaku it.digicore
-	
-	(shimbun-nikkei-group-table): Add it.business it.internet
-	it.mobile it.security it.digital it.pc release.it.comp 
-	release.it.peri release.it.sys release.it.cont release.it.net 
-	release.it.lsi release.it.game release.it.etc release.dist.depart 
-	release.dist.ryohan release.dist.zakka release.dist.cosme 
-	release.dist.car release.dist.bookrelease.dist.record
-	release.dist.food release.dist.mercha release.dist.mail 
-	release.dist.netshop release.dist.etc release.money.bank 
-	release.money.sec release.money.am release.money.insu
-	release.money.etc release.maker.chemi release.maker.mecha
-	release.maker.car release.maker.elec release.maker.food 
-	release.maker.sports release.maker.apparel release.maker.commu
-	release.maker.etc release.service.medi release.service.rest
-	release.service.trans release.service.energy release.service.enter
-	release.service.env release.service.consul release.service.edu
-	release.service.haken release.service.life release.service.media
-	release.service.lease release.service.travel release.service.etc
-	release.const.const release.const.house release.const.etc
-	
+	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Remove it,
+	it.zensen, it.manage, it.seisaku and it.digicore.
+
+	(shimbun-nikkei-group-table):, Add it.business, it.internet,
+	it.mobile, it.security, it.digital, it.pc, release.it.comp,
+	release.it.peri, release.it.sys, release.it.cont, release.it.net,
+	release.it.lsi, release.it.game, release.it.etc,
+	release.dist.depart, release.dist.ryohan, release.dist.zakka,
+	release.dist.cosme, release.dist.car,
+	release.dist.bookrelease.dist.record, release.dist.food,
+	release.dist.mercha, release.dist.mail, release.dist.netshop,
+	release.dist.etc, release.money.bank, release.money.sec,
+	release.money.am, release.money.insu, release.money.etc,
+	release.maker.chemi, release.maker.mecha, release.maker.car,
+	release.maker.elec, release.maker.food, release.maker.sports,
+	release.maker.apparel, release.maker.commu, release.maker.etc,
+	release.service.medi, release.service.rest, release.service.trans,
+	release.service.energy, release.service.enter,
+	release.service.env, release.service.consul, release.service.edu,
+	release.service.haken, release.service.life,
+	release.service.media, release.service.lease,
+	release.service.travel, release.service.etc, release.const.const,
+	release.const.house and release.const.etc.
+
 2005-07-09  Tsuyoshi CHO  <tsuyoshi_cho@yahoo.co.jp>
 
 	* w3m-xmas.el (top): Add `w3m-setup-bookmark-menu' to autoload
