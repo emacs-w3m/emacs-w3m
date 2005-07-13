@@ -28,10 +28,15 @@
 
 (luna-define-class shimbun-zeit-de (shimbun-rss) ())
 
-(defvar shimbun-zeit-de-groups
-  '("news"))
+(defvar shimbun-zeit-de-groups 
+  '("chancen" "dossier" "hochschule" "leben" "literatur" "media"
+    "news" "politik" "reden" "reisen" "wirtschaft" "wissen"
+    "wohlfuehlen" "zeitlaeufte"
+))
 
-(defvar shimbun-zeit-de-content-start "title\">")
+(defvar shimbun-zeit-de-content-start
+  "title\">\\|<!--content starts here-->\\(?:<table[^>]+>\\)?")
+
 (defvar shimbun-zeit-de-content-end
   (concat
    "</body>\\|</html>\\|navigation[^><]*>[^A]\\|"
@@ -90,7 +95,10 @@
       (goto-char (point-min)))))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-zeit-de))
-  "http://newsfeed.zeit.de/")
+  (let ((group (shimbun-current-group shimbun)))
+    (if (equal group "news")
+	"http://newsfeed.zeit.de/")
+    (concat "http://newsfeed.zeit.de/" group "/index")))
 
 (luna-define-method shimbun-clear-contents :after ((shimbun shimbun-zeit-de)
 						    header)
@@ -100,7 +108,8 @@
   (shimbun-remove-tags "<IFRAME[^>]*doubleclick.net[^>]*>")
   (shimbun-remove-tags "<img[^>]*doubleclick.net[^>]*>")
   (shimbun-remove-tags "<img[^>]*\\(width\\|height\\)=\"1px\"[^>]*>")
-  (shimbun-remove-tags "<tr><td[^>]*>Anzeige</td></tr>"))
+  (shimbun-remove-tags "<tr><td[^>]*>Anzeige</td></tr>")
+  t)
 
 (provide 'sb-zeit-de)
 
