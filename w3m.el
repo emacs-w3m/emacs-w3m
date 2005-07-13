@@ -2712,14 +2712,15 @@ message."
 
 (defun w3m-message (&rest args)
   "Print a one-line message at the bottom of the screen.
-It displays a given message without logging, when the cursor is not in
-the minibuffer and `w3m-verbose' is nil.  When the cursor is in the
-minibuffer and `w3m-verbose' is nil, it behaves as `format' and simply
-returns a string.  When `w3m-verbose' is non-nil, it behaves
-identically as `message', that displays a given message with logging."
+It displays a given message without logging, when the cursor is
+neither in the minibuffer or in the echo area and `w3m-verbose' is
+nil.  When the cursor is either in the minibuffer or in the echo area
+and `w3m-verbose' is nil, it behaves as `format' and simply returns a
+string.  When `w3m-verbose' is non-nil, it behaves identically as
+`message', that displays a given message with logging."
   (if w3m-verbose
       (apply (function message) args)
-    (if (eq (selected-window) (minibuffer-window))
+    (if (or (minibuffer-prompt) (current-message))
 	(apply (function format) args)
       (w3m-static-if (featurep 'xemacs)
 	  (display-message 'no-log (apply (function format) args))
@@ -5301,24 +5302,27 @@ when the URL of the retrieved page matches the REGEXP."
 For instance, it will let you visit \"http://foo/\" if you are currently
 viewing \"http://foo/bar/\"."
   (interactive)
-  (if (null w3m-current-url)
-      (error "w3m-current-url is not set"))
-  (let (parent-url)
-    ;; Check whether http://foo/bar/ or http://foo/bar
-    (if (string-match "/$" w3m-current-url)
-	(if (string-match "\\(.*\\)/[^/]+/$" w3m-current-url)
-	    ;; http://foo/bar/ -> http://foo/
-	    (setq parent-url (concat (match-string 1 w3m-current-url) "/")))
-      (if (string-match "\\(.*\\)/.+$" w3m-current-url)
-	  ;; http://foo/bar -> http://foo/
-	  (setq parent-url (concat (match-string 1 w3m-current-url) "/"))))
-    ;; Ignore "http:/"
-    (if (and parent-url
-	     (string-match "^[a-z]+:/+$" parent-url))
-	(setq parent-url nil))
-    (if parent-url
-	(w3m-goto-url parent-url)
-      (error "No parent page for: %s" w3m-current-url))))
+  (cond
+   (w3m-start-url (w3m-goto-url w3m-start-url))
+   (w3m-contents-url (w3m-goto-url w3m-contents-url))
+   (w3m-current-url
+    (let (parent-url)
+      ;; Check whether http://foo/bar/ or http://foo/bar
+      (if (string-match "/$" w3m-current-url)
+	  (if (string-match "\\(.*\\)/[^/]+/$" w3m-current-url)
+	      ;; http://foo/bar/ -> http://foo/
+	      (setq parent-url (concat (match-string 1 w3m-current-url) "/")))
+	(if (string-match "\\(.*\\)/.+$" w3m-current-url)
+	    ;; http://foo/bar -> http://foo/
+	    (setq parent-url (concat (match-string 1 w3m-current-url) "/"))))
+      ;; Ignore "http:/"
+      (if (and parent-url
+	       (string-match "^[a-z]+:/+$" parent-url))
+	  (setq parent-url nil))
+      (if parent-url
+	  (w3m-goto-url parent-url)
+	(error "No parent page for: %s" w3m-current-url))))
+   (t (error "w3m-current-url is not set"))))
 
 (defun w3m-view-previous-page (&optional count)
   "Move back COUNT pages in the history.

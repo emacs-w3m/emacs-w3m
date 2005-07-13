@@ -1,3 +1,10 @@
+2005-07-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-message): Bury messages when the cursor in the echo
+	area which is used by `y-or-n-p' etc.
+	(w3m-view-parent-page): Refer both `start' link element and
+	`content' start element before checking a parent URL.
+
 2005-07-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Remove book
