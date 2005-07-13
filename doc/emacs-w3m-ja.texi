@@ -4735,7 +4735,10 @@ zdnet-jp.news.internet zdnet-jp.news.os zdnet-jp.news.db
 zdnet-jp.news.system zdnet-jp.column zdnet-jp.channel.security
 
 @item @uref{http://www.zeit.de/, Die Zeit}
-zeit-de.news
+zeit-de.chancen zeit-de.dossier zeit-de.hochschule zeit-de.leben
+zeit-de.literatur zeit-de.media zeit-de.news zeit-de.politik
+zeit-de.reden zeit-de.reisen zeit-de.wirtschaft zeit-de.wissen
+zeit-de.wohlfuehlen zeit-de.zeitlaeufte
 @end table
 
 @node Mailing Lists Supported by Shimbun
