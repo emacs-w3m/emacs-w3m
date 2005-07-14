@@ -37,7 +37,9 @@
 (defvar shimbun-bbc-groups '("news"))
 (defvar shimbun-bbc-from-address  "newsonline@bbc.co.uk")
 (defvar shimbun-bbc-content-start
-  "\\(<!-- \\(E I\\(BYL\\|IMA\\)\\|S I\\(BOX\\|IMA\\)\\) -->\\)")
+  (concat "<!-- "
+	  (regexp-opt '("E IBYL" "E IIMA" "S IBOX" "S IMA" "S BO"))
+	  " -->"))
 (defvar shimbun-bbc-content-end "<!-- E BO -->")
 
 (luna-define-method shimbun-rss-build-message-id
