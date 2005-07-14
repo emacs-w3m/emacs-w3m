@@ -1,3 +1,9 @@
+2005-07-14 Masaru Nomiya   <nomiyac360@mg.point.ne.jp>
+	
+	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Fix index url
+	for the release.it.net group.
+        (shimbun-nikkei-prepare-article) Change for retto groups 
+	
 2005-07-13  Andreas Seltenreich  <seltenreich@gmx.de>
 
 	* shimbun/sb-zeit-de.el (shimbun-zeit-de-groups): Add new groups.

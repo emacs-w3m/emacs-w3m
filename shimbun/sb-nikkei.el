@@ -141,7 +141,7 @@
      shimbun-nikkei-prepare-article-default)
     ("retto" "地域経済" ,(concat shimbun-nikkei-url "news/retto/")
      shimbun-nikkei-get-headers-retto
-     shimbun-nikkei-prepare-article-default2)
+     shimbun-nikkei-prepare-article-okuyami)
     ("sports" "スポーツ" "http://sports.nikkei.co.jp/"
      shimbun-nikkei-get-headers-sports
      shimbun-nikkei-prepare-article-sports)
@@ -168,7 +168,7 @@
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
     ("release.it.net" "プレスリリース(ＩＴ；通信・インターネット)"
-     "http://release.nikkei.co.jp/isclassList.cfm?lindID=1&sindID=4"
+     "http://release.nikkei.co.jp/isclassList.cfm?lindID=1&sindID=5"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
     ("release.it.lsi" "プレスリリース(ＩＴ；半導体)"
