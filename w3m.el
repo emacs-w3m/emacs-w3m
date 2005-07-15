@@ -164,13 +164,13 @@
   (autoload 'w3m-about-cookie "w3m-cookie")
   (autoload 'w3m-cookie-shutdown "w3m-cookie" nil t)
   (autoload 'report-emacs-w3m-bug "w3m-bug" nil t)
-  (autoload 'w3m-replace-symbol "w3m-symbol" nil t)
-  (autoload 'widget-forward "wid-edit" nil t))
+  (autoload 'w3m-replace-symbol "w3m-symbol" nil t))
 
 ;; Avoid byte-compile warnings.
 (eval-when-compile
   (autoload 'rfc2368-parse-mailto-url "rfc2368")
   (autoload 'widget-convert-button "wid-edit")
+  (autoload 'widget-forward "wid-edit" nil t)
   (autoload 'widget-get "wid-edit")
   (unless (fboundp 'char-to-int)
     (defalias 'char-to-int 'identity)))
