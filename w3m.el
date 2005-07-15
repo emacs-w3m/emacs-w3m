@@ -2681,7 +2681,7 @@ need to know what function will be made, use `macroexpand'."
     `(lambda (window object pos)
        (if w3m-track-mouse
 	   (progn
-	     (w3m-message "")	; Clear the echo area.
+	     (message nil)	; Clear the echo area.
 	     (w3m-url-readable-string
 	      (get-text-property pos ',property
 				 (window-buffer window))))))))
@@ -2710,6 +2710,9 @@ message."
 		      (not (compiled-function-p (symbol-function fn))))
 	     (byte-compile fn)))))))
 
+(defvar w3m-current-message nil
+  "The string currently displayed by `w3m-message' in the echo area.")
+
 (defun w3m-message (&rest args)
   "Print a one-line message at the bottom of the screen.
 It displays a given message without logging, when the cursor is
@@ -2720,13 +2723,16 @@ string.  When `w3m-verbose' is non-nil, it behaves identically as
 `message', that displays a given message with logging."
   (if w3m-verbose
       (apply (function message) args)
-    (if (or (window-minibuffer-p (selected-window))
-	    (current-message))
+    (if (when w3m-process-background
+	  (or (window-minibuffer-p (selected-window))
+	      (when (current-message)
+		(not (equal (current-message) w3m-current-message)))))
 	(apply (function format) args)
-      (w3m-static-if (featurep 'xemacs)
-	  (display-message 'no-log (apply (function format) args))
-	(let (message-log-max)
-	  (apply (function message) args))))))
+      (setq w3m-current-message
+	    (w3m-static-if (featurep 'xemacs)
+		(display-message 'no-log (apply (function format) args))
+	      (let (message-log-max)
+		(apply (function message) args)))))))
 
 (defun w3m-time-parse-string (string)
   "Parse the time-string STRING into a time in the Emacs style."
@@ -6569,7 +6575,7 @@ is specified, otherwise prompt you for the confirmation.  See also
   (interactive "P")
   (when (or force
 	    (prog1 (y-or-n-p "Do you want to exit w3m? ")
-	      (w3m-message "")))
+	      (message nil)))
     (w3m-delete-frames-and-windows)
     (sit-for 0) ;; Delete frames seemingly fast.
     (dolist (buffer (w3m-list-buffers t))
@@ -7118,7 +7124,7 @@ this function will prompt user for it."
 			     (y-or-n-p
 			      (format "File(%s) already exists. Overwrite? "
 				      filename))
-			   (w3m-message ""))
+			   (message nil))
 			 (progn
 			   (delete-file filename)
 			   t))
@@ -8512,7 +8518,7 @@ passed to the `w3m-quit' function (which see)."
   "Show the buffer on the menu and switch to the buffer."
   (interactive)
   (pop-to-buffer (w3m-select-buffer-show-this-line))
-  (w3m-message ""))
+  (message nil))
 
 (defun w3m-select-buffer-show-this-line-and-quit ()
   "Show the buffer on the menu and quit the buffers selection."

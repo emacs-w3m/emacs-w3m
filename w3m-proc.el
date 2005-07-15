@@ -528,10 +528,14 @@ evaluated in a temporary buffer."
 	  (string-as-multibyte (format "%s" exit-status)))
     nil)))
 
+(defvar w3m-process-background nil
+  "Non-nil means that an after handler is being evaluated.")
+
 (defun w3m-process-sentinel (process event &optional ignore-queue)
   ;; Ensure that this function will be never called repeatedly.
   (set-process-sentinel process 'ignore)
-  (let ((inhibit-quit w3m-process-inhibit-quit))
+  (let ((inhibit-quit w3m-process-inhibit-quit)
+	(w3m-process-background t))
     (unwind-protect
 	(if (buffer-name (process-buffer process))
 	    (with-current-buffer (process-buffer process)

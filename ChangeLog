@@ -1,13 +1,28 @@
+2005-07-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-current-message): New internal variable.
+	(w3m-message): Use the above variable to keep the last displayed
+	message, to decide that this function can override the current
+	message in the echo area.
+	(w3m-make-help-echo): Use `message' instead of
+	`w3m-message' to clear the echo area in the foreground context.
+	(w3m-quit): Ditto.
+	(w3m-goto-ftp-url): Ditto.
+	(w3m-select-buffer-show-this-line-and-switch): Ditto.
+
+	* w3m-proc.el (w3m-process-background): New internal variable.
+	(w3m-process-sentinel): Set t to the above variable.
+
 2005-07-14  David Hansen  <david.hansen@physik.fu-berlin.de>
 
 	* shimbun/sb-bbc.el (shimbun-bbc-content-start): Relaxed.
 
-2005-07-14 Masaru Nomiya   <nomiyac360@mg.point.ne.jp>
-	
+2005-07-14 Masaru Nomiya  <nomiyac360@mg.point.ne.jp>
+
 	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Fix index url
 	for the release.it.net group.
-        (shimbun-nikkei-prepare-article) Change for retto groups 
-	
+	(shimbun-nikkei-prepare-article) Change for retto groups.
+
 2005-07-13  Andreas Seltenreich  <seltenreich@gmx.de>
 
 	* shimbun/sb-zeit-de.el (shimbun-zeit-de-groups): Add new groups.
