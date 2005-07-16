@@ -1,6 +1,6 @@
 ;;; sb-weeklyworldnews.el --- weekly world news shimbun backend
 
-;; Copyright (C) 2004 David Hansen
+;; Copyright (C) 2004, 2005 David Hansen
 
 ;; Author: David Hansen <david.hansen@physik.fu-berlin.de>
 ;; Keywords: news
@@ -46,7 +46,7 @@
 
 (defconst shimbun-weeklyworldnews-index-re
   (concat
-   "<a href=\"/\\(.*?\\)/\\([0-9]+\\)\">"         ; link
+   "<a href=\"/\\(.*?\\)/\\([0-9]+\\)\">"	; link
    "<span class=\"headsm\">\\(.+?\\)</span></a>") ; headline
 
   "Regexp to match a Weekly World News article on the summary page.")
@@ -56,7 +56,6 @@
   "Weekly World News <invalid@weeklyworldnews.com>"
 
   "From: header for the Weekly World News shimbun")
-
 
 (luna-define-method shimbun-get-headers
   ((shimbun shimbun-weeklyworldnews) &optional range)
@@ -71,10 +70,10 @@
 		  (shimbun-replace-in-string (match-string 1) "/" "-")
 		  "-" (match-string 2)
 		  "@weeklyworldnews.com>"))
-	(setq subject (match-string 3))
+	(setq subject (w3m-replace-in-string (match-string 3)
+					     "</?[a-zA-Z]+>" ""))
 	(when (shimbun-search-id shimbun id)
 	  (throw 'stop nil))
-	(message id)
 	(push (shimbun-make-header
 	       0 (shimbun-mime-encode-string subject)
 	       (shimbun-mime-encode-string shimbun-weeklyworldnews-from)

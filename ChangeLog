@@ -1,3 +1,8 @@
+2005-07-15  David Hansen  <david.hansen@physik.fu-berlin.de>
+
+	* shimbun/sb-weeklyworldnews.el (shimbun-get-headers): Remove HTML
+	tags from headlines; removed forgotten debug code.
+
 2005-07-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-current-message): New internal variable.
