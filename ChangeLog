@@ -1,3 +1,8 @@
+2005-07-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Set a
+	reviewer to From field.
+
 2005-07-15  David Hansen  <david.hansen@physik.fu-berlin.de>
 
 	* shimbun/sb-weeklyworldnews.el (shimbun-get-headers): Remove HTML

@@ -697,6 +697,11 @@ and tenjin, it tries to fetch the article for that day if it failed."
 	(group (shimbun-current-group-internal shimbun)))
     (cond
      ((string-match "\\`book\\." group)
+      (when (re-search-forward
+	     "<p class=\"midasi13\">[^<>]+<br>\\[評者\\]\\([^<>]+\\)</p>"
+	     nil t)
+	(shimbun-header-set-from header (match-string 1))
+	(goto-char (point-min)))
       ;; Collect images.
       (let (start end images)
 	(while (re-search-forward "<div[\t\n ]+class=\"bokp\">" nil t)
