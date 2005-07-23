@@ -53,11 +53,26 @@
     ("news.system"   . "http://japan.zdnet.com/rss/news/devsys/index.rdf")
 
     ;; column
-    ("column"        . "http://japan.zdnet.com/rss/column/index.rdf")
+    ("column"       . "http://japan.zdnet.com/rss/column/index.rdf")
+    ("column.sp1" . "http://japan.zdnet.com/rss/column/sp1/index.rdf")
+    ("column.netsecurity1"
+     . "http://japan.zdnet.com/rss/column/netsecurity1/index.rdf")
+    ("column.ea1" . "http://japan.zdnet.com/rss/column/ea1/index.rdf")
+    ("column.btl" . "http://japan.zdnet.com/rss/column/btl/index.rdf")
+    ("column.solutionIT"
+     . "http://japan.zdnet.com/rss/column/solutionIT/index.rdf")
 
     ;; channel
     ("channel.security" . "http://japan.zdnet.com/rss/channel/sec/index.rdf")
-    ))
+    ("channel.ilm" . "http://japan.zdnet.com/rss/channel/ilm/index.rdf")
+
+    ;; blog
+    ("blog.iida" . "http://blog.japan.zdnet.com/iida/index.rdf")
+    ("blog.mhatta" . "http://blog.japan.zdnet.com/mhatta/index.rdf")
+    ("blog.kurei" . "http://blog.japan.zdnet.com/kurei/index.rdf")
+    ("blog.opensource" . "http://blog.japan.zdnet.com/opensource/index.rdf")
+    ("blog.soa"  . "http://blog.japan.zdnet.com/soa/index.rdf")
+    ("blog.dp" . "http://blog.japan.zdnet.com/dp/index.rdf")))
 
 (defvar shimbun-zdnet-jp-orphaned-group-list
   '())
@@ -65,7 +80,8 @@
 (defvar shimbun-zdnet-jp-content-start
   "\\(<div class=\"leaf_body\">\\|<div class=\"leaf_body\">\\)")
 (defvar shimbun-zdnet-jp-content-end
-  "\\(<!-- *\\(/leaf_foot\\|/leaf_body\\|/main_left\\|NEWS LETTER SUB\\|ZD CAMPAIGN SUB\\) *-->\\)")
+  "\\(<!-- *\\(/leaf_foot\\|/leaf_body\\|/main_left\\|\
+NEWS LETTER SUB\\|ZD CAMPAIGN SUB\\) *-->\\)")
 
 (defvar shimbun-zdnet-jp-server-name "CNET Networks,Inc.")
 (defvar shimbun-zdnet-jp-x-face-alist
@@ -100,12 +116,14 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
    (t
     (luna-call-next-method))))
 
-(luna-define-method shimbun-cnetnetworks-clear-footer ((shimbun shimbun-zdnet-jp)
-						       header has-next)
+(luna-define-method shimbun-cnetnetworks-clear-footer
+  ((shimbun shimbun-zdnet-jp) header has-next)
   (goto-char (point-min))
   (when (and
-	 (re-search-forward "<a [^>]+>\\(前\\|次\\)のページ</a" nil t)
-	 (re-search-backward "<div class=\"leaf_body_page\">[ \t\r\n]*<ul>" nil t))
+	 (re-search-forward
+	  "<a [^>]+>\\(前\\|次\\)のページ</a" nil t)
+	 (re-search-backward
+	  "<div class=\"leaf_body_page\">[ \t\r\n]*<ul>" nil t))
     (let ((start (match-beginning 0))
 	  end)
       (if has-next

@@ -1,3 +1,14 @@
+2005-07-23  Tsuyoshi CHO  <tsuyoshi_cho@yahoo.co.jp>
+
+	* shimbun/sb-zdnet-jp.el (shimbun-zdnet-jp-group-alist): Add new
+	groups for blogs,columns and channel.
+
+	* shimbun/sb-engadget-ja.el (shimbun-engadget-ja-content-end):
+	Follow the change of the site.
+
+	* shimbun/(sb-cnetnetworks.el,sb-cnet-jp.el,sb-zdnet-jp,
+	sb-engadget-ja): Cosmetic refine.
+
 2005-07-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Set a

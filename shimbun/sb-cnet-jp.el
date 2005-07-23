@@ -49,7 +49,8 @@
     "blog.umeda"))
 
 (defvar shimbun-cnet-jp-content-start "<div class=\"leaf_body\">")
-(defvar shimbun-cnet-jp-content-end "<!-- *\\(NEWS LETTER SUB\\|ZD CAMPAIGN SUB\\) *-->")
+(defvar shimbun-cnet-jp-content-end
+  "<!-- *\\(NEWS LETTER SUB\\|ZD CAMPAIGN SUB\\) *-->")
 
 (defvar shimbun-cnet-jp-server-name "CNET Networks,Inc.")
 (defvar shimbun-cnet-jp-x-face-alist
@@ -85,8 +86,8 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 	      "%" (shimbun-current-group shimbun) "@japan.cnet.com>")
     (luna-call-next-method)))
 
-(luna-define-method shimbun-cnetnetworks-clear-footer ((shimbun shimbun-cnet-jp)
-						       header has-next)
+(luna-define-method shimbun-cnetnetworks-clear-footer
+  ((shimbun shimbun-cnet-jp) header has-next)
   ;; remove page footer (last page is ignored)
   (goto-char (point-min))
   (when (re-search-forward "| [0-9]+ / [0-9]+ |" nil t)

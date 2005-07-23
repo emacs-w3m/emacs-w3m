@@ -4732,7 +4732,12 @@ yahoo.kinki yahoo.chugoku yahoo.sikoku yahoo.kyushu yahoo.okinawa
 zdnet-jp.news zdnet-jp.news.network zdnet-jp.news.hardware
 zdnet-jp.news.software zdnet-jp.news.manage zdnet-jp.news.security
 zdnet-jp.news.internet zdnet-jp.news.os zdnet-jp.news.db
-zdnet-jp.news.system zdnet-jp.column zdnet-jp.channel.security
+zdnet-jp.news.system zdnet-jp.column zdnet-jp.column.sp1
+zdnet-jp.column.netsecurity1 zdnet-jp.column.ea1 zdnet-jp.column.btl
+zdnet-jp.column.solutionIT zdnet-jp.channel.security
+zdnet-jp.channel.ilm zdnet-jp.blog.iida zdnet-jp.blog.mhatta
+zdnet-jp.blog.kurei zdnet-jp.blog.opensource zdnet-jp.blog.soa
+zdnet-jp.blog.dp
 
 @item @uref{http://www.zeit.de/, Die Zeit}
 zeit-de.chancen zeit-de.dossier zeit-de.hochschule zeit-de.leben

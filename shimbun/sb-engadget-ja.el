@@ -32,15 +32,15 @@
 
 
 (defvar shimbun-engadget-ja-group-alist
-  '(("top" ."http://japanese.engadget.com/rss.xml")
-    ))
+  '(("top" ."http://japanese.engadget.com/rss.xml")))
 
 (luna-define-class shimbun-engadget-ja (shimbun-rss) ())
 
 (defvar shimbun-engadget-ja-content-start
   "<div id=\"incontent\">")
 (defvar shimbun-engadget-ja-content-end
-  "<h3>Recent Posts</h3>")
+  (regexp-opt '("<h3>Recent Posts</h3>"
+		"<a name=\"comments\"></a>")))
 
 (luna-define-method shimbun-groups ((shimbun shimbun-engadget-ja))
   (mapcar 'car shimbun-engadget-ja-group-alist))
@@ -63,8 +63,7 @@
 	    (md5 (match-string-no-properties 4 url))
 	    "@japanese.engadget.com>"))
    (t ;;(error "Cannot find message-id base")
-    (concat "<" (md5 url) "@japanese.engadget.com>"))
-   ))
+    (concat "<" (md5 url) "@japanese.engadget.com>"))))
 
 (provide 'sb-engadget-ja)
 

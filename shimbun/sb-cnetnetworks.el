@@ -35,11 +35,13 @@
 (require 'shimbun)
 (require 'sb-rss)
 
-(luna-define-class shimbun-cnetnetworks (shimbun-japanese-newspaper shimbun-rss) ())
+(luna-define-class shimbun-cnetnetworks
+		   (shimbun-japanese-newspaper shimbun-rss) ())
 
 (defvar shimbun-cnetnetworks-server-name "CNET Networks,Inc.")
 
-(luna-define-generic shimbun-cnetnetworks-clear-footer (shimbun header has-next)
+(luna-define-generic shimbun-cnetnetworks-clear-footer
+  (shimbun header has-next)
   "Remove footer by page.")
 
 (luna-define-generic shimbun-cnetnetworks-header-reconfig (shimbun header)
@@ -89,7 +91,8 @@
       (list (cons body (car result))
 	    (or (nth 1 result) images)))))
 
-(luna-define-method shimbun-make-contents ((shimbun shimbun-cnetnetworks) header)
+(luna-define-method shimbun-make-contents
+  ((shimbun shimbun-cnetnetworks) header)
   (let ((case-fold-search t)
 	(base-cid (shimbun-header-id header)))
     (shimbun-cnetnetworks-header-reconfig shimbun header)
@@ -98,8 +101,8 @@
       (setq base-cid (match-string 1 base-cid)))
     (let (body)
       (multiple-value-bind (texts images)
-	  (shimbun-cnetnetworks-retrieve-next-pages shimbun header base-cid
-						    (shimbun-header-xref header))
+	  (shimbun-cnetnetworks-retrieve-next-pages
+	   shimbun header base-cid (shimbun-header-xref header))
 	(erase-buffer)
 	(if (= (length texts) 1)
 	    (setq body (car texts))
