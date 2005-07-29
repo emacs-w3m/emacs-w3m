@@ -1,3 +1,9 @@
+2005-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-scroll-up-1): New function.
+	(w3m-lynx-like-map): Use it for the J command.
+	(w3m-scroll-up-or-next-url): Use it.
+
 2005-07-23  Tsuyoshi CHO  <tsuyoshi_cho@yahoo.co.jp>
 
 	* shimbun/sb-zdnet-jp.el (shimbun-zdnet-jp-group-alist): Add new

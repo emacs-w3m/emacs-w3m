@@ -6335,7 +6335,7 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "j" 'next-line)
     (define-key map "k" 'previous-line)
     (define-key map "l" 'forward-char)
-    (define-key map "J" (lambda () (interactive) (scroll-up 1)))
+    (define-key map "J" 'w3m-scroll-up-1)
     (define-key map "K" (lambda () (interactive) (scroll-down 1)))
     (define-key map "\M-g" 'goto-line)
     (define-key map "\C-?" 'w3m-scroll-down-or-previous-url)
@@ -6796,6 +6796,23 @@ closed.  See also `w3m-quit'."
   (run-hooks 'w3m-mode-setup-functions)
   (w3m-run-mode-hooks 'w3m-mode-hook))
 
+(defun w3m-scroll-up-1 (&optional arg)
+  "Scroll the current window up ARG line.
+ARG will be fixed into 1 when this function is called interactively.
+This function avoids the bug that Emacs 21.x hangs up when scrolling
+up for too many number of lines if `scroll-margin' is set as two or
+greater."
+  (interactive '(1))
+  (w3m-static-unless (featurep 'xemacs)
+    (when (and (numberp arg)
+	       (> arg 0)
+	       (numberp scroll-margin)
+	       (> scroll-margin 0))
+      (setq arg (min arg
+		     (max 0 (- (count-lines (window-start) (point-max))
+			       scroll-margin))))))
+  (scroll-up arg))
+
 (defun w3m-scroll-up-or-next-url (arg)
   "Scroll the current window up ARG lines, or go to the next page."
   (interactive "P")
@@ -6804,7 +6821,7 @@ closed.  See also `w3m-quit'."
       (if w3m-next-url
 	  (w3m-goto-url w3m-next-url)
 	(signal 'end-of-buffer nil))
-    (scroll-up arg)))
+    (w3m-scroll-up-1 arg)))
 
 (defun w3m-scroll-down-or-previous-url (arg)
   "Scroll the current window down ARG lines, or go to the previous page."
