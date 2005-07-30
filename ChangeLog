@@ -1,3 +1,7 @@
+2005-07-29  Kevin Rodgers  <kevin.rodgers@ihs.com>
+
+	* w3m.el (w3m-content-type-alist): Add the text/sgml entry.
+
 2005-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-scroll-up-1): New function.
