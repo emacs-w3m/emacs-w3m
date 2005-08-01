@@ -1,3 +1,14 @@
+2005-08-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* octet.el (octet-insert-buffer): Use insert-buffer-substring
+	instead of insert-buffer.
+
+	* w3m-bookmark.el (w3m-about-bookmark): Ditto.
+
+	* w3m-proc.el (w3m-process-sentinel): Ditto.
+
+	* shimbun/nnshimbun.el (nnshimbun-retrieve-headers-with-nov): Ditto.
+
 2005-07-29  Kevin Rodgers  <kevin.rodgers@ihs.com>
 
 	* w3m.el (w3m-content-type-alist): Add the text/sgml entry.

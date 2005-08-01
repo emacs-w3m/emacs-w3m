@@ -350,7 +350,7 @@ With prefix, ask new url to add instead of current page."
 
 ;;;###autoload
 (defun w3m-about-bookmark (&rest args)
-  (insert-buffer (w3m-bookmark-buffer))
+  (insert-buffer-substring (w3m-bookmark-buffer))
   (let ((ident) (i 0) (j 0))
     (goto-char (point-min))
     (while (search-forward (setq ident (format "w3mbk%d." i)) nil t)

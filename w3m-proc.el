@@ -552,7 +552,7 @@ evaluated in a temporary buffer."
 		  (when (buffer-name (w3m-process-handler-buffer x))
 		    (set-buffer (w3m-process-handler-buffer x))
 		    (unless (eq buffer (current-buffer))
-		      (insert-buffer buffer))))
+		      (insert-buffer-substring buffer))))
 		(dolist (x (w3m-process-handlers obj))
 		  (when (buffer-name (w3m-process-handler-buffer x))
 		    (set-buffer (w3m-process-handler-buffer x))

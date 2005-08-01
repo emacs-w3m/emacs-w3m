@@ -544,7 +544,7 @@ If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
   (unless (or gnus-nov-is-evil nnshimbun-nov-is-evil)
     (with-current-buffer nntp-server-buffer
       (erase-buffer)
-      (insert-buffer (nnshimbun-open-nov group))
+      (insert-buffer-substring (nnshimbun-open-nov group))
       (unless (and fetch-old (not (numberp fetch-old)))
 	(nnheader-nov-delete-outside-range
 	 (if fetch-old

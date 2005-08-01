@@ -402,7 +402,7 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 	(with-current-buffer from
 	  (if (setq extent (extent-at (point-min) nil nil nil 'at))
 	      (setq glyph (extent-end-glyph extent))))
-	(insert-buffer from)
+	(insert-buffer-substring from)
 	(if glyph
 	    (set-extent-end-glyph (make-extent (point) (point))
 				  glyph))))
