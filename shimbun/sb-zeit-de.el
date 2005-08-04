@@ -96,9 +96,9 @@
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-zeit-de))
   (let ((group (shimbun-current-group shimbun)))
-    (if (equal group "news")
-	"http://newsfeed.zeit.de/")
-    (concat "http://newsfeed.zeit.de/" group "/index")))
+    (if (equal "news" group)
+	"http://newsfeed.zeit.de/"
+      (concat "http://newsfeed.zeit.de/" group "/index"))))
 
 (luna-define-method shimbun-clear-contents :after ((shimbun shimbun-zeit-de)
 						    header)
