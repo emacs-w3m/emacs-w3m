@@ -192,7 +192,12 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
     ;; strip nasty "download" images
     (goto-char (point-min))
     (while (re-search-forward "<TP\\(xBUT\\|:AD\\)>" nil t nil)
-      (delete-region (point) (re-search-forward "</TP\\(xBUT\\|:AD\\)>" nil t nil)))))
+      (delete-region (point) (re-search-forward "</TP\\(xBUT\\|:AD\\)>" nil t nil)))
+    (goto-char (point-min))
+    (while (re-search-forward "<!--OAS AD=\"Middle[0-9]*\"-->" nil t nil)
+      (let ((beg (search-backward "<table" nil t nil))
+            (end (search-forward "</table>" nil t nil)))
+        (when (and beg end) (delete-region beg end))))))
 
 (luna-define-method shimbun-make-contents
   :before ((shimbun shimbun-heise) header)

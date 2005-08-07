@@ -1,3 +1,8 @@
+2005-08-07  David Hansen  <david.hansen@physik.fu-berlin.de>
+
+	* shimbun/sb-heise.el (shimbun-heise-wash-telepolis-article):
+	Remove ads.
+
 2005-08-04  Andreas Seltenreich  <seltenreich@gmx.de>
 
 	* shimbun/sb-zeit-de.el (shimbun-index-url): Fix typo.
