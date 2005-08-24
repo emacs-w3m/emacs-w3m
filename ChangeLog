@@ -1,3 +1,13 @@
+2005-08-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Note: the shopping groups should be renewed following the change
+	of the Asahi site.
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Change the
+	index page and the regexp for the shopping.kishi group.
+	(shimbun-asahi-prepare-article): Change the regexp used to find
+	the start of articles for the shopping.kishi group.
+
 2005-08-07  David Hansen  <david.hansen@physik.fu-berlin.de>
 
 	* shimbun/sb-heise.el (shimbun-heise-wash-telepolis-article):
