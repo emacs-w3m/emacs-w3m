@@ -3077,7 +3077,10 @@ For example:
 	(delete-region start (point))
 	(w3m-add-text-properties start (point-max)
 				 (list 'w3m-name-anchor
-				       (cons id prenames)))))
+				       (cons
+					(w3m-url-transfer-encode-string
+					 id)
+					prenames)))))
     (goto-char (point-min))
     (while (re-search-forward "<a[ \t\r\f\n]+" nil t)
       (setq start (match-beginning 0))
@@ -3138,11 +3141,17 @@ For example:
 	    (when name
 	      (w3m-add-text-properties start (point-max)
 				       (list 'w3m-name-anchor2
-					     (cons name prenames))))))
+					     (cons
+					      (w3m-url-transfer-encode-string
+					       name)
+					      prenames))))))
 	 (name
 	  (w3m-add-text-properties start (point-max)
 				   (list 'w3m-name-anchor2
-					 (cons name prenames)))))))
+					 (cons
+					  (w3m-url-transfer-encode-string
+					   name)
+					  prenames)))))))
     (when w3m-icon-data
       (setq w3m-icon-data (cons (w3m-expand-url (car w3m-icon-data))
 				(or (w3m-image-type (cdr w3m-icon-data))
