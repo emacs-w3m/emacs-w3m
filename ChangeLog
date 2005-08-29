@@ -1,7 +1,6 @@
 2005-08-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m-ucs.el: Enable it so as to be byte-compiled with
-	XEmacs 21.5-Mule anyway.
+	* w3m-ucs.el: Enable XEmacs 21.5-Mule to compile it anyway.
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Improve regexp
 	for the shopping group; remove the shopping.ryouhin group.

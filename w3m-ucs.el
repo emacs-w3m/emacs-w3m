@@ -36,7 +36,7 @@
 
 ;;; Code:
 
-;; Enable it so as to be byte-compiled with XEmacs 21.5-Mule anyway.
+;; Enable XEmacs 21.5-Mule to compile this module anyway.
 (eval-when-compile
   (if (featurep 'xemacs)
       (let ((mucs-ignore-version-incompatibilities t))
