@@ -378,12 +378,34 @@ Every `.' in NAME will be replaced with `/'."
        2 4 5 1 nil 7 8 9 3 nil 6)
       ("science" "サイエンス" "%s/list.html"
        ,@(shimbun-asahi-make-regexp "science.news"))
-      ("shopping" "ショッピング" "%s/news/"
-       ,@(shimbun-asahi-make-regexp "shopping.news"))
+      ("shopping" "ショッピング" "%s/"
+       ,(concat
+	 "<a" s1 "href=\"/"
+	 ;; 1. url
+	 "\\(\\(?:[^\"/]+/\\)+"
+	 ;; 2. extra
+	 "\\([^\"/]+\\)"
+	 "/"
+	 ;; 3. serial number
+	 "\\([a-z]*"
+	 ;; 4. year
+	 "\\(20[0-9][0-9]\\)"
+	 ;; 5. month
+	 "\\([01][0-9]\\)"
+	 ;; 6. day
+	 "\\([0-3][0-9]\\)"
+	 "[0-9]+\\)"
+	 "\\.html\\)"
+	 "\">\\(?:" s0 "<[^<>]+>\\)*" s0
+	 ;; 7. subject
+	 "\\([^>]+\\)"
+	 "\\(?:" s0 "</a>\\)?"
+	 s0 "<span" s1 "class=\"s\">")
+       1 3 nil 7 4 5 6 nil 2)
       ("shopping.kishi" "岸朝子の気になるお取り寄せ12カ月"
        "shopping/food/kishi"
        ,(concat
-	 "<a[\t\n ]+href=\"/"
+	 "<a" s1 "href=\"/"
 	 ;; 1. url
 	 "\\(shopping/food/kishi/"
 	 ;; 2. serial number
@@ -399,7 +421,6 @@ Every `.' in NAME will be replaced with `/'."
 	 "\\(" no-nl s0 "</div>" s0 no-nl "\\)"
 	 s0)
        1 nil 2 6 3 4 5)
-      ("shopping.ryouhin" "くらしの良品探訪" nil ,@default2)
       ("shougi" "将棋" "%s/news/" ,@(shimbun-asahi-make-regexp "shougi.news"))
       ("sports" "スポーツ" "%s/list.html" ,@default)
       ("sports.baseball" "野球" "sports/bb/"
@@ -796,6 +817,55 @@ and tenjin, it tries to fetch the article for that day if it failed."
 		  (goto-char (point-min)))
 	      (insert "Couldn't retrieve the page.\n")))
 	  (setq retry (1+ retry)))))
+     ((string-equal group "shopping")
+      (let ((subgroup (shimbun-header-xref header)))
+	(when (string-match "\\([^/]+\\)/[^/]+\\'" subgroup)
+	  (setq subgroup (match-string 1 subgroup))
+	  (cond ((string-equal subgroup "asapaso")
+		 (when (re-search-forward
+			"<div[\t\n ]+id=\"photo[0-9]+\">[\t\n ]*"
+			nil t)
+		   (delete-region (point-min) (point))
+		   (insert "<!-- Start of Kiji -->")
+		   (when (re-search-forward "\
+\\(?:[\t\n ]*<[^>]+>\\)*<div[\t\n ]+class=\"gotobacknumber\">"
+					    nil t)
+		     (goto-char (match-beginning 0))
+		     (insert "<!-- End of Kiji -->"))))
+		((string-equal subgroup "interiorlife")
+		 (when (re-search-forward
+			"<p[\t\n ]+class=\"intro\">[\t\n ]*"
+			nil t))
+		 (delete-region (point-min) (point))
+		 (insert "<!-- Start of Kiji -->")
+		 (when (re-search-forward "\
+\\(?:[\t\n ]*<[^>]+>\\)*<div[\t\n ]+class=\"gotobacknumber\">"
+					  nil t)
+		   (goto-char (match-beginning 0))
+		   (insert "<!-- End of Kiji -->")))
+		((string-equal subgroup "dvd")
+		 (let ((regexp (shimbun-content-end shimbun)))
+		   (while (re-search-forward regexp nil t)
+		     (replace-match "\n")))
+		 (goto-char (point-min))
+		 (when (re-search-forward "\\(?:\
+<!--特集-->\\|<div[\t\n ]+id=kijih>\\|<!--[\t\n ]+Start of Headline[\t\n ]+-->\
+\\)[\t\n ]*"
+					  nil t)
+		   (insert "<!-- Start of Kiji -->")
+		   (when (re-search-forward "\
+\[\t\n ]*\\(?:<!--/作品紹介ここまで-->\\|<!--/特集-->\\)"
+					    nil t)
+		     (insert "<!-- End of Kiji -->"))))
+		((member subgroup '("hobby" "music"))
+		 (let ((regexp (shimbun-content-end shimbun)))
+		   (while (re-search-forward regexp nil t)
+		     (replace-match "\n")))
+		 (goto-char (point-min))
+		 (when (re-search-forward "\
+\[\t\n ]*\\(?:<!--/作品紹介ここまで-->\\|<!--/特集-->\\)"
+					  nil t)
+		   (insert "<!-- End of Kiji -->")))))))
      ((string-equal group "shopping.kishi")
       (when (re-search-forward "<div[\t\n ]+id=\"kijih\">[\t\n ]*" nil t)
 	(insert "<!-- Start of Kiji -->")))
