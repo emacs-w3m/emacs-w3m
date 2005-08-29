@@ -1,12 +1,15 @@
+2005-08-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Improve regexp
+	for the shopping group; remove the shopping.ryouhin group.
+	(shimbun-asahi-prepare-article): Add a filter for the shopping group.
+
 2005-08-29  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-fontify-anchors): Put the encoded anchor names
 	instead of the itself.
 
 2005-08-24  Katsumi Yamaoka  <yamaoka@jpl.org>
-
-	Note: the shopping groups should be renewed following the change
-	of the Asahi site.
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Change the
 	index page and the regexp for the shopping.kishi group.

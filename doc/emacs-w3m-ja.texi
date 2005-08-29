@@ -4492,10 +4492,10 @@ asahi.nankyoku asahi.nankyoku.borderless asahi.nankyoku.people
 asahi.nankyoku.whitemail asahi.national asahi.national.calamity
 asahi.national.etc asahi.national.trial asahi.obituaries asahi.politics
 asahi.rss asahi.science asahi.shopping asahi.shopping.kishi
-asahi.shopping.ryouhin asahi.shougi asahi.sports asahi.sports.baseball
-asahi.sports.column asahi.sports.football asahi.sports.spo asahi.tenjin
-asahi.travel asahi.travel.kaido asahi.travel.matsuri
-asahi.travel.zeitaku asahi.wakamiya
+asahi.shougi asahi.sports asahi.sports.baseball asahi.sports.column
+asahi.sports.football asahi.sports.spo asahi.tenjin asahi.travel
+asahi.travel.kaido asahi.travel.matsuri asahi.travel.zeitaku
+asahi.wakamiya
 
 これらのグループは、デフォルトでテキストだけの記事を作ります。それらに、
 テキストだけでなく写真をも含む HTML の記事を生成させたいならば、以下の行

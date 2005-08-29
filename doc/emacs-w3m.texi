@@ -4435,10 +4435,10 @@ asahi.nankyoku asahi.nankyoku.borderless asahi.nankyoku.people
 asahi.nankyoku.whitemail asahi.national asahi.national.calamity
 asahi.national.etc asahi.national.trial asahi.obituaries asahi.politics
 asahi.rss asahi.science asahi.shopping asahi.shopping.kishi
-asahi.shopping.ryouhin asahi.shougi asahi.sports asahi.sports.baseball
-asahi.sports.column asahi.sports.football asahi.sports.spo asahi.tenjin
-asahi.travel asahi.travel.kaido asahi.travel.matsuri
-asahi.travel.zeitaku asahi.wakamiya
+asahi.shougi asahi.sports asahi.sports.baseball asahi.sports.column
+asahi.sports.football asahi.sports.spo asahi.tenjin asahi.travel
+asahi.travel.kaido asahi.travel.matsuri asahi.travel.zeitaku
+asahi.wakamiya
 
 Those groups generate articles containing only text by default.  If you
 would like to make them generate HTML articles that contain not only
