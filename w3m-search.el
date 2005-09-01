@@ -109,7 +109,7 @@
        "http://www.technorati.com/tag/%s"
        utf-8)
       ("goo-ja"
-       "http://www.goo.ne.jp/default.asp?MT=%s"
+       "http://search.goo.ne.jp/web.jsp?MT=%s"
        euc-japan)
       ("excite-ja"
        "http://www.excite.co.jp/search.gw?target=combined&look=excite_jp\
@@ -138,12 +138,12 @@ encoding=shift-jis"
 &type=Case+Insensitive+Substring+Match&order=host&server=archie1.iij.ad.jp\
 &hits=95&nice=Nice")
       ("waei"
-       "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=1"
+       "http://dictionary.goo.ne.jp/search.php?MT=%s&kind=je"
        euc-japan)
       ("eiwa"
-       "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=0")
+       "http://dictionary.goo.ne.jp/search.php?MT=%s&kind=ej")
       ("kokugo"
-       "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?MT=%s&sw=2"
+       "http://dictionary.goo.ne.jp/search.php?MT=%s&kind=jn"
        euc-japan)
       ("eiei"
        "http://www.dictionary.com/cgi-bin/dict.pl?term=%s&r=67")

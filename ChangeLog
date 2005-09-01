@@ -1,3 +1,8 @@
+2005-09-01  Hiroshi Fujishima  <hiroshi.fujishima@gmail.com>
+
+	* w3m-search.el (w3m-search-engine-alist): Update goo-ja, waei,
+	eiwa, kokugo URL.
+
 2005-08-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-ucs.el: Enable XEmacs 21.5-Mule to compile it anyway.
