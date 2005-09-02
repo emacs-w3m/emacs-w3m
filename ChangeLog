@@ -1,3 +1,8 @@
+2005-09-02  TAKAHASHI Kaoru  <kaoru@kaisei.org>
+
+	* doc/ptexinfmt.el: Support @frenchspacing, @euro, @sansserif.
+	(texinfo-format-ordf): Fix typo.
+
 2005-09-01  Hiroshi Fujishima  <hiroshi.fujishima@gmail.com>
 
 	* w3m-search.el (w3m-search-engine-alist): Update goo-ja, waei,
