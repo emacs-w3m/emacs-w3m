@@ -57,6 +57,19 @@
        "http://beta.search.yahoo.co.jp/search?p=%s&ei=UTF-8&eo=UTF-8"
        utf-8)
       ,@(if ja
+	    '(("blog"
+	       "http://search.blogger.com/?q=%s&lr=lang_ja&oe=utf-8&ie=utf-8"
+	       utf-8)
+	      ("blog-en"
+	       "http://search.blogger.com/?q=%s&oe=utf-8&ie=utf-8"
+	       utf-8))
+	  '(("blog"
+	     "http://search.blogger.com/?q=%s&oe=utf-8&ie=utf-8"
+	     utf-8)
+	    ("blog-ja"
+	     "http://search.blogger.com/?q=%s&lr=lang_ja&oe=utf-8&ie=utf-8"
+	     utf-8)))
+      ,@(if ja
 	    '(("google"
 	       "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=Shift_JIS"
 	       shift_jis)
