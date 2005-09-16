@@ -540,14 +540,6 @@ image parts, and returns an alist of URLs and image entities."
 			       "\\([^" spc "\"']+\\)"
 			       "\\)\\)")))
 		   end t)))
-      ;; Remove height="nn" attributes so as not to put excessive
-      ;; newlines in articles (that it might change the src position
-      ;; by removing the height attribute causes no problem since the
-      ;; match-data are all markers).
-      (save-match-data
-	(goto-char start)
-	(when (re-search-forward "[\t\n\f\r ]+height=\"[0-9]+\"" end t)
-	  (delete-region (match-beginning 0) (match-end 0))))
       (setq start (match-beginning 1)
 	    end (match-end 1)
 	    url (or (match-string 2) (match-string 3) (match-string 4)))
