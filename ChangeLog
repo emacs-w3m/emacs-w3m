@@ -1,5 +1,10 @@
 2005-09-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-prepare-article): Don't
+	remove height="nn" in image tags, there's no goal here.
+
+2005-09-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* shimbun/shimbun.el (shimbun-mime-replace-image-tags): Move the
 	code removing height="nn" in image tags back to sb-yomiuri.el.
 

@@ -440,23 +440,15 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 	   nil t)
      (delete-region (match-beginning 0) (match-end 0)))
    (goto-char (point-min))
-   ;; Replace 写真の拡大 with 写真; remove height and width attributes
-   ;; which might cause adding of excessive newline.
-   (let (start end)
-     (while (re-search-forward "\
-<img\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+alt=\"写真\\(の拡大\\)\"[^>]*>"
-			       nil t)
-       (setq start (match-beginning 0)
-	     end (set-marker (make-marker) (match-end 0)))
-       (delete-region (match-beginning 1) (match-end 1))
-       (while (progn
-		(goto-char start)
-		(re-search-forward
-		 "[\t\n ]*\\(?:height\\|width\\)=\"[0-9]+\""
-		 end t))
-	 (delete-region (match-beginning 0) (match-end 0)))
-       (goto-char end)
-       (set-marker end nil)))
+   ;; Replace 写真の拡大 with 写真.
+   (while (re-search-forward
+	   (eval-when-compile
+	     (let ((s1 "[\t\n ]+")
+		   (n1 "[^\t\n >]+"))
+	       (concat "<img\\(?:" s1 n1 "\\)*" s1
+		       "alt=\"写真\\(の拡大\\)\"")))
+	   nil t)
+     (delete-region (match-beginning 1) (match-end 1)))
    (goto-char (point-min))
    ;; Break continuous lines in editorial articles.
    (when (and (string-equal "editorial"
