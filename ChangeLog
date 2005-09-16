@@ -1,3 +1,7 @@
+2005-09-16  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-redisplay-this-page): Use the cache always.
+
 2005-09-15  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
 
 	* w3m-search.el (w3m-search-engine-alist): Add "blog-*" entries.
