@@ -58,16 +58,16 @@
        utf-8)
       ,@(if ja
 	    '(("blog"
-	       "http://search.blogger.com/?q=%s&lr=lang_ja&oe=utf-8&ie=utf-8"
+	       "http://blogsearch.google.com/blogsearch?q=%s&lr=lang_ja&oe=utf-8&ie=utf-8"
 	       utf-8)
 	      ("blog-en"
-	       "http://search.blogger.com/?q=%s&oe=utf-8&ie=utf-8"
+	       "http://blogsearch.google.com/blogsearch?q=%s&oe=utf-8&ie=utf-8"
 	       utf-8))
 	  '(("blog"
-	     "http://search.blogger.com/?q=%s&oe=utf-8&ie=utf-8"
+	     "http://blogsearch.google.com/blogsearch?q=%s&oe=utf-8&ie=utf-8"
 	     utf-8)
 	    ("blog-ja"
-	     "http://search.blogger.com/?q=%s&lr=lang_ja&oe=utf-8&ie=utf-8"
+	     "http://blogsearch.google.com/blogsearch?q=%s&lr=lang_ja&oe=utf-8&ie=utf-8"
 	     utf-8)))
       ,@(if ja
 	    '(("google"

@@ -1,3 +1,14 @@
+2005-09-18  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
+
+	* w3m.el (w3m-relationship-estimate-rules): Add a rule for Google
+	Blog Search.
+
+	* w3m-search.el (w3m-search-engine-alist): Use
+	`http://blogsearch.google.com/' instead of
+	`http://search.blogger.com/' for "blog-*" search, because
+	search.blogger.com does not have a explicit link to previous
+	search result page.
+
 2005-09-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-yomiuri.el (shimbun-yomiuri-prepare-article): Don't
