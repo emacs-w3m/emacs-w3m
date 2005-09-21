@@ -1,5 +1,9 @@
 2005-09-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* mime-w3m.el (mime-w3m-preview-text/html): Revert.
+
+2005-09-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* mime-w3m.el (mime-w3m-preview-text/html): Bind
 	w3m-treat-image-size to avoid inserting excessive newlines.
 
