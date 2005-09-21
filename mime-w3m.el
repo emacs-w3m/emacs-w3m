@@ -166,7 +166,9 @@ by way of `post-command-hook'."
        (condition-case err
 	   (let ((w3m-safe-url-regexp mime-w3m-safe-url-regexp)
 		 (w3m-display-inline-images mime-w3m-display-inline-images)
-		 w3m-force-redisplay)
+		 w3m-force-redisplay
+		 ;; Avoid inserting excessive newlines.
+		 w3m-treat-image-size)
 	     (w3m-region p (point-max)
 			 (and (stringp xref)
 			      (string-match "\\`http://" xref)

@@ -1,3 +1,8 @@
+2005-09-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mime-w3m.el (mime-w3m-preview-text/html): Bind
+	w3m-treat-image-size to avoid inserting excessive newlines.
+
 2005-09-18  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
 
 	* w3m.el (w3m-relationship-estimate-rules): Add a rule for Google
