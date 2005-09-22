@@ -3488,9 +3488,9 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
     (if (search-forward "<?xml" nil t)
 	(let ((start (match-beginning 0)))
 	  (search-forward "?>" nil t)
-	  (delete-region start (match-end 0))))
+	  (delete-region start (match-end 0))
+	  (goto-char (point-min))))
     ;; Delete extra title tag.
-    (goto-char (point-min))
     (let (start)
       (and (search-forward "<title>" nil t)
 	   (setq start (match-beginning 0))
@@ -3509,8 +3509,7 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
     (goto-char (point-min))
     (while (re-search-forward "</?[A-Za-z_][^>]*>" nil t)
       (let ((fid (get-text-property (match-beginning 0) 'w3m-form-field-id)))
-	(if (and fid (string-match "/type=textarea/" fid))
-	    (goto-char (match-end 0))
+	(unless (and fid (string-match "/type=textarea/" fid))
 	  (delete-region (match-beginning 0) (match-end 0)))))
     ;; Decode escaped characters (entities).
     (w3m-decode-entities 'reserve-prop)
@@ -3520,8 +3519,20 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
     (when w3m-delete-duplicated-empty-lines
       (while (re-search-forward "^[ \t]*\n\\(?:[ \t]*\n\\)+" nil t)
 	(delete-region (match-beginning 0) (1- (match-end 0)))))
-    (w3m-message "Fontifying...done")
+
+    ;; FIXME: The code above reduces number of empty lines but one line
+    ;; remains.  While such empty lines might have been inserted for
+    ;; making sure of rooms for displaying images, they all should be
+    ;; removed since they are useless for emacs-w3m.  However, currently
+    ;; we don't have a proper way to identify whether they were inserted
+    ;; intentionally by the author or not.  So, we decided to remove only
+    ;; that one at the beginning of the buffer though it is unwillingness.
+    (goto-char (point-min))
+    (skip-chars-forward "\t\n 　")
+    (delete-region (point-min) (point-at-bol))
+
     (w3m-header-line-insert)
+    (w3m-message "Fontifying...done")
     (run-hooks 'w3m-fontify-after-hook)))
 
 ;;

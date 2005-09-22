@@ -1,3 +1,8 @@
+2005-09-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-fontify): Remove empty lines at the beginning of the
+	buffer (see the comment).
+
 2005-09-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mime-w3m.el (mime-w3m-preview-text/html): Revert.
