@@ -601,6 +601,9 @@ evaluated in a temporary buffer."
 	      (ignore-errors
 		(process-send-string process (if yn "y\n" "n\n"))
 		(delete-region (point-min) (point-max)))))
+	   ((and (looking-at "Accept unsecure SSL session:.*\n")
+		 (= (match-end 0) (point-max)))
+	    (delete-region (point-min) (point-max)))
 	   ((and (looking-at "\\(\n?Wrong username or password\n\\)?\
 Proxy Username for \\(?:.*\\): Proxy Password: ")
 		 (= (match-end 0) (point-max)))

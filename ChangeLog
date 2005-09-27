@@ -1,3 +1,8 @@
+2005-09-27  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-proc.el (w3m-process-filter): Fixed problem for basic
+	authentication over SSL.
+
 2005-09-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-fontify): Remove empty lines at the beginning of the
