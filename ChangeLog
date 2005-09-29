@@ -1,7 +1,11 @@
+2005-09-29  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-proc.el (w3m-process-filter): Fixed regexp.
+
 2005-09-27  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
-	* w3m-proc.el (w3m-process-filter): Fixed problem for basic
-	authentication over SSL.
+	* w3m-proc.el (w3m-process-filter): Remove SSL warning message
+	for basic authentication over SSL.
 
 2005-09-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
