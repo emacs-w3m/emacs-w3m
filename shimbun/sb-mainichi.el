@@ -81,7 +81,7 @@
   "List of the default regexp used to extract headers and matching numbers.")
 
 (defvar shimbun-mainichi-group-table
-  '(("entertainment" "エンターテインメント")
+  `(("entertainment" "エンターテインメント")
     ("entertainment.car" "車")
     ("entertainment.cinema" "映画")
     ("entertainment.game" "ゲーム")
@@ -101,6 +101,27 @@
     ("eye.tenbou" "ニュース展望")
     ("eye.yoroku" "余録")
     ("eye.yuuraku" "憂楽帳")
+    ("kansai.sanshi" "三枝の楽屋へいらっしゃ〜い！" "kansai/sanshi/archive/"
+     ,(let ((s0 "[\t\n ]*")
+	    (s1 "[\t\n ]+"))
+	(concat
+	 "<a" s1 "href=\"/"
+	 ;; 1. url
+	 "\\(kansai/sanshi/archive/news/20[0-9][0-9]/"
+	 ;; 2. serial number
+	 "\\("
+	 ;; 3. year
+	 "\\(20[0-9][0-9]\\)"
+	 ;; 4. month
+	 "\\([01][0-9]\\)"
+	 ;; 5. day
+	 "\\([0-3][0-9]\\)"
+	 "\\(?:[^\t\n \"./]\\)+\\)"
+	 "\\.html\\)"
+	 "[^>]*>" s0
+	 ;; 6 subject
+	 "\\([^<]+\\)" s0))
+     1 2 3 4 5 6)
     ("keizai" "経済")
     ("keizai.it" "IT")
     ("keizai.it.net.archive" "ネット時代のジャーナリズムとは何か")
@@ -163,11 +184,12 @@
     ("sports.pro" "野球")
     ("sports.soccer" "サッカー")
     ("yougo" "ニュースな言葉"))
-  "Alist of group names, their Japanese translations, regexps and numbers.
-Where numbers point to the regexp search result in order of [0]a url,
-\[1]a serial number, [2]a year, [3]a month, [4]a day, [5]a subject,
-\[6]an hour and [7]a minute.  If regexps and numbers are omitted, the
-value of `shimbun-mainichi-header-regexp-default' is used by default.")
+  "Alist of group names, their Japanese translations, index pages, regexps
+and numbers.  Where numbers point to the regexp search result in order
+of [0]a url, [1]a serial number, [2]a year, [3]a month, [4]a day,
+\[5]a subject, \[6]an hour and [7]a minute.  If regexps and numbers are
+omitted, the value of `shimbun-mainichi-header-regexp-default' is used
+by default.")
 
 (defvar shimbun-mainichi-server-name "毎日新聞")
 
@@ -204,11 +226,14 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 		shimbun-mainichi-group-table)))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-mainichi))
-  (shimbun-expand-url
-   (concat (shimbun-subst-char-in-string
-	    ?. ?/ (shimbun-current-group-internal shimbun))
-	   "/")
-   (shimbun-url-internal shimbun)))
+  (let* ((group (shimbun-current-group-internal shimbun))
+	 (index (nth 2 (assoc group shimbun-mainichi-group-table))))
+    (shimbun-expand-url
+     (or index
+	 (concat (shimbun-subst-char-in-string
+		  ?. ?/ (shimbun-current-group-internal shimbun))
+		 "/"))
+     (shimbun-url-internal shimbun))))
 
 (defun shimbun-mainichi-make-date-string (&rest args)
   "Run `shimbun-make-date-string' with ARGS and fix a day if needed.
@@ -243,7 +268,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 
 (defun shimbun-mainichi-get-headers (shimbun)
   (let* ((group (shimbun-current-group-internal shimbun))
-	 (regexp (or (nthcdr 2 (assoc group shimbun-mainichi-group-table))
+	 (regexp (or (nthcdr 3 (assoc group shimbun-mainichi-group-table))
 		     shimbun-mainichi-header-regexp-default))
 	 (from (concat (shimbun-server-name shimbun)
 		       " (" (shimbun-current-group-name shimbun) ")"))
