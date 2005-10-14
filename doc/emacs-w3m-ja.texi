@@ -4524,8 +4524,8 @@ mainichi.entertainment.shougi mainichi.entertainment.tv
 mainichi.eye.closeup mainichi.eye.hassinbako mainichi.eye.hito
 mainichi.eye.kinji mainichi.eye.kishanome mainichi.eye.shasetsu
 mainichi.eye.shasetsu.archive mainichi.eye.tenbou mainichi.eye.yoroku
-mainichi.eye.yuuraku mainichi.keizai mainichi.keizai.it
-mainichi.keizai.it.net.archive mainichi.keizai.kaigai
+mainichi.eye.yuuraku mainichi.kansai.sanshi mainichi.keizai
+mainichi.keizai.it mainichi.keizai.it.net.archive mainichi.keizai.kaigai
 mainichi.keizai.kigyou mainichi.keizai.kigyou.info mainichi.keizai.kinyu
 mainichi.keizai.seisaku mainichi.keizai.wadai
 mainichi.keizai.wadai.kansoku.archive

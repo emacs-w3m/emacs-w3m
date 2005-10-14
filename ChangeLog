@@ -1,3 +1,12 @@
+2005-10-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-group-table): Allow to
+	specify index pages; add kansai.sanshi group.
+	(shimbun-index-url): Prefer the value specified by
+	shimbun-mainichi-group-table.
+	(shimbun-mainichi-get-headers): Follow
+	shimbun-mainichi-group-table change.
+
 2005-09-29  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-proc.el (w3m-process-filter): Fixed regexp.
