@@ -71,18 +71,18 @@
 			(const :tag "Newest first (Ignore threads)" 5)))))
 
 (defcustom shimbun-slashdot-jp-group-alist
-  '(("story"	   . "http://slashdot.jp/slashdot.rdf")
-    ("askslashdot" . "http://slashdot.jp/askslashdot.rdf")
-    ("bookreview"  . "http://slashdot.jp/books.rdf")
-    ("bsd"	   . "http://slashdot.jp/bsd.rdf")
-    ("developers"  . "http://slashdot.jp/developers.rdf")
-    ("interview"   . "http://slashdot.jp/interview.rdf")
-    ("linuxkernel" . "http://slashdot.jp/linuxkernel.rdf")
-    ("mac"	   . "http://slashdot.jp/mac.rdf")
-    ("mobile"	   . "http://slashdot.jp/mobile.rdf")
-    ("science"	   . "http://slashdot.jp/science.rdf")
-    ("security"	   . "http://slashdot.jp/security.rdf")
-    ("slash"	   . "http://slashdot.jp/slash.rdf")
+  '(("story"	   . "http://slashdot.jp/index.rss")
+    ("askslashdot" . "http://slashdot.jp/askslashdot.rss")
+    ("bookreview"  . "http://slashdot.jp/books.rss")
+    ("bsd"	   . "http://slashdot.jp/bsd.rss")
+    ("developers"  . "http://slashdot.jp/developers.rss")
+    ("interview"   . "http://slashdot.jp/interview.rss")
+    ("linuxkernel" . "http://slashdot.jp/linuxkernel.rss")
+    ("mac"	   . "http://slashdot.jp/mac.rss")
+    ("mobile"	   . "http://slashdot.jp/mobile.rss")
+    ("science"	   . "http://slashdot.jp/science.rss")
+    ("security"	   . "http://slashdot.jp/security.rss")
+    ("slash"	   . "http://slashdot.jp/slash.rss")
     ("diary.oliver" .
      "http://slashdot.jp/journal.pl?op=display&uid=4&content_type=rss"))
   "*Alist of slashdot groups and their RSS feeds."
@@ -112,9 +112,12 @@
   ((shimbun shimbun-slashdot-jp) url date)
   (cond
    ((string-match
-     "\\`http://slashdot\\.jp/article\\.pl\\?sid=\\([/0-9]+\\)&"
+     "\\`http://slashdot\\.jp/\\([a-zA-Z0-9]+\\)?/?article\\.pl\\?sid=\\([/0-9]+\\)&"
      url)
-    (concat "<" (match-string-no-properties 1 url) "@slashdot.jp>"))
+    (if (match-string-no-properties 1 url)
+	(concat "<" (match-string-no-properties 1 url)
+		"%" (match-string-no-properties 2 url) "@slashdot.jp>")
+    (concat "<" (match-string-no-properties 2 url) "@slashdot.jp>")))
    ((string-match
      "\\`http://slashdot\\.jp/journal\\.pl\\?op=display&uid=\\([0-9]+\\)&id=\\([0-9]+\\)"
      url)
@@ -146,6 +149,7 @@
   ((shimbun shimbun-slashdot-jp) header)
   (when (luna-call-next-method)
     (shimbun-remove-tags "<!-- begin ad code -->" "<!-- end ad code -->")
+    (shimbun-remove-tags "<script" "</script>")
     (let ((url (shimbun-slashdot-jp-comment-url (shimbun-header-xref header))))
       (when url
 	(goto-char (point-max))

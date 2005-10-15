@@ -1,3 +1,11 @@
+2005-10-16  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-slashdot-jp.el (shimbun-slashdot-jp-group-alist):
+	Update URL supporting by Slashcode 2.5.
+	(shimbun-rss-build-message-id): Update regexp and msgid generate
+	rule supporting by Slashcode 2.5.
+	(shimbun-clear-contents): Add removal `script' tag.
+
 2005-10-15  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* w3m-util.el (w3m-add-face-property): Add new functions.
