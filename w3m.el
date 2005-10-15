@@ -3005,8 +3005,8 @@ For example:
       (delete-region start (match-end 0))
       (when (re-search-forward "</b[ \t\r\f\n]*>" nil t)
 	(delete-region (match-beginning 0) (match-end 0))
-	(w3m-add-text-properties start (match-beginning 0)
-				 '(face w3m-bold-face))))))
+	(w3m-add-face-property start (match-beginning 0)
+				    'w3m-bold-face)))))
 
 (defun w3m-fontify-underline ()
   "Fontify underline text in the buffer containing halfdump."
@@ -3016,8 +3016,8 @@ For example:
       (delete-region start (match-end 0))
       (when (re-search-forward "</u[ \t\r\f\n]*>" nil t)
 	(delete-region (match-beginning 0) (match-end 0))
-	(w3m-add-text-properties start (match-beginning 0)
-				 '(face w3m-underline-face))))))
+	(w3m-add-face-property start (match-beginning 0)
+				      'w3m-underline-face)))))
 
 (defun w3m-fontify-strike-through ()
   "Fontify strike-through text in the buffer containing halfdump."
@@ -3031,8 +3031,8 @@ For example:
 	(delete-region start (match-end 0))
 	(when (re-search-forward ":\\(?:DEL\\|S\\)]" nil t)
 	  (delete-region (match-beginning 0) (match-end 0))
-	  (w3m-add-text-properties start (match-beginning 0)
-				   '(face w3m-strike-through-face)))))))
+	  (w3m-add-face-property start (match-beginning 0)
+					'w3m-strike-through-face))))))
 
 (defsubst w3m-decode-anchor-string (str)
   ;; FIXME: This is a quite ad-hoc function to process encoded url string.
@@ -3117,11 +3117,11 @@ For example:
 			  (w3m-charset-to-coding-system charset)))))
 	    (setq hseq (or (and (null hseq) 0) (abs hseq)))
 	    (setq w3m-max-anchor-sequence (max hseq w3m-max-anchor-sequence))
-	    (w3m-add-text-properties start end
-				     (list 'face (if (w3m-arrived-p href)
+	    (w3m-add-face-property start end (if (w3m-arrived-p href)
 						     'w3m-arrived-anchor-face
-						   'w3m-anchor-face)
-					   'w3m-href-anchor href
+						   'w3m-anchor-face))
+	    (w3m-add-text-properties start end
+				     (list 'w3m-href-anchor href
 					   'mouse-face 'highlight
 					   'w3m-anchor-sequence hseq
 					   'help-echo help
@@ -3216,8 +3216,8 @@ For example:
 	  (unless (or (w3m-anchor start)
 		      (w3m-action start))
 	    ;; No need to use `w3m-add-text-properties' here.
-	    (add-text-properties start end (list 'face 'w3m-image-face
-						 'mouse-face 'highlight
+	    (w3m-add-face-property start end 'w3m-image-face)
+	    (add-text-properties start end (list 'mouse-face 'highlight
 						 'help-echo help
 						 'balloon-help balloon))))))))
 
@@ -3535,23 +3535,27 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
     (w3m-message "Fontifying...done")
     (run-hooks 'w3m-fontify-after-hook)))
 
-;;
-
 (defun w3m-refontify-anchor (&optional buff)
   "Refontify anchors as they have already arrived.
 It replaces the faces on the arrived anchors from `w3m-anchor-face' to
 `w3m-arrived-anchor-face'."
   (save-excursion
     (and buff (set-buffer buff))
-    (when (and (eq major-mode 'w3m-mode)
-	       (eq (get-text-property (point) 'face) 'w3m-anchor-face))
-      (let* ((start)
-	     (end (next-single-property-change (point) 'face))
-	     (buffer-read-only))
-	(when (and end
-		   (setq start (previous-single-property-change end 'face)))
-	  (w3m-add-text-properties start end '(face w3m-arrived-anchor-face)))
-	(set-buffer-modified-p nil)))))
+    (let (prop)
+      (when (and (eq major-mode 'w3m-mode)
+		 (get-text-property (point) 'w3m-anchor-sequence)
+		 (setq prop (get-text-property (point) 'face))
+		 (memq 'w3m-anchor-face prop))
+	(let* ((start)
+	       (end (next-single-property-change (point) 'w3m-anchor-sequence))
+	       (buffer-read-only))
+	  (when (and end
+		     (setq start (previous-single-property-change end 'w3m-anchor-sequence))
+		     (w3m-arrived-p (get-text-property (point) 'w3m-href-anchor)))
+	    (w3m-remove-face-property start end 'w3m-anchor-face)
+	    (w3m-remove-face-property start end 'w3m-arrived-anchor-face)
+	    (w3m-add-face-property start end 'w3m-arrived-anchor-face))
+	  (set-buffer-modified-p nil))))))
 
 (defun w3m-url-completion (url predicate flag)
   "Completion function for URL."
@@ -5191,9 +5195,9 @@ specified in the `w3m-content-type-alist' variable."
 	(widen)
 	(delete-region (point-min) (point-max))
 	(insert w3m-current-title)
+	(w3m-add-face-property (point-min) (point-max) 'w3m-image-face)
 	(w3m-add-text-properties (point-min) (point-max)
-				 (list 'face 'w3m-image-face
-				       'w3m-image url
+				 (list 'w3m-image url
 				       'mouse-face 'highlight))
 	'image-page))))
 

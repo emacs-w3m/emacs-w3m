@@ -247,7 +247,9 @@ and its cdr element is used as height."
 (defun w3m-insert-image (beg end image &rest args)
   "Display image on the current buffer.
 Buffer string between BEG and END are replaced with IMAGE."
-  (let ((face (get-text-property beg 'face)))
+  (let ((faces (get-text-property beg 'face))
+	(idx 0)
+	orig len face)
     (add-text-properties beg end (list 'display image
 				       'intangible image
 				       'invisible nil))
@@ -258,17 +260,26 @@ Buffer string between BEG and END are replaced with IMAGE."
     ;; if it has an image as a text property is the feature of Emacs 21.
     ;; However, that behavior is not welcome to the w3m buffers, so we do
     ;; to fix it with the following stuffs.
-    (when (and face
-	       (face-underline-p face))
-      (put-text-property beg end 'face nil)
-      (put-text-property beg end 'w3m-underline-face face))))
+    (when faces
+      (unless (listp faces)
+	(setq faces (list faces)))
+      (setq orig (copy-sequence faces)
+	    len (length orig))
+      (while (< idx len)
+	(when (face-underline-p (setq face (nth idx orig)))
+	  (setq faces (delq face faces)))
+	(setq idx (1+ idx)))
+      (when (< (length faces) len)
+	(put-text-property beg end 'face faces)
+	(put-text-property beg end 'w3m-faces-with-underline orig)))))
 
 (defun w3m-remove-image (beg end)
   "Remove an image which is inserted between BEG and END."
   (remove-text-properties beg end '(display nil intangible nil))
-  (let ((underline (get-text-property beg 'w3m-underline-face)))
+  (let ((underline (get-text-property beg 'w3m-faces-with-underline)))
     (when underline
-      (put-text-property beg end 'face underline))))
+      (add-text-properties
+       beg end (list 'face underline 'w3m-faces-with-underline nil)))))
 
 (defun w3m-image-type-available-p (image-type)
   "Return non-nil if an image with IMAGE-TYPE can be displayed inline."

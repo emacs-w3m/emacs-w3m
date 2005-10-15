@@ -123,6 +123,40 @@ or `debug-on-quit' is non-nil."
 			    (append (, non-stickies) (, props))
 			    (, object)))))
 
+(defun w3m-add-face-property (start end name &optional object)
+  "FACE property add wrapper.
+FACE is only list type in emacs-w3m."
+  (let ((pos start)
+	next prop)
+    (while (< pos end)
+      (setq prop (get-text-property pos 'face object))
+      (setq next (next-single-property-change pos 'face object end))
+      (if prop
+	  (w3m-add-text-properties pos next
+				   (list 'face (append prop (list name)))
+				   object)
+	(w3m-add-text-properties pos next
+				 (list 'face (list name)) object))
+      (setq pos next))))
+
+(defun w3m-remove-face-property (start end name &optional object)
+  "FACE property remove wrapper.
+FACE is only list type in emacs-w3m."
+  (let ((pos start)
+	next prop new-prop elem)
+    (while (< pos end)
+      (setq prop (get-text-property pos 'face object))
+      (setq next (next-single-property-change pos 'face object end))
+      (setq new-prop nil)
+      (while prop
+	(setq elem (pop prop))
+	(unless (eq elem name)
+	  (push elem new-prop)))
+      (when new-prop
+	(w3m-add-text-properties pos next
+				 (list 'face new-prop)))
+      (setq pos next))))
+
 (defmacro w3m-get-text-property-around (prop)
   "Search for the text property PROP in one character before and behind
 the current position.  Return the value corresponding to PROP or nil.

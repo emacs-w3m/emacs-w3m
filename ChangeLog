@@ -1,3 +1,18 @@
+2005-10-15  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* w3m-util.el (w3m-add-face-property): Add new functions.
+	(w3m-remove-face-property): Ditto.
+
+	* w3m.el (w3m-fontify-bold, w3m-fontify-underline)
+	(w3m-fontify-strike-through, w3m-fontify-anchors)
+	(w3m-fontify-images): Replace `w3m-add-text-properties' to
+	`w3m-add-face-property' at FACE.
+	(w3m-refontify-anchor): Change for FACE properly is list type.
+
+	* w3m-e23.el (w3m-insert-image, w3m-remove-image): Ditto.
+
+	* w3m-e21.el (w3m-insert-image, w3m-remove-image): Ditto.
+
 2005-10-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-mainichi.el (shimbun-mainichi-group-table): Allow to
