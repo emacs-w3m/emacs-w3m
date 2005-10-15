@@ -9,9 +9,13 @@
 	`w3m-add-face-property' at FACE.
 	(w3m-refontify-anchor): Change for FACE properly is list type.
 
-	* w3m-e23.el (w3m-insert-image, w3m-remove-image): Ditto.
+2005-10-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m-e21.el (w3m-insert-image, w3m-remove-image): Ditto.
+	* w3m-e21.el (w3m-insert-image): Make it work with a face text
+	property whose value is a list.
+	(w3m-remove-image): Remove useless text property.
+	* w3m-e23.el (w3m-insert-image,w3m-remove-image): Same as
+	w3m-e21.el's modification.
 
 2005-10-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
