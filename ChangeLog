@@ -1,3 +1,7 @@
+2005-10-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-util.el (w3m-add-face-property): Simplified.
+
 2005-10-16  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-slashdot-jp.el (shimbun-slashdot-jp-group-alist):

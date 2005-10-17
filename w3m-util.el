@@ -129,14 +129,9 @@ FACE is only list type in emacs-w3m."
   (let ((pos start)
 	next prop)
     (while (< pos end)
-      (setq prop (get-text-property pos 'face object))
-      (setq next (next-single-property-change pos 'face object end))
-      (if prop
-	  (w3m-add-text-properties pos next
-				   (list 'face (append prop (list name)))
-				   object)
-	(w3m-add-text-properties pos next
-				 (list 'face (list name)) object))
+      (setq prop (get-text-property pos 'face object)
+	    next (next-single-property-change pos 'face object end))
+      (w3m-add-text-properties pos next (list 'face (cons name prop)) object)
       (setq pos next))))
 
 (defun w3m-remove-face-property (start end name &optional object)
