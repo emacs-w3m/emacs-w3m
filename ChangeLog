@@ -1,3 +1,9 @@
+2005-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-e21.el (w3m-tab-drag-mouse-function): Lower the buffer
+	displayed before moving to the other tab.
+	(w3m-tab-click-mouse-function): Ditto.
+
 2005-10-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-util.el (w3m-add-face-property): Simplified.

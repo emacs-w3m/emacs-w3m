@@ -473,13 +473,17 @@ Buffer string between BEG and END are replaced with IMAGE."
     (when window
       (unless (eq (window-buffer window) buffer)
 	(select-window window)
-	(switch-to-buffer buffer)
+	(bury-buffer (prog1
+			 (current-buffer)
+		       (switch-to-buffer buffer)))
 	(w3m-force-window-update window)))))
 
 (defun w3m-tab-click-mouse-function (event buffer)
   (let ((window (posn-window (event-start event))))
     (select-window window)
-    (switch-to-buffer buffer)
+    (bury-buffer (prog1
+		     (current-buffer)
+		   (switch-to-buffer buffer)))
     (w3m-force-window-update window)))
 
 (defvar w3m-tab-map nil)
