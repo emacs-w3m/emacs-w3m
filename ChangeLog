@@ -1,3 +1,11 @@
+2005-10-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-ibm-dev.el (shimbun-ibm-dev-from-address): Abolished.
+	(shimbun-ibm-dev-content-end, shimbun-get-headers): Follow the
+	change of site design.
+	(shimbun-index-url, shimbun-from-address): New methods.
+	(shimbun-article-url): Removed.
+
 2005-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el (w3m-tab-drag-mouse-function): Lower the buffer
