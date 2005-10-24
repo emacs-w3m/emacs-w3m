@@ -53,45 +53,41 @@
 					 &optional range)
   (catch 'stop
     (let ((case-fold-search t)
-	  (index (shimbun-index-url shimbun))
-	  (year (nth 5 (decode-time (current-time))))
 	  (indexes)
 	  (headers))
-      (goto-char (point-min))
-      (let ((pages (shimbun-header-index-pages range)))
+      (let ((base (shimbun-index-url shimbun))
+	    (pages (shimbun-header-index-pages range)))
+	(goto-char (point-min))
 	(while (when (or (not pages)
 			 (< (length indexes) (1- pages)))
 		 (re-search-forward "<a +class=\"[^\"]+\" +\
-href=\"\\(library[0-9]+\\.shtml\\)\">\\([0-9]+\\)年</a>" nil t))
+href=\"\\(library[0-9]*\\.s?html\\)\">\\([0-9]+\\)年</a>" nil t))
 	  (push (cons (string-to-number (match-string 2))
-		      (shimbun-expand-url (match-string 1) index))
-		indexes))
-	(setq indexes (nreverse indexes)))
-      (goto-char (point-min))
-      (while index
-	(while (re-search-forward ">\\([0-9]+\\)月\\([0-9]+\\)日</th>
-<td[^>]*><a href=\"\\([^\"]+\\)\" class=\"fbox\">\\(.*\\)</a>" nil t)
-	  (let* ((url (shimbun-expand-url (match-string 3) index))
-		 (id (concat "<" (md5 url)
-			     "%" (shimbun-current-group shimbun)
-			     "@www-6.ibm.com>")))
-	    (when (shimbun-search-id shimbun id)
-	      (throw 'stop headers))
-	    (push (shimbun-create-header nil
-					 (match-string 4)
-					 (shimbun-from-address shimbun)
-					 (shimbun-make-date-string
-					  year
-					  (string-to-number (match-string 1))
-					  (string-to-number (match-string 2)))
-					 id "" 0 0 url)
-		  headers)))
-	(setq year (car (car indexes))
-	      index (cdr (car indexes))
-	      indexes (cdr indexes))
-	(when index
+		      (shimbun-expand-url (match-string 1) base))
+		indexes)))
+      (dolist (pair (nreverse indexes))
+	(let ((year (car pair))
+	      (index (cdr pair)))
 	  (erase-buffer)
-	  (shimbun-retrieve-url index)))
+	  (shimbun-fetch-url shimbun index)
+	  (goto-char (point-min))
+	  (while (re-search-forward ">\\([0-9]+\\)月\\([0-9]+\\)日</th>
+<td[^>]*><a href=\"\\([^\"]+\\)\" class=\"fbox\">\\(.*\\)</a>" nil t)
+	    (let* ((url (shimbun-expand-url (match-string 3) index))
+		   (id (concat "<" (md5 url)
+			       "%" (shimbun-current-group shimbun)
+			       "@www-6.ibm.com>")))
+	      (when (shimbun-search-id shimbun id)
+		(throw 'stop headers))
+	      (push (shimbun-create-header nil
+					   (match-string 4)
+					   (shimbun-from-address shimbun)
+					   (shimbun-make-date-string
+					    year
+					    (string-to-number (match-string 1))
+					    (string-to-number (match-string 2)))
+					   id "" 0 0 url)
+		    headers)))))
       headers)))
 
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-ibm-dev)
