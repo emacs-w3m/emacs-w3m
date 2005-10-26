@@ -124,8 +124,12 @@ or `debug-on-quit' is non-nil."
 			    (, object)))))
 
 (defun w3m-add-face-property (start end name &optional object)
-  "FACE property add wrapper.
-FACE is only list type in emacs-w3m."
+  "Add face NAME to the face text property of the text from START to END.
+The value of the existing text property should be a list.
+If the optional fourth argument OBJECT is a buffer (or nil, which means
+the current buffer), START and END are buffer positions (integers or
+markers).  If OBJECT is a string, START and END are 0-based indices
+into it."
   (let ((pos start)
 	next prop)
     (while (< pos end)
@@ -135,8 +139,12 @@ FACE is only list type in emacs-w3m."
       (setq pos next))))
 
 (defun w3m-remove-face-property (start end name &optional object)
-  "FACE property remove wrapper.
-FACE is only list type in emacs-w3m."
+  "Remove face NAME from the face text property of text from START to END.
+The value of the existing text property should be a list.
+If the optional fourth argument OBJECT is a buffer (or nil, which means
+the current buffer), START and END are buffer positions (integers or
+markers).  If OBJECT is a string, START and END are 0-based indices
+into it."
   (let ((pos start)
 	next prop new-prop elem)
     (while (< pos end)
