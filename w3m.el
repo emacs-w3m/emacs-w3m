@@ -5644,6 +5644,7 @@ If Transient Mark mode, deactivate the mark."
 		   (or all
 		       (bolp)))
 	  (push url urls))))
+    (setq urls (nreverse urls))
     (while urls
       (setq url (car urls)
 	    urls (cdr urls))

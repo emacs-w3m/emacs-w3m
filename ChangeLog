@@ -1,3 +1,8 @@
+2005-11-16  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-open-all-links-in-new-session): Reverse the list of
+	URLs.
+
 2005-10-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-ibm-dev.el (shimbun-ibm-dev-from-address): Abolished.
