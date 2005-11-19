@@ -428,7 +428,7 @@ With prefix argument, kill that many entries from point."
      "----"
      ["Add Current URL to Bookmark" w3m-bookmark-add-current-url t]
      ["Add These URLs to Bookmark" w3m-bookmark-add-current-url-group t]
-     ["Add This URL to Bookmark" w3m-bookmark-add-this-url t])
+     ["Add This URL to Bookmark" w3m-bookmark-add-this-url (w3m-anchor)])
     .
     (["Kill Current Entry" w3m-bookmark-kill-entry
       (text-property-not-all (point-at-bol) (point-at-eol)

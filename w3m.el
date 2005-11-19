@@ -2201,7 +2201,7 @@ nil value means it has not been initialized.")
   '("w3m"
     ("Session"
      ["Create New Session..." w3m-goto-url-new-session t]
-     ["Copy This Session" w3m-copy-buffer t]
+     ["Copy This Session" w3m-copy-buffer w3m-current-url]
      "----" ;; separator
      ["Move Previous Session" w3m-previous-buffer
       (> (safe-length (w3m-list-buffers)) 1)]
@@ -2213,7 +2213,7 @@ nil value means it has not been initialized.")
      ["Close Other Sessions" w3m-delete-other-buffers
       (> (safe-length (w3m-list-buffers)) 1)]
      ) ;; end session
-    ["Download This URL" w3m-download-this-url t]
+    ["Download This URL" w3m-download-this-url (or (w3m-anchor) (w3m-image))]
     ["Download to..." w3m-download t]
     "----" ;; separator
     ["Back to Previous Page" w3m-view-previous-page
@@ -2226,6 +2226,7 @@ nil value means it has not been initialized.")
     ["Reload This Page" w3m-reload-this-page w3m-current-url]
     ("Redisplay"
      ["Toggle Images" w3m-toggle-inline-images (w3m-display-graphic-p)]
+     ["Toggle This Image" w3m-toggle-inline-image (w3m-image)]
      "----" ;; separator
      ["Redisplay This Page" w3m-redisplay-this-page w3m-current-url]
      ["Redisplay This Page with Charset"

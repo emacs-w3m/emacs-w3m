@@ -1,3 +1,12 @@
+2005-11-19  Tsuyoshi CHO  <tsuyoshi_cho@yahoo.co.jp>
+
+	* w3m.el (w3m-menubar): Renew enable/disable condition for `[Copy
+	This Session]',`[Download This URL]', and Append `[Toggle This
+	Image]'.
+
+	* w3m-bookmark.el (w3m-bookmark-menu-items): Renew enable/disable
+	condition for `[Add This URL to Bookmark]'.
+
 2005-11-16  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-open-all-links-in-new-session): Reverse the list of
