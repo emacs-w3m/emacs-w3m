@@ -98,7 +98,7 @@ If this variable is nil, never expired."
   :type '(integer :size 0))
 
 (defcustom w3m-favicon-type
-  (let ((types '(pbm png gif xpm bmp))
+  (let ((types '(png gif pbm xpm bmp))
 	type)
     (catch 'det
       (while types

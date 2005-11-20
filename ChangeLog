@@ -1,5 +1,10 @@
 2005-11-21  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
+	* w3m-favicon.el (w3m-favicon-type): Renew default image type
+	list.
+
+2005-11-21  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
 	* shimbun/sb-rss.el (shimbun-rss-get-headers): If id is nil,
 	ignore that URL for creating header.
 	(shimbun-rss-build-message-id): Fix Docstring for new interface
