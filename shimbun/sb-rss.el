@@ -130,7 +130,10 @@ but you can identify it from the URL, define this method in a backend.")
   nil)
 
 (luna-define-generic shimbun-rss-build-message-id (shimbun-rss url date)
-  "Build unique message-id from URL and DATE and return it.")
+  "Build unique message-id from URL and DATE and return it.
+If return nil, it mean argument URL are not SHIMBUN entry.
+Basically, implement illeagal URL to generate error message.
+But clarify need ignored URL return nil.")
 
 (luna-define-method shimbun-headers ((shimbun shimbun-rss) &optional range)
   (with-temp-buffer
@@ -181,8 +184,8 @@ but you can identify it from the URL, define this method in a backend.")
 			     (shimbun-rss-node-text dc-ns 'date item)
 			     (shimbun-rss-node-text rss-ns 'pubDate item)))
 		   (id (shimbun-rss-build-message-id shimbun url date)))
-	      (when (or need-all-items
-			(not (shimbun-search-id shimbun id)))
+	      (when (and id (or need-all-items
+				(not (shimbun-search-id shimbun id))))
 		(push (shimbun-create-header
 		       0
 		       (shimbun-rss-node-text rss-ns 'title item)

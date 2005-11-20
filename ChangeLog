@@ -1,4 +1,14 @@
-2005-11-19  Tsuyoshi CHO  <tsuyoshi_cho@yahoo.co.jp>
+2005-11-21  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-rss.el (shimbun-rss-get-headers): If id is nil,
+	ignore that URL for creating header.
+	(shimbun-rss-build-message-id): Fix Docstring for new interface
+	behavior.
+
+	* shimbun/sb-excite.el (shimbun-rss-build-message-id): If URL is
+	advertisement, return nil.
+
+2005-11-19  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* w3m.el (w3m-menubar): Renew enable/disable condition for `[Copy
 	This Session]',`[Download This URL]', and Append `[Toggle This

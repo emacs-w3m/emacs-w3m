@@ -76,15 +76,15 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAD4AAAAZCAMAAABetm34AAAAe1BMVEUAAACaHA4WCganBSTMA
 
 (luna-define-method shimbun-rss-build-message-id ((shimbun shimbun-excite)
 						  url date)
-		    (unless (string-match
+		    (if (string-match
 			     (concat (regexp-quote shimbun-excite-url)
 				     "\\([^/]\\)*/\\([0-9]+\\)\.html?")
 			     url)
-		      (error "Cannot find message-id base"))
 		    (concat "<"
 			    (match-string-no-properties 1 url)
 			    (match-string-no-properties 2 url)
-			    "@" shimbun-excite-top-level-domain ">"))
+			    "@" shimbun-excite-top-level-domain ">")
+		    nil))
 
 (luna-define-method shimbun-get-headers :around ((shimbun shimbun-excite)
 						 &optional range)
