@@ -1711,32 +1711,35 @@ textarea")))
       files)))
 
 (defun w3m-form-submit (form &optional id name value)
-  (when (and id name
-	     (> (length name) 0))
-    (w3m-form-put form id name value))
-  (let* ((orig-url w3m-current-url)
-	 (url (or (w3m-form-action form)
-		  (if (string-match "\\?" w3m-current-url)
-		      (substring w3m-current-url 0 (match-beginning 0))
-		    w3m-current-url))))
-    (setq w3m-form-textarea-post-files
-	  (w3m-form-submit-get-textarea-files form))
-    (cond ((and (not (string= url orig-url))
-		(string-match "^https://" orig-url)
-		(string-match "^http://" url)
-		(not (y-or-n-p (format "Send POST data to '%s'?" url))))
-	   (ding))
-	  ((eq 'get (w3m-form-method form))
-	   (w3m-goto-url
-	    (concat url "?" (w3m-form-make-form-data form))))
-	  ((eq 'post (w3m-form-method form))
-	   (w3m-goto-url url 'reload nil
-			 (w3m-form-make-form-data form)
-			 w3m-current-url))
-	  (t
-	   (w3m-message "This form's method has not been supported: %s"
-			(let (print-level print-length)
-			  (prin1-to-string (w3m-form-method form))))))))
+  (if (w3m-anchor (point))
+      ;; cf SA17565
+      (w3m-goto-url (w3m-anchor (point)))
+    (when (and id name
+	       (> (length name) 0))
+      (w3m-form-put form id name value))
+    (let* ((orig-url w3m-current-url)
+	   (url (or (w3m-form-action form)
+		    (if (string-match "\\?" w3m-current-url)
+			(substring w3m-current-url 0 (match-beginning 0))
+		      w3m-current-url))))
+      (setq w3m-form-textarea-post-files
+	    (w3m-form-submit-get-textarea-files form))
+      (cond ((and (not (string= url orig-url))
+		  (string-match "^https://" orig-url)
+		  (string-match "^http://" url)
+		  (not (y-or-n-p (format "Send POST data to '%s'?" url))))
+	     (ding))
+	    ((eq 'get (w3m-form-method form))
+	     (w3m-goto-url
+	      (concat url "?" (w3m-form-make-form-data form))))
+	    ((eq 'post (w3m-form-method form))
+	     (w3m-goto-url url 'reload nil
+			   (w3m-form-make-form-data form)
+			   w3m-current-url))
+	    (t
+	     (w3m-message "This form's method has not been supported: %s"
+			  (let (print-level print-length)
+			    (prin1-to-string (w3m-form-method form)))))))))
 
 (defsubst w3m-form-real-reset (form sexp)
   (and (eq 'w3m-form-input (car sexp))
