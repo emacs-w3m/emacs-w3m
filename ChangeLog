@@ -1,6 +1,6 @@
 2005-11-24  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
-	* w3m-form.el (w3m-form-submit): If anchor is exist, go to the uri.
+	* w3m-form.el (w3m-form-submit): If anchor exists, go to the uri.
 
 2005-11-21  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
