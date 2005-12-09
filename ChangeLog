@@ -1,3 +1,9 @@
+2005-12-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-form.el (w3m-form-submit): Use the post method for the
+	multipart/form-data enctype according to the proposal of RFC2070
+	even if the form specifies the get method.
+
 2005-11-24  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-form.el (w3m-form-submit): If anchor exists, go to the uri.

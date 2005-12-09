@@ -1729,13 +1729,18 @@ textarea")))
 		  (string-match "^http://" url)
 		  (not (y-or-n-p (format "Send POST data to '%s'?" url))))
 	     (ding))
-	    ((eq 'get (w3m-form-method form))
-	     (w3m-goto-url
-	      (concat url "?" (w3m-form-make-form-data form))))
-	    ((eq 'post (w3m-form-method form))
+	    ((or (eq 'post (w3m-form-method form))
+		 ;; While some sites, e.g., emacswiki.org, specify the
+		 ;; `get' method for the enctype `multipart/form-data',
+		 ;; we use the `post' method according to the proposal
+		 ;; of RFC2070.
+		 (eq 'multipart/form-data (w3m-form-enctype form)))
 	     (w3m-goto-url url 'reload nil
 			   (w3m-form-make-form-data form)
 			   w3m-current-url))
+	    ((eq 'get (w3m-form-method form))
+	     (w3m-goto-url
+	      (concat url "?" (w3m-form-make-form-data form))))
 	    (t
 	     (w3m-message "This form's method has not been supported: %s"
 			  (let (print-level print-length)
