@@ -69,7 +69,7 @@ Every `.' in NAME will be replaced with `/'."
 		  "\">" s0
 		  ;; 6. subject
 		  "\\(" no-nl "\\)"
-		  s0 "</a>"))
+		  s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>"))
 	1 nil 2 6 3 4 5))
 
 (defvar shimbun-asahi-group-table
@@ -92,7 +92,7 @@ Every `.' in NAME will be replaced with `/'."
 		    "\">" s0
 		    ;; 5. subject
 		    "\\(" no-nl "\\)"
-		    s0 "</a>")
+		    s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
 		   1 4 nil 5 nil 2 3))
 	 (default2 (shimbun-asahi-make-regexp "%s"))
 	 (default3 (list
@@ -113,7 +113,7 @@ Every `.' in NAME will be replaced with `/'."
 		     "\">" s0
 		     ;; 6. subject
 		     "\\(" no-nl "\\)"
-		     s0 "</a>")
+		     s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
 		    1 nil 2 6 3 4 5))
 	 (book1 (list
 		 (concat
@@ -130,7 +130,8 @@ Every `.' in NAME will be replaced with `/'."
 		  "\"" s0 ">" s0
 		  ;; 5. subject
 		  "\\(" no-nl "\\)"
-		  s0 "</a>\\(?:" s0 "<[^>]+>\\)*" s0 "("
+		  s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>\\(?:"
+		  s0 "<[^>]+>\\)*" s0 "("
 		  ;; 6. month
 		  "\\([01][0-9]\\)"
 		  "/"
@@ -149,8 +150,8 @@ Every `.' in NAME will be replaced with `/'."
 		  "\"" s0 ">" s0
 		  ;; 3. subject
 		  "\\(" no-nl "\\)"
-		  s0 "</a>\\(?:[^<>]*<[^!>]+>\\)+" s0
-		  "\\[掲載\\]\\(?:\\cj\\)*"
+		  s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>"
+		  "\\(?:[^<>]*<[^!>]+>\\)+" s0 "\\[掲載\\]\\(?:\\cj\\)*"
 		  ;; 4. year
 		  "\\(20[0-9][0-9]\\)"
 		  "年"
@@ -180,7 +181,8 @@ Every `.' in NAME will be replaced with `/'."
 	 "\"" s0 ">" s0
 	 ;; 3. subject
 	 "\\(" no-nl "\\)"
-	 s0 "</a>\\(?:[^<>]*<[^!>]+>\\)+" s0 "\\[更新\\]"
+	 s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>\\(?:[^<>]*<[^!>]+>\\)+"
+	 s0 "\\[更新\\]"
 	 ;; 4. year
 	 "\\(20[0-9][0-9]\\)"
 	 "年"
@@ -315,7 +317,7 @@ Every `.' in NAME will be replaced with `/'."
 	 "\">" s0
 	 ;; 6. subject
 	 "\\(" no-nl "\\)"
-	 s0 "</a>")
+	 s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
        1 nil 2 6 3 4 5)
       ("life.food" "食と料理" nil
        ,(concat
@@ -335,7 +337,7 @@ Every `.' in NAME will be replaced with `/'."
 	 "\">" s0
 	 ;; 6. subject
 	 "\\(" no-nl "\\)"
-	 s0 "</a>")
+	 s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
        1 nil 2 6 3 4 5)
       ("nankyoku" "南極プロジェクト" "%s/news/"
        ,@(shimbun-asahi-make-regexp "nankyoku.news"))
@@ -399,7 +401,7 @@ Every `.' in NAME will be replaced with `/'."
 	 "\">\\(?:" s0 "<[^<>]+>\\)*" s0
 	 ;; 7. subject
 	 "\\([^>]+\\)"
-	 "\\(?:" s0 "</a>\\)?"
+	 "\\(?:" s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>\\)?"
 	 s0 "<span" s1 "class=\"s\">")
        1 3 nil 7 4 5 6 nil 2)
       ("shopping.kishi" "岸朝子の気になるお取り寄せ12カ月"
