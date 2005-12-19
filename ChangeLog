@@ -1,3 +1,8 @@
+2005-12-19  Matt Hodges  <MPHodges@member.fsf.org>
+
+	* w3m-util.el (w3m-list-buffers): Further fix against the case
+	where someone did (setq w3m-fb-mode t).
+
 2005-12-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-fb.el (w3m-fb-mode): Never activate w3m-fb-mode if

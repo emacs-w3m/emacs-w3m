@@ -399,10 +399,14 @@ buffer names."
       ;; because `buffers' may have been sorted.
       (let ((fbs (w3m-fb-frame-parameter w3m-fb-list-buffers-frame
 					 'w3m-fb-buffer-list)))
-	(setq rest buffers)
-	(while rest
-	  (unless (memq (setq buffer (pop rest)) fbs)
-	    (setq buffers (delq buffer buffers))))))
+	;; Maybe someone did (setq w3m-fb-mode t) in which case the
+	;; W3M buffers have not been associated with frames, and the
+	;; relevant hooks have not been set up.
+	(when fbs
+	  (setq rest buffers)
+	  (while rest
+	    (unless (memq (setq buffer (pop rest)) fbs)
+	      (setq buffers (delq buffer buffers)))))))
     buffers))
 
 
