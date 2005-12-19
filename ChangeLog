@@ -1,3 +1,7 @@
+2005-11-26  Matt Hodges  <MPHodges@member.fsf.org>
+
+	* w3m-fb.el: New file.
+
 2005-12-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-make-regexp): Improve regexp.
