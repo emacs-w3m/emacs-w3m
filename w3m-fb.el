@@ -176,12 +176,15 @@ This allows frame-local lists of buffers (tabs)."
   :init-value nil
   :group 'w3m-fb
   :global t
-  (if w3m-fb-mode
-      (if w3m-pop-up-frames
-	  (progn
-	    (message
-	     "W3M Frame Buffer mode not activated (non-nil w3m-pop-up-frames)")
-	    (sit-for 2))
+  (if (and w3m-fb-mode
+	   (if w3m-pop-up-frames
+	       (prog1
+		   (setq w3m-fb-mode nil)
+		 (message "\
+W3M Frame Buffer mode not activated (non-nil w3m-pop-up-frames)")
+		 (sit-for 2))
+	     t))
+      (progn
 	(add-hook 'w3m-mode-hook 'w3m-fb-add)
 	(add-hook 'kill-buffer-hook 'w3m-fb-remove)
 	(when w3m-fb-delete-frame-kill-buffers

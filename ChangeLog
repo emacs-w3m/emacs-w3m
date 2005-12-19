@@ -1,5 +1,13 @@
 2005-12-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-fb.el (w3m-fb-mode): Never activate w3m-fb-mode if
+	w3m-pop-up-frames is non-nil.
+
+	* w3m-util.el (w3m-list-buffers): Reset w3m-fb-mode if it seems to
+	have been set thoughtlessly.
+
+2005-12-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-fb.el: Don't require w3m.
 	(w3m-fb-frame-parameter): Always define.
 	(w3m-fb-delete-frame-functions): Ditto.

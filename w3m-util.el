@@ -389,7 +389,12 @@ buffer names."
     (setq buffers (if nosort
 		      (nreverse rest)
 		    (sort rest #'w3m-buffer-name-lessp)))
-    (when w3m-fb-mode
+    (when (and w3m-fb-mode
+	       (if w3m-pop-up-frames
+		   ;; `w3m-fb-mode' might have been set by something
+		   ;; other than the `w3m-fb-mode' function.
+		   (setq w3m-fb-mode nil)
+		 t))
       ;; Don't just return `w3m-fb-buffer-list' for the selected frame
       ;; because `buffers' may have been sorted.
       (let ((fbs (w3m-fb-frame-parameter w3m-fb-list-buffers-frame
