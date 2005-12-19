@@ -48,6 +48,8 @@
   (defvar w3m-current-refresh)
   (defvar w3m-current-title)
   (defvar w3m-current-url)
+  (defvar w3m-fb-list-buffers-frame)
+  (defvar w3m-fb-mode)
   (defvar w3m-pop-up-frames)
   (defvar w3m-pop-up-windows)
   (defvar w3m-popup-frame-parameters)
@@ -66,8 +68,8 @@
 
 ;;; Things should be defined in advance:
 
-;; (There are no objects so far.)
-
+(eval-and-compile
+  (autoload 'w3m-fb-frame-parameter "w3m-fb"))
 
 ;;; Control structures:
 
@@ -384,9 +386,19 @@ buffer names."
 	(set-buffer (setq buffer (pop buffers)))
 	(when (eq major-mode 'w3m-mode)
 	  (push buffer rest))))
-    (if nosort
-	(nreverse rest)
-      (sort rest #'w3m-buffer-name-lessp))))
+    (setq buffers (if nosort
+		      (nreverse rest)
+		    (sort rest #'w3m-buffer-name-lessp)))
+    (when w3m-fb-mode
+      ;; Don't just return `w3m-fb-buffer-list' for the selected frame
+      ;; because `buffers' may have been sorted.
+      (let ((fbs (w3m-fb-frame-parameter w3m-fb-list-buffers-frame
+					 'w3m-fb-buffer-list)))
+	(setq rest buffers)
+	(while rest
+	  (unless (memq (setq buffer (pop rest)) fbs)
+	    (setq buffers (delq buffer buffers))))))
+    buffers))
 
 
 ;;; Pop up and delete buffers, windows or frames:

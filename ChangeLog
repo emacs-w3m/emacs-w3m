@@ -1,3 +1,26 @@
+2005-12-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-fb.el: Don't require w3m.
+	(w3m-fb-frame-parameter): Always define.
+	(w3m-fb-delete-frame-functions): Ditto.
+	(w3m-fb-select-buffer): Fix the 2nd clause of cond.
+	(w3m-fb-advised-functions): Remove.
+	(w3m-list-buffers): Move advice code to w3m-fb.el.
+	(w3m-close-window): Move advice code to w3m.el.
+	(w3m-delete-buffer): Ditto.
+	(w3m-quit): Ditto.
+	(w3m-fb-mode): Remove w3m-fb-advised-functions stuff.
+
+	* w3m.el (w3m-fb): Require.
+	(w3m-delete-buffer, w3m-quit, w3m-close-window): Merge the codes
+	which were formerly provided as advices in w3m-fb.el.
+
+	* w3m-util.el (w3m-fb-list-buffers-frame, w3m-fb-mode): Bind them
+	when compiling.
+	(w3m-fb-frame-parameter): Autoload.
+	(w3m-list-buffers): Merge the code which was formerly provided as
+	an advice in w3m-fb.el.
+
 2005-11-26  Matt Hodges  <MPHodges@member.fsf.org>
 
 	* w3m-fb.el: New file.

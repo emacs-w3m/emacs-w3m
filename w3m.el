@@ -118,6 +118,7 @@
     (error "Emacs-w3m of this version no longer supports Emacs %d"
 	   emacs-major-version))))
 
+(require 'w3m-fb)
 (require 'w3m-hist)
 (require 'timezone)
 
@@ -6237,7 +6238,11 @@ If there is the sole emacs-w3m buffer, it is assumed to be called for
 terminating the emacs-w3m session; the prefix argument FORCE will be
 passed to the `w3m-quit' function (which see)."
   (interactive "P")
-  (let* ((buffers (w3m-list-buffers t))
+  ;; Bind `w3m-fb-mode' to nil so that this function might not call
+  ;; `w3m-quit' when there is only one buffer belonging to the selected
+  ;; frame, but there are emacs-w3m buffers in other frames.
+  (let* ((w3m-fb-mode nil)
+	 (buffers (w3m-list-buffers t))
 	 (num (length buffers))
 	 cur buf bufs)
     (if (= 1 num)
@@ -6295,7 +6300,9 @@ passed to the `w3m-quit' function (which see)."
       (when w3m-use-form
 	(w3m-form-kill-buffer cur))
       (run-hooks 'w3m-delete-buffer-hook)))
-  (w3m-select-buffer-update))
+  (w3m-select-buffer-update)
+  (unless w3m-fb-inhibit-buffer-selection
+    (w3m-fb-select-buffer)))
 
 (defun w3m-delete-buffer-if-empty (buffer)
   "Delete a newly created emacs-w3m buffer BUFFER if it seems unnecessary.
@@ -6600,25 +6607,34 @@ URLs database.  Quit browsing immediately if the prefix argument FORCE
 is specified, otherwise prompt you for the confirmation.  See also
 `w3m-close-window'."
   (interactive "P")
-  (when (or force
-	    (prog1 (y-or-n-p "Do you want to exit w3m? ")
+  (let ((buffers (w3m-list-buffers t))
+	(all-buffers (let ((w3m-fb-mode nil))
+		       (w3m-list-buffers t))))
+    (if (or (= (length buffers) (length all-buffers))
+	    (prog1 (y-or-n-p "Kill emacs-w3m buffers on other frames? ")
 	      (message nil)))
-    (w3m-delete-frames-and-windows)
-    (sit-for 0) ;; Delete frames seemingly fast.
-    (dolist (buffer (w3m-list-buffers t))
-      (w3m-cancel-refresh-timer buffer)
-      (kill-buffer buffer)
-      (when w3m-use-form
-	(w3m-form-kill-buffer buffer)))
-    (when w3m-use-form
-      (w3m-form-textarea-file-cleanup))
-    (w3m-select-buffer-close-window)
-    (w3m-cache-shutdown)
-    (w3m-arrived-shutdown)
-    (w3m-process-shutdown)
-    (when w3m-use-cookies
-      (w3m-cookie-shutdown))
-    (w3m-kill-all-buffer)))
+	(let ((w3m-fb-mode nil))
+	  (when (or force
+		    (prog1 (y-or-n-p "Do you want to exit emacs-w3m? ")
+		      (message nil)))
+	    (w3m-delete-frames-and-windows)
+	    (sit-for 0) ;; Delete frames seemingly fast.
+	    (dolist (buffer all-buffers)
+	      (w3m-cancel-refresh-timer buffer)
+	      (kill-buffer buffer)
+	      (when w3m-use-form
+		(w3m-form-kill-buffer buffer)))
+	    (when w3m-use-form
+	      (w3m-form-textarea-file-cleanup))
+	    (w3m-select-buffer-close-window)
+	    (w3m-cache-shutdown)
+	    (w3m-arrived-shutdown)
+	    (w3m-process-shutdown)
+	    (when w3m-use-cookies
+	      (w3m-cookie-shutdown))
+	    (w3m-kill-all-buffer)))
+      (w3m-fb-delete-frame-buffers)
+      (w3m-fb-select-buffer))))
 
 (defun w3m-close-window ()
   "Return to a restless life (quitting all emacs-w3m sessions).
@@ -6626,6 +6642,8 @@ This command closes all emacs-w3m windows, but all the emacs-w3m
 buffers remain.  Frames created for emacs-w3m sessions will also be
 closed.  See also `w3m-quit'."
   (interactive)
+  ;; `w3m-list-buffers' won't return all the emacs-w3m buffers if
+  ;; `w3m-fb-mode' is turned on.
   (let* ((buffers (w3m-list-buffers t))
 	 (bufs buffers)
 	 buf windows window)
@@ -6644,7 +6662,13 @@ closed.  See also `w3m-quit'."
 	 (w3m-static-if (featurep 'xemacs)
 	     (other-buffer buf (window-frame window) nil)
 	   (other-buffer buf nil (window-frame window)))))))
-  (w3m-select-buffer-close-window))
+  (w3m-select-buffer-close-window)
+  ;; The current-buffer and displayed buffer are not necessarily the
+  ;; same at this point; if they aren't bury-buffer will be a nop, and
+  ;; we will infloop.
+  (set-buffer (window-buffer (selected-window)))
+  (while (eq major-mode 'w3m-mode)
+    (bury-buffer)))
 
 (unless w3m-mode-map
   (setq w3m-mode-map
