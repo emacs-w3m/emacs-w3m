@@ -1,3 +1,10 @@
+2005-12-18  Mark Plaksin  <happy@mcplaksin.org>
+
+	* shimbun/sb-emacswiki.el (shimbun-get-headers): Gets the Wiki
+	username into the From field of articles; appends the description
+	of the change to the end of the Subject line; removes some
+	apparently extraneous cddr's.
+
 2005-12-19  Matt Hodges  <MPHodges@member.fsf.org>
 
 	* w3m-util.el (w3m-list-buffers): Further fix against the case
