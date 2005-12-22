@@ -241,7 +241,8 @@ is available, otherwise return nil."
 		   (shimbun-rss-node-just-text node)
 		 node))
 	 (cleaned-text (if text (shimbun-replace-in-string
-				 text "^[ \000-\037\177]+\\|[ \000-\037\177]+$" ""))))
+				 text "^[ \000-\037\177]+\\|[ \000-\037\177]+$"
+				 ""))))
     (if (string-equal "" cleaned-text)
 	nil
       cleaned-text)))
