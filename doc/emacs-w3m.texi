@@ -1958,8 +1958,10 @@ changed, either by hitting @kbd{R} in the Antenna page, or by passing a
 prefix argument to the command (start Antenna with @kbd{C-u A}, for
 example).
 
-Please set the update interval to @code{w3m-antenna-refresh-interval}
-variable at the second if you want to Antenna database automatic update.
+@vindex w3m-antenna-refresh-interval
+If you want to make the Antenna database get updated automatically, set
+the value of the @code{w3m-antenna-refresh-interval} variable to a
+positive integer which is an interval time in seconds.
 
 @table @kbd
 @item A
