@@ -2004,8 +2004,9 @@ URL をアンテナ・データベースに加えます。接頭引数付きで呼ばれた場合は、現
 えば @kbd{C-u A} でアンテナを始める) ことによって、サイトが変化したかど
 うかをチェックしたい毎に、それを更新しなければなりません。
 
-もし、自動で更新させたいなら、変数 @code{w3m-antenna-refresh-interval}に
-更新間隔を秒で設定してください。
+@vindex w3m-antenna-refresh-interval
+もし、自動で更新させたいなら、変
+数 @code{w3m-antenna-refresh-interval} に更新間隔を秒で設定してください。
 
 @table @kbd
 @item A
