@@ -128,11 +128,10 @@ that consists of:
   :group 'w3m-antenna
   :type '(file :size 0))
 
-(defcustom w3m-antenna-refresh-interval
-  nil
-  "Antenna page auto-reload(refresh) interval second.
-Value only as plus interger or nil.
-If *Non-nil* means non-working auto-reload."
+(defcustom w3m-antenna-refresh-interval nil
+  "Interval time to update (to refresh) the antenna page automatically.
+The value should be a positive integer in seconds, or nil which means
+not to update the page."
   :group 'w3m-antenna
   :type '(choice
 	  (const :tag "Not reload." nil)
