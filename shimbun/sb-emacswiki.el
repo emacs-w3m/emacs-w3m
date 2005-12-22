@@ -82,10 +82,10 @@ e2ibWOZWTFz8j~/m")))
 	    (unless (shimbun-search-id shimbun id)
 	      (push (shimbun-create-header
 		     0
-                     (let ((desc (shimbun-rss-node-text rss-ns 'description item)))
-                       (concat (shimbun-rss-node-text rss-ns 'title item)
-                               (if desc
-                                   (concat " - " desc))))
+		     (let ((desc (shimbun-rss-node-text rss-ns 'description item)))
+		       (concat (shimbun-rss-node-text rss-ns 'title item)
+			       (if desc
+				   (concat " - " desc))))
 		     (or (shimbun-rss-node-text wiki-ns 'username item)
 			 (shimbun-from-address shimbun))
 		     (shimbun-rss-process-date shimbun date)
