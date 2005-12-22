@@ -1958,6 +1958,9 @@ changed, either by hitting @kbd{R} in the Antenna page, or by passing a
 prefix argument to the command (start Antenna with @kbd{C-u A}, for
 example).
 
+Please set the update interval to @code{w3m-antenna-refresh-interval}
+variable at the second if you want to Antenna database automatic update.
+
 @table @kbd
 @item A
 @kindex A

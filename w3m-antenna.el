@@ -128,6 +128,16 @@ that consists of:
   :group 'w3m-antenna
   :type '(file :size 0))
 
+(defcustom w3m-antenna-refresh-interval
+  nil
+  "Antenna page auto-reload(refresh) interval second.
+Value only as plus interger or nil.
+If *Non-nil* means non-working auto-reload."
+  :group 'w3m-antenna
+  :type '(choice
+	  (const :tag "Not reload." nil)
+	  (integer :tag "Interval second.")))
+
 (defcustom w3m-antenna-sites
   (unless noninteractive
     (mapcar (lambda (site)
@@ -173,7 +183,7 @@ that consists of:
 (defcustom w3m-antenna-html-skelton
   (eval-when-compile
     (concat "<!doctype html public \"-//W3C//DTD HTML 3.2//EN\">\n"
-	    "<html>\n<head>\n<title>Antenna</title>\n</head>\n<body>\n"
+	    "<html>\n<head>\n<title>Antenna</title>\n%R</head>\n<body>\n"
 	    "<h1>Antenna</h1>\n<p align=\"right\">Checked at %D.</p>\n"
 	    "<h2>Updated</h2>\n<ul>\n%C</ul>\n"
 	    "<h2>Visited</h2>\n<ul>\n%U</ul>\n"
@@ -513,7 +523,16 @@ asynchronous process that has not finished yet."
 	(insert (let ((time (nth 5 (file-attributes w3m-antenna-file))))
 		  (if time
 		      (current-time-string time)
-		    "(unknown)"))))))))
+		    "(unknown)"))))
+       ((eq c '?R)
+	(save-restriction
+	  (narrow-to-region (match-beginning 0) (match-end 0))
+	  (delete-region (point-min) (point-max))
+	  (when (and w3m-antenna-refresh-interval
+		     (integerp w3m-antenna-refresh-interval)
+		     (< 0 w3m-antenna-refresh-interval))
+	    (insert (format "<META HTTP-EQUIV=\"Refresh\" CONTENT=\"%d\">\n"
+			    w3m-antenna-refresh-interval)))))))))
 
 ;;;###autoload
 (defun w3m-about-antenna (url &optional no-decode no-cache

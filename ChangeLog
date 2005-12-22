@@ -1,3 +1,12 @@
+2005-12-22  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* w3m-antenna.el (w3m-antenna-refresh-interval): Add new customize
+	variable.
+	(w3m-antenna-make-contents): Add new generation rule for refresh
+	interval replacing `%R' to META Refresh tag and contents value are
+	`w3m-antenna-refresh-interval'.
+	(w3m-antenna-html-skelton): Add %R rule.
+
 2005-12-18  Mark Plaksin  <happy@mcplaksin.org>
 
 	* shimbun/sb-emacswiki.el (shimbun-get-headers): Gets the Wiki
