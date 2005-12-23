@@ -1,3 +1,8 @@
+2005-12-23  Matt Hodges  <MPHodges@member.fsf.org>
+
+	* w3m-util.el (w3m-list-buffers): Ensure disabling the w3m-fb-mode
+	after a careless (setq w3m-fb-mode t).
+
 2005-12-22  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* w3m-antenna.el (w3m-antenna-refresh-interval): Add new customize
