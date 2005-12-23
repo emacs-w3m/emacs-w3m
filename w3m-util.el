@@ -391,7 +391,7 @@ buffer names."
 		    (sort rest #'w3m-buffer-name-lessp)))
     (when (and w3m-fb-mode
 	       (if (or w3m-pop-up-frames
-                       (not (memq 'w3m-fb-add w3m-mode-hook)))
+		       (not (memq 'w3m-fb-add w3m-mode-hook)))
 		   ;; `w3m-fb-mode' might have been set by something
 		   ;; other than the `w3m-fb-mode' function.
 		   (setq w3m-fb-mode nil)
@@ -400,10 +400,10 @@ buffer names."
       ;; because `buffers' may have been sorted.
       (let ((fbs (w3m-fb-frame-parameter w3m-fb-list-buffers-frame
 					 'w3m-fb-buffer-list)))
-        (setq rest buffers)
-        (while rest
-          (unless (memq (setq buffer (pop rest)) fbs)
-            (setq buffers (delq buffer buffers))))))
+	(setq rest buffers)
+	(while rest
+	  (unless (memq (setq buffer (pop rest)) fbs)
+	    (setq buffers (delq buffer buffers))))))
     buffers))
 
 
