@@ -128,6 +128,7 @@ Pretty Good Features
 * Viewing Perl Documents::      Viewing Perl Documents
 * Using Namazu::                Searching files with Namazu
 * Octet::                       Viewing data in various octal form
+* Frame Local Buffers::         Splitting many pages into some frames
 
 Customizable Variables
 
@@ -1682,6 +1683,7 @@ emacs-w3m with other commands and Emacs subsystems.
 * Viewing Perl Documents::      Viewing Perl Documents
 * Using Namazu::                Searching files with Namazu
 * Octet::                       Viewing data in various octal form
+* Frame Local Buffers::         Splitting many pages into some frames
 @end menu
 
 @node Using Search Engines
@@ -2053,6 +2055,34 @@ octet data files which are opened with @code{octet-find-file}.
 (add-hook 'octet-find-file-hook 'view-mode)
 (add-hook 'octet-find-file-hook 'w3m-minor-mode)
 @end lisp
+
+@node Frame Local Buffers
+@section Splitting many pages into some frames
+
+You can use two emacs-w3m frames, for example, one visits the search
+engines, the other visits the news sites.
+
+@findex w3m-fb-mode
+Emacs-w3m offers some convenient features that allow you to visit many
+web pages manually or at a time.  For instance, you can use tabs
+(@pxref{Using Tabs}) and visit many pages respectively as a new session
+or use a special URL beginning with @samp{group:} (@pxref{Grouping
+URLs}).  However, you may want to split them into some frames if there
+are too many pages.  If so, the @code{w3m-fb-mode} command is just for
+you.  Note that you have to set the @code{w3m-use-tab} variable to
+non-@code{nil} (@code{t} by default) and set the
+@code{w3m-pop-up-frames} variable to @code{nil} (the default) in order
+to use it (@pxref{General Variables}).
+
+Typing @kbd{M-x w3m-fb-mode} toggles the mode, but you can turn the mode
+on by giving a positive integer as a prefix argument to the command
+(zero or less turns it off).
+
+When the @code{w3m-fb-mode} is turned on, the pages that you visited in
+the frame will be stuck to only the frame.  And, other pages that open
+in other frames will stick similarly only to those frames.  In other
+words, pages stuck to the frame don't appear in other frames.  You need
+by yourself to launch those frames in some way.
 
 
 @node Customizable Variables

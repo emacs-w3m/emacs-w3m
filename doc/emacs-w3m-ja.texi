@@ -160,6 +160,7 @@ Pretty Good Features
 * Viewing Perl Documents::      Perl のドキュメントを見る
 * Using Namazu::                Namazu でファイルを検索する
 * Octet::                       application/octet-stream データを見る
+* Frame Local Buffers::         たくさんのページをいくつかのフレームに分ける
 
 Customizable Variables
 
@@ -1735,6 +1736,7 @@ URLの種類毎に定義されます。
 * Viewing Perl Documents::      Perl のドキュメントを見る
 * Using Namazu::                Namazu でファイルを検索する
 * Octet::                       application/octet-stream データを見る
+* Frame Local Buffers::         たくさんのページをいくつかのフレームに分ける
 @end menu
 
 @node Using Search Engines
@@ -2143,6 +2145,34 @@ Namazu を使うためには、実際に検索を行う前に、検索対象となるファイルに含
 (add-hook 'octet-find-file-hook 'view-mode)
 (add-hook 'octet-find-file-hook 'w3m-minor-mode)
 @end lisp
+
+@node Frame Local Buffers
+@section たくさんのページをいくつかのフレームに分ける
+
+例えば一つは検索エンジン群のための、もう一方はニュースサイト群のための、
+二つの emacs-w3m のフレームを使うことができます。
+
+@findex w3m-fb-mode
+Emacs-w3m はたくさんのページを手動で、または一度に見るためのいくつかの機
+能を提供します。例えばタブを使って (@pxref{Using Tabs}) たくさんのページ
+をそれぞれ新しいセッションとして立ち上げるか、または @samp{group:} で始
+まる特別な URL (@pxref{Grouping URLs}) を使うことができます。しかし、あ
+まりにたくさんのページがある場合は、それらをいくつかのフレームに分割した
+いと思うかもしれません。そうであれば、@code{w3m-fb-mode} コマンドはまさ
+にあなたのためのものです。ただしそれを使うためには @code{w3m-use-tab} 変
+数を非-@code{nil} (デフォルトで @code{t}) に、
+@code{w3m-pop-up-frames} 変数を @code{nil} (それがデフォルト) に設定して
+おかなければなりません (@pxref{General Variables})。
+
+@kbd{M-x w3m-fb-mode} をタイプするとモードがトグルに切り替わりますが、接
+頭引数としてそのコマンドに正の整数を与えることによって、モードを on にす
+ることができます (ゼロ以下では off になります)。
+
+@code{w3m-fb-mode} が on になっていると、あるフレームで見るページはその
+フレームだけに限定されます。そして他のフレームで開いた他のページは、同様
+にそれらのフレームだけに限定されます。言い換えると、あるフレームに限定さ
+れたページは他のフレームには現れません。それらのフレームは、何らかの方法
+であなた自身が立ち上げる必要があります。
 
 
 @node Customizable Variables
