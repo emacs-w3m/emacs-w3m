@@ -1,5 +1,16 @@
 2005-12-30  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
+	* shimbun/sb-slashdot-jp.el (shimbun-slashdot-jp-group-alist):
+	Renew RSS URI
+	(shimbun-slashdot-jp-coding-system): Remove it.
+	(shimbun-slashdot-jp-content-start): Improve regex.
+	(shimbun-slashdot-jp-content-end): Ditto.
+	(shimbun-rss-build-message-id): Append new journal rule.
+	(shimbun-get-headers): Ditto.
+	(shimbun-slashdot-jp-comment-url): Improve new article rule.
+
+2005-12-30  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
 	* w3m.el (w3m-fontify-strike-through): Fix multi `<del>' problem.
 
 2005-12-23  Matt Hodges  <MPHodges@member.fsf.org>
