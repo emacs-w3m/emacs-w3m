@@ -3029,12 +3029,21 @@ For example:
 	       window-system))
     (goto-char (point-min))
     (while (re-search-forward "\\[\\(?:DEL\\|S\\):" nil t)
-      (let ((start (match-beginning 0)))
+      (let ((start (match-beginning 0))
+	    (indent 1))
 	(delete-region start (match-end 0))
-	(when (re-search-forward ":\\(?:DEL\\|S\\)]" nil t)
-	  (delete-region (match-beginning 0) (match-end 0))
-	  (w3m-add-face-property start (match-beginning 0)
-					'w3m-strike-through-face))))))
+	(while (and (< 0 indent)
+		    (re-search-forward
+		     "\\(\\[\\(?:DEL\\|S\\):\\)\\|\\(:\\(?:DEL\\|S\\)\\]\\)"
+		     nil t))
+	  (if (match-string 1)
+	      (progn
+		(delete-region (match-beginning 0) (match-end 0))
+		(setq indent (1+ indent)))
+	    (delete-region (match-beginning 0) (match-end 0))
+	    (setq indent (1- indent))))
+	(w3m-add-face-property start (match-end 0)
+			       'w3m-strike-through-face)))))
 
 (defsubst w3m-decode-anchor-string (str)
   ;; FIXME: This is a quite ad-hoc function to process encoded url string.
