@@ -1,3 +1,8 @@
+2005-12-31  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-util.el (top): Add the variable definition of
+	`w3m-mode-hook' to avoid byte-compile warnings.
+
 2005-12-30  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-slashdot-jp.el (shimbun-slashdot-jp-group-alist):

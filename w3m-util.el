@@ -50,6 +50,7 @@
   (defvar w3m-current-url)
   (defvar w3m-fb-list-buffers-frame)
   (defvar w3m-fb-mode)
+  (defvar w3m-mode-hook)
   (defvar w3m-pop-up-frames)
   (defvar w3m-pop-up-windows)
   (defvar w3m-popup-frame-parameters)
