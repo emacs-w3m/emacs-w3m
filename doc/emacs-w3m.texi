@@ -2057,32 +2057,34 @@ octet data files which are opened with @code{octet-find-file}.
 @end lisp
 
 @node Frame Local Buffers
-@section Splitting many pages into some frames
+@section Grouping sessions into separate frames
 
-You can use two emacs-w3m frames, for example, one visits the search
-engines, the other visits the news sites.
+It is possible to manage groups of emacs-w3m sessions in separate
+frames.  One use for this would be to have two emacs-w3m frames, where
+one contains sessions visiting search engines, and the other sessions
+visiting news sites.
 
 @findex w3m-fb-mode
 Emacs-w3m offers some convenient features that allow you to visit many
-web pages manually or at a time.  For instance, you can use tabs
-(@pxref{Using Tabs}) and visit many pages respectively as a new session
-or use a special URL beginning with @samp{group:} (@pxref{Grouping
-URLs}).  However, you may want to split them into some frames if there
-are too many pages.  If so, the @code{w3m-fb-mode} command is just for
-you.  Note that you have to set the @code{w3m-use-tab} variable to
-non-@code{nil} (@code{t} by default) and set the
-@code{w3m-pop-up-frames} variable to @code{nil} (the default) in order
-to use it (@pxref{General Variables}).
+web pages at the same time.  For instance, you can use tabs
+(@pxref{Using Tabs}) to visit many pages in new sessions, or do so using
+a special URL beginning with @samp{group:} (@pxref{Grouping URLs}).
+However, you may want to group them into separate frames if there are
+too many pages.  If so, the @code{w3m-fb-mode} command is for you.  Note
+that you have to set the @code{w3m-use-tab} variable to non-@code{nil}
+(@code{t} by default) and set the @code{w3m-pop-up-frames} variable to
+@code{nil} (the default) in order to use it (@pxref{General Variables}).
 
 Typing @kbd{M-x w3m-fb-mode} toggles the mode, but you can turn the mode
 on by giving a positive integer as a prefix argument to the command
 (zero or less turns it off).
 
-When the @code{w3m-fb-mode} is turned on, the pages that you visited in
-the frame will be stuck to only the frame.  And, other pages that open
-in other frames will stick similarly only to those frames.  In other
-words, pages stuck to the frame don't appear in other frames.  You need
-by yourself to launch those frames in some way.
+When the @code{w3m-fb-mode} is turned on, the sessions that you start in
+the current frame will be associated with only that frame.  Other
+sessions that are opened in other frames will similarly only appear in
+those frames.  In other words, sessions associated with one frame don't
+appear in other frames.  @code{w3m-fb-mode} doesn't create any new
+frames, so you need to make them yourself in some way.
 
 
 @node Customizable Variables
