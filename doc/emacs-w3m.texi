@@ -128,7 +128,7 @@ Pretty Good Features
 * Viewing Perl Documents::      Viewing Perl Documents
 * Using Namazu::                Searching files with Namazu
 * Octet::                       Viewing data in various octal form
-* Frame Local Buffers::         Splitting many pages into some frames
+* Frame Local Buffers::         Grouping sessions into separate frames
 
 Customizable Variables
 
@@ -1683,7 +1683,7 @@ emacs-w3m with other commands and Emacs subsystems.
 * Viewing Perl Documents::      Viewing Perl Documents
 * Using Namazu::                Searching files with Namazu
 * Octet::                       Viewing data in various octal form
-* Frame Local Buffers::         Splitting many pages into some frames
+* Frame Local Buffers::         Grouping sessions into separate frames
 @end menu
 
 @node Using Search Engines
