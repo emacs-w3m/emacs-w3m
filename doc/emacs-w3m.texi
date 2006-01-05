@@ -3372,8 +3372,9 @@ To activate this feaeture, add following in your @file{~/.mew.el}.
 (define-key mew-summary-mode-map "T" 'mew-w3m-view-inline-image)
 @end lisp
 
-Press ``T'', toggle the visibility of the images included its message only.
-Press ``C-uT'', display the all images included its Text/Html part."
+Press ``T'', toggle the visibility of the images included its message
+only.  Press ``C-uT'', display the all images included its Text/Html
+part.
 
 @item mew-w3m-cid-retrieve-hook
 A hook run just after retrieving a @samp{cid:} URL.  The default value
@@ -4648,8 +4649,8 @@ heise.news heise.telepolis
 infoshop.news
 
 @item @uref{http://www.watch.impress.co.jp/, Impress}
-impress.enterprise impress.pc impress.dc impress.akiba impress.av impress.game
-impress.k-tai impress.internet impress.bb impress.forest
+impress.enterprise impress.pc impress.dc impress.akiba impress.av
+impress.game impress.k-tai impress.internet impress.bb impress.forest
 
 @item @uref{http://www.itmedia.co.jp/, ITmedia}
 itmedia.anchordesk itmedia.bursts itmedia.enterprise itmedia.games
@@ -4788,8 +4789,8 @@ mew.mgp-users mew.mgp-users-jp
 @item @uref{http://www.namazu.org/cgi-bin/mailman/listinfo, www.namazu.org Mailing Lists}
 namazu.kakasi-commits namazu.kakasi-dev namazu.migemo
 namazu.namazu-users-en namazu.namazu-users-ja
-namazu.namazu-devel-ja namazu.namazu-devel-en namazu.namazu-win32-users-ja
-namazu.sary
+namazu.namazu-devel-ja namazu.namazu-devel-en
+namazu.namazu-win32-users-ja namazu.sary
 
 @item @uref{http://emacs-w3m.namazu.org/ml/, emacs-w3m Mailing List}
 emacs-w3m.emacs-w3m
@@ -5180,7 +5181,8 @@ vinelinux.errata.1x
 @item @uref{http://www.kantei.go.jp/jp/, Koizumu Cabinet Mail Magazine}
 kantei.m-magazine-en kantei.m-magazine-ja
 
-@samp{kantei.m-magazine} is also available for the backward compatibility.
+@samp{kantei.m-magazine} is also available for the backward
+compatibility.
 
 @item @uref{http://www.jpo.go.jp/, Patent Office in Japan}
 jpo.news jpo.revision jpo.lawguide jpo.details
@@ -5214,9 +5216,10 @@ lotusex.tips lotusex.practical lotusex.qanda lotusex.lounge
 lotusex.bbs
 
 @item @uref{http://www.atmarkit.co.jp, @@IT forum}
-atmarkit.news atmarkit.fwin2k atmarkit.fdotnet atmarkit.fsys atmarkit.fxml
-atmarkit.fdb atmarkit.flinux atmarkit.fnetwork atmarkit.fjava
-atmarkit.fsecurity atmarkit.farc atmarkit.fbiz atmarkit.fwcr atmarkit.jibun
+atmarkit.news atmarkit.fwin2k atmarkit.fdotnet atmarkit.fsys
+atmarkit.fxml atmarkit.fdb atmarkit.flinux atmarkit.fnetwork
+atmarkit.fjava atmarkit.fsecurity atmarkit.farc atmarkit.fbiz
+atmarkit.fwcr atmarkit.jibun
 
 @item @uref{http://www.matsusaka-u.ac.jp/~okumura/texfaq/qa/, TeX Q&A Bulletin Board}
 texfaq.qanda
