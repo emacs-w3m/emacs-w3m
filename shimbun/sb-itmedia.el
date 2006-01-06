@@ -1,6 +1,6 @@
 ;;; sb-itmedia.el --- shimbun backend for ITmedia -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2004, 2005 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2004, 2005, 2006 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
@@ -186,15 +186,25 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>")
 a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>")))
 
 (defun shimbun-itmedia-retrieve-next-pages (shimbun base-cid url
-						    &optional images)
-  (let ((case-fold-search t) (next))
+						    &optional images cont)
+  (let ((case-fold-search t) (next) (credit))
     (goto-char (point-min))
     (when (re-search-forward
 	   "<b><a href=\"\\([^\"]+\\)\">次のページ</a></b>" nil t)
       (setq next (shimbun-expand-url (match-string 1) url)))
+    (when (and (not cont)
+	       (progn
+		 (goto-char (point-min))
+		 (re-search-forward "<!--■クレジット-->[\t\n ]*" nil t))
+	       (looking-at "<p\\( [^\n>]+>[^\n]+</\\)p>"))
+      (setq credit (match-string 1))
+      (when (string-match "<b>\\[ITmedia\\]</b>" credit)
+	(setq credit nil)))
     (shimbun-itmedia-clean-text-page)
     (goto-char (point-min))
     (insert "<html>\n<head>\n<base href=\"" url "\">\n</head>\n<body>\n")
+    (when credit
+      (insert "<div" credit "div>\n"))
     (goto-char (point-max))
     (insert "\n</body>\n</html>\n")
     (when shimbun-encapsulate-images
@@ -204,7 +214,7 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>")))
 		    (with-temp-buffer
 		      (shimbun-fetch-url shimbun next)
 		      (shimbun-itmedia-retrieve-next-pages shimbun base-cid
-							   next images)))))
+							   next images t)))))
       (list (cons body (car result))
 	    (or (nth 1 result) images)))))
 
