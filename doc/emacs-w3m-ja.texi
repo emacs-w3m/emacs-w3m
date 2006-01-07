@@ -5067,6 +5067,10 @@ Tigris.org に保存されている全てのメーリングリストを閲覧できます。閲覧し
 たいグループを変数 @code{shimbun-tigris-group-alist} に登録してください。
 グループ名は tigris.<project>.<mailinglist> になります。
 
+@item @uref{http://www.scipy.net/mailman/listinfo, www.SciPy.net Mailing Lists}
+scipy.astropy scipy.ipython-user scipy.ipython-dev scipy.scipy-user
+scipy.scipy-dev scipy.scipy-testlog scipy.scipy-chaco scipy.scipy-cvs
+
 @end table
 
 @node Sport Sites Supported by Shimbun

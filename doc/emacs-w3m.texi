@@ -5016,6 +5016,10 @@ library.  Add a group name of your favorite archive to the variable
 @code{shimbun-tigris-group-alist}, and you can browse it.
 Group name is tigris.<project>.<mailinglist>.
 
+@item @uref{http://www.scipy.net/mailman/listinfo, www.SciPy.net Mailing Lists}
+scipy.astropy scipy.ipython-user scipy.ipython-dev scipy.scipy-user
+scipy.scipy-dev scipy.scipy-testlog scipy.scipy-chaco scipy.scipy-cvs
+
 @end table
 
 @node Sport Sites Supported by Shimbun
