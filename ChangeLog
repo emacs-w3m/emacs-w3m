@@ -1,4 +1,9 @@
-2006-01-08  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+2006-01-14  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-slashdot-jp.el (shimbun-clear-contents): Add
+	`noscript' removal rule.
+
+2006-01-08  Vishwanathan S V N  <vishketan@yahoo.com>
 
 	* shimbun/sb-scipy.el: New file.
 

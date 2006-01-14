@@ -173,6 +173,7 @@
   (when (luna-call-next-method)
     (shimbun-remove-tags "<!-- begin ad code -->" "<!-- end ad code -->")
     (shimbun-remove-tags "<script" "</script>")
+    (shimbun-remove-tags "<noscript" "</noscript>")
     (let ((url (shimbun-slashdot-jp-comment-url (shimbun-header-xref header))))
       (when url
 	(goto-char (point-max))
