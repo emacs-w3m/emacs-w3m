@@ -1,3 +1,9 @@
+2006-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* doc/Makefile.in: Add rules to make pdf files.
+
+	* configure.in: Check for dvipdfmx and texi2pdf.
+
 2006-01-14  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-slashdot-jp.el (shimbun-clear-contents): Add
