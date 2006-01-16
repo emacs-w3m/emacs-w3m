@@ -1,4 +1,4 @@
-.SUFFIXES: .texi .info
+.SUFFIXES: .texi .info .pdf
 
 INSTALL      = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
@@ -17,6 +17,8 @@ MAKEINFO     = @MAKEINFO@
 TEXI2DVI     = @TEXI2DVI@
 PTEX         = @PTEX@
 JBIBTEX      = @JBIBTEX@
+DVIPDFMX     = @DVIPDFMX@
+TEXI2PDF     = @TEXI2PDF@
 EMACS        = @EMACS@
 VANILLA_FLAG = @VANILLA_FLAG@
 FLAGS        = $(VANILLA_FLAG) -batch -l ./w3mhack.el $(ADDITIONAL_LOAD_PATH)
@@ -107,8 +109,29 @@ emacs-w3m-ja.dvi: version.texi emacs-w3m-ja.texi
 	    $(TEXI2DVI) -o $@ $$texi ;;\
 	esac
 
+pdf: pdf-en pdf-ja
+
+pdf-en: emacs-w3m.pdf
+
+pdf-ja: emacs-w3m-ja.pdf
+
+emacs-w3m.pdf: version.texi emacs-w3m.texi
+
+emacs-w3m-ja.pdf: version.texi emacs-w3m-ja.texi
+
+.texi.pdf:
+	@texi=$<;\
+	case "$$texi" in\
+	  *-ja.texi)\
+	     i=`basename $@ .pdf`;\
+	    $(MAKE) $$i.dvi; $(DVIPDFMX) $$i;;\
+	  *) \
+	    $(TEXI2PDF) $$texi;;\
+	esac
+
 clean:
-	-rm -rf *~ *.info *.info-[0-9] *.info-[0-9][0-9] *.dvi *.ps missfont.log
+	-rm -rf *~ *.info *.info-[0-9] *.info-[0-9][0-9] *.dvi missfont.log\
+ *.pdf *.aux *.cp *.cps *.fn *.fns *.ky *.kys *.log *.pg *.toc *.tp *.vr *.vrs
 
 distclean: clean
 	-rm -f Makefile
