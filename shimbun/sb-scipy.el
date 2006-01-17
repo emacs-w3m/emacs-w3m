@@ -1,6 +1,6 @@
 ;;; sb-scipy.el --- shimbun backend for scipy mailing lists
 
-;; Copyright (C) 2005 S V N Vishwanathan <vishketan@yahoo.com>
+;; Copyright (C) 2005, 2006 S V N Vishwanathan <vishketan@yahoo.com>
 
 ;; Author: S V N Vishwanathan <vishketan@yahoo.com>
 ;;         Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
