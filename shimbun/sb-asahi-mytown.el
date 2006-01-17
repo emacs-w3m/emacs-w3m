@@ -139,7 +139,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 		(concat
 		 "<a" s1 "href=\""
 		 ;; 1. url
-		 "\\(news.php\\?k_id="
+		 "\\(news\\.php\\?k_id="
 		 ;; 2. id
 		 "\\([0-9]+\\)"
 		 "\\)"
