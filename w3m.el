@@ -3042,7 +3042,7 @@ For example:
 		(setq indent (1+ indent)))
 	    (delete-region (match-beginning 0) (match-end 0))
 	    (setq indent (1- indent))))
-	(w3m-add-face-property start (match-end 0)
+	(w3m-add-face-property start (match-beginning 0)
 			       'w3m-strike-through-face)))))
 
 (defsubst w3m-decode-anchor-string (str)
