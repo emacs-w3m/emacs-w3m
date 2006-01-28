@@ -5208,11 +5208,13 @@ palmfan.news
 dennou.report
 
 @item @uref{http://pcweb.mycom.co.jp/column/, PCWEB COLUMN Square}
-pcweb-column.asia pcweb-column.benri pcweb-column.bytes
-pcweb-column.game pcweb-column.hitech pcweb-column.itshihonron
-pcweb-column.osx pcweb-column.rikei pcweb-column.scramble
-pcweb-column.sopinion pcweb-column.svalley pcweb-column.toolexp
-pcweb-column.winxp pcweb-column.yetanother
+pcweb-column.architecture pcweb-column.asia pcweb-column.benri
+pcweb-column.bytes pcweb-column.ebook pcweb-column.game
+pcweb-column.hitech pcweb-column.itshihonron pcweb-column.java
+pcweb-column.jisakuparts pcweb-column.kaden pcweb-column.nihongoprog
+pcweb-column.objc pcweb-column.osx pcweb-column.rikei
+pcweb-column.scramble pcweb-column.sopinion pcweb-column.svalley
+pcweb-column.toolexp pcweb-column.winxp pcweb-column.yetanother
 
 @item @uref{http://tsuruo.dominohosting.biz/members/tsuruo/, Notes Exhibition}
 lotusex.news lotusex.library lotusex.operation lotusex.primer

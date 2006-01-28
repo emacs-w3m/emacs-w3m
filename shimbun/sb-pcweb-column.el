@@ -34,11 +34,13 @@
 (defvar shimbun-pcweb-column-groups
   '(;; Under a series
     "itshihonron" "osx" "yetanother" "svalley" "winxp" "sopinion"
-    "toolexp" "rikei"
+    "rikei" "nihongoprog" "objc" "kaden" "jisakuparts" "java"
+    "architecture" "ebook"
     ;; Series end
-    "game" "asia" "scramble" "hitech" "bytes" "benri"))
+    "toolexp" "game" "asia" "scramble" "hitech" "bytes" "benri"))
 (defvar shimbun-pcweb-column-from-address "pcmail@pc.mycom.co.jp")
-(defvar shimbun-pcweb-column-content-start "<!-- #BeginEditable \"contents\" -->")
+(defvar shimbun-pcweb-column-content-start
+  "<!-- #BeginEditable \"contents\" -->")
 (defvar shimbun-pcweb-column-content-end "<!-- #EndEditable -->")
 (defvar shimbun-pcweb-column-coding-system 'shift_jis)
 
