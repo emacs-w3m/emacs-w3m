@@ -1,3 +1,10 @@
+2006-01-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-zeit-de.el (shimbun-get-headers): Assume a url
+	beginning with "/" is the one in which "http://www.zeit.de" is
+	omitted.
+	(shimbun-rss-build-message-id): Ditto.
+
 2006-01-28  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-pcweb-column.el (shimbun-pcweb-column-groups):
