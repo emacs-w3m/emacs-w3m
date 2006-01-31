@@ -1,6 +1,6 @@
 ;;; sb-zeit-de.el --- shimbun backend for <http://www.zeit.de>
 
-;; Copyright (C) 2004, 2005 Andreas Seltenreich <seltenreich@gmx.de>
+;; Copyright (C) 2004, 2005, 2006 Andreas Seltenreich <seltenreich@gmx.de>
 
 ;; Author: Andreas Seltenreich <seltenreich@gmx.de>
 ;; Keywords: news
@@ -28,7 +28,7 @@
 
 (luna-define-class shimbun-zeit-de (shimbun-rss) ())
 
-(defvar shimbun-zeit-de-groups 
+(defvar shimbun-zeit-de-groups
   '("chancen" "dossier" "hochschule" "leben" "literatur" "media"
     "news" "politik" "reden" "reisen" "wirtschaft" "wissen"
     "wohlfuehlen" "zeitlaeufte"
@@ -53,24 +53,33 @@
 
 (luna-define-method shimbun-get-headers :around ((shimbun shimbun-zeit-de)
 						 &optional range)
-  (mapcar
+  (mapc
    (lambda (header)
      (let ((url (shimbun-header-xref header)))
-       (when (string-match "^http://www\\.zeit\\.de" url)
-	 (shimbun-header-set-xref header (concat url "?page=all"))) header))
-  (luna-call-next-method)))
+       (cond ((string-match "\\`http://www\\.zeit\\.de" url)
+	      (shimbun-header-set-xref header (concat url "?page=all")))
+	     ((string-match "\\`/" url)
+	      (shimbun-header-set-xref
+	       header (concat "http://www.zeit.de" url))))))
+   (luna-call-next-method)))
 
 (luna-define-method shimbun-rss-build-message-id
   ((shimbun shimbun-zeit-de) url date)
-  (if (string-match "http://\\([^/]+\\)\\(/\\(.+\\)\\)?" url)
-      (let ((host (match-string-no-properties 1 url))
-	    (page (if (match-beginning 3)
-		      (shimbun-replace-in-string
-		       (match-string-no-properties 3 url)
-		       "[^a-zA-Z0-9]" "%")
-		    "top")))
-	(format "<%s@%s>" page host))
-    (error "Cannot find message-id base")))
+  (cond ((string-match "http://\\([^/]+\\)\\(/\\(.+\\)\\)?" url)
+	 (let ((host (match-string-no-properties 1 url))
+	       (page (if (match-beginning 3)
+			 (shimbun-replace-in-string
+			  (match-string-no-properties 3 url)
+			  "[^a-zA-Z0-9]" "%")
+		       "top")))
+	   (format "<%s@%s>" page host)))
+	((string-match "\\`/\\(.+\\)\\'" url)
+	 (concat "<" (shimbun-replace-in-string
+		      (match-string-no-properties 1 url)
+		      "[^a-zA-Z0-9]" "%")
+		 "@www.zeit.de>"))
+	(t
+	 (error "Cannot find message-id base"))))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-zeit-de)
 						   header)
