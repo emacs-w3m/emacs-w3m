@@ -1,3 +1,20 @@
+2006-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-url-components-regexp): Move to w3m-util.el.
+	(w3m-fontify-anchors, w3m-canonicalize-url, w3m-add-referer-p)
+	(w3m-expand-url, w3m-view-this-url-1, w3m-goto-url)
+	(w3m-goto-url-new-session): Use w3m-string-match-url-components
+	rather than to run string-match with w3m-url-components-regexp.
+	cf. <URL:http://emacs-w3m.namazu.org/ml/msg08412.html>.
+
+	* w3m-form.el (w3m-form-normalize-action): Ditto.
+
+	* w3m-cookie.el (w3m-parse-http-url): Ditto.
+
+	* w3m-util.el (w3m-string-match-url-components-1): New function.
+	(w3m-url-components-regexp): Move from w3m.el.
+	(w3m-string-match-url-components): New macro.
+
 2006-01-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-zeit-de.el (shimbun-get-headers): Assume a url
