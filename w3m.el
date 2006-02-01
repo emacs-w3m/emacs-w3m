@@ -2330,13 +2330,6 @@ db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?\\'\
 \\|\\`about:/*blank/?\\'"
   "Regexp matching urls which aren't stored in the history.")
 
-(defconst w3m-url-components-regexp
-  "\\`\\(\\([^:/?#]+\\):\\)?\\(//\\([^/?#]*\\)\\)?\
-\\([^?#]*\\)\\(\\?\\([^#]*\\)\\)?\\(#\\(.*\\)\\)?\\'"
-  "Regexp used for parsing a URI Reference.
-It matches the potential four components and fragment identifier of a
-URI reference.  See RFC2396, Appendix B for details.")
-
 (defvar w3m-mode-map nil "Keymap for emacs-w3m buffers.")
 
 (defvar w3m-mode-setup-functions nil
@@ -3116,8 +3109,8 @@ For example:
 	    (delete-region (match-beginning 1) (match-end 1))
 	    (setq href (w3m-expand-url (w3m-decode-anchor-string href)))
 	    (unless (w3m-url-local-p href)
-	      (setq href (if (and (string-match w3m-url-components-regexp href)
-				  (match-beginning 8))
+	      (w3m-string-match-url-components href)
+	      (setq href (if (match-beginning 8)
 			     (let ((tmp (match-string 9 href)))
 			       (concat (w3m-url-transfer-encode-string
 					(substring href 0 (match-beginning 8))
@@ -3714,8 +3707,8 @@ In Transient Mark mode, deactivate the mark."
 
 (defsubst w3m-canonicalize-url (url)
   "Add a scheme part to an URL if it has no scheme part."
-  (if (and (string-match w3m-url-components-regexp url)
-	   (match-beginning 1))
+  (w3m-string-match-url-components url)
+  (if (match-beginning 1)
       url
     (concat (if (and (file-name-absolute-p url)
 		     (file-exists-p url))
@@ -4482,11 +4475,11 @@ specified by `w3m-add-referer'."
     (cond
      ((eq w3m-add-referer 'lambda)
       (let (host)
-	(when (and (string-match w3m-url-components-regexp url)
-		   (match-beginning 4))
+	(w3m-string-match-url-components url)
+	(when (match-beginning 4)
 	  (setq host (match-string 4 url))
-	  (when (and (string-match w3m-url-components-regexp referer)
-		     (match-beginning 4))
+	  (w3m-string-match-url-components referer)
+	  (when (match-beginning 4)
 	    (string= host (match-string 4 referer))))))
      ((consp w3m-add-referer)
       (and (not (and (cdr w3m-add-referer)
@@ -5443,8 +5436,9 @@ compatibility which is described in Section 5.2 of RFC 2396.")
   "Convert URL to the absolute address, and canonicalize it."
   (save-match-data
     (if base
-	(if (and (string-match w3m-url-components-regexp base)
-		 (match-beginning 1))
+	(if (progn
+	      (w3m-string-match-url-components base)
+	      (match-beginning 1))
 	    (and (not (match-beginning 3))
 		 (member (match-string 2 base) w3m-url-hierarchical-schemes)
 		 (setq base (concat
@@ -5455,17 +5449,17 @@ compatibility which is described in Section 5.2 of RFC 2396.")
       (setq base (or w3m-current-base-url
 		     w3m-current-url
 		     w3m-url-fallback-base)))
-    (string-match w3m-url-components-regexp url)
+    (w3m-string-match-url-components url)
     ;; Remove an empty fragment part.
     (when (and (match-beginning 8)
 	       (= (match-beginning 9) (length url)))
       (setq url (substring url 0 (match-beginning 8)))
-      (string-match w3m-url-components-regexp url))
+      (w3m-string-match-url-components url))
     ;; Remove an empty query part.
     (when (and (match-beginning 6)
 	       (= (match-beginning 7) (length url)))
       (setq url (substring url 0 (match-beginning 6)))
-      (string-match w3m-url-components-regexp url))
+      (w3m-string-match-url-components url))
     (cond
      ((match-beginning 1)
       ;; URL has a scheme part. => URL may have an absolute spec.
@@ -5477,14 +5471,15 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	  url
 	(let ((scheme (match-string 2 url)))
 	  (if (and (member scheme w3m-url-hierarchical-schemes)
-		   (string-match w3m-url-components-regexp base)
-		   (equal scheme (match-string 2 base)))
+		   (progn
+		     (w3m-string-match-url-components base)
+		     (equal scheme (match-string 2 base))))
 	      (w3m-expand-url (substring url (match-end 1)) base)
 	    url))))
      ((match-beginning 3)
       ;; URL has a net-location part. => The hierarchical part of URL
       ;; has an absolute spec.
-      (string-match w3m-url-components-regexp base)
+      (w3m-string-match-url-components base)
       (concat (substring base 0 (match-end 1)) url))
      ((> (match-end 5) (match-beginning 5))
       ;; URL has a hierarchical part.
@@ -5492,7 +5487,7 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	  ;; Its first character is the slash "/". => The hierarchical
 	  ;; part of URL has an absolute spec.
 	  (progn
-	    (string-match w3m-url-components-regexp base)
+	    (w3m-string-match-url-components base)
 	    (concat (substring base 0 (or (match-end 3) (match-end 1)))
 		    url))
 	;; The hierarchical part of URL has a relative spec.
@@ -5501,7 +5496,7 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	      ;; the use of file-name-* functions for url string:
 	      ;; http://news.gmane.org/group/gmane.emacs.w3m/thread=4210
 	      file-name-handler-alist)
-	  (string-match w3m-url-components-regexp base)
+	  (w3m-string-match-url-components base)
 	  (concat
 	   (substring base 0 (match-beginning 5))
 	   (if (member (match-string 2 base) w3m-url-hierarchical-schemes)
@@ -5512,12 +5507,12 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	   (substring url path-end)))))
      ((match-beginning 6)
       ;; URL has a query part.
-      (string-match w3m-url-components-regexp base)
+      (w3m-string-match-url-components base)
       (concat (file-name-directory (substring base 0 (match-end 5)))
 	      url))
      (t
       ;; URL has only a fragment part.
-      (string-match w3m-url-components-regexp base)
+      (w3m-string-match-url-components base)
       (concat (substring base 0 (match-beginning 8))
 	      url)))))
 
@@ -5540,8 +5535,9 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	       ;; If a new url has the #name portion, we simply copy
 	       ;; the buffer's contents to the new settion, otherwise
 	       ;; creating an empty buffer.
-	       (not (and (string-match w3m-url-components-regexp url)
-			 (match-beginning 8)
+	       (not (and (progn
+			   (w3m-string-match-url-components url)
+			   (match-beginning 8))
 			 (string-equal w3m-current-url
 				       (substring url
 						  0 (match-beginning 8)))))))
@@ -7476,8 +7472,8 @@ Cannot run two w3m processes simultaneously \
 	    (setq url (replace-match "about://dtree/" nil nil url)
 		  orig url))
 	  ;; Split body and fragments.
-	  (and (string-match w3m-url-components-regexp url)
-	       (match-beginning 8)
+	  (w3m-string-match-url-components url)
+	  (and (match-beginning 8)
 	       (setq name (match-string 9 url)
 		     url (substring url 0 (match-beginning 8))))
 	  (w3m-process-do
@@ -7630,8 +7626,9 @@ session will start afresh."
 			    ;; When new URL has `name' portion, we have to
 			    ;; goto the base url because generated buffer
 			    ;; has no content at this moment.
-			    (and (string-match w3m-url-components-regexp url)
-				 (match-beginning 8)
+			    (and (progn
+				   (w3m-string-match-url-components url)
+				   (match-beginning 8))
 				 'redisplay))
 			charset post-data referer)
 	  ;; Delete useless newly created buffer if it is empty.

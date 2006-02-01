@@ -1,6 +1,7 @@
 ;;; w3m-cookie.el --- Functions for cookie processing
 
-;; Copyright (C) 2002, 2003, 2005 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2002, 2003, 2005, 2006
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Teranishi Yuuichi  <teranisi@gohome.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -173,11 +174,10 @@ If ask, ask user whether accept bad cookies or not."
 (defun w3m-parse-http-url (url)
   "Parse an absolute HTTP URL."
   (let (secure split)
-    (when (and (string-match w3m-url-components-regexp url)
-	       (or (string= (match-string 2 url) "http")
-		   (setq secure (string= (match-string 2 url) "https")))
-	       (match-beginning 4)
-	       (match-end 4))
+    (w3m-string-match-url-components url)
+    (when (and (match-beginning 4)
+	       (or (equal (match-string 2 url) "http")
+		   (setq secure (equal (match-string 2 url) "https"))))
       (setq split (save-match-data
 		    (split-string (match-string 4 url) ":")))
       (vector secure

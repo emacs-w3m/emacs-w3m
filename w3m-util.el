@@ -1,6 +1,6 @@
 ;;; w3m-util.el --- Utility macros and functions for emacs-w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -697,6 +697,68 @@ but it works even if the tag is considerably large.
 Note: this macro allows only strings for NAMES, that is, a form
 something like `(if foo \"bar\" \"baz\")' cannot be used."
   `(w3m-search-tag-1 ,(concat "<" (regexp-opt names t))))
+
+(defun w3m-string-match-url-components-1 (string)
+  "Subroutine used by `w3m-string-match-url-components'."
+
+  ;; ^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?
+  ;;  12            3  4          5       6  7        8 9
+
+  (let ((md (make-vector 20 nil))
+	pt)
+    (with-temp-buffer
+      (w3m-static-unless (featurep 'xemacs)
+	(set-buffer-multibyte (multibyte-string-p string)))
+      (insert string)
+      (goto-char (point-min))
+      (aset md 0 0)
+      (aset md 1 (1- (point-max)))
+      (when (looking-at "[^:/?#]+:")
+	(aset md 2 0)
+	(aset md 4 0)
+	(goto-char (match-end 0))
+	(aset md 3 (setq pt (1- (point))))
+	(aset md 5 (1- pt)))
+      (when (looking-at "//")
+	(aset md 6 (1- (point)))
+	(forward-char 2)
+	(aset md 8 (1- (point)))
+	(skip-chars-forward "^/?#")
+	(aset md 7 (setq pt (1- (point))))
+	(aset md 9 pt))
+      (aset md 10 (1- (point)))
+      (skip-chars-forward "^?#")
+      (aset md 11 (setq pt (1- (point))))
+      (when (eq (char-after) ??)
+	(aset md 12 pt)
+	(forward-char 1)
+	(aset md 14 (1- (point)))
+	(skip-chars-forward "^#")
+	(aset md 13 (setq pt (1- (point))))
+	(aset md 15 pt))
+      (unless (eobp)
+	(aset md 16 (1- (point)))
+	(aset md 18 (point))
+	(aset md 17 (setq pt (1- (point-max))))
+	(aset md 19 pt)))
+    (set-match-data (append md nil)))
+  0)
+
+(defconst w3m-url-components-regexp
+  "\\`\\(\\([^:/?#]+\\):\\)?\\(//\\([^/?#]*\\)\\)?\
+\\([^?#]*\\)\\(\\?\\([^#]*\\)\\)?\\(#\\(.*\\)\\)?\\'"
+  "Regexp used for parsing a URI Reference.
+It matches the potential four components and fragment identifier of a
+URI reference.  See RFC2396, Appendix B for details.")
+
+(defmacro w3m-string-match-url-components (string)
+  "Do the same thing as `(string-match w3m-url-components-regexp STRING)'.
+But this function should work even if STRING is considerably long."
+  `(let ((string ,string))
+     (condition-case nil
+	 (string-match w3m-url-components-regexp string)
+       (error ;; Stack overflow in regexp matcher
+	(w3m-string-match-url-components-1 string)))))
 
 (defsubst w3m-time-newer-p (a b)
   "Return t, if A is newer than B.  Otherwise return nil.

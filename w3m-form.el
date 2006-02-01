@@ -1,6 +1,6 @@
 ;;; w3m-form.el --- Stuffs to handle <form> tag
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -156,10 +156,10 @@ Files to save text are stored in the directory specified by the
   ;; "!CURRENT_URL!" is magic string of w3m.
   (if (and action (not (string= action "!CURRENT_URL!")))
       (w3m-expand-url action url)
-    (and url
-	 (string-match w3m-url-components-regexp url)
-	 (substring url 0 (or (match-beginning 6)
-			      (match-beginning 8))))))
+    (when url
+      (w3m-string-match-url-components url)
+      (substring url 0 (or (match-beginning 6)
+			   (match-beginning 8))))))
 
 (defun w3m-form-new (method action &optional baseurl charlst enctype)
   "Return new form object."
