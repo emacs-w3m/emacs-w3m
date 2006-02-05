@@ -1,3 +1,11 @@
+2006-02-05  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-x51.el (shimbun-x51-group-alist): Add new groups and
+	remove obsolete groups.
+	(shimbun-x51-obsolete-groups): New variable.
+	(shimbun-groups): Modify supporting obsoleted groups.
+	(shimbun-get-headers): Ditto.
+
 2006-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-url-components-regexp): Move to w3m-util.el.

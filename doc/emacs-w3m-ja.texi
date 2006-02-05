@@ -5291,9 +5291,9 @@ texfaq.qanda
 
 @item @uref{http://x51.org/, X51.org}
 x51.art x51.auction x51.blow x51.cabal x51.crime x51.disaster x51.edge
-x51.homme x51.info x51.life x51.love x51.media x51.medical x51.military
-x51.northkorea x51.oparts x51.phallic x51.psychics x51.religion
-x51.science x51.top x51.ufo x51.uma x51.xfiles
+x51.ghost x51.homme x51.info x51.life x51.love x51.media x51.medical
+x51.military x51.northkorea x51.oparts x51.phallic x51.psychics
+x51.religion x51.science x51.top x51.ufo x51.uma x51.xfiles
 
 @item @uref{http://www.exconn.net/, eXperts Connection (eXConn)}
 exconn.news

@@ -37,30 +37,28 @@
 (defvar shimbun-x51-group-alist
   '(("top"        . "index.rdf") ;; Top-RDF
     ("art"        . "x/art.php")
-    ("auction"    . "x/auction.php")
     ("blow"       . "x/blow.php")
-    ("cabal"      . "x/cabal.php")
     ("crime"      . "x/crime.php")
     ("disaster"   . "x/disaster.php")
     ("edge"       . "x/edge.php")
-    ("homme"      . "x/homme.php")
+    ("ghost"      . "x/ghost.php")
     ("info"       . "x/info.php")
     ("life"       . "x/life.php")
     ("love"       . "x/love.php")
     ("media"      . "x/media.php")
     ("medical"    . "x/medical.php")
-    ("military"   . "x/military.php")
-    ("news"       . "x/news.php")
-    ("northkorea" . "x/northkorea.php")
     ("oparts"     . "x/oparts.php")
     ("phallic"    . "x/phallic.php")
     ("psychic"    . "x/psychic.php")
     ("religion"   . "x/religion.php")
     ("science"    . "x/science.php")
-    ("story"      . "x/story.php")
     ("ufo"        . "x/ufo.php")
     ("uma"        . "x/uma.php")
     ("xfiles"     . "x/xfiles.php")))
+
+(defvar shimbun-x51-obsolete-groups
+  '("auction" "cabal" "homme" "military" "news" "northkorea" "story")
+  "Obsolete group names.")
 
 (defvar shimbun-x51-server-name "x51.org")
 (defvar shimbun-x51-from-address "webmaster@x51.org")
@@ -75,7 +73,9 @@
 !dzRSN]tO68A5{`1RzK`g+0Yo$0q2RFM\n 7m?9-o[R6ou-[9X$JI1HYc>A-a[+DGgI")))
 
 (luna-define-method shimbun-groups ((shimbun shimbun-x51))
-  (mapcar 'car shimbun-x51-group-alist))
+  (append
+   shimbun-x51-obsolete-groups
+   (mapcar 'car shimbun-x51-group-alist)))
 
 (defmacro shimbun-x51-concat-url (shimbun url)
   `(concat (shimbun-url-internal ,shimbun)
@@ -102,10 +102,14 @@
   (let* ((case-fold-search t)
 	 (url (shimbun-index-url shimbun))
 	 headers)
-    (if (string-match "top" (car (assoc (shimbun-current-group-internal
-					 shimbun)
-					shimbun-x51-group-alist)))
-	(luna-call-next-method)	;; call parent method
+    (cond
+     ((member (shimbun-current-group-internal shimbun)
+	      shimbun-x51-obsolete-groups)
+      (setq headers '()))
+     ((string-match "top"  (car (assoc (shimbun-current-group-internal shimbun)
+				       shimbun-x51-group-alist)))
+      (luna-call-next-method))	;; call parent method
+     (t
       (let* ((pages (shimbun-header-index-pages range))
 	     (beg (point-min))
 	     (end (point-max))
@@ -176,8 +180,8 @@
 			 date
 			 id "" 0 0 url)
 			headers))
-		(widen)))))
-	headers))))
+		(widen))))))
+      headers))))
 
 ;; normalize date
 (defun shimbun-x51-prepare-article (shimbun header)
