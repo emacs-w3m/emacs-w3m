@@ -17,7 +17,7 @@
 @ifinfo
 This file documents emacs-w3m, an Emacs interface to w3m.
 
-Copyright @copyright{} 2000, 2001, 2002, 2003, 2004, 2005
+Copyright @copyright{} 2000, 2001, 2002, 2003, 2004, 2005, 2006
 @w{TSUCHIYA Masatoshi}
 
 This edition is for emacs-w3m version @value{VERSION}.
@@ -45,7 +45,7 @@ Street, Fifth Floor, Boston, MA 02110-1301, USA.
 @page
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2000, 2001, 2002, 2003, 2004, 2005
+Copyright @copyright{} 2000, 2001, 2002, 2003, 2004, 2005, 2006
 @w{TSUCHIYA Masatoshi}
 
 This manual corresponds to emacs-w3m version @value{VERSION}.
