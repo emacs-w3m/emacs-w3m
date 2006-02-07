@@ -1,6 +1,6 @@
 ;;; sb-asahi.el --- shimbun backend for asahi.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -451,7 +451,7 @@ Every `.' in NAME will be replaced with `/'."
       ("travel.matsuri" "日本の祭り" nil ,@default2)
       ("travel.zeitaku" "地球の贅たく" nil ,@default2)
       ("wakamiya" "風考計 (論説主幹・若宮啓文)" nil
-       ,@(shimbun-asahi-make-regexp "column.wakayama"))))
+       ,@(shimbun-asahi-make-regexp "column.wakamiya"))))
   "Alist of group names, their Japanese translations, index pages,
 regexps and numbers.  Where index pages and regexps may contain the
 \"%s\" token which is replaced with group names, numbers point to the
@@ -511,6 +511,8 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	   index)
 	  ((string-match "\\`book\\." group)
 	   (shimbun-expand-url (substring index 5) "http://book.asahi.com/"))
+	  ((string-equal "wakamiya" group)
+	   "http://www.asahi.com/column/wakamiya/")
 	  (t
 	   (shimbun-expand-url (format index group) shimbun-asahi-url)))))
 

@@ -1,3 +1,9 @@
+2006-02-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Fix a directory
+	name in regexp of wakamiya group.
+	(shimbun-index-url): Return a correct url for wakamiya group.
+
 2006-02-05  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-x51.el (shimbun-x51-group-alist): Add new groups and
