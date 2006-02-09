@@ -163,11 +163,31 @@ Every `.' in NAME will be replaced with `/'."
 		  "日\\(?:\\cj\\)*" s0 "<")
 		 1 2 nil 3 4 5 6))
 	 (edu (shimbun-asahi-make-regexp "edu.news"))
-	 (health (shimbun-asahi-make-regexp "health.news")))
+	 (health (shimbun-asahi-make-regexp "health.news"))
+	 (international (list
+			 (concat
+			  "<a" s1 "href=\"/"
+			  ;; 1. url
+			  "\\(international/update/"
+			  ;; 2. month
+			  "\\([01][0-9]\\)"
+			  ;; 3. day
+			  "\\([0-3][0-9]\\)"
+			  "/"
+			  ;; 4. serial number
+			  "\\([a-z]*[0-9]+\\)"
+			  "\\.html\\)"
+			  "\">" s0
+			  ;; 5. subject
+			  "\\(" no-nl "\\)"
+			  s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
+			 1 4 nil 5 nil 2 3)))
     `(("book.author" "BOOK: 著者に会いたい" nil ,@book2)
       ("book.bestseller" "BOOK: ベストセラー快読" nil ,@book2)
-      ("book.bunko" "BOOK: ＰＯＰな文庫" nil ,@book2)
+      ("book.booktimes" "BOOK: BOOK TIMES" nil ,@book2)
+      ("book.bunko" "BOOK: 愛でたい文庫" nil ,@book2)
       ("book.comic" "BOOK: コミック教養講座" nil ,@book2)
+      ("book.edu" "BOOK: 教育・こどもの本" nil ,@book2)
       ("book.hondana" "BOOK: 話題の本棚" "book/hondana/index.html" ,@book2)
       ("book.navi" "BOOK: 読書ナビ" nil ,@book2)
       ("book.news" "BOOK: 出版ニュース" nil
@@ -216,18 +236,21 @@ Every `.' in NAME will be replaced with `/'."
       ("car.newcar" "新車情報" nil ,@default2)
       ("car.newcarbywebcg" "新車発表会" nil ,@default2)
       ("culture" "文化・芸能" "%s/list.html" ,@default)
-      ("culture.column" "もやしのひげ" "culture/list_moyashi.html"
+      ("culture.column" "もやしのひげ" "culture/column/moyashi/"
        ,@(shimbun-asahi-make-regexp "culture.column.moyashi"))
+      ("culture.yurufemi" "ゆるゆるフェミニン" "culture/column/yurufemi/"
+       ,@(shimbun-asahi-make-regexp "culture.column.yurufemi"))
       ("digital" "デジタル機器" "digital/av/"
        ,@(shimbun-asahi-make-regexp "digital.av"))
       ("digital.apc" "雑誌「ASAHIパソコン」ニュース" nil ,@default2)
+      ("digital.av" "デジタル機器" nil ,@default2)
       ("digital.bcnnews" "eビジネス情報 (提供：ＢＣＮ)" nil ,@default2)
       ("digital.column01" "デジタルコラム" nil ,@default2)
       ("digital.hotwired" "HotWired Japan" nil ,@default2)
       ("digital.internet" "ネット・ウイルス" nil ,@default2)
       ("digital.mobile" "携帯電話" nil ,@default2)
       ("digital.nikkanko" "日刊工業新聞ニュース" nil ,@default2)
-      ("digital.pc" "パソコン" nil ,@default2)
+      ("digital.pc" "ＰＣ・ゲーム" nil ,@default2)
       ("editorial" "社説" "paper/editorial.html"
        ,(concat
 	 "<a" s1 "href=\"\\./"
@@ -247,6 +270,7 @@ Every `.' in NAME will be replaced with `/'."
        ,@(shimbun-asahi-make-regexp "edu.column.ikuji"))
       ("edu.it" "IT教育" "edu/news/it.html" ,@edu)
       ("edu.kosodate" "子育て" "edu/news/kosodate.html" ,@edu)
+      ("edu.news" "教育一般" nil ,@edu)
       ("edu.nyushi" "大学・入試" "edu/news/nyushi.html" ,@edu)
       ("edu.tamate" "ののちゃんのふしぎ玉手箱" "edu/nie/tamate/"
        ,@(shimbun-asahi-make-regexp "edu.nie.tamate.kiji"))
@@ -265,11 +289,25 @@ Every `.' in NAME will be replaced with `/'."
       ("housing.amano" "天野彰のいい家いい家族" nil ,@default2)
       ("housing.column" "住まいのお役立ちコラム" nil ,@default2)
       ("housing.diary" "小さな家の生活日記" nil ,@default2)
+      ("housing.soudan" "ここが知りたい！" nil ,@default2)
       ("housing.world" "世界のウチ" nil ,@default2)
       ("igo" "囲碁" "%s/news/" ,@(shimbun-asahi-make-regexp "igo.news"))
       ("international" "国際" "%s/list.html" ,@default)
+      ("international.america" "南北アメリカ" "international/america.html"
+       ,@international)
+      ("international.asia" "アジア・太平洋" "international/asia.html"
+       ,@international)
+      ("international.asiamachi" "アジアの街角" nil ,@default2)
+      ("international.europe" "ヨーロッパ" "international/europe.html"
+       ,@international)
+      ("international.etc" "国連・その他" "international/etc.html"
+       ,@international)
       ("international.jinmin" "人民日報" "international/jinmin/index.html"
        ,@default2)
+      ("international.middleeast" "中東・アフリカ"
+       "international/middleeast.html" ,@international)
+      ("international.seoul" "スパイシー！ソウル" nil ,@default2)
+      ("international.shien" "国際支援の現場から" nil ,@default2)
       ("job" "就職・転職" "%s/news/"
        ,@(shimbun-asahi-make-regexp "job.news"))
       ("job.special" "週刊朝日・ＡＥＲＡから" nil
@@ -281,22 +319,20 @@ Every `.' in NAME will be replaced with `/'."
 	 "：")
        ,@(cdr default2) nil 7)
       ("kansai" "関西" "%s/news/" ,@(shimbun-asahi-make-regexp "kansai.news"))
-      ("kansai.horiekenichi" "堀江謙一の世界一周ひとりぼっち" nil ,@default2)
-      ("kansai.umaimon" "うまいもん" nil ,@default2)
-      ("kansai.fuukei" "風景を歩く" nil ,@default2)
-      ("kansai.yotsuba" "よつ葉びより" nil ,@default2)
-      ("kansai.smile" "スマイルスタイル" nil ,@default2)
-      ("kansai.keiki" "け〜きの“ええ話”" nil ,@default2)
-      ("kansai.okiniiri" "DJのお気に入り" nil ,@default2)
-      ("kansai.syun" "旬の顔" nil ,@default2)
-      ("kansai.takara" "たから図鑑" nil ,@default2)
+      ("kansai.honma" "かきくけこどものはひふへほんま？" nil ,@default2)
+      ("kansai.beichou" "米朝口まかせ" nil ,@default2)
       ("kansai.kansaiisan" "勝手に関西世界遺産" nil ,@default2)
+      ("kansai.umaimon" "うまいもん" nil ,@default2)
+      ("kansai.sweets" "粋・すいーつ" nil ,@default2)
+      ("kansai.fuukei" "新 風景を歩く" "kansai/fuukei2/"
+       ,@(shimbun-asahi-make-regexp "kansai.fuukei2"))
+      ("kansai.otoriyose" "わくわくお取り寄せ" nil ,@default2)
+      ("kansai.sakana" "やさしい肴" nil ,@default2)
       ("kansai.depa" "デパ地下ＮＥＷＳ" nil ,@default2)
-      ("kansai.kaban" "かばんの中身" nil ,@default2)
-      ("kansai.kyosho" "巨匠に学べ" nil ,@default2)
+      ("kansai.kataritsugu" "語りつぐ戦争" nil ,@default2)
       ("kansai.okan" "母さんの知恵袋" nil ,@default2)
-      ("kansai.densetsu" "ほんま？関西伝説" nil ,@default2)
-      ("kansai.onayami" "みうらじゅんのお悩み祭り" nil ,@default2)
+      ("kansai.madam" "夕刊マダム" nil ,@default2)
+      ("kansai.heibon" "週刊★平凡★女性" nil ,@default2)
       ("kansai.sanshi" "三枝の笑ウインドウ" nil ,@default2)
       ("life" "暮らし" "%s/list.html" ,@default)
       ("life.column" "暮らしコラム" nil
@@ -339,11 +375,6 @@ Every `.' in NAME will be replaced with `/'."
 	 "\\(" no-nl "\\)"
 	 s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
        1 nil 2 6 3 4 5)
-      ("nankyoku" "南極プロジェクト" "%s/news/"
-       ,@(shimbun-asahi-make-regexp "nankyoku.news"))
-      ("nankyoku.borderless" "国境のない大陸から" nil ,@default2)
-      ("nankyoku.people" "越冬隊の人びと" nil ,@default2)
-      ("nankyoku.whitemail" "WhiteMail＠南極" nil ,@default2)
       ("national" "社会" "%s/list.html" ,@default)
       ("national.calamity" "災害・交通情報" "national/calamity.html"
        ,@default3)
@@ -449,9 +480,49 @@ Every `.' in NAME will be replaced with `/'."
        ,@(shimbun-asahi-make-regexp "travel.news"))
       ("travel.kaido" "司馬遼太郎・街道をゆく" nil ,@default2)
       ("travel.matsuri" "日本の祭り" nil ,@default2)
-      ("travel.zeitaku" "地球の贅たく" nil ,@default2)
+      ("travel.zeitaku" "地球の贅たく" nil
+       ,(concat "<a" s1 "href=\""
+		;; 1. url
+		"\\(http://www\\.asahi\\.com/travel/zeitaku/"
+		;; 2. serial number
+		"\\([a-z]*"
+		;; 3. year
+		"\\(20[0-9][0-9]\\)"
+		;; 4. month
+		"\\([01][0-9]\\)"
+		;; 5. day
+		"\\([0-3][0-9]\\)"
+		"[0-9]+\\)"
+		"\\.html\\)"
+		"\">" s0
+		;; 6. subject
+		"\\(" no-nl "\\)"
+		s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
+       1 nil 2 6 3 4 5)
       ("wakamiya" "風考計 (論説主幹・若宮啓文)" nil
-       ,@(shimbun-asahi-make-regexp "column.wakamiya"))))
+       ,@(shimbun-asahi-make-regexp "column.wakamiya"))
+      ("world.china" "中国特集" nil
+       ,@(shimbun-asahi-make-regexp "world.china.news"))
+      ("world.germany" "ドイツ年特集" nil
+       ,@(shimbun-asahi-make-regexp "world.germany.news"))
+
+      ;; The following groups are obsolete, though old articles still
+      ;; can be read.
+      ("kansai.densetsu" "ほんま？関西伝説" nil ,@default2)
+      ("kansai.kaban" "かばんの中身" nil ,@default2)
+      ("kansai.keiki" "け〜きの“ええ話”" nil ,@default2)
+      ("kansai.kyosho" "巨匠に学べ" nil ,@default2)
+      ("kansai.okiniiri" "DJのお気に入り" nil ,@default2)
+      ("kansai.onayami" "みうらじゅんのお悩み祭り" nil ,@default2)
+      ("kansai.smile" "スマイルスタイル" nil ,@default2)
+      ("kansai.syun" "旬の顔" nil ,@default2)
+      ("kansai.takara" "たから図鑑" nil ,@default2)
+      ("kansai.yotsuba" "よつ葉びより" nil ,@default2)
+      ("nankyoku" "南極プロジェクト" "%s/news/"
+       ,@(shimbun-asahi-make-regexp "nankyoku.news"))
+      ("nankyoku.borderless" "国境のない大陸から" nil ,@default2)
+      ("nankyoku.people" "越冬隊の人びと" nil ,@default2)
+      ("nankyoku.whitemail" "WhiteMail＠南極" nil ,@default2)))
   "Alist of group names, their Japanese translations, index pages,
 regexps and numbers.  Where index pages and regexps may contain the
 \"%s\" token which is replaced with group names, numbers point to the
@@ -767,6 +838,19 @@ and tenjin, it tries to fetch the article for that day if it failed."
 		    (if images
 			"<br>\n"
 		      "\n"))))))
+     ((string-equal group "culture.yurufemi")
+      (let (start comics)
+	(while (and (search-forward "alt=\"マンガ\"" nil t)
+		    (re-search-backward "<table[\t\n ]+" nil t)
+		    (progn
+		      (setq start (match-beginning 0))
+		      (search-forward "</table>" nil t))
+		    (push (buffer-substring start (match-end 0)) comics)))
+	(erase-buffer)
+	(when comics
+	  (insert "<!-- Start of Kiji -->\n"
+		  (mapconcat 'identity comics "\n")
+		  "\n<!-- End of Kiji -->\n"))))
      ((string-equal group "editorial")
       (let ((regexp "\
 <h[0-9]\\(?:[\t\n ]+[^>]+\\)?>[\t\n ]*<a[\t\n ]+name=\"syasetu[0-9]+\">")
@@ -874,6 +958,20 @@ and tenjin, it tries to fetch the article for that day if it failed."
       (when (re-search-forward "<div[\t\n ]+id=\"kijih\">[\t\n ]*" nil t)
 	(insert "<!-- Start of Kiji -->")))
      ((string-equal group "rss"))
+     ((string-equal group "world.china")
+      (let (start)
+	(when (and (re-search-forward "\
+<H2>中国最新ニュース</H2>[\t\n ]*<H1>[^>]+</H1>[\t\n ]*<p>[\t\n ]*"
+				      nil t)
+		   (progn
+		     (setq start (match-end 0))
+		     (re-search-forward "\
+<p[^>]*>[\t\n ]*([01][0-9]/[0-3][0-9])[\t\n ]*</p>"
+					nil t)))
+	  (delete-region (match-end 0) (point-max))
+	  (insert "\n<!-- End of Kiji -->")
+	  (delete-region (point-min) (goto-char start))
+	  (insert "<!-- Start of Kiji -->\n"))))
      (t
       (when (re-search-forward
 	     (eval-when-compile
