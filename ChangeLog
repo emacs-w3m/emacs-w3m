@@ -1,3 +1,22 @@
+2006-02-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Remove
+	kansai.horiekenichi group;
+
+	add groups book.booktimes, book.edu, culture.yurufemi, digital.av,
+	edu.news, housing.soudan, international.america,
+	international.asia, international.asiamachi, international.etc,
+	international.europe, international.middleeast,
+	international.seoul, international.shien, kansai.beichou,
+	kansai.heibon, kansai.honma, kansai.kataritsugu, kansai.madam,
+	kansai.otoriyose, kansai.sakana, kansai.sweets, world.china, and
+	world.germany;
+
+	fix index urls of culture.column and kansai.fuukei groups.
+
+	(shimbun-asahi-prepare-article): Add special treatments for
+	culture.yurufemi and world.china groups.
+
 2006-02-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Fix a directory
