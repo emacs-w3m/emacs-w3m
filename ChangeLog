@@ -1,3 +1,14 @@
+2006-02-12  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-x51.el (shimbun-x51-url): Remove it.
+	(shimbun-x51-group-alist): Renew URL rule and add new groups.
+	(shimbun-x51-content-start, shimbun-x51-content-end): Add `anima'
+	rule.
+	(shimbun-x51-concat-url): Renew generate rule.
+	(shimbun-rss-build-message-id): Add `anima' id generate rule.
+	(shimbun-get-headers): Fix casing type rdf,normal pages and
+	obsolete groups.
+
 2006-02-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Remove

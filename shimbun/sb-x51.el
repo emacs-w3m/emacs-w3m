@@ -33,28 +33,29 @@
 
 (luna-define-class shimbun-x51 (shimbun-rss) ())
 
-(defvar shimbun-x51-url "http://x51.org/")
 (defvar shimbun-x51-group-alist
-  '(("top"        . "index.rdf") ;; Top-RDF
-    ("art"        . "x/art.php")
-    ("blow"       . "x/blow.php")
-    ("crime"      . "x/crime.php")
-    ("disaster"   . "x/disaster.php")
-    ("edge"       . "x/edge.php")
-    ("ghost"      . "x/ghost.php")
-    ("info"       . "x/info.php")
-    ("life"       . "x/life.php")
-    ("love"       . "x/love.php")
-    ("media"      . "x/media.php")
-    ("medical"    . "x/medical.php")
-    ("oparts"     . "x/oparts.php")
-    ("phallic"    . "x/phallic.php")
-    ("psychic"    . "x/psychic.php")
-    ("religion"   . "x/religion.php")
-    ("science"    . "x/science.php")
-    ("ufo"        . "x/ufo.php")
-    ("uma"        . "x/uma.php")
-    ("xfiles"     . "x/xfiles.php")))
+  '(("top"        . "http://x51.org/index.rdf") ;; Top-RDF
+    ("anima"      . "http://anima.x51.org/index.rdf")
+    ("enema"      . "http://enema.x51.org/index.rdf")
+    ("art"        . "http://x51.org/x/art.php")
+    ("blow"       . "http://x51.org/x/blow.php")
+    ("crime"      . "http://x51.org/x/crime.php")
+    ("disaster"   . "http://x51.org/x/disaster.php")
+    ("edge"       . "http://x51.org/x/edge.php")
+    ("ghost"      . "http://x51.org/x/ghost.php")
+    ("info"       . "http://x51.org/x/info.php")
+    ("life"       . "http://x51.org/x/life.php")
+    ("love"       . "http://x51.org/x/love.php")
+    ("media"      . "http://x51.org/x/media.php")
+    ("medical"    . "http://x51.org/x/medical.php")
+    ("oparts"     . "http://x51.org/x/oparts.php")
+    ("phallic"    . "http://x51.org/x/phallic.php")
+    ("psychic"    . "http://x51.org/x/psychic.php")
+    ("religion"   . "http://x51.org/x/religion.php")
+    ("science"    . "http://x51.org/x/science.php")
+    ("ufo"        . "http://x51.org/x/ufo.php")
+    ("uma"        . "http://x51.org/x/uma.php")
+    ("xfiles"     . "http://x51.org/x/xfiles.php")))
 
 (defvar shimbun-x51-obsolete-groups
   '("auction" "cabal" "homme" "military" "news" "northkorea" "story")
@@ -64,8 +65,8 @@
 (defvar shimbun-x51-from-address "webmaster@x51.org")
 (defvar shimbun-x51-auther "X51")
 (defvar shimbun-x51-coding-system 'utf-8)
-(defvar shimbun-x51-content-start "<!-- Article -->")
-(defvar shimbun-x51-content-end "<!---/ Article --->")
+(defvar shimbun-x51-content-start "<!-- Article -->\\|<div class=\"blogbody\">")
+(defvar shimbun-x51-content-end "<!---/ Article --->\\|<div class=\"comments-body\">")
 
 ;; X-Face create from banner
 (defvar shimbun-x51-x-face-alist
@@ -78,8 +79,7 @@
    (mapcar 'car shimbun-x51-group-alist)))
 
 (defmacro shimbun-x51-concat-url (shimbun url)
-  `(concat (shimbun-url-internal ,shimbun)
-	   (cdr (assoc (shimbun-current-group-internal ,shimbun)
+  `(concat (cdr (assoc (shimbun-current-group-internal ,shimbun)
 		       shimbun-x51-group-alist))
 	   ,url))
 
@@ -88,14 +88,20 @@
 
 (luna-define-method shimbun-rss-build-message-id ((shimbun shimbun-x51)
 						  url date)
-  (unless (string-match
-	   "http://[^\/]+/x/\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\).php"
-	   url)
-    (error "Cannot find message-id base"))
-  (format "<%s%s%s@x51.org>"
-	  (match-string-no-properties 1 url)
-	  (match-string-no-properties 2 url)
-	  (match-string-no-properties 3 url)))
+  (cond
+   ((string-match
+     "http://[^\/]+/x/\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\).php"
+     url)
+    (format "<%s%s%s@x51.org>"
+	    (match-string-no-properties 1 url)
+	    (match-string-no-properties 2 url)
+	    (match-string-no-properties 3 url)))
+   ((string-match
+     "http://[^\/]+/x/\\([_a-zA-Z0-9]+\\)/\\([_a-zA-Z0-9]+\\).php"
+     url)
+    (format "<%s@x51.org>" (md5 url)))
+   (t
+    nil)))
 
 (luna-define-method shimbun-get-headers :around ((shimbun shimbun-x51)
 						 &optional range)
@@ -106,9 +112,9 @@
      ((member (shimbun-current-group-internal shimbun)
 	      shimbun-x51-obsolete-groups)
       (setq headers '()))
-     ((string-match "top"  (car (assoc (shimbun-current-group-internal shimbun)
-				       shimbun-x51-group-alist)))
-      (luna-call-next-method))	;; call parent method
+     ((member (shimbun-current-group-internal shimbun)
+	      '("top" "anima" "enema"))
+      (setq headers (luna-call-next-method)))	;; call parent method
      (t
       (let* ((pages (shimbun-header-index-pages range))
 	     (beg (point-min))
