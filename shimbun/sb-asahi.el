@@ -961,7 +961,7 @@ and tenjin, it tries to fetch the article for that day if it failed."
      ((string-equal group "world.china")
       (let (start)
 	(when (and (re-search-forward "\
-<H2>中国最新ニュース</H2>[\t\n ]*<H1>[^>]+</H1>[\t\n ]*<p>[\t\n ]*"
+<H2>中国最新ニュース</H2>[\t\n ]*<H1>[^>]+</H1>[\t\n ]*"
 				      nil t)
 		   (progn
 		     (setq start (match-end 0))

@@ -1,3 +1,8 @@
+2006-02-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Fix content
+	start regexp for world.china group.
+
 2006-02-12  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-x51.el (shimbun-x51-url): Remove it.
