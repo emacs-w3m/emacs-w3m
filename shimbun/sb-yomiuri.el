@@ -1,6 +1,6 @@
 ;;; sb-yomiuri.el --- shimbun backend for www.yomiuri.co.jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005 Authors
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006 Authors
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -154,9 +154,9 @@
        ,(concat
 	 "<a" s1 "href=\"/"
 	 ;; 1. url
-	 "\\(%s/"
+	 "\\(\\(?:torino\\|%s\\)"
 	 ;; 2. subgroup
-	 "\\([^/]+\\)"
+	 "\\(?:/\\([^/]+\\)\\)?"
 	 "/news/"
 	 ;; 3. serial number[1]
 	 "\\("
@@ -248,34 +248,41 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 
 (defun shimbun-yomiuri-get-top-header (group from)
   "Return a list of a header for the top news."
-  (when (re-search-forward
-	 (format
-	  (eval-when-compile
-	    (let ((s0 "[\t\n ]*")
-		  (s1 "[\t\n ]+"))
-	      (concat
-	       "<a" s1 "href=\"/"
-	       ;; 1. url
-	       "\\(%s/"
-	       ;; 2. subgroup
-	       "\\(?:\\([^/]+\\)/\\)?"
-	       "news/"
-	       ;; 3. serial number[1]
-	       "\\("
-	       ;; 4. year
-	       "\\(20[0-9][0-9]\\)"
-	       "[01][0-9][0-3][0-9]\\)"
-	       ;; 5. serial number[2]
-	       "\\([^.]+\\)"
-	       "[^\"]+\\)"
-	       "\"[^>]*>" s0
-	       ;; 6. subject
-	       "\\([^<]+\\)"
-	       s0)))
-	  group)
-	 nil t)
+  (when (and (search-forward "<!--// top_news_start -->" nil t)
+	     (re-search-forward
+	      (format
+	       (eval-when-compile
+		 (let ((s0 "[\t\n ]*")
+		       (s1 "[\t\n ]+"))
+		   (concat
+		    "<a" s1 "href=\"/"
+		    ;; 1. url
+		    "\\(%s/"
+		    ;; 2. subgroup
+		    "\\(?:\\([^/]+\\)/\\)?"
+		    "news/"
+		    ;; 3. serial number[1]
+		    "\\("
+		    ;; 4. year
+		    "\\(20[0-9][0-9]\\)"
+		    "[01][0-9][0-3][0-9]\\)"
+		    ;; 5. serial number[2]
+		    "\\([^.]+\\)"
+		    "[^\"]+\\)"
+		    "\"[^>]*>" s0
+		    ;; 6. subject
+		    "\\([^<]+\\)"
+		    s0)))
+	       (if (string-equal "sports" group)
+		   "\\(?:torino\\|sports\\)"
+		 group))
+	      nil t))
     (let* ((url (shimbun-expand-url (match-string 1) shimbun-yomiuri-url))
-	   (subgroup (match-string 2))
+	   (subgroup (if (and (string-equal "sports" group)
+			      (save-match-data
+				(string-match "\\`torino/" (match-string 1))))
+			 "torino"
+		       (match-string 2)))
 	   (id (concat "<" (match-string 3) "." (match-string 5)
 		       "%" (when subgroup
 			     (concat subgroup "."))
@@ -338,8 +345,13 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 		    (shimbun-yomiuri-japanese-string-to-number
 		     (match-string (nth 9 numbers)))
 		  (string-to-number (match-string (nth 6 numbers))))
-	    subgroup (when (nth 10 numbers)
-		       (match-string (nth 10 numbers))))
+	    subgroup (if (and (string-equal "sports" group)
+			      (save-match-data
+				(string-match "\\`torino/"
+					      (match-string (nth 0 numbers)))))
+			 "torino"
+		       (when (nth 10 numbers)
+			 (match-string (nth 10 numbers)))))
       (cond ((string-equal group "editorial")
 	     (setq subject
 		   (format

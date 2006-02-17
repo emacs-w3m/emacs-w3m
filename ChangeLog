@@ -1,3 +1,10 @@
+2006-02-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Support
+	Torino news in sports group.
+	(shimbun-yomiuri-get-headers): Ditto.
+	(shimbun-yomiuri-get-top-header): Ditto; skip photo news.
+
 2006-02-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Fix content
