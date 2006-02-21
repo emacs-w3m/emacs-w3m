@@ -455,8 +455,26 @@ Every `.' in NAME will be replaced with `/'."
 	 s0)
        1 nil 2 6 3 4 5)
       ("shougi" "将棋" "%s/news/" ,@(shimbun-asahi-make-regexp "shougi.news"))
-      ("sports" "スポーツ" "%s/list.html" ,@default)
-      ("sports.baseball" "野球" "sports/bb/"
+      ("sports" "スポーツ" "%s/list.html"
+       ,(concat
+	 "<a" s1 "href=\"/?"
+	 ;; 1. url
+	 "\\(\\(?:sports/update/\
+\\|http://www2.asahi.com/torino2006/news/[a-z]+2006\\)"
+	 ;; 2. month
+	 "\\([01][0-9]\\)"
+	 ;; 3. day
+	 "\\([0-3][0-9]\\)"
+	 "/?"
+	 ;; 4. serial number
+	 "\\([a-z]*[0-9]+\\)"
+	 "\\.html\\)"
+	 "\">" s0
+	 ;; 5. subject
+	 "\\(" no-nl "\\)"
+	 s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
+       1 4 nil 5 nil 2 3)
+    ("sports.baseball" "野球" "sports/bb/"
        ,@(shimbun-asahi-make-regexp "sports.bb"))
       ("sports.column" "スポーツコラム" nil ,@default2)
       ("sports.football" "サッカー" "sports/fb/"
