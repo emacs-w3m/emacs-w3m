@@ -190,8 +190,10 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>")))
   (let ((case-fold-search t) (next) (credit))
     (goto-char (point-min))
     (when (re-search-forward
-	   "<b><a href=\"\\([^\"]+\\)\">次のページ</a></b>" nil t)
-      (setq next (shimbun-expand-url (match-string 1) url)))
+	   "<b><a href=\"\\([^\"]+\\)\">次のページ</a></b>\
+\\|<span id=\"next\"><a href=\"\\([^\"]+\\)\">次のページへ</a></span>" nil t)
+      (setq next (shimbun-expand-url (or (match-string 1) (match-string 2))
+				     url)))
     (when (and (not cont)
 	       (progn
 		 (goto-char (point-min))

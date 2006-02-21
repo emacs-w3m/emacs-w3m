@@ -1,5 +1,8 @@
 2006-02-21 Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-itmedia.el (shimbun-itmedia-retrieve-next-pages):
+	Improve regexp matching next page tags.
+
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Support Torino
 	news in sports group.
 
