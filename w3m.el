@@ -4276,13 +4276,21 @@ Return a list which includes:
 	    (setq type (substring type 0 (match-beginning 0)))))
 	(setq type (downcase type)))
       (setq w3m-current-ssl (cdr (assoc "w3m-ssl-certificate" headers)))
+      (when (string-match "\\`ftps?:" url)
+	(setq url (or (cdr (assoc "w3m-current-url" headers))
+		      url)))
       (list status
-	    (or type (w3m-local-content-type url))
-	    (or charset
-		(and (eq w3m-type 'w3mmee)
-		     (setq charset
-			   (cdr (assoc "w3m-document-charset" headers)))
-		     (car (split-string charset))))
+	    (if (string-match "\\`ftps?:.*/\\'" url)
+		"text/html"
+	      (or type (w3m-local-content-type url)))
+	    (if (string-match "\\`ftps?:.*/\\'" url)
+		(if w3m-accept-japanese-characters
+		    "w3m-euc-japan" "w3m-iso-latin-1")
+	      (or charset
+		  (and (eq w3m-type 'w3mmee)
+		       (setq charset
+			     (cdr (assoc "w3m-document-charset" headers)))
+		       (car (split-string charset)))))
 	    (let ((v (cdr (assoc "content-length" headers))))
 	      (and v (setq v (string-to-number v)) (> v 0) v))
 	    (cdr (or (assoc "content-encoding" headers)
@@ -4290,9 +4298,7 @@ Return a list which includes:
 		       (assoc "x-w3m-content-encoding" headers))))
 	    (let ((v (cdr (assoc "last-modified" headers))))
 	      (and v (w3m-time-parse-string v)))
-	    (or (when (string-match "\\`ftps?:" url)
-		  (cdr (assoc "w3m-current-url" headers)))
-		(let ((v (cdr (assoc "location" headers))))
+	    (or (let ((v (cdr (assoc "location" headers))))
 		  ;; RFC2616 says that the field value of the Location
 		  ;; response-header consists of a single absolute
 		  ;; URI.  However, some broken servers return
@@ -4359,12 +4365,7 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 	  (if (string-match "\\`ftps?:" url)
 	      (progn
 		(setq url (nth 6 attr))
-		(if (string-match "/\\'" url)
-		    (list "text/html"
-			  (if w3m-accept-japanese-characters
-			      "w3m-euc-japan" "w3m-iso-latin-1")
-			  nil nil nil url)
-		  (list (w3m-local-content-type url) nil nil nil nil url)))
+		(cdr attr))
 	    (w3m-cache-header url header)
 	    (if (memq (car attr) '(301 302 303 304 305 306 307))
 		(if (zerop counter)
@@ -4582,7 +4583,8 @@ It will put the retrieved contents into the current buffer.  See
 		(set-buffer-multibyte nil)
 		(w3m-w3m-retrieve-1 url post-data referer no-cache
 				    (or w3m-follow-redirection 0) handler)))
-      (when (memq (car attr) '(200 300))
+      (when (or (not (string-match "\\`https?:" url))
+		(memq (car attr) '(200 300)))
 	(if (or no-decode
 		(w3m-decode-encoded-contents (nth 4 attr)))
 	    (let ((temp-buffer (current-buffer)))
