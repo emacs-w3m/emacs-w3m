@@ -4362,19 +4362,15 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 		    (w3m-w3m-dump-head url handler)))
       (when header
 	(let ((attr (w3m-w3m-parse-header url header)))
-	  (if (string-match "\\`ftps?:" url)
-	      (progn
-		(setq url (nth 6 attr))
-		(cdr attr))
-	    (w3m-cache-header url header)
-	    (if (memq (car attr) '(301 302 303 304 305 306 307))
-		(if (zerop counter)
-		    ;; Redirect counter exceeds `w3m-follow-redirection'.
-		    nil
-		  ;; Follow redirection.
-		  (w3m-w3m-attributes-1 (nth 6 attr) no-cache
-					(1- counter) handler))
-	      (cdr attr))))))))
+	  (w3m-cache-header url header)
+	  (if (memq (car attr) '(301 302 303 304 305 306 307))
+	      (if (zerop counter)
+		  ;; Redirect counter exceeds `w3m-follow-redirection'.
+		  nil
+		;; Follow redirection.
+		(w3m-w3m-attributes-1 (nth 6 attr) no-cache
+				      (1- counter) handler))
+	    (cdr attr)))))))
 
 (defun w3m-w3m-expand-arguments (arguments)
   (apply 'append
