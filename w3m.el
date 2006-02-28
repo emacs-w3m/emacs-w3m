@@ -4051,8 +4051,11 @@ for decoding when the cdr that the data specify is not available.")
 	(goto-char (point-min))
 	(while (re-search-forward "\240\\|&#160;\\|&#xa0;" nil t)
 	  (replace-match "&nbsp;"))))
-    (set-buffer-multibyte t)
-    (decode-coding-region (point-min) (point-max) w3m-current-coding-system)))
+    (insert
+     (prog1
+	 (decode-coding-string (buffer-string) w3m-current-coding-system)
+       (erase-buffer)
+       (set-buffer-multibyte t)))))
 
 (defun w3m-x-moe-decode-buffer ()
   (let ((args '("-i" "-cs" "x-moe-internal"))

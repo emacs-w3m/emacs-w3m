@@ -1,3 +1,8 @@
+2006-02-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-decode-buffer): Decode buffer's string outside the
+	buffer.
+
 2006-02-26  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-w3m-parse-header): When the url matchs to ftp,
