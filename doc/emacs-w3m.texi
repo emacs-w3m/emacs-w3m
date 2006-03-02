@@ -4661,6 +4661,10 @@ itmedia.anchordesk itmedia.bursts itmedia.enterprise itmedia.games
 itmedia.lifestyle itmedia.mobile itmedia.news itmedia.pcupdate
 itmedia.technology
 
+@item @uref{http://plusd.itmedia.co.jp/, ITmedia +D}
+itmedia+D.plusd itmedia+D.mobile itmedia+D.pcupdate itmedia+D.lifestyle
+itmedia+D.games itmedia+D.docomo itmedia+D.au_kddi itmedia+D.vodafon
+
 @item @uref{http://www.japantimes.co.jp/, Japan Times}
 japantimes.general japantimes.business
 

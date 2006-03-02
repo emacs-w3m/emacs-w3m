@@ -1,3 +1,7 @@
+2006-03-02  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-itmedia+D.el: New file.
+
 2006-02-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-decode-buffer): Decode buffer's string outside the
