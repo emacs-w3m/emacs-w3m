@@ -4,7 +4,7 @@
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;          Akihiro Arisawa    <ari@atesoft.advantest.co.jp>,
+;;          ARISAWA Akihiro    <ari@mbf.sphere.ne.jp>,
 ;;          Katsumi Yamaoka    <yamaoka@jpl.org>,
 ;;          Yuuichi Teranishi  <teranisi@gohome.org>
 ;; Keywords: news
@@ -959,7 +959,7 @@ shimbun group."
 					     gnus-level-default-subscribed))
 	  (gnus-verbose 0)
 	  (utf8 (mm-coding-system-p 'utf-8))
-	  (grps (nreverse (shimbun-groups (shimbun-open server))))
+	  (grps (reverse (shimbun-groups (shimbun-open server))))
 	  (inhibit-read-only t)
 	  grp group)
       (if grps
