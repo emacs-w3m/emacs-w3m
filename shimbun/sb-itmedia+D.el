@@ -1,4 +1,4 @@
-;;; sb-yahoo-auctions.el --- shimbun backend for ITmedia +D
+;;; sb-itmedia+D.el --- shimbun backend for ITmedia +D
 
 ;; Copyright (C) 2006  ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
 
