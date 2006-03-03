@@ -26,22 +26,17 @@
 
 (require 'shimbun)
 (require 'sb-rss)
+(require 'sb-itmedia)
 
 (luna-define-class shimbun-itmedia+D (shimbun-rss) ())
 
-(defvar shimbun-itmedia+D-group-list
+(defvar shimbun-itmedia+D-groups
   '("plusd" "mobile" "pcupdate" "lifestyle" "games" "docomo" "au_kddi"
     "vodafon"))
-
-(defvar shimbun-itmedia+D-content-start "<!--BODY-->")
-(defvar shimbun-itmedia+D-content-end "<!--BODYEND-->")
 (defvar shimbun-itmedia+D-x-face-alist
   '(("default" . "X-Face: #Ur~tK`JhZFFHPEVGKEi`MS{55^~&^0KUuZ;]-@WQ[8\
 @,Ex'EeAAE}6xF<K#]pULF@5r24J
  |8/oP)(lCAzF0}.C@@}!k8!Qiz6b{]V")))
-
-(luna-define-method shimbun-groups ((shimbun shimbun-itmedia+D))
-  shimbun-itmedia+D-group-list)
 
 (luna-define-method shimbun-from-address ((shimbun shimbun-itmedia+D))
   (format "ITmedia +D (%s)" (shimbun-current-group shimbun)))
@@ -56,6 +51,9 @@
 	   "\\([0-9][0-9][0-1][0-9]/[0-3][0-9]/news[0-9]+\\).html$" url)
     (error "Cannot find message-id base"))
   (format "<%s@plusd.itmedia.co.jp>" (match-string 1 url)))
+
+(luna-define-method shimbun-make-contents ((shimbun shimbun-itmedia+D) header)
+  (shimbun-itmedia-make-contents shimbun header))
 
 (provide 'sb-itmedia+D)
 

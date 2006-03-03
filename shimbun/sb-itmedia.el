@@ -220,44 +220,47 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>")))
       (list (cons body (car result))
 	    (or (nth 1 result) images)))))
 
+(defun shimbun-itmedia-make-contents (shimbun header)
+  (let ((case-fold-search t)
+	(base-cid (shimbun-header-id header)))
+    (when (string-match "\\`<\\([^>]+\\)>\\'" base-cid)
+      (setq base-cid (match-string 1 base-cid)))
+    (let (body)
+      (multiple-value-bind (texts images)
+	  (shimbun-itmedia-retrieve-next-pages shimbun base-cid
+					       (shimbun-header-xref header))
+	(erase-buffer)
+	(if (= (length texts) 1)
+	    (setq body (car texts))
+	  (setq body (shimbun-make-multipart-entity))
+	  (let ((i 0))
+	    (dolist (text texts)
+	      (setf (shimbun-entity-cid text)
+		    (format "shimbun.%d.%s" (incf i) base-cid))))
+	  (apply 'shimbun-entity-add-child body texts))
+	(when images
+	  (setf (shimbun-entity-cid body) (concat "shimbun.0." base-cid))
+	  (let ((new (shimbun-make-multipart-entity)))
+	    (shimbun-entity-add-child new body)
+	    (apply 'shimbun-entity-add-child new
+		   (mapcar 'cdr (nreverse images)))
+	    (setq body new))))
+      (shimbun-header-insert shimbun header)
+      (insert "MIME-Version: 1.0\n")
+      (shimbun-entity-insert body)))
+  (buffer-string))
+    
 (luna-define-method shimbun-make-contents ((shimbun shimbun-itmedia) header)
-  (let ((case-fold-search t))
-    (when (re-search-forward "\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\) \
+  (when (re-search-forward "\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\) \
 \\([0-9]+:[0-9]+\\) 更新" nil t)
-      (shimbun-header-set-date
-       header
-       (shimbun-make-date-string
-	(string-to-number (match-string 1))
-	(string-to-number (match-string 2))
-	(string-to-number (match-string 3))
-	(match-string 4))))
-    (let ((base-cid (shimbun-header-id header)))
-      (when (string-match "\\`<\\([^>]+\\)>\\'" base-cid)
-	(setq base-cid (match-string 1 base-cid)))
-      (let (body)
-	(multiple-value-bind (texts images)
-	    (shimbun-itmedia-retrieve-next-pages shimbun base-cid
-						 (shimbun-header-xref header))
-	  (erase-buffer)
-	  (if (= (length texts) 1)
-	      (setq body (car texts))
-	    (setq body (shimbun-make-multipart-entity))
-	    (let ((i 0))
-	      (dolist (text texts)
-		(setf (shimbun-entity-cid text)
-		      (format "shimbun.%d.%s" (incf i) base-cid))))
-	    (apply 'shimbun-entity-add-child body texts))
-	  (when images
-	    (setf (shimbun-entity-cid body) (concat "shimbun.0." base-cid))
-	    (let ((new (shimbun-make-multipart-entity)))
-	      (shimbun-entity-add-child new body)
-	      (apply 'shimbun-entity-add-child new
-		     (mapcar 'cdr (nreverse images)))
-	      (setq body new))))
-	(shimbun-header-insert shimbun header)
-	(insert "MIME-Version: 1.0\n")
-	(shimbun-entity-insert body)))
-    (buffer-string)))
+    (shimbun-header-set-date
+     header
+     (shimbun-make-date-string
+      (string-to-number (match-string 1))
+      (string-to-number (match-string 2))
+      (string-to-number (match-string 3))
+      (match-string 4))))
+  (shimbun-itmedia-make-contents shimbun header))
 
 (provide 'sb-itmedia)
 
