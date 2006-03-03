@@ -1,4 +1,4 @@
-2006-03-03  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+2006-03-03  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp> 
 
 	* shimbun/sb-itmedia.el (shimbun-itmedia-make-contents): New function
 	separated from `shimbun-make-contents'.
