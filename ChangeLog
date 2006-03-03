@@ -1,3 +1,16 @@
+2006-03-03  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-itmedia.el (shimbun-itmedia-make-contents): New function
+	separated from `shimbun-make-contents'.
+	(shimbun-make-contents): Use it.
+
+	* shimbun/sb-itmedia+D.el (shimbun-itmedia+D-groups): Rename from
+	`shimbun-itmedia+D-group-list'.
+	(shimbun-itmedia+D-content-start): Removed.
+	(shimbun-itmedia+D-content-end): Removed.
+	(shimbun-groups): Removed.
+	(shimbun-make-contents): New method.
+	
 2006-03-02  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-itmedia+D.el: New file.
