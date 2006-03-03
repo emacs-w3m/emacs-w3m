@@ -1,4 +1,4 @@
-;;; nnshimbun.el --- interfacing with web newspapers
+;;; nnshimbun.el --- interfacing with web newspapers 
 
 ;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
