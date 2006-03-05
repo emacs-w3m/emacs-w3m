@@ -5147,6 +5147,23 @@ This is an example to use @samp{sb-rakuten}.
 @item @uref{http://www.emacswiki.org/, EmacsWiKi}
 emacswiki.changes emacswiki.diff
 
+@item RSS feed with contents
+Search contents appearance rss feed, and setup for below example.
+Mainly target is personal blogs.
+
+This alist parameter's group name,rss address,mail type(html as t),clear
+content start regexp and clear content end regexp.
+Except group name and rss address are option.
+
+This is an example to use @samp{sb-rss-hash}.
+In this case, accessible path are rss-hash.sampleblog1/2.
+@lisp
+(setq shimbun-rss-hash-group-path-alist
+  '(("sampleblog1" "http://www.example.com/index.rss") ;; text mail
+    ("sampleblog2" "http://www.example.com/index.rss" t "</title>"
+    "<!-- start ads"))) ;; html mail
+@end lisp
+
 @item Wiki contents
 This is an example to use @samp{sb-wiki}.  @samp{sb-wiki} support
 PukiWiki and Hiki.  If you don't know which regexps to set to 4th and

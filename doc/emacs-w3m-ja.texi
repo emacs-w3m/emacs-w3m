@@ -5203,6 +5203,24 @@ CGI_Board を使っている掲示板の URL を調べて、
 @item @uref{http://www.emacswiki.org/, EmacsWiKi}
 emacswiki.changes emacswiki.diff
 
+@item コンテンツを含む RSS フィード
+閲覧したい掲載コンテンツが含まれるような RSS フィードを調べて、以下のよ
+うに設定して使います。
+主に個人のブログなどが対象になると思います。
+
+パラメタはグループ名、RSS アドレス、メールタイプ(t で html)、整形時の開
+始正規表現、整形時の終了正規表現となります。
+グループ名、RSS アドレス以外はオプションです。
+
+以下はサンプルです。
+この場合は rss-hash.sampleblog1/2 として閲覧できます。
+@lisp
+(setq shimbun-rss-hash-group-path-alist
+  '(("sampleblog1" "http://www.example.com/index.rss") ;; text mail
+    ("sampleblog2" "http://www.example.com/index.rss" t "</title>"
+    "<!-- start ads"))) ;; html mail
+@end lisp
+
 @item Wiki コンテンツ
 閲覧したい Wiki の URL を調べて、以下のように設定して使います。
 PukiWiki と Hiki に対応しています。もし、各内側のリストの 4 番目、5 番目
