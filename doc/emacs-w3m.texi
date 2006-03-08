@@ -5154,11 +5154,11 @@ you would like to read, and add those groups to the
 The name of the back end is @samp{rss-hash}.  You may use this back end
 for reading mainly personal blogs.
 
-The parameters consist of the name of the group, the address of the RSS
-feed, the type of the mail (@code{t} for html), the regexp matching the
-start of contents, and the regexp matching the end of contents.  The
-parameters other than the name of the group and the address of the RSS
-feed are optional.
+The parameters for each group configuration consist of the name of the
+group, the address of the RSS feed, the type of the mail (@code{t} for
+html), the regexp matching the start of contents, and the regexp
+matching the end of contents.  The parameters other than the name of the
+group and the address of the RSS feed are optional.
 
 Here is an example of setting @code{shimbun-rss-hash-group-path-alist}.
 In this case, you can browse those groups as @samp{rss-hash.sampleblog1}
@@ -5180,8 +5180,8 @@ in front of each line):
 @lisp
 (setq shimbun-rss-hash-group-path-alist
       '(("koderanoblog"
-	 "http://plusdblog.itmedia.co.jp/koderanoblog/index.rdf"
-	 t)))
+         "http://plusdblog.itmedia.co.jp/koderanoblog/index.rdf"
+         t)))
 
 (setq shimbun-rss-hash-x-face-alist
       '(("koderanoblog" . "X-Face: (WZ,)3m%[o&pbnxD<q&KZPAT\\BmC\

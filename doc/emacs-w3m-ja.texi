@@ -5206,12 +5206,12 @@ emacswiki.changes emacswiki.diff
 @item コンテンツを含む RSS フィード
 閲覧したい掲載コンテンツが含まれるような RSS フィードを調べて、
 @code{shimbun-rss-hash-group-path-alist} 変数を以下のように設定して使い
-ます。サーバー名は @samp{rss-hash} です。主に個人のブログなどが対象にな
-るでしょう。
+ます。バックエンド名は @samp{rss-hash} です。主に個人のブログなどが対象
+になるでしょう。
 
-パラメタはグループ名、RSS アドレス、メールタイプ(@code{t} で html)、整形
-時の開始正規表現、整形時の終了正規表現となります。グループ名、RSS アドレ
-ス以外はオプションです。
+パラメータはグループ名、RSS アドレス、メールタイプ(@code{t} で html)、整
+形時の開始正規表現、整形時の終了正規表現となります。グループ名、RSS アド
+レス以外はオプションです。
 
 以下はサンプルです。この場合は @samp{rss-hash.sampleblog1} およ
 び @samp{rss-hash.sampleblog2} として閲覧できます。
@@ -5231,8 +5231,8 @@ emacswiki.changes emacswiki.diff
 @lisp
 (setq shimbun-rss-hash-group-path-alist
       '(("koderanoblog"
-	 "http://plusdblog.itmedia.co.jp/koderanoblog/index.rdf"
-	 t)))
+         "http://plusdblog.itmedia.co.jp/koderanoblog/index.rdf"
+         t)))
 
 (setq shimbun-rss-hash-x-face-alist
       '(("koderanoblog" . "X-Face: (WZ,)3m%[o&pbnxD<q&KZPAT\\BmC\
