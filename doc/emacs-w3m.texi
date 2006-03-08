@@ -5147,7 +5147,7 @@ This is an example to use @samp{sb-rakuten}.
 @item @uref{http://www.emacswiki.org/, EmacsWiKi}
 emacswiki.changes emacswiki.diff
 
-@item RSS feeds contains contents
+@item RSS feeds containing contents
 To use this back end, look for the RSS feeds containing contents which
 you would like to read, and add those groups to the
 @code{shimbun-rss-hash-group-path-alist} variable by the following way.
