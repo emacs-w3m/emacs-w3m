@@ -5147,21 +5147,49 @@ This is an example to use @samp{sb-rakuten}.
 @item @uref{http://www.emacswiki.org/, EmacsWiKi}
 emacswiki.changes emacswiki.diff
 
-@item RSS feed with contents
-Search contents appearance rss feed, and setup for below example.
-Mainly target is personal blogs.
+@item RSS feeds contains contents
+To use this back end, look for the RSS feeds containing contents which
+you would like to read, and add those groups to the
+@code{shimbun-rss-hash-group-path-alist} variable by the following way.
+The name of the back end is @samp{rss-hash}.  You may use this back end
+for reading mainly personal blogs.
 
-This alist parameter's group name,rss address,mail type(html as t),clear
-content start regexp and clear content end regexp.
-Except group name and rss address are option.
+The parameters consist of the name of the group, the address of the RSS
+feed, the type of the mail (@code{t} for html), the regexp matching the
+start of contents, and the regexp matching the end of contents.  The
+parameters other than the name of the group and the address of the RSS
+feed are optional.
 
-This is an example to use @samp{sb-rss-hash}.
-In this case, accessible path are rss-hash.sampleblog1/2.
+Here is an example of setting @code{shimbun-rss-hash-group-path-alist}.
+In this case, you can browse those groups as @samp{rss-hash.sampleblog1}
+and @samp{rss-hash.sampleblog2}:
+
 @lisp
 (setq shimbun-rss-hash-group-path-alist
-  '(("sampleblog1" "http://www.example.com/index.rss") ;; text mail
-    ("sampleblog2" "http://www.example.com/index.rss" t "</title>"
-    "<!-- start ads"))) ;; html mail
+      '(;; text mail
+        ("sampleblog1" "http://www.example.com/index.rss")
+        ;; html mail
+        ("sampleblog2" "http://www.example.com/index.rss"
+         t "</title>" "<!-- start ads")))
+@end lisp
+
+Another example which allows you to read a certain personal blog (it
+actually exists at present) is below (if you use it, delete whitespace
+in front of each line):
+
+@lisp
+(setq shimbun-rss-hash-group-path-alist
+      '(("koderanoblog"
+	 "http://plusdblog.itmedia.co.jp/koderanoblog/index.rdf"
+	 t)))
+
+(setq shimbun-rss-hash-x-face-alist
+      '(("koderanoblog" . "X-Face: (WZ,)3m%[o&pbnxD<q&KZPAT\\BmC\
+])#s*xk%Z;`S&Gy8]3jGS>/i61A:;4`[%3~$SSw;649\n ^$3x4lC1+>@}wMBlj4w\
+]o2yN.iY6cF0Gi%^cZvT,mkX!>5xq_n73pWiJXQ`h8@@~Z5b4!ui768h<-c\\+\n \
+~f\\&zIs](Z3;KPf7<i3@}`;u=qm5yf^\"/R.C(7km`\"z@}#-<^WqK\\.Ppd\"2?5\
+1:U<sJlJ9kV\"ws1SrVz\n Q7;<|8v=2g4RyWavi6qwDrSN#\\y$IXn.\"R<#zg@@\
+u,@@]fMh%oC%V~&MGKiS9LNQ!j]F\\Z&;<pgW9ixF\n z>l,To0e40d/v;XI>Uc")))
 @end lisp
 
 @item Wiki contents

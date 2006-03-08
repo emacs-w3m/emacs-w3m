@@ -5204,21 +5204,43 @@ CGI_Board を使っている掲示板の URL を調べて、
 emacswiki.changes emacswiki.diff
 
 @item コンテンツを含む RSS フィード
-閲覧したい掲載コンテンツが含まれるような RSS フィードを調べて、以下のよ
-うに設定して使います。
-主に個人のブログなどが対象になると思います。
+閲覧したい掲載コンテンツが含まれるような RSS フィードを調べて、
+@code{shimbun-rss-hash-group-path-alist} 変数を以下のように設定して使い
+ます。サーバー名は @samp{rss-hash} です。主に個人のブログなどが対象にな
+るでしょう。
 
-パラメタはグループ名、RSS アドレス、メールタイプ(t で html)、整形時の開
-始正規表現、整形時の終了正規表現となります。
-グループ名、RSS アドレス以外はオプションです。
+パラメタはグループ名、RSS アドレス、メールタイプ(@code{t} で html)、整形
+時の開始正規表現、整形時の終了正規表現となります。グループ名、RSS アドレ
+ス以外はオプションです。
 
-以下はサンプルです。
-この場合は rss-hash.sampleblog1/2 として閲覧できます。
+以下はサンプルです。この場合は @samp{rss-hash.sampleblog1} およ
+び @samp{rss-hash.sampleblog2} として閲覧できます。
+
 @lisp
 (setq shimbun-rss-hash-group-path-alist
-  '(("sampleblog1" "http://www.example.com/index.rss") ;; text mail
-    ("sampleblog2" "http://www.example.com/index.rss" t "</title>"
-    "<!-- start ads"))) ;; html mail
+      '(;; text mail
+        ("sampleblog1" "http://www.example.com/index.rss")
+        ;; html mail
+        ("sampleblog2" "http://www.example.com/index.rss"
+         t "</title>" "<!-- start ads")))
+@end lisp
+
+次の例では、今のところ実際に存在する個人的な blog を読むことができま
+す (これを使う場合、各行の先頭にある空白を取り除いて下さい):
+
+@lisp
+(setq shimbun-rss-hash-group-path-alist
+      '(("koderanoblog"
+	 "http://plusdblog.itmedia.co.jp/koderanoblog/index.rdf"
+	 t)))
+
+(setq shimbun-rss-hash-x-face-alist
+      '(("koderanoblog" . "X-Face: (WZ,)3m%[o&pbnxD<q&KZPAT\\BmC\
+])#s*xk%Z;`S&Gy8]3jGS>/i61A:;4`[%3~$SSw;649\n ^$3x4lC1+>@}wMBlj4w\
+]o2yN.iY6cF0Gi%^cZvT,mkX!>5xq_n73pWiJXQ`h8@@~Z5b4!ui768h<-c\\+\n \
+~f\\&zIs](Z3;KPf7<i3@}`;u=qm5yf^\"/R.C(7km`\"z@}#-<^WqK\\.Ppd\"2?5\
+1:U<sJlJ9kV\"ws1SrVz\n Q7;<|8v=2g4RyWavi6qwDrSN#\\y$IXn.\"R<#zg@@\
+u,@@]fMh%oC%V~&MGKiS9LNQ!j]F\\Z&;<pgW9ixF\n z>l,To0e40d/v;XI>Uc")))
 @end lisp
 
 @item Wiki コンテンツ
