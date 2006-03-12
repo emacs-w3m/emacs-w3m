@@ -1,3 +1,10 @@
+2006-03-12  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* w3m.el (w3m-insert-face): New face.
+	(w3m-fontify-insert): New variable.
+	(w3m-fontify-insert): New function.
+	(w3m-fontify): Add calling `w3m-fontify-insert'.
+
 2006-03-05  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-hash.el: New file.

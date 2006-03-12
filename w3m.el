@@ -890,9 +890,18 @@ of the original request method."
   "Face used for displaying strike-through text."
   :group 'w3m-face)
 
+(defface w3m-insert-face
+  '((((class color) (background light)) (:foreground "purple"))
+    (((class color) (background dark)) (:foreground "orchid")))
+  "Face used for displaying insert text."
+  :group 'w3m-face)
+
 (defvar w3m-fontify-strike-through (or (featurep 'w3m-e21)
 				       (featurep 'w3m-xmas))
   "Non-nil means use `strike-through' attribute to display deleted text.")
+
+(defvar w3m-fontify-insert nil
+  "Non-nil means display inserted text.")
 
 (defcustom w3m-mode-hook nil
   "*Hook run after `w3m-mode' initialization.
@@ -3038,6 +3047,27 @@ For example:
 	(w3m-add-face-property start (match-beginning 0)
 			       'w3m-strike-through-face)))))
 
+(defun w3m-fontify-insert ()
+  "Fontify insert text in the buffer containing halfdump."
+  (when w3m-fontify-insert
+    (goto-char (point-min))
+    (while (re-search-forward "\\[INS:" nil t)
+      (let ((start (match-beginning 0))
+	    (indent 1))
+	(delete-region start (match-end 0))
+	(while (and (< 0 indent)
+		    (re-search-forward
+		     "\\(\\[INS:\\)\\|\\(:INS\\]\\)"
+		     nil t))
+	  (if (match-string 1)
+	      (progn
+		(delete-region (match-beginning 0) (match-end 0))
+		(setq indent (1+ indent)))
+	    (delete-region (match-beginning 0) (match-end 0))
+	    (setq indent (1- indent))))
+	(w3m-add-face-property start (match-beginning 0)
+			       'w3m-insert-face)))))
+
 (defsubst w3m-decode-anchor-string (str)
   ;; FIXME: This is a quite ad-hoc function to process encoded url string.
   ;; More discussion about timing &-sequence decode is required.  The
@@ -3502,6 +3532,7 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 	   (delete-region start (match-end 0))))
     (w3m-fontify-bold)
     (w3m-fontify-strike-through)
+    (w3m-fontify-insert)
     (w3m-fontify-underline)
     (when w3m-use-symbol
       (w3m-replace-symbol))
