@@ -1,3 +1,8 @@
+2006-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-ccl.el (charset-id): Define it as a macro instead of an
+	alias to charset-id-internal if Emacs doesn't provide it.
+
 2006-03-12  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* w3m.el (w3m-insert-face): New face.
@@ -27,7 +32,7 @@
 	(shimbun-itmedia+D-content-end): Removed.
 	(shimbun-groups): Removed.
 	(shimbun-make-contents): New method.
-	
+
 2006-03-02  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-itmedia+D.el: New file.
