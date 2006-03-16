@@ -1,3 +1,9 @@
+2006-03-16  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* w3m.el (w3m-data-retrieve): New function.
+	(w3m-attributes, w3m-retrieve): Add support `data:' scheme handled
+	by `w3m-data-retrieve'.
+
 2006-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-ccl.el (charset-id): Define it as a macro instead of an

@@ -2622,6 +2622,11 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 	(w3m-process-do-with-temp-buffer
 	    (type (w3m-cid-retrieve url nil nil))
 	  (list type nil nil nil nil url url))))
+     ((string-match "\\`data:" url)
+      (let ((w3m-current-buffer (current-buffer)))
+	(w3m-process-do-with-temp-buffer
+	    (type (w3m-data-retrieve url nil nil))
+	  (list type nil nil nil nil url url))))
      ((w3m-url-local-p url)
       (w3m-local-attributes url))
      (t
@@ -4761,6 +4766,44 @@ NO-CACHE specifies whether functions should not use cached contents."
 			 w3m-cid-retrieve-function-alist))))
     (when func (funcall func url no-decode no-cache))))
 
+(defun w3m-data-retrieve (url &optional no-decode no-cache)
+  "Retrieve contents pointed to by URL prefixed with the data: scheme.
+Note:RFC2397"
+  (let ((case-fold-search t) (mime-type "text/plain")
+	(coding nil) (encode nil) (param "")
+	data-string)
+    (when (string-match
+	   "data:\\(\\([^/;,]+\\(/[^;,]+\\)?\\)\\(;[^;,]+\\)*\\)?,\\(.*\\)"
+	   url)
+      (setq  mime-type (or (match-string-no-properties 2 url)
+			   mime-type)
+	     param (or (match-string-no-properties 4 url)
+		       param)
+	     data-string (match-string-no-properties 5 url))
+      (when (string-match "^.*\\(;[ \t]*base64\\)$" param)
+	(setq param (substring param 0 (match-beginning 1)))
+	(setq encode 'base64))
+      (when (string-match "charset=\\([^;]+\\)" param)
+	(setq coding (w3m-charset-to-coding-system
+		      (match-string-no-properties 1 param))))
+      (when data-string
+	(erase-buffer)
+	(let (decode-string)
+	  (setq decode-string
+		(cond
+		 ((eq encode 'base64)
+		  (base64-decode-string data-string))
+		 (t
+		  (w3m-url-decode-string
+		   data-string coding))))
+	  (set-buffer-multibyte nil)
+	  (if (featurep 'xemacs)
+	      (insert decode-string)
+	    (set-buffer-multibyte (multibyte-string-p decode-string))
+	    (insert decode-string)
+	    (set-buffer-multibyte nil)))))
+    mime-type))
+
 ;;;###autoload
 (defun w3m-retrieve (url &optional no-decode no-cache
 			 post-data referer handler)
@@ -4799,6 +4842,8 @@ POST-DATA and REFERER will be sent to the web server with a request."
 			    no-decode no-cache post-data referer handler))
        ((string-match "\\`cid:" url)
 	(w3m-cid-retrieve url no-decode no-cache))
+       ((string-match "\\`data:" url)
+	(w3m-data-retrieve url no-decode no-cache))
        ((w3m-url-local-p url)
 	(w3m-local-retrieve url no-decode))
        (t
