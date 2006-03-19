@@ -5243,6 +5243,11 @@ emacswiki.changes emacswiki.diff
 u,@@]fMh%oC%V~&MGKiS9LNQ!j]F\\Z&;<pgW9ixF\n z>l,To0e40d/v;XI>Uc")))
 @end lisp
 
+@item コンテンツを含む Atom フィード
+同様に閲覧したい掲載コンテンツが含まれるような Atom フィードでは
+@code{shimbun-atom-hash-group-path-alist} 変数に設定して使います。
+バックエンド名は同じく @samp{atom-hash} です。
+
 @item Wiki コンテンツ
 閲覧したい Wiki の URL を調べて、以下のように設定して使います。
 PukiWiki と Hiki に対応しています。もし、各内側のリストの 4 番目、5 番目

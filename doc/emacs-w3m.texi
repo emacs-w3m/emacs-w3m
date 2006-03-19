@@ -5192,6 +5192,11 @@ in front of each line):
 u,@@]fMh%oC%V~&MGKiS9LNQ!j]F\\Z&;<pgW9ixF\n z>l,To0e40d/v;XI>Uc")))
 @end lisp
 
+@item Atom feeds containing contents
+Atom feeds containing contents same as RSS add those groups to the
+@code{shimbun-atom-hash-group-path-alist} variable.
+The name of the back end is @samp{atom-hash}.
+
 @item Wiki contents
 This is an example to use @samp{sb-wiki}.  @samp{sb-wiki} support
 PukiWiki and Hiki.  If you don't know which regexps to set to 4th and
