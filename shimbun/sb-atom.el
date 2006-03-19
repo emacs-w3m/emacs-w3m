@@ -99,8 +99,6 @@ But clarify need ignored URL return nil.")
 		   (id (shimbun-rss-build-message-id shimbun url date)))
 	      (when (and id (or need-all-entries
 				(not (shimbun-search-id shimbun id))))
-		(message "push header(date:%s -> %s)"
-			 date (shimbun-rss-process-date shimbun date))
 		(push (shimbun-create-header
 		       0
 		       (or (shimbun-rss-node-text atom-ns 'title entry)
