@@ -4768,7 +4768,7 @@ NO-CACHE specifies whether functions should not use cached contents."
 
 (defun w3m-data-retrieve (url &optional no-decode no-cache)
   "Retrieve contents pointed to by URL prefixed with the data: scheme.
-Note:RFC2397"
+See RFC2397."
   (let ((case-fold-search t) (mime-type "text/plain")
 	(coding nil) (encode nil) (param "")
 	data-string)
