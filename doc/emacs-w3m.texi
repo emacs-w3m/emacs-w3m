@@ -5167,9 +5167,9 @@ and @samp{rss-hash.sampleblog2}:
 @lisp
 (setq shimbun-rss-hash-group-path-alist
       '(;; text mail
-        ("sampleblog1" "http://www.example.com/index.rss")
+        ("sampleblog1" "http://www.example.com/index1.rss")
         ;; html mail
-        ("sampleblog2" "http://www.example.com/index.rss"
+        ("sampleblog2" "http://www.example.com/index2.rss"
          t "</title>" "<!-- start ads")))
 @end lisp
 
@@ -5193,9 +5193,13 @@ u,@@]fMh%oC%V~&MGKiS9LNQ!j]F\\Z&;<pgW9ixF\n z>l,To0e40d/v;XI>Uc")))
 @end lisp
 
 @item Atom feeds containing contents
-Atom feeds containing contents same as RSS add those groups to the
-@code{shimbun-atom-hash-group-path-alist} variable.
-The name of the back end is @samp{atom-hash}.
+As well as the previous section (RSS feeds containing contents), you can
+also read the Atom feeds which contain published contents.  To do that,
+configure the variable @code{shimbun-atom-hash-group-path-alist} (and
+possibly @code{shimbun-atom-hash-x-face-alist}, etc.) in the way similar
+to shimbun-rss-hash-*.  The name of the back end is @samp{atom-hash}.
+For example, @uref{http://plusdblog.itmedia.co.jp/koderanoblog/atom.xml}
+is currently available.
 
 @item Wiki contents
 This is an example to use @samp{sb-wiki}.  @samp{sb-wiki} support

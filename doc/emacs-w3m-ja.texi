@@ -5219,9 +5219,9 @@ emacswiki.changes emacswiki.diff
 @lisp
 (setq shimbun-rss-hash-group-path-alist
       '(;; text mail
-        ("sampleblog1" "http://www.example.com/index.rss")
+        ("sampleblog1" "http://www.example.com/index1.rss")
         ;; html mail
-        ("sampleblog2" "http://www.example.com/index.rss"
+        ("sampleblog2" "http://www.example.com/index2.rss"
          t "</title>" "<!-- start ads")))
 @end lisp
 
@@ -5244,9 +5244,14 @@ u,@@]fMh%oC%V~&MGKiS9LNQ!j]F\\Z&;<pgW9ixF\n z>l,To0e40d/v;XI>Uc")))
 @end lisp
 
 @item コンテンツを含む Atom フィード
-同様に閲覧したい掲載コンテンツが含まれるような Atom フィードでは
-@code{shimbun-atom-hash-group-path-alist} 変数に設定して使います。
-バックエンド名は同じく @samp{atom-hash} です。
+前項 (コンテンツを含む RSS フィード) と同様に、掲載されたコンテンツを含
+む Atom フィードも閲覧することができます。それを行なうには、
+shimbun-rss-hash-* と同様のやり方で変
+数 @code{shimbun-atom-hash-group-path-alist} (ひょっとする
+と @code{shimbun-atom-hash-x-face-alist} なども) を設定して下さい。バッ
+クエンド名は @samp{atom-hash} です。例え
+ば現在 @uref{http://plusdblog.itmedia.co.jp/koderanoblog/atom.xml} が利
+用可能です。
 
 @item Wiki コンテンツ
 閲覧したい Wiki の URL を調べて、以下のように設定して使います。
