@@ -1,3 +1,7 @@
+2006-03-23  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-atom.el (shimbun-atom): Improve class definition.
+
 2006-03-19  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-atom.el: New file.

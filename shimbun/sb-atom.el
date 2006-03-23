@@ -34,7 +34,7 @@
 (require 'shimbun)
 (require 'sb-rss)
 
-(luna-define-class shimbun-atom (shimbun) (shimbun-rss))
+(luna-define-class shimbun-atom (shimbun-rss) ())
 
 (luna-define-generic shimbun-atom-build-message-id (shimbun-atom url date)
   "Build unique message-id from URL and DATE and return it.
