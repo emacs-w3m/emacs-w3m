@@ -1,3 +1,11 @@
+2006-03-25  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-atom-hash.el
+	(shimbun-atom-rebuild-node,shimbun-atom-compose-tag): New
+	function.
+	(shimbun-hash-update-items-impl): Fix content html rebuild
+	problem.
+
 2006-03-23  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-atom.el (shimbun-atom): Improve class definition.

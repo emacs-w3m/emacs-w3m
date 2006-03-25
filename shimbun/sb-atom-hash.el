@@ -61,7 +61,8 @@
 	 (set-buffer-multibyte t)))
       (shimbun-hash-update-items-impl shimbun))))
 
-(luna-define-method shimbun-hash-update-items-impl ((shimbun shimbun-atom-hash))
+(luna-define-method shimbun-hash-update-items-impl
+  ((shimbun shimbun-atom-hash))
   (let (xml dc-ns atom-ns content-ns
 	    (buf-str (buffer-string)))
     (with-temp-buffer
@@ -99,19 +100,38 @@
 			       (shimbun-rss-node-text atom-ns 'issued entry)
 			       (shimbun-rss-node-text dc-ns 'date entry)))
 		     (id (shimbun-atom-build-message-id shimbun url date))
-		     (content (shimbun-rss-node-text atom-ns 'content entry)))
+		     content)
 		;; save contents
-		(when (not (string= (shimbun-atom-attribute-value
-				     (intern (concat atom-ns "type"))
-				     (shimbun-rss-find-el
-				      (intern (concat atom-ns "content"))
-				      entry))
-				    "xhtml"))
-		  (setq content (with-temp-buffer
-				  (erase-buffer)
-				  (insert content)
-				  (shimbun-decode-entities)
-				  (buffer-string))))
+		(let (type mode)
+		  (dolist (content-node (shimbun-rss-find-el
+					 (intern (concat atom-ns "content"))
+					 entry))
+		    (setq type (or (shimbun-atom-attribute-value
+				    (intern (concat atom-ns "type"))
+				    content-node)
+				   "text/plain")
+			  mode (or (shimbun-atom-attribute-value
+				    (intern (concat atom-ns "mode"))
+				    content-node)
+				   ""))
+		    (cond
+		     ((string-match "xhtml" type)
+		      ;; xhtml (type text/xhtml,application/xhtml+xml)
+		      (setq content (shimbun-atom-rebuild-node
+				     atom-ns 'content entry)))
+		     (t
+		      ;; text or html(without xhtml)
+		      (if (string= "escaped" mode)
+			  ;; escaped CDATA
+			  (setq content (shimbun-rss-node-text
+					 atom-ns 'content entry))
+			;; non-escaped, but  "<>& to &xxx;
+			(setq content (with-temp-buffer
+					(erase-buffer)
+					(insert (shimbun-rss-node-text
+						 atom-ns 'content entry))
+					(shimbun-decode-entities)
+					(buffer-string))))))))
 		(when (and id content)
 		  (shimbun-hash-set-item shimbun id content))))))))))
 
@@ -141,6 +161,42 @@
       (delete-region (match-beginning 0) (point-max))
       (delete-region (point-min) start)
       t)))
+
+(defun shimbun-atom-rebuild-node (namespace local-name element)
+  (let* ((node (assq (intern (concat namespace (symbol-name local-name)))
+		     element))
+	 (text (shimbun-atom-compose-tag node))
+	 (cleaned-text (if text (shimbun-replace-in-string
+				 text "^[ \000-\037\177]+\\|[ \000-\037\177]+$"
+				 ""))))
+    (if (string-equal "" cleaned-text)
+	nil
+      cleaned-text)))
+
+(defun shimbun-atom-compose-tag (node)
+  (cond
+   ((null node)
+    "")
+   ((listp node)
+    (let ((tag (car node))
+	  (attributes (car (cdr node)))
+	  (children (cdr (cdr node))))
+      (concat "<"
+	      (symbol-name tag)
+	      (if attributes
+		  (concat " "
+			  (mapconcat '(lambda (attr)
+					(concat (symbol-name (car attr))
+						"=\"" (cdr attr) "\""))
+				     attributes " "))
+		"")
+	      (if children
+		  (concat ">" (mapconcat 'shimbun-atom-compose-tag
+					 children "")
+			  "</" (symbol-name tag) ">")
+		" />"))))
+   ((stringp node)
+    node)))
 
 (provide 'sb-atom-hash)
 
