@@ -154,9 +154,9 @@
        ,(concat
 	 "<a" s1 "href=\"/"
 	 ;; 1. url
-	 "\\(\\(?:torino\\|%s\\)"
+	 "\\(%s/"
 	 ;; 2. subgroup
-	 "\\(?:/\\([^/]+\\)\\)?"
+	 "\\([^/]+\\)"
 	 "/news/"
 	 ;; 3. serial number[1]
 	 "\\("
@@ -169,7 +169,7 @@
 	 "\"[^>]*>" s0
 	 ;; 6. subject
 	 "\\([^<]+\\)"
-	 s0 "</a>[^<（]*（" s0
+	 "\\(?:" s0 "<img" s0 "[^>]+>\\)?" s0 "</a>[^<（]*（" s0
 	 ;; 7. month
 	 "\\([01]?[0-9]\\)"
 	 s0 "月" s0
@@ -273,16 +273,10 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 		    ;; 6. subject
 		    "\\([^<]+\\)"
 		    s0)))
-	       (if (string-equal "sports" group)
-		   "\\(?:torino\\|sports\\)"
-		 group))
+	       group)
 	      nil t))
     (let* ((url (shimbun-expand-url (match-string 1) shimbun-yomiuri-url))
-	   (subgroup (if (and (string-equal "sports" group)
-			      (save-match-data
-				(string-match "\\`torino/" (match-string 1))))
-			 "torino"
-		       (match-string 2)))
+	   (subgroup (match-string 2))
 	   (id (concat "<" (match-string 3) "." (match-string 5)
 		       "%" (when subgroup
 			     (concat subgroup "."))
@@ -317,7 +311,7 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 		    (string-to-number (match-string 2))
 		    (match-string 3))
 		   id "" 0 0 url)))
-	(goto-char (point-min))))))
+	(search-forward "<!--// top_news_end //-->" nil t)))))
 
 (defun shimbun-yomiuri-get-headers (shimbun)
   "Return a list of headers."
@@ -345,13 +339,8 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 		    (shimbun-yomiuri-japanese-string-to-number
 		     (match-string (nth 9 numbers)))
 		  (string-to-number (match-string (nth 6 numbers))))
-	    subgroup (if (and (string-equal "sports" group)
-			      (save-match-data
-				(string-match "\\`torino/"
-					      (match-string (nth 0 numbers)))))
-			 "torino"
-		       (when (nth 10 numbers)
-			 (match-string (nth 10 numbers)))))
+	    subgroup (when (nth 10 numbers)
+		       (match-string (nth 10 numbers))))
       (cond ((string-equal group "editorial")
 	     (setq subject
 		   (format

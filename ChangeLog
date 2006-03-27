@@ -1,5 +1,11 @@
 2006-03-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Remove
+	Torino news support; improve regexp for sports group.
+	(shimbun-yomiuri-get-top-header): Remove Torino news support; goto
+	the end of top news section.
+	(shimbun-yomiuri-get-headers): Remove Torino news support.
+
 	* shimbun/sb-m17n.el: Make it work.
 
 2006-03-25  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
