@@ -345,7 +345,7 @@ Lisp package is available at:
 @uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/Mule-UCS-0.84.tar.gz}
 
 If you use it with Emacs 21.2, it is necessary to apply
-@uref{http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.html, this
+@uref{http://www.m17n.org/mlarchive/mule/200203/msg00000.html, this
 patch} before installation.
 
 If you are an XEmacs user, the compiled package is here:

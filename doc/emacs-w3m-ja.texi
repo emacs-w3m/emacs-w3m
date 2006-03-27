@@ -380,7 +380,7 @@ XEmacs $B$r;H$&$+!"$^$?$O(B Emacs 21 $B$r;H$C$FCf9q8l!"F|K\8l!"4Z9q8l$J$I$N%F
 @uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/Mule-UCS-0.84.tar.gz}
 
 Emacs-21.2 $B$GMxMQ$9$k>l9g$O!"(B
-Mule-UCS $B$K(B @uref{http://tsukuba.m17n.org/mule-archive/2002-3/msg00000.html,
+Mule-UCS $B$K(B @uref{http://www.m17n.org/mlarchive/mule/200203/msg00000.html,
 $B$3$N%Q%C%A(B} $B$rE,MQ$7$?$[$&$,$$$$$G$7$g$&!#(B
 
 XEmacs $B%f!<%68~$1$K$O!"$3$3$K%3%s%Q%$%k:Q$_$N%Q%C%1!<%8$,$"$j$^$9(B:
