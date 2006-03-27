@@ -1,3 +1,7 @@
+2006-03-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-m17n.el: Make it work.
+
 2006-03-25  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-atom-hash.el

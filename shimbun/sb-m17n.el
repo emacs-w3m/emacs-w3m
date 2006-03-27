@@ -1,6 +1,6 @@
 ;;; sb-m17n.el --- shimbun backend for m17n.org
 
-;; Copyright (C) 2001, 2002, 2003 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001, 2002, 2003, 2006 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 
 ;; Author: Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 ;; Keywords: news
@@ -32,12 +32,19 @@
 
 (luna-define-class shimbun-m17n (shimbun-mhonarc) ())
 
-(defconst shimbun-m17n-group-path-alist
-  '(("mule-ja" "mule-ja-archive/" "mule-ja@m17n.org")
-    ("mule" "mule-archive/" "mule@m17n.org")))
+(defvar shimbun-m17n-url "http://www.m17n.org/mlarchive/")
 
-(defvar shimbun-m17n-url "http://www.m17n.org/")
+(defconst shimbun-m17n-group-path-alist
+  '(("mule-ja" "mule-ja/" "mule-ja@m17n.org")
+    ("mule" "mule/" "mule@m17n.org")))
+
 (defvar shimbun-m17n-groups (mapcar 'car shimbun-m17n-group-path-alist))
+
+(defvar shimbun-m17n-x-face-alist
+  '(("default" . "X-Face: '>=krMO{M-21~VC2Y-{q4s}ckFG89D`j^w\
+:FI[z%_o+'mV,NKiQlN5v9i+<6EuQs\\I!3UB_\n ZY>/Nhd6A?6:B'+zCXV\
+tcW.jD{Y&/'K6$ls7r8!M%HnBCV[j;?Vr!3l|dWt%.%Wx8nvzk1+w5Uw6Zb\n\
+ |?bUC;wOQxjd46p\\MP[x{+0i|lA\\fZ)@4_|!uG;=M\\Y}I&D3dP00O")))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-m17n))
   (shimbun-expand-url (nth 1 (assoc (shimbun-current-group-internal shimbun)
@@ -57,33 +64,33 @@
     (goto-char (point-min))
     (catch 'stop
       (while (and (if pages (<= (incf count) pages) t)
-		  (re-search-forward
-		   "<A HREF=\"\\([0-9][0-9][0-9][0-9]-[0-9]+\\)/index.html\">\\[Date Index\\]"
-		   nil t)
+		  (re-search-forward "<A HREF=\"\\([0-9]+\\)/\">" nil t)
 		  (push (match-string 1) months)))
       (setq months (nreverse months))
       (dolist (month months)
 	(let ((url (shimbun-expand-url (concat month "/")
 				       (shimbun-index-url shimbun))))
+	  (erase-buffer)
 	  (shimbun-retrieve-url url t)
 	  (goto-char (point-max))
-	  (while (re-search-backward
-		  "<STRONG><A NAME=\"\\([0-9]+\\)\" HREF=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</A></STRONG><BR>\n<EM>From</EM>: \\([^<]+\\)<EM>Date</EM>: \\(.*\\)"
-		  nil t)
+	  (while (re-search-backward "\
+<a name=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+.html\\)\">\
+\\([^<]+\\)</a></strong>\n\
+<ul><li><em>From</em>: \\([^<]+\\)"
+				     nil t)
 	    (let ((id (format "<%s%s%%%s>" month (match-string 1)
 			      (shimbun-current-group-internal shimbun)))
 		  (xref (shimbun-expand-url (match-string 2) url))
 		  (subject (shimbun-mhonarc-replace-newline-to-space
 			    (match-string 3)))
 		  (from (shimbun-mhonarc-replace-newline-to-space
-			 (match-string 4)))
-		  (date (match-string 5)))
+			 (match-string 4))))
 	      (if (shimbun-search-id shimbun id)
 		  (throw 'stop headers)
 		(push (shimbun-make-header 0
 					   (shimbun-mime-encode-string subject)
 					   (shimbun-mime-encode-string from)
-					   date id "" 0 0 xref)
+					   nil id "" 0 0 xref)
 		      headers)))))))
     headers))
 
