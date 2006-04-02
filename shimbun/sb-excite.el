@@ -46,9 +46,9 @@
 (defvar shimbun-excite-from-address (concat "nobody@"
 					    shimbun-excite-top-level-domain))
 (defvar shimbun-excite-content-start
-  "\\[ +[0-9]*年[0-9]*月[0-9]*日 *[0-9]*時[0-9]*分 +\\]")
+  "<font[^>]*>\\[ *[0-9]*年[0-9]*月[0-9]*日 *[0-9]*時[0-9]*分 *\\]</font>")
 (defvar shimbun-excite-content-end
-  "<a href=/News/>ニューストップ</a>")
+  "<center")
 
 ;(defvar shimbun-excite-expiration-days 14)
 

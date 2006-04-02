@@ -1,3 +1,8 @@
+2006-04-02  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-excite.el (shimbun-excite-content-start): Improve regexp.
+	(shimbun-excite-content-end): Ditto.
+
 2006-03-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Remove
