@@ -4659,7 +4659,7 @@ impress.game impress.k-tai impress.internet impress.bb impress.forest
 @item @uref{http://www.itmedia.co.jp/, ITmedia}
 itmedia.anchordesk itmedia.bursts itmedia.enterprise itmedia.games
 itmedia.lifestyle itmedia.mobile itmedia.news itmedia.pcupdate
-itmedia.technology
+itmedia.survey itmedia.technology
 
 @item @uref{http://plusd.itmedia.co.jp/, ITmedia +D}
 itmedia+D.plusd itmedia+D.mobile itmedia+D.pcupdate itmedia+D.lifestyle

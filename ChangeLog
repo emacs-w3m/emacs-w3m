@@ -1,3 +1,9 @@
+2006-04-03  Masaru Nomiya  <nomiyac360@mg.point.ne.jp>
+
+	* shimbun/sb-itmedia.el (shimbun-itmedia-group-alist): Add survey
+	group.
+	(shimbun-make-contents): Fix regexp matching timestamps.
+
 2006-04-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-retto): Rewrite.
