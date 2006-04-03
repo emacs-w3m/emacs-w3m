@@ -1,7 +1,7 @@
 2006-04-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Remove Torino
-	support; remove groups kansai.densetsu, kansai.kaban,
+	news support; remove groups kansai.densetsu, kansai.kaban,
 	kansai.keiki, kansai.kyosho, kansai.okiniiri, kansai.onayami,
 	kansai.smile, kansai.syun, kansai.takara, and kansai.yotsuba.
 	(shimbun-asahi-content-start, shimbun-asahi-content-end)
