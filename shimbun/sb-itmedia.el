@@ -56,6 +56,9 @@
       ("enterprise" "enterprise"
        ,(format template "enterprise/articles")
        "［[^ ]* \\([0-9]+:[0-9]+\\)］")
+      ("survey" "survey/news"
+       ,(format template "survey/articles")
+       nil)
       ("games" "games/news"
        ,(format template "games/articles")
        nil)
@@ -249,17 +252,17 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>")))
       (insert "MIME-Version: 1.0\n")
       (shimbun-entity-insert body)))
   (buffer-string))
-    
+
 (luna-define-method shimbun-make-contents ((shimbun shimbun-itmedia) header)
-  (when (re-search-forward "\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\) \
-\\([0-9]+:[0-9]+\\) 更新" nil t)
+    (when (re-search-forward "\\([0-9]+\\)年\\([0-9]+\\)月\\([0-9]+\\)日 \
+\\([0-9]+\\)時\\([0-9]+\\)分 更新" nil t)
     (shimbun-header-set-date
      header
      (shimbun-make-date-string
       (string-to-number (match-string 1))
       (string-to-number (match-string 2))
       (string-to-number (match-string 3))
-      (match-string 4))))
+      (concat (match-string 4) ":" (match-string 5)))))
   (shimbun-itmedia-make-contents shimbun header))
 
 (provide 'sb-itmedia)
