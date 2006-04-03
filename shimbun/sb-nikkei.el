@@ -1,6 +1,6 @@
 ;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
 ;; Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>
 
 ;; Author: Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>,
@@ -1438,56 +1438,76 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 
 (defun shimbun-nikkei-get-headers-retto (group folder)
   "Function used to fetch headers for the retto group."
-  (let ((region "")
-	headers)
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((s0 "[\t\n ]*")
-		    (s1 "[\t\n ]+"))
-		(concat "<p[^>]*>" s0 "【"
-			;; 1. region
-			"\\([^\t\n ]+\\)"
-			"】" s0 "</p>"
-			"\\|"
-			"<AREA21" s1 "HEADLINE=\""
-			;; 2. subject
-			"\\([^\"]+\\)"
-			"\"" s1 "URL=\""
-			;; 3. url
-			"\\("
-			;; 4. serial number
-			"\\(20[0-9][0-9][01][0-9][0-9a-z]+\\)"
-			"\\.html\\)"
-			"\"" s1 "ARTICLE_TIME=\""
-			;; 5. year
-			"\\(20[0-9][0-9]\\)"
-			"/"
-			;; 6. month
-			"\\([01][0-9]\\)"
-			"/"
-			;; 7. day
-			"\\([0-3][0-9]\\)"
-			s1
-			;; 8. hour:minute
-			"\\([012][0-9]:[0-5][0-9]\\)")))
-	    nil t)
-      (if (match-beginning 1)
-	  (setq region (match-string 1))
-	(push (shimbun-create-header
-	       0
-	       (concat "[" region "] " (match-string 2))
-	       shimbun-nikkei-from-address
-	       (shimbun-nikkei-make-date-string
-		(string-to-number (match-string 5))
-		(string-to-number (match-string 6))
-		(string-to-number (match-string 7))
-		(match-string 8))
-	       (concat "<" (match-string 4) "%" group "."
-		       shimbun-nikkei-top-level-domain ">")
-	       "" 0 0
-	       (shimbun-nikkei-expand-url (match-string 3) folder))
-	      headers)))
-    (shimbun-sort-headers headers)))
+  (when (re-search-forward "【\\([^\t\n ]+\\)】" nil t)
+    (let ((start (match-end 0))
+	  (region (match-string 1))
+	  end next subject url serial year month day time headers)
+      (while start
+	(if (re-search-forward "【\\([^\t\n ]+\\)】" nil t)
+	    (setq end (match-end 0)
+		  next (match-string 1))
+	  (setq end nil))
+	(while (progn
+		 (goto-char start)
+		 (re-search-forward
+		  (eval-when-compile
+		    (let ((s0 "[\t\n ]*")
+			  (s1 "[\t\n ]+"))
+		      (concat "<AREA21" s1 "HEADLINE=\""
+			      ;; 1. subject
+			      "\\([^\"]+\\)"
+			      "\"" s1 "URL=\""
+			      ;; 2. url
+			      "\\("
+			      ;; 3. serial number
+			      "\\([^\".]+\\)"
+			      "\\.html\\)"
+			      "\"" s1 "ARTICLE_TIME=\""
+			      ;; 4. year
+			      "\\(20[0-9][0-9]\\)"
+			      "/"
+			      ;; 5. month
+			      "\\([01][0-9]\\)"
+			      "/"
+			      ;; 6. day
+			      "\\([0-3][0-9]\\)"
+			      s1
+			      ;; 7. hour:minute
+			      "\\([012][0-9]:[0-5][0-9]\\)")))
+		  end t))
+	  (setq subject (match-string 1)
+		url (match-string 2)
+		serial (match-string 3)
+		year (string-to-number (match-string 4))
+		month (string-to-number (match-string 5))
+		day (string-to-number (match-string 6))
+		time (match-string 7)
+		start (match-end 0))
+	  (when (re-search-forward
+		 (concat
+		  (eval-when-compile
+		    (let ((s0 "[\t\n ]*")
+			  (s1 "[\t\n ]+"))
+		      (concat "<!--" s1 "aLink" s1 "-->" s0 "<a" s1 "HREF=\""
+			      ;; 1. url
+			      "\\([^\"]+\\)"
+			      "\">" s0 "<!--" s1 "headline" s1 "-->" s0)))
+		  (regexp-quote subject))
+		 end t)
+	    (setq url (match-string 1)))
+	  (push (shimbun-create-header
+		 0
+		 (concat "[" region "] " subject)
+		 shimbun-nikkei-from-address
+		 (shimbun-nikkei-make-date-string year month day time)
+		 (concat "<" serial "%" group "."
+			 shimbun-nikkei-top-level-domain ">")
+		 "" 0 0
+		 (shimbun-nikkei-expand-url url folder))
+		headers))
+	(setq start end
+	      region next))
+      (shimbun-sort-headers headers))))
 
 (defun shimbun-nikkei-get-headers-sports (group folder)
   "Function used to fetch headers for the sports group."
@@ -1791,17 +1811,19 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
       (setq start (match-beginning 0)
 	    end (match-end 0))
       (goto-char start)
-      (when (re-search-forward
-	     "src=\"http://parts\\.nikkei\\.co\\.jp/parts/s\\.gif\""
-	     end t)
-	(delete-region start end))))
+      (if (re-search-forward
+	   "src=\"http://parts\\.nikkei\\.co\\.jp/parts/s\\.gif\""
+	   end t)
+	  (delete-region start end)
+	(goto-char end))))
   (goto-char (point-min))
   (when (re-search-forward "\
 <!--[\t\n ]*FJZONE[\t\n ]+START[\t\n ]+NAME=\"HONBUN\"[\t\n ]+-->"
 			   nil t)
     (insert shimbun-nikkei-content-start)
     (when (re-search-forward "\
-<a[\t\n ]+name=\"newslist\"></a>\n"
+<!--[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\"[\t\n ]+-->\
+\\|<a[\t\n ]+name=\"newslist\"></a>\n"
 			     nil t)
       (goto-char (match-beginning 0))
       (insert shimbun-nikkei-content-end))))
