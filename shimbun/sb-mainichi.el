@@ -163,7 +163,7 @@
     ("shakai.edu" "教育")
     ("shakai.edu.mori" "教育の森")
     ("shakai.edu.elearningschool.nyushi.archive" "ITで入試が変わる")
-    ("shakai.edu.net.archive" "ネット社会と子供たち")
+    ("shakai.edu.net.morals.archive" "ネット社会と子供たち")
     ("shakai.fu" "訃報")
     ("shakai.gakugei" "学芸")
     ("shakai.ji" "人事")
@@ -182,6 +182,10 @@
     ("sports.pro" "野球")
     ("sports.soccer" "サッカー")
     ("yougo" "ニュースな言葉")
+
+    ;; The following groups are for the backward compatibility.
+    ("shakai.edu.net.archive" "ネット社会と子供たち"
+     "shakai/edu/net/morals/archive/")
 
     ;; The following groups are obsolete, though old articles still
     ;; can be read.

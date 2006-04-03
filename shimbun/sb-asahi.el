@@ -975,7 +975,8 @@ and tenjin, it tries to fetch the article for that day if it failed."
 	     (eval-when-compile
 	       (let ((s0 "[\t\n ]*")
 		     (s1 "[\t\n ]+"))
-		 (concat "<p" s1 "class" s0 "=" s0 "\"day\"" s0 ">" s0
+		 (concat "<\\(?:div\\|p\\)"
+			 s1 "class" s0 "=" s0 "\"day\"" s0 ">" s0
 			 ;; 1. year
 			 "\\(20[0-9][0-9]\\)年"
 			 ;; 2. month
@@ -986,7 +987,7 @@ and tenjin, it tries to fetch the article for that day if it failed."
 			 "\\([012]?[0-9]\\)時"
 			 ;; 5. minute
 			 "\\([0-5]?[0-9]\\)分"
-			 s0 "</p>")))
+			 s0 "</\\(?:div\\|p\\)>")))
 	     nil t)
 	(shimbun-header-set-date
 	 header
