@@ -1,3 +1,13 @@
+2006-04-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Remove Torino
+	support; remove groups kansai.densetsu, kansai.kaban,
+	kansai.keiki, kansai.kyosho, kansai.okiniiri, kansai.onayami,
+	kansai.smile, kansai.syun, kansai.takara, and kansai.yotsuba.
+	(shimbun-asahi-content-start, shimbun-asahi-content-end)
+	(shimbun-asahi-text-content-start, shimbun-asahi-text-content-end):
+	Improve regexps.
+
 2006-04-02  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-excite.el (shimbun-excite-content-start): Improve regexp.
@@ -88,7 +98,7 @@
 	(w3m-w3m-retrieve): Don't check status code when the url does not
 	match to http.
 
-2006-02-21 Katsumi Yamaoka  <yamaoka@jpl.org>
+2006-02-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-itmedia.el (shimbun-itmedia-retrieve-next-pages):
 	Improve regexp matching next page tags.

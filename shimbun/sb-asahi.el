@@ -236,8 +236,6 @@ Every `.' in NAME will be replaced with `/'."
       ("car.newcar" "新車情報" nil ,@default2)
       ("car.newcarbywebcg" "新車発表会" nil ,@default2)
       ("culture" "文化・芸能" "%s/list.html" ,@default)
-      ("culture.column" "もやしのひげ" "culture/column/moyashi/"
-       ,@(shimbun-asahi-make-regexp "culture.column.moyashi"))
       ("culture.yurufemi" "ゆるゆるフェミニン" "culture/column/yurufemi/"
        ,@(shimbun-asahi-make-regexp "culture.column.yurufemi"))
       ("digital" "デジタル機器" "digital/av/"
@@ -455,26 +453,8 @@ Every `.' in NAME will be replaced with `/'."
 	 s0)
        1 nil 2 6 3 4 5)
       ("shougi" "将棋" "%s/news/" ,@(shimbun-asahi-make-regexp "shougi.news"))
-      ("sports" "スポーツ" "%s/list.html"
-       ,(concat
-	 "<a" s1 "href=\"/?"
-	 ;; 1. url
-	 "\\(\\(?:sports/update/\
-\\|http://www2.asahi.com/torino2006/news/[a-z]+2006\\)"
-	 ;; 2. month
-	 "\\([01][0-9]\\)"
-	 ;; 3. day
-	 "\\([0-3][0-9]\\)"
-	 "/?"
-	 ;; 4. serial number
-	 "\\([a-z]*[0-9]+\\)"
-	 "\\.html\\)"
-	 "\">" s0
-	 ;; 5. subject
-	 "\\(" no-nl "\\)"
-	 s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
-       1 4 nil 5 nil 2 3)
-    ("sports.baseball" "野球" "sports/bb/"
+      ("sports" "スポーツ" "%s/list.html" ,@default)
+      ("sports.baseball" "野球" "sports/bb/"
        ,@(shimbun-asahi-make-regexp "sports.bb"))
       ("sports.column" "スポーツコラム" nil ,@default2)
       ("sports.football" "サッカー" "sports/fb/"
@@ -526,16 +506,8 @@ Every `.' in NAME will be replaced with `/'."
 
       ;; The following groups are obsolete, though old articles still
       ;; can be read.
-      ("kansai.densetsu" "ほんま？関西伝説" nil ,@default2)
-      ("kansai.kaban" "かばんの中身" nil ,@default2)
-      ("kansai.keiki" "け〜きの“ええ話”" nil ,@default2)
-      ("kansai.kyosho" "巨匠に学べ" nil ,@default2)
-      ("kansai.okiniiri" "DJのお気に入り" nil ,@default2)
-      ("kansai.onayami" "みうらじゅんのお悩み祭り" nil ,@default2)
-      ("kansai.smile" "スマイルスタイル" nil ,@default2)
-      ("kansai.syun" "旬の顔" nil ,@default2)
-      ("kansai.takara" "たから図鑑" nil ,@default2)
-      ("kansai.yotsuba" "よつ葉びより" nil ,@default2)
+      ("culture.column" "もやしのひげ" "culture/column/moyashi/"
+       ,@(shimbun-asahi-make-regexp "culture.column.moyashi"))
       ("nankyoku" "南極プロジェクト" "%s/news/"
        ,@(shimbun-asahi-make-regexp "nankyoku.news"))
       ("nankyoku.borderless" "国境のない大陸から" nil ,@default2)
@@ -550,20 +522,28 @@ keyword, [11]hour and [12]minute.  If an index page is nil, a group
 name in which \".\" is substituted with \"/\" is used instead.")
 
 (defvar shimbun-asahi-content-start
-  "<!--[\t\n ]*Start of \\(Kiji\\|photo\\)[\t\n ]*-->\
+  "<!--[\t\n ]*End of Headline[\t\n ]*-->\
+\\(?:[\t\n ]*<div[\t\n ]+[^<]+</div>[\t\n ]*\
+\\|[\t\n ]*<p[\t\n ]+[^<]+</p>[\t\n ]*\\)?\
+\\|<!--[\t\n ]*Start of \\(Kiji\\|photo\\)[\t\n ]*-->\
 \\|<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
 
 (defvar shimbun-asahi-content-end
-  "<!--[\t\n ]*End of Kiji[\t\n ]*-->\
+  "<!--[\t\n ]*\\(?:google_ad_section\\|[AD★☆]+\\)\
+\\|<!--[\t\n ]*End of Kiji[\t\n ]*-->\
 \\|<!--[\t\n ]*End of related link[\t\n ]*-->\
 \\|<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
 
 (defvar shimbun-asahi-text-content-start
-  "<!--[\t\n ]*Start of Kiji[\t\n ]*-->\
+  "<!--[\t\n ]*End of Headline[\t\n ]*-->\
+\\(?:[\t\n ]*<div[\t\n ]+[^<]+</div>[\t\n ]*\
+\\|[\t\n ]*<p[\t\n ]+[^<]+</p>[\t\n ]*\\)?\
+\\|<!--[\t\n ]*Start of Kiji[\t\n ]*-->\
 \\|<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
 
 (defvar shimbun-asahi-text-content-end
-  "<!--[\t\n ]*End of Kiji[\t\n ]*-->\
+  "<!--[\t\n ]*\\(?:google_ad_section\\|[AD★☆]+\\)\
+\\|<!--[\t\n ]*End of Kiji[\t\n ]*-->\
 \\|<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
 
 (defvar shimbun-asahi-x-face-alist
