@@ -4581,7 +4581,7 @@ mainichi.seiji mainichi.seiji.feature mainichi.seiji.gyousei
 mainichi.seiji.kokkai mainichi.seiji.seitou mainichi.seiji.senkyo
 mainichi.shakai mainichi.shakai.edu
 mainichi.shakai.edu.elearningschool.nyushi.archive
-mainichi.shakai.edu.mori mainichi.shakai.edu.net.archive
+mainichi.shakai.edu.mori mainichi.shakai.edu.net.morals.archive
 mainichi.shakai.fu mainichi.shakai.gakugei mainichi.shakai.ji
 mainichi.shakai.jiken mainichi.shakai.koushitsu mainichi.shakai.tenki
 mainichi.shakai.wadai mainichi.sokuhou mainichi.sports

@@ -1,5 +1,21 @@
 2006-04-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-retto): Rewrite.
+	(shimbun-nikkei-prepare-article-default2): Don't infloop; improve
+	regexp for the content-end.
+
+2006-04-03  Masaru Nomiya  <nomiyac360@mg.point.ne.jp>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Assume
+	there're correct dates in <div class="day"> tags as well as
+	<p class="day"> tags.
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-group-table): Rename
+	shakai.edu.net.archive to shakai.edu.net.morals.archive but don't
+	delete the old one for the backward compatibility.
+
+2006-04-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* shimbun/sb-mainichi.el (shimbun-mainichi-group-table): Remove
 	keizai.it.net.archive group.
 	(shimbun-mainichi-get-headers): Fix the way to remove ranking
@@ -557,7 +573,7 @@
 
 	* shimbun/sb-bbc.el (shimbun-bbc-content-start): Relaxed.
 
-2005-07-14 Masaru Nomiya  <nomiyac360@mg.point.ne.jp>
+2005-07-14  Masaru Nomiya  <nomiyac360@mg.point.ne.jp>
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Fix index url
 	for the release.it.net group.
