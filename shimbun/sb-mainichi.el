@@ -1,6 +1,6 @@
 ;;; sb-mainichi.el --- shimbun backend for MSN-Mainichi -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
 ;; Koichiro Ohba <koichiro@meadowy.org>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
@@ -124,7 +124,6 @@
      1 2 3 4 5 6)
     ("keizai" "経済")
     ("keizai.it" "IT")
-    ("keizai.it.net.archive" "ネット時代のジャーナリズムとは何か")
     ("keizai.kaigai" "経済・海外")
     ("keizai.kigyou" "企業")
     ("keizai.kigyou.info" "企業情報")
@@ -165,7 +164,6 @@
     ("shakai.edu.mori" "教育の森")
     ("shakai.edu.elearningschool.nyushi.archive" "ITで入試が変わる")
     ("shakai.edu.net.archive" "ネット社会と子供たち")
-    ("shakai.edu.manabito.archive" "「e」と「学び」と")
     ("shakai.fu" "訃報")
     ("shakai.gakugei" "学芸")
     ("shakai.ji" "人事")
@@ -183,7 +181,11 @@
     ("sports.major" "大リーグ")
     ("sports.pro" "野球")
     ("sports.soccer" "サッカー")
-    ("yougo" "ニュースな言葉"))
+    ("yougo" "ニュースな言葉")
+
+    ;; The following groups are obsolete, though old articles still
+    ;; can be read.
+    ("shakai.edu.manabito.archive" "「e」と「学び」と"))
   "Alist of group names, their Japanese translations, index pages, regexps
 and numbers.  Where numbers point to the regexp search result in order
 of [0]a url, [1]a serial number, [2]a year, [3]a month, [4]a day,
@@ -313,16 +315,11 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 
     ;; Remove ranking sections.
     (goto-char (point-min))
-    (while (and (re-search-forward "\
-\[\t\n ]*\\(<!--[\t\n ]*|[\t\n ]*\\)\\(ranking[\t\n ]*|-->\\)"
+    (while (and (re-search-forward "[\t ]*<div[\t\n ]+class=\"ranking\">"
 				   nil t)
 		(progn
 		  (setq start (match-beginning 0))
-		  (re-search-forward (concat (regexp-quote (match-string 1))
-					     "/"
-					     (regexp-quote (match-string 2))
-					     "[\t\n ]*")
-				     nil t)))
+		  (re-search-forward "</div>[\t\n ]*" nil t)))
       (delete-region start (match-end 0)))
 
     ;; Rearrange the group name so as to be the reverse order.

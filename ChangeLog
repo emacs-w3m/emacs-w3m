@@ -1,5 +1,10 @@
 2006-04-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-mainichi.el (shimbun-mainichi-group-table): Remove
+	keizai.it.net.archive group.
+	(shimbun-mainichi-get-headers): Fix the way to remove ranking
+	sections.
+
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Remove Torino
 	news support; remove groups kansai.densetsu, kansai.kaban,
 	kansai.keiki, kansai.kyosho, kansai.okiniiri, kansai.onayami,
