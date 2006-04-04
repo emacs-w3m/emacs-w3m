@@ -2893,6 +2893,7 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
     (w3m-static-if (and (featurep 'xemacs)
 			(featurep 'mule))
 	(w3m-decode-coding-string-with-priority str coding)
+      (setq str (string-make-unibyte str))
       (when (listp coding)
 	(setq coding
 	      (with-temp-buffer

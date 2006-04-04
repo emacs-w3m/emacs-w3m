@@ -1,5 +1,8 @@
 2006-04-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-url-decode-string): Make string unibyte before
+	decoding.
+
 	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-sports):
 	Rewrite.
 
