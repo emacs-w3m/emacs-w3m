@@ -4507,7 +4507,8 @@ asahi.book.bunko asahi.book.comic asahi.book.edu asahi.book.hondana
 asahi.book.navi asahi.book.news asahi.book.paperback asahi.book.pocket
 asahi.book.ranking asahi.book.review asahi.book.shinsho
 asahi.book.special asahi.book.topics asahi.book.watch asahi.business
-asahi.business.column asahi.car asahi.car.italycolumn
+asahi.business.aera asahi.business.column asahi.business.reuter
+asahi.business.toyo asahi.car asahi.car.italycolumn
 asahi.car.motorsports asahi.car.newcar asahi.car.newcarbywebcg
 asahi.culture asahi.culture.column asahi.culture.yurufemi asahi.digital
 asahi.digital.apc asahi.digital.av asahi.digital.bcnnews

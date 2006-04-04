@@ -1,3 +1,16 @@
+2006-04-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-sports):
+	Rewrite.
+
+	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Insert
+	newlines in business.toyo group.
+
+2006-04-04  Masaru Nomiya  <nomiyac360@mg.point.ne.jp>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add
+	business.aera, business.reuter, and business.toyo groups.
+
 2006-04-03  Masaru Nomiya  <nomiyac360@mg.point.ne.jp>
 
 	* shimbun/sb-itmedia.el (shimbun-itmedia-group-alist): Add survey
