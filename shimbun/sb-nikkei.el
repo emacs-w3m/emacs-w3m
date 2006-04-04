@@ -1511,44 +1511,52 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 
 (defun shimbun-nikkei-get-headers-sports (group folder)
   "Function used to fetch headers for the sports group."
-  (let (headers)
+  ;; Skip headlinenews.
+  (re-search-forward "\
+<span[\t\n ]+class=\"sub_bar_time\">[\t\n ]*更新：[01]?[0-9]月[0-3]?[0-9]日"
+		     nil t)
+  (let (category headers)
     (while (re-search-forward
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"\\./"
+		(concat "<a" s1 "href=\""
 			;; 1. url
-			"\\(news\\.cfm\\?i="
+			"\\(http://sports\\.nikkei\\.co\\.jp/news\\.cfm\\?i="
 			;; 2. serial number
 			"\\("
 			;; 3. year
 			"\\(20[0-9][0-9]\\)"
-			"[01][0-9][0-3][0-9][^\"]+\\)"
+			"[^&]+\\)"
+			"&t="
+			;; 4. category
+			"\\([^\"]+\\)"
 			"\\)"
-			"\"[^>]+>" "\\(?:" s0 "<[^>]+>\\)*" s0 "(" s0
-			;; 4. month
-			"\\([0-9]+\\)"
-			s0 "/" s0
-			;; 5. day
-			"\\([0-9]+\\)"
-			s0 ")" s0
-			;; 6. subject
+			"\">" s0 "("
+			;; 5. month
+			"\\([01]?[0-9]\\)"
+			"/"
+			;; 6. day
+			"\\([0-3]?[0-9]\\)"
+			")" s0
+			;; 7. subject
 			"\\([^<]+\\)")))
 	    nil t)
+      (setq category (match-string 4))
       (push (shimbun-create-header
 	     0
-	     (match-string 6)
+	     (concat "[" category "] " (match-string 7))
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
 	      (string-to-number (match-string 3))
-	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 5)))
-	     (concat "<" (match-string 2) "%" group "."
+	      (string-to-number (match-string 5))
+	      (string-to-number (match-string 6)))
+	     (concat "<" (match-string 2) "%" category "." group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
-	     (shimbun-nikkei-expand-url (match-string 1) folder))
+	     (match-string 1))
 	    headers))
-    headers))
+    (shimbun-sort-headers headers)))
 
 (defun shimbun-nikkei-get-headers-newpro (group folder)
   "Function used to fetch headers for the newpro group."
