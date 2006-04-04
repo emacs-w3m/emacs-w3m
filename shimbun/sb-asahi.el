@@ -228,8 +228,85 @@ Every `.' in NAME will be replaced with `/'."
       ("book.topics" "BOOK: ニュースな本" nil ,@book2)
       ("book.watch" "BOOK: マガジンウオッチ" nil ,@book2)
       ("business" "ビジネス" "%s/list.html" ,@default)
+      ("business.aera" "ＡＥＲＡ発マネー" "business/aera/index.html"
+       ,(concat
+	 "<a" s1 "href=\""
+	 ;; 1. url
+	 "\\(/business/aera/TKY"
+	 ;; 2. serial number
+	 "\\("
+	 ;; 3. year
+	 "\\(20[0-9][0-9]\\)"
+	 ;; 4. month
+	 "\\([01][0-9]\\)"
+	 ;; 5. day
+	 "\\([0-3][0-9]\\)"
+	 "\\([0-9]+\\)"
+	 "\\.html\\)\\)"
+	 "\"" s0 ">" s0
+	 ;; 7. subject
+	 "\\(" no-nl "\\)"
+	 "</a><span class=\"f80\">"
+	 )
+       1 2 nil 7 3 4 5 nil)
       ;; The url should be ended with "index.html".
       ("business.column" "経済気象台" "business/column/index.html" ,@default2)
+      ("business.reuter" "ロイターニュース" "business/list_reuters.html"
+       ,(concat
+	 "<a" s1 "href=\""
+	 ;; 1. url
+	 "\\(/business/reuters/RTR"
+	 ;; 2. serial number
+	 "\\("
+	 ;; 3. year
+	 "\\(20[0-9][0-9]\\)"
+	 ;; 4. month
+	 "\\([01][0-9]\\)"
+	 ;; 5. day
+	 "\\([0-3][0-9]\\)"
+	 "\\([0-9]+\\)"
+	 "\\.html\\)\\)"
+	 "\"" s0 ">" s0
+	 ;; 7. subject
+	 "\\(" no-nl "\\)"
+	 "</a><span class=\"f80\">"  s0 "("
+	 ;; 8 month
+	 "\\([01][0-9]\\)"
+	 "/"
+	 ;; 9.day
+	 "\\([0-3][0-9]\\)" s1
+	 ;; 10. hour:min
+	 "\\([012][0-9]:[0-5][0-9]\\)"
+	 ")")
+       1 2 nil 7 3 4 5 10)
+      ("business.toyo" "東洋経済ニュース" "business/list_toyo.html"
+       ,(concat
+	 "<a" s1 "href=\""
+	 ;; 1. url
+	 "\\(/business/toyo/[a-z]+/TKZ"
+	 ;; 2. serial number
+	 "\\("
+	 ;; 3. year
+	 "\\(20[0-9][0-9]\\)"
+	 ;; 4. month
+	 "\\([01][0-9]\\)"
+	 ;; 5. day
+	 "\\([0-3][0-9]\\)"
+	 "\\([0-9]+\\)"
+	 "\\.html\\)\\)"
+	 "\"" s0 ">" s0
+	 ;; 7. subject
+	 "\\(" no-nl "\\)"
+	 "</a><span class=\"f80\">"  s0 "("
+	 ;; 8 month
+	 "\\([01][0-9]\\)"
+	 "/"
+	 ;; 9.day
+	 "\\([0-3][0-9]\\)" s1
+	 ;; 10. hour:min
+	 "\\([012][0-9]:[0-5][0-9]\\)"
+	 ")")
+       1 2 nil 7 3 4 5 10)
       ("car" "愛車" "%s/news/" ,@(shimbun-asahi-make-regexp "car.news"))
       ("car.italycolumn" "イタリア発アモーレ！モトーレ！" nil ,@default2)
       ("car.motorsports" "モータースポーツ" nil ,@default2)
@@ -836,6 +913,12 @@ and tenjin, it tries to fetch the article for that day if it failed."
 		    (if images
 			"<br>\n"
 		      "\n"))))))
+     ((string-equal group "business.toyo")
+      ;; Insert newlines.
+      (shimbun-with-narrowed-article
+       shimbun
+       (while (re-search-forward "。　?\\(\\cj\\)" nil t)
+	 (replace-match "。<br><br>　\\1"))))
      ((string-equal group "culture.yurufemi")
       (let (start comics)
 	(while (and (search-forward "alt=\"マンガ\"" nil t)
