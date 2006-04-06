@@ -1,5 +1,12 @@
 2006-04-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-sankei.el (shimbun-sankei-group-table): Add column
+	group.
+	(shimbun-sankei-get-headers-column): New function.
+	(shimbun-get-headers): Use it.
+	(shimbun-clear-contents): Put content-end boundary for articles in
+	column group.
+
 	* attic/vm-w3m.el (vm-w3m-use-w3m-minor-mode-map): New variable.
 	(vm-mime-display-internal-text/html): Use it.
 

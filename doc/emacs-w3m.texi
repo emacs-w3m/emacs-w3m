@@ -4611,6 +4611,7 @@ group name for example.
 @item @uref{http://www.sankei.co.jp/, Sankei Shimbun}
 sankei.shakai sankei.sports sankei.keizai sankei.seiji sankei.kokusai
 sankei.bungei sankei.book sankei.person sankei.dead sankei.editoria
+sankei.column
 
 @item @uref{http://www.bbc.co.uk/, BBC}
 bbc.news
