@@ -1,6 +1,6 @@
 ;;; sb-sankei.el --- shimbun backend for the Sankei Shimbun -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003, 2004, 2005 Katsumi Yamaoka
+;; Copyright (C) 2003, 2004, 2005, 2006 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -58,7 +58,10 @@
     ("person" "ひと" "news/person.htm")
     ("dead" "おくやみ" "news/dead.htm")
     ("editoria" "主張" "http://ez.st37.arena.ne.jp/cgi-bin/search/namazu.cgi\
-?query=%8E%E5%92%A3&whence=0&max=20&sort=date%3Alate&idxname=edit")))
+?query=%8E%E5%92%A3&whence=0&max=20&sort=date%3Alate&idxname=edit")
+    ("column" "産経抄" "http://ez.st37.arena.ne.jp/cgi-bin/search/namazu.cgi\
+?query=%8EY%8Co%8F%B4&whence=0&max=50&sort=date%3Alate&result=normal&idxname\
+=clm")))
 
 (defvar shimbun-sankei-x-face-alist
   '(("default" . "X-Face: L%Y'jtF~2k?#oXVB%?3t/WE),tU/UwT%tl-omu#\
@@ -81,8 +84,12 @@
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-sankei)
 					 &optional range)
-  (if (string-equal (shimbun-current-group-internal shimbun) "editoria")
-      (shimbun-sankei-get-headers-editoria shimbun range)
+  (cond
+   ((string-equal (shimbun-current-group-internal shimbun) "editoria")
+    (shimbun-sankei-get-headers-editoria shimbun range))
+   ((string-equal (shimbun-current-group-internal shimbun) "column")
+    (shimbun-sankei-get-headers-column shimbun range))
+   (t
     (when (re-search-forward "<!--[\t\n ]*mlist[\t\n ]*-->[\t\n ]*" nil t)
       (delete-region (point-min) (point)))
     (when (re-search-forward "[\t\n ]*<!--" nil t)
@@ -111,7 +118,7 @@
 \[\t\n ]+\
 \\([012][0-9]:[0-5][0-9]\\)\
 )"
-				nil t)
+	      nil t)
 	(setq month (string-to-number (match-string 4))
 	      year (cond ((>= (- month cmonth) 2)
 			  (1- cyear))
@@ -143,7 +150,7 @@
 	       ;; xref
 	       (concat shimbun-sankei-url "news/" (match-string 1)))
 	      headers))
-      headers)))
+      headers))))
 
 (defun shimbun-sankei-get-headers-editoria (shimbun range)
   (let ((today (decode-time))
@@ -192,9 +199,57 @@ http://www.sankei.co.jp/news/%02d%02d%02d/morning/editoria.htm"
 	    headers))
     headers))
 
+(defun shimbun-sankei-get-headers-column (shimbun range)
+  (let ((today (decode-time))
+	(from (concat (shimbun-server-name shimbun)
+		      " (" (shimbun-current-group-name shimbun) ")"))
+	year month day url time headers)
+    (while (or (and today
+		    (if (and (>= (nth 2 today) 5)
+			     (< (nth 2 today) 10))
+			(prog1
+			    t
+			  (setq year (nth 5 today)
+				month (nth 4 today)
+				day (nth 3 today)
+				url (format "\
+http://www.sankei.co.jp/news/%02d%02d%02d/morning/column.htm"
+					    (% year 100) month day)
+				time "05:00"
+				today nil))
+		      (setq today nil)))
+	       (and (re-search-forward
+		     ;; 1:url 2:year 3:month 4:day 5:time
+		     "<a[\t\n ]+href=\"\
+\\(http://www\\.sankei\\.co\\.jp/news/\
+\\([0-9][0-9]\\)\\([01][0-9]\\)\\([0-3][0-9]\\)\
+/morning/column\\.htm\\)\
+\">[\t\n 　]*\\(?:\\(?:<[^>]+>\\|産経抄\\)[\t\n 　]*\\)\
++([01][0-9]/[0-3][0-9][\t\n ]+\
+\\([012][0-9]:[0-5][0-9]\\))"
+				       nil t)
+		    (prog1
+			t
+		      (setq year (+ 2000 (string-to-number (match-string 2)))
+			    month (string-to-number (match-string 3))
+			    day (string-to-number (match-string 4))
+			    url (match-string 1)
+			    time (match-string 5)))))
+      (push (shimbun-create-header
+	     0
+	     (format "産経抄 (%d/%d)" month day)
+	     from
+	     (shimbun-make-date-string year month day time)
+	     (format "<%d%02d%02d%%editoria.sankei.co.jp>" year month day)
+	     "" 0 0
+	     url)
+	    headers))
+    headers))
+
 (luna-define-method shimbun-clear-contents :before ((shimbun shimbun-sankei)
 						    header)
-  (if (string-equal (shimbun-current-group-internal shimbun) "editoria")
+  (if (member (shimbun-current-group-internal shimbun)
+	      '("editoria" "column"))
       (when (and (re-search-forward (shimbun-content-start shimbun) nil t)
 		 (re-search-forward "[\t\n ]*<p>[\t\n ]*<p>" nil t))
 	(goto-char (match-beginning 0))
