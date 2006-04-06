@@ -1,6 +1,6 @@
 ;;; vm-w3m.el --- additional functions to make VM use emacs-w3m for HTML mails
 
-;; Copyright (C) 2003, 2005 Katsumi Yamaoka
+;; Copyright (C) 2003, 2005, 2006 Katsumi Yamaoka
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@
 
 (defvar vm-message-pointer)
 (defvar vm-mode-map)
+(defvar vm-w3m-mode-map)
 (defvar w3m-minor-mode-map)
 
 (defcustom vm-w3m-display-inline-images t
@@ -71,6 +72,15 @@ this variable to nil if you consider all urls to be safe."
   :group 'w3m
   :type '(choice (regexp :tag "Regexp")
 		 (const :tag "All URLs are safe" nil)))
+
+(defcustom vm-w3m-use-w3m-minor-mode-map t
+  "Say whether to use emacs-w3m command keys in VM presentation buffers.
+Set this variable to nil if you don't want vm-w3m to override any VM
+commend keys.  If it is non-nil, you will not be able to use some VM
+command keys, which are bound to emacs-w3m commands defined in the
+`w3m-minor-mode-command-alist' variable."
+  :group 'w3m
+  :type 'boolean)
 
 (eval-and-compile
   (or (featurep 'xemacs) (>= emacs-major-version 21)
@@ -154,7 +164,8 @@ this keymap, add them to `w3m-minor-mode-map' instead of this keymap.")))
 	(delete-char -1)
 	(add-text-properties
 	 start end
-	 (nconc (vm-w3m-local-map-property)
+	 (nconc (if vm-w3m-use-w3m-minor-mode-map
+		    (vm-w3m-local-map-property))
 		;; Put the mark meaning that this part was
 		;; inlined by emacs-w3m.
 		'(text-rendered-by-emacs-w3m t)))

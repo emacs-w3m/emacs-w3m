@@ -1,3 +1,8 @@
+2006-04-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* attic/vm-w3m.el (vm-w3m-use-w3m-minor-mode-map): New variable.
+	(vm-mime-display-internal-text/html): Use it.
+
 2006-04-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-url-decode-string): Make string unibyte before
