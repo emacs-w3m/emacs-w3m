@@ -1,6 +1,6 @@
 ;;; sb-infoshop.el --- infoshop shimbun backend
 
-;; Copyright (C) 2005 David Hansen
+;; Copyright (C) 2005, 2006 David Hansen
 
 ;; Author: David Hansen <david.hansen@physik.fu-berlin.de>
 ;; Keywords: news
@@ -32,7 +32,7 @@
 (luna-define-class shimbun-infoshop (shimbun-rss) ())
 
 (defvar shimbun-infoshop-url
-  "http://www.infoshop.org/news.rdf")
+  "http://www.infoshop.org/inews/backend/news.rdf")
 (defvar shimbun-infoshop-groups '("news"))
 (defvar shimbun-infoshop-from-address  "invalid@infoshop.org")
 (defvar shimbun-infoshop-coding-system
