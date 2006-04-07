@@ -4665,7 +4665,7 @@ itmedia.survey itmedia.technology
 
 @item @uref{http://plusd.itmedia.co.jp/, ITmedia +D}
 itmedia+D.plusd itmedia+D.mobile itmedia+D.pcupdate itmedia+D.lifestyle
-itmedia+D.games itmedia+D.docomo itmedia+D.au_kddi itmedia+D.vodafon
+itmedia+D.games itmedia+D.docomo itmedia+D.au_kddi itmedia+D.vodafone
 
 @item @uref{http://www.japantimes.co.jp/, Japan Times}
 japantimes.general japantimes.business
