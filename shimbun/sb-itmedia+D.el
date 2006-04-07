@@ -32,7 +32,7 @@
 
 (defvar shimbun-itmedia+D-groups
   '("plusd" "mobile" "pcupdate" "lifestyle" "games" "docomo" "au_kddi"
-    "vodafon"))
+    "vodafone"))
 (defvar shimbun-itmedia+D-x-face-alist
   '(("default" . "X-Face: #Ur~tK`JhZFFHPEVGKEi`MS{55^~&^0KUuZ;]-@WQ[8\
 @,Ex'EeAAE}6xF<K#]pULF@5r24J
