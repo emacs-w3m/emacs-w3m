@@ -45,7 +45,7 @@
   "<!--[\t\n ]*\\(?:photo\\.sta\\|\\(?:ad--\\)?hombun\\)[\t\n ]*-->[\t\n ]*")
 
 (defvar shimbun-sankei-content-end
-  "[\t\n ]*<!--[\t\n ]*hbnend[\t\n ]*-->")
+  "[\t\n ]*<!--[\t\n ]*hbnend[\t\n ]*-->\\|<!--[\t\n ]*KIJI END[\t\n ]*-+>")
 
 (defvar shimbun-sankei-group-table
   '(("shakai" "社会" "news/shakai.htm")

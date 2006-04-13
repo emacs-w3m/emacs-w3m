@@ -1,3 +1,7 @@
+2006-04-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-sankei.el (shimbun-sankei-content-end): Improve.
+
 2006-04-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-itmedia+D.el (shimbun-itmedia+D-groups): vodafon ->
