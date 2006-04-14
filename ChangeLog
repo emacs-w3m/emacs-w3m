@@ -1,3 +1,7 @@
+2006-04-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-download): Clear minibuffer after y-or-n-p.
+
 2006-04-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-sankei.el (shimbun-sankei-content-end): Improve.

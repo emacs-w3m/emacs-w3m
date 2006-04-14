@@ -4940,9 +4940,10 @@ POST-DATA and REFERER will be sent to the web server with a request."
 		  jka-compr-compression-info-list
 		  format-alist)
 	      (when (or (not (file-exists-p filename))
-			(y-or-n-p
-			 (format "File(%s) already exists. Overwrite? "
-				 filename)))
+			(prog1 (y-or-n-p
+				(format "File(%s) already exists. Overwrite? "
+					filename))
+			  (message nil)))
 		(write-region (point-min) (point-max) filename)
 		(w3m-touch-file filename (w3m-last-modified url))
 		t))
