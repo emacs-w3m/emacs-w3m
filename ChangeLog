@@ -1,3 +1,8 @@
+2006-04-20  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* w3m-search.el (w3m-search-engine-alist): Fix url for
+	ja.wikipedia.
+
 2006-04-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-search.el (w3m-search-engine-alist): Add ja.wikipedia.
