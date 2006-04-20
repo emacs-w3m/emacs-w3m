@@ -3757,9 +3757,9 @@ Q. Why doesn't the emacs-w3m frame pop up to the front?
 It is quite convenient that the @kbd{M-x w3m RET} command makes the
 emacs-w3m frame pop to the front even if it is hidden under the other
 frames.  However, it was reported that it does not work in some
-platforms, e.g., Fedora Core 4.  In those systems, other features which
-raise the Emacs frames will not work, either.  If you are in such a
-miserable circumstance, it might be worth trying the following advice:
+platforms, e.g., Fedora Core 4 and 5.  In those systems, other features
+which raise the Emacs frames will not work, either.  If you are in such
+a miserable circumstance, it might be worth trying the following advice:
 
 @lisp
 (defadvice raise-frame
@@ -4554,7 +4554,15 @@ nikkansports.society nikkansports.leisure
 @item @uref{http://www.nikkei.co.jp/, Nihon Keizai Shimbun}
 nikkei.top nikkei.main nikkei.keizai nikkei.sangyo nikkei.tento
 nikkei.zinzi nikkei.report nikkei.kansai nikkei.it.business
-nikkei.it.internet nikkei.it.mobile nikkei.it.security nikkei.it.digital
+nikkei.it.busi_gyoukai nikkei.it.biz-system nikkei.it.sox nikkei.it.data
+nikkei.it.taidan nikkei.it.management nikkei.it.analyst
+nikkei.it.internet nikkei.it.broad nikkei.it.net_gyoukai nikkei.it.iptel
+nikkei.it.tele nikkei.it.broadcast nikkei.it.internet-column
+nikkei.it.contents nikkei.it.literacy nikkei.it.ec nikkei.it.policy
+nikkei.it.e-gov nikkei.it.mobile nikkei.it.mob_gyoukai nikkei.it.mobsoft
+nikkei.it.mobcon nikkei.it.money nikkei.it.wirelesslan nikkei.it.one
+nikkei.it.kougengaku nikkei.it.world nikkei.it.media nikkei.it.security
+nikkei.it.net_crime nikkei.it.digital nikkei.it.digi_contents
 nikkei.it.pc nikkei.kokunai nikkei.markets nikkei.kawase nikkei.kinri
 nikkei.ft nikkei.dj nikkei.ngyoseki nikkei.gyosuuchi nikkei.gyoseki
 nikkei.china nikkei.market nikkei.kaigai nikkei.seiji nikkei.shakai

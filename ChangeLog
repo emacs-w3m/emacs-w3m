@@ -1,3 +1,23 @@
+2006-04-20  Masaru Nomiya  <nomiyac360@mg.point.ne.jp>
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Add
+	it.busi_gyoukai, it.biz-system, it.sox, it.data, it.taidan,
+	it.management, it.analyst, it.broad, it.net_gyoukai, it.iptel,
+	it.tele, it.broadcast, it.internet-column, it.contents,
+	it.literacy, it.ec, it.policy, it.e-gov, it.mob_gyoukai,
+	it.mobsoft, it.mobcon, it.money, it.wirelesslan, it.one,
+	it.kougengaku, it.world, it.media, it.net_crime, it.digi_contents
+	groups; use shimbun-nikkei-get-headers-it-default and
+	shimbun-nikkei-prepare-article-default for it.business,
+	it.internet, it.mobile, it.security and it.digital groups.
+	(shimbun-nikkei-get-headers-it-default): New function.
+	(shimbun-nikkei-get-headers-it-business)
+	(shimbun-nikkei-get-headers-it-internet)
+	(shimbun-nikkei-get-headers-it-security)
+	(shimbun-nikkei-get-headers-it-mobile)
+	(shimbun-nikkei-get-headers-it-digital)
+	(shimbun-nikkei-get-headers-it-pc): Remove.
+
 2006-04-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-download): Clear minibuffer after y-or-n-p.

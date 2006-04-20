@@ -3839,10 +3839,10 @@ Q. なぜ emacs-w3m のフレームがポップアップしないのですか?
 
 Emacs-w3m のフレームが他のフレームの下に隠れていても、それ
 が @kbd{M-x w3m RET} コマンドでポップアップするのは、かなり便利です。し
-かし、いくつかのプラットフォーム、例えば Fedora Core 4 では、それが働か
-ないという報告がありました。それらのシステムでは、Emacs のフレームをポッ
-プアップさせる他の機能も動かないでしょう。もしあなたがそんな惨めな境遇に
-あるならば、以下の advice を試す価値があるかもしれません。
+かし、いくつかのプラットフォーム、例えば Fedora Core 4 と 5 では、それが
+働かないという報告がありました。それらのシステムでは、Emacs のフレームを
+ポップアップさせる他の機能も動かないでしょう。もしあなたがそんな惨めな境
+遇にあるならば、以下の advice を試す価値があるかもしれません。
 
 @lisp
 (defadvice raise-frame
@@ -4607,7 +4607,15 @@ nikkansports.society nikkansports.leisure
 @item @uref{http://www.nikkei.co.jp/, 日本経済新聞}
 nikkei.top nikkei.main nikkei.keizai nikkei.sangyo nikkei.tento
 nikkei.zinzi nikkei.report nikkei.kansai nikkei.it.business
-nikkei.it.internet nikkei.it.mobile nikkei.it.security nikkei.it.digital
+nikkei.it.busi_gyoukai nikkei.it.biz-system nikkei.it.sox nikkei.it.data
+nikkei.it.taidan nikkei.it.management nikkei.it.analyst
+nikkei.it.internet nikkei.it.broad nikkei.it.net_gyoukai nikkei.it.iptel
+nikkei.it.tele nikkei.it.broadcast nikkei.it.internet-column
+nikkei.it.contents nikkei.it.literacy nikkei.it.ec nikkei.it.policy
+nikkei.it.e-gov nikkei.it.mobile nikkei.it.mob_gyoukai nikkei.it.mobsoft
+nikkei.it.mobcon nikkei.it.money nikkei.it.wirelesslan nikkei.it.one
+nikkei.it.kougengaku nikkei.it.world nikkei.it.media nikkei.it.security
+nikkei.it.net_crime nikkei.it.digital nikkei.it.digi_contents
 nikkei.it.pc nikkei.kokunai nikkei.markets nikkei.kawase nikkei.kinri
 nikkei.ft nikkei.dj nikkei.ngyoseki nikkei.gyosuuchi nikkei.gyoseki
 nikkei.china nikkei.market nikkei.kaigai nikkei.seiji nikkei.shakai
