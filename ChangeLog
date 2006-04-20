@@ -1,3 +1,12 @@
+2006-04-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-search.el (w3m-search-engine-alist): Add ja.wikipedia.
+
+2006-04-20  David Hansen  <david.hansen@gmx.net>
+
+	* w3m-search.el (w3m-search-engine-alist): Add wikipedia,
+	en.wikipedia and de.wikipedia.
+
 2006-04-20  Masaru Nomiya  <nomiyac360@mg.point.ne.jp>
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Add

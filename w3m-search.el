@@ -1,6 +1,6 @@
 ;;; w3m-search.el --- functions convenient to access web search engines
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Keisuke Nishida    <kxn30@po.cwru.edu>,
@@ -182,7 +182,14 @@ field-keywords=%s")
 250-7496892-7797857"
 	     shift_jis
 	     "url=index=blended&search-type=quick-search&\
-field-keywords=%s")))))
+field-keywords=%s")))
+      ("emacswiki" "http://www.emacswiki.org/cgi-bin/wiki?search=%s")
+      ("en.wikipedia" "http://en.wikipedia.org/wiki/Special:Search?search=%s")
+      ("de.wikipedia" "http://de.wikipedia.org/wiki/Spezial:Search?search=%s"
+       utf-8)
+      ("ja.wikipedia"
+       "http://ja.wikipedia.org/wiki/%%e7%%89%%b9%%e5%%88%%a5:Search?search=%s"
+       utf-8)))
   "*An alist of search engines.
 Each element looks like (ENGINE ACTION CODING POST-DATA)
 ENGINE is a string, the name of the search engine.
