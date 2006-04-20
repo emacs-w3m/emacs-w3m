@@ -187,8 +187,7 @@ field-keywords=%s")))
       ("en.wikipedia" "http://en.wikipedia.org/wiki/Special:Search?search=%s")
       ("de.wikipedia" "http://de.wikipedia.org/wiki/Spezial:Search?search=%s"
        utf-8)
-      ("ja.wikipedia"
-       "http://ja.wikipedia.org/wiki/%%e7%%89%%b9%%e5%%88%%a5:Search?search=%s"
+      ("ja.wikipedia" "http://ja.wikipedia.org/wiki/Special:Search?search=%s"
        utf-8)))
   "*An alist of search engines.
 Each element looks like (ENGINE ACTION CODING POST-DATA)
