@@ -71,24 +71,140 @@
      shimbun-nikkei-prepare-article-kansai)
     ("it.business" "ITビジネス"
      "http://it.nikkei.co.jp/business/news/index.aspx"
-     shimbun-nikkei-get-headers-it-business
-     shimbun-nikkei-prepare-article-default2)
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.busi_gyoukai" "業界動向(ITビジネス)"
+     "http://it.nikkei.co.jp/business/news/busi_gyoukai.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.biz-system" "企業情報システム"
+     "http://it.nikkei.co.jp/business/news/busi_system.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.sox" "盛り上がるＳＯＸ法ビジネス"
+     "http://it.nikkei.co.jp/business/special/sox.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.data" "データで読むＩＴ市場"
+     "http://it.nikkei.co.jp/business/column/data.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.taidan" "トップ対談"
+     "http://it.nikkei.co.jp/business/column/taidan.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.management" "これからのＩＴ経営"
+     "http://it.nikkei.co.jp/business/column/management.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.analyst" "人気アナリストの業界診断"
+     "http://it.nikkei.co.jp/business/column/analyst.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
     ("it.internet" "インターネット"
      "http://it.nikkei.co.jp/internet/news/index.aspx"
-     shimbun-nikkei-get-headers-it-internet
-     shimbun-nikkei-prepare-article-default2)
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.broad" "ブロードバンド"
+     "http://it.nikkei.co.jp/internet/news/broadband.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.net_gyoukai" "業界動向(インターネット)"
+     "http://it.nikkei.co.jp/internet/news/net_gyoukai.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.iptel" "多機能化するＩＰ電話"
+     "http://it.nikkei.co.jp/internet/special/iptel.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.tele" "通信・放送再編、本番迎える"
+     "http://it.nikkei.co.jp/internet/special/tele.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.broadcast" "地上デジタル放送スタート"
+     "http://it.nikkei.co.jp/internet/special/d_broadcast.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.internet-column" "インターネット:コラム"
+     "http://it.nikkei.co.jp/internet/column/koike.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.contents" "コンテンツビジネス"
+     "http://it.nikkei.co.jp/internet/column/contents.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.literacy" "インターネット・リテラシー"
+     "http://it.nikkei.co.jp/internet/column/literacy.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.ec" "EC"
+     "http://it.nikkei.co.jp/internet/news/ec.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.policy" "政策・統計"
+     "http://it.nikkei.co.jp/internet/news/seisaku.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.e-gov" "行政のＩＴ化"
+     "http://it.nikkei.co.jp/business/special/e-gov.aspx"
+      shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
     ("it.mobile" "モバイル"
      "http://it.nikkei.co.jp/mobile/news/index.aspx"
-     shimbun-nikkei-get-headers-it-mobile
-     shimbun-nikkei-prepare-article-default2)
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.mob_gyoukai" "業界動向(モバイル)"
+     "http://it.nikkei.co.jp/mobile/news/gyoukai.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.mobsoft" "サービス"
+     "http://it.nikkei.co.jp/mobile/news/soft.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.mobcon" "コンテンツ"
+     "http://it.nikkei.co.jp/mobile/news/contents.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.money" "携帯キャリアの金融ビジネス"
+     "http://it.nikkei.co.jp/mobile/special/money.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.wirelesslan" "無線ＬＡＮ本格化"
+     "http://it.nikkei.co.jp/mobile/special/wirelesslan.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.one" "ワンセグはテレビを変えるか"
+     "http://it.nikkei.co.jp/mobile/special/one.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.kougengaku" "携帯考現学"
+     "http://it.nikkei.co.jp/mobile/column/kougengaku.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.world" "モバイル世界潮流"
+     "http://it.nikkei.co.jp/mobile/column/world.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.media" "メディア最前線"
+     "http://it.nikkei.co.jp/business/column/media.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
     ("it.security" "セキュリティ"
      "http://it.nikkei.co.jp/security/news/index.aspx"
-     shimbun-nikkei-get-headers-it-security
-     shimbun-nikkei-prepare-article-default2)
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.net_crime" "ネット犯罪"
+     "http://it.nikkei.co.jp/security/news/net_crime.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
     ("it.digital" "デジタル家電＆エンタメ"
      "http://it.nikkei.co.jp/digital/news/index.aspx"
-     shimbun-nikkei-get-headers-it-digital
-     shimbun-nikkei-prepare-article-default2)
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
+    ("it.digi_contents" "コンテンツビジネスの行方"
+     "http://it.nikkei.co.jp/digital/special/contents.aspx"
+     shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-prepare-article-default)
     ("it.pc" "PC＆デジタルカメラ"
      "http://it.nikkei.co.jp/pc/news/index.aspx"
      shimbun-nikkei-get-headers-it-pc
@@ -709,256 +825,68 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	    headers))
     headers))
 
-(defun shimbun-nikkei-get-headers-it-business (group folder)
-  "Function used to fetch headers for the it.business group."
-  (let (headers)
+(defun shimbun-nikkei-get-headers-it-default (group folder)
+  "Function used to fetch headers for the it groups."
+  (let (sub-end headers)
+    (catch 'stop
+      (while t
     (while (re-search-forward
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
 		(concat "<a" s1 "href=\"/"
 			;; 1. url
-			"\\(business/news/index\\.aspx\\?i="
-			;; 2. serial number
+			"\\(\\(?:[^\"<>]+/\\)?"
+			"\\([a-z_-]+\\)\\.aspx\\?"
+			;; 3. serial
 			"\\("
-			;; 3. year
-			"\\(20[0-9][0-9]\\)"
-			;; 4. month
-			"\\([01][0-9]\\)"
-			;; 5. day
+			"\\(?:ichiran=True&\\)?"
+			"[A-Z0-9a-z=]+\\(?:[\t\n ]*\\)?"
+			;; 3. serial number
+			;;"\\("
+			;; 4. day
 			"\\([0-3][0-9]\\)"
-			"[0-9a-z]+"
+			;; 5. month
+			"\\([01][0-9]\\)"
+			;; 6. year
+			"\\(20[0-9][0-9]\\)"
+			"\\(?:&Page=[0-9]?[0-9]\\)?"
 			"\\)"
-			"\\)"
-			"\">" s0
-			;; 6. subject
+			"\\)" s0
+			"\">" s0 "\n?" s0
+			"\\(?:([01]?[0-9]/[0-3]?[0-9])\\)?" s0
+			;; 7. subject
 			"\\([^<]+\\)"
 			"</a>")))
 	    nil t)
+      (setq sub-end (point))
       (push (shimbun-create-header
 	     0
-	     (match-string 6)
+	     (match-string 7)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 3))
-	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 5)))
-	     (concat "<" (match-string 2) "%" group "."
+	      (string-to-number (match-string 6))
+	      (string-to-number (match-string 5))
+	      (string-to-number (match-string 4)))
+	     (concat "<" (match-string 3) "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
 	     (shimbun-nikkei-expand-url
 	      (concat "http://it.nikkei.co.jp/" (match-string 1)) folder))
-	    headers))
-    headers))
-
-(defun shimbun-nikkei-get-headers-it-internet (group folder)
-  "Function used to fetch headers for the it.internet group."
-  (let (headers)
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((s0 "[\t\n ]*")
-		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"/"
-			;; 1. url
-			"\\(internet/news/index\\.aspx\\?i="
-			;; 2. serial number
-			"\\("
-			;; 3. year
-			"\\(20[0-9][0-9]\\)"
-			;; 4. month
-			"\\([01][0-9]\\)"
-			;; 5. day
-			"\\([0-3][0-9]\\)"
-			"[0-9a-z]+"
-			"\\)"
-			"\\)"
-			"\">" s0
-			;; 6. subject
-			"\\([^<]+\\)"
-			"</a>")))
-	    nil t)
-      (push (shimbun-create-header
-	     0
-	     (match-string 6)
-	     shimbun-nikkei-from-address
-	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 3))
-	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 5)))
-	     (concat "<" (match-string 2) "%" group "."
-		     shimbun-nikkei-top-level-domain ">")
-	     "" 0 0
-	     (shimbun-nikkei-expand-url
-	      (concat "http://it.nikkei.co.jp/" (match-string 1)) folder))
-	    headers))
-    headers))
-
-(defun shimbun-nikkei-get-headers-it-security (group folder)
-  "Function used to fetch headers for the it.security group."
-  (let (headers)
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((s0 "[\t\n ]*")
-		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"/"
-			;; 1. url
-			"\\(security/news/index\\.aspx\\?i="
-			;; 2. serial number
-			"\\("
-			;; 3. year
-			"\\(20[0-9][0-9]\\)"
-			;; 4. month
-			"\\([01][0-9]\\)"
-			;; 5. day
-			"\\([0-3][0-9]\\)"
-			"[0-9a-z]+"
-			"\\)"
-			"\\)"
-			"\">" s0
-			;; 6. subject
-			"\\([^<]+\\)"
-			"</a>")))
-	    nil t)
-      (push (shimbun-create-header
-	     0
-	     (match-string 6)
-	     shimbun-nikkei-from-address
-	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 3))
-	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 5)))
-	     (concat "<" (match-string 2) "%" group "."
-		     shimbun-nikkei-top-level-domain ">")
-	     "" 0 0
-	     (shimbun-nikkei-expand-url
-	      (concat "http://it.nikkei.co.jp/" (match-string 1)) folder))
-	    headers))
-    headers))
-
-(defun shimbun-nikkei-get-headers-it-mobile (group folder)
-  "Function used to fetch headers for the it.mobile group."
-  (let (headers)
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((s0 "[\t\n ]*")
-		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"/"
-			;; 1. url
-			"\\(mobile/news/index\\.aspx\\?i="
-			;; 2. serial number
-			"\\("
-			;; 3. year
-			"\\(20[0-9][0-9]\\)"
-			;; 4. month
-			"\\([01][0-9]\\)"
-			;; 5. day
-			"\\([0-3][0-9]\\)"
-			"[0-9a-z]+"
-			"\\)"
-			"\\)"
-			"\">" s0
-			;; 6. subject
-			"\\([^<]+\\)"
-			"</a>")))
-	    nil t)
-      (push (shimbun-create-header
-	     0
-	     (match-string 6)
-	     shimbun-nikkei-from-address
-	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 3))
-	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 5)))
-	     (concat "<" (match-string 2) "%" group "."
-		     shimbun-nikkei-top-level-domain ">")
-	     "" 0 0
-	     (shimbun-nikkei-expand-url
-	      (concat "http://it.nikkei.co.jp/" (match-string 1)) folder))
-	    headers))
-    headers))
-
-(defun shimbun-nikkei-get-headers-it-digital (group folder)
-  "Function used to fetch headers for the it.digital group."
-  (let (headers)
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((s0 "[\t\n ]*")
-		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"/"
-			;; 1. url
-			"\\(digital/news/index\\.aspx\\?i="
-			;; 2. serial number
-			"\\("
-			;; 3. year
-			"\\(20[0-9][0-9]\\)"
-			;; 4. month
-			"\\([01][0-9]\\)"
-			;; 5. day
-			"\\([0-3][0-9]\\)"
-			"[0-9a-z]+"
-			"\\)"
-			"\\)"
-			"\">" s0
-			;; 6. subject
-			"\\([^<]+\\)"
-			"</a>")))
-	    nil t)
-      (push (shimbun-create-header
-	     0
-	     (match-string 6)
-	     shimbun-nikkei-from-address
-	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 3))
-	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 5)))
-	     (concat "<" (match-string 2) "%" group "."
-		     shimbun-nikkei-top-level-domain ">")
-	     "" 0 0
-	     (shimbun-nikkei-expand-url
-	      (concat "http://it.nikkei.co.jp/" (match-string 1)) folder))
-	    headers))
-    headers))
-
-(defun shimbun-nikkei-get-headers-it-pc (group folder)
-  "Function used to fetch headers for the it.pc group."
-  (let (headers)
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((s0 "[\t\n ]*")
-		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"/"
-			;; 1. url
-			"\\(pc/news/index\\.aspx\\?i="
-			;; 2. serial number
-			"\\("
-			;; 3. year
-			"\\(20[0-9][0-9]\\)"
-			;; 4. month
-			"\\([01][0-9]\\)"
-			;; 5. day
-			"\\([0-3][0-9]\\)"
-			"[0-9a-z]+"
-			"\\)"
-			"\\)"
-			"\">" s0
-			;; 6. subject
-			"\\([^<]+\\)"
-			"</a>")))
-	    nil t)
-      (push (shimbun-create-header
-	     0
-	     (match-string 6)
-	     shimbun-nikkei-from-address
-	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 3))
-	      (string-to-number (match-string 4))
-	      (string-to-number (match-string 5)))
-	     (concat "<" (match-string 2) "%" group "."
-		     shimbun-nikkei-top-level-domain ">")
-	     "" 0 0
-	     (shimbun-nikkei-expand-url
-	      (concat "http://it.nikkei.co.jp/" (match-string 1)) folder))
-	    headers))
+	      headers)
+	(goto-char sub-end))
+	(if (re-search-forward "\
+<a href=\"\\([^\"]+\\)\">&gt;&gt; 過去記事一覧</a>\
+\\|<a href=\"\\([^\"]+\\)\">次へ&gt;</a>" nil t)
+	    (progn
+	      (shimbun-retrieve-url (prog1
+			(concat "\
+http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
+				      (erase-buffer))
+				    t)
+	      (goto-char (point-min)))
+	  (throw 'stop nil))))
+    ;;(shimbun-sort-headers headers)))
     headers))
 
 (defun shimbun-nikkei-get-headers-markets (group folder)
