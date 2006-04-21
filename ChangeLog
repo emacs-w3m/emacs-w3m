@@ -1,10 +1,11 @@
 2006-04-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-url-decode-string): Support non-Mule XEmacs
+	superficially.
+
 	* w3m-util.el (w3m-replace-in-string): Prefer
 	replace-regexp-in-string over of replace-in-string.  It was done
 	in Gnus by Reiner Steib.
-
-	* w3m.el (string-make-unibyte): Fbind when compiling.
 
 2006-04-20  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
 
