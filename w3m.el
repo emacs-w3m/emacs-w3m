@@ -174,7 +174,9 @@
   (autoload 'widget-forward "wid-edit" nil t)
   (autoload 'widget-get "wid-edit")
   (unless (fboundp 'char-to-int)
-    (defalias 'char-to-int 'identity)))
+    (defalias 'char-to-int 'identity))
+  (unless (fboundp 'string-make-unibyte)
+    (defalias 'string-make-unibyte 'identity)))
 
 (defconst emacs-w3m-version
   (eval-when-compile
