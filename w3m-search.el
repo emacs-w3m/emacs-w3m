@@ -188,7 +188,8 @@ field-keywords=%s")))
       ("de.wikipedia" "http://de.wikipedia.org/wiki/Spezial:Search?search=%s"
        utf-8)
       ("ja.wikipedia" "http://ja.wikipedia.org/wiki/Special:Search?search=%s"
-       utf-8)))
+       utf-8)
+      ("msdn" "http://search.msdn.microsoft.com/search/default.aspx?query=%s")))
   "*An alist of search engines.
 Each element looks like (ENGINE ACTION CODING POST-DATA)
 ENGINE is a string, the name of the search engine.

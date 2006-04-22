@@ -1,3 +1,7 @@
+2006-04-22  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* w3m-search.el (w3m-search-engine-alist): Add msdn.
+
 2006-04-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-url-decode-string): Support non-Mule XEmacs
