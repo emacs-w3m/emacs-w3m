@@ -51,10 +51,10 @@
           ftp://ftp.m17n.org/pub/mule/apel/apel-10.6.tar.gz
 
       Note: You must not use the APEL XEmacs package (which is contained
-       in SUMO).  If you have already installed the APEL XEmacs package,
-       use the following directives to replace it with APEL which is
-       linked above (you can also use the same directives in order to
-       newly install APEL):
+       in SUMO) of the versions older than 1.32.  If you have already
+       installed such a version, you should upgrade it or replace it
+       with APEL which is linked above (you can also use the same
+       directives in order to newly install APEL):
 
           % rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
           % cd apel-10.6
