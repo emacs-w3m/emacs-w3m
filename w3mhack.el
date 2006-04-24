@@ -262,7 +262,7 @@ APEL package seems to have been compiled for XEmacs with MULE,
 		   apel
 		   "\n
  If you are using the official APEL XEmacs package (or possibly SUMO),
- look for the new one (version 1.23 and later) and install it in your
+ look for the new one (version 1.32 and later) and install it in your
  system, or send a bug report to the maintainers using
  `M-x report-xemacs-bug'.  Otherwise, you may rebuild APEL from the
  source distribution, see manuals where you could get it from.")))
