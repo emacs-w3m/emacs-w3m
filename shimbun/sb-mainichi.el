@@ -294,9 +294,10 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 	     (delete-region (match-beginning 0) (point-max)))
 	   (goto-char (point-min))
 	   (re-search-forward "<div[\t\n ]+class=\"blocks\">[\t\n ]*" nil t))
-	  ((string-match "\\`eye\\." group)
-	   (goto-char (point-min))
-	   (re-search-forward "<td[\t\n ]+class=\"date_md\">" nil t))
+	  ((and (string-match "\\`eye\\." group)
+		(progn
+		  (goto-char (point-min))
+		  (re-search-forward "<td[\t\n ]+class=\"date_md\">" nil t))))
 	  (t
 	   (goto-char (point-max))
 	   (when (re-search-backward "<!--[\t\n ]*||[\t\n ]*\

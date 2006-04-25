@@ -1,3 +1,8 @@
+2006-04-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-get-headers): Use also
+	the default method to ignore unwanted links in eye.* groups.
+
 2006-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el: Require APEL XEmacs package 1.32 and later.
