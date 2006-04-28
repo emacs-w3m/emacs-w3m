@@ -1,3 +1,16 @@
+2006-04-28  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-google-feeling-lucky-charset): New user option.
+	(w3m-canonicalize-url): Support search-keyword for "I'm Feeling
+	Lucky on Google". Add 2nd argument.
+	(w3m-input-url): Suport "I'm Feeling Lucky".
+	Add 5th argument `feeling-lucky'.
+	Bind key to `self-insert-command' if `feeling-lucky'.
+	Call `w3m-canonicalize-url' with `feeling-lucky'.
+	(w3m-view-this-url): Call `w3m-input-url' with `feeling-lucky'.
+	(w3m-goto-url-new-session): Ditto.
+	(w3m): Ditto.
+
 2006-04-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-mainichi.el (shimbun-mainichi-get-headers): Use also

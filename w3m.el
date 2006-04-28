@@ -1788,6 +1788,19 @@ Here are some predefined functions which can be used for those ways:
 		 function
 		 (repeat :tag "Arguments" sexp)))))
 
+(defcustom w3m-google-feeling-lucky-charset
+  (cond
+   ((or (featurep 'un-define) (fboundp 'utf-translate-cjk-mode))
+    "UTF-8")
+   ((equal "Japanese" w3m-language)
+    "SHIFT_JIS")
+   ((w3m-find-coding-system 'utf-8)
+    "UTF-8")
+   (t "US-ASCII"))
+  "*Character set for \"I'm Feeling Lucky on Google\"."
+  :group 'w3m
+  :type '(string :size 0))
+
 (defconst w3m-entity-alist
   (append
    (eval-when-compile
@@ -3748,18 +3761,27 @@ In Transient Mark mode, deactivate the mark."
 	(w3m-deactivate-region))
     (w3m-url-at-point)))
 
-(defsubst w3m-canonicalize-url (url)
-  "Add a scheme part to an URL if it has no scheme part."
+(defsubst w3m-canonicalize-url (url &optional feeling-lucky)
+  "Add a scheme part to an URL or make an URL for \"I'm Feeling Lucky on Google\"
+if it has no scheme part."
   (w3m-string-match-url-components url)
-  (if (match-beginning 1)
-      url
-    (concat (if (and (file-name-absolute-p url)
-		     (file-exists-p url))
-		"file://"
-	      "http://")
-	    url)))
+  (cond
+   ((match-beginning 1)
+    url)
+   ((and (file-name-absolute-p url) (file-exists-p url))
+    (concat "file://" url))
+   (feeling-lucky
+    (let* ((charset w3m-google-feeling-lucky-charset)
+	   (cs (w3m-charset-to-coding-system charset))
+	   (str (w3m-url-encode-string url cs)))
+      (format (concat "http://www.google.com/search"
+		      "?btnI=I%%27m+Feeling+Lucky&ie=%s&oe=%s&q=%s")
+	      charset charset str)))
+   (t
+    (concat "http://" url))))
 
-(defun w3m-input-url (&optional prompt initial default quick-start)
+(defun w3m-input-url (&optional prompt initial default quick-start
+				feeling-lucky)
   "Read a url from the minibuffer, prompting with string PROMPT."
   (let (url)
     (w3m-arrived-setup)
@@ -3772,18 +3794,27 @@ In Transient Mark mode, deactivate the mark."
 	     (not initial))
 	default
       (setq url (let ((minibuffer-setup-hook
-		       (append minibuffer-setup-hook '(beginning-of-line))))
-		  (completing-read
-		   (or prompt
-		       (if default
-			   (format "URL (default %s): "
-				   (if (stringp default)
-				       (if (eq default w3m-home-page)
-					   "HOME" default)
-				     (prin1-to-string default)))
-			 "URL: "))
-		   'w3m-url-completion nil nil initial
-		   'w3m-input-url-history)))
+		       (append minibuffer-setup-hook '(beginning-of-line)))
+		      (ofunc (lookup-key minibuffer-local-completion-map " ")))
+		  (when feeling-lucky
+		    (define-key minibuffer-local-completion-map " "
+		      'self-insert-command))
+		  (unwind-protect
+		      (completing-read
+		       (or prompt
+			   (if default
+			       (format "URL %s(default %s): "
+				       (if feeling-lucky
+					   "or Keyword "
+					 "")
+				       (if (stringp default)
+					   (if (eq default w3m-home-page)
+					       "HOME" default)
+					 (prin1-to-string default)))
+			     "URL: "))
+		       'w3m-url-completion nil nil initial
+		       'w3m-input-url-history)
+		    (define-key minibuffer-local-completion-map " " ofunc))))
       (when (string= "" url)
 	(setq url default))
       (if (stringp url)
@@ -3791,10 +3822,9 @@ In Transient Mark mode, deactivate the mark."
 	    ;; remove duplication
 	    (setq w3m-input-url-history
 		  (cons url (delete url w3m-input-url-history)))
-	    (w3m-canonicalize-url url))
+	    (w3m-canonicalize-url url feeling-lucky))
 	;; It may be `popup'.
 	url))))
-
 
 ;;; Cache:
 (defun w3m-cache-setup ()
@@ -5692,7 +5722,7 @@ point."
 	  (w3m-toggle-inline-image)
 	(w3m-view-image)))
      ((setq url (w3m-active-region-or-url-at-point))
-      (unless (eq 'quit (setq url (w3m-input-url nil url 'quit)))
+      (unless (eq 'quit (setq url (w3m-input-url nil url 'quit nil 'feeling-lucky)))
 	(w3m-view-this-url-1 url arg new-session)))
      (t (w3m-message "No URL at point")))))
 
@@ -7448,7 +7478,8 @@ the current page."
 		(if (string-match "\\`about://\\(?:header\\|source\\)/"
 				  w3m-current-url)
 		    (substring w3m-current-url (match-end 0))
-		  w3m-current-url))))
+		  w3m-current-url)))
+	  nil nil 'feeling-lucky)
 	 current-prefix-arg
 	 (w3m-static-if (fboundp 'universal-coding-system-argument)
 	     coding-system-for-read)))
@@ -7690,7 +7721,8 @@ session will start afresh."
 		     (if (string-match "\\`about://\\(?:header\\|source\\)/"
 				       w3m-current-url)
 			 (substring w3m-current-url (match-end 0))
-		       w3m-current-url)))
+		       w3m-current-url))
+		   nil nil 'feeling-lucky)
     current-prefix-arg
     (w3m-static-if (fboundp 'universal-coding-system-argument)
 	coding-system-for-read)
@@ -7912,7 +7944,7 @@ interactive command in the batch mode."
 	  (let ((default (if (w3m-alive-p) 'popup w3m-home-page)))
 	    (setq new (if current-prefix-arg
 			  default
-			(w3m-input-url nil nil default w3m-quick-start)))))
+			(w3m-input-url nil nil default w3m-quick-start 'feeling-lucky)))))
       ;; new-session
       (and w3m-make-new-session
 	   (w3m-alive-p)
