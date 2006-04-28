@@ -1,3 +1,8 @@
+2006-04-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-url-decode-string): Don't perform find-coding-system
+	on a list of coding system in XEmacs.
+
 2006-04-28  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-google-feeling-lucky-charset): New user option.

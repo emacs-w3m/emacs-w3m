@@ -2905,10 +2905,9 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
     (setq str (apply 'concat (nreverse (cons (substring str start) buf))))
     (w3m-static-cond
      ((and (featurep 'xemacs)
-	   (fboundp 'find-coding-system))
-      (if (find-coding-system coding)
-	  (w3m-decode-coding-string-with-priority str coding)
-	str))
+	   (fboundp 'find-coding-system)
+	   (subrp (symbol-function 'find-coding-system)))
+      (w3m-decode-coding-string-with-priority str coding))
      ((featurep 'xemacs)
       str)
      (t
