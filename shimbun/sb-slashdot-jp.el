@@ -168,6 +168,22 @@
 			     shimbun-slashdot-jp-comment-arguments))
 	       "&")))
 
+(luna-define-method shimbun-make-contents :before
+  ((shimbun shimbun-slashdot-jp) header)
+  (goto-char (point-min))
+  (if (string-match
+       "\\`http://slashdot\\.jp/\\([a-zA-Z0-9]+\\)?/?article\\.pl"
+       (shimbun-header-xref header))
+      ;; article
+      (when (re-search-forward "<table[^>]*class=\"titlebar\"[^>]*>[ \t\n]*\
+<tr[^>]*>[ \t\n]*<td[^>]*>[ \t\n]*<font[^>]*>\\([^<]+\\)</font>" nil t)
+	(shimbun-header-set-subject header (match-string-no-properties 1)))
+    ;; journal
+    (when (re-search-forward
+	   "<a +href=\"?/?[^/]*/journal/[0-9]+\"?>\\([^<]+\\)</a>" nil t)
+      (shimbun-header-set-subject header (match-string-no-properties 1))))
+  (goto-char (point-min)))
+
 (luna-define-method shimbun-clear-contents :around
   ((shimbun shimbun-slashdot-jp) header)
   (when (luna-call-next-method)

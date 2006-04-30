@@ -37,25 +37,25 @@
   '(("top"        . "http://x51.org/index.rdf") ;; Top-RDF
     ("anima"      . "http://anima.x51.org/index.rdf")
     ("enema"      . "http://enema.x51.org/index.rdf")
-    ("art"        . "http://x51.org/x/art.php")
-    ("blow"       . "http://x51.org/x/blow.php")
-    ("crime"      . "http://x51.org/x/crime.php")
-    ("disaster"   . "http://x51.org/x/disaster.php")
-    ("edge"       . "http://x51.org/x/edge.php")
-    ("ghost"      . "http://x51.org/x/ghost.php")
-    ("info"       . "http://x51.org/x/info.php")
-    ("life"       . "http://x51.org/x/life.php")
-    ("love"       . "http://x51.org/x/love.php")
-    ("media"      . "http://x51.org/x/media.php")
-    ("medical"    . "http://x51.org/x/medical.php")
-    ("oparts"     . "http://x51.org/x/oparts.php")
-    ("phallic"    . "http://x51.org/x/phallic.php")
-    ("psychic"    . "http://x51.org/x/psychic.php")
-    ("religion"   . "http://x51.org/x/religion.php")
-    ("science"    . "http://x51.org/x/science.php")
-    ("ufo"        . "http://x51.org/x/ufo.php")
-    ("uma"        . "http://x51.org/x/uma.php")
-    ("xfiles"     . "http://x51.org/x/xfiles.php")))
+    ("art"        . "http://x51.org/x/art/")
+    ("blow"       . "http://x51.org/x/blow/")
+    ("crime"      . "http://x51.org/x/crime/")
+    ("disaster"   . "http://x51.org/x/disaster/")
+    ("edge"       . "http://x51.org/x/edge/")
+    ("ghost"      . "http://x51.org/x/ghost/")
+    ("info"       . "http://x51.org/x/info/")
+    ("life"       . "http://x51.org/x/life/")
+    ("love"       . "http://x51.org/x/love/")
+    ("media"      . "http://x51.org/x/media/")
+    ("medical"    . "http://x51.org/x/medical/")
+    ("oparts"     . "http://x51.org/x/oparts/")
+    ("phallic"    . "http://x51.org/x/phallic/")
+    ("psychic"    . "http://x51.org/x/psychic/")
+    ("religion"   . "http://x51.org/x/religion/")
+    ("science"    . "http://x51.org/x/science/")
+    ("ufo"        . "http://x51.org/x/ufo/")
+    ("uma"        . "http://x51.org/x/uma/")
+    ("xfiles"     . "http://x51.org/x/xfiles/")))
 
 (defvar shimbun-x51-obsolete-groups
   '("auction" "cabal" "homme" "military" "news" "northkorea" "story")
@@ -120,7 +120,7 @@
 	     (beg (point-min))
 	     (end (point-max))
 	     indexes)
-	(push (concat url "?page=1") indexes) ;; push page 1
+	(push (concat url "index.php?page=1") indexes) ;; push page 1
 	(when (if pages (< 1 pages) t)
 	  (goto-char (point-min))
 	  (when (search-forward "<div class=\"middlebar\">" nil t)
@@ -157,23 +157,16 @@
 	      (goto-char (point-min))
 	      (let (title url date id)
 		(while (re-search-forward
-			"<a +href=\"http://x51\\.org/x/\
-\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\.php\"\
+			"<a +href=\"\\(http://x51\\.org/x/\
+\\([0-9][0-9]\\)/\\([0-9][0-9]\\)/\\([0-9][0-9]\\)\\([0-9][0-9]\\)\\.php\\)\"\
  +class=\"title[^\"]*\">\\([^<]*\\)</a>"
 			nil t)
-		  (setq url (shimbun-expand-url
-			     (concat
-			      "http://x51.org/x/"
-			      (match-string 1) "/"
-			      (match-string 2) "/"
-			      (match-string 3) (match-string 4)
-			      ".php")
-			     (shimbun-index-url shimbun)))
-		  (setq title (match-string 5))
-		  (setq date  (shimbun-make-date-string
-			       (string-to-number (match-string 1))
-			       (string-to-number (match-string 2))
-			       (string-to-number (match-string 3))))
+		  (setq url (match-string-no-properties 1)
+			title (match-string-no-properties 6)
+			date (shimbun-make-date-string
+			      (string-to-number (match-string 2))
+			      (string-to-number (match-string 3))
+			      (string-to-number (match-string 4))))
 		  (setq id (shimbun-rss-build-message-id shimbun url date))
 		  ;; check old id
 		  (when (shimbun-search-id shimbun id)

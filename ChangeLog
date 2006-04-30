@@ -1,3 +1,11 @@
+2006-05-01  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-x51.el (shimbun-x51-group-alist): Improve URL.
+	(shimbun-get-headers): Improve regexp and url rule.
+
+	* shimbun/sb-slashdot-jp.el (shimbun-make-contents): Append new
+	method.
+
 2006-04-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-url-decode-string): Don't perform find-coding-system
