@@ -189,7 +189,8 @@ field-keywords=%s")))
        utf-8)
       ("ja.wikipedia" "http://ja.wikipedia.org/wiki/Special:Search?search=%s"
        utf-8)
-      ("msdn" "http://search.msdn.microsoft.com/search/default.aspx?query=%s")))
+      ("msdn" "http://search.msdn.microsoft.com/search/default.aspx?query=%s")
+      ("freshmeat" "http://freshmeat.net/search/?q=%s&section=projects")))
   "*An alist of search engines.
 Each element looks like (ENGINE ACTION CODING POST-DATA)
 ENGINE is a string, the name of the search engine.
@@ -224,6 +225,9 @@ If Transient Mark mode, this option is ignored and the region is used
 as an initial string."
   :group 'w3m
   :type 'boolean)
+
+(defvar w3m-search-engine-history nil
+  "History variable used by `w3m-search' for prompting a search engine.")
 
 (defun w3m-search-escape-query-string (str &optional coding)
   (mapconcat
@@ -266,13 +270,14 @@ and deactivate the mark."
   (interactive
    (let ((engine
 	  (if current-prefix-arg
-	      (let ((completion-ignore-case t))
+	      (let ((default (or (car w3m-search-engine-history)
+				 w3m-search-default-engine))
+		    (completion-ignore-case t))
 		(completing-read (format "Which engine? (default %s): "
-					 w3m-search-default-engine)
-				 w3m-search-engine-alist nil t))
+					 default)
+				 w3m-search-engine-alist nil t nil
+				 'w3m-search-engine-history default))
 	    w3m-search-default-engine)))
-     (when (string= engine "")
-       (setq engine w3m-search-default-engine))
      (list engine
 	   (w3m-search-read-query
 	    (format "%s search: " engine)
