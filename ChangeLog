@@ -1,3 +1,8 @@
+2006-05-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-cnet-jp.el (shimbun-cnet-jp-content-end): Relaxed to
+	follow the change of site description.
+
 2006-05-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-search.el (w3m-search-engine-history): New variable.

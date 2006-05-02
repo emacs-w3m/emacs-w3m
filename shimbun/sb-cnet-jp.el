@@ -50,7 +50,8 @@
 
 (defvar shimbun-cnet-jp-content-start "<div class=\"leaf_body\">")
 (defvar shimbun-cnet-jp-content-end
-  "<!-- *\\(NEWS LETTER SUB\\|ZD CAMPAIGN SUB\\) *-->")
+  "\\(<!-- *\\(NEWS LETTER SUB\\|ZD CAMPAIGN SUB\\) *-->\\|\
+<div class=\"navi_[^\"]+\">\\)")
 
 (defvar shimbun-cnet-jp-server-name "CNET Networks,Inc.")
 (defvar shimbun-cnet-jp-x-face-alist
