@@ -128,10 +128,6 @@
        "http://www.excite.co.jp/search.gw?target=combined&look=excite_jp\
 &lang=jp&tsug=-1&csug=-1&search=%s"
        shift_jis)
-      ("lycos-ja"
-       "http://www.lycos.co.jp/cgi-bin/pursuit?query=\"%s\"&cat=jp&\
-encoding=shift-jis"
-       shift_jis)
       ("altavista"
        "http://altavista.com/sites/search/web?q=\"%s\"&kl=ja&search=Search")
       ("rpmfind"

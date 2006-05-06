@@ -1,3 +1,7 @@
+2006-05-06  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* w3m-search.el (w3m-search-engine-alist): Remove lycos-ja.
+
 2006-05-02  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-cnet-jp.el (shimbun-cnet-jp-content-end): Relaxed to
