@@ -1209,12 +1209,11 @@ See also `w3m-filter-rules'."
   :require 'w3m-filter)
 
 (defcustom w3m-use-symbol
-  (and (featurep 'mule)
-       (eq w3m-type 'w3m-m17n)
-       (or (not (eq w3m-output-coding-system 'utf-8))
-	   (and (w3m-mule-unicode-p)
-		(or window-system (eq (terminal-coding-system) 'utf-8))))
-       t)
+  (when (and (featurep 'mule)
+	     (eq w3m-type 'w3m-m17n))
+    (if (eq w3m-output-coding-system 'utf-8)
+	(and (w3m-mule-unicode-p) 'w3m-device-on-window-system-p)
+      t))
   "*Non-nil means replace symbols that the <_SYMBOL> tags lead into.
 It is meaningful only when the w3m-m17n command is used and (X)Emacs
 handles unicode charsets."
@@ -3050,9 +3049,7 @@ For example:
 (defun w3m-fontify-strike-through ()
   "Fontify strike-through text in the buffer containing halfdump."
   (when (and w3m-fontify-strike-through
-	     (w3m-static-if (featurep 'xemacs)
-		 (device-on-window-system-p)
-	       window-system))
+	     (w3m-device-on-window-system-p))
     (goto-char (point-min))
     (while (re-search-forward "\\[\\(?:DEL\\|S\\):" nil t)
       (let ((start (match-beginning 0))

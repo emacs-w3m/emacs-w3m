@@ -1,3 +1,21 @@
+2006-05-07  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-symbol.el: Bind w3m-use-symbol when compiling.
+	(w3m-use-symbol): New function.
+	(w3m-replace-symbol): Use it.
+
+	* w3m.el (w3m-use-symbol): Changed its default value when
+	w3m-output-coding-system is utf-8.
+
+2006-05-07  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m-util.el (w3m-device-on-window-system-p): New function.
+	(w3m-popup-frame-p): Use it.
+
+	* w3m-search.el (w3m-search-engine-alist): Ditto.
+
+	* w3m.el (w3m-fontify-strike-through): Ditto.
+
 2006-05-06  Yoichi NAKAYAMA  <yoichi@geiin.org>
 
 	* w3m-search.el (w3m-search-engine-alist): Remove lycos-ja.

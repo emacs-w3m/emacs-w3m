@@ -202,9 +202,7 @@ If CODING is omitted, it defaults to `w3m-default-coding-system'."
 		 (string :format "       Action: %v\n" :size 0)
 		 (coding-system :format "%t: %v\n" :size 0)
 		 (checklist :inline t
-			    :entry-format ,(if (if (featurep 'xemacs)
-						   (device-on-window-system-p)
-						 window-system)
+			    :entry-format ,(if (w3m-device-on-window-system-p)
 					       "%b   %v"
 					     "%b  %v")
 			    (string :format "PostData: %v\n" :size 0)))))

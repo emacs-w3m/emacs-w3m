@@ -427,12 +427,16 @@ otherwise return an alist."
 	   (setq params (cddr params)))
 	 (nreverse alist)))))
 
+(defun w3m-device-on-window-system-p ()
+  "Return non-nil if the selected frame is on a widnow system"
+  (w3m-static-if (featurep 'xemacs)
+      (device-on-window-system-p)
+    window-system))
+
 (defmacro w3m-popup-frame-p ()
   "Return non-nil if `w3m-pop-up-frames' is non-nil and Emacs really
 supports separate frames."
-  (if (featurep 'xemacs)
-      '(and w3m-pop-up-frames (device-on-window-system-p))
-    '(and w3m-pop-up-frames window-system)))
+  '(and w3m-pop-up-frames (w3m-device-on-window-system-p)))
 
 (defmacro w3m-use-tab-p ()
   "Return non-nil if `w3m-use-tab' is non-nil and Emacs really supports

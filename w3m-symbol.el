@@ -31,7 +31,8 @@
 
 (eval-when-compile
   (defvar w3m-output-coding-system)
-  (defvar w3m-language))
+  (defvar w3m-language)
+  (defvar w3m-use-symbol))
 
 (defgroup w3m-symbol nil
   "Symbols for w3m"
@@ -177,6 +178,11 @@
 			  :value w3m-default-symbol)
 		,w3m-symbol-custom-type))
 
+(defun w3m-use-symbol ()
+  (cond ((functionp w3m-use-symbol)
+	 (funcall w3m-use-symbol))
+	(t w3m-use-symbol)))
+
 (defun w3m-symbol ()
   (cond (w3m-symbol
 	 (if (symbolp w3m-symbol)
@@ -193,20 +199,21 @@
 
 ;;;###autoload
 (defun w3m-replace-symbol ()
-  (let ((symbol-list (w3m-symbol)))
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward "<_SYMBOL TYPE=\\([0-9]+\\)>" nil t)
-	(let ((symbol (nth (string-to-number (match-string 1)) symbol-list))
-	      (start (point))
-	      end symbol-cnt)
-	  (search-forward "</_SYMBOL>" nil t)
-	  (setq end (match-beginning 0)
-		symbol-cnt (/ (string-width (buffer-substring start end))
-			      (string-width symbol)))
-	  (goto-char start)
-	  (delete-region start end)
-	  (insert (apply 'concat (make-list symbol-cnt symbol))))))))
+  (when (w3m-use-symbol)
+    (let ((symbol-list (w3m-symbol)))
+      (save-excursion
+	(goto-char (point-min))
+	(while (re-search-forward "<_SYMBOL TYPE=\\([0-9]+\\)>" nil t)
+	  (let ((symbol (nth (string-to-number (match-string 1)) symbol-list))
+		(start (point))
+		end symbol-cnt)
+	    (search-forward "</_SYMBOL>" nil t)
+	    (setq end (match-beginning 0)
+		  symbol-cnt (/ (string-width (buffer-substring start end))
+				(string-width symbol)))
+	    (goto-char start)
+	    (delete-region start end)
+	    (insert (apply 'concat (make-list symbol-cnt symbol)))))))))
 
 (provide 'w3m-symbol)
 
