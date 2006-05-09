@@ -1,3 +1,8 @@
+2006-05-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_SET_VANILLA_FLAG): Add --no-unibyte option so as
+	to invalidate EMACS_UNIBYTE environment variable.
+
 2006-05-07  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-symbol.el: Bind w3m-use-symbol when compiling.
