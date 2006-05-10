@@ -1,3 +1,7 @@
+2006-05-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-show-decoded-url): Add entry for hatena.ne.jp.
+
 2006-05-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* aclocal.m4 (AC_SET_VANILLA_FLAG): Add --no-unibyte option so as
