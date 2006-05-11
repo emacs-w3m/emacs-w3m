@@ -1,3 +1,8 @@
+2006-05-11  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-search.el (w3m-search-engine-alist): Use utf-8 for google if
+	possible.
+
 2006-05-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-show-decoded-url): Add entry for hatena.ne.jp.

@@ -41,7 +41,10 @@
 (require 'w3m)
 
 (defcustom w3m-search-engine-alist
-  (let ((ja (equal "Japanese" w3m-language)))
+  (let* ((ja (equal "Japanese" w3m-language))
+	 (utf-8 (or (featurep 'un-define)
+		    (fboundp 'utf-translate-cjk-mode)
+		    (and (not ja) (w3m-find-coding-system 'utf-8)))))
     `(,@(if ja
 	    '(("yahoo"
 	       "http://search.yahoo.co.jp/bin/search?p=%s"
@@ -69,28 +72,55 @@
 	    ("blog-ja"
 	     "http://blogsearch.google.com/blogsearch?q=%s&lr=lang_ja&oe=utf-8&ie=utf-8"
 	     utf-8)))
-      ,@(if ja
-	    '(("google"
-	       "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=Shift_JIS"
-	       shift_jis)
-	      ("google-en"
-	       "http://www.google.com/search?q=%s"))
+      ,@(cond
+	 ((and ja utf-8)
+	  '(("google"
+	     "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=utf-8"
+	     utf-8)
+	    ("google-en"
+	     "http://www.google.com/search?q=%s")))
+	 (ja
+	  '(("google"
+	     "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=Shift_JIS"
+	     shift_jis)
+	    ("google-en"
+	     "http://www.google.com/search?q=%s")))
+	 (utf-8
+	  '(("google"
+	     "http://www.google.com/search?q=%s&ie=utf-8"
+	     utf-8)
+	    ("google-en"
+	     "http://www.google.com/search?q=%s")))
+	 (t
 	  '(("google"
 	     "http://www.google.com/search?q=%s")
 	    ("google-ja"
 	     "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=Shift_JIS"
-	     shift_jis)))
-      ,@(if ja
-	    '(("google news"
-	       "http://news.google.co.jp/news?hl=ja&ie=Shift_JIS&q=%s"
-	       shift_jis)
-	      ("google news-en"
-	       "http://news.google.com/news?hl=en&q=%s"))
+	     shift_jis))))
+      ,@(cond
+	 ((and ja utf-8)
 	  '(("google news"
-	     "http://news.google.com/news?q=%s")
-	    ("google news-ja"
+	     "http://news.google.co.jp/news?hl=ja&ie=utf-8&q=%s"
+	     utf-8)
+	    ("google news-en"
+	     "http://news.google.com/news?hl=en&q=%s")))
+	 (ja
+	  '(("google news"
 	     "http://news.google.co.jp/news?hl=ja&ie=Shift_JIS&q=%s"
-	     shift_jis)))
+	     shift_jis)
+	    ("google news-en"
+	     "http://news.google.com/news?hl=en&q=%s")))
+	 (utf-8
+	  '(("google news"
+	     "http://news.google.co.jp/news?hl=ja&ie=utf-8&q=%s"
+	     utf-8)
+	    ("google news-en"
+	     "http://news.google.com/news?hl=en&q=%s")))
+	 '(("google news"
+	    "http://news.google.com/news?q=%s")
+	   ("google news-ja"
+	    "http://news.google.co.jp/news?hl=ja&ie=Shift_JIS&q=%s"
+	    shift_jis)))
       ("google groups"
        "http://groups.google.com/groups?q=%s")
       ,@(if ja
