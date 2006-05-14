@@ -1,5 +1,10 @@
 2006-05-14  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
+	* shimbun/sb-pcweb-column.el (shimbun-pcweb-column-url): Improve
+	base URL.
+
+2006-05-14  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
 	* w3m.el (w3m-refontify-anchor): Improve parameter check.
 	(w3m-create-image-page): Use `w3m-add-face-property' instead
 	`put-text-property'/`add-text-properties'/`w3m-add-text-properties'.

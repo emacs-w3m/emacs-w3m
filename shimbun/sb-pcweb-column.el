@@ -30,7 +30,8 @@
 
 (luna-define-class shimbun-pcweb-column (shimbun) ())
 
-(defvar shimbun-pcweb-column-url "http://pcweb.mycom.co.jp/column/")
+(defvar shimbun-pcweb-column-url "http://journal.mycom.co.jp/column/")
+
 (defvar shimbun-pcweb-column-groups
   '(;; Under a series
     "itshihonron" "osx" "yetanother" "svalley" "winxp" "sopinion"
@@ -62,6 +63,7 @@
 	    (num (match-string 2))
 	    (subject (match-string 3))
 	    id)
+	;; do not modify for compatibility.
 	(setq id (format "<%s.%s.column@pcweb.mycom.co.jp>"
 			 num (shimbun-current-group-internal shimbun)))
 	(push (shimbun-make-header
