@@ -1,3 +1,27 @@
+2006-05-14  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* w3m.el (w3m-refontify-anchor): Improve parameter check.
+	(w3m-create-image-page): Use `w3m-add-face-property' instead
+	`put-text-property'/`add-text-properties'/`w3m-add-text-properties'.
+	(w3m-history-highlight-current-url): Ditto.
+	(w3m-header-line-insert): Ditto.
+
+	* w3m-search.el (w3m-search-read-query): Improve parameter check.
+
+	* w3m-lnum.el (w3m-link-numbering): Use `w3m-add-face-property'
+	instead `put-text-property'.
+
+	* w3m-form.el (w3m-form-make-button): Use `w3m-add-face-property'
+	instead `add-text-properties'.
+	(w3m-fontify-textareas): Ditto.
+	(w3m-form-parse-and-fontify): Ditto.
+
+	* w3m-e21.el,w3m-e23.el (w3m-form-make-button): Improve face
+	property append method.
+	(w3m-setup-header-line): Ditto.
+	(w3m-tab-line): Ditto.
+	(w3m-tab-separator): Modify `face' value to list.
+
 2006-05-11  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-search.el (w3m-search-engine-alist): Use utf-8 for google if

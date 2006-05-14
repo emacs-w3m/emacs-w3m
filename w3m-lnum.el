@@ -103,9 +103,8 @@
 		    (overlay-put overlay 'before-string num)
 		    (set-glyph-face (extent-begin-glyph overlay)
 				    'w3m-link-numbering-face))
-		(put-text-property 0 (length num)
-				   'face 'w3m-link-numbering-face
-				   num)
+		(w3m-add-face-property 0 (length num)
+				       'w3m-link-numbering-face num)
 		(overlay-put overlay 'before-string num)
 		(overlay-put overlay 'evaporate t))
 	      (overlay-put overlay 'w3m-link-numbering-overlay i))))))))

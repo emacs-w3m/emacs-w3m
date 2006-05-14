@@ -428,8 +428,7 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]+\\)/id=\\(.*\\)$"
   (unless (fboundp 'w3m-form-make-button)
     (defun w3m-form-make-button (start end properties)
       "Make button on the region from START to END."
-      (add-text-properties start end (append '(face w3m-form-face)
-					     properties)))))
+      (w3m-add-face-property start end 'w3m-form-face))))
 
 ;;; w3mmee
 ;;
@@ -551,11 +550,11 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]+\\)/id=\\(.*\\)$"
 		    (delete-char 1)
 		    (setq end (point))
 		    (insert "]"))
+		  (w3m-add-face-property start end 'w3m-form-face)
 		  (add-text-properties
 		   start end
 		   `(w3m-form-field-id
 		     ,(format "fid=%s/type=%s/name=%s/id=%d" fid type name id)
-		     face w3m-form-face
 		     w3m-action (w3m-form-input-textarea ,form ,hseq)
 		     w3m-submit (w3m-form-submit ,form ,id ,name
 						 (w3m-form-get ,form ,id))
@@ -651,10 +650,10 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	    (unless maps (setq maps (w3m-form-new "map" ".")))
 	    (unless usemap (setq usemap mapval))
 	    (when mapval (setq mapval nil))
+	    (w3m-add-face-property start end 'w3m-form-face)
 	    (add-text-properties
 	     start (match-beginning 0)
-	     `(face w3m-form-face
-		    w3m-action (w3m-form-input-map ,maps ,usemap))))))
+	     `(w3m-action (w3m-form-input-map ,maps ,usemap))))))
        ((string= tag "/input_alt")
 	(replace-match ""))
        ((string= tag "input_alt")
@@ -727,11 +726,11 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 				w3m-form-textarea-directory))
 		(setq w3m-form-textarea-files
 		      (cons filename w3m-form-textarea-files)))
+	      (w3m-add-face-property start end 'w3m-form-face)
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
 		 ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
-		 face w3m-form-face
 		 w3m-action (w3m-form-input-textarea ,form ,hseq)
 		 w3m-submit (w3m-form-submit ,form ,id ,name
 					     (w3m-form-get ,form ,id))
@@ -749,21 +748,21 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			  t)
 		      (setq selects (cons (list selectnumber form id name)
 					  selects)))
+		(w3m-add-face-property start end 'w3m-form-face)
 		(add-text-properties
 		 start end
 		 `(w3m-form-field-id
 		   ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
-		   face w3m-form-face
 		   w3m-action (w3m-form-input-select ,form ,id ,name)
 		   w3m-submit (w3m-form-submit ,form ,id ,name
 					       (w3m-form-get ,form ,id))
 		   w3m-anchor-sequence ,abs-hseq))))
 	     ((string= type "password")
+	      (w3m-add-face-property start end 'w3m-form-face)
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
 		 ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
-		 face w3m-form-face
 		 w3m-action (w3m-form-input-password ,form ,id ,name)
 		 w3m-submit (w3m-form-submit ,form ,id ,name
 					     (w3m-form-get ,form ,id))
@@ -774,11 +773,11 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			      (if checked
 				  (cons value cvalue)
 				cvalue)))
+	      (w3m-add-face-property start end 'w3m-form-face)
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
 		 ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
-		 face w3m-form-face
 		 w3m-action (w3m-form-input-checkbox ,form ,id ,name ,value)
 		 w3m-submit (w3m-form-submit ,form ,id ,name
 					     (w3m-form-get ,form ,id))
@@ -787,22 +786,22 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	      ;; Radio button input, one name has one value
 	      (if checked
 		  (w3m-form-put-by-name form id name value))
+	      (w3m-add-face-property start end 'w3m-form-face)
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
 		 ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
-		 face w3m-form-face
 		 w3m-action (w3m-form-input-radio ,form ,id ,name ,value)
 		 w3m-submit (w3m-form-submit ,form ,id ,name
 					     (w3m-form-get-by-name
 					      ,form ,name))
 		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "file")
+	      (w3m-add-face-property start end 'w3m-form-face)
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
 		 ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
-		 face w3m-form-face
 		 w3m-action (w3m-form-input-file ,form ,id ,name ,value)
 		 w3m-submit (w3m-form-submit ,form ,id ,name
 					     (w3m-form-get ,form ,id))
@@ -812,11 +811,11 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			    id
 			    name
 			    (or value (w3m-form-get form id)))
+	      (w3m-add-face-property start end 'w3m-form-face)
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
 		 ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
-		 face w3m-form-face
 		 w3m-action (w3m-form-input ,form ,id ,name ,type
 					    ,width ,maxlength ,value)
 		 w3m-submit (w3m-form-submit ,form ,id ,name
@@ -1521,8 +1520,9 @@ textarea")))
 	    (insert "\n")))
 	(goto-char (point-min))
 	(while (and (not (eobp))
-		    (not (equal cur (get-text-property (point)
-						       'w3m-form-select-value))))
+		    (not (equal cur
+				(get-text-property (point)
+						   'w3m-form-select-value))))
 	  (goto-char (next-single-property-change (point)
 						  'w3m-form-select-value)))
 	(set-buffer-modified-p nil)

@@ -3602,13 +3602,16 @@ It replaces the faces on the arrived anchors from `w3m-anchor-face' to
       (when (and (eq major-mode 'w3m-mode)
 		 (get-text-property (point) 'w3m-anchor-sequence)
 		 (setq prop (get-text-property (point) 'face))
-		 (memq 'w3m-anchor-face prop))
+		 (listp prop)
+		 (member 'w3m-anchor-face prop))
 	(let* ((start)
 	       (end (next-single-property-change (point) 'w3m-anchor-sequence))
 	       (buffer-read-only))
 	  (when (and end
-		     (setq start (previous-single-property-change end 'w3m-anchor-sequence))
-		     (w3m-arrived-p (get-text-property (point) 'w3m-href-anchor)))
+		     (setq start (previous-single-property-change
+				  end 'w3m-anchor-sequence))
+		     (w3m-arrived-p (get-text-property (point)
+						       'w3m-href-anchor)))
 	    (w3m-remove-face-property start end 'w3m-anchor-face)
 	    (w3m-remove-face-property start end 'w3m-arrived-anchor-face)
 	    (w3m-add-face-property start end 'w3m-arrived-anchor-face))
@@ -8370,7 +8373,7 @@ It does manage history position data as well."
 	(w3m-next-anchor)
 	(setq start (point))
 	(end-of-line)
-	(put-text-property start (point) 'face 'w3m-history-current-url-face)
+	(w3m-add-face-property start (point) 'w3m-history-current-url-face)
 	(goto-char start)))
     (set-buffer-modified-p nil)))
 
@@ -8782,14 +8785,14 @@ passed to the `w3m-quit' function (which see)."
 					   (ct " [T]")
 					   (charset " [C]")
 					   (t "")))))
-    (w3m-add-text-properties (point-min) (point)
-			     `(face w3m-header-line-location-title-face))
+    (w3m-add-face-property (point-min) (point)
+			   'w3m-header-line-location-title-face)
     (let ((start (point)))
       (insert w3m-current-url)
+      (w3m-add-face-property start (point)
+			     'w3m-header-line-location-content-face)
       (w3m-add-text-properties start (point)
-			       `(face
-				 w3m-header-line-location-content-face
-				 mouse-face highlight
+			       `(mouse-face highlight
 				 keymap ,w3m-header-line-map
 				 ,@(if (featurep 'xemacs)
 				       '(help-echo
@@ -8806,8 +8809,8 @@ passed to the `w3m-quit' function (which see)."
 			       (frame-width)
 			     (window-width))
 			   (current-column) 1)))
-      (w3m-add-text-properties start (point)
-			       '(face w3m-header-line-location-content-face))
+      (w3m-add-face-property start (point)
+			     'w3m-header-line-location-content-face)
       (unless (eolp)
 	(insert "\n")))))
 

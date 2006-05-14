@@ -351,8 +351,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 		  :w3m-form-action (plist-get properties 'w3m-action))))
 	  (overlay-put (widget-get w :button-overlay) 'evaporate t))
 	(add-text-properties start end properties))
-    (add-text-properties start end (append '(face w3m-form-face)
-					   properties))))
+    (w3m-add-face-property start end 'w3m-form-face)))
 
 (defun w3m-setup-widget-faces ()
   (make-local-variable 'widget-button-face)
@@ -510,13 +509,13 @@ Buffer string between BEG and END are replaced with IMAGE."
 	       (list
 		(propertize
 		 "Location: "
-		 'face 'w3m-header-line-location-title-face)
+		 'face (list 'w3m-header-line-location-title-face))
 		`(:eval
 		  (propertize
 		   (if (stringp w3m-current-url)
 		       (replace-regexp-in-string "%" "%%" w3m-current-url)
 		     "")
-		   'face 'w3m-header-line-location-content-face
+		   'face (list 'w3m-header-line-location-content-face)
 		   'mouse-face '(highlight :foreground
 					   ,(face-foreground 'default))
 		   'local-map (let ((map (make-sparse-keymap)))
@@ -622,7 +621,7 @@ cleared by a timer.")
 
 (defvar w3m-tab-separator
   (propertize " "
-	      'face 'w3m-tab-background-face
+	      'face (list 'w3m-tab-background-face)
 	      'display '(space :width 0.5))
   "String used to separate tabs.")
 
@@ -688,13 +687,14 @@ cleared by a timer.")
 		title (nth 2 datum)
 		favicon (nth 3 datum)
 		keymap (nth 4 datum)
-		face (if process
-			 (if current
-			     'w3m-tab-selected-retrieving-face
-			   'w3m-tab-unselected-retrieving-face)
-		       (if current
-			   'w3m-tab-selected-face
-			 'w3m-tab-unselected-face))
+		face (list
+		      (if process
+			  (if current
+			      'w3m-tab-selected-retrieving-face
+			    'w3m-tab-unselected-retrieving-face)
+			(if current
+			    'w3m-tab-selected-face
+			  'w3m-tab-unselected-face)))
 		icon (when graphic
 		       (cond
 			(process
@@ -739,7 +739,7 @@ cleared by a timer.")
 	(setq w3m-tab-line-format
 	      (concat (apply 'concat (apply 'nconc line))
 		      (propertize (make-string (window-width) ?\ )
-				  'face 'w3m-tab-background-face))))))
+				  'face (list 'w3m-tab-background-face)))))))
 
 (defun w3m-update-tab-line ()
   "Update tab line by a side effect."
