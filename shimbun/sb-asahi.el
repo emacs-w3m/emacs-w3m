@@ -511,7 +511,7 @@ Every `.' in NAME will be replaced with `/'."
 	 s0 "<span" s1 "class=\"s\">")
        1 3 nil 7 4 5 6 nil 2)
       ("shopping.kishi" "岸朝子の気になるお取り寄せ12カ月"
-       "shopping/food/kishi"
+       "shopping/food/kishi/back.html"
        ,(concat
 	 "<a" s1 "href=\"/"
 	 ;; 1. url
@@ -524,10 +524,9 @@ Every `.' in NAME will be replaced with `/'."
 	 "\\([01][0-9]\\)"
 	 ;; 5. day
 	 "\\([0-3][0-9]\\)"
-	 "[0-9]+\\)\\.html\\)\">" s0 "<div" s1 "class=\"keyword\">" s0
+	 "[0-9]+\\)\\.html\\)\">" s0 "<div" s1 "class=\"keyword\"[^>]*>[^<【]*"
 	 ;; 6. subject
-	 "\\(" no-nl s0 "</div>" s0 no-nl "\\)"
-	 s0)
+	 "\\([^<]+</div>[^<]+\\)")
        1 nil 2 6 3 4 5)
       ("shougi" "将棋" "%s/news/" ,@(shimbun-asahi-make-regexp "shougi.news"))
       ("sports" "スポーツ" "%s/list.html" ,@default)
@@ -670,7 +669,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	(case-fold-search t)
 	regexp jname numbers cyear cmonth rss-p paper-p en-category
 	hour-min month year day serial num extra rgroup id headers
-	backnumbers book-p)
+	backnumbers book-p kishi-p)
     (setq regexp (assoc group shimbun-asahi-group-table)
 	  jname (nth 1 regexp)
 	  numbers (nthcdr 4 regexp)
@@ -682,7 +681,8 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	  cyear (nth 5 cyear)
 	  rss-p (string-equal group "rss")
 	  paper-p (member group '("editorial" "tenjin"))
-	  book-p (string-match "\\`book\\." group))
+	  book-p (string-match "\\`book\\." group)
+	  kishi-p (string-equal group "shopping.kishi"))
     (catch 'stop
       ;; The loop for fetching all the articles in the whitemail group.
       (while t
@@ -770,6 +770,11 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 				  (match-string (nth 3 numbers))))
 			 (paper-p
 			  (concat jname (format " (%d/%d)" month day)))
+			 (kishi-p
+			  (save-match-data ;; XEmacs 21.4 needs it.
+			    (shimbun-replace-in-string
+			     (match-string (nth 3 numbers))
+			     "[\t\n 　]+" " ")))
 			 (t
 			  (match-string (nth 3 numbers))))
 		   ;; from
