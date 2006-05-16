@@ -1,5 +1,14 @@
 2006-05-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-tab-button-menu-commands): New variable.
+	(w3m-tab-button-menu-current-buffer): New variable.
+	(w3m-tab-button-menu): New variable.
+	(w3m-tab-button-menu): New function.
+
+	* w3m-e21.el (w3m-tab-make-keymap): Bind mouse-3 to menu.
+
+2006-05-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* shimbun/sb-japantimes.el (shimbun-get-headers): Rearrange the
 	way to generate regexp.
 
