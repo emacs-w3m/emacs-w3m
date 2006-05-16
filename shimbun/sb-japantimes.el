@@ -56,59 +56,61 @@
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-japantimes)
 					 &optional range)
-  (let ((serialregexp (nth 2 (assoc (shimbun-current-group-internal shimbun)
-				    shimbun-japantimes-group-table)))
+  (let ((regexp
+	 (format
+	  (eval-when-compile
+	    (let ((s0 "[\t\n ]*")
+		  (s1 "[\t\n ]+"))
+	      (concat "<a href=\""
+		      ;; 1. url
+		      "\\(http://search.japantimes.co.jp/cgi-bin/"
+		      ;; 2.
+		      "\\(%s\\)"
+		      ;; 3. year
+		      "\\(20[0-9][0-9]\\)"
+		      s0
+		      ;; 4. month
+		      "\\([0-1][0-9]\\)"
+		      s0
+		      ;; 5. day
+		      "\\([0-3][0-9]\\)"
+		      s0
+		      ;; 6. tag
+		      "\\([a-z][0-9]\\)"
+		      s0 "\\.html\\)\">"
+		      ;; 7. subject
+		      s0 "\\([^[<>]+\\)"
+		      s0 "</a>")))
+	  (nth 2 (assoc (shimbun-current-group-internal shimbun)
+			shimbun-japantimes-group-table))))
 	(case-fold-search t)
-	headers)
+	url serial year month day tag subject id date headers)
     (goto-char (point-min))
-    (while (re-search-forward
-	    (format
-	     (eval-when-compile
-	       (let ((s0 "[\t\n ]*")
-		     (s1 "[\t\n ]+"))
-		 (concat "<a href=\""
-			 ;; 1. url
-			 "\\(http://search.japantimes.co.jp/cgi-bin/"
-			 ;; 2.
-			 "\\(%s\\)"
-			 ;; 3. year
-			 "\\(20[0-9][0-9]\\)"
-			 s0
-			 ;; 4. month
-			 "\\([0-1][0-9]\\)"
-			 s0
-			 ;; 5. day
-			 "\\([0-3][0-9]\\)"
-			 s0
-			 ;; 6. tag
-			 "\\([a-z][0-9]\\)"
-			 s0 "\\.html\\)\">"
-			 ;; 7. subject
-			 s0 "\\([^[<>]+\\)"
-			 s0 "</a>")))
-	     serialregexp)
-	    nil t)
-      (let* ((url (match-string 1))
-	     (serial (match-string 2))
-	     (year (match-string 3))
-	     (month (match-string 4))
-	     (day (match-string 5))
-	     (tag (match-string 6))
-	     (subject (match-string 7))
-	     id date)
-	(setq id (format "<%s%s%s%s%s%%%s.japantimes.co.jp>"
-			 serial year month day tag
-			 (shimbun-current-group-internal shimbun)))
-	(setq date (shimbun-make-date-string
-		    (string-to-number year)
-		    (string-to-number month)
-		    (string-to-number day)))
-	(push (shimbun-make-header
-	       0
-	       (shimbun-mime-encode-string subject)
-	       (shimbun-from-address shimbun)
-	       date id "" 0 0 url)
-	      headers)))
+    (while (re-search-forward regexp nil t)
+      (setq url (match-string 1)
+	    serial (match-string 2)
+	    year (match-string 3)
+	    month (match-string 4)
+	    day (match-string 5)
+	    tag (match-string 6)
+	    subject (match-string 7)
+	    id (format "<%s%s%s%s%s%%%s.japantimes.co.jp>"
+		       serial
+		       year
+		       month
+		       day
+		       tag
+		       (shimbun-current-group-internal shimbun))
+	    date (shimbun-make-date-string
+		  (string-to-number year)
+		  (string-to-number month)
+		  (string-to-number day)))
+      (push (shimbun-make-header
+	     0
+	     (shimbun-mime-encode-string subject)
+	     (shimbun-from-address shimbun)
+	     date id "" 0 0 url)
+	    headers))
     headers))
 
 (provide 'sb-japantimes)
