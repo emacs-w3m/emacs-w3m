@@ -1,6 +1,6 @@
 ;;; w3m-e21.el --- The stuffs to use emacs-w3m on Emacs 21 and 22
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -586,13 +586,17 @@ Wobble the selected window size to force redisplay of the header-line."
 			   (w3m-tab-drag-mouse-function e ,buffer)))
 	   (up-action `(lambda (e)
 			 (interactive "e")
-			 (w3m-tab-click-mouse-function e ,buffer))))
+			 (w3m-tab-click-mouse-function e ,buffer)))
+	   (menu-action `(lambda (e)
+			   (interactive "e")
+			   (w3m-tab-button-menu e ,buffer))))
       (define-key w3m-tab-map [header-line down-mouse-1] 'ignore)
       (define-key w3m-tab-map [header-line down-mouse-2] 'ignore)
       (define-key w3m-tab-map [header-line drag-mouse-1] drag-action)
       (define-key w3m-tab-map [header-line drag-mouse-2] drag-action)
       (define-key w3m-tab-map [header-line mouse-1] up-action)
-      (define-key w3m-tab-map [header-line mouse-2] up-action)))
+      (define-key w3m-tab-map [header-line mouse-2] up-action)
+      (define-key w3m-tab-map [header-line mouse-3] menu-action)))
   (unless w3m-tab-spinner-map
     (setq w3m-tab-spinner-map (make-sparse-keymap))
     (define-key w3m-tab-spinner-map [header-line mouse-2]
