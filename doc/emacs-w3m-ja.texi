@@ -4505,17 +4505,16 @@ Folder, wl-ja, The Wanderlust-ja Manual})。
 @item @uref{http://www.asahi.com/, 朝日新聞}
 asahi.book.author asahi.book.bestseller asahi.book.booktimes
 asahi.book.bunko asahi.book.comic asahi.book.edu asahi.book.hondana
-asahi.book.navi asahi.book.news asahi.book.paperback asahi.book.pocket
-asahi.book.ranking asahi.book.review asahi.book.shinsho
-asahi.book.special asahi.book.topics asahi.book.watch asahi.business
-asahi.business.aera asahi.business.column asahi.business.reuter
-asahi.business.toyo asahi.car asahi.car.italycolumn
-asahi.car.motorsports asahi.car.newcar asahi.car.newcarbywebcg
-asahi.culture asahi.culture.column asahi.culture.yurufemi asahi.digital
-asahi.digital.apc asahi.digital.av asahi.digital.bcnnews
-asahi.digital.column01 asahi.digital.hotwired asahi.digital.internet
-asahi.digital.mobile asahi.digital.nikkanko asahi.digital.pc
-asahi.editorial asahi.edu asahi.edu.column asahi.edu.it
+asahi.book.navi asahi.book.news asahi.book.paperback asahi.book.ranking
+asahi.book.review asahi.book.shinsho asahi.book.special
+asahi.book.topics asahi.business asahi.business.aera
+asahi.business.column asahi.business.reuter asahi.business.toyo
+asahi.car asahi.car.italycolumn asahi.car.motorsports asahi.car.newcar
+asahi.car.newcarbywebcg asahi.culture asahi.culture.column
+asahi.culture.yurufemi asahi.digital asahi.digital.apc asahi.digital.av
+asahi.digital.bcnnews asahi.digital.column01 asahi.digital.hotwired
+asahi.digital.internet asahi.digital.mobile asahi.digital.nikkanko
+asahi.digital.pc asahi.editorial asahi.edu asahi.edu.column asahi.edu.it
 asahi.edu.kosodate asahi.edu.news asahi.edu.nyushi asahi.edu.tamate
 asahi.english asahi.health asahi.health.aged asahi.health.alz
 asahi.health.medical asahi.housing asahi.housing.amano
@@ -4528,16 +4527,16 @@ asahi.international.middleeast asahi.international.seoul
 asahi.international.shien asahi.job asahi.job.special asahi.kansai
 asahi.kansai.beichou asahi.kansai.depa asahi.kansai.fuukei
 asahi.kansai.heibon asahi.kansai.honma asahi.kansai.kansaiisan
-asahi.kansai.kataritsugu asahi.kansai.madam asahi.kansai.okan
-asahi.kansai.otoriyose asahi.kansai.sakana asahi.kansai.sanshi
-asahi.kansai.sweets asahi.kansai.umaimon asahi.life asahi.life.column
-asahi.life.food asahi.national asahi.national.calamity
-asahi.national.etc asahi.national.trial asahi.obituaries asahi.politics
-asahi.rss asahi.science asahi.shopping asahi.shopping.kishi asahi.shougi
+asahi.kansai.madam asahi.kansai.okan asahi.kansai.otoriyose
+asahi.kansai.sakana asahi.kansai.sanshi asahi.kansai.sweets
+asahi.kansai.umaimon asahi.life asahi.life.column asahi.life.food
+asahi.national asahi.national.calamity asahi.national.etc
+asahi.national.trial asahi.obituaries asahi.politics asahi.rss
+asahi.science asahi.shopping asahi.shopping.kishi asahi.shougi
 asahi.sports asahi.sports.baseball asahi.sports.column
 asahi.sports.football asahi.sports.spo asahi.tenjin asahi.travel
-asahi.travel.kaido asahi.travel.matsuri asahi.travel.zeitaku
-asahi.wakamiya asahi.world.china asahi.world.germany
+asahi.travel.kaido asahi.travel.zeitaku asahi.wakamiya asahi.world.china
+asahi.world.germany
 
 これらのグループは、デフォルトでテキストだけの記事を作ります。それらに、
 テキストだけでなく写真をも含む HTML の記事を生成させたいならば、以下の行
