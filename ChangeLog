@@ -1,3 +1,7 @@
+2006-05-16  KASUGA Toru  <gen@qb3.so-net.ne.jp>
+
+	* shimbun/sb-japantimes.el: Rewrite to follow site change.
+
 2006-05-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Update regexp
