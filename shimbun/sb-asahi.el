@@ -160,7 +160,7 @@ Every `.' in NAME will be replaced with `/'."
 		  "月"
 		  ;; 6. day
 		  "\\([0-3]?[0-9]\\)"
-		  "日\\(?:\\cj\\)*" s0 "<")
+		  "日")
 		 1 2 nil 3 4 5 6))
 	 (edu (shimbun-asahi-make-regexp "edu.news"))
 	 (health (shimbun-asahi-make-regexp "health.news"))
@@ -220,13 +220,11 @@ Every `.' in NAME will be replaced with `/'."
 	 "分" s0 "<")
        1 2 nil 3 4 5 6)
       ("book.paperback" "BOOK: 文庫・新書" nil ,@book2)
-      ("book.pocket" "BOOK: ポケットから" nil ,@book2)
       ("book.ranking" "BOOK: 売れ筋ランキング" nil ,@book1)
       ("book.review" "BOOK: 書評" nil ,@book2)
       ("book.shinsho" "BOOK: 新書の穴" nil ,@book2)
       ("book.special" "BOOK: 特集" nil ,@book1)
       ("book.topics" "BOOK: ニュースな本" nil ,@book2)
-      ("book.watch" "BOOK: マガジンウオッチ" nil ,@book2)
       ("business" "ビジネス" "%s/list.html" ,@default)
       ("business.aera" "ＡＥＲＡ発マネー" "business/aera/index.html"
        ,(concat
@@ -404,7 +402,6 @@ Every `.' in NAME will be replaced with `/'."
       ("kansai.otoriyose" "わくわくお取り寄せ" nil ,@default2)
       ("kansai.sakana" "やさしい肴" nil ,@default2)
       ("kansai.depa" "デパ地下ＮＥＷＳ" nil ,@default2)
-      ("kansai.kataritsugu" "語りつぐ戦争" nil ,@default2)
       ("kansai.okan" "母さんの知恵袋" nil ,@default2)
       ("kansai.madam" "夕刊マダム" nil ,@default2)
       ("kansai.heibon" "週刊★平凡★女性" nil ,@default2)
@@ -553,7 +550,6 @@ Every `.' in NAME will be replaced with `/'."
       ("travel" "トラベル" "%s/news/"
        ,@(shimbun-asahi-make-regexp "travel.news"))
       ("travel.kaido" "司馬遼太郎・街道をゆく" nil ,@default2)
-      ("travel.matsuri" "日本の祭り" nil ,@default2)
       ("travel.zeitaku" "地球の贅たく" nil
        ,(concat "<a" s1 "href=\""
 		;; 1. url
@@ -582,8 +578,11 @@ Every `.' in NAME will be replaced with `/'."
 
       ;; The following groups are obsolete, though old articles still
       ;; can be read.
+      ("book.pocket" "BOOK: ポケットから" nil ,@book2)
+      ("book.watch" "BOOK: マガジンウオッチ" nil ,@book2)
       ("culture.column" "もやしのひげ" "culture/column/moyashi/"
        ,@(shimbun-asahi-make-regexp "culture.column.moyashi"))
+      ("kansai.kataritsugu" "語りつぐ戦争" nil ,@default2)
       ("nankyoku" "南極プロジェクト" "%s/news/"
        ,@(shimbun-asahi-make-regexp "nankyoku.news"))
       ("nankyoku.borderless" "国境のない大陸から" nil ,@default2)
