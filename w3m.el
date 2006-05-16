@@ -6796,6 +6796,85 @@ closed.  See also `w3m-quit'."
 	    w3m-info-like-map
 	  w3m-lynx-like-map)))
 
+(w3m-static-unless (featurep 'xemacs)
+  (defvar w3m-tab-button-menu-commands
+    (let ((fn1 (lambda nil
+		 (w3m-goto-url-new-session "about:blank")))
+	  (fn2 (lambda nil
+		 (dolist (buffer (w3m-list-buffers))
+		   (switch-to-buffer buffer)
+		   (w3m-reload-this-page))))
+	  (fn3 (lambda nil
+		 (dolist (buffer (w3m-list-buffers))
+		   (switch-to-buffer buffer)
+		   (condition-case nil
+		       (w3m-bookmark-add-current-url)
+		     (quit)))))
+	  (flag '(cdr (w3m-list-buffers))))
+      (if (and (equal "Japanese" w3m-language)
+	       ;; Emacs 21 doesn't seem to support non-ASCII text
+	       ;; in the popup menu.
+	       (>= emacs-major-version 22))
+	  `((,fn1 "新しいタブ" t t)
+	    -
+	    (w3m-reload-this-page "タブを再読み込み" t)
+	    (,fn2 "すべてのタブを再読み込み" ,flag)
+	    (w3m-delete-other-buffers "他のタブをすべて閉じる" ,flag)
+	    -
+	    (w3m-bookmark-add-current-url "このタブをブックマーク" t t)
+	    (,fn3 "すべてのタブをブックマーク" ,flag)
+	    -
+	    (w3m-delete-buffer "タブを閉じる" t))
+	`((,fn1 "New Tab" t t)
+	  -
+	  (w3m-reload-this-page "Reload Tab" t)
+	  (,fn2 "Reload All Tabs" ,flag)
+	  (w3m-delete-other-buffers "Close Other Tabs" ,flag)
+	  -
+	  (w3m-bookmark-add-current-url "Bookmark This Tab..." t t)
+	  (,fn3 "Bookmark All Tabs..." ,flag)
+	  -
+	  (w3m-delete-buffer "Close Tab" t))))
+    "List of commands invoked by the tab button menu.
+Each item is the symbol `-' which is a separator,
+or a list which consists of the following elements:
+
+0: a function, takes no argument.
+1: a function description.
+2: a Lisp form which returns non-nil if the item is active.
+3: a flag specifying whether the buffer is selected.")
+
+  (defvar w3m-tab-button-menu-current-buffer nil
+    "Internal variable used by `w3m-tab-button-menu'.")
+
+  (easy-menu-define
+    w3m-tab-button-menu w3m-tab-map "w3m tab button menu."
+    (cons nil
+	  (mapcar
+	   (lambda (c)
+	     (if (consp c)
+		 (vector
+		  (cadr c)
+		  (if (nth 3 c)
+		      `(progn
+			 (switch-to-buffer w3m-tab-button-menu-current-buffer)
+			 (funcall (function ,(car c))))
+		    `(save-window-excursion
+		       (switch-to-buffer w3m-tab-button-menu-current-buffer)
+		       (funcall (function ,(car c)))))
+		  :active (nth 2 c)
+		  :keys (let ((key (where-is-internal (car c) w3m-mode-map)))
+			  (when key
+			    (key-description (car key)))))
+	       (symbol-name c)))
+	   w3m-tab-button-menu-commands)))
+
+  ;; This function must be placed after `easy-menu-define'.
+  (defun w3m-tab-button-menu (event buffer)
+    (select-window (posn-window (event-start event)))
+    (setq w3m-tab-button-menu-current-buffer buffer)
+    (popup-menu w3m-tab-button-menu)))
+
 (defun w3m-clean-hook-options ()
   "Remove the functions which should be set newly from some hooks."
   (dolist (elem '((w3m-mode-hook w3m-setup-header-line
