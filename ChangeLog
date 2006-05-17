@@ -1,3 +1,11 @@
+2006-05-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-menubar): Escape the Japanese katakana `a' which
+	breaks the string syntax in non-Mule XEmacs.
+
+	* w3m-bookmark.el (w3m-bookmark-menu-items): Escape the Japanese
+	kanji `etsu' which breaks the string syntax in non-Mule XEmacs.
+
 2006-05-17  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-use-japanese-menu): New option.

@@ -2184,7 +2184,7 @@ nil value means it has not been initialized.")
 
 (defconst w3m-toolbar
   (if (equal "Japanese" w3m-language)
-      (let ((a (decode-coding-string "\e$B%\"\e(B" 'iso-2022-jp)));;ア
+      (let ((a (decode-coding-string "\e$B%\"\e(B" 'iso-2022-jp))) ;; ア
 	`([w3m-toolbar-back-icon w3m-view-previous-page
 				 (w3m-history-previous-link-available-p)
 				 "前のページに戻る"]
@@ -2237,12 +2237,14 @@ nil value means it has not been initialized.")
 ;; "View" is page viewing
 ;; "Show" is link list showing
 (defconst w3m-menubar
-  (let ((japanesep  (and w3m-use-japanese-menu
-			 (not (featurep 'xemacs))
-			 (equal "Japanese" w3m-language)
-			 ;; Emacs 21 doesn't seem to support non-ASCII text
-			 ;; in the popup menu.
-			 (>= emacs-major-version 22))))
+  (let* ((japanesep  (and w3m-use-japanese-menu
+			  (not (featurep 'xemacs))
+			  (equal "Japanese" w3m-language)
+			  ;; Emacs 21 doesn't seem to support non-ASCII text
+			  ;; in the popup menu.
+			  (>= emacs-major-version 22)))
+	 (a (when japanesep
+	      (decode-coding-string "\e$B%\"\e(B" 'iso-2022-jp)))) ;; ア
     `("w3m"
       (,(if japanesep "セッション" "Session")
        [,(if japanesep "新しいセッションを作る..." "Create New Session...")
@@ -2318,7 +2320,7 @@ nil value means it has not been initialized.")
        ) ;; end history
       [,(if japanesep "天気予報" "Weather Forecast")
        w3m-weather t]
-      [,(if japanesep "アンテナで取得" "Investigate with Antenna")
+      [,(if japanesep (concat a "ンテナで取得") "Investigate with Antenna")
        w3m-antenna t]
       (,(if japanesep "ヘルプ" "Resource")
        [,(if japanesep "ソースを見る" "View Source")
