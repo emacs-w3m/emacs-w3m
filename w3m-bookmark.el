@@ -1,6 +1,6 @@
 ;;; w3m-bookmark.el --- Functions to operate bookmark file of w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2005
+;; Copyright (C) 2001, 2002, 2003, 2005, 2006
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -423,18 +423,32 @@ With prefix argument, kill that many entries from point."
 
 ;; Bookmark menu
 (defvar w3m-bookmark-menu-items
-  '((["View Bookmark" w3m-bookmark-view t]
-     ["Edit Bookmark" w3m-bookmark-edit t]
-     "----"
-     ["Add Current URL to Bookmark" w3m-bookmark-add-current-url t]
-     ["Add These URLs to Bookmark" w3m-bookmark-add-current-url-group t]
-     ["Add This URL to Bookmark" w3m-bookmark-add-this-url (w3m-anchor)])
-    .
-    (["Kill Current Entry" w3m-bookmark-kill-entry
-      (text-property-not-all (point-at-bol) (point-at-eol)
-			     'w3m-href-anchor nil)]
-     ["Undo" w3m-bookmark-undo t]
-     ["Edit Bookmark" w3m-bookmark-edit t]))
+  (let ((japanesep  (and w3m-use-japanese-menu
+			 (not (featurep 'xemacs))
+			 (equal "Japanese" w3m-language)
+			 ;; Emacs 21 doesn't seem to support non-ASCII text
+			 ;; in the popup menu.
+			 (>= emacs-major-version 22))))
+    `(([,(if japanesep "ブックマークの閲覧" "View Bookmark")
+	w3m-bookmark-view t]
+       [,(if japanesep "ブックマークの編集" "Edit Bookmark")
+	w3m-bookmark-edit t]
+       "----"
+       [,(if japanesep "このページをブックマーク" "Add Current URL to Bookmark")
+	w3m-bookmark-add-current-url t]
+       [,(if japanesep "すべての URL をブックマーク" "Add These URLs to Bookmark")
+	w3m-bookmark-add-current-url-group t]
+       [,(if japanesep "この URL をブックマーク" "Add This URL to Bookmark")
+	w3m-bookmark-add-this-url (w3m-anchor)])
+      .
+      ([,(if japanesep "このエントリを消去" "Kill Current Entry")
+	w3m-bookmark-kill-entry
+	(text-property-not-all (point-at-bol) (point-at-eol)
+			       'w3m-href-anchor nil)]
+       [,(if japanesep "もとに戻す" "Undo")
+	w3m-bookmark-undo t]
+       [,(if japanesep "ブックマークの編集" "Edit Bookmark")
+	w3m-bookmark-edit t])))
   "*List of the bookmark menu items.
 The car is used if `w3m-bookmark-mode' is nil, otherwise the cdr is used.")
 

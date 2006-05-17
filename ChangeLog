@@ -1,5 +1,14 @@
 2006-05-17  Hideyuki SHIRAI  <shirai@meadowy.org>
 
+	* w3m.el (w3m-use-japanese-menu): New option.
+	(w3m-menubar): Add Japanese menu.
+	(w3m-tab-button-menu-commands): Change the way to check Japanse or
+	others.
+
+	* w3m-bookmark.el (w3m-bookmark-menu-items): Add Japanese menu.
+
+2006-05-17  Hideyuki SHIRAI  <shirai@meadowy.org>
+
 	* w3m.el (w3m-tab-button-new-session-url): New option.
 	(w3m-delete-other-buffers): New command.
 	(w3m-delete-left-tabs): Ditto.

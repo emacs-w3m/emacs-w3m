@@ -1376,6 +1376,11 @@ This variable can take one of the following five kinds of forms:
 	   :format "%t: %{nil%}\n" :sample-face widget-field-face
 	   nil)))
 
+(defcustom w3m-use-japanese-menu t
+  "Non-nil means use Japanese characters for Menu if possible."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-use-tab t
   "Non-nil means make emacs-w3m a tab browser.
 It makes it possible to show all emacs-w3m buffers in a single window
@@ -2232,64 +2237,106 @@ nil value means it has not been initialized.")
 ;; "View" is page viewing
 ;; "Show" is link list showing
 (defconst w3m-menubar
-  '("w3m"
-    ("Session"
-     ["Create New Session..." w3m-goto-url-new-session t]
-     ["Copy This Session" w3m-copy-buffer w3m-current-url]
-     "----" ;; separator
-     ["Move Previous Session" w3m-previous-buffer
-      (> (safe-length (w3m-list-buffers)) 1)]
-     ["Move Next Session" w3m-next-buffer
-      (> (safe-length (w3m-list-buffers)) 1)]
-     "----" ;; separator
-     ["Close This Session" w3m-delete-buffer
-      (> (safe-length (w3m-list-buffers)) 1)]
-     ["Close Other Sessions" w3m-delete-other-buffers
-      (> (safe-length (w3m-list-buffers)) 1)]
-     ) ;; end session
-    ["Download This URL" w3m-download-this-url (or (w3m-anchor) (w3m-image))]
-    ["Download to..." w3m-download t]
-    "----" ;; separator
-    ["Back to Previous Page" w3m-view-previous-page
-     (w3m-history-previous-link-available-p)]
-    ["Forward to Next Page" w3m-view-next-page
-     (w3m-history-next-link-available-p)]
-    ["Up to Parent Page" w3m-view-parent-page
-     (w3m-parent-page-available-p)]
-    ["Cancel Process" w3m-process-stop w3m-current-process]
-    ["Reload This Page" w3m-reload-this-page w3m-current-url]
-    ("Redisplay"
-     ["Toggle Images" w3m-toggle-inline-images (w3m-display-graphic-p)]
-     ["Toggle This Image" w3m-toggle-inline-image (w3m-image)]
-     "----" ;; separator
-     ["Redisplay This Page" w3m-redisplay-this-page w3m-current-url]
-     ["Redisplay This Page with Charset"
-      w3m-redisplay-with-charset w3m-current-url]
-     ["Redisplay This Page with Content-type"
-      w3m-redisplay-with-content-type w3m-current-url]
-     ["Reset Charset and Content-type" w3m-redisplay-and-reset w3m-current-url]
-     ) ;; end redisplay
-    ["Search the Internet..." w3m-search t]
-    ["Go to Home Page" w3m-gohome w3m-home-page]
-    ["Go to..." w3m-goto-url t]
-    "----" ;; separator
-    ("History"
-     ["Show a Visited URLs Tree" w3m-history t]
-     ["Show an Arrived URLs List" w3m-db-history t]
-     ) ;; end history
-    ["Weather Forecast" w3m-weather t]
-    ["Investigate with Antenna" w3m-antenna t]
-    ("Resource"
-     ["View Source" w3m-view-source t]
-     ["View Header" w3m-view-header t]
-     ) ;; end resource
-    "----" ;; separator
-    ["Send a Bug Report" report-emacs-w3m-bug t]
-    "----" ;; separator
-    ["Print the Current URL" w3m-print-current-url t]
-    ["Close w3m" w3m-close-window t]
-    ["Quit w3m" w3m-quit t]
-    );; end w3m
+  (let ((japanesep  (and w3m-use-japanese-menu
+			 (not (featurep 'xemacs))
+			 (equal "Japanese" w3m-language)
+			 ;; Emacs 21 doesn't seem to support non-ASCII text
+			 ;; in the popup menu.
+			 (>= emacs-major-version 22))))
+    `("w3m"
+      (,(if japanesep "セッション" "Session")
+       [,(if japanesep "新しいセッションを作る..." "Create New Session...")
+	w3m-goto-url-new-session t]
+       [,(if japanesep "このセッションを複製する" "Copy This Session")
+	w3m-copy-buffer w3m-current-url]
+       "----" ;; separator
+       [,(if japanesep "前のセッションに移動する" "Move Previous Session")
+	w3m-previous-buffer
+	(> (safe-length (w3m-list-buffers)) 1)]
+       [,(if japanesep "次のセッションに移動する" "Move Next Session")
+	w3m-next-buffer
+	(> (safe-length (w3m-list-buffers)) 1)]
+       "----" ;; separator
+       [,(if japanesep "このセッションを閉じる" "Close This Session")
+	w3m-delete-buffer
+	(> (safe-length (w3m-list-buffers)) 1)]
+       [,(if japanesep "他のセッションを閉じる" "Close Other Sessions")
+	w3m-delete-other-buffers
+	(> (safe-length (w3m-list-buffers)) 1)]
+       ) ;; end session
+      [,(if japanesep "この URL を新しいセッションで開く"
+	  "Open This URL in a new session")
+       w3m-view-this-url-new-session (or (w3m-anchor) (w3m-image))]
+      [,(if japanesep "この URL をダウンロードする" "Download This URL")
+       w3m-download-this-url (or (w3m-anchor) (w3m-image))]
+      [,(if japanesep "ダウンロード..." "Download to...")
+       w3m-download t]
+      "----" ;; separator
+      [,(if japanesep "前のページに戻る" "Back to Previous Page")
+       w3m-view-previous-page
+       (w3m-history-previous-link-available-p)]
+      [,(if japanesep "次のページに移動する" "Forward to Next Page")
+       w3m-view-next-page
+       (w3m-history-next-link-available-p)]
+      [,(if japanesep "上の階層に移動する" "Up to Parent Page")
+       w3m-view-parent-page
+       (w3m-parent-page-available-p)]
+      [,(if japanesep "プロセスを中止する" "Cancel Process")
+       w3m-process-stop w3m-current-process]
+      [,(if japanesep "このページを再取得する" "Reload This Page")
+       w3m-reload-this-page w3m-current-url]
+      (,(if japanesep "再描画" "Redisplay")
+       [,(if japanesep "画像表示の切替(全部)" "Toggle Images")
+	w3m-toggle-inline-images (w3m-display-graphic-p)]
+       [,(if japanesep "画像表示の切替(この画像)" "Toggle This Image")
+	w3m-toggle-inline-image (w3m-image)]
+       "----" ;; separator
+       [,(if japanesep "再描画する" "Redisplay This Page")
+	w3m-redisplay-this-page w3m-current-url]
+       [,(if japanesep "Charset を指定して再描画する"
+	   "Redisplay This Page with Charset")
+	w3m-redisplay-with-charset w3m-current-url]
+       [,(if japanesep "Content-type を指定して再描画する"
+	   "Redisplay This Page with Content-type")
+	w3m-redisplay-with-content-type w3m-current-url]
+       [,(if japanesep "指定した Charset と Content-type を破棄する"
+	   "Reset Charset and Content-type")
+	w3m-redisplay-and-reset w3m-current-url]
+       ) ;; end redisplay
+      [,(if japanesep "インターネットでの検索..." "Search the Internet...")
+       w3m-search t]
+      [,(if japanesep "ホームページへ移動" "Go to Home Page")
+       w3m-gohome w3m-home-page]
+      [,(if japanesep "移動..." "Go to...")
+       w3m-goto-url t]
+      "----" ;; separator
+      (,(if japanesep "履歴" "History")
+       [,(if japanesep "木構造で履歴を表示" "Show a Visited URLs Tree")
+	w3m-history t]
+       [,(if japanesep "リストで履歴を表示" "Show an Arrived URLs List")
+	w3m-db-history t]
+       ) ;; end history
+      [,(if japanesep "天気予報" "Weather Forecast")
+       w3m-weather t]
+      [,(if japanesep "アンテナで取得" "Investigate with Antenna")
+       w3m-antenna t]
+      (,(if japanesep "ヘルプ" "Resource")
+       [,(if japanesep "ソースを見る" "View Source")
+	w3m-view-source t]
+       [,(if japanesep "ヘッダーを見る" "View Header")
+	w3m-view-header t]
+       ) ;; end resource
+      "----" ;; separator
+      [,(if japanesep "バグレポートを送る" "Send a Bug Report")
+       report-emacs-w3m-bug t]
+      "----" ;; separator
+      [,(if japanesep "この URL を表示する" "Print the Current URL")
+       w3m-print-current-url t]
+      [,(if japanesep "w3m を閉じる" "Close w3m")
+       w3m-close-window t]
+      [,(if japanesep "w3m を終了する" "Quit w3m")
+       w3m-quit t]
+      )) ;; end w3m
   "Menubar definition for emacs-w3m.")
 
 (defvar w3m-cid-retrieve-function-alist nil)
@@ -6863,41 +6910,48 @@ closed.  See also `w3m-quit'."
 		     (quit)))))
 	  (flag '(cdr (w3m-list-buffers)))
 	  (leftp '(w3m-lefttab-exist-p w3m-tab-button-menu-current-buffer))
-	  (rightp '(w3m-righttab-exist-p w3m-tab-button-menu-current-buffer)))
-      (if (and (equal "Japanese" w3m-language)
-	       ;; Emacs 21 doesn't seem to support non-ASCII text
-	       ;; in the popup menu.
-	       (>= emacs-major-version 22))
-	  `((,fn1 "新しいタブ" t t)
-	    (w3m-copy-buffer "タブを複製" t)
-	    -
-	    (w3m-reload-this-page "タブを再読み込み" t)
-	    (,fn2 "すべてのタブを再読み込み" ,flag)
-	    -
-	    (w3m-delete-other-buffers "他のタブをすべて閉じる" ,flag)
-	    (w3m-delete-left-tabs "左側のタブをすべて閉じる" ,leftp)
-	    (w3m-delete-right-tabs "右側のタブをすべて閉じる" ,rightp)
-	    -
-	    (w3m-view-url-with-external-browser "外部ブラウザで開く" t)
-	    (w3m-bookmark-add-current-url "このタブをブックマーク" t t)
-	    (,fn3 "すべてのタブをブックマーク" ,flag)
-	    -
-	    (w3m-delete-buffer "タブを閉じる" t))
-	`((,fn1 "New Tab" t t)
-	  (w3m-copy-buffer "Copy Tab" t)
-	  -
-	  (w3m-reload-this-page "Reload Tab" t)
-	  (,fn2 "Reload All Tabs" ,flag)
-	  -
-	  (w3m-delete-other-buffers "Close Other Tabs" ,flag)
-	  (w3m-delete-left-tabs "Close Left Tabs" ,leftp)
-	  (w3m-delete-right-tabs "Close Right Tabs" ,rightp)
-	  -
-	  (w3m-view-url-with-external-browser "View with external browser" t)
-	  (w3m-bookmark-add-current-url "Bookmark This Tab..." t t)
-	  (,fn3 "Bookmark All Tabs..." ,flag)
-	  -
-	  (w3m-delete-buffer "Close Tab" t))))
+	  (rightp '(w3m-righttab-exist-p w3m-tab-button-menu-current-buffer))
+	  (japanesep (and w3m-use-japanese-menu
+			  (equal "Japanese" w3m-language)
+			  ;; Emacs 21 doesn't seem to support non-ASCII text
+			  ;; in the popup menu.
+			  (>= emacs-major-version 22))))
+      `((,fn1
+	 ,(if japanesep "新しいタブ" "New Tab")
+	 t t)
+	(w3m-copy-buffer
+	 ,(if japanesep "タブを複製" "Copy Tab")
+	 t)
+	-
+	(w3m-reload-this-page
+	 ,(if japanesep "タブを再読み込み" "Reload Tab") t)
+	(,fn2
+	 ,(if japanesep "すべてのタブを再読み込み" "Reload All Tabs")
+	 ,flag)
+	-
+	(w3m-delete-other-buffers
+	 ,(if japanesep "他のタブをすべて閉じる" "Close Other Tabs")
+	 ,flag)
+	(w3m-delete-left-tabs
+	 ,(if japanesep "左側のタブをすべて閉じる" "Close Left Tabs")
+	 ,leftp)
+	(w3m-delete-right-tabs
+	 ,(if japanesep "右側のタブをすべて閉じる" "Close Right Tabs")
+	 ,rightp)
+	-
+	(w3m-view-url-with-external-browser
+	 ,(if japanesep "外部ブラウザで開く" "View with external browser")
+	 t)
+	(w3m-bookmark-add-current-url
+	 ,(if japanesep "このタブをブックマーク" "Bookmark This Tab...")
+	 t t)
+	(,fn3
+	 ,(if japanesep "すべてのタブをブックマーク" "Bookmark All Tabs..." )
+	 ,flag)
+	-
+	(w3m-delete-buffer
+	 ,(if japanesep "タブを閉じる" "Close Tab")
+	 t)))
     "List of commands invoked by the tab button menu.
 Each item is the symbol `-' which is a separator,
 or a list which consists of the following elements:
