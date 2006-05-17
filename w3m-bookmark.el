@@ -423,12 +423,7 @@ With prefix argument, kill that many entries from point."
 
 ;; Bookmark menu
 (defvar w3m-bookmark-menu-items
-  (let* ((japanesep  (and w3m-use-japanese-menu
-			  (not (featurep 'xemacs))
-			  (equal "Japanese" w3m-language)
-			  ;; Emacs 21 doesn't seem to support non-ASCII text
-			  ;; in the popup menu.
-			  (>= emacs-major-version 22)))
+  (let* ((japanesep w3m-use-japanese-menu)
 	 (etsu (when japanesep
 		 (decode-coding-string "\e$B1\\\e(B" 'iso-2022-jp)))) ;; 閲
     `(([,(if japanesep (concat "ブックマークの" etsu "覧") "View Bookmark")

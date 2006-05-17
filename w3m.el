@@ -1376,7 +1376,13 @@ This variable can take one of the following five kinds of forms:
 	   :format "%t: %{nil%}\n" :sample-face widget-field-face
 	   nil)))
 
-(defcustom w3m-use-japanese-menu t
+(defcustom w3m-use-japanese-menu
+  (and (equal "Japanese" w3m-language)
+       ;; Emacs 21 doesn't seem to support non-ASCII text
+       ;; in the popup menu.
+       (or (>= emacs-major-version 22)
+	   (featurep 'xemacs)
+	   (featurep 'meadow)))
   "Non-nil means use Japanese characters for Menu if possible."
   :group 'w3m
   :type 'boolean)
@@ -2237,12 +2243,7 @@ nil value means it has not been initialized.")
 ;; "View" is page viewing
 ;; "Show" is link list showing
 (defconst w3m-menubar
-  (let* ((japanesep  (and w3m-use-japanese-menu
-			  (not (featurep 'xemacs))
-			  (equal "Japanese" w3m-language)
-			  ;; Emacs 21 doesn't seem to support non-ASCII text
-			  ;; in the popup menu.
-			  (>= emacs-major-version 22)))
+  (let* ((japanesep w3m-use-japanese-menu)
 	 (a (when japanesep
 	      (decode-coding-string "\e$B%\"\e(B" 'iso-2022-jp)))) ;; ア
     `("w3m"
@@ -6913,11 +6914,7 @@ closed.  See also `w3m-quit'."
 	  (flag '(cdr (w3m-list-buffers)))
 	  (leftp '(w3m-lefttab-exist-p w3m-tab-button-menu-current-buffer))
 	  (rightp '(w3m-righttab-exist-p w3m-tab-button-menu-current-buffer))
-	  (japanesep (and w3m-use-japanese-menu
-			  (equal "Japanese" w3m-language)
-			  ;; Emacs 21 doesn't seem to support non-ASCII text
-			  ;; in the popup menu.
-			  (>= emacs-major-version 22))))
+	  (japanesep w3m-use-japanese-menu))
       `((,fn1
 	 ,(if japanesep "新しいタブ" "New Tab")
 	 t t)

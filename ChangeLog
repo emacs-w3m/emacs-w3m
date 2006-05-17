@@ -1,3 +1,12 @@
+2006-05-17  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-use-japanese-menu): Change default value.
+	(w3m-menubar): Simplify the rule to use Japanese menu.
+	(w3m-tab-button-menu-commands): Ditto.
+
+	* w3m-bookmark.el (w3m-bookmark-menu-items): Simplify the rule to
+	use Japanese menu.
+
 2006-05-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-menubar): Escape the Japanese katakana `a' which
