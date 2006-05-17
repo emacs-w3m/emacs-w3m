@@ -446,6 +446,19 @@ the tabs line."
 	(t
 	 'w3m-use-tab)))
 
+(defsubst w3m-lefttab-exist-p (&optional buffer)
+  (not (eq (or buffer (current-buffer)) (car (w3m-list-buffers)))))
+
+(defsubst w3m-righttab-exist-p (&optional buffer)
+  (let ((bufs (w3m-list-buffers))
+	(cbuf (or buffer (current-buffer)))
+	buf)
+    (catch 'exist
+      (while (setq buf (car bufs))
+	(setq bufs (cdr bufs))
+	(when (eq cbuf buf)
+	  (throw 'exist bufs))))))
+
 (defmacro w3m-popup-window-p ()
   "Return non-nil if `w3m-pop-up-windows' is non-nil and the present
 situation allows it."

@@ -1394,6 +1394,17 @@ text.  See also `w3m-use-tab'."
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-tab-button-new-session-url "about://bookmark/"
+  "*This variable specifies the url string to open new tab session."
+  :group 'w3m
+  :type `(radio (const :tag "About emacs-w3m" "about:")
+		(const :tag "Blank page" "about:blank")
+		(const :tag "Bookmark" "about://bookmark/")
+		(const :tag ,(format "Home page (%s)" w3m-home-page)
+		       ,w3m-home-page)
+		(string :format "URL: %v\n" :size 0
+			:value "http://emacs-w3m.namazu.org")))
+
 (defcustom w3m-make-new-session nil
   "*Non-nil means making new emacs-w3m buffers when visiting new pages.
 If it is non-nil and there are already emacs-w3m buffers, the `w3m'
@@ -6473,6 +6484,39 @@ as if the folder command of MH performs with the -pack option."
   (w3m-select-buffer-update)
   (w3m-force-window-update))
 
+(defun w3m-delete-left-tabs ()
+  "Delete tabs of left side from current tab."
+  (interactive)
+  (let ((cbuf (current-buffer))
+	bufs)
+    (setq bufs (catch 'done
+		 (dolist (buf (w3m-list-buffers))
+		   (if (eq cbuf buf)
+		       (throw 'done bufs)
+		     (setq bufs (cons buf bufs))))))
+    (when bufs
+      (w3m-delete-buffers bufs))))
+
+(defun w3m-delete-right-tabs ()
+  "Delete tabs of right side from current tab."
+  (interactive)
+  (let ((bufs (w3m-righttab-exist-p)))
+    (when bufs
+      (w3m-delete-buffers bufs))))
+
+(defun w3m-delete-buffers (buffers)
+  "Delete emacs-w3m buffers."
+  (let (buffer)
+    (while buffers
+      (setq buffer (pop buffers))
+      (w3m-process-stop buffer)
+      (kill-buffer buffer)
+      (when w3m-use-form
+	(w3m-form-kill-buffer buffer))))
+  (run-hooks 'w3m-delete-buffer-hook)
+  (w3m-select-buffer-update)
+  (w3m-force-window-update))
+
 (defvar w3m-lynx-like-map nil
   "Lynx-like keymap used in emacs-w3m buffers.")
 (unless w3m-lynx-like-map
@@ -6547,6 +6591,8 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "\C-c\C-n" 'w3m-next-buffer)
     (define-key map "\C-c\C-w" 'w3m-delete-buffer)
     (define-key map "\C-c\M-w" 'w3m-delete-other-buffers)
+    (define-key map "\C-c\M-l" 'w3m-delete-left-tabs)
+    (define-key map "\C-c\M-r" 'w3m-delete-right-tabs)
     (define-key map "\C-c\C-s" 'w3m-select-buffer)
     (define-key map "\C-c\C-a" 'w3m-switch-buffer)
     (define-key map "r" 'w3m-redisplay-this-page)
@@ -6655,6 +6701,8 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "\C-c\C-n" 'w3m-next-buffer)
     (define-key map "\C-c\C-w" 'w3m-delete-buffer)
     (define-key map "\C-c\M-w" 'w3m-delete-other-buffers)
+    (define-key map "\C-c\M-l" 'w3m-delete-left-tabs)
+    (define-key map "\C-c\M-r" 'w3m-delete-right-tabs)
     (define-key map "\C-c\C-s" 'w3m-select-buffer)
     (define-key map "\C-c\C-a" 'w3m-switch-buffer)
     (define-key map "o" 'w3m-history)
@@ -6797,9 +6845,12 @@ closed.  See also `w3m-quit'."
 	  w3m-lynx-like-map)))
 
 (w3m-static-unless (featurep 'xemacs)
+  (defvar w3m-tab-button-menu-current-buffer nil
+    "Internal variable used by `w3m-tab-button-menu'.")
+
   (defvar w3m-tab-button-menu-commands
     (let ((fn1 (lambda nil
-		 (w3m-goto-url-new-session "about:blank")))
+		 (w3m-goto-url-new-session w3m-tab-button-new-session-url)))
 	  (fn2 (lambda nil
 		 (dolist (buffer (w3m-list-buffers))
 		   (switch-to-buffer buffer)
@@ -6810,27 +6861,39 @@ closed.  See also `w3m-quit'."
 		   (condition-case nil
 		       (w3m-bookmark-add-current-url)
 		     (quit)))))
-	  (flag '(cdr (w3m-list-buffers))))
+	  (flag '(cdr (w3m-list-buffers)))
+	  (leftp '(w3m-lefttab-exist-p w3m-tab-button-menu-current-buffer))
+	  (rightp '(w3m-righttab-exist-p w3m-tab-button-menu-current-buffer)))
       (if (and (equal "Japanese" w3m-language)
 	       ;; Emacs 21 doesn't seem to support non-ASCII text
 	       ;; in the popup menu.
 	       (>= emacs-major-version 22))
 	  `((,fn1 "新しいタブ" t t)
+	    (w3m-copy-buffer "タブを複製" t)
 	    -
 	    (w3m-reload-this-page "タブを再読み込み" t)
 	    (,fn2 "すべてのタブを再読み込み" ,flag)
-	    (w3m-delete-other-buffers "他のタブをすべて閉じる" ,flag)
 	    -
+	    (w3m-delete-other-buffers "他のタブをすべて閉じる" ,flag)
+	    (w3m-delete-left-tabs "左側のタブをすべて閉じる" ,leftp)
+	    (w3m-delete-right-tabs "右側のタブをすべて閉じる" ,rightp)
+	    -
+	    (w3m-view-url-with-external-browser "外部ブラウザで開く" t)
 	    (w3m-bookmark-add-current-url "このタブをブックマーク" t t)
 	    (,fn3 "すべてのタブをブックマーク" ,flag)
 	    -
 	    (w3m-delete-buffer "タブを閉じる" t))
 	`((,fn1 "New Tab" t t)
+	  (w3m-copy-buffer "Copy Tab" t)
 	  -
 	  (w3m-reload-this-page "Reload Tab" t)
 	  (,fn2 "Reload All Tabs" ,flag)
-	  (w3m-delete-other-buffers "Close Other Tabs" ,flag)
 	  -
+	  (w3m-delete-other-buffers "Close Other Tabs" ,flag)
+	  (w3m-delete-left-tabs "Close Left Tabs" ,leftp)
+	  (w3m-delete-right-tabs "Close Right Tabs" ,rightp)
+	  -
+	  (w3m-view-url-with-external-browser "View with external browser" t)
 	  (w3m-bookmark-add-current-url "Bookmark This Tab..." t t)
 	  (,fn3 "Bookmark All Tabs..." ,flag)
 	  -
@@ -6843,9 +6906,6 @@ or a list which consists of the following elements:
 1: a function description.
 2: a Lisp form which returns non-nil if the item is active.
 3: a flag specifying whether the buffer is selected.")
-
-  (defvar w3m-tab-button-menu-current-buffer nil
-    "Internal variable used by `w3m-tab-button-menu'.")
 
   (easy-menu-define
     w3m-tab-button-menu w3m-tab-map "w3m tab button menu."

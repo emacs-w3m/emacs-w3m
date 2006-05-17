@@ -1,5 +1,19 @@
 2006-05-17  Hideyuki SHIRAI  <shirai@meadowy.org>
 
+	* w3m.el (w3m-tab-button-new-session-url): New option.
+	(w3m-delete-other-buffers): New command.
+	(w3m-delete-left-tabs): Ditto.
+	(w3m-delete-right-tabs): Ditto.
+	(w3m-delete-buffers): New function.
+	(w3m-lynx-like-map): Add `w3m-delete-left|right-tabs'.
+	(w3m-tab-button-menu-commands): New new items.
+
+	* w3m-util.el (w3m-lefttab-exist-p): New inline function.
+	(w3m-righttab-exist-p): Ditto.
+
+	* w3m-tabmenu.el (w3m-tab-menubar-make-items): Handle
+	`w3m-tab-button-menu-commands' if possible.
+
 	* shimbun/mew-shimbun.el (mew-shimbun-folder-file): New function.
 	(mew-shimbun-expand-msg): Ditto.
 	(mew-shimbun-goto-folder): Use `mew-shimbun-folder-file' instead
