@@ -1,7 +1,7 @@
 ;; -*- mode: emacs-lisp -*-
 ;; mew-shimbun.el --- View shimbun contents with Mew
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -296,6 +296,18 @@ show below example,
     (unless (mew-sinfo-get-summary-form)
       (mew-sinfo-set-summary-form (mew-get-summary-form fld)))))
 
+(static-if (fboundp 'mew-expand-file)
+    ;; Mew 5
+    (defalias 'mew-shimbun-folder-file 'mew-expand-file)
+  (defun mew-shimbun-folder-file (fld file)
+    (expand-file-name file (mew-expand-folder fld))))
+
+(static-if (fboundp 'mew-expand-msg)
+    ;; Mew 5
+    (defalias 'mew-shimbun-expand-msg 'mew-expand-msg)
+  (defun mew-shimbun-expand-msg (fld msg)
+    (expand-file-name msg (mew-expand-folder fld))))
+
 (if (featurep 'xemacs)
     nil
   (eval-and-compile
@@ -356,7 +368,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 		    (when (re-search-forward (or mew-shimbun-unseen-regex
 						 (mew-shimbun-unseen-regex)) nil t)
 		      (setq sbflds (cons fld sbflds))))
-		(setq cfile (mew-expand-folder fld mew-summary-cache-file))
+		(setq cfile (mew-shimbun-folder-file fld mew-summary-cache-file))
 		(when (file-readable-p cfile)
 		  (with-temp-buffer
 		    (mew-frwlet
@@ -502,7 +514,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 		    (insert (format "X-Shimbun-Id: %s\n" id))
 		    (mew-shimbun-sanity-convert)
 		    (setq msg (mew-folder-new-message fld 'numonly))
-		    (setq file (mew-expand-folder fld msg))
+		    (setq file (mew-shimbun-expand-msg fld msg))
 		    (mew-frwlet
 		     mew-cs-dummy mew-cs-text-for-write
 		     (write-region (point-min) (point-max) file nil 'nomsg))
@@ -663,7 +675,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 		  (setq newcount (1+ newcount))
 		  (setq msg (mew-folder-new-message fld 'numonly))
 		  (setq oldmd5 nil))
-		(setq file (mew-expand-folder fld msg))
+		(setq file (mew-shimbun-expand-msg fld msg))
 		(setq buf (get-buffer-create mew-shimbun-article-buffer-name))
 		(with-current-buffer buf
 		  (mew-erase-buffer)
@@ -791,7 +803,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 		     (mew-elet
 		      (delete-region (point)
 				     (progn (forward-line) (point)))))
-		   (setq file (mew-expand-folder fld msg))
+		   (setq file (mew-shimbun-expand-msg fld msg))
 		   (when (and (file-exists-p file)
 			      (file-readable-p file)
 			      (file-writable-p file))

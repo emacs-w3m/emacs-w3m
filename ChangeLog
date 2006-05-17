@@ -1,3 +1,14 @@
+2006-05-17  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* shimbun/mew-shimbun.el (mew-shimbun-folder-file): New function.
+	(mew-shimbun-expand-msg): Ditto.
+	(mew-shimbun-goto-folder): Use `mew-shimbun-folder-file' instead
+	of mew-expand-folder.
+	(mew-shimbun-retrieve-article): Use `mew-shimbun-expand-msg'
+	instead of mew-expand-folder.
+	(mew-shimbun-re-retrieve-article): Ditto.
+	(mew-shimbun-expire): Ditto.
+
 2006-05-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-tab-button-menu-commands): New variable.
