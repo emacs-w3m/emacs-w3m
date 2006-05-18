@@ -522,6 +522,14 @@ Format as (list (\"Group name\" . (\"Entry URL\" . \"Entry name\")* )* )."
 (defvar w3m-bookmark-menu-items-pre nil)
 (defvar w3m-bookmark-menu-items-time nil)
 
+(defvar w3m-bookmark-make-item-xmas
+  (and (equal "Japanese" w3m-language) (featurep 'xemacs)))
+
+(defsubst w3m-bookmark-make-item (item)
+  (if w3m-bookmark-make-item-xmas
+      (concat " " item)
+    item))
+
 (defun w3m-bookmark-make-menu-items (&optional nomenu)
   "Create w3m bookmark menu items."
   (when (not nomenu)
@@ -538,12 +546,12 @@ Format as (list (\"Group name\" . (\"Entry URL\" . \"Entry name\")* )* )."
 		    (lambda (entry)
 		      (let ((group (car entry))
 			    (items (cdr entry)))
-			(cons group
+			(cons (w3m-bookmark-make-item group)
 			      (and items
 				   (mapcar
 				    (lambda (item)
 				      (vector
-				       (cdr item)
+				       (w3m-bookmark-make-item (cdr item))
 				       `(w3m-bookmark-menu-open-item
 					 ,(car item))))
 				    items)))))

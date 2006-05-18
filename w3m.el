@@ -6598,6 +6598,9 @@ as if the folder command of MH performs with the -pack option."
     (define-key map [(shift kp-enter)] 'w3m-view-this-url-new-session)
     (define-key map [right] 'w3m-view-this-url)
     (if (featurep 'xemacs)
+	(define-key map [(button3)] 'w3m-mouse-major-mode-menu)
+      (define-key map [mouse-3] 'w3m-mouse-major-mode-menu))
+    (if (featurep 'xemacs)
 	(progn
 	  (define-key map [(button2)] 'w3m-mouse-view-this-url)
 	  (define-key map [(shift button2)]
@@ -6709,6 +6712,9 @@ as if the folder command of MH performs with the -pack option."
       ;; Support for mouse-1 on Emacs 22.
       (define-key map [follow-link] 'mouse-face)
       (define-key map [S-mouse-2] 'w3m-mouse-view-this-url-new-session))
+    (if (featurep 'xemacs)
+	(define-key map [(button3)] 'w3m-mouse-major-mode-menu)
+      (define-key map [mouse-3] 'w3m-mouse-major-mode-menu))
     (define-key map "\C-c\C-@" 'w3m-history-store-position)
     (define-key map [?\C-c?\C- ] 'w3m-history-store-position)
     (define-key map "\C-c\C-v" 'w3m-history-restore-position)
@@ -6892,6 +6898,23 @@ closed.  See also `w3m-quit'."
 	(if (eq w3m-key-binding 'info)
 	    w3m-info-like-map
 	  w3m-lynx-like-map)))
+
+(defun w3m-mouse-major-mode-menu (event)
+  "Pop up a W3M mode-specific menu of mouse commands."
+  (interactive "e")
+  (mouse-set-point event)
+  (w3m-static-if (featurep 'xemacs)
+      (let (menubar tmp)
+	(when current-menubar
+	  (run-hooks 'activate-menubar-hook))
+	(setq menubar
+	      (cons "w3m Mode"
+		    (delq nil
+			  (list (assoc "w3m" current-menubar)
+				(assoc "Bookmark" current-menubar)
+				(assoc "Tab" current-menubar)))))
+	(popup-menu menubar event))
+    (mouse-major-mode-menu event nil)))
 
 (defvar w3m-tab-button-menu-current-buffer nil
   "Internal variable used by `w3m-tab-button-menu'.")

@@ -1,5 +1,19 @@
 2006-05-18  Hideyuki SHIRAI  <shirai@meadowy.org>
 
+	* w3m.el (w3m-lynx-like-map): Define `w3m-mouse-major-mode-menu'
+	to mouse-3.
+	(w3m-info-like-map): Ditto.
+	(w3m-mouse-major-mode-menu): New command.
+
+	* w3m-util.el (top): Add the variable definition of
+	`w3m-use-japanese-menu' to avoid byte-compile warnings.
+
+	* w3m-bookmark.el (w3m-bookmark-make-item-xmas): New variable.
+	(w3m-bookmark-make-item): New inline macro.
+	(w3m-bookmark-make-menu-items): Use `w3m-bookmark-make-item'.
+
+2006-05-18  Hideyuki SHIRAI  <shirai@meadowy.org>
+
 	* w3m.el (w3m-menubar): Use `w3m-make-menu-item'.
 	(w3m-tab-button-menu-current-buffer): Enable always.
 	(w3m-tab-button-menu-commands): Ditto. Use `w3m-make-menu-item'.

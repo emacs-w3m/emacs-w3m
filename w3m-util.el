@@ -59,6 +59,7 @@
   (defvar w3m-use-refresh)
   (defvar w3m-use-tab)
   (defvar w3m-work-buffer-list)
+  (defvar w3m-use-japanese-menu)
   (unless (fboundp 'select-frame-set-input-focus)
     (defalias 'select-frame-set-input-focus 'ignore)))
 
