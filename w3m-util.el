@@ -60,6 +60,7 @@
   (defvar w3m-use-tab)
   (defvar w3m-work-buffer-list)
   (defvar w3m-use-japanese-menu)
+  (defvar w3m-mode-map)
   (unless (fboundp 'select-frame-set-input-focus)
     (defalias 'select-frame-set-input-focus 'ignore)))
 
@@ -1058,6 +1059,27 @@ If SECONDS is omitted, it defaults to 0.5."
     japan)
    (t
     english)))
+
+(defun w3m-make-menu-commands (menu-commands)
+  "Make menu items."
+  (mapcar
+   (lambda (c)
+     (if (consp c)
+	 (vector
+	  (cadr c)
+	  (if (nth 3 c)
+	      `(progn
+		 (switch-to-buffer w3m-tab-button-menu-current-buffer)
+		 (funcall (function ,(car c)) ,@(nthcdr 4 c)))
+	    `(save-window-excursion
+	       (switch-to-buffer w3m-tab-button-menu-current-buffer)
+	       (funcall (function ,(car c)) ,@(nthcdr 4 c))))
+	  :active (nth 2 c)
+	  :keys (let ((key (where-is-internal (car c) w3m-mode-map)))
+		  (when key
+		    (key-description (car key)))))
+       (symbol-name c)))
+   menu-commands))
 
 (provide 'w3m-util)
 

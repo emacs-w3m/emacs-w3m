@@ -1418,6 +1418,12 @@ text.  See also `w3m-use-tab'."
 		(string :format "URL: %v\n" :size 0
 			:value "http://emacs-w3m.namazu.org")))
 
+(defcustom w3m-tab-button-focus-new-tab t
+  "*If non-nil, focus is moved to a new tab."
+  :group 'w3m
+  :type '(radio (const :tag "Move new tab" t)
+		(const :tag "Stay intact tab" nil)))
+
 (defcustom w3m-make-new-session nil
   "*Non-nil means making new emacs-w3m buffers when visiting new pages.
 If it is non-nil and there are already emacs-w3m buffers, the `w3m'
@@ -2285,13 +2291,20 @@ nil value means it has not been initialized.")
       [,(w3m-make-menu-item "上の階層に移動する" "Up to Parent Page")
        w3m-view-parent-page
        (w3m-parent-page-available-p)]
-      [,(w3m-make-menu-item "プロセスを中止する" "Cancel Process")
-       w3m-process-stop w3m-current-process]
-      [,(w3m-make-menu-item "このページを再取得する" "Reload This Page")
-       w3m-reload-this-page w3m-current-url]
-      [,(w3m-make-menu-item "すべてのページを再取得する" "Reload All Pages")
+      "----" ;; separator
+      [,(w3m-make-menu-item "このページを外部ブラウザで開く"
+	  "Open This Page in an External Browser")
+       w3m-external-view-current-url w3m-current-url]
+      [,(w3m-make-menu-item "この URL を外部ブラウザで開く"
+	  "Open This URL in an External Browser")
+       w3m-external-view-this-url (or (w3m-anchor) (w3m-image))]
+      "----" ;; separator
+      (,(w3m-make-menu-item "再表示" "Redisplay")
+       [,(w3m-make-menu-item "このページを再取得する" "Reload This Page")
+	w3m-reload-this-page w3m-current-url]
+       [,(w3m-make-menu-item "すべてのページを再取得する" "Reload All Pages")
        w3m-reload-all-pages (cdr (w3m-list-buffers))]
-      (,(w3m-make-menu-item "再描画" "Redisplay")
+       "----" ;; separator
        [,(w3m-make-menu-item "画像表示の切替(全部)" "Toggle Images")
 	w3m-toggle-inline-images (w3m-display-graphic-p)]
        [,(w3m-make-menu-item "画像表示の切替(この画像)" "Toggle This Image")
@@ -2309,10 +2322,10 @@ nil value means it has not been initialized.")
 	   "Reset Charset and Content-type")
 	w3m-redisplay-and-reset w3m-current-url]
        ) ;; end redisplay
-      [,(w3m-make-menu-item "インターネットでの検索..." "Search the Internet...")
-       w3m-search t]
       [,(w3m-make-menu-item "ホームページへ移動" "Go to Home Page")
        w3m-gohome w3m-home-page]
+      [,(w3m-make-menu-item "ブックマークの表示" "View Bookmark")
+       w3m-bookmark-view t]
       [,(w3m-make-menu-item "移動..." "Go to...")
        w3m-goto-url t]
       "----" ;; separator
@@ -2322,11 +2335,15 @@ nil value means it has not been initialized.")
        [,(w3m-make-menu-item "リストで履歴を表示" "Show an Arrived URLs List")
 	w3m-db-history t]
        ) ;; end history
+      [,(w3m-make-menu-item "インターネットでの検索..." "Search the Internet...")
+       w3m-search t]
       [,(w3m-make-menu-item "天気予報" "Weather Forecast")
        w3m-weather t]
       [,(w3m-make-menu-item (concat a "ンテナで取得") "Investigate with Antenna")
        w3m-antenna t]
       (,(w3m-make-menu-item "ヘルプ" "Resource")
+       [,(w3m-make-menu-item "プロセスを中止する" "Cancel Process")
+	w3m-process-stop w3m-current-process]
        [,(w3m-make-menu-item "ソースを見る" "View Source")
 	w3m-view-source t]
        [,(w3m-make-menu-item "ヘッダーを見る" "View Header")
@@ -5954,6 +5971,21 @@ The default name will be the original name of the image."
 	(w3m-download url)
       (w3m-message "No image at point"))))
 
+(defun w3m-external-view-this-url ()
+  "Lanch the external browser and display the link URL."
+  (interactive)
+  (let ((url (w3m-url-valid (or (w3m-anchor) (w3m-image)))))
+    (if url
+	(w3m-external-view url)
+      (w3m-message "No URL at point"))))
+
+(defun w3m-external-view-current-url ()
+  "Lanch the external browser and display the current URL."
+  (interactive)
+  (if w3m-current-url
+      (w3m-external-view w3m-current-url)
+    (w3m-message "No URL at this page")))
+
 (defun w3m-view-url-with-external-browser (&optional url)
   "Launch the external browser and display the same web page.
 If the cursor points to a link, it visits the url of the link instead
@@ -6940,10 +6972,10 @@ closed.  See also `w3m-quit'."
 	(rightp '(w3m-righttab-exist-p w3m-tab-button-menu-current-buffer)))
     `((w3m-goto-url-new-session
        ,(w3m-make-menu-item "新しいタブ" "New Tab")
-       t t w3m-tab-button-new-session-url)
+       t ,w3m-tab-button-focus-new-tab w3m-tab-button-new-session-url)
       (w3m-copy-buffer
        ,(w3m-make-menu-item "タブを複製" "Copy Tab")
-       t t)
+       t ,w3m-tab-button-focus-new-tab)
       -
       (w3m-reload-this-page
        ,(w3m-make-menu-item "タブを再読み込み" "Reload Tab") t)
@@ -6988,25 +7020,7 @@ or a list which consists of the following elements:
 (w3m-static-unless (featurep 'xemacs)
   (easy-menu-define
     w3m-tab-button-menu w3m-tab-map "w3m tab button menu."
-    (cons nil
-	  (mapcar
-	   (lambda (c)
-	     (if (consp c)
-		 (vector
-		  (cadr c)
-		  (if (nth 3 c)
-		      `(progn
-			 (switch-to-buffer w3m-tab-button-menu-current-buffer)
-			 (funcall (function ,(car c)) ,@(nthcdr 4 c)))
-		    `(save-window-excursion
-		       (switch-to-buffer w3m-tab-button-menu-current-buffer)
-		       (funcall (function ,(car c)) ,@(nthcdr 4 c))))
-		  :active (nth 2 c)
-		  :keys (let ((key (where-is-internal (car c) w3m-mode-map)))
-			  (when key
-			    (key-description (car key)))))
-	       (symbol-name c)))
-	   w3m-tab-button-menu-commands)))
+    (cons nil (w3m-make-menu-commands w3m-tab-button-menu-commands)))
 
   ;; This function must be placed after `easy-menu-define'.
   (defun w3m-tab-button-menu (event buffer)

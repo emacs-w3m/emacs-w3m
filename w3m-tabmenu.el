@@ -132,24 +132,7 @@
       (append menu
 	      '("-")
 	      '("-")
-	      (mapcar
-	       (lambda (c)
-		 (if (consp c)
-		     (vector
-		      (cadr c)
-		      (if (nth 3 c)
-			  `(progn
-			     (switch-to-buffer w3m-tab-button-menu-current-buffer)
-			     (funcall (function ,(car c))))
-			`(save-window-excursion
-			   (switch-to-buffer w3m-tab-button-menu-current-buffer)
-			   (funcall (function ,(car c)))))
-		      :active (nth 2 c)
-		      :keys (let ((key (where-is-internal (car c) w3m-mode-map)))
-			      (when key
-				(key-description (car key)))))
-		   (symbol-name c)))
-	       w3m-tab-button-menu-commands)))))
+	      (w3m-make-menu-commands w3m-tab-button-menu-commands)))))
 
 (provide 'w3m-tabmenu)
 

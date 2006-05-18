@@ -1,3 +1,20 @@
+2006-05-18  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-tab-button-focus-new-tab): New option.
+	(w3m-menubar): Add some items.
+	(w3m-external-view-this-url): New command.
+	(w3m-external-view-current-url): Ditto.
+	(w3m-tab-button-menu-commands): Use `w3m-tab-button-focus-new-tab'
+	on `w3m-goto-url-new-session' and `w3m-copy-buffer'.
+	(w3m-tab-button-menu): Make with `w3m-make-menu-commands'.
+
+	* w3m-util.el (top): Add the variable definition of
+	`w3m-mode-map' to avoid byte-compile warnings.
+	(w3m-make-menu-commands): New function.
+
+	* w3m-tabmenu.el (w3m-tab-menubar-make-items): Use
+	`w3m-make-menu-commands'.
+
 2006-05-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-view-url-with-external-browser): Add optional url
