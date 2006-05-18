@@ -1,3 +1,22 @@
+2006-05-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-bookmark.el (w3m-bookmark-add-all-urls): New function.
+
+	* w3m.el: Autoload w3m-bookmark-add-all-urls.
+	(w3m-menubar): Add w3m-reload-all-pages.
+	(w3m-lynx-like-map): Add w3m-reload-all-pages and
+	w3m-bookmark-add-all-urls.
+	(w3m-info-like-map): Ditto.
+	(w3m-tab-button-menu-commands): Make it enable to pass arguments
+	to function items; use w3m-goto-url-new-session,
+	w3m-reload-all-pages, and w3m-bookmark-add-all-urls instead of
+	lambda forms.
+	(w3m-tab-button-menu): Pass arguments to functions defined in
+	w3m-tab-button-menu-commands.
+	(w3m-mode): Add descriptions about w3m-reload-all-pages and
+	w3m-bookmark-add-all-urls to docstring.
+	(w3m-reload-all-pages): New function.
+
 2006-05-18  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-lynx-like-map): Define `w3m-mouse-major-mode-menu'

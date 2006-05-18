@@ -322,12 +322,29 @@ Optional argument TITLE is title of link."
 
 ;;;###autoload
 (defun w3m-bookmark-add-current-url (&optional arg)
-  "Add link of current page to bookmark.
-With prefix, ask new url to add instead of current page."
+  "Add a url of the current page to the bookmark.
+With prefix, ask for a new url instead of the present one."
   (interactive "P")
   (w3m-bookmark-add (if arg (w3m-input-url) w3m-current-url)
 		    w3m-current-title)
   (message "Added"))
+
+;;;###autoload
+(defun w3m-bookmark-add-all-urls ()
+  "Add urls of all pages being visited to the bookmark."
+  (interactive)
+  (let ((buffers (w3m-list-buffers)))
+    (if (and w3m-use-tab
+	     (>= (length buffers) 2))
+	(while buffers
+	  (switch-to-buffer (pop buffers))
+	  (condition-case nil
+	      (w3m-bookmark-add-current-url)
+	    (quit)))
+      (message
+       "Use the `%s' command instead"
+       (key-description (car (where-is-internal 'w3m-bookmark-add-current-url
+						w3m-mode-map)))))))
 
 ;;;###autoload
 (defun w3m-bookmark-add-current-url-group ()

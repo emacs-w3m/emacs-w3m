@@ -128,7 +128,9 @@
   (autoload 'w3m-bookmark-add-this-url "w3m-bookmark"
     "Add a link under point to the bookmark." t)
   (autoload 'w3m-bookmark-add-current-url "w3m-bookmark"
-    "Add a link address of the current page to the bookmark." t)
+    "Add a url of the current page to the bookmark." t)
+  (autoload 'w3m-bookmark-add-all-urls "w3m-bookmark"
+    "Add urls of all pages being visited to the bookmark." t)
   (autoload 'w3m-search "w3m-search"
     "Search a word using search engines." t)
   (autoload 'w3m-search-uri-replace "w3m-search")
@@ -2287,6 +2289,8 @@ nil value means it has not been initialized.")
        w3m-process-stop w3m-current-process]
       [,(w3m-make-menu-item "このページを再取得する" "Reload This Page")
        w3m-reload-this-page w3m-current-url]
+      [,(w3m-make-menu-item "すべてのページを再取得する" "Reload All Pages")
+       w3m-reload-all-pages (cdr (w3m-list-buffers))]
       (,(w3m-make-menu-item "再描画" "Redisplay")
        [,(w3m-make-menu-item "画像表示の切替(全部)" "Toggle Images")
 	w3m-toggle-inline-images (w3m-display-graphic-p)]
@@ -6568,6 +6572,8 @@ as if the folder command of MH performs with the -pack option."
 
 (defvar w3m-lynx-like-map nil
   "Lynx-like keymap used in emacs-w3m buffers.")
+;; `C-t' is a prefix key reserved to commands that do something in all
+;; emacs-w3m buffers.  2006-05-18
 (unless w3m-lynx-like-map
   (let ((map (make-keymap)))
     (suppress-keymap map)
@@ -6649,10 +6655,12 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "\C-c\C-a" 'w3m-switch-buffer)
     (define-key map "r" 'w3m-redisplay-this-page)
     (define-key map "R" 'w3m-reload-this-page)
+    (define-key map "\C-tR" 'w3m-reload-all-pages)
     (define-key map "?" 'describe-mode)
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
     (define-key map "\M-k" 'w3m-cookie)
     (define-key map "a" 'w3m-bookmark-add-current-url)
+    (define-key map "\C-ta" 'w3m-bookmark-add-all-urls)
     (define-key map "+" 'w3m-antenna-add-current-url)
     (define-key map "]" 'w3m-next-form)
     (define-key map "[" 'w3m-previous-form)
@@ -6686,6 +6694,8 @@ as if the folder command of MH performs with the -pack option."
 
 (defvar w3m-info-like-map nil
   "Info-like keymap used in emacs-w3m buffers.")
+;; `C-t' is a prefix key reserved to commands that do something in all
+;; emacs-w3m buffers.  2006-05-18
 (unless w3m-info-like-map
   (let ((map (make-keymap)))
     (suppress-keymap map)
@@ -6720,6 +6730,7 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "\C-c\C-v" 'w3m-history-restore-position)
     (define-key map " " 'w3m-scroll-up-or-next-url)
     (define-key map "a" 'w3m-bookmark-add-current-url)
+    (define-key map "\C-ta" 'w3m-bookmark-add-all-urls)
     (define-key map "\M-a" 'w3m-bookmark-add-this-url)
     (define-key map "+" 'w3m-antenna-add-current-url)
     (define-key map "A" 'w3m-antenna)
@@ -6746,6 +6757,7 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "l" 'w3m-view-previous-page)
     (define-key map "\C-l" 'recenter)
     (define-key map [(control L)] 'w3m-reload-this-page)
+    (define-key map [(control t) (control L)] 'w3m-reload-all-pages)
     (define-key map "M" 'w3m-view-url-with-external-browser)
     (define-key map "n" 'w3m-view-next-page)
     (define-key map "N" 'w3m-namazu)
@@ -6768,6 +6780,7 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "Q" 'w3m-quit)
     (define-key map "r" 'w3m-redisplay-this-page)
     (define-key map "R" 'w3m-reload-this-page)
+    (define-key map "\C-tR" 'w3m-reload-all-pages)
     (define-key map "s" 'w3m-search)
     (define-key map "S" (lambda ()
 			  (interactive)
@@ -6920,37 +6933,25 @@ closed.  See also `w3m-quit'."
   "Internal variable used by `w3m-tab-button-menu'.")
 
 (defvar w3m-tab-button-menu-commands
-  (let ((fn1 (lambda nil
-	       (w3m-goto-url-new-session w3m-tab-button-new-session-url)))
-	(fn2 (lambda nil
-	       (dolist (buffer (w3m-list-buffers))
-		 (switch-to-buffer buffer)
-		 (w3m-reload-this-page))))
-	(fn3 (lambda nil
-	       (dolist (buffer (w3m-list-buffers))
-		 (switch-to-buffer buffer)
-		 (condition-case nil
-		     (w3m-bookmark-add-current-url)
-		   (quit)))))
-	(flag '(cdr (w3m-list-buffers)))
+  (let ((manyp '(cdr (w3m-list-buffers)))
 	(leftp '(w3m-lefttab-exist-p w3m-tab-button-menu-current-buffer))
 	(rightp '(w3m-righttab-exist-p w3m-tab-button-menu-current-buffer)))
-    `((,fn1
+    `((w3m-goto-url-new-session
        ,(w3m-make-menu-item "新しいタブ" "New Tab")
-       t t)
+       t t w3m-tab-button-new-session-url)
       (w3m-copy-buffer
        ,(w3m-make-menu-item "タブを複製" "Copy Tab")
        t)
       -
       (w3m-reload-this-page
        ,(w3m-make-menu-item "タブを再読み込み" "Reload Tab") t)
-      (,fn2
+      (w3m-reload-all-pages
        ,(w3m-make-menu-item "すべてのタブを再読み込み" "Reload All Tabs")
-       ,flag)
+       ,manyp)
       -
       (w3m-delete-other-buffers
        ,(w3m-make-menu-item "他のタブをすべて閉じる" "Close Other Tabs")
-       ,flag)
+       ,manyp)
       (w3m-delete-left-tabs
        ,(w3m-make-menu-item "左側のタブをすべて閉じる" "Close Left Tabs")
        ,leftp)
@@ -6964,9 +6965,10 @@ closed.  See also `w3m-quit'."
       (w3m-bookmark-add-current-url
        ,(w3m-make-menu-item "このタブをブックマーク" "Bookmark This Tab...")
        t t)
-      (,fn3
-       ,(w3m-make-menu-item "すべてのタブをブックマーク" "Bookmark All Tabs..." )
-       ,flag)
+      (w3m-bookmark-add-all-urls
+       ,(w3m-make-menu-item
+	 "すべてのタブをブックマーク" "Bookmark All Tabs..." )
+       ,manyp)
       -
       (w3m-delete-buffer
        ,(w3m-make-menu-item "タブを閉じる" "Close Tab")
@@ -6975,10 +6977,11 @@ closed.  See also `w3m-quit'."
 Each item is the symbol `-' which is a separator,
 or a list which consists of the following elements:
 
-0: a function, takes no argument.
+0: a function.
 1: a function description.
 2: a Lisp form which returns non-nil if the item is active.
-3: a flag specifying whether the buffer is selected.")
+3: a flag specifying whether the buffer should be selected.
+&rest: arguments passed to the function.")
 
 (w3m-static-unless (featurep 'xemacs)
   (easy-menu-define
@@ -6992,10 +6995,10 @@ or a list which consists of the following elements:
 		  (if (nth 3 c)
 		      `(progn
 			 (switch-to-buffer w3m-tab-button-menu-current-buffer)
-			 (funcall (function ,(car c))))
+			 (funcall (function ,(car c)) ,@(nthcdr 4 c)))
 		    `(save-window-excursion
 		       (switch-to-buffer w3m-tab-button-menu-current-buffer)
-		       (funcall (function ,(car c)))))
+		       (funcall (function ,(car c)) ,@(nthcdr 4 c))))
 		  :active (nth 2 c)
 		  :keys (let ((key (where-is-internal (car c) w3m-mode-map)))
 			  (when key
@@ -7049,6 +7052,7 @@ or a list which consists of the following elements:
 \\[w3m-submit-form]	Submit the form at point.
 
 \\[w3m-reload-this-page]	Reload the current page.
+\\[w3m-reload-all-pages]	Reload all the pages.
 \\[w3m-redisplay-this-page]	Redisplay the current page.
 \\[w3m-redisplay-with-content-type]	Redisplay the page, specifying\
  a content type.
@@ -7134,9 +7138,11 @@ or a list which consists of the following elements:
 	To change the index, give any prefix argument to the command.
 
 \\[w3m-bookmark-view]	Display the bookmark.
-\\[w3m-bookmark-add-current-url]	Add the url of the current page to\
+\\[w3m-bookmark-add-current-url]	Add a url of the current page to\
  the bookmark.
 	If the prefix arg is given, the user will be prompted for the url.
+\\[w3m-bookmark-add-all-urls]	Add urls of all pages being visited to\
+ the bookmark.
 \\[w3m-bookmark-add-this-url]	Add the url under point to the bookmark.
 
 \\[w3m-copy-buffer]	Create a copy of the current page as a new session.
@@ -8002,6 +8008,20 @@ If the prefix arg ARG is given, it also clears forms and post data."
 		      nil
 		      (w3m-history-element (cadar w3m-history) t)))
     (w3m-message "Can't reload this page")))
+
+(defun w3m-reload-all-pages (&optional arg)
+  "Reload all pages, disregarding the cached contents.
+If the prefix arg ARG is given, it also clears forms and post data."
+  (interactive "P")
+  (if arg
+      (save-window-excursion
+	(dolist (buffer (w3m-list-buffers))
+	  (switch-to-buffer buffer)
+	  (w3m-reload-this-page)))
+    (dolist (buffer (w3m-list-buffers))
+      (save-window-excursion
+	(switch-to-buffer buffer)
+	(w3m-reload-this-page)))))
 
 (defun w3m-redisplay-this-page (&optional arg)
   "Redisplay the current page.
