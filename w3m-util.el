@@ -1048,6 +1048,16 @@ If SECONDS is omitted, it defaults to 0.5."
 		   buffer))
   (defalias 'w3m-force-window-update-later 'ignore))
 
+(defun w3m-make-menu-item (japan english)
+  "Make menu item."
+  (cond
+   ((and w3m-use-japanese-menu (featurep 'xemacs))
+    (concat " " japan))
+   (w3m-use-japanese-menu
+    japan)
+   (t
+    english)))
+
 (provide 'w3m-util)
 
 ;;; w3m-util.el ends here

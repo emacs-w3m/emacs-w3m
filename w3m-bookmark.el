@@ -423,28 +423,27 @@ With prefix argument, kill that many entries from point."
 
 ;; Bookmark menu
 (defvar w3m-bookmark-menu-items
-  (let* ((japanesep w3m-use-japanese-menu)
-	 (etsu (when japanesep
-		 (decode-coding-string "\e$B1\\\e(B" 'iso-2022-jp)))) ;; 閲
-    `(([,(if japanesep (concat "ブックマークの" etsu "覧") "View Bookmark")
+  (let ((etsu (when w3m-use-japanese-menu
+		(decode-coding-string "\e$B1\\\e(B" 'iso-2022-jp)))) ;; 閲
+    `(([,(w3m-make-menu-item (concat "ブックマークの" etsu "覧") "View Bookmark")
 	w3m-bookmark-view t]
-       [,(if japanesep "ブックマークの編集" "Edit Bookmark")
+       [,(w3m-make-menu-item "ブックマークの編集" "Edit Bookmark")
 	w3m-bookmark-edit t]
        "----"
-       [,(if japanesep "このページをブックマーク" "Add Current URL to Bookmark")
+       [,(w3m-make-menu-item "このページをブックマーク" "Add Current URL to Bookmark")
 	w3m-bookmark-add-current-url t]
-       [,(if japanesep "すべての URL をブックマーク" "Add These URLs to Bookmark")
+       [,(w3m-make-menu-item "すべての URL をブックマーク" "Add These URLs to Bookmark")
 	w3m-bookmark-add-current-url-group t]
-       [,(if japanesep "この URL をブックマーク" "Add This URL to Bookmark")
+       [,(w3m-make-menu-item "この URL をブックマーク" "Add This URL to Bookmark")
 	w3m-bookmark-add-this-url (w3m-anchor)])
       .
-      ([,(if japanesep "このエントリを消去" "Kill Current Entry")
+      ([,(w3m-make-menu-item "このエントリを消去" "Kill Current Entry")
 	w3m-bookmark-kill-entry
 	(text-property-not-all (point-at-bol) (point-at-eol)
 			       'w3m-href-anchor nil)]
-       [,(if japanesep "もとに戻す" "Undo")
+       [,(w3m-make-menu-item "もとに戻す" "Undo")
 	w3m-bookmark-undo t]
-       [,(if japanesep "ブックマークの編集" "Edit Bookmark")
+       [,(w3m-make-menu-item "ブックマークの編集" "Edit Bookmark")
 	w3m-bookmark-edit t])))
   "*List of the bookmark menu items.
 The car is used if `w3m-bookmark-mode' is nil, otherwise the cdr is used.")

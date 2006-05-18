@@ -1,3 +1,17 @@
+2006-05-18  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-menubar): Use `w3m-make-menu-item'.
+	(w3m-tab-button-menu-current-buffer): Enable always.
+	(w3m-tab-button-menu-commands): Ditto. Use `w3m-make-menu-item'.
+
+	* w3m-util.el (w3m-make-menu-item): New function.
+
+	* w3m-tabmenu.el (w3m-tab-menubar-make-items): Handle
+	`w3m-tab-button-menu-commands' always.
+
+	* w3m-bookmark.el (w3m-bookmark-menu-items): Use
+	`w3m-make-menu-item'.
+
 2006-05-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-rediff.el (shimbun-rss-build-message-id): Fix regexp.
