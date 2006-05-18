@@ -7,6 +7,8 @@
 
 	* w3m-util.el (top): Add the variable definition of
 	`w3m-use-japanese-menu' to avoid byte-compile warnings.
+	(w3m-make-menu-item): Change method to take measures for garbage
+	characters on XEmacs.
 
 	* w3m-bookmark.el (w3m-bookmark-make-item-xmas): New variable.
 	(w3m-bookmark-make-item): New inline macro.

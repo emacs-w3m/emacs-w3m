@@ -1053,7 +1053,7 @@ If SECONDS is omitted, it defaults to 0.5."
   "Make menu item."
   (cond
    ((and w3m-use-japanese-menu (featurep 'xemacs))
-    (concat " " japan))
+    (concat japan "%_ "))
    (w3m-use-japanese-menu
     japan)
    (t

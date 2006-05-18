@@ -527,7 +527,7 @@ Format as (list (\"Group name\" . (\"Entry URL\" . \"Entry name\")* )* )."
 
 (defsubst w3m-bookmark-make-item (item)
   (if w3m-bookmark-make-item-xmas
-      (concat " " item)
+      (concat item "%_ ")
     item))
 
 (defun w3m-bookmark-make-menu-items (&optional nomenu)
