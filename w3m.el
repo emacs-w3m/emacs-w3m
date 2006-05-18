@@ -5960,17 +5960,18 @@ If the cursor points to a link, it visits the url of the link instead
 of the url currently displayed.  The browser is defined in
 `w3m-content-type-alist' for every type of a url."
   (interactive)
-  (let ((url (or url
-		 (w3m-anchor)
-		 (unless w3m-display-inline-images
-		   (w3m-image))
-		 (when (y-or-n-p (format "Browse <%s> ? " w3m-current-url))
-		   w3m-current-url))))
-    (if (w3m-url-valid url)
-	(progn
-	  (message "Browsing <%s>..." url)
-	  (w3m-external-view url))
-      (w3m-message "No URL at point"))))
+  (unless url
+    (setq url (or url
+		  (w3m-anchor)
+		  (unless w3m-display-inline-images
+		    (w3m-image))
+		  (when (y-or-n-p (format "Browse <%s> ? " w3m-current-url))
+		    w3m-current-url))))
+  (if (w3m-url-valid url)
+      (progn
+	(message "Browsing <%s>..." url)
+	(w3m-external-view url))
+    (w3m-message "No URL at point")))
 
 (defun w3m-download-this-url ()
   "Download the file or the page pointed to by the link under point."
