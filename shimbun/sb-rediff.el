@@ -1,6 +1,6 @@
 ;;; sb-rediff.el --- shimbun backend for rediff.com
 
-;; Copyright (C) 2004, 2005 S V N Vishwanathan <vishketan@yahoo.com>
+;; Copyright (C) 2004, 2005, 2006 S V N Vishwanathan <vishketan@yahoo.com>
 
 ;; Author: S V N Vishwanathan <vishketan@yahoo.com>
 ;; Keywords: news
@@ -107,7 +107,7 @@ http://www.rediff.com/\\(.+\\.htm\\)"
 						  url date)
   (unless
       (string-match
-       "http://www.rediff.com/rss/redirect.php\\?\url=\
+       "http://www.rediff.com/rss/redirect.php\\?url=\
 http://www.rediff.com/\\([A-Za-z]+\\)/\\([0-9]+\\)/\\([^/]+\\)/\\(.+\\)\\.htm"
        url)
     (error "Cannot find a message-id base for %s" url))

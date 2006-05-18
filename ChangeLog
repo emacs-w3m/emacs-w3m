@@ -1,3 +1,7 @@
+2006-05-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-rediff.el (shimbun-rss-build-message-id): Fix regexp.
+
 2006-05-17  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-use-japanese-menu): Change default value.
