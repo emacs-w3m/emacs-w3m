@@ -1,5 +1,13 @@
 2006-05-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-view-url-with-external-browser): Add optional url
+	argument.
+	(w3m-tab-button-menu-commands): Make w3m-copy-buffer and
+	w3m-view-url-with-external-browser select the buffer; pass url to
+	w3m-view-url-with-external-browser.
+
+2006-05-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-bookmark.el (w3m-bookmark-add-all-urls): New function.
 
 	* w3m.el: Autoload w3m-bookmark-add-all-urls.

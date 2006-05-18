@@ -5954,13 +5954,14 @@ The default name will be the original name of the image."
 	(w3m-download url)
       (w3m-message "No image at point"))))
 
-(defun w3m-view-url-with-external-browser ()
+(defun w3m-view-url-with-external-browser (&optional url)
   "Launch the external browser and display the same web page.
 If the cursor points to a link, it visits the url of the link instead
 of the url currently displayed.  The browser is defined in
 `w3m-content-type-alist' for every type of a url."
   (interactive)
-  (let ((url (or (w3m-anchor)
+  (let ((url (or url
+		 (w3m-anchor)
 		 (unless w3m-display-inline-images
 		   (w3m-image))
 		 (when (y-or-n-p (format "Browse <%s> ? " w3m-current-url))
@@ -6941,7 +6942,7 @@ closed.  See also `w3m-quit'."
        t t w3m-tab-button-new-session-url)
       (w3m-copy-buffer
        ,(w3m-make-menu-item "タブを複製" "Copy Tab")
-       t)
+       t t)
       -
       (w3m-reload-this-page
        ,(w3m-make-menu-item "タブを再読み込み" "Reload Tab") t)
@@ -6961,7 +6962,7 @@ closed.  See also `w3m-quit'."
       -
       (w3m-view-url-with-external-browser
        ,(w3m-make-menu-item "外部ブラウザで開く" "View with external browser")
-       t)
+       t t w3m-current-url)
       (w3m-bookmark-add-current-url
        ,(w3m-make-menu-item "このタブをブックマーク" "Bookmark This Tab...")
        t t)
