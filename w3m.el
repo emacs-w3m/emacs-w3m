@@ -5972,7 +5972,7 @@ The default name will be the original name of the image."
       (w3m-message "No image at point"))))
 
 (defun w3m-external-view-this-url ()
-  "Lanch the external browser and display the link URL."
+  "Launch the external browser and display the link an point."
   (interactive)
   (let ((url (w3m-url-valid (or (w3m-anchor) (w3m-image)))))
     (if url
@@ -5980,7 +5980,7 @@ The default name will be the original name of the image."
       (w3m-message "No URL at point"))))
 
 (defun w3m-external-view-current-url ()
-  "Lanch the external browser and display the current URL."
+  "Launch the external browser and display the current URL."
   (interactive)
   (if w3m-current-url
       (w3m-external-view w3m-current-url)
