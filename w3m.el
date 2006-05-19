@@ -764,21 +764,22 @@ Otherwise, you will be prompted for that url with the editing form."
   "*This variable specifies the url string to open when emacs-w3m starts.
 Don't say HP, which is the abbreviated name of a certain company. ;-)"
   :group 'w3m
-  :type '(list :convert-widget
-	       (lambda (widget)
-		 `(radio :args
-			 ,(append
-			   (if (getenv "HTTP_HOME")
-			       (list (list 'const
-					   :format "HTTP_HOME: \"%v\"\n"
-					   (getenv "HTTP_HOME"))))
-			   (if (getenv "WWW_HOME")
-			       (list (list 'const
-					   :format "WWW_HOME: \"%v\"\n"
-					   (getenv "WWW_HOME"))))
-			   '((const :tag "About emacs-w3m" "about:")
-			     (const :tag "Blank page" "about:blank")
-			     (string :format "URL: %v\n" :size 0)))))))
+  :type '(radio
+	  :convert-widget
+	  (lambda (widget)
+	    (apply 'widget-convert (widget-type widget)
+		   (delq nil (eval (car (widget-get widget :args))))))
+	  `(,(if (getenv "HTTP_HOME")
+		 (list 'const
+		       :format "HTTP_HOME: \"%v\"\n"
+		       (getenv "HTTP_HOME")))
+	    ,(if (getenv "WWW_HOME")
+		 (list 'const
+		       :format "WWW_HOME: \"%v\"\n"
+		       (getenv "WWW_HOME")))
+	    (const :tag "About emacs-w3m" "about:")
+	    (const :tag "Blank page" "about:blank")
+	    (string :format "URL: %v\n" :size 0))))
 
 (defcustom w3m-arrived-file
   (expand-file-name ".arrived" w3m-profile-directory)
@@ -1413,18 +1414,18 @@ text.  See also `w3m-use-tab'."
 (defcustom w3m-new-session-url "about://bookmark/"
   "*Default url to be opened in a tab or a session which is created newly."
   :group 'w3m
-  :type '(list
+  :type '(radio
 	  :convert-widget
 	  (lambda (widget)
-	    `(radio
-	      :args
-	      ((const :tag "About emacs-w3m" "about:")
-	       (const :tag "Blank page" "about:blank")
-	       (const :tag "Bookmark" "about://bookmark/")
-	       (const :tag ,(format "Home page (%s)" w3m-home-page)
-		      ,w3m-home-page)
-	       (string :format "URL: %v\n" :size 0
-		       :value "http://emacs-w3m.namazu.org"))))))
+	    (apply 'widget-convert (widget-type widget)
+		   (delq nil (eval (car (widget-get widget :args))))))
+	  `((const :tag "About emacs-w3m" "about:")
+	    (const :tag "Blank page" "about:blank")
+	    (const :tag "Bookmark" "about://bookmark/")
+	    (const :tag ,(format "Home page (%s)" w3m-home-page)
+		   ,w3m-home-page)
+	    (string :format "URL: %v\n" :size 0
+		    :value "http://emacs-w3m.namazu.org"))))
 
 (defcustom w3m-make-new-session nil
   "*Non-nil means making new emacs-w3m buffers when visiting new pages.

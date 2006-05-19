@@ -1,5 +1,10 @@
 2006-05-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-home-page): Rewrite :convert-widget function.
+	(w3m-new-session-url): Ditto.
+
+2006-05-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-new-session-url): Doc fix; improve custom type.
 	(w3m-new-session-in-background): Doc fix.
 
