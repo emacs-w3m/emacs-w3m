@@ -362,8 +362,17 @@ With prefix, ask for a new url instead of the present one."
 
 ;;;###autoload
 (defun w3m-bookmark-view (&optional reload)
+  "Display the bookmark."
   (interactive "P")
   (w3m-goto-url "about://bookmark/" reload))
+
+;;;###autoload
+(defun w3m-bookmark-view-new-session (&optional reload)
+  "Display the bookmark on a new session."
+  (interactive "P")
+  (if (not (eq major-mode 'w3m-mode))
+      (message "This command can be used in w3m mode only")
+    (w3m-view-this-url-1 "about://bookmark/" reload 'new-session)))
 
 ;;;###autoload
 (defun w3m-about-bookmark (&rest args)
@@ -444,6 +453,9 @@ With prefix argument, kill that many entries from point."
 		(decode-coding-string "\e$B1\\\e(B" 'iso-2022-jp)))) ;; 閲
     `(([,(w3m-make-menu-item (concat "ブックマークの" etsu "覧") "View Bookmark")
 	w3m-bookmark-view t]
+       [,(w3m-make-menu-item (concat "新セッションでブックマークの" etsu "覧")
+			     "View Bookmark in a New Session")
+	w3m-bookmark-view-new-session t]
        [,(w3m-make-menu-item "ブックマークの編集" "Edit Bookmark")
 	w3m-bookmark-edit t]
        "----"

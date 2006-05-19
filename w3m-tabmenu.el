@@ -110,25 +110,49 @@
 	  (setcdr items (cdr w3m-tab-menu))
 	  (set-buffer-menubar current-menubar))))))
 
+(defvar w3m-tab-menubar-items-sub-coeff 30) ;; 30?
+(defvar w3m-tab-menubar-items-width 50) ;; 50?
+
+(defsubst w3m-tab-menubar-make-items-1 (buffers &optional nomenu)
+  (let ((i 0)
+	(current (current-buffer))
+	(width w3m-tab-menubar-items-width)
+	title)
+    (mapcar
+     (lambda (buffer)
+       (if nomenu
+	   (list (buffer-name buffer)
+		 (w3m-buffer-title buffer)
+		 (eq buffer current))
+	 (setq title (w3m-buffer-title buffer))
+	 (when (>= (string-width title) width)
+	   (setq title
+		 (concat (w3m-truncate-string title
+					      (- width 3))
+			 "...")))
+	 (vector (format "%d: %s%s"
+			 (incf i)
+			 (if (eq buffer current) "* " "  ")
+			 title)
+		 `(w3m-tab-menubar-open-item ,(buffer-name buffer))
+		 buffer)))
+     buffers)))
+
 (defun w3m-tab-menubar-make-items (&optional nomenu)
   "Create w3m tab menu items."
-  (let* ((i 0) (current (current-buffer))
-	 (menu (mapcar
-		(lambda (buffer)
-		  (if nomenu
-		      (list (buffer-name buffer)
-			    (w3m-buffer-title buffer)
-			    (eq buffer current))
-		    (vector (format "%d: %s%s"
-				    (incf i)
-				    (if (eq buffer current) "* " "  ")
-				    (w3m-buffer-title buffer))
-			    `(w3m-tab-menubar-open-item ,(buffer-name buffer))
-			    buffer)))
-		(w3m-list-buffers))))
+  (let (menu buflst total max)
     (if nomenu
-	menu
+	(w3m-tab-menubar-make-items-1 (w3m-list-buffers) t)
       (setq w3m-tab-button-menu-current-buffer (current-buffer))
+      (setq buflst (w3m-list-buffers))
+      (setq total (length buflst))
+      (setq max (- (frame-height (selected-frame))
+		   w3m-tab-menubar-items-sub-coeff))
+      (if (< total max)
+	  (setq menu (w3m-tab-menubar-make-items-1 buflst))
+	(setq menu (list `(,(w3m-make-menu-item "タブの選択"
+						"Select TAB")
+			   ,@(w3m-tab-menubar-make-items-1 buflst)))))
       (append menu
 	      '("-")
 	      '("-")

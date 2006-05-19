@@ -1,3 +1,42 @@
+2006-05-19  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (autoload): Add `w3m-bookmark-view-new-sessiont'.
+	(w3m-new-session-url): Rename from
+	`w3m-tab-button-new-session-url'.
+	(w3m-tab-button-focus-new-tab): Delete.
+	(w3m-view-this-url-new-session-in-background): This option sets
+	obsolete.
+	(w3m-new-session-in-background): New option.
+	(w3m-menubar): Change and add Some items.
+	(w3m-copy-buffer): If call-interactively, set `just-copy' to `t'.
+	If `w3m-new-session-in-background' and `just-copy' is non-nil,
+	swith to original buffer when finished.
+	(w3m-info-like-map): Add `w3m-bookmark-view-new-session'.
+	(w3m-lynx-like-map): Ditto.
+	(w3m-tab-button-menu-commands): Use
+	`w3m-new-session-in-background' insted of
+	`w3m-tab-button-focus-new-tab'.
+	(w3m-mode): Modify doc string.
+	(w3m-goto-new-session-url): New command.
+	(w3m-goto-url-new-session): Call `w3m-copy-buffer' with
+	`w3m-new-session-in-background'.
+	(w3m-select-buffer-generate-contents): Add prefix number to
+	beginning of title name.
+
+	* w3m-tabmenu.el (w3m-tab-menubar-items-sub-coeff): New variable.
+	(w3m-tab-menubar-items-width): Ditto.
+	(w3m-tab-menubar-make-items-1): New inline macro and trancate
+	string of tab's title if over `w3m-tab-menubar-items-width'.
+	(w3m-tab-menubar-make-items): Use
+	`w3m-tab-menubar-make-items-1'.
+	If the number of tabs over
+	`(- (frame-height) w3m-tab-menubar-items-sub-coeff)', make
+	sub-menu.
+
+	* w3m-bookmark.el (w3m-bookmark-view): Add doc string.
+	(w3m-bookmark-view-new-session): New command.
+	(w3m-bookmark-menu-items): Add a item.
+
 2006-05-18  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-tab-button-focus-new-tab): New option.

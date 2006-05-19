@@ -124,7 +124,10 @@
 
 ;; Add-on programs:
 (eval-and-compile
-  (autoload 'w3m-bookmark-view "w3m-bookmark" nil t)
+  (autoload 'w3m-bookmark-view "w3m-bookmark"
+    "Display the bookmark" t)
+  (autoload 'w3m-bookmark-view-new-sessiont "w3m-bookmark"
+    "Display the bookmark on a new session" t)
   (autoload 'w3m-bookmark-add-this-url "w3m-bookmark"
     "Add a link under point to the bookmark." t)
   (autoload 'w3m-bookmark-add-current-url "w3m-bookmark"
@@ -1407,8 +1410,8 @@ text.  See also `w3m-use-tab'."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-tab-button-new-session-url "about://bookmark/"
-  "*This variable specifies the url string to open new tab session."
+(defcustom w3m-new-session-url "about://bookmark/"
+  "*This variable specifies the url string to open new tab or session."
   :group 'w3m
   :type `(radio (const :tag "About emacs-w3m" "about:")
 		(const :tag "Blank page" "about:blank")
@@ -1417,12 +1420,6 @@ text.  See also `w3m-use-tab'."
 		       ,w3m-home-page)
 		(string :format "URL: %v\n" :size 0
 			:value "http://emacs-w3m.namazu.org")))
-
-(defcustom w3m-tab-button-focus-new-tab t
-  "*If non-nil, focus is moved to a new tab."
-  :group 'w3m
-  :type '(radio (const :tag "Move new tab" t)
-		(const :tag "Stay intact tab" nil)))
 
 (defcustom w3m-make-new-session nil
   "*Non-nil means making new emacs-w3m buffers when visiting new pages.
@@ -1494,12 +1491,14 @@ variable is ignored when creating the second or more emacs-w3m session."
   :type 'boolean)
 
 (defcustom w3m-view-this-url-new-session-in-background nil
-  "Run `w3m-view-this-url' without switching to the newly created buffer.
-It is useful if you enabled the tabs line or the buffers selection
-window for the `w3m-select-buffer' feature.  Note that it is meaningful
-only when specifying a prefix argument to the `w3m-view-this-url'
-command or using the `w3m-view-this-url-new-session' command in order
-to create a new emacs-w3m session."
+  "*Obsolete."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-new-session-in-background
+  w3m-view-this-url-new-session-in-background
+  "*Run all functions be assigned to new-session|tab without switching
+to the newly created buffer."
   :group 'w3m
   :type 'boolean)
 
@@ -2256,7 +2255,7 @@ nil value means it has not been initialized.")
     `("w3m"
       (,(w3m-make-menu-item "セッション" "Session")
        [,(w3m-make-menu-item "新しいセッションを作る..." "Create New Session...")
-	w3m-goto-url-new-session t]
+	w3m-goto-new-session-url t]
        [,(w3m-make-menu-item "このセッションを複製する" "Copy This Session")
 	w3m-copy-buffer w3m-current-url]
        "----" ;; separator
@@ -2324,8 +2323,11 @@ nil value means it has not been initialized.")
        ) ;; end redisplay
       [,(w3m-make-menu-item "ホームページへ移動" "Go to Home Page")
        w3m-gohome w3m-home-page]
-      [,(w3m-make-menu-item "ブックマークの表示" "View Bookmark")
-       w3m-bookmark-view t]
+      (,(w3m-make-menu-item "ブックマーク" "Bookmark")
+       [,(w3m-make-menu-item "ブックマークを表示" "View Bookmark")
+	w3m-bookmark-view t]
+       [,(w3m-make-menu-item "新しいセッションでブックマークを表示" "View Bookmark in a New Session")
+	w3m-bookmark-view-new-session t])
       [,(w3m-make-menu-item "移動..." "Go to...")
        w3m-goto-url t]
       "----" ;; separator
@@ -5739,9 +5741,9 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 						  0 (match-beginning 8)))))))
 	  (setq pos (point-marker)
 		buffer (w3m-copy-buffer
-			nil nil w3m-view-this-url-new-session-in-background
+			nil nil w3m-new-session-in-background
 			empty))
-	  (when w3m-view-this-url-new-session-in-background
+	  (when w3m-new-session-in-background
 	    (set-buffer buffer))
 	  (when empty
 	    (w3m-display-progress-message url)))
@@ -6388,7 +6390,8 @@ Note that this function should be called on the window displaying the
 original buffer BUFFER even if JUST-COPY is non-nil in order to render
 a page in a new buffer with the correct width."
   (interactive (list (current-buffer)
-		     (if current-prefix-arg (read-string "Name: "))))
+		     (if current-prefix-arg (read-string "Name: "))
+		     t))
   (unless buffer
     (setq buffer (current-buffer)))
   (unless newname
@@ -6428,7 +6431,11 @@ a page in a new buffer with the correct width."
 			;; Pass the properties of the history elements,
 			;; although it is currently always nil.
 			(w3m-history-element (cadr positions))))
-	(setcar w3m-history positions)))
+	(setcar w3m-history positions)
+	(when (and w3m-new-session-in-background
+		   just-copy
+		   (not (get-buffer-window buffer)))
+	  (set-window-buffer (selected-window) buffer))))
     new))
 
 (defun w3m-next-buffer (arg)
@@ -6673,8 +6680,8 @@ as if the folder command of MH performs with the -pack option."
       (define-key map "\M-[" 'w3m-zoom-out-image)
       (define-key map "\M-]" 'w3m-zoom-in-image))
     (define-key map "U" 'w3m-goto-url)
-    (define-key map "V" 'w3m-goto-url)
     (define-key map "v" 'w3m-bookmark-view)
+    (define-key map "V" 'w3m-bookmark-view-new-session)
     (define-key map "q" 'w3m-close-window)
     (define-key map "Q" 'w3m-quit)
     (define-key map "\M-n" 'w3m-copy-buffer)
@@ -6823,6 +6830,7 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "T" 'w3m-dtree)
     (define-key map "u" 'w3m-view-parent-page)
     (define-key map "v" 'w3m-bookmark-view)
+    (define-key map "V" 'w3m-bookmark-view-new-session)
     (define-key map "W" 'w3m-weather)
     (define-key map "y" 'w3m-print-current-url)
     (define-key map "Y" 'w3m-print-this-url)
@@ -6972,10 +6980,10 @@ closed.  See also `w3m-quit'."
 	(rightp '(w3m-righttab-exist-p w3m-tab-button-menu-current-buffer)))
     `((w3m-goto-url-new-session
        ,(w3m-make-menu-item "新しいタブ" "New Tab")
-       t ,w3m-tab-button-focus-new-tab w3m-tab-button-new-session-url)
+       t ,w3m-new-session-in-background w3m-new-session-url)
       (w3m-copy-buffer
        ,(w3m-make-menu-item "タブを複製" "Copy Tab")
-       t ,w3m-tab-button-focus-new-tab)
+       t ,w3m-new-session-in-background)
       -
       (w3m-reload-this-page
        ,(w3m-make-menu-item "タブを再読み込み" "Reload Tab") t)
@@ -6995,10 +7003,10 @@ closed.  See also `w3m-quit'."
       -
       (w3m-view-url-with-external-browser
        ,(w3m-make-menu-item "外部ブラウザで開く" "View with external browser")
-       t t w3m-current-url)
+       t ,w3m-new-session-in-background w3m-current-url)
       (w3m-bookmark-add-current-url
        ,(w3m-make-menu-item "このタブをブックマーク" "Bookmark This Tab...")
-       t t)
+       t ,w3m-new-session-in-background)
       (w3m-bookmark-add-all-urls
        ,(w3m-make-menu-item
 	 "すべてのタブをブックマーク" "Bookmark All Tabs..." )
@@ -7154,6 +7162,7 @@ or a list which consists of the following elements:
 	To change the index, give any prefix argument to the command.
 
 \\[w3m-bookmark-view]	Display the bookmark.
+\\[w3m-bookmark-view-new-session]	Display the bookmark on a new session.
 \\[w3m-bookmark-add-current-url]	Add a url of the current page to\
  the bookmark.
 	If the prefix arg is given, the user will be prompted for the url.
@@ -7942,6 +7951,13 @@ Cannot run two w3m processes simultaneously \
       (with-current-buffer buffer
 	(w3m-cancel-refresh-timer buffer)))))
 
+(defun w3m-goto-new-session-url (&optional reload)
+  "Open `w3m-new-session-url' in a new session."
+  (interactive "P")
+  (if (not (eq major-mode 'w3m-mode))
+      (message "This command can be used in w3m mode only")
+    (w3m-view-this-url-1 w3m-new-session-url reload 'new-session)))
+
 ;;;###autoload
 (defun w3m-goto-url-new-session (url &optional reload charset post-data
 				     referer)
@@ -7971,7 +7987,9 @@ session will start afresh."
 		   t)))
 	(progn
 	  (switch-to-buffer (setq buffer
-				  (w3m-copy-buffer nil nil nil 'empty)))
+				  (w3m-copy-buffer nil nil
+						   w3m-new-session-in-background
+						   'empty)))
 	  (w3m-display-progress-message url)
 	  (w3m-goto-url url
 			(or reload
@@ -8738,12 +8756,14 @@ buffer list.  The following command keys are available:
   (w3m-update-tab-line))
 
 (defun w3m-select-buffer-generate-contents (current-buffer)
-  (let (buffer-read-only)
+  (let ((i 0)
+	(buffer-read-only))
     (delete-region (point-min) (point-max))
     (dolist (buffer (w3m-list-buffers))
       (put-text-property (point)
 			 (progn
-			   (insert (w3m-buffer-title buffer) "\n")
+			   (insert (format "%d: %s\n" (incf i)
+					   (w3m-buffer-title buffer)))
 			   (point))
 			 'w3m-select-buffer buffer))
     (skip-chars-backward " \t\r\f\n")
