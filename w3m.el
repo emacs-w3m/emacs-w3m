@@ -1411,15 +1411,20 @@ text.  See also `w3m-use-tab'."
   :type 'boolean)
 
 (defcustom w3m-new-session-url "about://bookmark/"
-  "*This variable specifies the url string to open new tab or session."
+  "*Default url to be opened in a tab or a session which is created newly."
   :group 'w3m
-  :type `(radio (const :tag "About emacs-w3m" "about:")
-		(const :tag "Blank page" "about:blank")
-		(const :tag "Bookmark" "about://bookmark/")
-		(const :tag ,(format "Home page (%s)" w3m-home-page)
-		       ,w3m-home-page)
-		(string :format "URL: %v\n" :size 0
-			:value "http://emacs-w3m.namazu.org")))
+  :type '(list
+	  :convert-widget
+	  (lambda (widget)
+	    `(radio
+	      :args
+	      ((const :tag "About emacs-w3m" "about:")
+	       (const :tag "Blank page" "about:blank")
+	       (const :tag "Bookmark" "about://bookmark/")
+	       (const :tag ,(format "Home page (%s)" w3m-home-page)
+		      ,w3m-home-page)
+	       (string :format "URL: %v\n" :size 0
+		       :value "http://emacs-w3m.namazu.org"))))))
 
 (defcustom w3m-make-new-session nil
   "*Non-nil means making new emacs-w3m buffers when visiting new pages.
@@ -1497,8 +1502,8 @@ variable is ignored when creating the second or more emacs-w3m session."
 
 (defcustom w3m-new-session-in-background
   w3m-view-this-url-new-session-in-background
-  "*Run all functions be assigned to new-session|tab without switching
-to the newly created buffer."
+  "*Say whether not to focus on a new tab or a new session in target.
+It influences only when a new emacs-w3m buffer is created."
   :group 'w3m
   :type 'boolean)
 

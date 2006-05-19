@@ -1,3 +1,8 @@
+2006-05-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-new-session-url): Doc fix; improve custom type.
+	(w3m-new-session-in-background): Doc fix.
+
 2006-05-19  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (autoload): Add `w3m-bookmark-view-new-sessiont'.
