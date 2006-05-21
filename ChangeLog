@@ -1,3 +1,8 @@
+2006-05-21  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* w3m.el (autoload): `w3m-bookmark-view-new-sessiont' ->
+	`w3m-bookmark-view-new-session'.
+
 2006-05-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-home-page): Rewrite :convert-widget function.

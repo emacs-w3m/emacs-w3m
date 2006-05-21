@@ -126,7 +126,7 @@
 (eval-and-compile
   (autoload 'w3m-bookmark-view "w3m-bookmark"
     "Display the bookmark" t)
-  (autoload 'w3m-bookmark-view-new-sessiont "w3m-bookmark"
+  (autoload 'w3m-bookmark-view-new-session "w3m-bookmark"
     "Display the bookmark on a new session" t)
   (autoload 'w3m-bookmark-add-this-url "w3m-bookmark"
     "Add a link under point to the bookmark." t)
