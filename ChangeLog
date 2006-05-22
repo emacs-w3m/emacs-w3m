@@ -45,8 +45,10 @@
 	`(- (frame-height) w3m-tab-menubar-items-sub-coeff)', make
 	sub-menu.
 
-	* w3m-bookmark.el (w3m-bookmark-menu-items): Add
-	w3m-bookmark-view-new-session.
+	* w3m-bookmark.el (w3m-bookmark-view-new-session): Use
+	w3m-view-this-url-1 instead of w3m-goto-url; warn if w3m-mode does
+	not run.
+	(w3m-bookmark-menu-items): Add w3m-bookmark-view-new-session.
 
 2006-05-18  Luca Capello  <luca@pca.it>
 
