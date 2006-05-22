@@ -765,10 +765,7 @@ Otherwise, you will be prompted for that url with the editing form."
 Don't say HP, which is the abbreviated name of a certain company. ;-)"
   :group 'w3m
   :type '(radio
-	  :convert-widget
-	  (lambda (widget)
-	    (apply 'widget-convert (widget-type widget)
-		   (delq nil (eval (car (widget-get widget :args))))))
+	  :convert-widget w3m-widget-type-convert-widget
 	  `(,(if (getenv "HTTP_HOME")
 		 (list 'const
 		       :format "HTTP_HOME: \"%v\"\n"
@@ -1415,10 +1412,7 @@ text.  See also `w3m-use-tab'."
   "*Default url to be opened in a tab or a session which is created newly."
   :group 'w3m
   :type '(radio
-	  :convert-widget
-	  (lambda (widget)
-	    (apply 'widget-convert (widget-type widget)
-		   (delq nil (eval (car (widget-get widget :args))))))
+	  :convert-widget w3m-widget-type-convert-widget
 	  `((const :tag "About emacs-w3m" "about:")
 	    (const :tag "Blank page" "about:blank")
 	    (const :tag "Bookmark" "about://bookmark/")
@@ -1738,54 +1732,50 @@ Here are some predefined functions which can be used for those ways:
 "
   :group 'w3m
   :type '(repeat
-	  (list
-	   :convert-widget
-	   (lambda (widget)
-	     (require 'w3m-search)
-	     (list
-	      'choice :format "%[Value Menu%] %v" :tag "Replacing URI with"
-	      :args
-	      (append
-	       '((list :indent 4 :tag "Replacement Using Pattern"
-		       (regexp :format "%t: %v\n" :size 0)
-		       (function-item :format "" w3m-pattern-uri-replace)
-		       (string :format "Pattern: %v\n" :size 0)))
-	       '((list :format "%t:\n%v" :indent 4 :tag "Quick Search"
-		       (regexp :format "Prefix URI %t: %v\n"
-			       :size 0 :value "")
-		       (function-item :format "" w3m-search-uri-replace)
-		       (string :format "Quick Search Engine: %v\n"
-			       :size 0 :value "")))
-	       (mapcar
-		(lambda (elem)
-		  (let ((engine (car elem))
-			prefix)
-		    (setq prefix (mapconcat 'identity
-					    (split-string (downcase engine))
-					    "-"))
-		    (list 'list
-			  :format "Quick Search:\n%v"
-			  :tag (concat "Quick Search: " prefix)
-			  (list 'regexp
-				:tag "Prefix URL Regexp"
-				(concat "\\`" (regexp-quote prefix) ":"))
-			  '(function-item :format "" w3m-search-uri-replace)
-			  (list 'string :tag "Quick Search Engine" engine))))
-		w3m-search-engine-alist)
-	       '((list :indent 4 :tag "User Defined Function"
-		       (regexp :format "%t: %v\n" :size 0)
-		       (function
-			:format "%t: %v\n" :size 0
-			;; Fixing a bug in Emacs versions prior to 22.
-			:value-to-internal
-			(lambda (widget value)
-			  (if (stringp value)
-			      (if (string-match "\\`\".*\"\\'" value)
-				  (substring value 1 -1)
-				value)
-			    (prin1-to-string value))))
-		       (repeat :extra-offset 2 :tag "Options"
-			       (sexp :format "%t: %v\n" :size 0))))))))))
+	  :convert-widget w3m-widget-type-convert-widget
+	  `((choice
+	     :format "%[Value Menu%] %v" :tag "Replacing URI with"
+	     (list :indent 4 :tag "Replacement Using Pattern"
+		   (regexp :format "%t: %v\n" :size 0)
+		   (function-item :format "" w3m-pattern-uri-replace)
+		   (string :format "Pattern: %v\n" :size 0))
+	     (list :format "%t:\n%v" :indent 4 :tag "Quick Search"
+		   (regexp :format "Prefix URI %t: %v\n"
+			   :size 0 :value "")
+		   (function-item :format "" w3m-search-uri-replace)
+		   (string :format "Quick Search Engine: %v\n"
+			   :size 0 :value ""))
+	     ,@(progn
+		 (require 'w3m-search)
+		 (mapcar
+		  (lambda (elem)
+		    (let* ((engine (car elem))
+			   (prefix (mapconcat 'identity
+					      (split-string (downcase engine))
+					      "-")))
+		      `(list
+			:format "Quick Search:\n%v"
+			:indent 4
+			:tag ,(concat "Quick Search: " prefix)
+			(regexp :tag "Prefix URL Regexp"
+				,(concat "\\`" (regexp-quote prefix) ":"))
+			(function-item :format "" w3m-search-uri-replace)
+			(string :tag "Quick Search Engine" ,engine))))
+		  w3m-search-engine-alist))
+	     (list :indent 4 :tag "User Defined Function"
+		   (regexp :format "%t: %v\n" :size 0)
+		   (function
+		    :format "%t: %v\n" :size 0
+		    ;; Fix a bug in Emacs versions prior to 22.
+		    :value-to-internal
+		    (lambda (widget value)
+		      (if (stringp value)
+			  (if (string-match "\\`\".*\"\\'" value)
+			      (substring value 1 -1)
+			    value)
+			(prin1-to-string value))))
+		   (repeat :extra-offset 2 :tag "Options"
+			   (sexp :format "%t: %v\n" :size 0)))))))
 
 (defcustom w3m-relationship-estimate-rules
   `((w3m-relationship-simple-estimate

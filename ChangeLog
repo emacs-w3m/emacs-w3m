@@ -1,3 +1,15 @@
+2006-05-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-widget-type-convert-widget): New function.
+
+	* w3m.el (w3m-home-page, w3m-new-session-url)
+	(w3m-uri-replace-alist): Use it.
+
+	* w3m-dtree.el (w3m-dtree-indent-strings, w3m-dtree-stop-strings):
+	Use it.
+
+	* w3m-symbol.el (w3m-symbol-custom-type): Use it.
+
 2006-05-21  Yoichi NAKAYAMA  <yoichi@geiin.org>
 
 	* w3m.el (autoload): `w3m-bookmark-view-new-sessiont' ->

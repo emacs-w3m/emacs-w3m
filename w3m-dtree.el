@@ -1,6 +1,6 @@
 ;;; w3m-dtree.el --- The add-on program to display local directory tree.
 
-;; Copyright (C) 2001, 2002, 2003, 2005
+;; Copyright (C) 2001, 2002, 2003, 2005, 2006
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Hideyuki SHIRAI    <shirai@meadowy.org>,
@@ -62,33 +62,29 @@ If you care for another style, set manually and try it :-).
   :group 'w3m
   :type '(radio
 	  (const :format "ASCII: " ["|-" "+-" "|  " "   "])
-	  (list
-	   :convert-widget
-	   (lambda (widget)
-	     (require 'w3m)
-	     (let ((defaults (if (equal w3m-language "Japanese")
-				 (vconcat
-				  (mapcar
-				   (lambda (s)
-				     (decode-coding-string s 'iso-2022-7bit))
-				   '("\e$B('\e(B" "\e$B(&\e(B"
-				     "\e$B(\"\e(B" "\e$B!!\e(B")))
-			       ["|-" "+-" "|  " "   "])))
-	       `(vector
-		 :format "Others:\n%v" :indent 4
-		 :args
-		 ((string :format "%{|-%}          %v\n"
-			  :sample-face widget-field-face :size 0
-			  :value ,(aref defaults 0))
-		  (string :format "%{+-%}          %v\n"
-			  :sample-face widget-field-face :size 0
-			  :value ,(aref defaults 1))
-		  (string :format "%{|  %}         %v\n"
-			  :sample-face widget-field-face :size 0
-			  :value ,(aref defaults 2))
-		  (string :format "%{   %}         %v"
-			  :sample-face widget-field-face :size 0
-			  :value ,(aref defaults 3)))))))))
+	  (vector
+	   :convert-widget w3m-widget-type-convert-widget
+	   (let ((defaults (if (equal w3m-language "Japanese")
+			       (vconcat
+				(mapcar
+				 (lambda (s)
+				   (decode-coding-string s 'iso-2022-7bit))
+				 '("\e$B('\e(B" "\e$B(&\e(B"
+				   "\e$B(\"\e(B" "\e$B!!\e(B")))
+			     ["|-" "+-" "|  " "   "])))
+	     `(:format "Others:\n%v" :indent 4
+		       (string :format "%{|-%}          %v\n"
+			       :sample-face widget-field-face :size 0
+			       :value ,(aref defaults 0))
+		       (string :format "%{+-%}          %v\n"
+			       :sample-face widget-field-face :size 0
+			       :value ,(aref defaults 1))
+		       (string :format "%{|  %}         %v\n"
+			       :sample-face widget-field-face :size 0
+			       :value ,(aref defaults 2))
+		       (string :format "%{   %}         %v"
+			       :sample-face widget-field-face :size 0
+			       :value ,(aref defaults 3)))))))
 
 (defcustom w3m-dtree-stop-strings ["|=" "+="]
   "*Vector of strings to be used for indentation when a depth of directory
@@ -97,26 +93,22 @@ over the 'w3m-dtree-directory-depth'."
   :type '(radio
 	  (const :format "ASCII: " ["|=" "+="])
 	  (const :format "ASCII Bold: " ["<b>|-</b>" "<b>+-</b>"])
-	  (list
-	   :convert-widget
-	   (lambda (widget)
-	     (require 'w3m)
-	     (let ((defaults (if (equal w3m-language "Japanese")
-				 (vconcat
-				  (mapcar
-				   (lambda (s)
-				     (decode-coding-string s 'iso-2022-7bit))
-				   '("\e$B(<\e(B" "\e$B(1\e(B")))
-			       ["|=" "+="])))
-	       `(vector
-		 :format "Others:\n%v" :indent 4
-		 :args
-		 ((string :format "|=          %{|=%}              %v\n"
-			  :sample-face bold :size 0
-			  :value ,(aref defaults 0))
-		  (string :format "+=          %{+=%}              %v\n"
-			  :sample-face bold :size 0
-			  :value ,(aref defaults 1)))))))))
+	  (vector
+	   :convert-widget w3m-widget-type-convert-widget
+	   (let ((defaults (if (equal w3m-language "Japanese")
+			       (vconcat
+				(mapcar
+				 (lambda (s)
+				   (decode-coding-string s 'iso-2022-7bit))
+				 '("\e$B(<\e(B" "\e$B(1\e(B")))
+			     ["|=" "+="])))
+	     `(:format "Others:\n%v" :indent 4
+		       (string :format "|=          %{|=%}              %v\n"
+			       :sample-face bold :size 0
+			       :value ,(aref defaults 0))
+		       (string :format "+=          %{+=%}              %v\n"
+			       :sample-face bold :size 0
+			       :value ,(aref defaults 1)))))))
 
 (defsubst w3m-dtree-expand-file-name (path)
   (if (string-match "^\\(.\\):\\(.*\\)" path)

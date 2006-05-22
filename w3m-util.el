@@ -1081,6 +1081,12 @@ If SECONDS is omitted, it defaults to 0.5."
        (symbol-name c)))
    menu-commands))
 
+(eval-when-compile (require 'wid-edit))
+(defun w3m-widget-type-convert-widget (widget)
+  "Convert the car of `:args' as a widget type in WIDGET."
+  (apply 'widget-convert (widget-type widget)
+	 (delq nil (eval (car (widget-get widget :args))))))
+
 (provide 'w3m-util)
 
 ;;; w3m-util.el ends here

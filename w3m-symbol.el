@@ -40,23 +40,22 @@
 
 (defvar w3m-symbol-custom-type
   '(list
-    :convert-widget
-    (lambda (widget)
-      (let* ((w `(sexp :match (lambda (widget value) (stringp value))
-		       :size 4 :value ""
-		       ,@(if (not (widget-get widget :copy))
-			     ;; Emacs versions prior to 22.
-			     '(:value-to-internal
-			       (lambda (widget value)
-				 (if (string-match "\\`\".*\"\\'" value)
-				     value
-				   (prin1-to-string value)))))))
-	     (a `(,@w :format "%v "))
-	     (b `(,@w :format "%v\n"))
-	     (c (list a a a a a a a b))
-	     (d (list a a a a a b)))
-	`(list :indent 4 :tag "Customize"
-	       :args (,@c ,@c ,@c ,@c ,@d ,@d ,b ,b))))))
+    :convert-widget w3m-widget-type-convert-widget
+    (let* ((w `(sexp :match (lambda (widget value) (stringp value))
+		     :size 4 :value ""
+		     ,@(if (not (widget-get widget :copy))
+			   ;; Emacs versions prior to 22.
+			   '(:value-to-internal
+			     (lambda (widget value)
+			       (if (string-match "\\`\".*\"\\'" value)
+				   value
+				 (prin1-to-string value)))))))
+	   (a `(,@w :format "%v "))
+	   (b `(,@w :format "%v\n"))
+	   (c (list a a a a a a a b))
+	   (d (list a a a a a b)))
+      `(:indent 4 :tag "Customize"
+		,@c ,@c ,@c ,@c ,@d ,@d ,b ,b))))
 
 (defcustom w3m-default-symbol
   '("-+" " |" "--" " +" "-|" " |" "-+" ""
