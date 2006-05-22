@@ -15,8 +15,7 @@
 
 2006-05-19  Hideyuki SHIRAI  <shirai@meadowy.org>
 
-	* w3m.el (autoload): Add `w3m-bookmark-view-new-sessiont'.
-	(w3m-new-session-url): Rename from
+	* w3m.el (w3m-new-session-url): Rename from
 	`w3m-tab-button-new-session-url'.
 	(w3m-tab-button-focus-new-tab): Delete.
 	(w3m-view-this-url-new-session-in-background): This option sets
@@ -26,12 +25,10 @@
 	(w3m-copy-buffer): If call-interactively, set `just-copy' to `t'.
 	If `w3m-new-session-in-background' and `just-copy' is non-nil,
 	swith to original buffer when finished.
-	(w3m-info-like-map): Add `w3m-bookmark-view-new-session'.
-	(w3m-lynx-like-map): Ditto.
+	(w3m-lynx-like-map): Add `w3m-bookmark-view-new-session'.
 	(w3m-tab-button-menu-commands): Use
 	`w3m-new-session-in-background' insted of
 	`w3m-tab-button-focus-new-tab'.
-	(w3m-mode): Modify doc string.
 	(w3m-goto-new-session-url): New command.
 	(w3m-goto-url-new-session): Call `w3m-copy-buffer' with
 	`w3m-new-session-in-background'.
@@ -48,9 +45,21 @@
 	`(- (frame-height) w3m-tab-menubar-items-sub-coeff)', make
 	sub-menu.
 
-	* w3m-bookmark.el (w3m-bookmark-view): Add doc string.
+	* w3m-bookmark.el (w3m-bookmark-menu-items): Add
+	w3m-bookmark-view-new-session.
+
+2006-05-18  Luca Capello  <luca@pca.it>
+
+	* w3m-bookmark.el (w3m-bookmark-view): Add docstring.
 	(w3m-bookmark-view-new-session): New command.
-	(w3m-bookmark-menu-items): Add a item.
+
+	* w3m.el (autoload): Add docstring to w3m-bookmark-view; add
+	w3m-bookmark-view-new-session.
+	(w3m-menubar): Add Bookmark submenu and
+	w3m-bookmark-view-new-session.
+	(w3m-info-like-map): Add w3m-bookmark-view-new-session.
+	(w3m-mode): Add description of w3m-bookmark-view-new-session to
+	docstring.
 
 2006-05-18  Hideyuki SHIRAI  <shirai@meadowy.org>
 
