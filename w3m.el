@@ -5725,7 +5725,7 @@ compatibility which is described in Section 5.2 of RFC 2396.")
     (if new-session
 	(let ((empty
 	       ;; If a new url has the #name portion, we simply copy
-	       ;; the buffer's contents to the new settion, otherwise
+	       ;; the buffer's contents to the new session, otherwise
 	       ;; creating an empty buffer.
 	       (not (and (progn
 			   (w3m-string-match-url-components url)
