@@ -69,6 +69,9 @@
   (defvar w3m-use-tab)
   (defvar w3m-work-buffer-name)
   (defvar w3m-work-buffer-list)
+  (defvar w3m-new-session-in-background)
+  (autoload 'w3m-copy-buffer "w3m")
+  (autoload 'w3m-delete-buffer "w3m")
   (autoload 'w3m-image-type "w3m")
   (autoload 'w3m-retrieve "w3m"))
 
@@ -550,25 +553,39 @@ Wobble the selected window size to force redisplay of the header-line."
       (setq window nil
 	    mpos (mouse-position))
       (and (framep (car mpos))
-	   (car (cdr mpos))
-	   (cdr (cdr mpos))
-	   (setq window (window-at (car (cdr mpos))
-				   (cdr (cdr mpos))
-				   (car mpos)))))
-    (when window
-      (unless (eq (window-buffer window) buffer)
-	(select-window window)
-	(bury-buffer (prog1
-			 (current-buffer)
-		       (switch-to-buffer buffer)))
-	(w3m-force-window-update window)))))
+ 	   (car (cdr mpos))
+ 	   (cdr (cdr mpos))
+ 	   (setq window (window-at (car (cdr mpos))
+ 				   (cdr (cdr mpos))
+ 				   (car mpos))))
+      (unless window
+ 	(when (one-window-p 'nomini)
+ 	  (split-window))
+ 	(setq window (next-window))))
+    (unless (eq (window-buffer window) buffer)
+      (select-window window)
+      (switch-to-buffer buffer)
+      (w3m-force-window-update window))))
 
 (defun w3m-tab-click-mouse-function (event buffer)
   (let ((window (posn-window (event-start event))))
     (select-window window)
-    (bury-buffer (prog1
-		     (current-buffer)
-		   (switch-to-buffer buffer)))
+    (switch-to-buffer buffer)
+    (w3m-force-window-update window)))
+
+(defun w3m-tab-double-click-mouse1-function (event buffer)
+  (let ((window (posn-window (event-start event))))
+    (when (eq major-mode 'w3m-mode)
+      (if w3m-new-session-in-background
+	  (save-window-excursion
+	    (w3m-copy-buffer))
+	(w3m-copy-buffer)))
+    (w3m-force-window-update window)))
+
+(defun w3m-tab-double-click-mouse2-function (event buffer)
+  (let ((window (posn-window (event-start event))))
+    (when (eq major-mode 'w3m-mode)
+      (w3m-delete-buffer))
     (w3m-force-window-update window)))
 
 (defvar w3m-tab-map nil)
@@ -584,28 +601,42 @@ Wobble the selected window size to force redisplay of the header-line."
 	   (drag-action `(lambda (e)
 			   (interactive "e")
 			   (w3m-tab-drag-mouse-function e ,buffer)))
-	   (up-action `(lambda (e)
+	   (single-action `(lambda (e)
 			 (interactive "e")
 			 (w3m-tab-click-mouse-function e ,buffer)))
+	   (double-action1 `(lambda (e)
+			      (interactive "e")
+			      (w3m-tab-double-click-mouse1-function e ,buffer)))
+	   (double-action2 `(lambda (e)
+			      (interactive "e")
+			      (w3m-tab-double-click-mouse2-function e ,buffer)))
 	   (menu-action `(lambda (e)
 			   (interactive "e")
-			   (w3m-tab-button-menu e ,buffer))))
+			   (w3m-tab-button-menu e ,buffer)))
+	   (menu-action2 `(lambda (e)
+			    (interactive "e")
+			    (w3m-tab-button-menu2 e ,buffer))))
       (define-key w3m-tab-map [header-line down-mouse-1] 'ignore)
       (define-key w3m-tab-map [header-line down-mouse-2] 'ignore)
+      (define-key w3m-tab-map [header-line mouse-1] single-action)
+      (define-key w3m-tab-map [header-line mouse-2] single-action)
       (define-key w3m-tab-map [header-line drag-mouse-1] drag-action)
       (define-key w3m-tab-map [header-line drag-mouse-2] drag-action)
-      (define-key w3m-tab-map [header-line mouse-1] up-action)
-      (define-key w3m-tab-map [header-line mouse-2] up-action)
-      (define-key w3m-tab-map [header-line mouse-3] menu-action)))
-  (unless w3m-tab-spinner-map
-    (setq w3m-tab-spinner-map (make-sparse-keymap))
-    (define-key w3m-tab-spinner-map [header-line mouse-2]
-      `(lambda (e)
-	 (interactive "e")
-	 (save-current-buffer
-	   ;; Why the `(w3m-process-stop BUFFER)' doesn't work?
-	   (set-buffer ,(current-buffer))
-	   (call-interactively 'w3m-process-stop))))))
+      (define-key w3m-tab-map [header-line double-mouse-1] double-action1)
+      (define-key w3m-tab-map [header-line double-mouse-2] double-action2)
+      (define-key w3m-tab-map [header-line mouse-3] menu-action)
+      (define-key w3m-mode-map [header-line double-mouse-1]
+	'w3m-goto-new-session-url)
+      (define-key w3m-mode-map [header-line mouse-3] menu-action2))
+    (unless w3m-tab-spinner-map
+      (setq w3m-tab-spinner-map (make-sparse-keymap))
+      (define-key w3m-tab-spinner-map [header-line mouse-2]
+	`(lambda (e)
+	   (interactive "e")
+	   (save-current-buffer
+	     ;; Why the `(w3m-process-stop BUFFER)' doesn't work?
+	     (set-buffer ,(current-buffer))
+	     (call-interactively 'w3m-process-stop)))))))
 
 (defvar w3m-tab-line-format nil
   "Internal variable used to keep contents to be shown in the header-line.

@@ -6970,28 +6970,34 @@ closed.  See also `w3m-quit'."
 
 (defvar w3m-tab-button-menu-commands
   (let ((manyp '(cdr (w3m-list-buffers)))
-	(leftp '(w3m-lefttab-exist-p w3m-tab-button-menu-current-buffer))
-	(rightp '(w3m-righttab-exist-p w3m-tab-button-menu-current-buffer)))
+	(currentp 'w3m-tab-button-menu-current-buffer)
+	(leftp '(and w3m-tab-button-menu-current-buffer
+		     (w3m-lefttab-exist-p w3m-tab-button-menu-current-buffer)))
+	(rightp '(and w3m-tab-button-menu-current-buffer
+		      (w3m-righttab-exist-p w3m-tab-button-menu-current-buffer)))
+	(many2p '(and w3m-tab-button-menu-current-buffer
+		      (cdr (w3m-list-buffers)))))
     `((w3m-goto-url-new-session
        ,(w3m-make-menu-item "新しいタブ" "New Tab")
        t ,w3m-new-session-in-background w3m-new-session-url)
       (w3m-copy-buffer
        ,(w3m-make-menu-item "タブを複製" "Copy Tab")
-       t ,w3m-new-session-in-background)
+       ,currentp ,w3m-new-session-in-background)
       -
       (w3m-reload-this-page
-       ,(w3m-make-menu-item "タブを再読み込み" "Reload Tab") t)
+       ,(w3m-make-menu-item "タブを再読み込み" "Reload Tab")
+       ,currentp)
       (w3m-reload-all-pages
        ,(w3m-make-menu-item "すべてのタブを再読み込み" "Reload All Tabs")
        ,manyp)
       -
       (w3m-delete-buffer
        ,(w3m-make-menu-item "このタブを閉じる" "Close This Tab")
-       t)
+       ,currentp)
       -
       (w3m-delete-other-buffers
        ,(w3m-make-menu-item "他のタブをすべて閉じる" "Close Other Tabs")
-       ,manyp)
+       ,many2p)
       (w3m-delete-left-tabs
        ,(w3m-make-menu-item "左側のタブをすべて閉じる" "Close Left Tabs")
        ,leftp)
@@ -7001,10 +7007,10 @@ closed.  See also `w3m-quit'."
       -
       (w3m-view-url-with-external-browser
        ,(w3m-make-menu-item "外部ブラウザで開く" "View with external browser")
-       t ,w3m-new-session-in-background w3m-current-url)
+       ,currentp ,w3m-new-session-in-background w3m-current-url)
       (w3m-bookmark-add-current-url
        ,(w3m-make-menu-item "このタブをブックマーク" "Bookmark This Tab...")
-       t ,w3m-new-session-in-background)
+       ,currentp ,w3m-new-session-in-background)
       (w3m-bookmark-add-all-urls
        ,(w3m-make-menu-item
 	 "すべてのタブをブックマーク" "Bookmark All Tabs..." )
@@ -7028,6 +7034,11 @@ or a list which consists of the following elements:
   (defun w3m-tab-button-menu (event buffer)
     (select-window (posn-window (event-start event)))
     (setq w3m-tab-button-menu-current-buffer buffer)
+    (popup-menu w3m-tab-button-menu))
+
+  (defun w3m-tab-button-menu2 (event buffer)
+    (select-window (posn-window (event-start event)))
+    (setq w3m-tab-button-menu-current-buffer nil)
     (popup-menu w3m-tab-button-menu)))
 
 (defun w3m-clean-hook-options ()
