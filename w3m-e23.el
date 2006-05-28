@@ -417,6 +417,14 @@ Buffer string between BEG and END are replaced with IMAGE."
   "*Face to fontify background of tab line."
   :group 'w3m-face)
 
+(defface w3m-tab-selected-background-face
+  '((((type x w32 mac) (class color))
+     :background "LightSteelBlue" :foreground "black")
+    (((class color))
+     (:background "white" :foreground "black")))
+  "*Face to fontify selected background tab."
+  :group 'w3m-face)
+
 (defface w3m-tab-mouse-face
   '((((type x w32 mac) (class color))
      :background "Gray65" :foreground "white"
@@ -571,6 +579,7 @@ cleared by a timer.")
 (defvar w3m-tab-separator
   (propertize " "
 	      'face (list 'w3m-tab-background-face)
+	      'mouse-face 'w3m-tab-selected-background-face
 	      'display '(space :width 0.5))
   "String used to separate tabs.")
 
@@ -688,7 +697,8 @@ cleared by a timer.")
 	(setq w3m-tab-line-format
 	      (concat (apply 'concat (apply 'nconc line))
 		      (propertize (make-string (window-width) ?\ )
-				  'face (list 'w3m-tab-background-face)))))))
+				  'face (list 'w3m-tab-background-face)
+				  'mouse-face 'w3m-tab-selected-background-face))))))
 
 (defun w3m-update-tab-line ()
   "Update tab line by a side effect."

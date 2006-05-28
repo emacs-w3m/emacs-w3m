@@ -1,3 +1,15 @@
+2006-05-28  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-e21.el (w3m-tab-selected-background-face): New face.
+	(w3m-tab-separator): Put `mouse-face' for the shape of a mouse
+	button.
+	(w3m-tab-line): Ditto.
+
+	* w3m-e23.el (w3m-tab-selected-background-face): New face.
+	(w3m-tab-separator): Put `mouse-face' for the shape of a mouse
+	button.
+	(w3m-tab-line): Ditto.
+
 2006-05-26  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-tab-button-menu-commands): Disable same items if
