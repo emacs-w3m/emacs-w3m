@@ -6400,6 +6400,9 @@ a page in a new buffer with the correct width."
 	    images w3m-display-inline-images
 	    init-frames (when (w3m-popup-frame-p)
 			  (copy-sequence w3m-initial-frames)))
+      (unless url
+	(setq just-copy nil
+	      empty t))
       ;;
       (set-buffer (setq new (generate-new-buffer newname)))
       (w3m-mode)
@@ -6410,12 +6413,13 @@ a page in a new buffer with the correct width."
 	    (if w3m-toggle-inline-images-permanently
 		images
 	      w3m-default-display-inline-images)))
-    (if (and (not just-copy) empty)
+    (when (and just-copy empty)
+      (error "Meaningless combination of arguments."))
+    (if empty
 	;; Pop to a window or a frame up because `w3m-goto-url' is not called.
 	(w3m-popup-buffer new)
       ;; Need to change to the `new' buffer in which `w3m-goto-url' runs.
-      (set-buffer new))
-    (unless empty
+      (set-buffer new)
       ;; Render a page.
       (let ((positions (copy-sequence (car w3m-history)))
 	    (w3m-history-reuse-history-elements t)
@@ -6425,11 +6429,11 @@ a page in a new buffer with the correct width."
 			;; Pass the properties of the history elements,
 			;; although it is currently always nil.
 			(w3m-history-element (cadr positions))))
-	(setcar w3m-history positions)
-	(when (and w3m-new-session-in-background
-		   just-copy
-		   (not (get-buffer-window buffer)))
-	  (set-window-buffer (selected-window) buffer))))
+	(setcar w3m-history positions))
+      (when (and w3m-new-session-in-background
+		 just-copy
+		 (not (get-buffer-window buffer)))
+	(set-window-buffer (selected-window) buffer)))
     new))
 
 (defun w3m-next-buffer (arg)

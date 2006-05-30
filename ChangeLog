@@ -1,3 +1,9 @@
+2006-05-30  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* w3m.el (w3m-copy-buffer): Create empty w3m buffer when url
+	is not set.
+	Cause error on meaningless combination of arguments.
+
 2006-05-28  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-e21.el (w3m-tab-selected-background-face): New face.
