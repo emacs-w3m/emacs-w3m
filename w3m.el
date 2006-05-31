@@ -5735,8 +5735,7 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 						  0 (match-beginning 8)))))))
 	  (setq pos (point-marker)
 		buffer (w3m-copy-buffer
-			nil nil w3m-new-session-in-background
-			empty))
+			nil nil nil empty w3m-new-session-in-background))
 	  (when w3m-new-session-in-background
 	    (set-buffer buffer))
 	  (when empty
@@ -6368,7 +6367,7 @@ Return t if highlighting is successful."
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
-(defun w3m-copy-buffer (&optional buffer newname just-copy empty)
+(defun w3m-copy-buffer (&optional buffer newname just-copy empty backgroud)
   "Create a copy of the BUFFER in which emacs-w3m is working.
 Return a new buffer.
 
@@ -6378,7 +6377,8 @@ this function lets a new buffer be the current buffer and pop up as a
 new window or a new frame according to `w3m-pop-up-windows' and
 `w3m-pop-up-frames' (which see), otherwise just creates BUFFER's copy.
 If EMPTY is nil, a page of the same url will be re-rendered in a new
-buffer, otherwise an empty buffer is created.
+buffer, otherwise an empty buffer is created. If BACKGROUD is non-nil,
+this function stays on the current buffer.
 
 Note that this function should be called on the window displaying the
 original buffer BUFFER even if JUST-COPY is non-nil in order to render
@@ -6401,8 +6401,7 @@ a page in a new buffer with the correct width."
 	    init-frames (when (w3m-popup-frame-p)
 			  (copy-sequence w3m-initial-frames)))
       (unless url
-	(setq just-copy nil
-	      empty t))
+	(setq empty t))
       ;;
       (set-buffer (setq new (generate-new-buffer newname)))
       (w3m-mode)
@@ -6413,11 +6412,14 @@ a page in a new buffer with the correct width."
 	    (if w3m-toggle-inline-images-permanently
 		images
 	      w3m-default-display-inline-images)))
-    (when (and just-copy empty)
-      (error "Meaningless combination of arguments."))
-    (if empty
-	;; Pop to a window or a frame up because `w3m-goto-url' is not called.
-	(w3m-popup-buffer new)
+    (cond
+     ((and empty (not backgroud))
+      ;; Pop to a window or a frame up because `w3m-goto-url' is not called.
+      (w3m-popup-buffer new))
+     (empty
+      ;; When empty and just-copy, stay origianl buffer.
+      )
+     (t
       ;; Need to change to the `new' buffer in which `w3m-goto-url' runs.
       (set-buffer new)
       ;; Render a page.
@@ -6433,7 +6435,7 @@ a page in a new buffer with the correct width."
       (when (and w3m-new-session-in-background
 		 just-copy
 		 (not (get-buffer-window buffer)))
-	(set-window-buffer (selected-window) buffer)))
+	(set-window-buffer (selected-window) buffer))))
     new))
 
 (defun w3m-next-buffer (arg)
