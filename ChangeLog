@@ -2,8 +2,8 @@
 
 	* w3m.el (w3m-view-this-url-1): Set 5th argument of
 	`w3m-copy-buffer' to `w3m-new-session-in-background'.
-	(w3m-copy-buffer): Add `backgroud' argument. When URL is null and
-	`backgroud' is not non-nil, stay the current buffer.
+	(w3m-copy-buffer): Add `background' argument. When URL is null and
+	`background' is not non-nil, stay the current buffer.
 
 2006-05-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 

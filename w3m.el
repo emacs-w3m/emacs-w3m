@@ -6367,7 +6367,7 @@ Return t if highlighting is successful."
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
-(defun w3m-copy-buffer (&optional buffer newname just-copy empty backgroud)
+(defun w3m-copy-buffer (&optional buffer newname just-copy empty background)
   "Create a copy of the BUFFER in which emacs-w3m is working.
 Return a new buffer.
 
@@ -6377,7 +6377,7 @@ this function lets a new buffer be the current buffer and pop up as a
 new window or a new frame according to `w3m-pop-up-windows' and
 `w3m-pop-up-frames' (which see), otherwise just creates BUFFER's copy.
 If EMPTY is nil, a page of the same url will be re-rendered in a new
-buffer, otherwise an empty buffer is created. If BACKGROUD is non-nil,
+buffer, otherwise an empty buffer is created. If BACKGROUND is non-nil,
 this function stays on the current buffer.
 
 Note that this function should be called on the window displaying the
@@ -6413,7 +6413,7 @@ a page in a new buffer with the correct width."
 		images
 	      w3m-default-display-inline-images)))
     (cond
-     ((and empty (not backgroud))
+     ((and empty (not background))
       ;; Pop to a window or a frame up because `w3m-goto-url' is not called.
       (w3m-popup-buffer new))
      (empty
