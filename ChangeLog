@@ -1,3 +1,8 @@
+2006-05-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-search.el (w3m-search-read-query): Ignore page title only in
+	w3m-mode buffers.
+
 2006-05-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-search.el (w3m-search-read-query): Assume there's not only a

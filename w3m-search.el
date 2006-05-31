@@ -267,12 +267,10 @@ PROMPT-WITH-DEFAULT instead of string PROMPT."
   (let ((default
 	  (if (w3m-region-active-p)
 	      (buffer-substring (region-beginning) (region-end))
-	    (let ((face (get-text-property (point-at-bol) 'face)))
-	      (unless (or (and (consp face)
-			       (memq 'w3m-header-line-location-title-face
-				     face))
-			  (eq face 'w3m-header-line-location-title-face))
-		(thing-at-point 'word)))))
+	    (unless (and (eq major-mode 'w3m-mode)
+			 (memq 'w3m-header-line-location-title-face
+			       (get-text-property (point-at-bol) 'face)))
+	      (thing-at-point 'word))))
 	initial)
     (when default
       (set-text-properties 0 (length default) nil default)
