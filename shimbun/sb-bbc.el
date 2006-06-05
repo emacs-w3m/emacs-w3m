@@ -1,6 +1,6 @@
 ;;; sb-bbc.el --- shimbun backend for BBC UK
 
-;; Copyright (C) 2003, 2004, 2005 Koichiro Ohba <koichiro@meadowy.org>
+;; Copyright (C) 2003, 2004, 2005, 2006 Koichiro Ohba <koichiro@meadowy.org>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
 ;; Keywords: news
@@ -33,14 +33,43 @@
 (luna-define-class shimbun-bbc (shimbun-rss) ())
 
 (defvar shimbun-bbc-url
-  "http://news.bbc.co.uk/rss/newsonline_uk_edition/world/rss091.xml")
-(defvar shimbun-bbc-groups '("news"))
+  "http://newsrss.bbc.co.uk/rss/newsonline_uk_edition")
 (defvar shimbun-bbc-from-address  "newsonline@bbc.co.uk")
 (defvar shimbun-bbc-content-start
   (concat "<!-- "
 	  (regexp-opt '("E IBYL" "E IIMA" "S IBOX" "S IMA" "S BO"))
 	  " -->"))
 (defvar shimbun-bbc-content-end "<!-- E BO -->")
+
+(defvar shimbun-bbc-path-alist
+  '(("front_page" . "/front_page/rss.xml")
+    ;; use the name "news" here to be backward compatible
+    ;; ("world" . "/world/rss.xml")
+    ("news" . "/world/rss.xml")
+    ("uk" . "/uk/rss.xml")
+    ("england" "/england/rss.xml")
+    ("northern_ireland" . "/northern_ireland/rss.xml")
+    ("scotland" . "/scotland/rss.xml")
+    ("wales" . "/wales/rss.xml")
+    ("business" . "/business/rss.xml")
+    ("politics" . "/uk_politics/rss.xml")
+    ("health" . "/health/rss.xml")
+    ("education" . "/education/rss.xml")
+    ("science" . "/sci/tech/rss.xml")
+    ("technology" . "/technology/rss.xml")
+    ("entertainment" . "/entertainment/rss.xml")
+    ("talking_point" . "/talking_point/rss.xml")
+    ("magazine" . "/magazine/rss.xml")
+    ("week_at-a-glance" . "/week_at-a-glance/rss.xml")
+    ("programmes" . "programmes/rss.xml")
+    ("latest_stories" . "/latest_published_stories/rss.xml")))
+
+(defvar shimbun-bbc-groups (mapcar 'car shimbun-bbc-path-alist))
+
+(luna-define-method shimbun-index-url ((shimbun shimbun-bbc))
+  (concat shimbun-bbc-url
+	  (cdr (assoc (shimbun-current-group-internal shimbun)
+		      shimbun-bbc-path-alist))))
 
 (luna-define-method shimbun-rss-build-message-id
   ((shimbun shimbun-bbc) url date)

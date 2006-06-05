@@ -1,3 +1,11 @@
+2006-05-31  David Hansen  <david.hansen@physik.fu-berlin.de>
+
+	* shimbun/sb-bbc.el (shimbun-bbc-url): Set to the base URL of the
+	various RSS feeds.
+	(shimbun-bbc-path-alist): New variable to support other groups.
+	(shimbun-bbc-groups): Added other groups.
+	(shimbun-index-url): New function.
+
 2006-05-31  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-view-this-url-1): Set 5th argument of
