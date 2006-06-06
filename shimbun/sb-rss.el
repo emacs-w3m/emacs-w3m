@@ -129,14 +129,15 @@ but you can identify it from the URL, define this method in a backend.")
 (luna-define-method shimbun-rss-get-date ((shimbun shimbun-rss) url)
   nil)
 
-(luna-define-generic shimbun-rss-build-message-id (shimbun-rss url date)
+(luna-define-generic shimbun-rss-build-message-id (shimbun-rss
+						   url &optional date)
   "Build unique message-id from URL and DATE and return it.
 If return nil, it mean argument URL are not SHIMBUN entry.
 Basically, implement illeagal URL to generate error message.
 But clarify need ignored URL return nil.")
 
 (luna-define-method shimbun-rss-build-message-id ((shimbun shimbun-rss)
-						  url date)
+						  url &optional date)
   (when (string-match "[?#]" url)
     (setq url (substring url 0 (match-beginning 0))))
   (concat "<" (md5 url) "%" (shimbun-current-group shimbun)
