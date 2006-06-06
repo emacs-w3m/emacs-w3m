@@ -41,13 +41,6 @@
 (defvar shimbun-exconn-content-end
   "<!-- - -KB 3 end- - -->")
 
-(luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-exconn) url date)
-  (unless (string-match "\
-http://support.microsoft.com/default.aspx\\?scid=kb;ja;\\([0-9]+\\)" url)
-    (error "Cannot find message-id base"))
-  (concat "<" (match-string-no-properties 1 url) "@support.microsoft.com>"))
-
 (luna-define-method shimbun-rss-process-date ((shimbun shimbun-exconn) date)
   (cond ((null date)
 	 "")

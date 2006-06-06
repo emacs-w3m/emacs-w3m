@@ -58,19 +58,6 @@
   (format "http://api.plaza.rakuten.ne.jp/%s/rss/"
 	  (shimbun-current-group-internal shimbun)))
 
-(luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-rakuten) url date)
-  (unless (string-match
-	   "http://\\([^\/]+\\)/[^\/]+/[^\/]+/\\([0-9]+\\)-\\([0-9]+\\)-\\([0-9]+\\)"
-	   url)
-    (error "Cannot find a message-id base"))
-    (format "%s%s%s%%%s@%s"
-	    (match-string-no-properties 2 url)
-	    (match-string-no-properties 3 url)
-	    (match-string-no-properties 4 url)
-	    (shimbun-current-group-internal shimbun)
-	    (match-string-no-properties 1 url)))
-
 (luna-define-method shimbun-rss-get-date
   ((shimbun shimbun-rakuten) url)
   (unless (string-match

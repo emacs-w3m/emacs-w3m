@@ -59,12 +59,6 @@ URL is the URL for category or search result."
       (concat "http://search.auctions.yahoo.co.jp/search_rss?p="
 	      (shimbun-url-encode-string group 'euc-japan)))))
 
-(luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-yahoo-auctions) url date)
-  (unless (string-match "\\([^/]+\\)$" url)
-    (error "Cannot find message-id base"))
-  (format "<%s@auctions.yahoo.co.jp>" (match-string 1 url)))
-
 (luna-define-method shimbun-get-headers ((shimbun shimbun-yahoo-auctions)
 					 &optional range)
   (nreverse (shimbun-rss-get-headers shimbun range t t)))

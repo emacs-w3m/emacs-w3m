@@ -43,12 +43,6 @@
 (luna-define-method shimbun-groups ((shimbun shimbun-welt-de))
   shimbun-welt-de-groups)
 
-(luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-welt-de) url date)
-  (unless (string-match "\\?nid=\\([0-9]+\\)" url)
-    (error "Cannot find message-id"))
-  (format "<%s@www.welt.de>" (match-string 1 url)))
-
 ;; Kill Javascript
 (luna-define-method shimbun-clear-contents
   :before ((shimbun shimbun-welt-de) headers)

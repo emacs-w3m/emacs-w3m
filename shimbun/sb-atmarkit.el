@@ -80,13 +80,6 @@
   (cdr (assoc (shimbun-current-group-internal shimbun)
 	      shimbun-atmarkit-group-path-alist)))
 
-(luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-atmarkit) url date)
-  (unless (string-match "http://[^\/]+/\\(.+\\)\\.html" url)
-    (error "Cannot find message-id base"))
-  (format "<%s%%%s@atmarkit.co.jp>" (match-string-no-properties 1 url)
-	  (shimbun-current-group-internal shimbun)))
-
 (defvar shimbun-atmarkit-use-base-url nil
   "Non-nil means make `shimbun-article-url' return a base url.")
 

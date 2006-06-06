@@ -88,12 +88,6 @@
 	    (when (setq end (search-forward end-str nil t))
 	      (delete-region beg end))))))))
 
-(luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-the-register) url date)
-  (unless (string-match "http://[^/]+/\\(.+\\)\\(/*print\\.html\\)?" url)
-    (error "Cannot find message-id base"))
-  (concat "<" (match-string 1 url) "@the-register.co.uk>"))
-
 (provide 'sb-the-register)
 
 ;;; sb-the-register.el ends here

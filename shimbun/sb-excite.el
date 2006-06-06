@@ -74,18 +74,6 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAD4AAAAZCAMAAABetm34AAAAe1BMVEUAAACaHA4WCganBSTMA
 	  (cdr  (assoc  (shimbun-current-group-internal shimbun)
 			shimbun-excite-group-alist))))
 
-(luna-define-method shimbun-rss-build-message-id ((shimbun shimbun-excite)
-						  url date)
-		    (if (string-match
-			     (concat (regexp-quote shimbun-excite-url)
-				     "\\([^/]\\)*/\\([0-9]+\\)\.html?")
-			     url)
-		    (concat "<"
-			    (match-string-no-properties 1 url)
-			    (match-string-no-properties 2 url)
-			    "@" shimbun-excite-top-level-domain ">")
-		    nil))
-
 (luna-define-method shimbun-get-headers :around ((shimbun shimbun-excite)
 						 &optional range)
   (let ((headers (luna-call-next-method)))

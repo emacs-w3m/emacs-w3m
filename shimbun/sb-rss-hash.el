@@ -43,10 +43,6 @@
   (nth 1 (assoc (shimbun-current-group-internal shimbun)
 		shimbun-rss-hash-group-path-alist)))
 
-(luna-define-method shimbun-rss-build-message-id ((shimbun shimbun-rss-hash)
-						  url date)
-  (concat "<" (md5 url) "%" (shimbun-current-group-internal shimbun) ">"))
-
 (luna-define-method shimbun-hash-update-items ((shimbun shimbun-rss-hash))
   (with-temp-buffer
     (let ((case-fold-search t))

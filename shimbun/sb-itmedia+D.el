@@ -45,13 +45,6 @@
   (format "http://rss.rssad.jp/rss/itm/2.0/%s.xml"
 	  (shimbun-current-group shimbun)))
 
-(luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-itmedia+D) url date)
-  (unless (string-match
-	   "\\([0-9][0-9][0-1][0-9]/[0-3][0-9]/news[0-9]+\\).html$" url)
-    (error "Cannot find message-id base"))
-  (format "<%s@plusd.itmedia.co.jp>" (match-string 1 url)))
-
 (luna-define-method shimbun-make-contents ((shimbun shimbun-itmedia+D) header)
   (shimbun-itmedia-make-contents shimbun header))
 

@@ -68,14 +68,6 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAQBAMAAACigOGCAAAABGdBTUEAALGPC/xhBQAAADB
 		     shimbun-wired-jp-group-table)))
     (or (nth 1 elem) (nth 2 elem))))
 
-(defsubst shimbun-wired-jp-build-message-id (shimbun url)
-  (concat "<" (md5 url) "%" (shimbun-current-group shimbun)
-	  "@hotwired.goo.ne.jp>"))
-
-(luna-define-method shimbun-rss-build-message-id ((shimbun shimbun-wired-jp)
-						  url date)
-  (shimbun-wired-jp-build-message-id shimbun url))
-
 (luna-define-method shimbun-headers :around ((shimbun shimbun-wired-jp)
 					     &optional range)
   (if (nth 1 (assoc (shimbun-current-group shimbun)

@@ -53,16 +53,6 @@
      header)
    (luna-call-next-method)))
 
-(luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-spiegel) url date)
-  (unless (string-match "[0-9,]+\\.html" url)
-    (error "Cannot find message-id base"))
-  (concat "<"
-	  (shimbun-replace-in-string (match-string 0 url)
-				     "\\(,\\|druck-\\|\\.html\\)"
-				     "")
-	  "@spiegel.de>"))
-
 (provide 'sb-spiegel)
 
 ;;; sb-spiegel.el ends here

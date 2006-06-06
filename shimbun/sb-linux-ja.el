@@ -50,14 +50,6 @@
   (shimbun-expand-url (concat (shimbun-current-group-internal shimbun) ".rdf")
 		      shimbun-linux-ja-url))
 
-(luna-define-method shimbun-rss-build-message-id ((shimbun shimbun-linux-ja)
-						  url date)
-  (when (string-match "[?#]" url)
-    (setq url (substring url 0 (match-beginning 0))))
-  (unless (string-match "\\`http://japan.linux.com/\\(.*\\)\\.[^.]*\\'" url)
-    (error "Cannot find message-id base"))
-  (concat "<" (match-string 1 url) "@japan.linux.com>"))
-
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-linux-ja)
 						    header)
   (when (luna-call-next-method)

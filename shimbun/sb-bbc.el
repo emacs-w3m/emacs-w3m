@@ -71,19 +71,6 @@
 	  (cdr (assoc (shimbun-current-group-internal shimbun)
 		      shimbun-bbc-path-alist))))
 
-(luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-bbc) url date)
-;;;<DEBUG>
-;;  (shimbun-bbc-build-message-id url))
-;;
-;;(defun shimbun-bbc-build-message-id (url)
-;;;</DEBUG>
-  (if (string-match "/hi/\\(.+\\)\\.stm" url)
-      (let ((elems (nreverse (split-string (match-string 1 url) "/"))))
-	(concat "<" (car elems) "@" (mapconcat 'identity (cdr elems) ".")
-		".bbc.co.uk>"))
-    (error "Cannot find message-id base")))
-
 (provide 'sb-bbc)
 
 ;;; sb-bbc.el ends here

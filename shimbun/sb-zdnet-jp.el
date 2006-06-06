@@ -102,20 +102,6 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 (luna-define-method shimbun-index-url ((shimbun shimbun-zdnet-jp))
   (cdr (assoc (shimbun-current-group shimbun) shimbun-zdnet-jp-group-alist)))
 
-(luna-define-method shimbun-rss-build-message-id :around
-  ((shimbun shimbun-zdnet-jp) url date)
-  (cond
-   ((string-match "http://japan\\.zdnet\\.com/\\([^/]+\\)/\
-\\([^/]+\\)/\\([^/]+\\)/\\([,0-9]+\\)\\.htm" url) ;; \\?ref=rss do not need
-    (shimbun-replace-in-string
-     (concat "<" (match-string-no-properties 4 url)
-	     "%" (match-string-no-properties 2 url)
-	     "." (match-string-no-properties 1 url)
-	     "@japan.zdnet.com>")
-     "," "."))
-   (t
-    (luna-call-next-method))))
-
 (luna-define-method shimbun-cnetnetworks-clear-footer
   ((shimbun shimbun-zdnet-jp) header has-next)
   (goto-char (point-min))

@@ -101,22 +101,6 @@ http://www.rediff.com/\\(.+\\.htm\\)"
       "+05:30"))
     (goto-char (point-min))))
 
-;; Build unique ID for the message
-
-(luna-define-method shimbun-rss-build-message-id ((shimbun shimbun-rediff)
-						  url date)
-  (unless
-      (string-match
-       "http://www.rediff.com/rss/redirect.php\\?url=\
-http://www.rediff.com/\\([A-Za-z]+\\)/\\([0-9]+\\)/\\([^/]+\\)/\\(.+\\)\\.htm"
-       url)
-    (error "Cannot find a message-id base for %s" url))
-  (format "<%s%s%s%s@rediff.com>"
-	  (match-string-no-properties 1 url)
-	  (match-string-no-properties 2 url)
-	  (match-string-no-properties 3 url)
-	  (match-string-no-properties 4 url)))
-
 (provide 'sb-rediff)
 
 ;;; sb-rediff.el ends here

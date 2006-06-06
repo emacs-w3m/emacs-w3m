@@ -76,15 +76,6 @@
   (cdr (assoc (shimbun-current-group shimbun)
 	      shimbun-nifty-forum-group-alist)))
 
-(luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-nifty-forum) url date)
-  (unless (string-match
-	   "http://bbs\\.com\\.nifty\\.com/\\(.+wr_sq=\\)\\(.+[0-9]+\\)"
-	   url)
-    (error "Cannot find message-id base"))
-  (concat "<" (match-string-no-properties 2 url) "%"
-	  (shimbun-current-group shimbun) "@nifty.com>"))
-
 (provide 'sb-nifty-forum)
 
 ;;; sb-nifty-forum.el ends here

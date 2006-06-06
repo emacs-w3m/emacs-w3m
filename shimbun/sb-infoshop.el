@@ -52,12 +52,6 @@
      header)
    (luna-call-next-method)))
 
-(luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-infoshop) url date)
-  (unless (string-match "story=\\([0-9]+\\)" url)
-    (error "Cannot find message-id base"))
-  (concat "<" (match-string 1 url) "@infoshop.de>"))
-
 (provide 'sb-infoshop)
 
 ;;; sb-infoshop.el ends here

@@ -76,13 +76,6 @@ List is available at:
 (luna-define-method shimbun-rss-process-date ((shimbun shimbun-msdn) date)
   date)
 
-(luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-msdn) url date)
-  ;; don't insert group name in domain-part for cross posted articles
-  (format "<%s@%s.shimbun.namazu.org>"
-	  (md5 url)
-	  (shimbun-server shimbun)))
-
 (luna-define-method shimbun-article-url ((shimbun shimbun-msdn) header)
   (let ((url (shimbun-article-base-url shimbun header)))
     (if (string-match "\\`http://msdn\\.microsoft\\.com/\

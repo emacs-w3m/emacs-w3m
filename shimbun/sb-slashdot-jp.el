@@ -112,26 +112,6 @@
   (cdr (assoc (shimbun-current-group-internal shimbun)
 	      shimbun-slashdot-jp-group-alist)))
 
-(luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-slashdot-jp) url date)
-  (cond
-   ((string-match
-     "\\`http://slashdot\\.jp/\\([a-zA-Z0-9]+\\)?/?article\\.pl\\?sid=\\([/0-9]+\\)&"
-     url)
-    (if (match-string-no-properties 1 url)
-	(concat "<" (match-string-no-properties 1 url)
-		"%" (match-string-no-properties 2 url) "@slashdot.jp>")
-    (concat "<" (match-string-no-properties 2 url) "@slashdot.jp>")))
-   ((or (string-match
-	 "\\`http://slashdot\\.jp/journal\\.pl\\?op=display&uid=\\([0-9]+\\)&id=\\([0-9]+\\)"
-	 url)
-	(string-match
-	 "\\`http://slashdot\\.jp/~\\([^/]+\\)/journal/\\([0-9]+\\)\\(\\?from=rss\\)?"
-	 url))
-    (concat "<" (match-string-no-properties 2 url)
-	    "%" (match-string-no-properties 1 url) "@slashdot.jp>"))
-   (t (error "Cannot find message-id base"))))
-
 (luna-define-method shimbun-get-headers :around
   ((shimbun shimbun-slashdot-jp) &optional range)
   (let ((headers (luna-call-next-method)))

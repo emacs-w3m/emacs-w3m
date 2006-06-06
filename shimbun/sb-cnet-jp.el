@@ -72,21 +72,6 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 (luna-define-method shimbun-index-url ((shimbun shimbun-cnet-jp))
   (cdr (assoc (shimbun-current-group shimbun) shimbun-cnet-jp-group-alist)))
 
-(luna-define-method shimbun-rss-build-message-id :around
-  ((shimbun shimbun-cnet-jp) url date)
-  (if (or
-       ;; For news group
-       (string-match "http://japan\\.cnet\\.com/\
-\\(.+\\)/\\([,0-9]+\\)\\.htm\\(\\?ref=rss\\)?" url)
-       ;; For blog group
-       (string-match "http://blog\\.japan\\.cnet\\.com/\
-\\([^/]+\\)/archives/\\([0-9]+\\)\\.html" url))
-      (concat "<"
-	      (shimbun-replace-in-string
-	       (match-string-no-properties 2 url) "," ".")
-	      "%" (shimbun-current-group shimbun) "@japan.cnet.com>")
-    (luna-call-next-method)))
-
 (luna-define-method shimbun-cnetnetworks-clear-footer
   ((shimbun shimbun-cnet-jp) header has-next)
   ;; remove page footer (last page is ignored)

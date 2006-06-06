@@ -56,15 +56,6 @@
 (luna-define-method shimbun-groups ((shimbun shimbun-laut-de))
   shimbun-laut-de-groups)
 
-(luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-laut-de) url date)
-  (unless (string-match "laut.de/\\(.*\\)/" url)
-    (error "Cannot find message-id base"))
-  (format "<%s@sb-laut-de.invalid>"
-	  (shimbun-replace-in-string
-	   (match-string-no-properties 1 url)
-	   "[^a-zA-Z0-9]" "%")))
-
 (luna-define-method shimbun-index-url ((shimbun shimbun-laut-de))
   (concat "http://www.laut.de/partner/allgemein/"
 	  (shimbun-current-group-internal shimbun) ".rdf"))

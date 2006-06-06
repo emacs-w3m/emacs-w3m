@@ -63,24 +63,6 @@
 	       header (concat "http://www.zeit.de" url))))))
    (luna-call-next-method)))
 
-(luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-zeit-de) url date)
-  (cond ((string-match "http://\\([^/]+\\)\\(/\\(.+\\)\\)?" url)
-	 (let ((host (match-string-no-properties 1 url))
-	       (page (if (match-beginning 3)
-			 (shimbun-replace-in-string
-			  (match-string-no-properties 3 url)
-			  "[^a-zA-Z0-9]" "%")
-		       "top")))
-	   (format "<%s@%s>" page host)))
-	((string-match "\\`/\\(.+\\)\\'" url)
-	 (concat "<" (shimbun-replace-in-string
-		      (match-string-no-properties 1 url)
-		      "[^a-zA-Z0-9]" "%")
-		 "@www.zeit.de>"))
-	(t
-	 (error "Cannot find message-id base"))))
-
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-zeit-de)
 						   header)
   (let* ((case-fold-search t)

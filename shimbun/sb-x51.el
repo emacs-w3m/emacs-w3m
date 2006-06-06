@@ -86,23 +86,6 @@
 (luna-define-method shimbun-index-url ((shimbun shimbun-x51))
   (shimbun-x51-concat-url shimbun ""))
 
-(luna-define-method shimbun-rss-build-message-id ((shimbun shimbun-x51)
-						  url date)
-  (cond
-   ((string-match
-     "http://[^\/]+/x/\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\).php"
-     url)
-    (format "<%s%s%s@x51.org>"
-	    (match-string-no-properties 1 url)
-	    (match-string-no-properties 2 url)
-	    (match-string-no-properties 3 url)))
-   ((string-match
-     "http://[^\/]+/x/\\([_a-zA-Z0-9]+\\)/\\([_a-zA-Z0-9]+\\).php"
-     url)
-    (format "<%s@x51.org>" (md5 url)))
-   (t
-    nil)))
-
 (luna-define-method shimbun-get-headers :around ((shimbun shimbun-x51)
 						 &optional range)
   (let* ((case-fold-search t)

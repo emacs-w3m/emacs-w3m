@@ -50,12 +50,6 @@
 (luna-define-method shimbun-rss-process-date ((shimbun shimbun-haiku-os) date)
   date)
 
-(luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-haiku-os) url date)
-  (unless (string-match "=\\([0-9]+\\)\\>" url)
-    (error "Cannot find message-id base"))
-  (concat "<" (match-string-no-properties 1 url) "%" (shimbun-current-group shimbun) "@haiku-os.org>"))
-
 (luna-define-method shimbun-make-contents :around ((shimbun shimbun-haiku-os)
 						   &optional header)
   (let ((entry (assoc (shimbun-current-group shimbun)

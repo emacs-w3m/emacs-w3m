@@ -81,13 +81,6 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 				      (/ zone 60)
 				      (% zone 60)))))
 
-(luna-define-method shimbun-rss-build-message-id ((shimbun shimbun-cnet)
-						  url date)
-  (if (string-match "\\`http://news\\.com\\.com/\\([-_0-9]+\\)\\.html" url)
-      (concat "<" (match-string 1 url) "%"
-	      (shimbun-current-group shimbun) "@news.com.com>")
-    (error "Cannot find message-id base")))
-
 (defun shimbun-cnet-extract-body ()
   "Extract a body of an article.
 In CNET site, bodies are surrounded by either <div id=\"story\"> or

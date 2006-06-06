@@ -54,12 +54,7 @@
 			    (format "%s (%s@%s)"
 				    shimbun-cnetnetworks-server-name
 				    (shimbun-current-group shimbun)
-				    (shimbun-server shimbun)
-				    ))))
-
-(luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-cnetnetworks) url date)
-  (concat "<" (md5 url) "@japan.cnet.com>"))
+				    (shimbun-server shimbun)))))
 
 (defun shimbun-cnetnetworks-retrieve-next-pages (shimbun header base-cid url
 							 &optional images)

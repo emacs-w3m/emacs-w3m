@@ -49,22 +49,6 @@
   (cdr (assoc (shimbun-current-group-internal shimbun)
 	      shimbun-engadget-ja-group-alist)))
 
-(luna-define-method shimbun-rss-build-message-id
-  ((shimbun shimbun-engadget-ja) url date)
-  (cond
-   ((string-match
-     "http://japanese\\.engadget\\.com/\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)/\\([^/]+\\)/"
-     url)
-    (concat "<"
-	    (match-string-no-properties 1 url)
-	    (match-string-no-properties 2 url)
-	    (match-string-no-properties 3 url)
-	    "%"
-	    (md5 (match-string-no-properties 4 url))
-	    "@japanese.engadget.com>"))
-   (t ;;(error "Cannot find message-id base")
-    (concat "<" (md5 url) "@japanese.engadget.com>"))))
-
 (provide 'sb-engadget-ja)
 
 ;;; sb-engadget-ja.el ends here
