@@ -95,7 +95,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAQBAMAAACigOGCAAAABGdBTUEAALGPC/xhBQAAADB
 		       (shimbun-server-name shimbun)
 		       (shimbun-current-group shimbun))
 	       ""
-	       (shimbun-wired-jp-build-message-id shimbun url)
+	       (shimbun-rss-build-message-id shimbun url)
 	       "" 0 0 url)
 	      headers)))
     headers))

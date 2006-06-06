@@ -1,3 +1,29 @@
+2006-06-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-rss.el (shimbun-rss-build-message-id): New default
+	method is defined.
+
+	* shimbun/sb-atmarkit.el, shimbun/sb-bbc.el,
+	shimbun/sb-cnet-jp.el, shimbun/sb-cnet.el,
+	shimbun/sb-cnetnetworks.el, shimbun/sb-engadget-ja.el,
+	shimbun/sb-excite.el, shimbun/sb-exconn.el, shimbun/sb-fau.el,
+	shimbun/sb-haiku-os.el, shimbun/sb-infoshop.el,
+	shimbun/sb-itmedia+D.el, shimbun/sb-laut-de.el,
+	shimbun/sb-linux-ja.el, shimbun/sb-msdn.el,
+	shimbun/sb-nifty-forum.el, shimbun/sb-rakuten.el,
+	shimbun/sb-rediff.el, shimbun/sb-rss-hash.el,
+	shimbun/sb-slashdot-jp.el, shimbun/sb-spiegel.el,
+	shimbun/sb-the-register.el, shimbun/sb-welt-de.el,
+	shimbun/sb-x51.el, shimbun/sb-yahoo-auctions.el,
+	shimbun/sb-zdnet-jp.el, shimbun/sb-zeit-de.el
+	(shimbun-rss-build-message-id): Use the above method instead of
+	respective methods defined in themselves.
+
+	* shimbun/sb-wired-jp.el (shimbun-rss-build-message-id): Use the
+	above method instead of respective methods defined in itself.
+	(shimbun-wired-jp-get-headers): Use `shimbun-rss-build-message-id'
+	instead of `shimbun-wired-jp-build-message-id'.
+
 2006-05-31  David Hansen  <david.hansen@physik.fu-berlin.de>
 
 	* shimbun/sb-bbc.el (shimbun-bbc-url): Set to the base URL of the
