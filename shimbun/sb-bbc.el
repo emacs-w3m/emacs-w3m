@@ -47,7 +47,7 @@
     ;; ("world" . "/world/rss.xml")
     ("news" . "/world/rss.xml")
     ("uk" . "/uk/rss.xml")
-    ("england" "/england/rss.xml")
+    ("england" . "/england/rss.xml")
     ("northern_ireland" . "/northern_ireland/rss.xml")
     ("scotland" . "/scotland/rss.xml")
     ("wales" . "/wales/rss.xml")

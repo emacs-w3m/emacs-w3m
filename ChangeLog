@@ -1,3 +1,7 @@
+2006-06-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-bbc.el (shimbun-bbc-path-alist): Add missing dot.
+
 2006-06-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-rss.el (shimbun-rss-build-message-id): New default
