@@ -1,3 +1,8 @@
+2006-06-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* attic/rfc2368.el: Copy from Emacs 22; modify
+	rfc2368-unhexify-string to work with both Emacs and XEmacs.
+
 2006-06-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-bbc.el (shimbun-bbc-path-alist): Add missing dot.
