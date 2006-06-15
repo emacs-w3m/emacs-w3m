@@ -240,9 +240,9 @@ First of all, you should note that emacs-w3m supports only XEmacs
 to have installed the latest xemacs-base package including the
 @file{timer-funcs.el} module.
 
-The @acronym{APEL} package and the @samp{gifsicle} program are required
-(@pxref{Other Requirements}).  We recommend using the latest XEmacs 21.4
-which seems stable.
+The @acronym{APEL} package and the @samp{gifsicle} program are required.
+In addition, it would be better to have installed the @file{rfc2368.el}
+module which parses @samp{mailto} urls (@pxref{Other Requirements}).
 
 @item Emacs 20.x, Emacs 19.34 (including Mule 2.3)
 Emacs-w3m no longer supports those Emacs versions.
@@ -274,6 +274,7 @@ You must install the latest w3m, it is available at:
 @cindex @acronym{FLIM} package
 @cindex Mule-UCS package
 @cindex codepage-ex
+@cindex rfc2368.el
 
 Depending on the version of Emacs, third party packages may be required.
 This section provides resources to help you find and install them.
@@ -364,6 +365,18 @@ use it using the module called @code{codepage-ex}.  See the following
 page:
 
 @uref{http://www.nijino.com/ari/emacs/codepage-ex.html}
+
+@item rfc2368.el
+Install it if you'd like to enable emacs-w3m running with XEmacs to
+parse @samp{mailto} urls properly.  You can find the @file{rfc2368.el}
+module which can be used with XEmacs in the @file{attic} directory in
+the emacs-w3m distribution.  To install it, copy the @file{rfc2368.el}
+file to the directory belonging to the @code{load-path}, and perform the
+following command:
+
+@example
+% xemacs -batch -vanilla -f batch-byte-compile rfc2368.el
+@end example
 @end table
 
 @node Installing Emacs-w3m
