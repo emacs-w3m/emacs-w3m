@@ -1,3 +1,18 @@
+2006-06-19  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-tabmenu.el (w3m-tab-menubar-make-items-precbuf): New
+	internal variable.
+	(w3m-tab-menubar-make-items-prebuflst): Ditto.
+	(w3m-tab-menubar-make-items-preurl): Ditto.
+	(w3m-tab-menubar-make-items-preitems): Ditto.
+	(w3m-tab-menubar-make-items): Set an use previous variables to
+	used for the speed improvement.
+
+	* w3m-util.el (w3m-make-menu-commands-keys): New internal
+	variable.
+	(w3m-make-menu-commands): Set and use
+	`w3m-make-menu-commands-keys to used for the speed improvement.
+
 2006-06-18  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-excite.el (shimbun-rss-build-message-id): Add new

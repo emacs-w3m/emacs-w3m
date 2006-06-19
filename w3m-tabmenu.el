@@ -138,6 +138,11 @@
 		 buffer)))
      buffers)))
 
+(defvar w3m-tab-menubar-make-items-precbuf nil)
+(defvar w3m-tab-menubar-make-items-prebuflst nil)
+(defvar w3m-tab-menubar-make-items-preurl nil)
+(defvar w3m-tab-menubar-make-items-preitems nil)
+
 (defun w3m-tab-menubar-make-items (&optional nomenu)
   "Create w3m tab menu items."
   (let (menu buflst total max)
@@ -145,19 +150,31 @@
 	(w3m-tab-menubar-make-items-1 (w3m-list-buffers) t)
       (setq w3m-tab-button-menu-current-buffer (current-buffer))
       (setq buflst (w3m-list-buffers))
-      (setq total (length buflst))
-      (setq max (- (frame-height (selected-frame))
-		   w3m-tab-menubar-items-sub-coeff))
-      (if (< total max)
-	  (setq menu (w3m-tab-menubar-make-items-1 buflst))
-	(setq menu (list `(,(w3m-make-menu-item "タブの選択"
-						"Select TAB")
-			   ,@(w3m-tab-menubar-make-items-1 buflst)))))
-      (append menu
-	      '("-")
-	      '("-")
-	      (w3m-make-menu-commands w3m-tab-button-menu-commands)))))
-
+      (if (and w3m-tab-menubar-make-items-preitems
+	       (eq w3m-tab-button-menu-current-buffer
+		   w3m-tab-menubar-make-items-precbuf)
+	       (equal w3m-tab-menubar-make-items-prebuflst buflst)
+	       (equal w3m-tab-menubar-make-items-preurl w3m-current-url))
+	  w3m-tab-menubar-make-items-preitems
+	(setq w3m-tab-menubar-make-items-precbuf
+	      w3m-tab-button-menu-current-buffer)
+	(setq w3m-tab-menubar-make-items-prebuflst buflst)
+	(setq w3m-tab-menubar-make-items-preurl w3m-current-url)
+	(setq total (length buflst))
+	(setq max (- (frame-height (selected-frame))
+		     w3m-tab-menubar-items-sub-coeff))
+	(if (< total max)
+	    (setq menu (w3m-tab-menubar-make-items-1 buflst))
+	  (setq menu (list `(,(w3m-make-menu-item "タブの選択"
+						  "Select TAB")
+			     ,@(w3m-tab-menubar-make-items-1 buflst)))))
+	(setq w3m-tab-menubar-make-items-preitems
+	      (append menu
+		      '("-")
+		      '("-")
+		      (w3m-make-menu-commands
+		       w3m-tab-button-menu-commands)))))))
+  
 (provide 'w3m-tabmenu)
 
 ;;; w3m-tabmenu.el ends here

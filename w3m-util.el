@@ -1060,6 +1060,8 @@ If SECONDS is omitted, it defaults to 0.5."
    (t
     english)))
 
+(defvar w3m-make-menu-commands-keys nil)
+
 (defun w3m-make-menu-commands (menu-commands)
   "Make menu items."
   (mapcar
@@ -1075,9 +1077,15 @@ If SECONDS is omitted, it defaults to 0.5."
 	       (switch-to-buffer w3m-tab-button-menu-current-buffer)
 	       (funcall (function ,(car c)) ,@(nthcdr 4 c))))
 	  :active (nth 2 c)
-	  :keys (let ((key (where-is-internal (car c) w3m-mode-map)))
-		  (when key
-		    (key-description (car key)))))
+	  :keys (or (and (assq (car c) w3m-make-menu-commands-keys)
+			 (cdr (assq (car c) w3m-make-menu-commands-keys)))
+		    (let ((key (where-is-internal (car c) w3m-mode-map)))
+		      (when key
+			(setq w3m-make-menu-commands-keys
+			      (cons (cons (car c)
+					  (key-description (car key)))
+				    w3m-make-menu-commands-keys))
+			(cdr (car w3m-make-menu-commands-keys))))))
        (symbol-name c)))
    menu-commands))
 
