@@ -4732,13 +4732,14 @@ impress.enterprise impress.pc impress.dc impress.akiba impress.av
 impress.game impress.k-tai impress.internet impress.bb impress.forest
 
 @item @uref{http://www.itmedia.co.jp/, ITmedia}
-itmedia.anchordesk itmedia.bursts itmedia.enterprise itmedia.games
-itmedia.lifestyle itmedia.mobile itmedia.news itmedia.pcupdate
-itmedia.survey itmedia.technology
-
-@item @uref{http://plusd.itmedia.co.jp/, ITmedia +D}
-itmedia+D.plusd itmedia+D.mobile itmedia+D.pcupdate itmedia+D.lifestyle
-itmedia+D.games itmedia+D.docomo itmedia+D.au_kddi itmedia+D.vodafone
+itmedia.news.bursts, itmedia.news.domestic, itmedia.news.foreign,
+itmedia.news.products, itmedia.news.technology, itmedia.news.web20,
+itmedia.news.nettopics, itmedia.news.society, itmedia.news.security,
+itmedia.news.industry, itmedia.news.research, itmedia.news.sp_amd,
+itmedia.anchordesk, itmedia.enterprise,
+itmedia.+D.plusd, itmedia.+D.mobile, itmedia.+D.pcupdate,
+itmedia.+D.lifestyle, itmedia.+D.games, itmedia.+D.docomo,
+itmedia.+D.au_kddi, itmedia.+D.vodafone, itmedia.+D.shopping
 
 @item @uref{http://www.japantimes.co.jp/, Japan Times}
 japantimes.general japantimes.business

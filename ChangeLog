@@ -1,3 +1,20 @@
+2006-06-29  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-itmedia.el: Require sb-rss.
+	(shimbun-itmedia): Derived from shimbun-rss.
+	(shimbun-itmedia-url): Remove.
+	(shimbun-itmedia-group-alist): Rewrite.
+	(shimbun-itmedia-server-name): Remove.
+	(shimbun-itmedia-from-address): Remove.
+	(shimbun-itmedia-x-face-alist): Add x-face for the +D groups.
+	(shimbun-from-address): New overridden method.
+	(shimbun-index-url): Rewrite.
+	(shimbun-headers): New overridden method.
+	(shimbun-get-headers): Remove.
+	(shimbun-itmedia-anchordesk-get-headers): New function.
+
+	* shimbun/sb-itmedia+D.el: Remove.
+
 2006-06-21  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-yahoo-auctions.el (shimbun-rss-build-message-id):
