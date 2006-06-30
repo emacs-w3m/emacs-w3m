@@ -1,3 +1,8 @@
+2006-06-30  Hiroya Murata  <lapis-lazuli@pop06.odn.ne.jp>
+
+	* shimbun/sb-itmedia.el (shimbun-itmedia): Don't inherit shimbun.
+	(shimbun-from-address): Fix typo.
+	
 2006-06-29  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-itmedia.el: Require sb-rss.

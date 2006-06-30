@@ -37,7 +37,7 @@
 (require 'shimbun)
 (require 'sb-rss)
 
-(luna-define-class shimbun-itmedia (shimbun-rss shimbun) ())
+(luna-define-class shimbun-itmedia (shimbun-rss) ())
 
 (defvar shimbun-itmedia-group-alist
   `(,@(mapcar
@@ -65,7 +65,7 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 (luna-define-method shimbun-groups ((shimbun shimbun-itmedia))
   (mapcar 'car shimbun-itmedia-group-alist))
 
-(luna-define-method shimbun-from-address ((shimbun shimbun-itmedia-rss))
+(luna-define-method shimbun-from-address ((shimbun shimbun-itmedia))
   (format "ITmedia (%s)" (shimbun-current-group shimbun)))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-itmedia))
