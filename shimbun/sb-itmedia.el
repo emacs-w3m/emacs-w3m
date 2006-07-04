@@ -47,6 +47,7 @@
 	 "nettopics" "society" "security" "industry" "research" "sp_amd"))
     ("anchordesk" nil "http://www.itmedia.co.jp/anchordesk/"
      shimbun-itmedia-anchordesk-get-headers)
+    ("bizid" "bizid")
     ("enterprise" "enterprise")
     ,@(mapcar
        (lambda (group)

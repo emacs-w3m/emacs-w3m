@@ -4736,7 +4736,7 @@ itmedia.news.bursts, itmedia.news.domestic, itmedia.news.foreign,
 itmedia.news.products, itmedia.news.technology, itmedia.news.web20,
 itmedia.news.nettopics, itmedia.news.society, itmedia.news.security,
 itmedia.news.industry, itmedia.news.research, itmedia.news.sp_amd,
-itmedia.anchordesk, itmedia.enterprise,
+itmedia.anchordesk, itmedia.bizid, itmedia.enterprise,
 itmedia.+D.plusd, itmedia.+D.mobile, itmedia.+D.pcupdate,
 itmedia.+D.lifestyle, itmedia.+D.games, itmedia.+D.docomo,
 itmedia.+D.au_kddi, itmedia.+D.vodafone, itmedia.+D.shopping
