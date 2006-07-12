@@ -1,5 +1,9 @@
 2006-07-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
+	* shimbun/sb-wiki.el: Minimize the backend-specific procedure.
+	(shimbun-make-contents): Removed.
+	(shimbun-clear-contents): Supercede the part of the above.
+
 	* shimbun/sb-cgi-board.el: Minimize the backend-specific procedure.
 	(shimbun-make-contents): Removed.
 	(shimbun-clear-contents): Supercede the part of the above.
