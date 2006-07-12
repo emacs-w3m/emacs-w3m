@@ -182,7 +182,7 @@
 	      (string-match "\\`[^:/#?]+://\\([^/#?]+\\)/" url)
 	      (match-string 1 url)))))
 
-(luna-define-method shimbun-make-contents ((shimbun shimbun-cgi-board) header)
+(luna-define-method shimbun-clear-contents ((shimbun shimbun-cgi-board) header)
   (let ((id (shimbun-header-id header)))
     (when (string-match "\\`<\\([^@]+\\)@" id)
       (goto-char (point-min))
@@ -196,15 +196,7 @@
 	  (goto-char (point-min))
 	  (when (looking-at "<hr[^>]*>")
 	    (delete-region (match-beginning 0) (match-end 0)))
-	  (goto-char (point-min))
-	  (insert "<html>\n<head>\n<base href=\""
-		  (shimbun-header-xref header)
-		  "\">\n</head>\n<body>\n")
-	  (goto-char (point-max))
-	  (insert (shimbun-footer shimbun header t)
-		  "\n</body>\n</html>\n")
-	  (shimbun-make-mime-article shimbun header)
-	  (buffer-string))))))
+	  t)))))
 
 (provide 'sb-cgi-board)
 

@@ -1,3 +1,9 @@
+2006-07-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-cgi-board.el: Minimize the backend-specific procedure.
+	(shimbun-make-contents): Removed.
+	(shimbun-clear-contents): Supercede the part of the above.
+
 2006-07-04  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-itmedia.el (shimbun-itmedia-group-alist):
@@ -7,7 +13,7 @@
 
 	* shimbun/sb-itmedia.el (shimbun-itmedia): Don't inherit shimbun.
 	(shimbun-from-address): Fix typo.
-	
+
 2006-06-29  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-itmedia.el: Require sb-rss.

@@ -112,9 +112,9 @@ start of each article."
   (cadr (assoc (shimbun-current-group-internal shimbun)
 	       shimbun-wiki-group-alist)))
 
-(luna-define-method shimbun-make-contents ((shimbun shimbun-wiki) header)
+(luna-define-method shimbun-clear-contents ((shimbun shimbun-wiki) header)
   (let* ((case-fold-search t)
-	 (alist (assoc (shimbun-current-group-internal shimbun)
+	 (alist (assoc (shimbun-current-group shimbun)
 		       shimbun-wiki-group-alist))
 	 (cstart (nth 4 alist))
 	 (cend (nth 5 alist))
@@ -125,14 +125,7 @@ start of each article."
 	       (re-search-forward cend nil t))
       (delete-region (match-beginning 0) (point-max))
       (delete-region (point-min) start)
-      (goto-char (point-min))
-      (insert "<html>\n<head>\n<base href=\""
-	      (shimbun-header-xref header) "\">\n</head>\n<body>\n")
-      (goto-char (point-max))
-      (insert (shimbun-footer shimbun header t)
-	      "\n</body>\n</html>\n"))
-    (shimbun-make-mime-article shimbun header)
-    (buffer-string)))
+      t)))
 
 (provide 'sb-wiki)
 
