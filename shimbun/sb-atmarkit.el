@@ -29,10 +29,10 @@
 
 (require 'shimbun)
 (require 'sb-rss)
+(require 'sb-multi)
 
-(luna-define-class shimbun-atmarkit (shimbun-rss) ())
+(luna-define-class shimbun-atmarkit (shimbun-multi shimbun-rss) ())
 
-(defvar shimbun-atmarkit-from-address  "info@atmarkit.co.jp")
 (defvar shimbun-atmarkit-coding-system 'euc-japan)
 (defvar shimbun-atmarkit-content-start "<body[^>]*>")
 (defvar shimbun-atmarkit-content-end "</body[^>]*>")
@@ -41,7 +41,6 @@
   '( ;; ニュース系
     ;; NewsInsight
     ("news". "http://www.atmarkit.co.jp/rss/news/rss2dc.xml")
-
     ;; フォーラム系
     ;; Windows Server Insiderフォーラム
     ("fwin2k" . "http://www.atmarkit.co.jp/rss/fwin2k/rss2dc.xml")
@@ -80,23 +79,36 @@
   (cdr (assoc (shimbun-current-group-internal shimbun)
 	      shimbun-atmarkit-group-path-alist)))
 
-(defvar shimbun-atmarkit-use-base-url nil
-  "Non-nil means make `shimbun-article-url' return a base url.")
+(luna-define-method shimbun-article-url ((shimbun shimbun-atmarkit)
+					 header)
+  "http://www.atmarkit.co.jp/club/print/print.php")
 
-(luna-define-method shimbun-article-url :around ((shimbun shimbun-atmarkit)
-						 header)
-  ;; Switch the return value to the base url and the printing url
-  ;; according to `shimbun-atmarkit-use-base-url'.
-  (if shimbun-atmarkit-use-base-url
-      (luna-call-next-method)
-    "http://www.atmarkit.co.jp/club/print/print.php"))
+(luna-define-method shimbun-multi-next-url ((shimbun shimbun-atmarkit)
+					    header url)
+  (goto-char (point-max))
+  (when (re-search-backward
+	 "<a href=\"\\([^\"]+\\)\"><img src=\"[^\"]*/images/next\\.gif\"" nil t)
+    (shimbun-expand-url (match-string 1) url)))
 
-(luna-define-method shimbun-make-contents :around ((shimbun shimbun-atmarkit)
-						   header)
-  ;; Make `shimbun-article-url' return the base url rather than the
-  ;; printing url because links in the print page are relative to it.
-  (let ((shimbun-atmarkit-use-base-url t))
-    (luna-call-next-method)))
+(luna-define-method shimbun-multi-clear-contents ((shimbun shimbun-atmarkit)
+						  header
+						  has-previous-page
+						  has-next-page)
+  (when (shimbun-clear-contents shimbun header)
+    (when has-next-page
+      ;; Remove footer.
+      (goto-char (point-min))
+      (when (re-search-forward
+	     "<img src=\"[^\"]*/images/\\(prev\\|next\\)\\.gif\"" nil t)
+	(delete-region (line-beginning-position) (point-max))
+	(insert "</tr></table>")))
+    t))
+
+(luna-define-method shimbun-clear-contents :before ((shimbun shimbun-atmarkit)
+						    header)
+  (shimbun-remove-tags "<script" "</script *>")
+  (shimbun-remove-tags "<noscript" "</noscript *>")
+  (shimbun-remove-tags "<form" "</form *>"))
 
 (luna-define-method shimbun-article :before ((shimbun shimbun-atmarkit)
 					     header &optional outbuf)
@@ -105,12 +117,6 @@
     (when (setq end (string-match "\\?" xref))
       (setq xref (substring xref 0 end)))
     (shimbun-header-set-xref header xref)))
-
-(luna-define-method shimbun-clear-contents :before ((shimbun shimbun-atmarkit)
-						    header)
-  (shimbun-remove-tags "<script" "</script *>")
-  (shimbun-remove-tags "<noscript" "</noscript *>")
-  (shimbun-remove-tags "<form" "</form *>"))
 
 (provide 'sb-atmarkit)
 

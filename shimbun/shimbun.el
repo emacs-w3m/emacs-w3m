@@ -575,7 +575,7 @@ image parts, and returns an alist of URLs and image entities."
 	(insert "src=\"cid:" (shimbun-entity-cid (cdr img)) "\""))))
   images)
 
-(defun shimbun-make-mime-article (shimbun header)
+(defun shimbun-make-mime-article (shimbun header &optional base-url)
   "Make a MIME article according to SHIMBUN and HEADER.
 If article have inline images, generated article have a multipart/related
 content-type if `shimbun-encapsulate-images' is non-nil."
@@ -585,8 +585,9 @@ content-type if `shimbun-encapsulate-images' is non-nil."
     (when shimbun-encapsulate-images
       (setq images
 	    (shimbun-mime-replace-image-tags base-cid
-					     (shimbun-article-url shimbun
-								  header))))
+					     (or base-url
+						 (shimbun-article-url
+						  shimbun header)))))
     (let ((body (shimbun-make-text-entity "text/html" (buffer-string))))
       (erase-buffer)
       (when images
@@ -868,11 +869,16 @@ Return nil when articles are not expired."
   "Make a From address like \"SERVER (GROUP) <ADDRESS>\".")
 
 (luna-define-method shimbun-from-address ((shimbun shimbun))
-  (format "%s (%s) <%s>"
-	  (shimbun-server-name shimbun)
-	  (shimbun-current-group-name shimbun)
-	  (or (shimbun-from-address-internal shimbun)
-	      (shimbun-reply-to shimbun))))
+  (let ((addr (or (shimbun-from-address-internal shimbun)
+		  (shimbun-reply-to shimbun))))
+    (if addr
+	(format "%s (%s) <%s>"
+		(shimbun-server-name shimbun)
+		(shimbun-current-group-name shimbun)
+		addr)
+      (format "%s (%s)"
+	      (shimbun-server-name shimbun)
+	      (shimbun-current-group-name shimbun)))))
 
 (luna-define-generic shimbun-article (shimbun header &optional outbuf)
   "Retrieve a SHIMBUN article which corresponds to HEADER to the OUTBUF.
@@ -907,15 +913,30 @@ HEADER is a header structure obtained via `shimbun-headers'.")
     (delete-region (match-beginning 0) (point-max)))
   (apply 'insert "\n" (shimbun-footer shimbun header html) args))
 
-(defun shimbun-make-html-contents (shimbun header)
-  (when (shimbun-clear-contents shimbun header)
+(defun shimbun-current-base-url ()
+  "Process BASE tag in the current buffer."
+  (let ((case-fold-search t))
     (goto-char (point-min))
-    (insert "<html>\n<head>\n<base href=\""
-	    (shimbun-article-url shimbun header)
-	    "\">\n</head>\n<body>\n")
-    (shimbun-insert-footer shimbun header t "</body>\n</html>\n"))
-  (shimbun-make-mime-article shimbun header)
-  (buffer-string))
+    (when (re-search-forward "</head\\(?:[ \t\r\f\n][^>]*\\)?>" nil t)
+      (save-restriction
+	(narrow-to-region (point-min) (point))
+	(goto-char (point-min))
+	(when (re-search-forward "<base[ \t\r\f\n]+" nil t)
+	  (w3m-parse-attributes (href)
+	    (when (< 0 (length href))
+	      href)))))))
+
+(defun shimbun-make-html-contents (shimbun header)
+  (let ((base-url (or (shimbun-current-base-url)
+		      (shimbun-article-url shimbun header))))
+    (when (shimbun-clear-contents shimbun header)
+      (goto-char (point-min))
+      (insert "<html>\n<head>\n<base href=\""
+	      base-url
+	      "\">\n</head>\n<body>\n")
+      (shimbun-insert-footer shimbun header t "</body>\n</html>\n"))
+    (shimbun-make-mime-article shimbun header base-url)
+    (buffer-string)))
 
 (eval-and-compile
   (autoload 'shimbun-make-text-contents "sb-text"))

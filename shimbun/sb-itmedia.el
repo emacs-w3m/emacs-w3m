@@ -36,8 +36,9 @@
 
 (require 'shimbun)
 (require 'sb-rss)
+(require 'sb-multi)
 
-(luna-define-class shimbun-itmedia (shimbun-rss) ())
+(luna-define-class shimbun-itmedia (shimbun-multi shimbun-rss) ())
 
 (defvar shimbun-itmedia-group-alist
   `(,@(mapcar
@@ -111,7 +112,34 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 	      headers)))
     (shimbun-sort-headers headers)))
 
-(defun shimbun-itmedia-clean-text-page ()
+(luna-define-method shimbun-multi-next-url ((shimbun shimbun-itmedia)
+					    header url)
+  (goto-char (point-min))
+  (when (re-search-forward
+	 "<b><a href=\"\\([^\"]+\\)\">次のページ</a></b>\
+\\|<span id=\"next\"><a href=\"\\([^\"]+\\)\">次のページへ</a></span>" nil t)
+    (shimbun-expand-url (or (match-string 1) (match-string 2)) url)))
+
+(luna-define-method shimbun-multi-clear-contents ((shimbun shimbun-itmedia)
+						  header
+						  has-previous-page
+						  has-next-page)
+  (let (credit)
+    (when (and (not has-previous-page)
+	       (progn
+		 (goto-char (point-min))
+		 (re-search-forward "<!--■クレジット-->[\t\n ]*" nil t))
+	       (looking-at "<p\\( [^\n>]+>[^\n]+</\\)p>"))
+      (setq credit (match-string 1))
+      (when (string-match "<b>\\[ITmedia\\]</b>" credit)
+	(setq credit nil)))
+    (when (shimbun-clear-contents shimbun header)
+      (when credit
+	(goto-char (point-min))
+	(insert "<div" credit "div>\n"))
+      t)))
+
+(luna-define-method shimbun-clear-contents ((shimbun shimbun-itmedia) header)
   (let ((case-fold-search t) (start))
     (goto-char (point-min))
     (when (and (search-forward "<!--BODY-->" nil t)
@@ -136,74 +164,11 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 a1100\\.g\\.akamai\\.net\\)/[^>]+>")
     (shimbun-remove-tags "\
 <A [^>]*HREF=\"http:/[^\"]*/\\(ad\\.itmedia\\.co\\.jp\\|\
-a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>")))
+a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>")
+    t))
 
-(defun shimbun-itmedia-retrieve-next-pages (shimbun base-cid url
-						    &optional images cont)
-  (let ((case-fold-search t) (next) (credit))
-    (goto-char (point-min))
-    (when (re-search-forward
-	   "<b><a href=\"\\([^\"]+\\)\">次のページ</a></b>\
-\\|<span id=\"next\"><a href=\"\\([^\"]+\\)\">次のページへ</a></span>" nil t)
-      (setq next (shimbun-expand-url (or (match-string 1) (match-string 2))
-				     url)))
-    (when (and (not cont)
-	       (progn
-		 (goto-char (point-min))
-		 (re-search-forward "<!--■クレジット-->[\t\n ]*" nil t))
-	       (looking-at "<p\\( [^\n>]+>[^\n]+</\\)p>"))
-      (setq credit (match-string 1))
-      (when (string-match "<b>\\[ITmedia\\]</b>" credit)
-	(setq credit nil)))
-    (shimbun-itmedia-clean-text-page)
-    (goto-char (point-min))
-    (insert "<html>\n<head>\n<base href=\"" url "\">\n</head>\n<body>\n")
-    (when credit
-      (insert "<div" credit "div>\n"))
-    (goto-char (point-max))
-    (insert "\n</body>\n</html>\n")
-    (when shimbun-encapsulate-images
-      (setq images (shimbun-mime-replace-image-tags base-cid url images)))
-    (let ((body (shimbun-make-text-entity "text/html" (buffer-string)))
-	  (result (when next
-		    (with-temp-buffer
-		      (shimbun-fetch-url shimbun next)
-		      (shimbun-itmedia-retrieve-next-pages shimbun base-cid
-							   next images t)))))
-      (list (cons body (car result))
-	    (or (nth 1 result) images)))))
-
-(defun shimbun-itmedia-make-contents (shimbun header)
-  (let ((case-fold-search t)
-	(base-cid (shimbun-header-id header)))
-    (when (string-match "\\`<\\([^>]+\\)>\\'" base-cid)
-      (setq base-cid (match-string 1 base-cid)))
-    (let (body)
-      (multiple-value-bind (texts images)
-	  (shimbun-itmedia-retrieve-next-pages shimbun base-cid
-					       (shimbun-header-xref header))
-	(erase-buffer)
-	(if (= (length texts) 1)
-	    (setq body (car texts))
-	  (setq body (shimbun-make-multipart-entity))
-	  (let ((i 0))
-	    (dolist (text texts)
-	      (setf (shimbun-entity-cid text)
-		    (format "shimbun.%d.%s" (incf i) base-cid))))
-	  (apply 'shimbun-entity-add-child body texts))
-	(when images
-	  (setf (shimbun-entity-cid body) (concat "shimbun.0." base-cid))
-	  (let ((new (shimbun-make-multipart-entity)))
-	    (shimbun-entity-add-child new body)
-	    (apply 'shimbun-entity-add-child new
-		   (mapcar 'cdr (nreverse images)))
-	    (setq body new))))
-      (shimbun-header-insert shimbun header)
-      (insert "MIME-Version: 1.0\n")
-      (shimbun-entity-insert body)))
-  (buffer-string))
-
-(luna-define-method shimbun-make-contents ((shimbun shimbun-itmedia) header)
+(luna-define-method shimbun-make-contents :before ((shimbun shimbun-itmedia)
+						   header)
   (when (re-search-forward "\\([0-9]+\\)年\\([0-9]+\\)月\\([0-9]+\\)日 \
 \\([0-9]+\\)時\\([0-9]+\\)分 更新" nil t)
     (shimbun-header-set-date
@@ -212,8 +177,7 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>")))
       (string-to-number (match-string 1))
       (string-to-number (match-string 2))
       (string-to-number (match-string 3))
-      (concat (match-string 4) ":" (match-string 5)))))
-    (shimbun-itmedia-make-contents shimbun header))
+      (concat (match-string 4) ":" (match-string 5))))))
 
 (provide 'sb-itmedia)
 

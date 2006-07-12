@@ -1,12 +1,38 @@
 2006-07-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* shimbun/sb-wiki.el: Minimize the backend-specific procedure.
-	(shimbun-make-contents): Removed.
-	(shimbun-clear-contents): Supercede the part of the above.
+	* shimbun/shimbun.el: Changes to handle <BASE> tag properly.
+	(shimbun-make-mime-article): Accept a base URL of this current
+	article as the 3rd optional argument.
+	(shimbun-current-base-url): New function.
+	(shimbun-make-html-contents): Call the above.
+	(shimbun-from-address): Accept backends that have no address.
+
+	* shimbun/sb-multi.el: New virtual class.
+
+	* shimbun/sb-atmarkit.el: Use `shimbun-multi' class.
+	(shimbun-multi-next-url, shimbun-multi-clear-contents): New
+	methods.
+	(shimbun-atmarkit-use-base-url): Abolished.
+	(shimbun-article-url, shimbun-make-contents): Cancel the last
+	change, because `shimbun-multi' class handles <BASE> tag properly.
+	(shimbun-atmarkit-from-address): Abolished.
+
+	* shimbun/sb-itmedia.el: Use `shimbun-multi' class.
+	(shimbun-make-contents): Minimized.
+	(shimbun-itmedia-make-contents)
+	(shimbun-itmedia-clean-text-page): Removed.
+	(shimbun-multi-next-url)
+	(shimbun-multi-clear-contents)
+	(shimbun-clear-contents): New methods to supercede a part of the
+	above removed functions.
 
 	* shimbun/sb-cgi-board.el: Minimize the backend-specific procedure.
 	(shimbun-make-contents): Removed.
-	(shimbun-clear-contents): Supercede the part of the above.
+	(shimbun-clear-contents): Supercede a part of the above.
+
+	* shimbun/sb-wiki.el: Minimize the backend-specific procedure.
+	(shimbun-make-contents): Removed.
+	(shimbun-clear-contents): Supercede a part of the above.
 
 2006-07-04  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
