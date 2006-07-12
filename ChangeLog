@@ -26,6 +26,32 @@
 	(shimbun-clear-contents): New methods to supercede a part of the
 	above removed functions.
 
+	* shimbun/sb-cnetnetworks.el: Removed.
+
+	* shimbun/sb-zdnet-jp.el: Use `shimbun-multi' class instead of
+	`shimbun-cnetnetworks' class.
+	(shimbun-zdnet-jp-orphaned-group-list)
+	(shimbun-zdnet-jp-content-start)
+	(shimbun-zdnet-jp-content-end): Abolished.
+	(shimbun-groups, shimbun-headers): Simplified.
+	(shimbun-cnetnetworks-header-reconfig)
+	(shimbun-cnetnetworks-clear-footer): Abolished.
+	(shimbun-multi-next-url)
+	(shimbun-multi-clear-contents)
+	(shimbun-make-contents): New methods to supercede a part of the
+	above abolished methods.
+
+	* shimbun/sb-cnet-jp.el: Use `shimbun-multi' class instead of
+	`shimbun-cnetnetworks' class.
+	(shimbun-cnet-jp-group-alist): Follow the change of the site.
+	(shimbun-cnetnetworks-header-reconfig)
+	(shimbun-cnetnetworks-clear-footer): Abolished.
+	(shimbun-multi-next-url)
+	(shimbun-multi-clear-contents)
+	(shimbun-clear-contents)
+	(shimbun-make-contents): New methods to supercede a part of the
+	above abolished methods.
+
 	* shimbun/sb-cgi-board.el: Minimize the backend-specific procedure.
 	(shimbun-make-contents): Removed.
 	(shimbun-clear-contents): Supercede a part of the above.

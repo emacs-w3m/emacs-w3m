@@ -1,8 +1,8 @@
 ;;; sb-zdnet-jp.el --- shimbun backend for ZDNet Japan -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2005 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2005, 2006 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
-;; Author: Tsuyoshi CHO       <tsuyoshi_cho@ybb.ne.jp>
+;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: news
 ;; Created: Jun 14, 2003
 
@@ -35,13 +35,15 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-cnetnetworks)
+(require 'sb-multi)
+(require 'sb-rss)
 
-(luna-define-class shimbun-zdnet-jp (shimbun-cnetnetworks) ())
+(luna-define-class shimbun-zdnet-jp (shimbun-japanese-newspaper
+				     shimbun-multi shimbun-rss) ())
 
 (defvar shimbun-zdnet-jp-group-alist
   '( ;; news
-    ("news"          . "http://japan.zdnet.com/rss/news/index.rdf")
+    ("news"	     . "http://japan.zdnet.com/rss/news/index.rdf")
     ("news.network"  . "http://japan.zdnet.com/rss/news/nw/index.rdf")
     ("news.hardware" . "http://japan.zdnet.com/rss/news/hardware/index.rdf")
     ("news.software" . "http://japan.zdnet.com/rss/news/software/index.rdf")
@@ -74,68 +76,53 @@
     ("blog.soa"  . "http://blog.japan.zdnet.com/soa/index.rdf")
     ("blog.dp" . "http://blog.japan.zdnet.com/dp/index.rdf")))
 
-(defvar shimbun-zdnet-jp-orphaned-group-list
-  '())
-
-(defvar shimbun-zdnet-jp-content-start
-  "\\(<div class=\"leaf_body\">\\|<div class=\"leaf_body\">\\)")
-(defvar shimbun-zdnet-jp-content-end
-  "\\(<!-- *\\(/leaf_foot\\|/leaf_body\\|/main_left\\|\
-NEWS LETTER SUB\\|ZD CAMPAIGN SUB\\) *-->\\)")
-
-(defvar shimbun-zdnet-jp-server-name "CNET Networks,Inc.")
 (defvar shimbun-zdnet-jp-x-face-alist
   '(("default" . "X-Face: 0p7.+XId>z%:!$ahe?x%+AEm37Abvn]n\
 *GGh+>v=;[3`a{1lqO[$,~3C3xU_ri>[JwJ!9l0\n ~Y`b*eXAQ:*q=bBI\
 _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 
 (luna-define-method shimbun-groups ((shimbun shimbun-zdnet-jp))
-  (nconc (mapcar 'car shimbun-zdnet-jp-group-alist)
-	 shimbun-zdnet-jp-orphaned-group-list))
-
-(luna-define-method shimbun-headers :around ((shimbun shimbun-zdnet-jp)
-					     &optional range)
-  (unless (member (shimbun-current-group shimbun)
-		  shimbun-zdnet-jp-orphaned-group-list)
-    (luna-call-next-method)))
+  (mapcar 'car shimbun-zdnet-jp-group-alist))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-zdnet-jp))
   (cdr (assoc (shimbun-current-group shimbun) shimbun-zdnet-jp-group-alist)))
 
-(luna-define-method shimbun-cnetnetworks-clear-footer
-  ((shimbun shimbun-zdnet-jp) header has-next)
+(luna-define-method shimbun-multi-next-url ((shimbun shimbun-zdnet-jp)
+					    header url)
   (goto-char (point-min))
-  (when (and
-	 (re-search-forward
-	  "<a [^>]+>\\(前\\|次\\)のページ</a" nil t)
-	 (re-search-backward
-	  "<div class=\"leaf_body_page\">[ \t\r\n]*<ul>" nil t))
-    (let ((start (match-beginning 0))
-	  end)
-      (if has-next
-	  ;; isn't last
-	  (delete-region start (point-max))
-	;; last page
-	(when (re-search-forward "<div class=\"leaf_foot\">" nil t)
-	  (setq end (match-end 0))
-	  (delete-region start end))))))
+  (when (re-search-forward
+	 "<a href=\"\\([^\"]+\\)\" class=\"article_leaf_paging_next\"" nil t)
+    (shimbun-expand-url (match-string 1) url)))
 
-(luna-define-method shimbun-cnetnetworks-header-reconfig :around
-  ((shimbun shimbun-zdnet-jp) header)
+(luna-define-method shimbun-multi-clear-contents ((shimbun shimbun-zdnet-jp)
+						  header
+						  has-previous-page
+						  has-next-page)
+  (let (start end)
+    (if (or has-previous-page has-next-page)
+	(setq start "<div class=\"leaf_body\">"
+	      end "<div class=\"article_leaf_paging\">")
+      (setq start "<div class=\"article_body\">"
+	    end "</div><!--/article_body-->"))
+    (goto-char (point-min))
+    (when (and (search-forward start nil t)
+	       (setq start (point))
+	       (re-search-forward end nil t))
+      (delete-region (match-beginning 0) (point-max))
+      (delete-region (point-min) start)
+      t)))
+
+(luna-define-method shimbun-make-contents :before ((shimbun shimbun-zdnet-jp)
+						   header)
   (goto-char (point-min))
-  (if (and (re-search-forward "<div class=\"leaf_head\">" nil t)
-	   (re-search-forward "<li>\\([^<]+\\)\\(<br[^>]*>\\([^<]+\\)\\)?\
-</li>[ \n\r\t]*<li class=\"date\">" nil t))
-      (shimbun-header-set-from header
-			       (shimbun-mime-encode-string
-				(concat
-				 (match-string-no-properties 1)
-				 (if (match-string-no-properties 2)
-				     " "
-				   "")
-				 (or (match-string-no-properties 3)
-				     ""))))
-    (luna-call-next-method)))
+  (when (re-search-forward "<div class=\"property cblack\">\\([^\n]+\\)</div>"
+			   nil t)
+    (let ((from (match-string 1)))
+      (setq from (shimbun-replace-in-string from "文：" ""))
+      (setq from (shimbun-replace-in-string from "翻訳校正：*" ""))
+      (setq from (shimbun-replace-in-string from " *<br +/> *" ", "))
+      (setq from (shimbun-replace-in-string from "、" ", "))
+      (shimbun-header-set-from header from))))
 
 (luna-define-method shimbun-footer :around ((shimbun shimbun-zdnet-jp)
 					    header &optional html)
