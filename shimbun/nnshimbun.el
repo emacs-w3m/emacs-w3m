@@ -663,7 +663,7 @@ allowed for each string."
 (defun nnshimbun-search-id (group id)
   (with-current-buffer (nnshimbun-open-nov group)
     (goto-char (point-min))
-    (let (found)
+    (let (found case-fold-search)
       (while (and (not found)
 		  (search-forward id nil t)) ; We find the ID.
 	;; And the id is in the fourth field.

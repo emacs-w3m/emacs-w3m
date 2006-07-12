@@ -34,6 +34,11 @@
 	(shimbun-make-contents): Removed.
 	(shimbun-clear-contents): Supercede a part of the above.
 
+2006-07-06  Andreas Seltenreich  <seltenreich@gmx.de>
+
+	* shimbun/nnshimbun.el (nnshimbun-search-id): Bind
+	`case-fold-search' to nil, in order to reduce time to search IDs.
+
 2006-07-04  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-itmedia.el (shimbun-itmedia-group-alist):
