@@ -2,6 +2,8 @@
 
 	* shimbun/sb-opentechpress-jp.el: New module.
 
+	* shimbun/sb-linux-ja.el: Removed.
+
 2006-07-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/shimbun.el: Changes to handle <BASE> tag properly.

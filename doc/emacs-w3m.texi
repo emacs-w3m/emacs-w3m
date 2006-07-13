@@ -4706,10 +4706,6 @@ opentechpress-jp.general opentechpress-jp.enterprise
 opentechpress-jp.opensource opentechpress-jp.security
 opentechpress-jp.news opentechpress-jp.pr
 
-@item @uref{http://japan.linux.com/, japan.linux.com}
-linux-ja.news linux-ja.desktop linux-ja.enterprise linux-ja.kernel
-linux-ja.opensource linux-ja.security
-
 @item @uref{http://www.n24.de/, N24}
 n24-de.boerse n24-de.boulevard n24-de.nachrichten n24-de.netnews
 n24-de.politik n24-de.sport n24-de.wirtschaft
