@@ -1,3 +1,7 @@
+2006-07-13  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-opentechpress-jp.el: New module.
+
 2006-07-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/shimbun.el: Changes to handle <BASE> tag properly.
