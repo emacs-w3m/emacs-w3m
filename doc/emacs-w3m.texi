@@ -4701,6 +4701,11 @@ laut-de.platten_dance laut-de.platten_hiphop platten_jazz
 laut-de.platten_metal laut-de.platten_pop laut-de.platten_rnb
 laut-de.platten_rock
 
+@item @uref{http://opentechpress.jp/, Open Tech Press}
+opentechpress-jp.general opentechpress-jp.enterprise
+opentechpress-jp.opensource opentechpress-jp.security
+opentechpress-jp.news opentechpress-jp.pr
+
 @item @uref{http://japan.linux.com/, japan.linux.com}
 linux-ja.news linux-ja.desktop linux-ja.enterprise linux-ja.kernel
 linux-ja.opensource linux-ja.security
