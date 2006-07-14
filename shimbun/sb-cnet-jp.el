@@ -95,6 +95,7 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
   (shimbun-strip-cr)
   (shimbun-remove-tags "<script" "</script>")
   (shimbun-remove-tags "<noscript" "</noscript>")
+  (shimbun-remove-tags "<div class=\"photor_thumb_wrap\"" "</div>")
   (shimbun-remove-tags "<!--AD_ART_S-->" "<!--AD_ART_S END-->"))
 
 (luna-define-method shimbun-multi-clear-contents ((shimbun shimbun-cnet-jp)
