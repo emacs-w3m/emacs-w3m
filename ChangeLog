@@ -1,3 +1,9 @@
+2006-07-16  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-cnet-jp.el (shimbun-make-contents): Improve regexp.
+
+	* shimbun/sb-zdnet-jp.el (shimbun-make-contents): Ditto.
+
 2006-07-14  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-cnet-jp.el (shimbun-clear-contents): Remove

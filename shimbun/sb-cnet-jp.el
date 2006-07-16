@@ -121,7 +121,7 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
     (let ((from (or (match-string 2) (match-string 3))))
       (setq from (shimbun-replace-in-string from "文：" ""))
       (setq from (shimbun-replace-in-string from "翻訳校正：*" ""))
-      (setq from (shimbun-replace-in-string from " *<br +/> *" ", "))
+      (setq from (shimbun-replace-in-string from " *<br */?> *" ", "))
       (setq from (shimbun-replace-in-string from "、" ", "))
       (shimbun-header-set-from header from))))
 
