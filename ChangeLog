@@ -1,5 +1,7 @@
 2006-07-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-util.el (w3m-truncate-string): Don't autoload mule-util.el.
+
 	* shimbun/sb-sankei.el (shimbun-clear-contents): Break paragraphs
 	in column group; no need to add content-end boundary in editoria
 	and column groups.

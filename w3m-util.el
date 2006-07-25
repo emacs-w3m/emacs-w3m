@@ -905,7 +905,6 @@ Otherwise return nil."
 	     (setq idx (1- idx)))
 	   (substring str 0 idx))))
       (t
-       (autoload 'truncate-string-to-width "mule-util")
        (defalias 'w3m-truncate-string 'truncate-string-to-width)))
 
 (defsubst w3m-assoc-ignore-case (name alist)
