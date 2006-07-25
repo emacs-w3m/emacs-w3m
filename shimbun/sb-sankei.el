@@ -250,7 +250,7 @@ http://www.sankei.co.jp/news/%02d%02d%02d/morning/column.htm"
 						    header)
   (if (string-equal (shimbun-current-group-internal shimbun) "column")
       (while (re-search-forward "\\([^\n>]\\)\\(　▼\\)" nil t)
-	(replace-match "\\1。<p>\n\\2"))
+	(replace-match "\\1。\n<p>\\2"))
     ;; Remove advertisements.
     (shimbun-remove-tags "<!--[\t\n ]*AdSpace\\(?:.+=.+\\)+-->"
 			 "<!--[\t\n ]*/AdSpace[\t\n ]*-->")
