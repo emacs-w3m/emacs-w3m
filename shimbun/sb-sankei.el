@@ -248,12 +248,9 @@ http://www.sankei.co.jp/news/%02d%02d%02d/morning/column.htm"
 
 (luna-define-method shimbun-clear-contents :before ((shimbun shimbun-sankei)
 						    header)
-  (if (member (shimbun-current-group-internal shimbun)
-	      '("editoria" "column"))
-      (when (and (re-search-forward (shimbun-content-start shimbun) nil t)
-		 (re-search-forward "[\t\n ]*<p>[\t\n ]*<p>" nil t))
-	(goto-char (match-beginning 0))
-	(insert "\n<!--hbnend-->"))
+  (if (string-equal (shimbun-current-group-internal shimbun) "column")
+      (while (re-search-forward "\\([^\n>]\\)\\(　▼\\)" nil t)
+	(replace-match "\\1。<p>\n\\2"))
     ;; Remove advertisements.
     (shimbun-remove-tags "<!--[\t\n ]*AdSpace\\(?:.+=.+\\)+-->"
 			 "<!--[\t\n ]*/AdSpace[\t\n ]*-->")

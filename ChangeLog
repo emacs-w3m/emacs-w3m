@@ -1,3 +1,9 @@
+2006-07-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-sankei.el (shimbun-clear-contents): Break paragraphs
+	in column group; no need to add content-end boundary in editoria
+	and column groups.
+
 2006-07-16  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-cnet-jp.el (shimbun-make-contents): Improve regexp.
