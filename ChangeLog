@@ -1,3 +1,16 @@
+2006-07-31  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-impress.el: Require sb-rss.
+	(shimbun-impress): Inherite from shimbun-rss.
+	(shimbun-impress-groups-alist): In each element, 2nd element is
+	link-regexp or rss; add robot group.
+	(shimbun-rss-build-message-id): New overridden method.
+	(shimbun-impress-get-headers): Rename from
+	`shimbun-impress-get-headers-date'.
+	(shimbun-impress-get-headers-sequence): Remove.
+	(shimbun-headers): Rewrite.
+	(shimbun-article-url): New overridden method.
+
 2006-07-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-truncate-string): Don't autoload mule-util.el.
