@@ -91,7 +91,7 @@ JzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r\
       (concat (shimbun-url-internal shimbun)
 	      (shimbun-current-group-internal shimbun) "/")))
 
-(luna-define-method shimbun-rss-build-message-id ((shimbun shimbun-rss)
+(luna-define-method shimbun-rss-build-message-id ((shimbun shimbun-impress)
 						  url &optional date)
   (concat "<" (md5 url) "%" (shimbun-current-group shimbun)
 	  "@www.watch.impress.co.jp>"))
