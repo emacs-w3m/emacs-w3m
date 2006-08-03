@@ -39,10 +39,9 @@
     ("enterprise" rss
      "<!-- 本文開始 -->" "<!-- 本文終了 -->"
      "http://enterprise.watch.impress.co.jp/cda/rss/enterprise.rdf")
-    ("pc" "<a href=\"\\(docs/\\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]\\)\
-\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">"
+    ("pc" rss
      "<!-- 記事見出し -->" "<!-- /記事署名 -->"
-     "http://pc.watch.impress.co.jp/")
+     "http://pc.watch.impress.co.jp/sublink/pc.rdf")
     ("dc" rss
      "<!-- 本文開始 -->" "<!-- 本文終了 -->"
      "http://dc.watch.impress.co.jp/cda/rss/digicame.rdf")

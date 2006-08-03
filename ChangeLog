@@ -1,3 +1,8 @@
+2006-08-03  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-impress.el (shimbun-impress-groups-alist): Use rss
+	for pc group.
+
 2006-07-31  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-impress.el: Require sb-rss.
