@@ -148,9 +148,10 @@ JzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r\
       (delq nil
 	    (mapcar
 	     (lambda (header)
-	       (unless (string= (substring (shimbun-header-subject header) 0 3)
-				"AD:")
-		 header))
+	       (let ((subject (shimbun-header-subject header)))
+		 (unless (and subject (>= (length subject) 3)
+			      (string= (substring subject 0 3) "AD:"))
+		   header)))
 	     (luna-call-next-method)))
     (with-temp-buffer
       (shimbun-fetch-url shimbun (shimbun-index-url shimbun) t)
