@@ -1,6 +1,6 @@
-2006-08-11  David Hansen <david.hansen@pysik.fu-berlin.de>
+2006-08-11  David Hansen  <david.hansen@pysik.fu-berlin.de>
 
-	* w3m.el: (w3m-relationship-oddmuse-estimate): New function.
+	* w3m.el (w3m-relationship-oddmuse-estimate): New function.
 	(w3m-relationship-freshmeat-estimate): New function.
 	(w3m-relationship-estimate-rules): Fixed regexp for google groups.
 	Added above new functions.
