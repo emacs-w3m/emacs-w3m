@@ -1778,10 +1778,10 @@ Here are some predefined functions which can be used for those ways:
 (defcustom w3m-relationship-estimate-rules
   `((w3m-relationship-simple-estimate
      "\\`http://\\(?:www\\|blogsearch\\|groups\\|news\\)\\.google\\.[^/]+/\\(?:search\\|blogsearch\\|groups\\|news\\)"
-     ,(concat "<a href=" w3m-html-string-regexp
-	      "><img src=\\(?:/intl/[^/]+/\\)?nav_next\\.gif")
-     ,(concat "<a href=" w3m-html-string-regexp
-	      "><img src=\\(?:/intl/[^/]+/\\)?nav_previous\\.gif")
+     ,(concat "<a[^>]+?href=" w3m-html-string-regexp
+	      "><img src=[^>]*nav_next\\.gif")
+     ,(concat "<a[^>]+?href=" w3m-html-string-regexp
+	      "><img src=[^>]*nav_previous\\.gif")
      nil nil)
     (w3m-relationship-simple-estimate
      "\\`http://beta\\.search\\.yahoo\\.co\\.jp/"
@@ -1795,7 +1795,9 @@ Here are some predefined functions which can be used for those ways:
      ,(concat "<a href=" w3m-html-string-regexp ">次のページ</a>")
      ,(concat "<a href=" w3m-html-string-regexp ">前のページ</a>")
      nil nil)
-    (w3m-relationship-magicpoint-estimate))
+    (w3m-relationship-magicpoint-estimate)
+    (w3m-relationship-oddmuse-estimate)
+    (w3m-relationship-freshmeat-estimate))
   "*Rules to estimate relationships between a retrieved page and others."
   :group 'w3m
   :type '(repeat
@@ -5461,6 +5463,28 @@ when the URL of the retrieved page matches the REGEXP."
        (concat "<A HREF=" w3m-html-string-regexp ">\\[&lt;&lt;start\\]</A>"))
      (eval-when-compile
        (concat "<A HREF=" w3m-html-string-regexp ">\\[index\\]</A>")))))
+
+(defun w3m-relationship-oddmuse-estimate (url)
+  (when (string-match "/wiki\\?search=[^\";]*\\(;page=\\([0-9]+\\)\\)?" url)
+    (let ((re "<a href=\"\\(http://[^\"]+?/wiki\\?search=[^\";]*")
+          (n (match-string 2 url)))
+      (setq n (or (and n (string-to-number n)) 1))
+      (let ((next (concat re ";page=" (number-to-string (1+ n)) "\\)\""))
+            (prev (cond
+                   ((< 2 n)
+                    (concat re ";page=" (number-to-string (1- n)) "\\)\""))
+                   ((= 2 n)
+                    "<a href=\"\\(http://[^\"]+?/wiki\\?search=[^\"]*\\)\""))))
+        (w3m-relationship-search-patterns url next prev)))))
+
+(defun w3m-relationship-freshmeat-estimate (url)
+  (when (string-match "^http://freshmeat.net/search/" url)
+        (w3m-relationship-search-patterns
+         url
+         (eval-when-compile
+           (concat "<A HREF=" w3m-html-string-regexp ">\\[&raquo;\\]</A>"))
+         (eval-when-compile
+           (concat "<A HREF=" w3m-html-string-regexp ">\\[&laquo;\\]</A>")))))
 
 (defun w3m-relationship-search-patterns (url next previous
 					     &optional start contents)
