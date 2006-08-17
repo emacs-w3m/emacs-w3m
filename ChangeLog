@@ -1,3 +1,10 @@
+2006-08-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-sankei.el (shimbun-sankei-group-table): Add seiron
+	group.
+	(shimbun-sankei-get-headers-seiron): New function.
+	(shimbun-get-headers): Use it.
+
 2006-08-11  David Hansen  <david.hansen@pysik.fu-berlin.de>
 
 	* w3m.el (w3m-relationship-oddmuse-estimate): New function.
