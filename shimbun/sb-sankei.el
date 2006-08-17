@@ -61,7 +61,8 @@
 ?query=%8E%E5%92%A3&whence=0&max=20&sort=date%3Alate&idxname=edit")
     ("column" "産経抄" "http://ez.st37.arena.ne.jp/cgi-bin/search/namazu.cgi\
 ?query=%8EY%8Co%8F%B4&whence=0&max=50&sort=date%3Alate&result=normal&idxname\
-=clm")))
+=clm")
+    ("seiron" "正論" "http://www.sankei.co.jp/special/opi/past_seiron.htm")))
 
 (defvar shimbun-sankei-x-face-alist
   '(("default" . "X-Face: L%Y'jtF~2k?#oXVB%?3t/WE),tU/UwT%tl-omu#\
@@ -89,6 +90,8 @@
     (shimbun-sankei-get-headers-editoria shimbun range))
    ((string-equal (shimbun-current-group-internal shimbun) "column")
     (shimbun-sankei-get-headers-column shimbun range))
+   ((string-equal (shimbun-current-group-internal shimbun) "seiron")
+    (shimbun-sankei-get-headers-seiron shimbun range))
    (t
     (when (re-search-forward "<!--[\t\n ]*mlist[\t\n ]*-->[\t\n ]*" nil t)
       (delete-region (point-min) (point)))
@@ -243,6 +246,50 @@ http://www.sankei.co.jp/news/%02d%02d%02d/morning/column.htm"
 	     (format "<%d%02d%02d%%editoria.sankei.co.jp>" year month day)
 	     "" 0 0
 	     url)
+	    headers))
+    headers))
+
+(defun shimbun-sankei-get-headers-seiron (shimbun range)
+  (let ((from (concat (shimbun-server-name shimbun)
+		      " (" (shimbun-current-group-name shimbun) ")"))
+	url year month day subject hour minute headers)
+    (while (re-search-forward
+	    (eval-when-compile
+	      (concat
+	       "<a href=\""
+	       ;; 1. url
+	       "\\(http://www\\.sankei\\.co\\.jp/news/"
+	       ;; 2. year
+	       "\\([0-9][0-9]\\)"
+	       ;; 3. month
+	       "\\([01][0-9]\\)"
+	       ;; 4. day
+	       "\\([0-3][0-9]\\)"
+	       "/morning/seiron\\.htm\\)"
+	       "\">■?【.*正論.*>】"
+	       ;; 5. subject
+	       "\\([^<]+\\)"
+	       "</a></b>　([01][0-9]/[0-3][0-9] "
+	       ;; 6. hour
+	       "\\([012][0-9]\\)"
+	       ":"
+	       ;; 7. minute
+	       "\\([0-5][0-9]\\)"))
+	    nil t)
+      (setq url (match-string 1)
+	    year (+ 2000 (string-to-number (match-string 2)))
+	    month (string-to-number (match-string 3))
+	    day (string-to-number (match-string 4))
+	    subject (match-string 5)
+	    hour (match-string 6)
+	    minute (match-string 7))
+      (push (shimbun-create-header
+	     0 subject from
+	     (shimbun-make-date-string year month day
+				       (concat hour ":" minute))
+	     (format "<%d%02d%02d%s%s%%seiron.sankei.co.jp>"
+		     year month day hour minute)
+	     "" 0 0 url)
 	    headers))
     headers))
 
