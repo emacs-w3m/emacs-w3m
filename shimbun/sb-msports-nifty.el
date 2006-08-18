@@ -46,10 +46,8 @@
     ("Europe" . "europe")
     ("USA" . "usa")))
 (defvar shimbun-msports-nifty-from-address "motorsports_post@nifty.com")
-(defvar shimbun-msports-nifty-content-start
-  "^<div class=\"entry-body-text\">\n\\(\\(.\\|\n\\)+\n<img[^>]+>\\)?")
-(defvar shimbun-msports-nifty-content-end
-  "^</div>\n</div>\n+<div class=\"entry-body-bottom\">")
+(defvar shimbun-msports-nifty-content-start "<div class=\"entry-body-text\">")
+(defvar shimbun-msports-nifty-content-end "<!-- New Menu End -->")
 
 (luna-define-method shimbun-groups ((shimbun shimbun-msports-nifty))
   (mapcar 'car shimbun-msports-nifty-group-alist))
@@ -65,16 +63,14 @@
   (let ((case-fold-search t) headers)
     (goto-char (point-min))
     (while (re-search-forward
-	    "<A HREF=\"\\(http://.*/\\([0-9]+\\)/\\([0-9][0-9]\\)/.*_\\(.*\\)\.html\\)\"[^>]*>☆　\\([^<]+\\)<" nil t)
+	    "<A HREF=\"\\(http://.*/\\([0-9]+\\)/[0-9][0-9]\\([0-9][0-9]\\)\\([0-9][0-9]\\)_\\(.*\\)\.htm\\)\"[^>]*>☆　\\([^<]+\\)<" nil t)
       (let ((url (match-string 1))
 	    (year (match-string 2))
 	    (month (match-string 3))
-	    (id (match-string 4))
-	    (subject (match-string 5))
-	    (day 1) date)
-	(save-excursion
-	  (when (re-search-backward "[0-9]+/[0-9][0-9]/\\([0-9][0-9]\\)" nil t)
-	    (setq day (match-string 1))))
+	    (day (match-string 4))
+	    (id (match-string 5))
+	    (subject (match-string 6))
+	    date)
 	(setq id (format "<%s%s%s%s%%%s%%msports@nifty.com>"
 			 year month day
 			 id (shimbun-current-group-internal shimbun)))
