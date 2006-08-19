@@ -1,5 +1,9 @@
 2006-08-19  MIYOSHI Masanori  <miyoshi@meadowy.org>
 
+	* shimbun/sb-makanai.el: Follow the change of the site.
+
+2006-08-19  MIYOSHI Masanori  <miyoshi@meadowy.org>
+
 	* shimbun/sb-msports-nifty.el: Follow the change of the site.
 
 2006-08-17  Katsumi Yamaoka  <yamaoka@jpl.org>
