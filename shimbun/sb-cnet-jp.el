@@ -44,6 +44,7 @@
     ("opinion" . "http://feed.japan.cnet.com/rss/opinion/index.rdf")
     ;;("whitepaper" . "http://paper.japan.cnet.com/rss/index.rdf")
     ;;("review" . "http://review.japan.cnet.com/rss/index.rdf")
+    ("blog.geetstate" . "http://blog.japan.cnet.com/geetstate/index.rdf")
     ("blog.kenn" . "http://blog.japan.cnet.com/kenn/index.rdf")
     ("blog.lessig" . "http://blog.japan.cnet.com/lessig/index.rdf")
     ("blog.matsumura" . "http://blog.japan.cnet.com/matsumura/index.rdf")

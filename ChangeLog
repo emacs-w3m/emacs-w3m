@@ -1,3 +1,8 @@
+2006-08-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-cnet-jp.el (shimbun-cnet-jp-group-alist): Add
+	"blog.geetstate".
+
 2006-08-19  MIYOSHI Masanori  <miyoshi@meadowy.org>
 
 	* shimbun/sb-makanai.el: Follow the change of the site.
