@@ -4706,10 +4706,10 @@ cnet.perspectives
 
 @item @uref{http://japan.cnet.com/, CNET Japan}
 cnet-jp.general cnet-jp.news cnet-jp.special cnet-jp.opinion
-cnet-jp.blog.kenn cnet-jp.blog.lessig cnet-jp.blog.matsumura
-cnet-jp.blog.nakajima cnet-jp.blog.saeki cnet-jp.blog.sakamoto
-cnet-jp.blog.sasaki cnet-jp.blog.sentan cnet-jp.blog.staff
-cnet-jp.blog.takawata cnet-jp.blog.watanabe
+cnet-jp.blog.geetstate cnet-jp.blog.kenn cnet-jp.blog.lessig
+cnet-jp.blog.matsumura cnet-jp.blog.nakajima cnet-jp.blog.saeki
+cnet-jp.blog.sakamoto cnet-jp.blog.sasaki cnet-jp.blog.sentan
+cnet-jp.blog.staff cnet-jp.blog.takawata cnet-jp.blog.watanabe
 
 @item @uref{http://www.cnn.co.jp/, CNN Japan}
 cnn-jp.business cnn-jp.fringe cnn-jp.science cnn-jp.showbiz
