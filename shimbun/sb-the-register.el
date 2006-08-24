@@ -78,7 +78,7 @@
   (save-excursion
     ;; remove annoying stuff
     (let ((junk '(("(<span class=\"URL\">" . "</span>)")
-		  ("<div class=\"Ad\">" . "</div>"))))
+		  ("<div class=\"Ad\"" . "</div>"))))
       (while junk
 	(goto-char (point-min))
 	(let ((beg-str (caar junk)) (end-str (cdar junk)) beg end)
