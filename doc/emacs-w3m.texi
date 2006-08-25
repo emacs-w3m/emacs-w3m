@@ -3836,6 +3836,14 @@ common e-mails.
 shouldn't be prolonged), it means ``newspaper'' in Japanese.
 @end quotation
 
+The @samp{shimbun} module has the goal to generate articles that are as
+readable as normal mail or news posting.  This goal is often difficult
+to achieve as web sites change the html of their articles.
+
+If you notice (even small) annoyances like nonsense images within the
+text or any other text that is not related to the article please report
+them using @code{report-emacs-w3m-bug} (@pxref{Mailing List}).
+
 @samp{Shimbun} library currently supports Asahi Shimbun, Yomiuri
 On-line, many maling list archives such as Emacs Devel, XEmacs Beta,
 Gnus, Mew, and Wanderlust, the Japanese Prime Minister Koizumi's mail
