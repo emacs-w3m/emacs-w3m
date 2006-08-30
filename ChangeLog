@@ -1,3 +1,7 @@
+2006-08-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-ohmynews.el: New module.
+
 2006-08-24  David Hansen  <david.hansen@pysik.fu-berlin.de>
 
 	* shimbun/sb-the-register.el (shimbun-make-contents): Fixed junk

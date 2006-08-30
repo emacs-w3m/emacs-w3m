@@ -4826,6 +4826,11 @@ zeit-de.chancen zeit-de.dossier zeit-de.hochschule zeit-de.leben
 zeit-de.literatur zeit-de.media zeit-de.news zeit-de.politik
 zeit-de.reden zeit-de.reisen zeit-de.wirtschaft zeit-de.wissen
 zeit-de.wohlfuehlen zeit-de.zeitlaeufte
+
+@item @uref{http://ohmynews.co.jp/, オーマイニュース}
+ohmynews-jp.shakai ohmynews-jp.keizai ohmynews-jp.seiji
+ohmynews-jp.kokusai ohmynews-jp.entame ohmynews-jp.life
+ohmynews-jp.science ohmynews-jp.sports ohmynews-jp.books ohmynews-jp.all
 @end table
 
 @node Mailing Lists Supported by Shimbun
