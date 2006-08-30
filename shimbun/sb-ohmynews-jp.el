@@ -119,6 +119,7 @@ v*[xW.y6Tt/r=U{a?+nH20N{)a/w145kJxfhqf}Jd<p\n `bP:u\\Awi^xGQ3pUOrsPL.';\
 	      "\\([012]?[0-9]:[0-5]?[0-9]\\(?::[0-5]?[0-9]\\)\\)"
 	      s0 ")" s0 "<")))
 	(group (shimbun-current-group-internal shimbun))
+	(gname (shimbun-current-group-name shimbun))
 	md start url id subject end author year month day time headers)
     (while (cond ((eq md 'end)
 		  nil)
@@ -145,7 +146,8 @@ v*[xW.y6Tt/r=U{a?+nH20N{)a/w145kJxfhqf}Jd<p\n `bP:u\\Awi^xGQ3pUOrsPL.';\
 	      time (match-string 5))
 	(push (shimbun-create-header
 	       0 subject
-	       (concat shimbun-ohmynews-jp-server-name " (" author ")")
+	       (concat shimbun-ohmynews-jp-server-name ":"
+		       gname " (" author ")")
 	       (shimbun-make-date-string year month day time)
 	       (format "<%d%02d%02d.%s.%s%%%s.%s>"
 		       year month day
