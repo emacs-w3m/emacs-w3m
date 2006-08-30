@@ -91,7 +91,7 @@ v*[xW.y6Tt/r=U{a?+nH20N{)a/w145kJxfhqf}Jd<p\n `bP:u\\Awi^xGQ3pUOrsPL.';\
 	      "<a" s1 "href=[\"']?"
 	      ;; 1. url
 	      "\\(http://www\\.ohmynews\\.co\\.jp/News\\.aspx\\?news_id="
-	      ;; 2. id
+	      ;; 2. serial
 	      "\\([0-9]+\\)"
 	      "\\)"
 	      "[\"']?" s0 ">" s0 "<h1>" s0
@@ -99,6 +99,7 @@ v*[xW.y6Tt/r=U{a?+nH20N{)a/w145kJxfhqf}Jd<p\n `bP:u\\Awi^xGQ3pUOrsPL.';\
 	      "\\([^<]+\\)"
 	      s0 "</h1>"))))
 	(regexp2
+	 (eval-when-compile
 	   (let ((s0 "[\t\n\r ]*")
 		 (s1 "[\t\n\r ]+"))
 	     (concat
@@ -117,47 +118,77 @@ v*[xW.y6Tt/r=U{a?+nH20N{)a/w145kJxfhqf}Jd<p\n `bP:u\\Awi^xGQ3pUOrsPL.';\
 	      s1
 	      ;; 5. time
 	      "\\([012]?[0-9]:[0-5]?[0-9]\\(?::[0-5]?[0-9]\\)\\)"
-	      s0 ")" s0 "<")))
+	      s0 ")" s0 "<"))))
 	(group (shimbun-current-group-internal shimbun))
 	(gname (shimbun-current-group-name shimbun))
-	md start url id subject end author year month day time headers)
-    (while (cond ((eq md 'end)
-		  nil)
-		 (md
-		  (set-match-data md)
-		  (goto-char (setq start (match-end 0))))
-		 ((re-search-forward regexp1 nil t)
-		  (setq start (match-end 0))))
-      (setq url (match-string 1)
-	    id (match-string 2)
-	    subject (match-string 3))
-      (if (re-search-forward regexp1 nil t)
-	  (progn
-	    (setq end (match-beginning 0)
-		  md (match-data))
-	    (goto-char start))
-	(setq end nil
-	      md 'end))
-      (when (re-search-forward regexp2 end t)
-	(setq author (match-string 1)
-	      year (string-to-number (match-string 2))
-	      month (string-to-number (match-string 3))
-	      day (string-to-number (match-string 4))
-	      time (match-string 5))
-	(push (shimbun-create-header
-	       0 subject
-	       (concat shimbun-ohmynews-jp-server-name ":"
-		       gname " (" author ")")
-	       (shimbun-make-date-string year month day time)
-	       (format "<%d%02d%02d.%s.%s%%%s.%s>"
-		       year month day
-		       (mapconcat (lambda (elem)
-				    (format "%02d" (string-to-number elem)))
-				  (split-string time ":")
-				  "")
-		       id group shimbun-ohmynews-jp-top-level-domain)
-	       "" 0 0 url)
-	      headers)))
+	md start url serial subject end author year month day time id
+	backnumbers headers)
+    (catch 'stop
+      (while t
+	(while (cond ((eq md 'end)
+		      nil)
+		     (md
+		      (set-match-data md)
+		      (goto-char (setq start (match-end 0))))
+		     ((re-search-forward regexp1 nil t)
+		      (setq start (match-end 0))))
+	  (setq url (match-string 1)
+		serial (match-string 2)
+		subject (match-string 3))
+	  (if (re-search-forward regexp1 nil t)
+	      (progn
+		(setq end (match-beginning 0)
+		      md (match-data))
+		(goto-char start))
+	    (setq end nil
+		  md 'end))
+	  (when (re-search-forward regexp2 end t)
+	    (setq author (match-string 1)
+		  year (string-to-number (match-string 2))
+		  month (string-to-number (match-string 3))
+		  day (string-to-number (match-string 4))
+		  time (match-string 5)
+		  id (format "<%d%02d%02d.%s.%s%%%s.%s>"
+			     year month day
+			     (mapconcat
+			      (lambda (elem)
+				(format "%02d" (string-to-number elem)))
+			      (split-string time ":")
+			      "")
+			     serial group
+			     shimbun-ohmynews-jp-top-level-domain))
+	    (unless (and (shimbun-search-id shimbun id)
+			 (if backnumbers
+			     (throw 'stop nil)
+			   t))
+	      (push (shimbun-create-header
+		     0 subject
+		     (concat shimbun-ohmynews-jp-server-name ":"
+			     gname " (" author ")")
+		     (shimbun-make-date-string year month day time)
+		     id "" 0 0 url)
+		    headers))))
+	(cond ((eq backnumbers 'stop)
+	       (throw 'stop nil))
+	      ((null backnumbers)
+	       (while (re-search-forward "<a[\t\n\r ]+href=[\"']\
+\\(/NewsList\\.aspx\\?newstype_id=[0-9]+&amp;type_id=[A-Z]+&amp;list_page=\
+\[0-9]+\\)[\"'][\t\n\r ]*>[\t\n\r]*[0-9]"
+					 nil t)
+		 (unless (member (setq id (match-string 1)) backnumbers)
+		   (setq backnumbers (nconc backnumbers (list id)))))))
+	(if backnumbers
+	    (progn
+	      (shimbun-retrieve-url
+	       (prog1
+		   (shimbun-expand-url (shimbun-decode-entities-string
+					(car backnumbers))
+				       (shimbun-url-internal shimbun))
+		 (erase-buffer)
+		 (unless (setq backnumbers (cdr backnumbers))
+		   (setq backnumbers 'stop))))
+	      (setq md nil))
+	  (throw 'stop nil))))
     (shimbun-sort-headers headers)))
 
 (luna-define-method shimbun-make-contents
