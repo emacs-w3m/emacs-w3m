@@ -1795,9 +1795,13 @@ Here are some predefined functions which can be used for those ways:
      ,(concat "<a href=" w3m-html-string-regexp ">次のページ</a>")
      ,(concat "<a href=" w3m-html-string-regexp ">前のページ</a>")
      nil nil)
-    (w3m-relationship-magicpoint-estimate)
+    (w3m-relationship-simple-estimate
+     "\\`http://freshmeat\\.net/search/"
+     ,(concat "<A HREF=" w3m-html-string-regexp ">\\[&raquo;\\]</A>")
+     ,(concat "<A HREF=" w3m-html-string-regexp ">\\[&laquo;\\]</A>")
+     nil nil)
     (w3m-relationship-oddmuse-estimate)
-    (w3m-relationship-freshmeat-estimate))
+    (w3m-relationship-magicpoint-estimate))
   "*Rules to estimate relationships between a retrieved page and others."
   :group 'w3m
   :type '(repeat
@@ -5467,24 +5471,15 @@ when the URL of the retrieved page matches the REGEXP."
 (defun w3m-relationship-oddmuse-estimate (url)
   (when (string-match "/wiki\\?search=[^\";]*\\(;page=\\([0-9]+\\)\\)?" url)
     (let ((re "<a href=\"\\(http://[^\"]+?/wiki\\?search=[^\";]*")
-          (n (match-string 2 url)))
+	  (n (match-string 2 url)))
       (setq n (or (and n (string-to-number n)) 1))
       (let ((next (concat re ";page=" (number-to-string (1+ n)) "\\)\""))
-            (prev (cond
-                   ((< 2 n)
-                    (concat re ";page=" (number-to-string (1- n)) "\\)\""))
-                   ((= 2 n)
-                    "<a href=\"\\(http://[^\"]+?/wiki\\?search=[^\"]*\\)\""))))
-        (w3m-relationship-search-patterns url next prev)))))
-
-(defun w3m-relationship-freshmeat-estimate (url)
-  (when (string-match "^http://freshmeat.net/search/" url)
-        (w3m-relationship-search-patterns
-         url
-         (eval-when-compile
-           (concat "<A HREF=" w3m-html-string-regexp ">\\[&raquo;\\]</A>"))
-         (eval-when-compile
-           (concat "<A HREF=" w3m-html-string-regexp ">\\[&laquo;\\]</A>")))))
+	    (prev (cond
+		   ((< 2 n)
+		    (concat re ";page=" (number-to-string (1- n)) "\\)\""))
+		   ((= 2 n)
+		    "<a href=\"\\(http://[^\"]+?/wiki\\?search=[^\"]*\\)\""))))
+	(w3m-relationship-search-patterns url next prev)))))
 
 (defun w3m-relationship-search-patterns (url next previous
 					     &optional start contents)
@@ -5493,33 +5488,33 @@ when the URL of the retrieved page matches the REGEXP."
   (and next
        (re-search-forward next nil t)
        (setq w3m-next-url
-	     (w3m-expand-url (or (match-string 2)
-				 (match-string 3)
-				 (match-string 1))
+	     (w3m-expand-url (w3m-decode-anchor-string (or (match-string 2)
+							   (match-string 3)
+							   (match-string 1)))
 			     url))
        (goto-char (point-min)))
   (and previous
        (re-search-forward previous nil t)
        (setq w3m-previous-url
-	     (w3m-expand-url (or (match-string 2)
-				 (match-string 3)
-				 (match-string 1))
+	     (w3m-expand-url (w3m-decode-anchor-string (or (match-string 2)
+							   (match-string 3)
+							   (match-string 1)))
 			     url))
        (goto-char (point-min)))
   (and start
        (re-search-forward start nil t)
        (setq w3m-start-url
-	     (w3m-expand-url (or (match-string 2)
-				 (match-string 3)
-				 (match-string 1))
+	     (w3m-expand-url (w3m-decode-anchor-string (or (match-string 2)
+							   (match-string 3)
+							   (match-string 1)))
 			     url))
        (goto-char (point-min)))
   (and contents
        (re-search-forward contents nil t)
        (setq w3m-contents-url
-	     (w3m-expand-url (or (match-string 2)
-				 (match-string 3)
-				 (match-string 1))
+	     (w3m-expand-url (w3m-decode-anchor-string (or (match-string 2)
+							   (match-string 3)
+							   (match-string 1)))
 			     url))))
 
 (defun w3m-search-name-anchor (name &optional quiet)

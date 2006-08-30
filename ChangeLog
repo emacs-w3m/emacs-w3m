@@ -1,3 +1,13 @@
+2006-08-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-relationship-search-patterns): Call
+	`w3m-decode-anchor-string' in order to decode "&amp;" in anchor
+	strings.
+	(w3m-relationship-freshmeat-estimate): Removed.
+	(w3m-relationship-estimate-rules): Use
+	`w3m-relationship-simple-estimate' instead of the above, to
+	simplify related codes.
+
 2006-08-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-ohmynews-jp.el: New module.
