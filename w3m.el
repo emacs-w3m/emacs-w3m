@@ -1297,6 +1297,7 @@ See the balloon-help.el file for more information."
 (defcustom w3m-show-decoded-url
   '(("\\`http://\\(?:[^./?#]+\\.\\)*wikipedia\\.org/" . utf-8)
     ("\\`http://\\(?:[^./?#]+\\.\\)*hatena\\.ne\\.jp/" . euc-jp)
+    ("\\`http://\\(?:[^./?#]+\\.\\)*ohmynews\\.co\\.jp/" . utf-8)
     (t . t))
   "*Non-nil means show decoded URIs in the echo area, the balloon, etc.
 This variable can take one of the following five kinds of forms:
