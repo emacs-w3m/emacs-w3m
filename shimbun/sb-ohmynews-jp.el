@@ -1,4 +1,4 @@
-;;; sb-ohmynews.el --- shimbun backend for OhmyNews Japan -*- coding: iso-2022-7bit; -*-
+;;; sb-ohmynews-jp.el --- shimbun backend for OhmyNews Japan -*- coding: iso-2022-7bit; -*-
 
 ;; Copyright (C) 2006 Katsumi Yamaoka
 

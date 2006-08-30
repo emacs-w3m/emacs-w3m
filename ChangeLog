@@ -1,6 +1,6 @@
 2006-08-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* shimbun/sb-ohmynews.el: New module.
+	* shimbun/sb-ohmynews-jp.el: New module.
 
 2006-08-24  David Hansen  <david.hansen@pysik.fu-berlin.de>
 
