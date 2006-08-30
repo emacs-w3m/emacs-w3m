@@ -4,6 +4,7 @@
 
 	* shimbun/sb-ohmynews-jp.el (shimbun-get-headers): Show Japanese
 	group name in From.
+	(shimbun-make-contents): Break long Japanese lines.
 
 2006-08-30  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 

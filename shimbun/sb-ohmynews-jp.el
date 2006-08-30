@@ -160,6 +160,10 @@ v*[xW.y6Tt/r=U{a?+nH20N{)a/w145kJxfhqf}Jd<p\n `bP:u\\Awi^xGQ3pUOrsPL.';\
 	      headers)))
     (shimbun-sort-headers headers)))
 
+(luna-define-method shimbun-make-contents
+  :before ((shimbun shimbun-ohmynews-jp) header)
+  (shimbun-break-long-japanese-lines shimbun))
+
 (provide 'sb-ohmynews-jp)
 
 ;;; sb-ohmynews-jp.el ends here
