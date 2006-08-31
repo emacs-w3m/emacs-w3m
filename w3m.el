@@ -1818,6 +1818,12 @@ Here are some predefined functions which can be used for those ways:
 		 function
 		 (repeat :tag "Arguments" sexp)))))
 
+(defcustom w3m-enable-google-feeling-lucky t
+  "Non-nil enables you to enter any words as well as a url when prompted.
+In that case, emacs-w3m uses Google to search for the words."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-google-feeling-lucky-charset
   (cond
    ((or (featurep 'un-define) (fboundp 'utf-translate-cjk-mode))
@@ -3877,6 +3883,8 @@ if it has no scheme part."
 	     default
 	     (not initial))
 	default
+      (unless w3m-enable-google-feeling-lucky
+	(setq feeling-lucky nil))
       (setq url (let ((minibuffer-setup-hook
 		       (append minibuffer-setup-hook '(beginning-of-line)))
 		      (ofunc (lookup-key minibuffer-local-completion-map " ")))
