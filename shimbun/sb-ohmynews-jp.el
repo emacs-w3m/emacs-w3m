@@ -118,6 +118,16 @@ v*[xW.y6Tt/r=U{a?+nH20N{)a/w145kJxfhqf}Jd<p\n `bP:u\\Awi^xGQ3pUOrsPL.';\
 	      ;; 5. time
 	      "\\([012]?[0-9]:[0-5]?[0-9]\\(?::[0-5]?[0-9]\\)\\)"
 	      s0 ")" s0 "<"))))
+	(regexp3
+	 (eval-when-compile
+	   (let ((s0 "[\t\n\r ]*")
+		 (s1 "[\t\n\r ]+"))
+	     (concat
+	      "<a" s1 "href=[\"']"
+	      "\\(/NewsList\\.aspx\\?"
+	      "\\(?:newstype_id=[0-9]+&amp;type_id=[A-Z]+&amp;\\)?"
+	      "list_page=[0-9]+\\)"
+	      "[\"']" s0 ">" s0 "[0-9]"))))
 	(group (shimbun-current-group-internal shimbun))
 	(gname (shimbun-current-group-name shimbun))
 	md start url serial subject end author year month day time id
@@ -170,22 +180,28 @@ v*[xW.y6Tt/r=U{a?+nH20N{)a/w145kJxfhqf}Jd<p\n `bP:u\\Awi^xGQ3pUOrsPL.';\
 	(cond ((eq backnumbers 'stop)
 	       (throw 'stop nil))
 	      ((null backnumbers)
-	       (while (re-search-forward "<a[\t\n\r ]+href=[\"']\
-\\(/NewsList\\.aspx\\?newstype_id=[0-9]+&amp;type_id=[A-Z]+&amp;list_page=\
-\[0-9]+\\)[\"'][\t\n\r ]*>[\t\n\r]*[0-9]"
-					 nil t)
+	       (while (re-search-forward regexp3 nil t)
 		 (unless (member (setq id (match-string 1)) backnumbers)
 		   (setq backnumbers (nconc backnumbers (list id)))))))
 	(if backnumbers
 	    (progn
+	      (erase-buffer)
 	      (shimbun-retrieve-url
-	       (prog1
-		   (shimbun-expand-url (shimbun-decode-entities-string
-					(car backnumbers))
-				       (shimbun-url-internal shimbun))
-		 (erase-buffer)
-		 (unless (setq backnumbers (cdr backnumbers))
-		   (setq backnumbers 'stop))))
+	       (shimbun-expand-url (shimbun-decode-entities-string
+				    (car backnumbers))
+				   (shimbun-url-internal shimbun)))
+	      (when (and (cdr backnumbers)
+			 (re-search-forward
+			  (concat "<a[\t\n\r ]+href=[\"']"
+				  (regexp-quote (cadr backnumbers))
+				  "[\"'][\t\n\r ]*>[\t\n\r ]*[0-9]")
+			  nil t))
+		(while (re-search-forward regexp3 nil t)
+		  (unless (member (setq id (match-string 1)) backnumbers)
+		    (setq backnumbers (nconc backnumbers (list id)))))
+		(goto-char (point-min)))
+	      (unless (setq backnumbers (cdr backnumbers))
+		(setq backnumbers 'stop))
 	      (setq md nil))
 	  (throw 'stop nil))))
     (shimbun-sort-headers headers)))
