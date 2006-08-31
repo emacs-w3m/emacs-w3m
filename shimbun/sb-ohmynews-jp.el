@@ -43,11 +43,10 @@
 
 (defvar shimbun-ohmynews-jp-content-start
   "\\(?:<div[\t\n\r ]+class=\"news-sub[bt]itle\">[\t\n\r ]*\
-\\|<!-+[\t\n\r ]*\\(?:編集者注\\|記事本文\\)[\t\n\r ]*-+>\
-\[\t\n\r ]*\\(?:<[^>]+>[\t\n\r ]*\\)*\\)")
+\\|<!-+[\t\n\r ]*\\(?:編集者注\\|記事本文\\)[\t\n\r ]*-+>[\t\n\r ]*\\)")
 
 (defvar shimbun-ohmynews-jp-content-end
-  "\\(?:[\t\n\r ]*<[^>]+>\\)*[\t\n\r ]*<!-+[\t\n\r ]*記事フッタ[\t\n\r ]*-+>")
+  "[\t\n\r ]*<!-+[\t\n\r ]*記事フッタ[\t\n\r ]*-+>")
 
 (defvar shimbun-ohmynews-jp-group-table
   '(("shakai" "社会" "NewsList.aspx?newstype_id=0&type_id=COM")

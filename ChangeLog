@@ -1,3 +1,8 @@
+2006-08-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-ohmynews-jp.el (shimbun-ohmynews-jp-content-start)
+	(shimbun-ohmynews-jp-content-end): Relax.
+
 2006-08-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-show-decoded-url): Add entry for ohmynews.co.jp.
