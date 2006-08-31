@@ -4831,6 +4831,9 @@ zeit-de.wohlfuehlen zeit-de.zeitlaeufte
 ohmynews-jp.shakai ohmynews-jp.keizai ohmynews-jp.seiji
 ohmynews-jp.kokusai ohmynews-jp.entame ohmynews-jp.life
 ohmynews-jp.science ohmynews-jp.sports ohmynews-jp.books ohmynews-jp.all
+
+@item @uref{http://www.theonion.com/, The Onion}
+the-onion.news
 @end table
 
 @node Mailing Lists Supported by Shimbun
