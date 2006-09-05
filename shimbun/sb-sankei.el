@@ -218,9 +218,9 @@
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
 		(concat
-		 "<a" s1 "href=\""
+		 "<a" s1 "href=\"\\(?:\\./\\)?"
 		 ;; 1. url
-		 "\\(\\(?:\\.\\|http://www\\.sankei\\.co\\.jp/news\\)/"
+		 "\\("
 		 ;; 2. year
 		 "\\(\\(?:20\\)?[0-9][0-9]\\)"
 		 "[01][0-9][0-3][0-9]/\\(?:col"
@@ -238,8 +238,7 @@
 		 "\\([012]?[0-9]:[0-5]?[0-9]\\(?:[0-5]?[0-9]\\)?\\)"
 		 s0 ")")))
 	    nil t)
-      (when (eq (aref (setq url (match-string 1)) 0) ?.)
-	(setq url (concat shimbun-sankei-url "news" (substring url 1))))
+      (setq url (concat shimbun-sankei-url "news/" (match-string 1)))
       (when (< (setq year (string-to-number (match-string 2))) 100)
 	(setq year (+ year 2000)))
       (setq serial (match-string 3)
