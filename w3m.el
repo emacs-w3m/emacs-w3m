@@ -1574,14 +1574,14 @@ of the w3m command.  See also `w3m-command'."
   :group 'w3m
   :type '(string :size 0))
 
-(defcustom w3m-local-find-file-regexps '(nil . "\\.html?\\'")
+(defcustom w3m-local-find-file-regexps '(nil . "\\.[sx]?html?\\'")
   "*Cons of two regexps matching and not matching with local file names.
 If a url of the `file:' scheme in which you entered matches the first
 form and does not match the latter form, it will be opened by the
 function specified by the `w3m-local-find-file-function' variable.
 Nil for the regexp matches any file names.
 
-For instance, the value `(nil . \"\\\\.html?\\\\'\")' allows
+For instance, the value `(nil . \"\\\\.[sx]?html?\\\\'\")' allows
 \"file:///some/where/w3m.el\", not \"file:///any/where/index.html\", to
 open by the function specified by `w3m-local-find-file-function'.  The
 latter will be opened as a normal web page.

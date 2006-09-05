@@ -1,3 +1,8 @@
+2006-09-05  David Hansen  <david.hansen@gmx.net>
+
+	* w3m.el (w3m-local-find-file-regexps): Default to
+	'(nil . "\\.[sx]?html?\\'").
+
 2006-09-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-sankei.el (shimbun-sankei-group-table): Update editoria,
