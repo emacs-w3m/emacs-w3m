@@ -1,3 +1,13 @@
+2006-09-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-sankei.el (shimbun-sankei-group-table): Update editoria,
+	column, and seiron groups.
+	(shimbun-sankei-get-headers-editoria): Rewrite.
+	(shimbun-sankei-get-headers-column): Rewrite.
+	(shimbun-sankei-get-headers-seiron): Rewrite.
+	(shimbun-clear-contents): Remove headlines and blockquotes from seiron
+	articles.
+
 2006-08-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-ohmynews-jp.el (shimbun-get-headers): Fetch old
