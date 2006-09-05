@@ -26,6 +26,8 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
+
 (require 'shimbun)
 
 (luna-define-class shimbun-sankei (shimbun-japanese-newspaper shimbun) ())
@@ -316,7 +318,29 @@
 (luna-define-method shimbun-clear-contents :before ((shimbun shimbun-sankei)
 						    header)
   (let ((group (shimbun-current-group-internal shimbun)))
-    (cond ((string-equal group "column")
+    (cond ((string-equal group "editoria")
+	   ;; Rearrange subject header.
+	   (let (posns subjects)
+	     (while (re-search-forward
+		     (eval-when-compile
+		       (let ((s0 "[\t\n 　]*")
+			     (s1 "[\t\n ]+"))
+			 (concat "[\t ]*<font" s1 "[^>]+>" s0 "■" s0
+				 "</font>" s0 "<\\(?:strong\\|b\\)>" s0
+				 "【主張】" s0 "\\([^<]+\\)" s0
+				 "</\\(?:strong\\|b\\)>" s0 "<p>" s0)))
+		     nil t)
+	       (push (list (match-beginning 0) (match-end 0)) posns)
+	       (push (match-string 1) subjects))
+	     (cond ((= (length subjects) 1)
+		    (delete-region (caar posns) (cadar posns)))
+		   ((>= (length subjects) 2)
+		    (shimbun-header-set-subject header
+						(mapconcat
+						 'identity
+						 (nreverse subjects)
+						 " / "))))))
+	  ((string-equal group "column")
 	   (while (re-search-forward "\\([^\n>]\\)\\(　▼\\)" nil t)
 	     (replace-match "\\1。\n<p>\\2")))
 	  ((string-equal group "seiron")

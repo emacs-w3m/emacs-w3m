@@ -5,8 +5,8 @@
 	(shimbun-sankei-get-headers-editoria): Rewrite.
 	(shimbun-sankei-get-headers-column): Rewrite.
 	(shimbun-sankei-get-headers-seiron): Rewrite.
-	(shimbun-clear-contents): Remove headlines and blockquotes from seiron
-	articles.
+	(shimbun-clear-contents): Rearrange subject header in editoria
+	articles; remove headlines and blockquotes from seiron articles.
 
 2006-08-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
