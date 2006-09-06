@@ -35,9 +35,8 @@
   "http://www.spiegel.de/schlagzeilen/rss/0,5291,,00.xml")
 (defvar shimbun-spiegel-groups '("news"))
 (defvar shimbun-spiegel-from-address  "spiegel_online@spiegel.de")
-(defvar shimbun-spiegel-content-start "<p>")
-(defvar shimbun-spiegel-content-end
-  "\\(<hr size=\"1\" noshade>\\|<div align=right>\\)")
+(defvar shimbun-spiegel-content-start "^URL:.*")
+(defvar shimbun-spiegel-content-end "<div class=\"spArticleCredit\">")
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-spiegel))
   shimbun-spiegel-url)
