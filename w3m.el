@@ -643,6 +643,27 @@ w3m command, edit the file named \"~/.w3m/config\" normally."
   :group 'w3m
   :type '(directory :size 0))
 
+(defcustom w3m-default-directory nil
+  "*Directory used as the current directory in emacs-w3m buffers.
+The valid values include a string specifying an existing directory,
+a symbol of which the value specifies an existing directory,
+a function which takes a url as an argument and returns a directory,
+or nil.  If the specified directory does not exist or it is nil,
+the value of `w3m-profile-directory' is used.
+
+Note that there is an exception: if a page visits a local file or
+visits a remote file using ftp, the directory in which the file exists
+is used as the current directory instead."
+  :group 'w3m
+  :type '(radio (directory :format "%{%t%}: %v\n" :size 0 :value "~/")
+		(symbol :format "%{%t%}: %v\n"
+			:match (lambda (widget value) value)
+			:size 0
+			:value default-directory)
+		(function :format "%{%t%}: %v\n"
+			  :size 0)
+		(const nil)))
+
 (defcustom w3m-accept-languages
   (let ((file (expand-file-name "config" w3m-profile-directory)))
     (or (when (file-readable-p file)
@@ -7949,22 +7970,43 @@ Cannot run two w3m processes simultaneously \
    (t (w3m-message "Invalid URL: %s" url))))
 
 (defun w3m-current-directory (url)
-  (let (file)
-    (file-name-as-directory
-     (if (and url (stringp url))
-	 (if (string-match "\\`ftp://" url)
-	     (progn
-	       (setq file (w3m-convert-ftp-url-for-emacsen url))
-	       (if (string-match "/\\`" file)
-		   file
-		 (file-name-directory file)))
-	   (setq file (w3m-url-to-file-name url))
-	   (if (and file (file-exists-p file))
-	       (if (file-directory-p file)
-		   file
-		 (file-name-directory file))
-	     w3m-profile-directory))
-       w3m-profile-directory))))
+  "Return a directory used as the current directory in a page visiting URL.
+See `w3m-default-directory'."
+  (or (and url
+	   (stringp url)
+	   (let (file)
+	     (if (string-match "\\`ftp://" url)
+		 (progn
+		   (setq file (w3m-convert-ftp-url-for-emacsen url))
+		   (file-name-as-directory
+		    (if (string-match "/\\`" file)
+			file
+		      (file-name-directory file))))
+	       (and (setq file (w3m-url-to-file-name url))
+		    (file-exists-p file)
+		    (file-name-as-directory
+		     (if (file-directory-p file)
+			 file
+		       (file-name-directory file)))))))
+      (let (directory)
+	(file-name-as-directory
+	 (or (and (stringp w3m-default-directory)
+		  (file-directory-p w3m-default-directory)
+		  (expand-file-name w3m-default-directory))
+	     (and (symbolp w3m-default-directory)
+		  (boundp w3m-default-directory)
+		  (setq directory (symbol-value w3m-default-directory))
+		  (stringp directory)
+		  (file-directory-p directory)
+		  (expand-file-name directory))
+	     (and (functionp w3m-default-directory)
+		  (stringp (setq directory
+				 (condition-case nil
+				     (funcall w3m-default-directory url)
+				   (error nil))))
+		  (file-directory-p directory)
+		  (expand-file-name directory))
+	     w3m-profile-directory)))))
 
 (defun w3m-refresh-at-time ()
   (when (and w3m-use-refresh w3m-current-refresh)
