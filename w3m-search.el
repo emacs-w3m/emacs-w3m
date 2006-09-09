@@ -78,19 +78,21 @@
 	     "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=utf-8"
 	     utf-8)
 	    ("google-en"
-	     "http://www.google.com/search?q=%s")))
+	     "http://www.google.com/search?q=%s&hl=en&ie=utf-8"
+	     utf-8)))
 	 (ja
 	  '(("google"
 	     "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=Shift_JIS"
 	     shift_jis)
 	    ("google-en"
-	     "http://www.google.com/search?q=%s")))
+	     "http://www.google.com/search?q=%s&hl=en")))
 	 (utf-8
 	  '(("google"
 	     "http://www.google.com/search?q=%s&ie=utf-8"
 	     utf-8)
 	    ("google-en"
-	     "http://www.google.com/search?q=%s")))
+	     "http://www.google.com/search?q=%s&hl=en&ie=utf-8"
+	     utf-8)))
 	 (t
 	  '(("google"
 	     "http://www.google.com/search?q=%s")
