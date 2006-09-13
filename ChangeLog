@@ -1,5 +1,9 @@
 2006-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-lynx-like-map, w3m-info-like-map): Don't bind M-g key
+	because Emacs 22 uses it as a prefix command in global map.  Suggested
+	by David Hansen <david.hansen@gmx.net>.
+
 	* shimbun/sb-gendai-net.el: New module.
 
 2006-09-09  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
