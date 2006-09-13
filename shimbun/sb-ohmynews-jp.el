@@ -130,6 +130,8 @@ v*[xW.y6Tt/r=U{a?+nH20N{)a/w145kJxfhqf}Jd<p\n `bP:u\\Awi^xGQ3pUOrsPL.';\
 	      "[\"']" s0 ">" s0 "[0-9]"))))
 	(group (shimbun-current-group-internal shimbun))
 	(gname (shimbun-current-group-name shimbun))
+	(pages (shimbun-header-index-pages range))
+	(count 0)
 	md start url serial subject end author year month day time id
 	backnumbers headers)
     (catch 'stop
@@ -183,7 +185,9 @@ v*[xW.y6Tt/r=U{a?+nH20N{)a/w145kJxfhqf}Jd<p\n `bP:u\\Awi^xGQ3pUOrsPL.';\
 	       (while (re-search-forward regexp3 nil t)
 		 (unless (member (setq id (match-string 1)) backnumbers)
 		   (setq backnumbers (nconc backnumbers (list id)))))))
-	(if backnumbers
+	(if (and backnumbers
+		 (or (not pages)
+		     (< (setq count (1+ count)) pages)))
 	    (progn
 	      (erase-buffer)
 	      (shimbun-retrieve-url
