@@ -88,11 +88,12 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAYBAMAAABO02PvAAAAGFBMVEX+6ctRUVH7qDX416T
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-gendai-net)
 					 &optional range)
-  (if (string-equal (shimbun-current-group-internal shimbun) "today")
-      (shimbun-gendai-net-get-headers-today shimbun range)
-    (shimbun-gendai-net-get-headers-default shimbun range)))
+  (let ((pages (shimbun-header-index-pages range)))
+    (if (string-equal (shimbun-current-group-internal shimbun) "today")
+	(shimbun-gendai-net-get-headers-today shimbun pages)
+      (shimbun-gendai-net-get-headers-default shimbun pages))))
 
-(defun shimbun-gendai-net-get-headers-today (shimbun range)
+(defun shimbun-gendai-net-get-headers-today (shimbun pages)
   (let ((regexp1
 	 (eval-when-compile
 	   (let ((s0 "[\t\n\r ]*")
@@ -130,7 +131,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAYBAMAAABO02PvAAAAGFBMVEX+6ctRUVH7qDX416T
 	(group (shimbun-current-group-internal shimbun))
 	(from (concat "ゲンダイネット (" (shimbun-current-group-name shimbun)
 		      ")"))
-	year month indices day index date url base c num subject id headers)
+	year month indices index day date url base c num subject id headers)
     (while (re-search-forward regexp1 nil t)
       (setq year (string-to-number (match-string 2))
 	    month (string-to-number (match-string 3)))
@@ -151,18 +152,17 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAYBAMAAABO02PvAAAAGFBMVEX+6ctRUVH7qDX416T
 		(when (= (setq month (string-to-number (match-string 1))) 12)
 		  (setq year (1- year)))
 	      (setq month (string-to-number (match-string 1))))
-	    (setq day (string-to-number (match-string 2))
-		  indices (list (list (format
-				       "http://gendai.net/?td=%d%02d%02d"
-				       year month day)
-				      year month day)))))
+	    (setq indices (list (list nil year month
+				      (string-to-number (match-string 2)))))))
 	(goto-char (match-end 0))
 	(push (list (match-string 1)
 		    (string-to-number (match-string 2))
 		    (string-to-number (match-string 3))
 		    (string-to-number (match-string 4)))
 	      indices)))
-    (setq indices (nreverse indices))
+    (setq indices (nreverse (if pages
+				(last indices pages)
+			      indices)))
     (catch 'stop
       (while indices
 	(setq index (pop indices)
@@ -171,8 +171,9 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAYBAMAAABO02PvAAAAGFBMVEX+6ctRUVH7qDX416T
 	      day (nth 3 index)
 	      index (car index)
 	      date (shimbun-make-date-string year month day))
-	(erase-buffer)
-	(shimbun-retrieve-url index)
+	(when index
+	  (erase-buffer)
+	  (shimbun-retrieve-url index))
 	(goto-char (point-max))
 	(while (re-search-backward regexp2 nil t)
 	  (setq url (match-string 1)
@@ -205,7 +206,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAYBAMAAABO02PvAAAAGFBMVEX+6ctRUVH7qDX416T
 		  headers)))))
     headers))
 
-(defun shimbun-gendai-net-get-headers-default (shimbun range)
+(defun shimbun-gendai-net-get-headers-default (shimbun pages)
   (let* ((regexp1
 	  (eval-when-compile
 	    (let ((s0 "[\t\n\r ]*"))
@@ -248,6 +249,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAYBAMAAABO02PvAAAAGFBMVEX+6ctRUVH7qDX416T
 	 (ctime (shimbun-decode-time nil 32400))
 	 (from (concat "ゲンダイネット (" (shimbun-current-group-name shimbun)
 		       ")"))
+	 (count 0)
 	 md start month day year date end url c num subject id backnumbers
 	 headers)
     (catch 'stop
@@ -297,7 +299,9 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAYBAMAAABO02PvAAAAGFBMVEX+6ctRUVH7qDX416T
 	       (while (re-search-forward regexp3 nil t)
 		 (unless (member (setq id (match-string 1)) backnumbers)
 		   (setq backnumbers (nconc backnumbers (list id)))))))
-	(if backnumbers
+	(if (and backnumbers
+		 (or (not pages)
+		     (< (setq count (1+ count)) pages)))
 	    (progn
 	      (erase-buffer)
 	      (shimbun-retrieve-url (car backnumbers))
