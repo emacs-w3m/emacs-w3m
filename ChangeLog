@@ -1,3 +1,7 @@
+2006-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-gendai-net.el: New module.
+
 2006-09-09  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
 
 	* w3m-search.el (w3m-search-engine-alist): Instruct explicitly Google

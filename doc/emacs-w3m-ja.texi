@@ -4700,6 +4700,10 @@ bbc.news
 
 @item @uref{http://www.spiegel.de/, Spiegel Online}
 spiegel.news
+
+@item @uref{http://gendai.net/, ゲンダイネット}
+gendai-net.today gendai-net.syakai gendai-net.sports gendai-net.geino
+gendai-net.wadai gendai-net.kenko gendai-net.syoku gendai-net.book
 @end table
 
 @node News Sites Supported by Shimbun
