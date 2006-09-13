@@ -130,8 +130,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAYBAMAAABO02PvAAAAGFBMVEX+6ctRUVH7qDX416T
 	(group (shimbun-current-group-internal shimbun))
 	(from (concat "ゲンダイネット (" (shimbun-current-group-name shimbun)
 		      ")"))
-	year month indices day index date url base c num subject id rest
-	headers)
+	year month indices day index date url base c num subject id headers)
     (while (re-search-forward regexp1 nil t)
       (setq year (string-to-number (match-string 2))
 	    month (string-to-number (match-string 3)))
@@ -187,7 +186,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAYBAMAAABO02PvAAAAGFBMVEX+6ctRUVH7qDX416T
 	  (if (shimbun-search-id shimbun id)
 	      (throw 'stop nil)
 	    (push (shimbun-create-header 0 subject from date id "" 0 0 url)
-		  rest)))
+		  headers)))
 	(when (re-search-backward
 	       (eval-when-compile
 		 (let ((s0 "[\t\n\r ]*"))
@@ -203,12 +202,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAYBAMAAABO02PvAAAAGFBMVEX+6ctRUVH7qDX416T
 	    (push (shimbun-create-header
 		   0 subject from date id "" 0 0
 		   (format "%s%d" base (1- num)))
-		  rest)))
-	(setq headers (nconc rest headers)
-	      rest nil)))
-    (if rest
-	(nconc rest headers)
-      headers)))
+		  headers)))))
+    headers))
 
 (defun shimbun-gendai-net-get-headers-default (shimbun range)
   (let* ((regexp1
