@@ -1,5 +1,14 @@
 2006-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-gendai-net.el (shimbun-get-headers): Support range.
+	(shimbun-gendai-net-get-headers-default): Ditto.
+	(shimbun-gendai-net-get-headers-today): Ditto; don't re-fetch initial
+	page.
+
+	* shimbun/sb-ohmynews-jp.el (shimbun-get-headers): Support range.
+
+2006-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-lynx-like-map, w3m-info-like-map): Don't bind M-g key
 	because Emacs 22 uses it as a prefix command in global map.  Suggested
 	by David Hansen <david.hansen@gmx.net>.
