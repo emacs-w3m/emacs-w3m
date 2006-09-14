@@ -250,8 +250,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAYBAMAAABO02PvAAAAGFBMVEX+6ctRUVH7qDX416T
 	 (from (concat "ゲンダイネット (" (shimbun-current-group-name shimbun)
 		       ")"))
 	 (count 0)
-	 md start month day year date end url c num subject id backnumbers
-	 headers)
+	 md start month day year date end url c num subject id headers
+	 backnumbers)
     (catch 'stop
       (while t
 	(while (cond ((eq md 'end)
@@ -287,10 +287,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAYBAMAAABO02PvAAAAGFBMVEX+6ctRUVH7qDX416T
 		  id (format "<%d%02d%02d.%s.%s%%%s.%s>"
 			     year month day c num group
 			     shimbun-gendai-net-top-level-domain))
-	    (unless (and (shimbun-search-id shimbun id)
-			 (if backnumbers
-			     (throw 'stop nil)
-			   t))
+	    (if (shimbun-search-id shimbun id)
+		(throw 'stop nil)
 	      (push (shimbun-create-header 0 subject from date id "" 0 0 url)
 		    headers))))
 	(cond ((eq backnumbers 'stop)
