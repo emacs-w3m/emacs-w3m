@@ -827,60 +827,64 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 
 (defun shimbun-nikkei-get-headers-it-default (group folder)
   "Function used to fetch headers for the it groups."
-  (let (sub-end headers)
+  (let (sub-end id headers)
     (catch 'stop
       (while t
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((s0 "[\t\n ]*")
-		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"/"
-			;; 1. url
-			"\\(\\(?:[^\"<>]+/\\)?"
-			"\\([a-z_-]+\\)\\.aspx\\?"
-			;; 3. serial
-			"\\("
-			"\\(?:ichiran=True&\\)?"
-			"[A-Z0-9a-z=]+\\(?:[\t\n ]*\\)?"
-			;; 3. serial number
-			;;"\\("
-			;; 4. day
-			"\\([0-3][0-9]\\)"
-			;; 5. month
-			"\\([01][0-9]\\)"
-			;; 6. year
-			"\\(20[0-9][0-9]\\)"
-			"\\(?:&Page=[0-9]?[0-9]\\)?"
-			"\\)"
-			"\\)" s0
-			"\">" s0 "\n?" s0
-			"\\(?:([01]?[0-9]/[0-3]?[0-9])\\)?" s0
-			;; 7. subject
-			"\\([^<]+\\)"
-			"</a>")))
-	    nil t)
-      (setq sub-end (point))
-      (push (shimbun-create-header
-	     0
-	     (match-string 7)
-	     shimbun-nikkei-from-address
-	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 6))
-	      (string-to-number (match-string 5))
-	      (string-to-number (match-string 4)))
-	     (concat "<" (match-string 3) "%" group "."
-		     shimbun-nikkei-top-level-domain ">")
-	     "" 0 0
-	     (shimbun-nikkei-expand-url
-	      (concat "http://it.nikkei.co.jp/" (match-string 1)) folder))
-	      headers)
-	(goto-char sub-end))
+	(while (re-search-forward
+		(eval-when-compile
+		  (let ((s0 "[\t\n ]*")
+			(s1 "[\t\n ]+"))
+		    (concat "<a" s1 "href=\"/"
+			    ;; 1. url
+			    "\\(\\(?:[^\"<>]+/\\)?"
+			    "\\([a-z_-]+\\)\\.aspx\\?"
+			    ;; 3. serial
+			    "\\("
+			    "\\(?:ichiran=True&\\)?"
+			    "[A-Z0-9a-z=]+\\(?:[\t\n ]*\\)?"
+			    ;; 3. serial number
+			    ;;"\\("
+			    ;; 4. day
+			    "\\([0-3][0-9]\\)"
+			    ;; 5. month
+			    "\\([01][0-9]\\)"
+			    ;; 6. year
+			    "\\(20[0-9][0-9]\\)"
+			    "\\(?:&Page=[0-9]?[0-9]\\)?"
+			    "\\)"
+			    "\\)" s0
+			    "\">" s0 "\n?" s0
+			    "\\(?:([01]?[0-9]/[0-3]?[0-9])\\)?" s0
+			    ;; 7. subject
+			    "\\([^<]+\\)"
+			    "</a>")))
+		nil t)
+	  (setq sub-end (point)
+		id (concat "<" (match-string 3) "%" group "."
+			   shimbun-nikkei-top-level-domain ">"))
+	  (if (shimbun-search-id
+	       ;; FIXME: `shimbun' should be passed as an argument.
+	       (symbol-value 'shimbun)
+	       id)
+	      (throw 'stop nil)
+	    (push (shimbun-create-header
+		   0
+		   (match-string 7)
+		   shimbun-nikkei-from-address
+		   (shimbun-nikkei-make-date-string
+		    (string-to-number (match-string 6))
+		    (string-to-number (match-string 5))
+		    (string-to-number (match-string 4)))
+		   id "" 0 0
+		   (concat "http://it.nikkei.co.jp/" (match-string 1)))
+		  headers)
+	    (goto-char sub-end)))
 	(if (re-search-forward "\
 <a href=\"\\([^\"]+\\)\">&gt;&gt; 過去記事一覧</a>\
 \\|<a href=\"\\([^\"]+\\)\">次へ&gt;</a>" nil t)
 	    (progn
 	      (shimbun-retrieve-url (prog1
-			(concat "\
+					(concat "\
 http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 				      (erase-buffer))
 				    t)
