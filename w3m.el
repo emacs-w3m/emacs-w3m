@@ -1818,7 +1818,7 @@ Here are some predefined functions which can be used for those ways:
      ,(concat "<a href=" w3m-html-string-regexp ">前のページ</a>")
      nil nil)
     (w3m-relationship-simple-estimate
-     "\\`http://freshmeat\\.net/search/"
+     "\\`http://freshmeat\\.net/\\(search\\|browse\\)/"
      ,(concat "<A HREF=" w3m-html-string-regexp ">\\[&raquo;\\]</A>")
      ,(concat "<A HREF=" w3m-html-string-regexp ">\\[&laquo;\\]</A>")
      nil nil)
