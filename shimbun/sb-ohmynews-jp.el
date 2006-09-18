@@ -123,11 +123,11 @@ v*[xW.y6Tt/r=U{a?+nH20N{)a/w145kJxfhqf}Jd<p\n `bP:u\\Awi^xGQ3pUOrsPL.';\
 	   (let ((s0 "[\t\n\r ]*")
 		 (s1 "[\t\n\r ]+"))
 	     (concat
-	      "<a" s1 "href=[\"']"
+	      "<a" s1 "class=\"pager-link\"" s1 "href=\""
 	      "\\(/NewsList\\.aspx\\?"
 	      "\\(?:newstype_id=[0-9]+&amp;type_id=[A-Z]+&amp;\\)?"
 	      "list_page=[0-9]+\\)"
-	      "[\"']" s0 ">" s0 "[0-9]"))))
+	      "\"" s0 ">" s0 "[0-9]+" s0 "</a>"))))
 	(group (shimbun-current-group-internal shimbun))
 	(gname (shimbun-current-group-name shimbun))
 	(pages (shimbun-header-index-pages range))
