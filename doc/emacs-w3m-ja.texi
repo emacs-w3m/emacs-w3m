@@ -2869,7 +2869,7 @@ If non-@code{nil}, use the @samp{/cygdrive/} rule when performing
 @vindex w3m-use-filter
 Non-@code{nil} means use filter programs to convert web contents.  See
 also @code{w3m-filter-rules} (the @file{w3m-filter.elc} module provides
-it but might have never be loaded.  In that case, to see the default
+it but might have never been loaded.  In that case, to see the default
 value and the documentation of @code{w3m-filter-rules}, type @kbd{M-x
 load-library RET w3m-filter RET}).
 
