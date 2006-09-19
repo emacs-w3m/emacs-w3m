@@ -2289,7 +2289,7 @@ for the regexp matches any url.
 
 @item
 a function: emacs-w3m send referers when this function which has two
-arguments, URL and REFERER, returns non-nil.
+arguments, URL and REFERER, returns non-@code{nil}.
 @end enumerate
 
 If you're nervous about leaking private WEB browsing history
@@ -2410,6 +2410,19 @@ Default coding system used to encode url strings and post-data.
 @vindex w3m-default-content-type
 Default value assumed as the content type of local files.
 
+@item w3m-default-directory
+@vindex w3m-default-directory
+Directory used as the current directory in emacs-w3m buffers.  The valid
+values include a string specifying an existing directory, a symbol of
+which the value specifies an existing directory, a function which takes
+a url as an argument and returns a directory, and @code{nil} (which is
+the default).  If the specified directory does not exist or it is
+@code{nil}, the value of @code{w3m-profile-directory} is used.
+
+Note that there is an exception: if a page visits a local file or visits
+a remote file using ftp, the directory in which the file exists is used
+as the current directory instead.
+
 @item w3m-default-save-directory
 @vindex w3m-default-save-directory
 Default directory where downloaded files will be saved to.
@@ -2438,6 +2451,12 @@ decide which function shouled be used to edit a specified page, when
 either @code{w3m-edit-current-url} or @code{w3m-edit-this-url} is
 invoked.  When no suitable function is found from this alist,
 @code{w3m-edit-function} is used.
+
+@item w3m-enable-google-feeling-lucky
+@vindex w3m-enable-google-feeling-lucky
+Non-@code{nil} enables you to enter any words as well as a url when
+prompted.  In that case, emacs-w3m uses Google to search for the words.
+The default value is @code{t}.
 
 @item w3m-encoding-type-alist
 @vindex w3m-encoding-type-alist
@@ -2645,7 +2664,8 @@ allows not only the alist form but also XEmacs' plist form.
 
 @item w3m-prefer-cache
 @vindex w3m-prefer-cache
-Non-nil means that cached contents are used without checking headers.
+Non-@code{nil} means that cached contents are used without checking
+headers.
 
 @item w3m-profile-directory
 @vindex w3m-profile-directory
@@ -2689,8 +2709,8 @@ windows vertically.
 
 @item w3m-show-decoded-url
 @vindex w3m-show-decoded-url
-Non-nil means show decoded URIs in the echo area, the balloon, etc.
-This variable can take one of the following five kinds of forms:
+Non-@code{nil} means show decoded URIs in the echo area, the balloon,
+etc.  This variable can take one of the following five kinds of forms:
 
 @enumerate
 @item
@@ -2848,7 +2868,10 @@ If non-@code{nil}, use the @samp{/cygdrive/} rule when performing
 @item w3m-use-filter
 @vindex w3m-use-filter
 Non-@code{nil} means use filter programs to convert web contents.  See
-also @code{w3m-filter-rules}.
+also @code{w3m-filter-rules} (the @file{w3m-filter.elc} module provides
+it but might have never be loaded.  In that case, to see the default
+value and the documentation of @code{w3m-filter-rules}, type @kbd{M-x
+load-library RET w3m-filter RET}).
 
 @item w3m-use-form
 @vindex w3m-use-form
