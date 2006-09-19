@@ -288,7 +288,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAYBAMAAABO02PvAAAAGFBMVEX+6ctRUVH7qDX416T
 			     year month day c num group
 			     shimbun-gendai-net-top-level-domain))
 	    (if (shimbun-search-id shimbun id)
-		(throw 'stop nil)
+		;;(throw 'stop nil)
+		(setq backnumbers 'stop)
 	      (push (shimbun-create-header 0 subject from date id "" 0 0 url)
 		    headers))))
 	(cond ((eq backnumbers 'stop)
@@ -339,14 +340,18 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAYBAMAAABO02PvAAAAGFBMVEX+6ctRUVH7qDX416T
 	  (setq start (match-end 0)))
 	(when (re-search-forward "[\t\n\r ]*</span>" nil t)
 	  (setq end (match-beginning 0)))))
-    (when end
-      (save-restriction
-	(narrow-to-region start end)
-	(shimbun-break-long-japanese-lines)
-	(goto-char (point-min))
-	(insert shimbun-gendai-net-content-start)
-	(goto-char (point-max))
-	(insert shimbun-gendai-net-content-end))))
+    (if end
+	(save-restriction
+	  (narrow-to-region start end)
+	  (shimbun-break-long-japanese-lines)
+	  (goto-char (point-min))
+	  (insert shimbun-gendai-net-content-start)
+	  (goto-char (point-max))
+	  (insert shimbun-gendai-net-content-end))
+      (erase-buffer)
+      (insert "<html><body>\
+This article seems to have been canceled or expired.\
+</body></html>\n")))
   (goto-char (point-min)))
 
 (provide 'sb-gendai-net)
