@@ -80,6 +80,21 @@
      1 2 3 4 5 6 7 8))
   "List of the default regexp used to extract headers and matching numbers.")
 
+;; Emacs 21 needs increasing `max-lisp-eval-depth' and `max-specpdl-size'
+;; when compiling `shimbun-mainichi-group-table' for some unknown reason.
+(eval-when-compile
+  (if (and (not (featurep 'xemacs))
+	   (= emacs-major-version 21)
+	   (fboundp 'byte-compile-file-form-defvar))
+      (fset 'byte-compile-file-form-defvar
+	    `(lambda (form)
+	       (let ((fn ,(symbol-function 'byte-compile-file-form-defvar)))
+		 (unwind-protect
+		     (let ((max-lisp-eval-depth 1000)
+			   (max-specpdl-size 1000))
+		       (funcall fn form))
+		   (fset 'byte-compile-file-form-defvar fn)))))))
+
 (defvar shimbun-mainichi-group-table
   `(("entertainment" "エンターテインメント")
     ("entertainment.car" "車")
@@ -94,11 +109,13 @@
     ("eye.closeup" "クローズアップ")
     ("eye.hassinbako" "発信箱")
     ("eye.hito" "ひと")
+    ("eye.kaisetsu" "土曜解説")
     ("eye.kinji" "近事片々")
     ("eye.kishanome" "記者の目")
+    ("eye.mieru" "！")
+    ("eye.newsup" "ニュースＵＰ")
     ("eye.shasetsu" "社説")
     ("eye.shasetsu.archive" "社説アーカイブ")
-    ("eye.tenbou" "ニュース展望")
     ("eye.yoroku" "余録")
     ("eye.yuuraku" "憂楽帳")
     ("kansai.sanshi" "三枝の楽屋へいらっしゃ〜い！" "kansai/sanshi/archive/"
@@ -131,7 +148,6 @@
     ("keizai.seisaku" "経済・政策")
     ("keizai.wadai" "経済・話題")
     ("keizai.wadai.kansoku.archive" "経済観測")
-    ("keizai.wadai.seika.archive" "「成果主義」って何ですか")
     ("kokusai" "国際")
     ("kokusai.afro-ocea" "アフリカ・オセアニア")
     ("kokusai.america" "南北アメリカ")
@@ -181,15 +197,40 @@
     ("sports.major" "大リーグ")
     ("sports.pro" "野球")
     ("sports.soccer" "サッカー")
+    ("today" "今日の話題" "rss/wadai.rdf"
+     ,(let ((s0 "[\t\n ]*"))
+	(concat
+	 "<title>" s0
+	 ;; 1. subject
+	 "\\([^<]+\\)"
+	 s0 "</title>" s0 "<link>" s0
+	 ;; 2. url
+	 "\\([^<]+/"
+	 ;; 3. serial number
+	 "\\([^./]+\\)"
+	 "\\.html\\?in=rssw\\)"
+	 s0 "</link>" s0 "<description/>" s0 "<dc:subject>[^<]+</dc:subject>"
+	 s0 "<dc:date>" s0
+	 ;; 4. year
+	 "\\(20[0-9][0-9]\\)"
+	 "-"
+	 ;; 5. month
+	 "\\([01]?[0-9]\\)"
+	 "-"
+	 ;; 6. day
+	 "\\([0-3]?[0-9]\\)"
+	 "T"
+	 ;; 7. hour
+	 "\\([0-2]?[0-9]\\)"
+	 ":"
+	 ;; 8. minute
+	 "\\([0-5]?[0-9]\\)"))
+     2 3 4 5 6 1 7 8)
     ("yougo" "ニュースな言葉")
-
-    ;; The following groups are for the backward compatibility.
-    ("shakai.edu.net.archive" "ネット社会と子供たち"
-     "shakai/edu/net/morals/archive/")
 
     ;; The following groups are obsolete, though old articles still
     ;; can be read.
-    ("shakai.edu.manabito.archive" "「e」と「学び」と"))
+    ("keizai.wadai.seika.archive" "「成果主義」って何ですか"))
   "Alist of group names, their Japanese translations, index pages, regexps
 and numbers.  Where numbers point to the regexp search result in order
 of [0]a url, [1]a serial number, [2]a year, [3]a month, [4]a day,
