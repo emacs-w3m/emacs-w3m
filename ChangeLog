@@ -1,3 +1,15 @@
+2006-09-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-fb.el: Bind w3m-delete-buffer, w3m-fb-frame-parameter,
+	w3m-list-buffers, w3m-next-buffer, and w3m-pop-up-frames when
+	compiling.
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-group-table): Add
+	eye.kaisetsu, eye.mieru, eye.newsup, and today groups; remove
+	eye.tenbou, shakai.edu.net.archive, and shakai.edu.manabito.archive
+	groups; increase max-lisp-eval-depth and max-specpdl-size when
+	compiling this variable using Emacs 21.
+
 2006-09-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-gendai-net.el (shimbun-gendai-net-get-headers-default):
