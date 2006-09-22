@@ -3945,9 +3945,9 @@ Q. なぜ @samp{shimbun} モジュールがインストールされないのですか?
 List}) を使って報告して下さい。
 
 @samp{Shimbun} ライブラリは、現在、朝日新聞、読売オンライン、Emacs Devel、
-XEmacs Beta、Gnus/Mew/Wanderlust などのメーリングリスト、小泉日本国首相
-のメールマガジン、Slashdot Japan、および他のたくさんのものに対応していま
-す。具体的には、@ref{Shimbun Sites} を参照してください。
+XEmacs Beta、Gnus/Mew/Wanderlust などのメーリングリスト、Slashdot Japan、
+および他のたくさんのものに対応しています。具体的には、@ref{Shimbun
+Sites} を参照してください。
 
 ところで、@samp{Shimbun} ライブラリを利用する時は、著作権について注意が
 必要です。@samp{Shimbun} ライブラリによって加工・生成された記事の著作権

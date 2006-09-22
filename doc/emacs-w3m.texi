@@ -3869,9 +3869,8 @@ them using @code{report-emacs-w3m-bug} (@pxref{Mailing List}).
 
 @samp{Shimbun} library currently supports Asahi Shimbun, Yomiuri
 On-line, many maling list archives such as Emacs Devel, XEmacs Beta,
-Gnus, Mew, and Wanderlust, the Japanese Prime Minister Koizumi's mail
-magazine, Slashdot Japan, and a lot of others.  For more detail, see
-@ref{Shimbun Sites}.
+Gnus, Mew, and Wanderlust, Slashdot Japan, and a lot of others.  For
+more detail, see @ref{Shimbun Sites}.
 
 By the way, you have to pay attention to copyright when using
 @samp{Shimbun} library.  Copyrights of articles generated with
