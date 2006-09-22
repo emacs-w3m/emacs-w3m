@@ -547,6 +547,10 @@ Buffer string between BEG and END are replaced with IMAGE."
       (define-key w3m-tab-map [header-line double-mouse-1] double-action1)
       (define-key w3m-tab-map [header-line double-mouse-2] double-action2)
       (define-key w3m-tab-map [header-line mouse-3] menu-action)
+      (define-key w3m-tab-map [header-line wheel-up] 'w3m-previous-buffer)
+      (define-key w3m-tab-map [header-line wheel-down] 'w3m-next-buffer)
+      (define-key w3m-tab-map [header-line mouse-4] 'w3m-previous-buffer)
+      (define-key w3m-tab-map [header-line mouse-5] 'w3m-next-buffer)
       (define-key w3m-mode-map [header-line double-mouse-1]
 	'w3m-goto-new-session-url)
       (define-key w3m-mode-map [header-line mouse-3] menu-action2))

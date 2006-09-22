@@ -1,3 +1,10 @@
+2006-09-22  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-e21.el (w3m-tab-make-keymap): Support mouse wheel on the
+	tab.
+
+	* w3m-e23.el (w3m-tab-make-keymap): Ditto.
+
 2006-09-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-fb.el: Bind w3m-delete-buffer, w3m-fb-frame-parameter,
