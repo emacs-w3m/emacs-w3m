@@ -1,3 +1,10 @@
+2006-09-25  Luca Capello  <luca@pca.it>
+
+	* w3m-bookmark.el: Add myself to the authors list, forgotten when
+	submitting the patch for w3m-bookmark-view-new-session.
+
+	* w3m.el: Ditto.
+
 2006-09-22  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-e21.el (w3m-tab-make-keymap): Support mouse wheel on the

@@ -11,7 +11,8 @@
 ;;          Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
 ;;          Katsumi Yamaoka    <yamaoka@jpl.org>,
-;;          Tsuyoshi CHO       <tsuyoshi_cho@ybb.ne.jp>
+;;          Tsuyoshi CHO       <tsuyoshi_cho@ybb.ne.jp>,
+;;          Luca Capello       <luca@pca.it>
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; This file is the main part of emacs-w3m.
