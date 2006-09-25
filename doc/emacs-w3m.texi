@@ -249,10 +249,9 @@ Emacs-w3m no longer supports those Emacs versions.
 
 @end table
 
-If you use the developing version of GNU Emacs, which is so called
-``Emacs 22'', perhaps you can run the CVS version of emacs-w3m on it.
-In such case, it is strongly recommended for you to join the
-@ref{Mailing List}.
+If you use the development version of GNU Emacs (``Emacs 22''), perhaps
+you should run the CVS version of emacs-w3m on it.  In that case, it is
+strongly recommended that you join the @ref{Mailing List}.
 
 @node You Need w3m
 @section Using w3m: the reason why emacs-w3m is fast
@@ -276,8 +275,9 @@ You must install the latest w3m, it is available at:
 @cindex codepage-ex
 @cindex rfc2368.el
 
-Depending on the version of Emacs, third party packages may be required.
-This section provides resources to help you find and install them.
+Depending on the Emacs version you're using, third party packages may be
+required.  This section provides resources to help you find and install
+them.
 
 @table @samp
 
@@ -355,14 +355,13 @@ If you are an XEmacs user, the compiled package is here:
 @uref{ftp://ftp.xemacs.org/packages/mule-ucs-1.11-pkg.tar.gz}
 
 @item codepage-ex
-Some web sites in Europe use the @code{windows-1252} coding system for
-encoding text in spite of the @samp{charset=ISO-8859-1} label being
-specified there.  Since @code{iso-8859-1} is insufficient to decode such
-text, emacs-w3m uses @code{windows-1252} as a superset of
-@code{iso-8859-1} if it is available.  The @code{windows-1252} coding
-system is built-in since Emacs 22.  Even in Emacs 21, you can enable to
-use it using the module called @code{codepage-ex}.  See the following
-page:
+Some web sites in Europe specify a @samp{charset=ISO-8859-1} encoding,
+but really use @code{windows-1252}.  Since @code{iso-8859-1} is
+insufficient to decode that, emacs-w3m uses @code{windows-1252} as a
+superset of @code{iso-8859-1} if it is available.  The
+@code{windows-1252} coding system is built-in since Emacs 22.  Even in
+Emacs 21, you can enable to use it using the module called
+@code{codepage-ex}.  See the following page:
 
 @uref{http://www.nijino.com/ari/emacs/codepage-ex.html}
 
@@ -1705,18 +1704,26 @@ emacs-w3m with other commands and Emacs subsystems.
 @cindex Search engines
 
 Emacs-w3m comes with advanced features related to search engines, they
-are accessible through two interfaces:
+are accessible through three interfaces:
 
 @itemize
 @item
-The regular interface, invoked by the @kbd{S} key in any emacs-w3m
-buffer.  It is a simple interactive way to choose which search engine to
-use and input a search term; see @ref{The Search Interface}.
+The regular search interface, invoked by the @kbd{S} key in any
+emacs-w3m buffer.  It is a simple interactive way to choose which search
+engine to use and input a search term; see @ref{The Search Interface}.
 
 @item
 The Quicksearch interface: it is a faster (yet more complicated) way to
 use search engines, by going to specially crafted URLs.  For more
 information about this feature, see @ref{Quick Searching}.
+
+@item
+The ``I'm feeling lucky'' feature: if it's enabled
+(@code{w3m-enable-google-feeling-lucky}), entering words instead of a
+regular URL at the URL prompt will begin a Google search for the words
+automatically, and display the most relevant result.  This is useful if
+you actually want to fetch the most relevant page, it does not display a
+list of search results.
 @end itemize
 
 @menu
@@ -1796,14 +1803,16 @@ Yahoo!.  @xref{Grouping URLs}.
 @end itemize
 
 Using it is very simple: suppose you want to search for the word ``gnu''
-on Google.  Hit @kbd{g} to go to a new URL, and type ``gg:gnu''.  The
-first part of this expression, ``gg'' indicates that we want to use the
-Google search engine.  The second term is the word we will be searching
-for.  The prefix and the search term must be separated by a colon.  Hit
-@kbd{RET}, and you will see the results of your search.  Please note
-that you can input several words by separating them with spaces (to
-type a space in the minibuffer, hit @kbd{C-q} first, e.g. @kbd{C-q
-@key{SPC}}).
+on Google and get a list of results.  Hit @kbd{g} to go to a new URL,
+and type ``gg:gnu''.  The first part of this expression, ``gg''
+indicates that we want to use the Google search engine.  The second term
+is the word we will be searching for.  The prefix and the search term
+must be separated by a colon.  Hit @kbd{RET}, and you will see the
+results of your search.  Note that you can input several words by
+separating them with spaces.  @kbd{SPC} is a self-inserting key in the
+minibuffer if the ``Feeling Lucky'' feature is enabled (it is by
+default; see @code{w3m-enable-google-feeling-lucky}).  If it's disabled,
+then hit @kbd{C-q} first, i.e. @kbd{C-q @key{SPC}}.
 
 The default configuration of emacs-w3m includes several prefixes you can
 use, they are defined in the @code{w3m-uri-replace-alist} variable.
@@ -2356,8 +2365,8 @@ command is invoked.
 
 @item w3m-edit-function-alist
 @vindex w3m-edit-function-alist
-Alist of functions used for editing pages.  This option is refered to
-decide which function shouled be used to edit a specified page, when
+Alist of functions used for editing pages.  This option is referred to
+decide which function should be used to edit a specified page, when
 either @code{w3m-edit-current-url} or @code{w3m-edit-this-url} is
 invoked.  When no suitable function is found from this alist,
 @code{w3m-edit-function} is used.
@@ -3403,7 +3412,7 @@ you read a multipart/related message.  Note that mew-w3m only allows
 images contained in the message body with a @samp{cid:} URL to be
 displayed (as we consider them safe).  The default value is @code{nil}.
 
-To activate this feaeture, add following in your @file{~/.mew.el}.
+To activate this feature, add following in your @file{~/.mew.el}.
 
 @lisp
 (define-key mew-summary-mode-map "T" 'mew-w3m-view-inline-image)
@@ -3670,7 +3679,7 @@ necessary.
 Emacsen incompatibility
 
 Under XEmacs 21.1, pages written by the SHIFT_JIS character set may not
-be displaied correctly.  There is also a problem in XEmacs 21.2 prior to
+be displayed correctly.  There is also a problem in XEmacs 21.2 prior to
 the beta 36 version.  You should upgrade your XEmacs if you use such
 one.
 
@@ -3868,7 +3877,7 @@ text or any other text that is not related to the article please report
 them using @code{report-emacs-w3m-bug} (@pxref{Mailing List}).
 
 @samp{Shimbun} library currently supports Asahi Shimbun, Yomiuri
-On-line, many maling list archives such as Emacs Devel, XEmacs Beta,
+On-line, many mailing list archives such as Emacs Devel, XEmacs Beta,
 Gnus, Mew, and Wanderlust, Slashdot Japan, and a lot of others.  For
 more detail, see @ref{Shimbun Sites}.
 
@@ -5873,8 +5882,8 @@ list of file names used in @samp{speedbar-0.14beta4}.
 @end multitable
 
 @item
-You should select file names which remind their refering WEB servers'
-URIs.  It is allowed to remove coutry parts (Ex. jp,de,uk,etc),
+You should select file names which remind their referring WEB servers'
+URIs.  It is allowed to remove country parts (Ex. jp,de,uk,etc),
 organization parts (Ex. edu,com,org,net,etc) and redundant parts
 (Ex. www) if removing does not increase vagueness.
 

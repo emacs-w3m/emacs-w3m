@@ -279,10 +279,9 @@ Emacs-w3m Functions
 $B$3$l$i$N(B Emacs $B$r(B emacs-w3m $B$O%5%]!<%H$7$^$;$s!#(B
 @end table
 
-GNU Emacs $B$N3+H/Cf$N%P!<%8%g%s(B (Emacs 22 $B$H8F$P$l$F$$$^$9(B) $B$r;H$C$F$$$k(B
-$B>l9g$O!"(BCVS $BHG$N(B emacs-w3m $B$J$iF0$/$+$bCN$l$^$;$s!#(BCVS $BHG$N(B emacs-w3m $B$r(B
-$BMxMQ$5$l$k>l9g$O!"3+H/%a!<%j%s%0%j%9%H$K$b;22C$5$l$k$3$H$r6/$/$*4+$a$7$^(B
-$B$9(B (@pxref{Mailing List})$B!#(B
+GNU Emacs $B$N3+H/HG(B (``Emacs 22'') $B$r;H$C$F$$$k$N$G$"$l$P!"$*$=$i$/(BCVS $BHG(B
+$B$N(B emacs-w3m $B$r;H$o$J$1$l$P$J$i$J$$$G$7$g$&!#$=$N>l9g$K$O!"%a!<%j%s%0%j(B
+$B%9%H$K;22C$9$k$3$H$r6/$/4+$a$^$9(B (@pxref{Mailing List})$B!#(B
 
 @node You Need w3m
 @section w3m $B$r;H$$$^$9(B: emacs-w3m $B$,B.$$$o$1(B
@@ -307,9 +306,9 @@ Emacs-w3m $B$O30It%3%^%s%I(B w3m $B$r!"%&%'%V%3%s%F%s%D$r<hF@$9$k$?$a$N%P%C%/
 @cindex codepage-ex
 @cindex rfc2368.el
 
-Emacs $B$N%P!<%8%g%s$K$h$C$F$O!"%5!<%I%Q!<%F%#$N%Q%C%1!<%8$,I,MW$K$J$k$3$H(B
-$B$,$"$j$^$9!#$3$N9`$G$O!"$=$l$i$r8+$D$1$F%$%s%9%H!<%k$9$k$?$a$N;qNA$rDs6!(B
-$B$7$^$9!#(B
+$B;HMQ$7$F$$$k(B Emacs $B$N%P!<%8%g%s$K$h$C$F$O!"%5!<%I%Q!<%F%#$N%Q%C%1!<%8$,(B
+$BI,MW$K$J$k$3$H$,$"$j$^$9!#$3$N9`$G$O!"$=$l$i$r8+$D$1$F%$%s%9%H!<%k$9$k$?(B
+$B$a$N;qNA$rDs6!$7$^$9!#(B
 
 @table @samp
 @item @acronym{APEL}
@@ -390,9 +389,9 @@ XEmacs $B%f!<%68~$1$K$O!"$3$3$K%3%s%Q%$%k:Q$_$N%Q%C%1!<%8$,$"$j$^$9(B:
 @uref{ftp://ftp.xemacs.org/packages/mule-ucs-1.11-pkg.tar.gz}
 
 @item codepage-ex
-$B%h!<%m%C%Q$N$$$/$D$+$N(B web $B%5%$%H$O!"(B@samp{charset=ISO-8859-1} $B$r;XDj$7(B
-$B$F$$$k$N$K$b$+$+$o$i$:!"%F%-%9%H$N%(%s%3!<%I$K(B @code{windows-1252}
-coding system $B$r;H$$$^$9!#$=$N$h$&$J%F%-%9%H$r%G%3!<%I$9$k$N(B
+$B%h!<%m%C%Q$N$$$/$D$+$N(B web $B%5%$%H$O!"(B@samp{charset=ISO-8859-1} $B$r%F%-%9(B
+$B%H$N%(%s%3!<%I$K;XDj$7$F$$$k$N$K$b$+$+$o$i$:!"<B:]$K(B
+$B$O(B @code{windows-1252} $B$r;H$$$^$9!#$=$l$i$r%G%3!<%I$9$k$N(B
 $B$K(B @code{iso-8859-1} $B$OIT==J,$J$N$G!"(Bemacs-w3m $B$OMxMQ2DG=$J(B
 $B$i(B @code{windows-1252} $B$r(B @code{iso-8859-1} $B$N%9!<%Q!<%;%C%H$H$7$F;HMQ$7(B
 $B$^$9!#(BEmacs 22 $B$+$i(B @code{windows-1252} coding system $B$OAH$_9~$^$l$F$$$^(B
@@ -1758,20 +1757,28 @@ HTML $B%U%!%$%k$r3+$$$F$$$k(B Emacs $B$N%P%C%U%!$NL>A0$rL@<(E*$K;XDj$7$F%P%C%
 @section $B;H$$$d$9$$%&%'%V8!:w(B
 @cindex Search engines
 
-Emacs-w3m $B$K$O8!:w%(%s%8%s$rMxMQ$9$k$?$a$N@h?J$N5!G=$,$"$j!"Fs$D$N%$%s%?!<(B
+Emacs-w3m $B$K$O8!:w%(%s%8%s$rMxMQ$9$k$?$a$N@h?J$N5!G=$,$"$j!";0$D$N%$%s%?!<(B
 $B%U%'!<%9$rDL$7$FMxMQ$9$k$3$H$,$G$-$^$9(B:
 
 @itemize
 @item
-$BI8=`$N%$%s%?!<%U%'!<%9$G$9!#(B@kbd{S} $B%-!<$G$$$:$l$+$N(B emacs-w3m $B%P%C%U%!(B
-$B$+$i5/F0$5$l$^$9!#$3$l$O8!:w%(%s%8%s$r;XDj$7$F8!:w8l$rF~NO$9$k!"C1=c$JBP(B
-$BOC7?$N$d$jJ}$G$9!#(B@ref{The Search Interface} $B$r;2>H$7$F2<$5$$!#(B
+$BI8=`$N8!:w%$%s%?!<%U%'!<%9$G$9!#(B@kbd{S} $B%-!<$G$$$:$l$+$N(B emacs-w3m $B%P%C(B
+$B%U%!$+$i5/F0$5$l$^$9!#$3$l$O8!:w%(%s%8%s$r;XDj$7$F8!:w8l$rF~NO$9$k!"C1=c(B
+$B$JBPOC7?$N$d$jJ}$G$9!#(B@ref{The Search Interface} $B$r;2>H$7$F2<$5$$!#(B
 
 @item
 $B%/%$%C%/%5!<%A!&%$%s%?!<%U%'!<%9$G$9!#$3$l$O5;9*E*$K:n$i$l$?(B URL $B$K9T$/(B
 $B$3$H$K$h$C$F8!:w%(%s%8%s$rMxMQ$9$k$?$a$N!"$h$jB.$$(B ($B$5$i$K!"$h$jJ#;((B
 $B$J(B) $BJ}K!$G$9!#$3$N5!G=$K4X$9$k>\:Y$O(B @ref{Quick Searching} $B$r;2>H$7$F2<(B
 $B$5$$!#(B
+
+@item
+``I'm feeling lucky'' $B5!G=$,M-8z$K$J$C$F$$(B
+$B$k(B (@code{w3m-enable-google-feeling-lucky}) $B$H!"(BURL $B$rF~NO$9$k$H$-$KDL>o(B
+$B$N(B URL $B$NBe$o$j$K2?$+$N8l6g$r;XDj$9$k$3$H$K$h$C$F!"$=$N8l6g$N(B Google $B8!(B
+$B:w$r<+F0E*$K3+;O$7$F!":G$b4X78$,$"$j$=$&$J7k2L$rI=<($5$;$k$3$H$,$G$-$^$9!#(B
+$B$3$l$O:G$b4X78$,$"$j$=$&$J%Z!<%8$r$9$0$K8+$?$$>l9g$KJXMx$G$9$,!"8!:w7k2L(B
+$B$N%j%9%H$OI=<($5$l$^$;$s!#(B
 @end itemize
 
 @menu
@@ -1846,14 +1853,17 @@ Variables} $B;2>H(B) $B$r%+%9%?%^%$%:$9$k$3$H$K$h$C$F!"$3$N?6$kIq$$$rJQ99$9$k
 @xref{Grouping URLs}.
 @end itemize
 
-$B$3$l$r;H$&$N$O$H$F$b4JC1$G$9!#(B``gnu'' $B$H$$$&C18l$r(B Google $B$GC5$7$?$$$H$9(B
-$B$l$P!"(B@kbd{g} $B$rC!$$$F$+$i(B ``gg:gnu'' $B$H$$$&(B URL $B$r%?%$%W$7$F2<$5$$!#$3(B
-$B$NI=8=$NBh0l$NItJ,(B "gg" $B$O!"(BGoogle $B8!:w%(%s%8%s$r;HMQ$7$?$$$3$H$r<($7$^(B
-$B$9!#BhFs$NItJ,$O8!:w8l$G$9!#%(%s%8%s$H8!:w8l$O!"%3%m%s$GJ,$1$J$1$l$P$J$j(B
-$B$^$;$s!#$=$7$F(B @kbd{RET} $B$rC!$1$P8!:w7k2L$r8+$k$3$H$,$G$-$^$9!#%9%Z!<%9(B
-$B$GJ,N%$7$?J#?t$N8l$rF~NO$G$-$k$3$H$r!"?4$KN1$a$F$*$$$F2<$5$$(B ($B%_%K%P%C%U%!(B
-$B$G%9%Z!<%9$r%?%$%W$9$k$K$O!"(B@kbd{C-q @key{SPC}} $B$N$h$&$K!":G=i(B
-$B$K(B @kbd{C-q} $B$rC!$$$F2<$5$$(B)$B!#(B
+$B$3$l$r;H$&$N$O$H$F$b4JC1$G$9!#(B``gnu'' $B$H$$$&C18l$r(B Google $B$GC5$7$F7k2L$N(B
+$B%j%9%H$rF@$?$$$N$G$"$l$P!"(B@kbd{g} $B$rC!$$$F$+$i(B ``gg:gnu'' $B$H$$$&(B URL $B$r(B
+$B%?%$%W$7$F2<$5$$!#$3$NI=8=$NBh0l$NItJ,(B "gg" $B$O!"(BGoogle $B8!:w%(%s%8%s$r;H(B
+$BMQ$7$?$$$3$H$r<($7$^$9!#BhFs$NItJ,$O8!:w8l$G$9!#%(%s%8%s$H8!:w8l$O!"%3%m(B
+$B%s$GJ,$1$J$1$l$P$J$j$^$;$s!#$=$7$F(B @kbd{RET} $B$rC!$1$P8!:w7k2L$r8+$k$3$H(B
+$B$,$G$-$^$9!#%9%Z!<%9$GJ,N%$7$?J#?t$N8l$rF~NO$G$-$k$3$H$r!"?4$KN1$a$F$*$$(B
+$B$F2<$5$$!#(B``Feeling Lucky'' $B5!G=$,M-8z$K$J$C$F$$$l$P!"%_%K%P%C%U%!(B
+$B$G(B @kbd{SPC} $B$O(B self-insert $B%-!<$K$J$C$F$$$^$9(B ($B$3$l$,%G%U%)%k%H$G$9!#(B
+@code{w3m-enable-google-feeling-lucky} $B$r;2>H$7$F2<$5$$!#(B) $BL58z$K$7$F$"(B
+$B$k>l9g$O!":G=i$K(B @kbd{C-q} $B$rC!$$$F2<$5$$!#$D$^$j(B @kbd{C-q @key{SPC}} $B$G(B
+$B$9!#(B
 
 Emacs-w3m $B$N%G%U%)%k%H$G$O!"MxMQ2DG=$J$$$/$D$+$N8!:w%(%s%8%s$NC;=L7A$,$"(B
 $B$j!"$=$l$i$OJQ?t(B @code{w3m-uri-replace-alist} $B$GDj5A$5$l$F$$$^$9!#Nc$((B
@@ -2446,8 +2456,8 @@ command is invoked.
 
 @item w3m-edit-function-alist
 @vindex w3m-edit-function-alist
-Alist of functions used for editing pages.  This option is refered to
-decide which function shouled be used to edit a specified page, when
+Alist of functions used for editing pages.  This option is referred to
+decide which function should be used to edit a specified page, when
 either @code{w3m-edit-current-url} or @code{w3m-edit-this-url} is
 invoked.  When no suitable function is found from this alist,
 @code{w3m-edit-function} is used.
