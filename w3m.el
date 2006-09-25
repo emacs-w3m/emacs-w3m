@@ -1259,7 +1259,7 @@ is invoked for local pages."
 (defcustom w3m-edit-function-alist
   '(("\\`[^?]+/hiki\\.cgi\\?" . hiki-edit-url))
   "*Alist of functions used for editing pages.
-This option is refered to decide which function shouled be used to
+This option is referred to decide which function should be used to
 edit a specified page, when either `w3m-edit-current-url' or
 `w3m-edit-this-url' is invoked.  When no suitable function is found
 from this alist, `w3m-edit-function' is used."
