@@ -137,6 +137,8 @@
     "Add urls of all pages being visited to the bookmark." t)
   (autoload 'w3m-search "w3m-search"
     "Search a word using search engines." t)
+  (autoload 'w3m-search-new-session "w3m-search"
+    "Search a word using search engines in a new session." t)
   (autoload 'w3m-search-uri-replace "w3m-search")
   (autoload 'w3m-weather "w3m-weather"
     "Display a weather report." t)
@@ -2283,12 +2285,14 @@ nil value means it has not been initialized.")
 	     (decode-coding-string "\e$B%\"\e(B" 'iso-2022-jp)))) ;; ア
     `("w3m"
       (,(w3m-make-menu-item "セッション" "Session")
-       [,(w3m-make-menu-item "新しいセッションを作る..." "Create New Session...")
+       [,(w3m-make-menu-item "新しいセッションを作る..."
+			     "Create New Session...")
 	w3m-goto-new-session-url t]
        [,(w3m-make-menu-item "このセッションを複製する" "Copy This Session")
 	w3m-copy-buffer w3m-current-url]
        "----" ;; separator
-       [,(w3m-make-menu-item "前のセッションに移動する" "Move Previous Session")
+       [,(w3m-make-menu-item "前のセッションに移動する"
+			     "Move Previous Session")
 	w3m-previous-buffer
 	(> (safe-length (w3m-list-buffers)) 1)]
        [,(w3m-make-menu-item "次のセッションに移動する" "Move Next Session")
@@ -2366,11 +2370,16 @@ nil value means it has not been initialized.")
        [,(w3m-make-menu-item "リストで履歴を表示" "Show an Arrived URLs List")
 	w3m-db-history t]
        ) ;; end history
-      [,(w3m-make-menu-item "インターネットでの検索..." "Search the Internet...")
+      [,(w3m-make-menu-item "インターネットでの検索..."
+			    "Search the Internet...")
        w3m-search t]
+      [,(w3m-make-menu-item "新しいセッションで検索..."
+			    "Search the Internet in a New Session...")
+       w3m-search-new-session t]
       [,(w3m-make-menu-item "天気予報" "Weather Forecast")
        w3m-weather t]
-      [,(w3m-make-menu-item (concat a "ンテナで取得") "Investigate with Antenna")
+      [,(w3m-make-menu-item (concat a "ンテナで取得")
+			    "Investigate with Antenna")
        w3m-antenna t]
       (,(w3m-make-menu-item "ヘルプ" "Resource")
        [,(w3m-make-menu-item "プロセスを中止する" "Cancel Process")
@@ -6871,10 +6880,7 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "R" 'w3m-reload-this-page)
     (define-key map "\C-tR" 'w3m-reload-all-pages)
     (define-key map "s" 'w3m-search)
-    (define-key map "S" (lambda ()
-			  (interactive)
-			  (let ((current-prefix-arg t))
-			    (call-interactively 'w3m-search))))
+    (define-key map "S" 'w3m-search-new-session)
     (define-key map "T" 'w3m-dtree)
     (define-key map "u" 'w3m-view-parent-page)
     (define-key map "v" 'w3m-bookmark-view)
@@ -7212,6 +7218,8 @@ or a list which consists of the following elements:
 	If it is called with the prefix arg, it updates the report.
 \\[w3m-antenna-add-current-url]	Add the current url to the antenna database.
 \\[w3m-search]	Query to the search engine a word.
+	To change the server, give any prefix argument to the command.
+\\[w3m-search-new-session] Query to the search engine a word in a new session.
 	To change the server, give any prefix argument to the command.
 \\[w3m-weather]	Display a weather report.
 	To change the local area, give any prefix argument to the command.

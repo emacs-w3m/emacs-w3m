@@ -1,3 +1,19 @@
+2006-09-26  Luca Capello  <luca@pca.it>
+
+	* w3m-search.el (w3m-search-new-session): New command.
+	(w3m-search-read-variables): Ditto.
+	(w3m-search-do-search): Ditto.
+	(w3m-search): Rewrite to use the new commands above; add myself to
+	the authors list.
+
+	* w3m.el (autoload): Add w3m-search-new-session.
+	(w3m-menubar): Add w3m-search-new-session.
+	(w3m-info-like-map): Add w3m-search-new-session at the place of
+	the called-interactively w3m-search to be compliant with the other
+	*-new-session key-bindings.
+	(w3m-mode): Add description of w3m-search-new-session to
+	docstring.
+
 2006-09-25  Luca Capello  <luca@pca.it>
 
 	* w3m-bookmark.el: Add myself to the authors list, forgotten when

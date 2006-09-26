@@ -6,7 +6,8 @@
 ;; Authors: Keisuke Nishida    <kxn30@po.cwru.edu>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;          Romain FRANCOISE   <romain@orebokech.com>
+;;          Romain FRANCOISE   <romain@orebokech.com>,
+;;          Luca Capello       <luca@pca.it>
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; This file is a part of emacs-w3m.
@@ -286,16 +287,9 @@ PROMPT-WITH-DEFAULT instead of string PROMPT."
 		   prompt)
 		 initial history default)))
 
-;;;###autoload
-(defun w3m-search (search-engine query)
-  "Search QUERY using SEARCH-ENGINE.
-When called interactively with a prefix argument, you can choose one of
-the search engines defined in `w3m-search-engine-alist'.  Otherwise use
-`w3m-search-default-engine'.
-If Transient Mark mode, use the region as an initial string of query
-and deactivate the mark."
-  (interactive
-   (let ((engine
+(defun w3m-search-read-variables ()
+  "Ask for a search engine and words to query and return them as a list."
+  (let* ((search-engine
 	  (if current-prefix-arg
 	      (let ((default (or (car w3m-search-engine-history)
 				 w3m-search-default-engine))
@@ -304,23 +298,44 @@ and deactivate the mark."
 					 default)
 				 w3m-search-engine-alist nil t nil
 				 'w3m-search-engine-history default))
-	    w3m-search-default-engine)))
-     (list engine
-	   (w3m-search-read-query
-	    (format "%s search: " engine)
-	    (format "%s search (default %%s): " engine)))))
+	    w3m-search-default-engine))
+	 (query
+	  (w3m-search-read-query
+	   (format "%s search: " search-engine)
+	   (format "%s search (default %%s): " search-engine))))
+    (list search-engine query)))
+
+(defun w3m-search-do-search (w3m-goto-function search-engine query)
+  "Call W3M-GOTO-FUNCTION with the URL for the search."
   (unless (string= query "")
     (let ((info (assoc search-engine w3m-search-engine-alist)))
       (if info
 	  (let ((query-string (w3m-search-escape-query-string query
 							      (caddr info)))
 		(post-data (cadddr info)))
-	    (w3m-goto-url
-	     (format (cadr info) query-string)
-	     post-data
-	     nil
-	     (and post-data (format post-data query-string))))
+	    (funcall w3m-goto-function
+		     (format (cadr info) query-string)
+		     post-data
+		     nil
+		     (and post-data (format post-data query-string))))
 	(error "Unknown search engine: %s" search-engine)))))
+
+;;;###autoload
+(defun w3m-search (search-engine query)
+  "Search QUERY using SEARCH-ENGINE.
+When called interactively with a prefix argument, you can choose one of
+the search engines defined in `w3m-search-engine-alist'.  Otherwise use
+`w3m-search-default-engine'.
+If Transient Mark mode, use the region as an initial string of query
+and deactivate the mark."
+  (interactive (w3m-search-read-variables))
+  (w3m-search-do-search 'w3m-goto-url search-engine query))
+
+;;;###autoload
+(defun w3m-search-new-session (search-engine query)
+  "Like `w3m-search', but do the search in a new session."
+  (interactive (w3m-search-read-variables))
+  (w3m-search-do-search 'w3m-goto-url-new-session search-engine query))
 
 ;;;###autoload
 (defun w3m-search-uri-replace (uri engine)
