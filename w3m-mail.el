@@ -143,6 +143,9 @@ the same as those of `compose-mail'.")
       (insert source))
     (compose-mail to subject other-headers)
     (message-add-action `(kill-buffer ,buffer) 'exit 'kill 'postpone 'send)
+    (setq message-required-headers
+	  (delq (assq 'X-Draft-From message-required-headers)
+		message-required-headers))
     (goto-char (point-min))
     (if (re-search-forward (concat "^\\(?:"
 				   (regexp-quote mail-header-separator)
@@ -158,7 +161,7 @@ the same as those of `compose-mail'.")
      ;; Use the base64 encoding if the body contains non-ASCII text or
      ;; very long lines which might be broken by MTAs.
      'encoding "base64"
-     'charset charset
+     'charset (when charset (symbol-name charset))
      'disposition "inline"
      'description url)
     (goto-char (point-min))
@@ -176,10 +179,10 @@ the same as those of `compose-mail'.")
 
 (defun w3m-mail (&optional headers)
   "Send a web page as an html mail.
-When called interactively, the message subject is generated according
-to `w3m-mail-subject'.  The optional HEADERS is a list in which each
-element is a cons of the symbol of a header name and a string.  Here
-is an example to use this function:
+By default the subject is generated according to `w3m-mail-subject'.
+The optional HEADERS is a list in which each element is a cons of the
+symbol of a header name and a string.  Here is an example to use this
+function:
 
 \(w3m-mail '((To . \"foo@bar\") (Subject . \"The emacs-w3m home page\")))"
   (interactive)
@@ -204,11 +207,12 @@ is an example to use this function:
 	    charset w3m-current-coding-system
 	    base (w3m-mail-compute-base-url))
       (w3m-view-source))
+    ;; Don't use `coding-system-base' or non-Mule XEmacs howls. :-<
     (setq charset (symbol-name charset))
     (when (string-match "-\\(?:dos\\|mac\\|unix\\)\\'" charset)
       (setq charset (substring charset 0 (match-beginning 0))))
-    (when (string-equal charset "undecided")
-      (setq charset nil))
+    (setq charset (unless (string-equal charset "undecided")
+		    (intern charset)))
     (when base
       (setq source (w3m-mail-embed-base-url source base)))
     (setq to (or (assq 'To headers) (assq 'to headers))

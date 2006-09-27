@@ -1,5 +1,11 @@
 2006-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-mail.el (w3m-mail-compose-with-mml): Remove X-Draft-From
+	header; make charset argument a string.
+	(w3m-mail): Make charset argument to be passed to composer a string.
+
+2006-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-mail.el: New file.
 
 	* w3m.el: Autoload w3m-mail.
