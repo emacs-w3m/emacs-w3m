@@ -1,3 +1,11 @@
+2006-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-mail.el: New file.
+
+	* w3m.el: Autoload w3m-mail.
+	(w3m-mail-user-agents): New variable.
+	(w3m-menubar): Add w3m-mail.
+
 2006-09-26  Luca Capello  <luca@pca.it>
 
 	* w3m-search.el (w3m-search-new-session): New command.
