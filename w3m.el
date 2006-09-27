@@ -173,7 +173,8 @@
   (autoload 'w3m-about-cookie "w3m-cookie")
   (autoload 'w3m-cookie-shutdown "w3m-cookie" nil t)
   (autoload 'report-emacs-w3m-bug "w3m-bug" nil t)
-  (autoload 'w3m-replace-symbol "w3m-symbol" nil t))
+  (autoload 'w3m-replace-symbol "w3m-symbol" nil t)
+  (autoload 'w3m-mail "w3m-mail" nil t))
 
 ;; Avoid byte-compile warnings.
 (eval-when-compile
@@ -2099,6 +2100,14 @@ It will be supplied by the REFRESH attribute in the META tag, and made
 buffer-local in each emacs-w3m buffer.")
 (make-variable-buffer-local 'w3m-refresh-timer)
 
+(defvar w3m-mail-user-agents '(gnus-user-agent
+			       message-user-agent
+			       ;;mew-user-agent
+			       ;;wl-user-agent
+			       )
+  "List of mail user agents that `w3m-mail' supports.
+See also w3m-mail.el.")
+
 (defvar w3m-current-base-url nil
   "URL specified by <base...> tag in <head> element of the page source.")
 (defvar w3m-current-forms nil
@@ -2389,6 +2398,9 @@ nil value means it has not been initialized.")
        [,(w3m-make-menu-item "ヘッダーを見る" "View Header")
 	w3m-view-header t]
        ) ;; end resource
+      "----" ;; separator
+      [,(w3m-make-menu-item "このページをメールで送る" "Mail this page")
+       w3m-mail (memq mail-user-agent w3m-mail-user-agents)]
       "----" ;; separator
       [,(w3m-make-menu-item "バグレポートを送る" "Send a Bug Report")
        report-emacs-w3m-bug t]
