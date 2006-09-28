@@ -1,3 +1,9 @@
+2006-09-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-mail.el (w3m-mail-compose-with-mml): Treat source as binary
+	data for images (we will probably have to do so for some more types);
+	pass content-type argument to MML.
+
 2006-09-28  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-mail-user-agents): Add mew-user-agent.

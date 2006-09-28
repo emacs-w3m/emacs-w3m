@@ -149,7 +149,8 @@ as those of `compose-mail'.")
 (defun w3m-mail-compose-with-mml (source url charset content-type
 					 to subject other-headers)
   "Compose a mail using MML."
-  (let* ((default-enable-multibyte-characters t)
+  (let* ((default-enable-multibyte-characters
+	   (not (string-match "\\`image/" content-type)))
 	 (buffer (generate-new-buffer " *w3m-mail*"))
 	 body)
     (with-current-buffer buffer
@@ -171,7 +172,7 @@ as those of `compose-mail'.")
     (setq body (point))
     (mml-insert-empty-tag
      'part
-     'type "text/html"
+     'type content-type
      'buffer (buffer-name buffer)
      ;; Use the base64 encoding if the body contains non-ASCII text or
      ;; very long lines which might be broken by MTAs.
