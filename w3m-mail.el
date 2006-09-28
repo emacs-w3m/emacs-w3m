@@ -141,7 +141,11 @@ the same as those of `compose-mail'.")
 	 body)
     (with-current-buffer buffer
       (insert source))
-    (let (gnus-newsgroup-name)
+    (if (eq mail-user-agent 'gnus-user-agent)
+	(progn
+	  (require 'gnus)
+	  (let (gnus-newsgroup-name)
+	    (compose-mail to subject other-headers)))
       (compose-mail to subject other-headers))
     (message-add-action `(kill-buffer ,buffer) 'exit 'kill 'postpone 'send)
     (goto-char (point-min))

@@ -1,7 +1,8 @@
 2006-09-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-mail.el (w3m-mail-compose-with-mml): Bind gnus-newsgroup-name
-	to nil while composing mail instead of removing X-Draft-From header.
+	to nil while composing mail if gnus-user-agent is used instead of
+	removing X-Draft-From header.
 
 2006-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
