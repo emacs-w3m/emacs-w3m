@@ -30,6 +30,7 @@
 ;;      `gnus-user-agent'
 ;;      `message-user-agent'
 ;;      `wl-user-agent'
+;;      `mew-user-agent'
 ;; To send the page you are looking at, type `M-x w3m-mail' or click
 ;; the menu button, fill message headers properly, and type `C-c C-c'.
 
@@ -54,7 +55,7 @@ just a string for this variable."
 (defvar w3m-mail-user-agent-compose-function-alist
   (let ((alist '((gnus-user-agent . w3m-mail-compose-with-mml)
 		 (message-user-agent . w3m-mail-compose-with-mml)
-		 ;;(mew-user-agent . w3m-mail-compose-with-mew)
+		 (mew-user-agent . w3m-mail-compose-with-mew)
 		 (wl-user-agent . w3m-mail-compose-with-semi)))
 	composer)
     (delq nil (mapcar (lambda (agent)
@@ -79,6 +80,9 @@ as those of `compose-mail'.")
 		       mime-edit-define-encoding
 		       mime-encode-region))
        (defalias symbol 'ignore)))))
+
+(eval-and-compile
+  (autoload 'w3m-mail-compose-with-mew "mew-w3m" "Compose a mail using Mew." t))
 
 (defun w3m-mail-make-subject ()
   "Return a string used for the Subject header."
@@ -181,6 +185,7 @@ as those of `compose-mail'.")
 			     body 'move)
       (goto-char (or (match-end 1) (match-end 2))))))
 
+;; w3m-mail-compose-with-mew() are implemented in mew-w3m.el
 ;;(defun w3m-mail-compose-with-mew (source url charset to subject other-headers)
 ;;  "Compose a mail using Mew.")
 

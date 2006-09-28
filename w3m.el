@@ -2102,7 +2102,7 @@ buffer-local in each emacs-w3m buffer.")
 
 (defvar w3m-mail-user-agents '(gnus-user-agent
 			       message-user-agent
-			       ;;mew-user-agent
+			       mew-user-agent
 			       wl-user-agent)
   "List of mail user agents that `w3m-mail' supports.
 See also w3m-mail.el.")

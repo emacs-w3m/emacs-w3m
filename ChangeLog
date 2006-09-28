@@ -1,3 +1,12 @@
+2006-09-28  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-mail-user-agents): Add mew-user-agent.
+
+	* w3m-mail.el (top): Autoload w3m-mail-compose-with-mew
+	(w3m-mail-user-agent-compose-function-alist): Add mew-user-agent.
+
+	* mew-w3m.el (w3m-mail-compose-with-mew): New function.
+
 2006-09-28  Hiroya Murata  <lapis-lazuli@pop06.odn.ne.jp>
 
 	* w3m-mail.el (w3m-mail-user-agent-compose-function-alist): Add
