@@ -70,7 +70,8 @@ the same as those of `compose-mail'.")
 
 (eval-when-compile
   (autoload 'message-add-action "message")
-  (autoload 'mml-insert-empty-tag "mml"))
+  (autoload 'mml-insert-empty-tag "mml")
+  (defvar message-required-headers))
 
 (defun w3m-mail-make-subject ()
   "Return a string used for the Subject header."
