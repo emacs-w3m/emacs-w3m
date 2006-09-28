@@ -29,6 +29,7 @@
 ;; set the `mail-user-agent' variable to one of the following agents:
 ;;      `gnus-user-agent'
 ;;      `message-user-agent'
+;;      `wl-user-agent'
 ;; To send the page you are looking at, type `M-x w3m-mail' or click
 ;; the menu button, fill message headers properly, and type `C-c C-c'.
 
