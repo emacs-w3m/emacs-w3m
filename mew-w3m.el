@@ -1,6 +1,6 @@
 ;; mew-w3m.el --- View Text/Html content with w3m in Mew
 
-;; Copyright (C) 2001, 2002, 2003, 2004
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Shun-ichi GOTO  <gotoh@taiyo.co.jp>,
@@ -279,6 +279,66 @@ This variable is effective only in XEmacs, Emacs 21 and Emacs 22."
 	  (message "Download: %s...done" name)
 	(message "Download: %s...failed" name))
       (sit-for 1))))
+
+(defun w3m-mail-compose-with-mew (source url charset to subject other-headers)
+  "Compose a mail using Mew."
+  (mew-user-agent-compose to subject other-headers) ;; for mew-temp-dir init
+  (save-excursion
+    (let* ((basename (file-name-nondirectory (w3m-url-strip-query url)))
+	   (filename (expand-file-name (cond
+					((string-match "^[\t ]*$" basename)
+					 "index.html")
+					((string-match "html?$" basename)
+					 basename)
+					(t
+					 (concat basename ".html")))
+				       mew-temp-dir))
+	   (mew-attach-move-next-after-copy nil)
+	   cs)
+      (when charset
+	(setq charset (symbol-name charset)))
+      (with-temp-buffer
+	(insert source)
+	(setq cs (or (w3m-static-if (fboundp 'mew-text/html-detect-cs)
+			 (mew-text/html-detect-cs (point-min) (point-max)))
+		     (and charset (mew-charset-to-cs charset))
+		     mew-cs-autoconv))
+	(if (eq cs mew-cs-autoconv)
+	    (setq charset (mew-charset-guess-region (point-min) (point-max)))
+	  (setq charset (mew-cs-to-charset cs)))
+	(mew-frwlet
+	 mew-cs-text-for-read cs
+	 (write-region (point-min) (point-max) filename nil 'nomsg)))
+      (unless (mew-attach-p) (mew-draft-prepare-attachments))
+      (if (not (mew-attach-not-line012-1))
+	  (message "Can not attach from emacs-w3m here!")
+	(mew-attach-copy filename (file-name-nondirectory filename))
+	(let* ((nums (mew-syntax-nums))
+	       (syntax (mew-syntax-get-entry mew-encode-syntax nums))
+	       (file (mew-syntax-get-file syntax))
+	       (ctl (mew-syntax-get-ct syntax))
+	       (ct (mew-syntax-get-value ctl 'cap))
+	       (params (mew-syntax-get-params ctl))
+	       (icharset "icharset")
+	       (ocharset "charset")
+	       cte)
+	  (unless (string= "Text/Html" ct)
+	    (setq ct "Text/Html")
+	    (setq ctl (list ct))
+	    (mew-syntax-set-ct syntax ctl)
+	    (setq cte (mew-ctdb-cte (mew-ctdb-by-ct ct)))
+	    (mew-syntax-set-cte syntax cte)
+	    (mew-syntax-set-cdp syntax (mew-syntax-cdp-format ct file)))
+	  (setq params (mew-delete icharset params))
+	  (setq params (cons (list icharset charset) params))
+	  (setq params (mew-delete ocharset params))
+	  (setq ctl (cons ct (cons (list ocharset charset) params)))
+	  (mew-syntax-set-ct syntax ctl)
+	  (mew-syntax-set-cd syntax url)
+	  (mew-encode-syntax-print mew-encode-syntax))
+	(message "Compose a mail using Mew with %s...done" url))
+      (when (and (file-exists-p filename) (file-writable-p filename))
+	(delete-file filename)))))
 
 ;;;
 (provide 'mew-w3m)
