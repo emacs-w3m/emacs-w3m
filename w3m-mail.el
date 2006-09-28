@@ -54,8 +54,7 @@ just a string for this variable."
   (let ((alist '((gnus-user-agent . w3m-mail-compose-with-mml)
 		 (message-user-agent . w3m-mail-compose-with-mml)
 		 ;;(mew-user-agent . w3m-mail-compose-with-mew)
-		 ;;(wl-user-agent . w3m-mail-compose-with-wl)
-		 ))
+		 (wl-user-agent . w3m-mail-compose-with-semi)))
 	composer)
     (delq nil (mapcar (lambda (agent)
 			(if (setq composer (cdr (assq agent alist)))
@@ -70,7 +69,15 @@ as those of `compose-mail'.")
 
 (eval-when-compile
   (autoload 'message-add-action "message")
-  (autoload 'mml-insert-empty-tag "mml"))
+  (autoload 'mml-insert-empty-tag "mml")
+  (condition-case nil
+      (require 'mime-edit)
+    (error
+     (dolist (symbol '(encode-mime-charset-region
+		       mime-edit-insert-tag
+		       mime-edit-define-encoding
+		       mime-encode-region))
+       (defalias symbol 'ignore)))))
 
 (defun w3m-mail-make-subject ()
   "Return a string used for the Subject header."
@@ -176,8 +183,42 @@ as those of `compose-mail'.")
 ;;(defun w3m-mail-compose-with-mew (source url charset to subject other-headers)
 ;;  "Compose a mail using Mew.")
 
-;;(defun w3m-mail-compose-with-wl (source url charset to subject other-headers)
-;;  "Compose a mail using Wanderlust.")
+(defun w3m-mail-compose-with-semi (source url charset to subject other-headers)
+  "Compose a mail using SEMI."
+  (let ((default-enable-multibyte-characters t)
+	(encoding "base64")
+	body)
+    (compose-mail to subject other-headers)
+    (goto-char (point-min))
+    (if (re-search-forward (concat "^\\(?:"
+				   (regexp-quote mail-header-separator)
+				   "\\)?\n")
+			   nil 'move)
+	(delete-region (point) (point-max))
+      (insert (if (bolp) "\n" "\n\n")))
+    (setq body (point))
+    (mime-edit-insert-tag
+     "text" "html"
+     (concat (when charset
+	       (concat "; charset=" (symbol-name charset) "\n"))
+	     "Content-Disposition: inline\n"
+	     "Content-Description: " url))
+    (mime-edit-define-encoding encoding)
+    (save-restriction
+      (narrow-to-region (point) (point))
+      (insert source)
+      (encode-mime-charset-region (point-min) (point-max) charset)
+      (mime-encode-region (point-min) (point-max) encoding)
+      (unless (bolp)
+	(insert "\n"))
+      (add-text-properties
+       (point-min) (point-max) '(invisible t mime-edit-invisible t)))
+    (goto-char (point-min))
+    ;; Go to empty or bogus header, otherwise the beginning of the body.
+    (when (re-search-forward "^\\(Subject: \\)(no subject)\\|\
+^\\([0-9A-Za-z-]+: ?\\)[\t ]*\n\\(?:[\t ]+\n\\)*[^\t ]"
+			     body 'move)
+      (goto-char (or (match-end 1) (match-end 2))))))
 
 (defun w3m-mail (&optional headers)
   "Send a web page as an html mail.
