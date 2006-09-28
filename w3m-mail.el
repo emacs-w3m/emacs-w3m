@@ -146,7 +146,8 @@ as those of `compose-mail'.")
 	  (insert "\n" margin "<base href=\"" base-url "\">\n" margin)))
       (buffer-string))))
 
-(defun w3m-mail-compose-with-mml (source url charset to subject other-headers)
+(defun w3m-mail-compose-with-mml (source url charset content-type
+					 to subject other-headers)
   "Compose a mail using MML."
   (let* ((default-enable-multibyte-characters t)
 	 (buffer (generate-new-buffer " *w3m-mail*"))
@@ -186,10 +187,12 @@ as those of `compose-mail'.")
       (goto-char (or (match-end 1) (match-end 2))))))
 
 ;; This function is implemented in mew-w3m.el.
-;;(defun w3m-mail-compose-with-mew (source url charset to subject other-headers)
-;;  "Compose a mail using Mew.")
+;; (defun w3m-mail-compose-with-mew (source url charset content-type
+;;                                         to subject other-headers)
+;;   "Compose a mail using Mew.")
 
-(defun w3m-mail-compose-with-semi (source url charset to subject other-headers)
+(defun w3m-mail-compose-with-semi (source url charset content-type
+					  to subject other-headers)
   "Compose a mail using SEMI."
   (let ((default-enable-multibyte-characters t)
 	(encoding "base64")
@@ -240,16 +243,34 @@ function:
     (error "`w3m-mail' must be invoked from an emacs-w3m buffer"))
   (let ((composer (cdr (assq mail-user-agent
 			     w3m-mail-user-agent-compose-function-alist)))
-	url source charset base to subject)
+	url source charset content-type base to subject)
     (unless composer
       (error "`%s' is not supported (yet) by `w3m-mail'" mail-user-agent))
-    (if (and w3m-current-url
-	     (string-match "\\`about://source/" w3m-current-url))
-	(setq url (substring w3m-current-url (match-end 0))
-	      source (buffer-string)
-	      charset (w3m-coding-system-to-mime-charset
-		       w3m-current-coding-system)
-	      base (w3m-mail-compute-base-url))
+    (cond
+     ((and w3m-current-url
+	   (string-match "\\`about://source/" w3m-current-url))
+      (setq url (substring w3m-current-url (match-end 0))
+	    source (buffer-string)
+	    charset (w3m-coding-system-to-mime-charset
+		     w3m-current-coding-system)
+	    base (w3m-mail-compute-base-url))
+      (w3m-view-source)
+      (setq content-type (or (w3m-arrived-content-type w3m-current-url)
+			     (w3m-content-type w3m-current-url)))
+      (w3m-view-source))
+     ((and w3m-current-url
+	   (string-match "\\`about://header/" w3m-current-url))
+      (setq url (substring w3m-current-url (match-end 0)))
+      (w3m-view-source)
+      (setq source (buffer-string)
+	    charset (w3m-coding-system-to-mime-charset
+		     w3m-current-coding-system)
+	    base (w3m-mail-compute-base-url))
+      (w3m-view-source)
+      (setq content-type (or (w3m-arrived-content-type w3m-current-url)
+			     (w3m-content-type w3m-current-url)))
+      (w3m-view-header))
+     (t
       (unless (setq url w3m-current-url)
 	(error "The html source for this page is not available"))
       (w3m-view-source)
@@ -257,8 +278,10 @@ function:
 	    charset (w3m-coding-system-to-mime-charset
 		     w3m-current-coding-system)
 	    base (w3m-mail-compute-base-url))
-      (w3m-view-source))
-    (when base
+      (w3m-view-source)
+      (setq content-type (or (w3m-arrived-content-type w3m-current-url)
+			     (w3m-content-type w3m-current-url)))))
+    (when (and base (string= "text/html" content-type))
       (setq source (w3m-mail-embed-base-url source base)))
     (setq to (or (assq 'To headers) (assq 'to headers))
 	  subject (or (assq 'Subject headers) (assq 'subject headers)))
@@ -268,6 +291,6 @@ function:
 	    subject (cdr subject)))
     (unless subject
       (setq subject (let ((w3m-current-url url)) (w3m-mail-make-subject))))
-    (funcall composer source url charset to subject headers)))
+    (funcall composer source url charset content-type to subject headers)))
 
 ;;; w3m-mail.el ends here

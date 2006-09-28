@@ -4,8 +4,12 @@
 
 	* w3m-mail.el (top): Autoload w3m-mail-compose-with-mew
 	(w3m-mail-user-agent-compose-function-alist): Add mew-user-agent.
+	(w3m-mail-compose-with-mml): Add `content-type' argument
+	(w3m-mail-compose-with-semi): Ditto.
+	(w3m-mail): Handle `content-type' and `about://header/'.
 
 	* mew-w3m.el (w3m-mail-compose-with-mew): New function.
+	Add `content-type' argument and handle it.
 
 2006-09-28  Hiroya Murata  <lapis-lazuli@pop06.odn.ne.jp>
 
