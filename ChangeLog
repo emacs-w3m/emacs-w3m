@@ -2,7 +2,7 @@
 
 	* w3m-mail.el (w3m-mail-compose-with-mml): Remove X-Draft-From
 	header; make charset argument a string.
-	(w3m-mail): Make charset argument to be passed to composer a string.
+	(w3m-mail): Make charset argument to be passed to composer a symbol.
 
 2006-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
