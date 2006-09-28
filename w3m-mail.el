@@ -29,8 +29,8 @@
 ;; set the `mail-user-agent' variable to one of the following agents:
 ;;      `gnus-user-agent'
 ;;      `message-user-agent'
-;;      `wl-user-agent'
 ;;      `mew-user-agent'
+;;      `wl-user-agent'
 ;; To send the page you are looking at, type `M-x w3m-mail' or click
 ;; the menu button, fill message headers properly, and type `C-c C-c'.
 
@@ -185,7 +185,7 @@ as those of `compose-mail'.")
 			     body 'move)
       (goto-char (or (match-end 1) (match-end 2))))))
 
-;; w3m-mail-compose-with-mew() are implemented in mew-w3m.el
+;; This function is implemented in mew-w3m.el.
 ;;(defun w3m-mail-compose-with-mew (source url charset to subject other-headers)
 ;;  "Compose a mail using Mew.")
 
