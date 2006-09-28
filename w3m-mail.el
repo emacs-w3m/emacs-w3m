@@ -201,9 +201,9 @@ as those of `compose-mail'.")
     (mime-edit-insert-tag
      "text" "html"
      (concat (when charset
-	       (concat "; charset=" (symbol-name charset) "\n"))
-	     "Content-Disposition: inline\n"
-	     "Content-Description: " url))
+	       (concat "; charset=" (symbol-name charset)))
+	     "\nContent-Disposition: inline"
+	     "\nContent-Description: " url))
     (mime-edit-define-encoding encoding)
     (save-restriction
       (narrow-to-region (point) (point))
