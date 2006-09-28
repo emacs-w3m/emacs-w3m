@@ -70,8 +70,7 @@ the same as those of `compose-mail'.")
 
 (eval-when-compile
   (autoload 'message-add-action "message")
-  (autoload 'mml-insert-empty-tag "mml")
-  (defvar message-required-headers))
+  (autoload 'mml-insert-empty-tag "mml"))
 
 (defun w3m-mail-make-subject ()
   "Return a string used for the Subject header."
@@ -142,11 +141,9 @@ the same as those of `compose-mail'.")
 	 body)
     (with-current-buffer buffer
       (insert source))
-    (compose-mail to subject other-headers)
+    (let (gnus-newsgroup-name)
+      (compose-mail to subject other-headers))
     (message-add-action `(kill-buffer ,buffer) 'exit 'kill 'postpone 'send)
-    (setq message-required-headers
-	  (delq (assq 'X-Draft-From message-required-headers)
-		message-required-headers))
     (goto-char (point-min))
     (if (re-search-forward (concat "^\\(?:"
 				   (regexp-quote mail-header-separator)
