@@ -1,8 +1,11 @@
 2006-09-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-util.el (w3m-coding-system-to-mime-charset): New function.
+
 	* w3m-mail.el (w3m-mail-compose-with-mml): Bind gnus-newsgroup-name
 	to nil while composing mail if gnus-user-agent is used instead of
 	removing X-Draft-From header.
+	(w3m-mail): Use w3m-coding-system-to-mime-charset.
 
 2006-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 

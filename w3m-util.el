@@ -61,6 +61,10 @@
   (defvar w3m-work-buffer-list)
   (defvar w3m-use-japanese-menu)
   (defvar w3m-mode-map)
+  (unless (fboundp 'coding-system-get)
+    (defalias 'coding-system-get 'ignore))
+  (unless (fboundp 'coding-system-to-mime-charset)
+    (defalias 'coding-system-to-mime-charset 'ignore))
   (unless (fboundp 'select-frame-set-input-focus)
     (defalias 'select-frame-set-input-focus 'ignore)))
 
@@ -1093,6 +1097,22 @@ If SECONDS is omitted, it defaults to 0.5."
   "Convert the car of `:args' as a widget type in WIDGET."
   (apply 'widget-convert (widget-type widget)
 	 (eval (car (widget-get widget :args)))))
+
+(defun w3m-coding-system-to-mime-charset (coding-system)
+  "Return the MIME charset corresponding to CODING-SYSTEM."
+  (when coding-system
+    (or (and (fboundp 'coding-system-get)
+	     (not (eq (symbol-function 'coding-system-get) 'ignore))
+	     (or (coding-system-get coding-system :mime-charset)
+		 (coding-system-get coding-system 'mime-charset)))
+	(and (featurep 'xemacs)
+	     (or (and (fboundp 'coding-system-to-mime-charset)
+		      (not (eq (symbol-function 'coding-system-to-mime-charset)
+			       'ignore)))
+		 (progn
+		   (require 'mcharset)
+		   (fboundp 'coding-system-to-mime-charset)))
+	     (coding-system-to-mime-charset coding-system)))))
 
 (provide 'w3m-util)
 

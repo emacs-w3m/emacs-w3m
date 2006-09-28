@@ -65,8 +65,8 @@ just a string for this variable."
 The function will be called with the arguments `source', `url',
 `charset', `to', `subject', and `other-headers'; where `source' is
 a string containing the html source, `url' is the url of the page,
-`charset' is a coding system that the page uses, and the rest are
-the same as those of `compose-mail'.")
+`charset' is a charset that the page uses, and the rest are the same
+as those of `compose-mail'.")
 
 (eval-when-compile
   (autoload 'message-add-action "message")
@@ -200,21 +200,17 @@ function:
 	     (string-match "\\`about://source/" w3m-current-url))
 	(setq url (substring w3m-current-url (match-end 0))
 	      source (buffer-string)
-	      charset w3m-current-coding-system
+	      charset (w3m-coding-system-to-mime-charset
+		       w3m-current-coding-system)
 	      base (w3m-mail-compute-base-url))
       (unless (setq url w3m-current-url)
 	(error "The html source for this page is not available"))
       (w3m-view-source)
       (setq source (buffer-string)
-	    charset w3m-current-coding-system
+	    charset (w3m-coding-system-to-mime-charset
+		     w3m-current-coding-system)
 	    base (w3m-mail-compute-base-url))
       (w3m-view-source))
-    ;; Don't use `coding-system-base' or non-Mule XEmacs howls. :-<
-    (setq charset (symbol-name charset))
-    (when (string-match "-\\(?:dos\\|mac\\|unix\\)\\'" charset)
-      (setq charset (substring charset 0 (match-beginning 0))))
-    (setq charset (unless (string-equal charset "undecided")
-		    (intern charset)))
     (when base
       (setq source (w3m-mail-embed-base-url source base)))
     (setq to (or (assq 'To headers) (assq 'to headers))
