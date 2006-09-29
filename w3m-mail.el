@@ -75,7 +75,9 @@ as those of `compose-mail'.")
   (condition-case nil
       (require 'mime-edit)
     (error
-     (dolist (symbol '(encode-mime-charset-region
+     (dolist (symbol '(encode-mime-charset-string
+		       std11-wrap-as-quoted-string
+		       mime-find-file-type
 		       mime-edit-insert-tag
 		       mime-edit-define-encoding
 		       mime-encode-region))
@@ -195,9 +197,36 @@ as those of `compose-mail'.")
 (defun w3m-mail-compose-with-semi (source url charset content-type
 					  to subject other-headers)
   "Compose a mail using SEMI."
-  (let ((default-enable-multibyte-characters t)
-	(encoding "base64")
-	body)
+  (let* ((content-type (and content-type
+			    (split-string (downcase content-type) "/")))
+	 (basename (file-name-nondirectory (w3m-url-strip-query url)))
+	 (filename (cond
+		    ((and (string-match "^[\t ]*$" basename)
+			  (equal content-type '("text" "html")))
+		     "index.html")
+		    ((string-match "^[\t ]*$" basename)
+		     "dummy")
+		    (t
+		     basename)))
+	 (type (or (nth 0 content-type) "text"))
+	 (subtype (or (nth 1 content-type) "html"))
+	 parameters
+	 (encoding "base64")
+	 (disposition-type "inline")
+	 disposition-params
+	 (guess (mime-find-file-type filename))
+	 (textp (string= type "text"))
+	 body)
+    (when (and guess
+	       (string= (nth 0 guess) type)
+	       (string= (nth 1 guess) subtype))
+      (setq parameters (nth 2 guess)
+	    encoding (or (nth 3 guess) encoding)
+	    disposition-type (or (nth 4 guess) disposition-type)
+	    disposition-params (nth 5 guess)))
+    (when (and textp charset)
+      (setq parameters (cons (cons "charset" (symbol-name charset))
+			     parameters)))
     (compose-mail to subject other-headers)
     (goto-char (point-min))
     (if (re-search-forward (concat "^\\(?:"
@@ -207,22 +236,41 @@ as those of `compose-mail'.")
 	(delete-region (point) (point-max))
       (insert (if (bolp) "\n" "\n\n")))
     (setq body (point))
-    (mime-edit-insert-tag
-     "text" "html"
-     (concat (when charset
-	       (concat "; charset=" (symbol-name charset)))
-	     "\nContent-Disposition: inline"
-	     "\nContent-Description: " url))
+    (let ((parameters-to-string
+	   (lambda (parameters)
+	     (when parameters
+	       (mapconcat
+		(lambda (parameter)
+		  (concat "; " (car parameter)
+			  "=" (if (eq (cdr parameter) 'file)
+				  (std11-wrap-as-quoted-string filename)
+				(cdr parameter))))
+		parameters
+		"")))))
+      (mime-edit-insert-tag
+       type subtype
+       (concat (funcall parameters-to-string parameters)
+	       "\nContent-Disposition: " disposition-type
+	       (funcall parameters-to-string disposition-params)
+	       "\nContent-Description: " url)))
     (mime-edit-define-encoding encoding)
     (save-restriction
       (narrow-to-region (point) (point))
-      (insert source)
-      (encode-mime-charset-region (point-min) (point-max) charset)
-      (mime-encode-region (point-min) (point-max) encoding)
+      (let ((encoded (if (and textp charset)
+			 (encode-mime-charset-string source charset)
+		       source)))
+	(insert
+	 (with-temp-buffer
+	   (set-buffer-multibyte nil)
+	   (insert encoded)
+	   (mime-encode-region (point-min) (point-max) encoding)
+	   (buffer-string))))
       (unless (bolp)
 	(insert "\n"))
-      (add-text-properties
-       (point-min) (point-max) '(invisible t mime-edit-invisible t)))
+      (when (or (string= disposition-type "attachment")
+		(not (member encoding '("7bit" "8bit" "binary"))))
+	(add-text-properties
+	 (point-min) (point-max) '(invisible t mime-edit-invisible t))))
     (goto-char (point-min))
     ;; Go to empty or bogus header, otherwise the beginning of the body.
     (when (re-search-forward "^\\(Subject: \\)(no subject)\\|\

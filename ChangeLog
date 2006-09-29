@@ -1,3 +1,8 @@
+2006-09-29  Hiroya Murata  <lapis-lazuli@pop06.odn.ne.jp>
+
+	* w3m-mail.el (w3m-mail-compose-with-semi): Handle types other
+	than text/html as well.
+
 2006-09-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-mail.el (w3m-mail-compose-with-mml): Treat source as binary
