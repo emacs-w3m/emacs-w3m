@@ -1,3 +1,14 @@
+2006-09-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-mail-user-agents): Add vm-user-agent.
+
+	* w3m-mail.el (w3m-mail-user-agent-compose-function-alist): Add
+	vm-user-agent.
+	(w3m-mail-compose-with-vm): New function.
+	(w3m-mail-goto-body-and-clear-body): New function.
+	(w3m-mail-position-point): New function.
+	(w3m-mail-compose-with-mml, w3m-mail-compose-with-semi): Use them.
+
 2006-09-29  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (w3m-mail-compose-with-mew): Handle coding-system and

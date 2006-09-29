@@ -30,6 +30,7 @@
 ;;      `gnus-user-agent'
 ;;      `message-user-agent'
 ;;      `mew-user-agent'
+;;      `vm-user-agent'
 ;;      `wl-user-agent'
 ;; To send the page you are looking at, type `M-x w3m-mail' or click
 ;; the menu button, fill message headers properly, and type `C-c C-c'.
@@ -56,6 +57,7 @@ just a string for this variable."
   (let ((alist '((gnus-user-agent . w3m-mail-compose-with-mml)
 		 (message-user-agent . w3m-mail-compose-with-mml)
 		 (mew-user-agent . w3m-mail-compose-with-mew)
+		 (vm-user-agent . w3m-mail-compose-with-vm)
 		 (wl-user-agent . w3m-mail-compose-with-semi)))
 	composer)
     (delq nil (mapcar (lambda (agent)
@@ -72,6 +74,7 @@ as those of `compose-mail'.")
 (eval-when-compile
   (autoload 'message-add-action "message")
   (autoload 'mml-insert-empty-tag "mml")
+  (autoload 'vm-mime-attach-buffer "vm-mime")
   (condition-case nil
       (require 'mime-edit)
     (error
@@ -149,13 +152,30 @@ as those of `compose-mail'.")
 	  (insert "\n" margin "<base href=\"" base-url "\">\n" margin)))
       (buffer-string))))
 
+(defun w3m-mail-goto-body-and-clear-body ()
+  "Go to the beginning of the body and clear the body."
+  (goto-char (point-min))
+  (if (re-search-forward (concat "^\\(?:"
+				 (regexp-quote mail-header-separator)
+				 "\\)?\n")
+			 nil 'move)
+      (delete-region (point) (point-max))
+    (insert (if (bolp) "\n" "\n\n"))))
+
+(defun w3m-mail-position-point (bob)
+  "Go to empty or bogus header, otherwise the beginning of the body BOB."
+  (goto-char (point-min))
+  (when (re-search-forward "^\\(Subject: \\)(no subject)\\|\
+^\\([0-9A-Za-z-]+: ?\\)[\t ]*\n\\(?:[\t ]+\n\\)*[^\t ]"
+			   bob 'move)
+    (goto-char (or (match-end 1) (match-end 2)))))
+
 (defun w3m-mail-compose-with-mml (source url charset content-type
 					 to subject other-headers)
   "Compose a mail using MML."
   (let* ((default-enable-multibyte-characters
 	   (not (string-match "\\`image/" content-type)))
-	 (buffer (generate-new-buffer " *w3m-mail*"))
-	 body)
+	 (buffer (generate-new-buffer " *w3m-mail*")))
     (with-current-buffer buffer
       (insert source))
     (if (eq mail-user-agent 'gnus-user-agent)
@@ -165,35 +185,43 @@ as those of `compose-mail'.")
 	    (compose-mail to subject other-headers)))
       (compose-mail to subject other-headers))
     (message-add-action `(kill-buffer ,buffer) 'exit 'kill 'postpone 'send)
-    (goto-char (point-min))
-    (if (re-search-forward (concat "^\\(?:"
-				   (regexp-quote mail-header-separator)
-				   "\\)?\n")
-			   nil 'move)
-	(delete-region (point) (point-max))
-      (insert (if (bolp) "\n" "\n\n")))
-    (setq body (point))
-    (mml-insert-empty-tag
-     'part
-     'type content-type
-     'buffer (buffer-name buffer)
-     ;; Use the base64 encoding if the body contains non-ASCII text or
-     ;; very long lines which might be broken by MTAs.
-     'encoding "base64"
-     'charset (when charset (symbol-name charset))
-     'disposition "inline"
-     'description url)
-    (goto-char (point-min))
-    ;; Go to empty or bogus header, otherwise the beginning of the body.
-    (when (re-search-forward "^\\(Subject: \\)(no subject)\\|\
-^\\([0-9A-Za-z-]+: ?\\)[\t ]*\n\\(?:[\t ]+\n\\)*[^\t ]"
-			     body 'move)
-      (goto-char (or (match-end 1) (match-end 2))))))
+    (w3m-mail-goto-body-and-clear-body)
+    (w3m-mail-position-point
+     (prog1
+	 (point)
+       (mml-insert-empty-tag
+	'part
+	'type content-type
+	'buffer (buffer-name buffer)
+	;; Use the base64 encoding if the body contains non-ASCII text
+	;; or very long lines which might be broken by MTAs.
+	'encoding "base64"
+	'charset (when charset (symbol-name charset))
+	'disposition "inline"
+	'description url)))))
 
 ;; This function is implemented in mew-w3m.el.
 ;; (defun w3m-mail-compose-with-mew (source url charset content-type
 ;;                                         to subject other-headers)
 ;;   "Compose a mail using Mew.")
+
+(defun w3m-mail-compose-with-vm (source url charset content-type
+					to subject other-headers)
+  "Compose a mail using VM."
+  (let* ((default-enable-multibyte-characters
+	   (not (string-match "\\`image/" content-type)))
+	 (buffer (generate-new-buffer " *w3m-mail*")))
+    (with-current-buffer buffer
+      (insert source))
+    (compose-mail to subject other-headers)
+    (w3m-add-local-hook 'kill-buffer-hook `(lambda nil (kill-buffer ,buffer)))
+    (w3m-mail-goto-body-and-clear-body)
+    (w3m-mail-position-point
+     (prog1
+	 (point)
+       (vm-mime-attach-buffer buffer content-type
+			      (when charset (symbol-name charset))
+			      url)))))
 
 (defun w3m-mail-compose-with-semi (source url charset content-type
 					  to subject other-headers)
@@ -225,13 +253,7 @@ as those of `compose-mail'.")
 	    disposition-type (or (nth 4 guess) disposition-type)
 	    disposition-params (nth 5 guess)))
     (compose-mail to subject other-headers)
-    (goto-char (point-min))
-    (if (re-search-forward (concat "^\\(?:"
-				   (regexp-quote mail-header-separator)
-				   "\\)?\n")
-			   nil 'move)
-	(delete-region (point) (point-max))
-      (insert (if (bolp) "\n" "\n\n")))
+    (w3m-mail-goto-body-and-clear-body)
     (let ((parameters-to-string
 	   (lambda (parameters)
 	     (when parameters
@@ -278,12 +300,7 @@ as those of `compose-mail'.")
 		    (not (member encoding '("7bit" "8bit" "binary"))))
 	    (add-text-properties
 	     (point-min) (point-max) '(invisible t mime-edit-invisible t)))))
-      (goto-char (point-min))
-      ;; Go to empty or bogus header, otherwise the beginning of the body.
-      (when (re-search-forward "^\\(Subject: \\)(no subject)\\|\
-^\\([0-9A-Za-z-]+: ?\\)[\t ]*\n\\(?:[\t ]+\n\\)*[^\t ]"
-			       body 'move)
-	(goto-char (or (match-end 1) (match-end 2)))))))
+      (w3m-mail-position-point body))))
 
 (defun w3m-mail (&optional headers)
   "Send a web page as an html mail.
