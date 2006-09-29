@@ -1,7 +1,17 @@
+2006-09-29  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* mew-w3m.el (w3m-mail-compose-with-mew): Handle coding-system and
+	charset accurately. When call with `current-prefix-arg', try to
+	use existing draft buffer.
+
+	* w3m-mail.el (w3m-mail): Bind
+	`w3m-history-reuse-history-elements' to 'reload.
+
 2006-09-29  Hiroya Murata  <lapis-lazuli@pop06.odn.ne.jp>
 
 	* w3m-mail.el (w3m-mail-compose-with-semi): Handle types other
-	than text/html as well.
+	than text/html as well. Decide the charset when the charset is nil
+	though the content-type is a text.
 
 2006-09-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 

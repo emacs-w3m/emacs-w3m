@@ -75,7 +75,8 @@ as those of `compose-mail'.")
   (condition-case nil
       (require 'mime-edit)
     (error
-     (dolist (symbol '(encode-mime-charset-string
+     (dolist (symbol '(encode-mime-charset-region
+		       detect-mime-charset-region
 		       std11-wrap-as-quoted-string
 		       mime-find-file-type
 		       mime-edit-insert-tag
@@ -215,8 +216,7 @@ as those of `compose-mail'.")
 	 (disposition-type "inline")
 	 disposition-params
 	 (guess (mime-find-file-type filename))
-	 (textp (string= type "text"))
-	 body)
+	 (textp (string= type "text")))
     (when (and guess
 	       (string= (nth 0 guess) type)
 	       (string= (nth 1 guess) subtype))
@@ -224,9 +224,6 @@ as those of `compose-mail'.")
 	    encoding (or (nth 3 guess) encoding)
 	    disposition-type (or (nth 4 guess) disposition-type)
 	    disposition-params (nth 5 guess)))
-    (when (and textp charset)
-      (setq parameters (cons (cons "charset" (symbol-name charset))
-			     parameters)))
     (compose-mail to subject other-headers)
     (goto-char (point-min))
     (if (re-search-forward (concat "^\\(?:"
@@ -235,7 +232,6 @@ as those of `compose-mail'.")
 			   nil 'move)
 	(delete-region (point) (point-max))
       (insert (if (bolp) "\n" "\n\n")))
-    (setq body (point))
     (let ((parameters-to-string
 	   (lambda (parameters)
 	     (when parameters
@@ -246,37 +242,48 @@ as those of `compose-mail'.")
 				  (std11-wrap-as-quoted-string filename)
 				(cdr parameter))))
 		parameters
-		"")))))
-      (mime-edit-insert-tag
-       type subtype
-       (concat (funcall parameters-to-string parameters)
-	       "\nContent-Disposition: " disposition-type
-	       (funcall parameters-to-string disposition-params)
-	       "\nContent-Description: " url)))
-    (mime-edit-define-encoding encoding)
-    (save-restriction
-      (narrow-to-region (point) (point))
-      (let ((encoded (if (and textp charset)
-			 (encode-mime-charset-string source charset)
-		       source)))
-	(insert
-	 (with-temp-buffer
-	   (set-buffer-multibyte nil)
-	   (insert encoded)
-	   (mime-encode-region (point-min) (point-max) encoding)
-	   (buffer-string))))
-      (unless (bolp)
-	(insert "\n"))
-      (when (or (string= disposition-type "attachment")
-		(not (member encoding '("7bit" "8bit" "binary"))))
-	(add-text-properties
-	 (point-min) (point-max) '(invisible t mime-edit-invisible t))))
-    (goto-char (point-min))
-    ;; Go to empty or bogus header, otherwise the beginning of the body.
-    (when (re-search-forward "^\\(Subject: \\)(no subject)\\|\
+		""))))
+	  (body (point))
+	  (edit-buffer (current-buffer))
+	  work-buffer)
+      (with-temp-buffer
+	(if textp
+	    (progn
+	      (insert source)
+	      (unless charset
+		(setq charset (detect-mime-charset-region (point-min)
+							  (point-max))))
+	      (when charset
+		(setq parameters (cons (cons "charset" (symbol-name charset))
+				       parameters))
+		(encode-mime-charset-region (point-min) (point-max) charset)))
+	  (set-buffer-multibyte nil)
+	  (insert source))
+	(mime-encode-region (point-min) (point-max) encoding)
+	(setq work-buffer (current-buffer))
+	(set-buffer edit-buffer)
+	(mime-edit-insert-tag
+	 type subtype
+	 (concat (funcall parameters-to-string parameters)
+		 "\nContent-Disposition: " disposition-type
+		 (funcall parameters-to-string disposition-params)
+		 "\nContent-Description: " url))
+	(mime-edit-define-encoding encoding)
+	(save-restriction
+	  (narrow-to-region (point) (point))
+	  (insert-buffer-substring work-buffer)
+	  (unless (bolp)
+	    (insert "\n"))
+	  (when (or (string= disposition-type "attachment")
+		    (not (member encoding '("7bit" "8bit" "binary"))))
+	    (add-text-properties
+	     (point-min) (point-max) '(invisible t mime-edit-invisible t)))))
+      (goto-char (point-min))
+      ;; Go to empty or bogus header, otherwise the beginning of the body.
+      (when (re-search-forward "^\\(Subject: \\)(no subject)\\|\
 ^\\([0-9A-Za-z-]+: ?\\)[\t ]*\n\\(?:[\t ]+\n\\)*[^\t ]"
-			     body 'move)
-      (goto-char (or (match-end 1) (match-end 2))))))
+			       body 'move)
+	(goto-char (or (match-end 1) (match-end 2)))))))
 
 (defun w3m-mail (&optional headers)
   "Send a web page as an html mail.
@@ -292,6 +299,8 @@ function:
     (error "`w3m-mail' must be invoked from an emacs-w3m buffer"))
   (let ((composer (cdr (assq mail-user-agent
 			     w3m-mail-user-agent-compose-function-alist)))
+	;; Don't move the history position.
+	(w3m-history-reuse-history-elements 'reload)
 	url source charset content-type base to subject)
     (unless composer
       (error "`%s' is not supported (yet) by `w3m-mail'" mail-user-agent))
