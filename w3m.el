@@ -4145,6 +4145,20 @@ This function is imported from mcharset.el."
   (let ((cs (assq charset w3m-charset-coding-system-alist)))
     (w3m-find-coding-system (if cs (cdr cs) charset))))
 
+(defun w3m-coding-system-to-charset (coding-system)
+  "Return the MIME charset corresponding to CODING-SYSTEM."
+  (when coding-system
+    (w3m-static-if (featurep 'xemacs)
+	(when (or (fboundp 'coding-system-to-mime-charset)
+		  (progn
+		    (require 'mcharset)
+		    (fboundp 'coding-system-to-mime-charset)))
+	  (defalias 'w3m-coding-system-to-charset
+	    'coding-system-to-mime-charset)
+	  (w3m-coding-system-to-charset coding-system))
+      (or (coding-system-get coding-system :mime-charset)
+	  (coding-system-get coding-system 'mime-charset)))))
+
 ;; FIXME: we need to investigate the kind of Content-Charsets being
 ;; actually possible.
 (defun w3m-read-content-charset (prompt &optional default)

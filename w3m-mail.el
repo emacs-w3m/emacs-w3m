@@ -88,7 +88,9 @@ as those of `compose-mail'.")
        (defalias symbol 'ignore)))))
 
 (eval-and-compile
-  (autoload 'w3m-mail-compose-with-mew "mew-w3m" "Compose a mail using Mew." t))
+  (autoload 'mm-find-mime-charset-region "mm-util")
+  (autoload 'w3m-mail-compose-with-mew "mew-w3m"
+    "Compose a mail using Mew." t))
 
 (defun w3m-mail-make-subject ()
   "Return a string used for the Subject header."
@@ -173,9 +175,11 @@ as those of `compose-mail'.")
 (defun w3m-mail-compose-with-mml (source url charset content-type
 					 to subject other-headers)
   "Compose a mail using MML."
-  (let* ((default-enable-multibyte-characters
-	   (not (string-match "\\`image/" content-type)))
-	 (buffer (generate-new-buffer " *w3m-mail*")))
+  (let ((buffer (w3m-static-if (featurep 'xemacs)
+		    (generate-new-buffer " *w3m-mail*")
+		  (let ((default-enable-multibyte-characters
+			  (not (string-match "\\`image/" content-type))))
+		    (generate-new-buffer " *w3m-mail*")))))
     (with-current-buffer buffer
       (insert source))
     (if (eq mail-user-agent 'gnus-user-agent)
@@ -208,12 +212,37 @@ as those of `compose-mail'.")
 (defun w3m-mail-compose-with-vm (source url charset content-type
 					to subject other-headers)
   "Compose a mail using VM."
-  (let* ((default-enable-multibyte-characters
-	   (not (string-match "\\`image/" content-type)))
-	 (buffer (generate-new-buffer " *w3m-mail*")))
+  (let* ((coding (and charset (w3m-charset-to-coding-system charset)))
+	 (multibytep (and (not coding)
+			  (or charset
+			      (and (not (string-match "\\`image/"
+						      content-type))
+				   (w3m-static-if (featurep 'xemacs)
+				       (string-match "[^\000-\177]" source)
+				     (multibyte-string-p source))))))
+	 (buffer (w3m-static-if (featurep 'xemacs)
+		     (generate-new-buffer " *w3m-mail*")
+		   (let ((default-enable-multibyte-characters
+			   (and (not coding) multibytep)))
+		     (generate-new-buffer " *w3m-mail*")))))
     (with-current-buffer buffer
-      (insert source))
+      (cond (coding
+	     (insert (encode-coding-string source coding)))
+	    (multibytep
+	     (insert source)
+	     (when (and (setq charset (car (mm-find-mime-charset-region
+					    (point-min) (point-max))))
+			(setq coding (w3m-charset-to-coding-system charset)))
+	       (w3m-static-if (featurep 'xemacs)
+		   (encode-coding-region (point-min) (point-max) coding)
+		 (insert (prog1
+			     (encode-coding-string (buffer-string) coding)
+			   (erase-buffer)
+			   (set-buffer-multibyte nil))))))
+	    (t
+	     (insert source))))
     (compose-mail to subject other-headers)
+    (add-to-list 'mail-send-actions `(kill-buffer ,buffer))
     (w3m-add-local-hook 'kill-buffer-hook `(lambda nil (kill-buffer ,buffer)))
     (w3m-mail-goto-body-and-clear-body)
     (w3m-mail-position-point
@@ -317,45 +346,41 @@ function:
   (let ((composer (cdr (assq mail-user-agent
 			     w3m-mail-user-agent-compose-function-alist)))
 	;; Don't move the history position.
-	(w3m-history-reuse-history-elements 'reload)
-	url source charset content-type base to subject)
-    (unless composer
-      (error "`%s' is not supported (yet) by `w3m-mail'" mail-user-agent))
+	(w3m-history-reuse-history-elements t)
+	source base url charset content-type to subject)
     (cond
-     ((and w3m-current-url
-	   (string-match "\\`about://source/" w3m-current-url))
-      (setq url (substring w3m-current-url (match-end 0))
-	    source (buffer-string)
-	    charset (w3m-coding-system-to-mime-charset
-		     w3m-current-coding-system)
+     ((not composer)
+      (error "`%s' is not supported (yet) by `w3m-mail'" mail-user-agent))
+     ((not w3m-current-url)
+      (error "The html source for this page is not available"))
+     ((string-match "\\`about://source/" w3m-current-url)
+      (setq source (buffer-string)
 	    base (w3m-mail-compute-base-url))
       (w3m-view-source)
-      (setq content-type (or (w3m-arrived-content-type w3m-current-url)
+      (setq url w3m-current-url
+	    charset (w3m-coding-system-to-charset w3m-current-coding-system)
+	    content-type (or (w3m-arrived-content-type w3m-current-url)
 			     (w3m-content-type w3m-current-url)))
       (w3m-view-source))
-     ((and w3m-current-url
-	   (string-match "\\`about://header/" w3m-current-url))
-      (setq url (substring w3m-current-url (match-end 0)))
+     ((string-match "\\`about://header/" w3m-current-url)
       (w3m-view-source)
       (setq source (buffer-string)
-	    charset (w3m-coding-system-to-mime-charset
-		     w3m-current-coding-system)
 	    base (w3m-mail-compute-base-url))
       (w3m-view-source)
-      (setq content-type (or (w3m-arrived-content-type w3m-current-url)
+      (setq url w3m-current-url
+	    charset (w3m-coding-system-to-charset w3m-current-coding-system)
+	    content-type (or (w3m-arrived-content-type w3m-current-url)
 			     (w3m-content-type w3m-current-url)))
       (w3m-view-header))
      (t
-      (unless (setq url w3m-current-url)
-	(error "The html source for this page is not available"))
+      (setq url w3m-current-url
+	    charset (w3m-coding-system-to-charset w3m-current-coding-system)
+	    content-type (or (w3m-arrived-content-type w3m-current-url)
+			     (w3m-content-type w3m-current-url)))
       (w3m-view-source)
       (setq source (buffer-string)
-	    charset (w3m-coding-system-to-mime-charset
-		     w3m-current-coding-system)
 	    base (w3m-mail-compute-base-url))
-      (w3m-view-source)
-      (setq content-type (or (w3m-arrived-content-type w3m-current-url)
-			     (w3m-content-type w3m-current-url)))))
+      (w3m-view-source)))
     (when (and base (string= "text/html" content-type))
       (setq source (w3m-mail-embed-base-url source base)))
     (setq to (or (assq 'To headers) (assq 'to headers))

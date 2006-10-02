@@ -1,6 +1,15 @@
 2006-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-buffer): New function.
+	* w3m-mail.el (w3m-mail-compose-with-vm): Treat source as binary
+	data for images; encode source according to charset; use
+	mail-send-actions to kill source buffer.
+	(w3m-mail): Examine charset when the page is displayed normally.
+
+	* w3m-util.el (w3m-coding-system-to-mime-charset): Rename to
+	w3m-coding-system-to-charset and move to w3m.el
+
+	* w3m.el (w3m-coding-system-to-charset): Move from w3m-util.el.
+	(w3m-buffer): New function.
 
 2006-09-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
