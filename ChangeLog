@@ -1,3 +1,7 @@
+2006-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-buffer): New function.
+
 2006-09-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-mail-user-agents): Add vm-user-agent.

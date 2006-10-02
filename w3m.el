@@ -8414,6 +8414,13 @@ parse the meta tag to extract the charset."
 	(and w3m-force-redisplay (sit-for 0))
 	(w3m-toggle-inline-images 'force)))))
 
+;;;###autoload
+(defun w3m-buffer (&optional url charset)
+  "Render the current buffer.
+See `w3m-region' for the optional arguments."
+  (interactive (list (w3m-expand-file-name-as-url (or (buffer-file-name)
+						      default-directory))))
+  (w3m-region (point-min) (point-max) url charset))
 
 ;;; About:
 (defun w3m-about (url &rest args)
