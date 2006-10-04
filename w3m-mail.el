@@ -25,8 +25,9 @@
 ;;; Commentary:
 
 ;; This module provides the `w3m-mail' command which enables you to
-;; send web pages as html mails.  Currently this program works iff you
-;; set the `mail-user-agent' variable to one of the following agents:
+;; send web pages as mails respecting those content types (typically
+;; text/html).  Currently this program works if and only if you set
+;; the `mail-user-agent' variable to one of the following agents:
 ;;      `gnus-user-agent'
 ;;      `message-user-agent'
 ;;      `mew-user-agent'
@@ -66,10 +67,11 @@ just a string for this variable."
 		      w3m-mail-user-agents)))
   "Alist of mail user agents and functions to compose a mail.
 The function will be called with the arguments `source', `url',
-`charset', `to', `subject', and `other-headers'; where `source' is
-a string containing the html source, `url' is the url of the page,
-`charset' is a charset that the page uses, and the rest are the same
-as those of `compose-mail'.")
+`charset', `content-type', `to', `subject', and `other-headers'; where
+`source' is a string containing the page source, `url' is the url of
+the page, `charset' is a charset that the page uses, `content-type' is
+the one such as \"text/html\", and the rest are the same as those of
+`compose-mail'.")
 
 (eval-when-compile
   (autoload 'message-add-action "message")
@@ -332,17 +334,16 @@ as those of `compose-mail'.")
       (w3m-mail-position-point body))))
 
 (defun w3m-mail (&optional headers)
-  "Send a web page as an html mail.
+  "Send a web page as a mail.
 By default the subject is generated according to `w3m-mail-subject'.
 The optional HEADERS is a list in which each element is a cons of the
 symbol of a header name and a string.  Here is an example to use this
 function:
 
 \(w3m-mail '((To . \"foo@bar\") (Subject . \"The emacs-w3m home page\")))"
-  (interactive)
-  (when (and (interactive-p)
-	     (not (eq major-mode 'w3m-mode)))
-    (error "`w3m-mail' must be invoked from an emacs-w3m buffer"))
+  (interactive (unless (eq major-mode 'w3m-mode)
+		 (error "`%s' must be invoked from an emacs-w3m buffer"
+			this-command)))
   (let ((composer (cdr (assq mail-user-agent
 			     w3m-mail-user-agent-compose-function-alist)))
 	;; Don't move the history position.
@@ -352,7 +353,7 @@ function:
      ((not composer)
       (error "`%s' is not supported (yet) by `w3m-mail'" mail-user-agent))
      ((not w3m-current-url)
-      (error "The html source for this page is not available"))
+      (error "The source for this page is not available"))
      ((string-match "\\`about://source/" w3m-current-url)
       (setq source (buffer-string)
 	    base (w3m-mail-compute-base-url))
