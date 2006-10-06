@@ -1,3 +1,10 @@
+2006-10-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-compatible-encoding-alist): Add
+	iso-8859-8/windows-1255 and iso-8859-9/windows-1254.
+
+	* shimbun/sb-rss.el (shimbun-rss-compatible-encoding-alist): Ditto.
+
 2006-10-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-cnet-jp.el (shimbun-clear-contents): Remove anchors

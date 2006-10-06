@@ -216,7 +216,10 @@ But clarify need ignored URL return nil.")
 
 ;;; XML functions
 
-(defvar shimbun-rss-compatible-encoding-alist '((iso-8859-1 . windows-1252))
+(defvar shimbun-rss-compatible-encoding-alist
+  '((iso-8859-1 . windows-1252)
+    (iso-8859-8 . windows-1255)
+    (iso-8859-9 . windows-1254))
   "Alist of encodings and those supersets.
 The cdr of each element is used to decode data if it is available when
 the car is what the data specify as the encoding.  Or, the car is used
