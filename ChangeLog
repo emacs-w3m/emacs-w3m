@@ -1,3 +1,11 @@
+2006-10-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-cnet-jp.el (shimbun-clear-contents): Remove anchors
+	to print pages.
+
+	* shimbun/sb-opentechpress-jp.el
+	(shimbun-opentechpress-jp-content-end): Now covers widen area.
+
 2006-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-mail.el (w3m-mail-compose-with-vm): Treat source as binary
