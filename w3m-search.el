@@ -6,8 +6,7 @@
 ;; Authors: Keisuke Nishida    <kxn30@po.cwru.edu>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;          Romain FRANCOISE   <romain@orebokech.com>,
-;;          Luca Capello       <luca@pca.it>
+;;          Romain FRANCOISE   <romain@orebokech.com>
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; This file is a part of emacs-w3m.

@@ -4,8 +4,7 @@
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
-;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
-;;          Luca Capello       <luca@pca.it>
+;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
 
 ;; This file is a part of emacs-w3m.
