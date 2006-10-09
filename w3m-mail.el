@@ -5,7 +5,7 @@
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
 
-;; This file is the main part of emacs-w3m.
+;; This file is a part of emacs-w3m.
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
