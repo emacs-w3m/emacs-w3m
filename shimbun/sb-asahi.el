@@ -1083,8 +1083,15 @@ and tenjin, it tries to fetch the article for that day if it failed."
 	  (string-to-number (match-string 2))
 	  (string-to-number (match-string 3))
 	  (concat (match-string 4) ":" (match-string 5))
-	  "+0900"))))))
-  (goto-char (point-min)))
+	  "+0900")))))
+    (goto-char (point-min))
+    ;; Remove sitesearch area.
+    (when (re-search-forward "[\t\n ]*\\(?:<div[\t\n ]+[^>]+>[\t\n ]*\\)+\
+この記事の関連情報をアサヒ・コム内で検索する"
+			     nil t)
+      (goto-char (match-beginning 0))
+      (insert "\n<!-- End of Kiji -->")
+      (goto-char (point-min)))))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-asahi)
 						   header)
