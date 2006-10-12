@@ -1,3 +1,9 @@
+2006-10-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-kantei.el (shimbun-kantei-from-address): Shinzo Abe.
+	(shimbun-kantei-groups): Doc fix.
+	(shimbun-kantei-x-face-alist): Renew.
+
 2006-10-11  David Hansen  <david.hansen@physik.fu-berlin.de>
 
 	* w3m.el (w3m-relationship-estimate-rules): Support for google code
