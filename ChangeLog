@@ -1,5 +1,8 @@
 2006-10-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Break long
+	lines.
+
 	* shimbun/sb-kantei.el (shimbun-kantei-from-address): Remove.
 	(shimbun-kantei-groups): Add m-magazine-ja.koizumi group.
 	(shimbun-kantei-x-face-alist): Restore Koizumi's face.
