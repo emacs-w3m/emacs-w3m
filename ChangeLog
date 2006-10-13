@@ -1,3 +1,15 @@
+2006-10-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-kantei.el (shimbun-kantei-from-address): Remove.
+	(shimbun-kantei-groups): Add m-magazine-ja.koizumi group.
+	(shimbun-kantei-x-face-alist): Restore Koizumi's face.
+	(shimbun-index-url): Work with m-magazine-ja.koizumi group; make
+	m-magazine group an alias to m-magazine-ja.koizumi group.
+	(shimbun-from-address): Return a correct author.
+	(shimbun-get-headers): Update regexp for English articles; remove
+	too match whitespace in Japanese subject.
+	(shimbun-clear-contents): Remove <CENTER> tags in English article.
+
 2006-10-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-kantei.el (shimbun-kantei-from-address): Shinzo Abe.
