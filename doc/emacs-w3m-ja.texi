@@ -5308,33 +5308,13 @@ emacswiki.changes emacswiki.diff
          t "</title>" "<!-- start ads")))
 @end lisp
 
-次の例では、今のところ実際に存在する個人的な blog を読むことができま
-す (これを使う場合、各行の先頭にある空白を取り除いて下さい):
-
-@lisp
-(setq shimbun-rss-hash-group-path-alist
-      '(("koderanoblog"
-         "http://plusdblog.itmedia.co.jp/koderanoblog/index.rdf"
-         t)))
-
-(setq shimbun-rss-hash-x-face-alist
-      '(("koderanoblog" . "X-Face: (WZ,)3m%[o&pbnxD<q&KZPAT\\BmC\
-])#s*xk%Z;`S&Gy8]3jGS>/i61A:;4`[%3~$SSw;649\n ^$3x4lC1+>@}wMBlj4w\
-]o2yN.iY6cF0Gi%^cZvT,mkX!>5xq_n73pWiJXQ`h8@@~Z5b4!ui768h<-c\\+\n \
-~f\\&zIs](Z3;KPf7<i3@}`;u=qm5yf^\"/R.C(7km`\"z@}#-<^WqK\\.Ppd\"2?5\
-1:U<sJlJ9kV\"ws1SrVz\n Q7;<|8v=2g4RyWavi6qwDrSN#\\y$IXn.\"R<#zg@@\
-u,@@]fMh%oC%V~&MGKiS9LNQ!j]F\\Z&;<pgW9ixF\n z>l,To0e40d/v;XI>Uc")))
-@end lisp
-
 @item コンテンツを含む Atom フィード
 前項 (コンテンツを含む RSS フィード) と同様に、掲載されたコンテンツを含
 む Atom フィードも閲覧することができます。それを行なうには、
 shimbun-rss-hash-* と同様のやり方で変
 数 @code{shimbun-atom-hash-group-path-alist} (ひょっとする
 と @code{shimbun-atom-hash-x-face-alist} なども) を設定して下さい。バッ
-クエンド名は @samp{atom-hash} です。例え
-ば現在 @uref{http://plusdblog.itmedia.co.jp/koderanoblog/atom.xml} が利
-用可能です。
+クエンド名は @samp{atom-hash} です。
 
 @item Wiki コンテンツ
 閲覧したい Wiki の URL を調べて、以下のように設定して使います。
@@ -5383,7 +5363,7 @@ vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
 vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
 vinelinux.errata.1x
 
-@item @uref{http://www.kantei.go.jp/jp/, 阿部内閣メールマガジン}
+@item @uref{http://www.kantei.go.jp/, 阿部内閣メールマガジン}
 kantei.m-magazine-en kantei.m-magazine-ja kantei.m-magazine-ja.koizumi
 
 後方互換性のため、@samp{kantei.m-magazine} も利用可能になっています。

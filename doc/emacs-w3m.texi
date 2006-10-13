@@ -5253,33 +5253,12 @@ and @samp{rss-hash.sampleblog2}:
          t "</title>" "<!-- start ads")))
 @end lisp
 
-Another example which allows you to read a certain personal blog (it
-actually exists at present) is below (if you use it, delete whitespace
-in front of each line):
-
-@lisp
-(setq shimbun-rss-hash-group-path-alist
-      '(("koderanoblog"
-         "http://plusdblog.itmedia.co.jp/koderanoblog/index.rdf"
-         t)))
-
-(setq shimbun-rss-hash-x-face-alist
-      '(("koderanoblog" . "X-Face: (WZ,)3m%[o&pbnxD<q&KZPAT\\BmC\
-])#s*xk%Z;`S&Gy8]3jGS>/i61A:;4`[%3~$SSw;649\n ^$3x4lC1+>@}wMBlj4w\
-]o2yN.iY6cF0Gi%^cZvT,mkX!>5xq_n73pWiJXQ`h8@@~Z5b4!ui768h<-c\\+\n \
-~f\\&zIs](Z3;KPf7<i3@}`;u=qm5yf^\"/R.C(7km`\"z@}#-<^WqK\\.Ppd\"2?5\
-1:U<sJlJ9kV\"ws1SrVz\n Q7;<|8v=2g4RyWavi6qwDrSN#\\y$IXn.\"R<#zg@@\
-u,@@]fMh%oC%V~&MGKiS9LNQ!j]F\\Z&;<pgW9ixF\n z>l,To0e40d/v;XI>Uc")))
-@end lisp
-
 @item Atom feeds containing contents
 As well as the previous section (RSS feeds containing contents), you can
 also read the Atom feeds which contain published contents.  To do that,
 configure the variable @code{shimbun-atom-hash-group-path-alist} (and
 possibly @code{shimbun-atom-hash-x-face-alist}, etc.) in the way similar
 to shimbun-rss-hash-*.  The name of the back end is @samp{atom-hash}.
-For example, @uref{http://plusdblog.itmedia.co.jp/koderanoblog/atom.xml}
-is currently available.
 
 @item Wiki contents
 This is an example to use @samp{sb-wiki}.  @samp{sb-wiki} support
@@ -5324,7 +5303,7 @@ vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
 vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
 vinelinux.errata.1x
 
-@item @uref{http://www.kantei.go.jp/jp/, Abe Cabinet Mail Magazine}
+@item @uref{http://www.kantei.go.jp/, Abe Cabinet Mail Magazine}
 kantei.m-magazine-en kantei.m-magazine-ja kantei.m-magazine-ja.koizumi
 
 @samp{kantei.m-magazine} is also available for the backward
