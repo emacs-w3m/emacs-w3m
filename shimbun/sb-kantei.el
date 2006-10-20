@@ -48,11 +48,11 @@ is for the backward compatibility.")
   "\\(<!-- /CONTENT -->\\)\\|\\(</PRE>\\)\n</FONT>\n</TD></TR></TABLE>")
 
 (defvar shimbun-kantei-x-face-alist
-  '(("default" . "X-Face: #j64iK&$Ao220A!\\\\tqgtA2?%O+6agSQYwasO-bR=\
-i4jvi)sY%u]:><N>|r$nM\\pO+K.R<<\n VbLue|jYf&\"2t)<UZ.TF!BW}d>!;<T]KH'\
-Wnxf\\Yz}-]SF#S~=VQf/X{h5\\$UmliCX7wmhs,&L&7I.\n Jr?~k2:Xf}go(QDd=k?W\
-+:^tpFH['bX(8qw&5|h?Mte<:qn;E0[\\{|FP]e*GyxX0[CrOd14_:@o7rI\n T3oI(>,\
-o<MT~H(]>J5C\":P37R[`|,G2f-7!2q2q}IYksyDF8YvSMy~CpjBmhL!V@,f@@ak;{2ATB")
+  '(("default" . "X-Face: 2lqMN=orK#d]Xl-K5P`=ApJHMB3[faCtca;G(i=qL^3\
+qh<kEoLHF\"L\"x/a:|xD>x=IKEqN%\n 3EL93@D{*BW-{GE88b7{d^m-%v9}=-7=^M#$\
+?zJm$]Yy07J^}:#V?9t_<{fhavZVZQ1^1=SLQf3X=<\n z|Af_njD},U!m}4V}$]L_7a!\
+b>X!RW$['xZs$r=G?o|=M^O)IJoOurt|UKUu[UuQFT/r&vygySYUmf\n <G6B:zwx0@$x\
+HbD#Hr3`J,C!5rN5t7oI)ng/'e40?>Jm;kjj")
     ("\\.koizumi\\'\\|\\`m-magazine\\'" . "X-Face: .bsmj'!8A`wI\\o+KF\
 !)#0.a0,f1MA~PH/5T0fu$Mg+)_5G~NSk4.0t]&|f@^c3l8-Fuz8'|\n kr;td_Jn7|Gw\
 REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\

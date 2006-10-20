@@ -1,3 +1,7 @@
+2006-10-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-kantei.el (shimbun-kantei-x-face-alist): Renew.
+
 2006-10-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Break long
