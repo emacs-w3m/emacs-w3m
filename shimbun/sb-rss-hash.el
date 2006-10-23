@@ -1,4 +1,4 @@
-;;; sb-hash.el --- shimbun backend for rss description -*- coding: iso-2022-7bit -*-
+;;; sb-rss-hash.el --- shimbun backend for rss description -*- coding: iso-2022-7bit -*-
 
 ;; Copyright (C) 2006 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
@@ -50,8 +50,11 @@
        (shimbun-hash-contents-url shimbun) 'no-cache 'no-decode)
       ;; In some rss feeds, LFs might be used mixed with CRLFs.
       (shimbun-strip-cr)
-      (decode-coding-region (point-min) (point-max) (shimbun-rss-get-encoding))
-      (set-buffer-multibyte t)
+      (insert
+       (prog1
+	   (decode-coding-string (buffer-string) (shimbun-rss-get-encoding))
+	 (erase-buffer)
+	 (set-buffer-multibyte t)))
       (shimbun-hash-update-items-impl shimbun))))
 
 (luna-define-method shimbun-hash-update-items-impl ((shimbun shimbun-rss-hash))

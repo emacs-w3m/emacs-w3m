@@ -1,3 +1,10 @@
+2006-10-23  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-rss-hash.el (shimbun-hash-update-items): Fix
+	multibyte problem.
+
+	* shimbun/sb-rss.el (shimbun-headers): Ditto.
+
 2006-10-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-kantei.el (shimbun-kantei-x-face-alist): Renew.

@@ -150,8 +150,11 @@ But clarify need ignored URL return nil.")
        (shimbun-index-url shimbun) 'no-cache 'no-decode)
       ;; In some rss feeds, LFs might be used mixed with CRLFs.
       (shimbun-strip-cr)
-      (decode-coding-region (point-min) (point-max) (shimbun-rss-get-encoding))
-      (set-buffer-multibyte t)
+      (insert
+       (prog1
+	   (decode-coding-string (buffer-string) (shimbun-rss-get-encoding))
+	 (erase-buffer)
+	 (set-buffer-multibyte t)))
       (shimbun-get-headers shimbun range))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-rss)
