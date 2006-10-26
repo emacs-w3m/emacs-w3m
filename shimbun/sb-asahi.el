@@ -1093,7 +1093,8 @@ and tenjin, it tries to fetch the article for that day if it failed."
        (goto-char (match-beginning 0))
        (insert "\n<!-- End of Kiji -->"))
      ;; Break long lines.
-     (shimbun-break-long-japanese-lines))))
+     (unless (shimbun-prefer-text-plain-internal shimbun)
+       (shimbun-break-long-japanese-lines)))))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-asahi)
 						   header)
