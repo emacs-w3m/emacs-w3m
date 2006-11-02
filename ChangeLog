@@ -1,3 +1,8 @@
+2006-11-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Update index
+	url and regexp for kansai.fuukei group.
+
 2006-10-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Break long

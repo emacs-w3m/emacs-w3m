@@ -397,8 +397,26 @@ Every `.' in NAME will be replaced with `/'."
       ("kansai.kansaiisan" "勝手に関西世界遺産" nil ,@default2)
       ("kansai.umaimon" "うまいもん" nil ,@default2)
       ("kansai.sweets" "粋・すいーつ" nil ,@default2)
-      ("kansai.fuukei" "新 風景を歩く" "kansai/fuukei2/"
-       ,@(shimbun-asahi-make-regexp "kansai.fuukei2"))
+      ("kansai.fuukei" "新 風景を歩く" "kansai/sumai/fuukei2/"
+       ,(concat
+	 "<a" s1 "href=\"/"
+	 ;; 1. url
+	 "\\(kansai/sumai/fuukei2/"
+	 ;; 2. serial number
+	 "\\([a-z]*"
+	 ;; 3. year
+	 "\\(20[0-9][0-9]\\)"
+	 ;; 4. month
+	 "\\([01][0-9]\\)"
+	 ;; 5. day
+	 "\\([0-3][0-9]\\)"
+	 "[0-9]+\\)"
+	 "\\.html\\)"
+	 "\">" s0
+	 ;; 6. subject
+	 "\\([^[\t\n ][^\n<>]*\\|[^\n<>]*[^]\t\n ]\\)"
+	 s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
+       1 nil 2 6 3 4 5)
       ("kansai.otoriyose" "わくわくお取り寄せ" nil ,@default2)
       ("kansai.sakana" "やさしい肴" nil ,@default2)
       ("kansai.depa" "デパ地下ＮＥＷＳ" nil ,@default2)
