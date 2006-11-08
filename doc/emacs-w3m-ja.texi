@@ -3886,19 +3886,22 @@ Q. なぜ emacs-w3m のフレームがポップアップしないのですか?
 
 Emacs-w3m のフレームが他のフレームの下に隠れていても、それ
 が @kbd{M-x w3m RET} コマンドでポップアップするのは、かなり便利です。し
-かし、いくつかのプラットフォーム、例えば Fedora Core 4 と 5 では、それが
-働かないという報告がありました。それらのシステムでは、Emacs のフレームを
-ポップアップさせる他の機能も動かないでしょう。もしあなたがそんな惨めな境
-遇にあるならば、以下の advice を試す価値があるかもしれません。
+かし、いくつかのプラットフォーム、例えば Fedora Core 4〜6 上で Emacs
+21 を走らせる場合に、それが働かないという報告がありました。それらのシス
+テムでは、Emacs のフレームをポップアップさせる他の機能も動かないでしょう。
+もしあなたがそんな惨めな境遇にあるならば、以下の advice を試す価値がある
+かもしれません。
 
 @lisp
-(defadvice raise-frame
-  (after make-it-work (&optional frame) activate)
-  "Make it work."
-  (call-process
-   "wmctrl" nil nil nil "-i" "-R"
-   (frame-parameter (or frame (selected-frame))
-                    'outer-window-id)))
+(if (or (featurep 'xemacs) (< emacs-major-version 22))
+    nil
+  (defadvice raise-frame
+    (after make-it-work (&optional frame) activate)
+    "Make it work."
+    (call-process
+     "wmctrl" nil nil nil "-i" "-R"
+     (frame-parameter (or frame (selected-frame))
+                      'outer-window-id))))
 @end lisp
 
 ここで @samp{wmctrl} は、以下の場所で取得できる外部コマンドです。

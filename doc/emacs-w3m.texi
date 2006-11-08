@@ -3802,19 +3802,22 @@ Q. Why doesn't the emacs-w3m frame pop up to the front?
 
 It is quite convenient that the @kbd{M-x w3m RET} command makes the
 emacs-w3m frame pop to the front even if it is hidden under the other
-frames.  However, it was reported that it does not work in some
-platforms, e.g., Fedora Core 4 and 5.  In those systems, other features
-which raise the Emacs frames will not work, either.  If you are in such
-a miserable circumstance, it might be worth trying the following advice:
+frames.  However, it was reported that it does not work when running
+Emacs 21 on some platforms, e.g., Fedora Core 4, 5 and 6.  In those
+systems, other features which raise the Emacs frames will not work,
+either.  If you are in such a miserable circumstance, it might be worth
+trying the following advice:
 
 @lisp
-(defadvice raise-frame
-  (after make-it-work (&optional frame) activate)
-  "Make it work."
-  (call-process
-   "wmctrl" nil nil nil "-i" "-R"
-   (frame-parameter (or frame (selected-frame))
-                    'outer-window-id)))
+(if (or (featurep 'xemacs) (< emacs-major-version 22))
+    nil
+  (defadvice raise-frame
+    (after make-it-work (&optional frame) activate)
+    "Make it work."
+    (call-process
+     "wmctrl" nil nil nil "-i" "-R"
+     (frame-parameter (or frame (selected-frame))
+                      'outer-window-id))))
 @end lisp
 
 Where @samp{wmctrl} is the external command which you can get from:
