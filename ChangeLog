@@ -1,3 +1,8 @@
+2006-11-11  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* shimbun/shimbun.el (shimbun-servers-list): Exclude hash,
+	rss-hash, atom, atom-hash and multi.
+
 2006-11-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Update index

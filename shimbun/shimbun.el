@@ -136,7 +136,9 @@ while shimbun is waiting for a server's response."
 	  (and (string-match "\\`sb-\\(.*\\)\\.elc?\\'" file)
 	       (not (member (setq file (match-string 1 file))
 			    '("fml" "glimpse" "lump" "mailarc"
-			      "mailman" "mhonarc" "rss" "text")))
+			      "mailman" "mhonarc" "text" "hash"
+			      "rss" "rss-hash" "atom" "atom-hash"
+			      "multi")))
 	       (not (member file servers))
 	       (push file servers)))))
     (sort servers 'string-lessp)))
