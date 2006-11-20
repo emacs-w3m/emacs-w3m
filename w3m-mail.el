@@ -243,6 +243,7 @@ the one such as \"text/html\", and the rest are the same as those of
 			   (set-buffer-multibyte nil))))))
 	    (t
 	     (insert source))))
+    (require 'vm-startup)
     (compose-mail to subject other-headers)
     (add-to-list 'mail-send-actions `(kill-buffer ,buffer))
     (w3m-add-local-hook 'kill-buffer-hook `(lambda nil (kill-buffer ,buffer)))
@@ -257,6 +258,7 @@ the one such as \"text/html\", and the rest are the same as those of
 (defun w3m-mail-compose-with-semi (source url charset content-type
 					  to subject other-headers)
   "Compose a mail using SEMI."
+  (require 'mime-edit)
   (let* ((content-type (and content-type
 			    (split-string (downcase content-type) "/")))
 	 (basename (file-name-nondirectory (w3m-url-strip-query url)))
