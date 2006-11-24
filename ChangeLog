@@ -1,3 +1,10 @@
+2006-11-14  Ren Lifeng  <lfren@cad.zju.edu.cn>
+
+	* w3m-cookie.el (w3m-cookie-1-acceptable-p): Accept cookie whose
+	domain attribute is ".foo.barz.bar" from host "foo.barz.bar".
+	(w3m-cookie-retrieve): Send cookie whose domain attribute is
+	".foo.barz.bar" when requesting host "foo.barz.bar".
+
 2006-11-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-mail.el (w3m-mail-compose-with-vm): Require vm-startup.

@@ -155,9 +155,12 @@ If ask, ask user whether accept bad cookies or not."
 				  (w3m-cookie-expires c))))
 	  (push c expires)
 	(when (and (not (w3m-cookie-ignore c))
-		   (string-match (concat
-				  (regexp-quote (w3m-cookie-domain c)) "$")
-				 host)
+		   (or
+		    ;; A special case that domain name is ".hostname".
+		    (string= (concat "." host) (w3m-cookie-domain c))
+		    (string-match (concat
+				   (regexp-quote (w3m-cookie-domain c)) "$")
+				  host))
 		   (string-match (concat
 				  "^" (regexp-quote (w3m-cookie-path c)))
 				 path))
@@ -314,6 +317,9 @@ If ask, ask user whether accept bad cookies or not."
 	(setq mindots 2))
     (cond
      ((string= host domain)		; Apparently netscape lets you do this
+      t)
+     ;; A special case that domain name is ".hostname".
+     ((string= (concat "." host) domain)
       t)
      ((>= numdots mindots)		; We have enough dots in domain name
       ;; Need to check and make sure the host is actually _in_ the
