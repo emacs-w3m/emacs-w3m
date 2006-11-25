@@ -287,8 +287,7 @@ This variable is effective only in XEmacs, Emacs 21 and Emacs 22."
     (split-window))
   (select-window (next-window))
   (condition-case nil
-      (unless (and current-prefix-arg
-		   (boundp 'mew-init-p) mew-init-p
+      (unless (and (boundp 'mew-init-p) mew-init-p
 		   (progn
 		     (mew-summary-jump-to-draft-buffer)
 		     (and (eq major-mode 'mew-draft-mode)

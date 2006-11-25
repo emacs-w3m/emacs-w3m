@@ -1,3 +1,8 @@
+2006-11-25  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* mew-w3m.el (w3m-mail-compose-with-mew): Refrain handling of
+	`current-prefix-arg'.
+
 2006-11-14  Ren Lifeng  <lfren@cad.zju.edu.cn>
 
 	* w3m-cookie.el (w3m-cookie-1-acceptable-p): Accept cookie whose
