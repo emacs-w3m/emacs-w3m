@@ -4672,9 +4672,13 @@ generate HTML articles.  In order to use it, specify
 group name for example.
 
 @item @uref{http://www.sankei.co.jp/, Sankei Shimbun}
-sankei.shakai sankei.sports sankei.keizai sankei.seiji sankei.kokusai
-sankei.bungei sankei.book sankei.person sankei.dead sankei.editoria
-sankei.column sankei.seiron
+sankei.news.shakai sankei.news.kokusai sankei.news.seiji
+sankei.news.keizai sankei.news.seikatsu sankei.news.kyouiku
+sankei.news.sports sankei.news.cutlure sankei.news.chiho
+sankei.special.komori sankei.special.kuroda sankei.special.ito
+sankei.special.jieitai sankei.special.kenpo sankei.special.kyouiku
+sankei.special.kiko sankei.ronsetsu.shucho sankei.ronsetsu.sankeisho
+sankei.ronsetsu.seiron
 
 @item @uref{http://www.bbc.co.uk/, BBC}
 bbc.news
