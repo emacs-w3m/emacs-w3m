@@ -1,5 +1,9 @@
 2006-12-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-sankei.el (shimbun-clear-contents): Break long lines.
+
+2006-12-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* shimbun/sb-sankei.el: Rewrite.
 
 	* shimbun/nnshimbun.el (nnshimbun-close-server): Save NOV for only

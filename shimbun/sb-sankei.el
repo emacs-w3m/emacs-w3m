@@ -295,7 +295,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACUAAAAlAgMAAAC48MiQAAAADFBMVEUDU4CnwdA3dpr///9
 	   (while (re-search-forward "<img[\t\n ]+src=[^>]+>" nil 'move)
 	     (insert "<br>"))
 	   (widen)
-	   (insert "<!--hbnend-->")))))
+	   (insert "<!--hbnend-->"))))
+  (shimbun-break-long-japanese-lines shimbun))
 
 (provide 'sb-sankei)
 
