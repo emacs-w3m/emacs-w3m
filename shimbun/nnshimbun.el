@@ -1,6 +1,6 @@
 ;;; nnshimbun.el --- interfacing with web newspapers
 
-;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -406,7 +406,8 @@ If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
   (when (nnshimbun-server-opened server)
     (when nnshimbun-shimbun
       (dolist (group (shimbun-groups nnshimbun-shimbun))
-	(nnshimbun-write-nov group t))
+	(when (buffer-live-p (nnshimbun-nov-buffer-name group))
+	  (nnshimbun-write-nov group t)))
       (shimbun-close nnshimbun-shimbun)))
   (nnshimbun-backlog (gnus-backlog-shutdown))
   (nnoo-close-server 'nnshimbun server)
