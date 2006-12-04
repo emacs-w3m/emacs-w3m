@@ -373,6 +373,20 @@ If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
       (mm-decode-coding-string group 'utf-8)
     group))
 
+(defsubst nnshimbun-nov-buffer-name (&optional group)
+  (format " *nnshimbun overview %s %s*"
+	  (nnshimbun-current-server)
+	  (or group (nnshimbun-current-group))))
+
+(defsubst nnshimbun-nov-directory (group)
+  (nnmail-group-pathname (or group (nnshimbun-current-group))
+			 (expand-file-name (nnshimbun-current-server)
+					   nnshimbun-directory)))
+
+(defsubst nnshimbun-nov-file-name (group)
+  (concat (nnshimbun-nov-directory group) nnshimbun-nov-file-name))
+
+
 ;; Interface functions:
 
 (nnoo-define-basics nnshimbun)
@@ -707,19 +721,6 @@ allowed for each string."
       (shimbun-make-header number subject from date
 			   (or (cdr (assq 'X-Nnshimbun-Id extra)) id)
 			   refs chars lines xref extra))))
-
-(defsubst nnshimbun-nov-buffer-name (&optional group)
-  (format " *nnshimbun overview %s %s*"
-	  (nnshimbun-current-server)
-	  (or group (nnshimbun-current-group))))
-
-(defsubst nnshimbun-nov-directory (group)
-  (nnmail-group-pathname (or group (nnshimbun-current-group))
-			 (expand-file-name (nnshimbun-current-server)
-					   nnshimbun-directory)))
-
-(defsubst nnshimbun-nov-file-name (group)
-  (concat (nnshimbun-nov-directory group) nnshimbun-nov-file-name))
 
 (defun nnshimbun-open-nov (group)
   (let ((buffer (nnshimbun-nov-buffer-name group)))
