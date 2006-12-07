@@ -1,3 +1,9 @@
+2006-12-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-italic-face): New face.
+	(w3m-fontify-italic): New function.
+	(w3m-fontify): Use it.
+
 2006-12-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-sankei.el (shimbun-clear-contents): Break long lines.
