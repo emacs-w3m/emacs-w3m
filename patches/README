@@ -1,23 +1,21 @@
-* no-proxy.patch
+You can apply these patches to the released version of w3m in order to
+use some emacs-w3m functions that require the w3m functions under
+development.  The patches listed here are lined in new order.
 
-  This patch was posted by Hironori Sakamoto <h-saka@lsi.nec.co.jp> in
-  [emacs-w3m:01119].
+* italic-text.patch
 
-  If the caching configuration of your proxy server is broken, you
-  should apply this patch and set non-nil value to
-  `w3m-broken-proxy-cache'.
+  This patch enables emacs-w3m to display italic text, was posted by
+  Hiroyuki Ito <ZXB01226@nifty.com> in [w3m-dev 04185].  Formerly w3m
+  simply stripped the <i>...</i> tags in halfdump, so there was no way
+  to display italic text by emacs-w3m.
 
 
-* w3m-0.2.1-inu-1.5-solaris-xemacs.patch
+* dot-domain.patch
 
-  This patch was posted by Hideyuki SHIRAI <shirai@meadowy.org> in
-  [emacs-w3m:02079].  It includes
-
-  (1) The patch to use `getpassphase' instead of `getpass' if the system
-      has a `getpassphase' like Solaris 2.x.
-
-  (2) The patch to use `STDIN' instead of `getpass' if w3m is associated
-      with a terminal device. It take effect for XEmacs with Solaris 2.x.
+  This patch was first posted by Ren Lifeng <lfren@cad.zju.edu.cn> in
+  [emacs-w3m:08943] and improved by Hiroyuki Ito <ZXB01226@nifty.com>
+  in [w3m-dev 04159] afterward.  This enables the cookie to recognize
+  that ".namazu.org" is a domain name of the hostname "namazu.org".
 
 
 * file-progress.patch
