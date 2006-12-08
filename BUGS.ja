@@ -12,6 +12,8 @@ $Date$
 
 ■ TODOs
 
+   --> 開発ポリシーの合意事項一覧を作成する．できれば英訳も．
+
    --> rendering 速度の改善
 
    --> w3mnav.el 相当の処理ができるように 
@@ -71,9 +73,13 @@ $Date$
 (4) プロセスが同時に大量に呼び出されてエラーになることがある．
     [emacs-w3m:06896], [emacs-w3m:06901]
 
+
+
 ■ Known LIMITATIONs
 
 (1) w3m の制限により Del/Strikeの打ち消し線がテーブルを跨がる．
+
+
 
 ■ Wishlist and Idea Notes
 
