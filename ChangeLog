@@ -1,3 +1,9 @@
+2006-12-08  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-view-parent-page): Add prefix argument `TOP'. If TOP
+	is non-nil, visit the top of this site."
+	(w3m-parent-page-available-p): Fix regexp.
+
 2006-12-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* patches/README: Update.

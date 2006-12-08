@@ -938,8 +938,8 @@ why you must learn to use them today!  (Just kidding.)
 @kindex ^
 @findex w3m-view-parent-page
 Attempt to move to the parent directory of the page currently displayed.
-For instance, it will attempt to move to ``http://foo/'' when
-``http://foo/bar/'' is displayed.  This function has been implemented
+For instance, it will attempt to move to ``http://foo/bar/'' when
+``http://foo/bar/baz'' is displayed.  This function has been implemented
 because of the following observation: users of web browsers often have
 to move up one level of directories because the information they're
 looking for isn't displayed on the current page (either because it has
@@ -949,6 +949,9 @@ When you use another web browser, you usually need to remove the last
 component from the URL by using the @key{DEL} key, etc. several times
 manually.  In emacs-w3m, this operation can be performed in only one
 keystroke, by typing @kbd{^}!
+
+Also, you type this command with prefix as ''C-u ^'', you visit the top
+of this site.
 @end table
 
 @table @key
