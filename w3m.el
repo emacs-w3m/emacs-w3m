@@ -5898,7 +5898,8 @@ point."
 	act url)
     (cond
      ((setq act (w3m-action))
-      (eval act))
+      (let ((w3m-form-new-session new-session))
+	(eval act)))
      ((setq url (w3m-url-valid (w3m-anchor)))
       (w3m-view-this-url-1 url arg new-session))
      ((w3m-url-valid (w3m-image))
@@ -5972,14 +5973,15 @@ command instead."
   (mouse-set-point event)
   (w3m-view-this-url nil t))
 
-(defun w3m-submit-form ()
+(defun w3m-submit-form (&optional new-session)
   "Submit the form at point."
-  (interactive)
+  (interactive "P")
   (let ((submit (w3m-submit)))
     (if (and submit
 	     w3m-current-url
 	     (w3m-url-valid w3m-current-url))
-	(eval submit)
+	(let ((w3m-form-new-session new-session))
+	  (eval submit))
       (w3m-message "Can't submit form at this point"))))
 
 (defun w3m-external-view (url &optional no-cache handler)

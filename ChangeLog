@@ -1,3 +1,17 @@
+2006-12-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-form.el: Changes to create a new session after submitting
+	form.
+	(w3m-form-new-session): New variable.
+	(w3m-fontify-textareas, w3m-form-parse-and-fontify): Combine the
+	above variable into expressions which represent form actions.
+	(w3m-form-submit): Accept and optional argument `new-session'.
+
+	* w3m.el: Changes to create a new session after submitting form.
+	(w3m-submit-form): Accept and optional argument `new-session'.
+	`w3m-form-new-session' is binded locally.
+	(w3m-view-this-url): `w3m-form-new-session' is binded locally.
+
 2006-12-08  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-view-parent-page): Add prefix argument `TOP'. If TOP
