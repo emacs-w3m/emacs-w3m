@@ -114,13 +114,23 @@ AC_DEFUN(AC_EXAMINE_PACKAGEDIR,
   AC_EMACS_LISP(PACKAGEDIR,
     (let ((prefix \"${prefix}\")\
 	  (dirs (append\
+		 (cond ((boundp (quote early-package-hierarchies))\
+			(append (if early-package-load-path\
+				    early-package-hierarchies)\
+				(if late-package-load-path\
+				    late-package-hierarchies)\
+				(if last-package-load-path\
+				    last-package-hierarchies)))\
+		       ((boundp (quote early-packages))\
+			(append (if early-package-load-path\
+				    early-packages)\
+				(if late-package-load-path\
+				    late-packages)\
+				(if last-package-load-path\
+				    last-packages))))\
 		 (if (and (boundp (quote configure-package-path))\
 			  (listp configure-package-path))\
-		     (delete \"\" configure-package-path))\
-		 (if (boundp (quote early-packages))\
-		     (append (if early-package-load-path early-packages)\
-			     (if late-package-load-path late-packages)\
-			     (if last-package-load-path last-packages)))))\
+		     (delete \"\" configure-package-path))))\
 	  package-dir)\
       (while (and dirs (not package-dir))\
 	(if (file-directory-p (car dirs))\

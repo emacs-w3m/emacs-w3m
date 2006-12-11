@@ -1,3 +1,9 @@
+2006-12-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_EXAMINE_PACKAGEDIR): Check for
+	(early|late|last)-package-hierarchies as well as
+	(early|late|last)-packages; prefer them to configure-package-path.
+
 2006-12-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-form.el: Changes to create a new session after submitting
