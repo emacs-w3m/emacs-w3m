@@ -4869,10 +4869,10 @@ zdnet-jp.blog.kurei zdnet-jp.blog.opensource zdnet-jp.blog.soa
 zdnet-jp.blog.dp
 
 @item @uref{http://www.zeit.de/, Die Zeit}
-zeit-de.chancen zeit-de.dossier zeit-de.hochschule zeit-de.leben
-zeit-de.literatur zeit-de.media zeit-de.news zeit-de.politik
-zeit-de.reden zeit-de.reisen zeit-de.wirtschaft zeit-de.wissen
-zeit-de.wohlfuehlen zeit-de.zeitlaeufte
+zeit-de.auto zeit-de.computer zeit-de.deutschland zeit-de.feuilleton
+zeit-de.gesundheit zeit-de.international zeit-de.leben zeit-de.literatur
+zeit-de.musik zeit-de.news zeit-de.reisen zeit-de.schule zeit-de.sport
+zeit-de.studium zeit-de.wirtschaft zeit-de.wissen zeit-de.zuender
 
 @item @uref{http://ohmynews.co.jp/, オーマイニュース}
 ohmynews-jp.shakai ohmynews-jp.keizai ohmynews-jp.seiji

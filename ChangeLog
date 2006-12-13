@@ -1,3 +1,7 @@
+2006-12-13  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
+
+	* shimbun/sb-zeit-de.el: Adapt to markup and group changes.
+
 2006-12-13  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m-search.el (w3m-search-engine-alist): Fix amazon entry.
