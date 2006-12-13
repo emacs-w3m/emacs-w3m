@@ -190,27 +190,23 @@
        "http://www.dictionary.com/cgi-bin/dict.pl?term=%s&r=67")
       ,@(if ja
 	    '(("amazon"
-	       "http://www.amazon.co.jp/exec/obidos/search-handle-form/\
-250-7496892-7797857"
-	       shift_jis
-	       "url=index=blended&search-type=quick-search&\
-field-keywords=%s")
+	       "http://www.amazon.co.jp/gp/search?\
+__mk_ja_JP=%%83J%%83%%5E%%83J%%83i&url=search-alias%%3Daps&field-keywords=%s"
+	       shift_jis)
 	      ("amazon-en"
 	       "http://www.amazon.com/exec/obidos/search-handle-form/\
 250-7496892-7797857"
-	       nil
+	       iso-8859-1
 	       "url=index=blended&field-keywords=%s"))
 	  '(("amazon"
 	     "http://www.amazon.com/exec/obidos/search-handle-form/\
 250-7496892-7797857"
-	     nil
+	     iso-8859-1
 	     "url=index=blended&field-keywords=%s")
 	    ("amazon-ja"
-	     "http://www.amazon.co.jp/exec/obidos/search-handle-form/\
-250-7496892-7797857"
-	     shift_jis
-	     "url=index=blended&search-type=quick-search&\
-field-keywords=%s")))
+	       "http://www.amazon.co.jp/gp/search?\
+__mk_ja_JP=%%83J%%83%%5E%%83J%%83i&url=search-alias%%3Daps&field-keywords=%s"
+	       shift_jis)))
       ("emacswiki" "http://www.emacswiki.org/cgi-bin/wiki?search=%s")
       ("en.wikipedia" "http://en.wikipedia.org/wiki/Special:Search?search=%s")
       ("de.wikipedia" "http://de.wikipedia.org/wiki/Spezial:Search?search=%s"
