@@ -21,6 +21,12 @@
 ;; program's maintainer or write to: The Free Software Foundation,
 ;; Inc.; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
+;;; Commentary:
+
+;; Macro used to extract groups from the overview-page
+;; (fset 'sb-zeit-de-macro [?\C-s ?d ?e ?/ ?\C-m ?\C-  ?\C-a ?\C-w ?\"
+;; 			       ?\M-f ?\" ?\C-k ?\C-k ?\C-k return ?\C-k])
+
 ;;; Code:
 
 (require 'shimbun)
@@ -29,10 +35,9 @@
 (luna-define-class shimbun-zeit-de (shimbun-rss) ())
 
 (defvar shimbun-zeit-de-groups
-  '("chancen" "dossier" "hochschule" "leben" "literatur" "media"
-    "news" "politik" "reden" "reisen" "wirtschaft" "wissen"
-    "wohlfuehlen" "zeitlaeufte"
-))
+  '("auto" "computer" "deutschland" "feuilleton" "gesundheit"
+    "international" "leben" "literatur" "musik" "news" "reisen"
+    "schule" "sport" "studium" "wirtschaft" "wissen" "zuender"))
 
 (defvar shimbun-zeit-de-content-start
   "title\">\\|<!--content starts here-->\\(?:<table[^>]+>\\)?")
@@ -40,7 +45,8 @@
 (defvar shimbun-zeit-de-content-end
   (concat
    "</body>\\|</html>\\|navigation[^><]*>[^A]\\|"
-   "<script language=\"JavaScript1\.2\" type=\"text/javascript\">"))
+   "<script language=\"JavaScript1\.2\" type=\"text/javascript\">\\|"
+   "<div[^>]+class=\"comments"))
 
 (defvar shimbun-zeit-de-from-address "DieZeit@zeit.de")
 
@@ -95,6 +101,7 @@
 						    header)
 
   ;;  remove advertisements and 1-pixel-images aka webbugs
+  (shimbun-remove-tags "<div[^>]*class=\"?\\(?:ad\\|most_read\\)" "</div>")
   (shimbun-remove-tags "<a[^>]*doubleclick.net" "</a>")
   (shimbun-remove-tags "<IFRAME[^>]*doubleclick.net[^>]*>")
   (shimbun-remove-tags "<img[^>]*doubleclick.net[^>]*>")
