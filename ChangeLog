@@ -1,3 +1,8 @@
+2006-12-14  Hiroaki Irokawa  <irorin@terra.dti.ne.jp>
+
+	* shimbun/sb-vinelinux.el (shimbun-vinelinux-group-path-alist):
+	Add errata.4x.i386 and errata.4x.ppc groups.
+
 2006-12-13  Andreas Seltenreich  <uwi7@rz.uni-karlsruhe.de>
 
 	* shimbun/sb-zeit-de.el: Adapt to markup and group changes.

@@ -5307,6 +5307,7 @@ This is an example to use @samp{sb-yahoo-auctions}.
 @end lisp
 
 @item @uref{http://www.vinelinux.org, VineLinux Errata}
+vinelinux.errata.4x.i386 vinelinux.errata.4x.ppc
 vinelinux.errata.3x.i386 vinelinux.errata.3x.ppc
 vinelinux.errata.3x.alpha
 vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
