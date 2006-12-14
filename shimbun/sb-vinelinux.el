@@ -32,7 +32,9 @@
 
 (defconst shimbun-vinelinux-url "http://www.vinelinux.org")
 (defconst shimbun-vinelinux-group-path-alist
-  '(("errata.3x.i386" . "errata/3x/i386.html")
+  '(("errata.4x.i386" . "errata/4x/i386.html")
+    ("errata.4x.ppc" . "errata/4x/ppc.html")
+    ("errata.3x.i386" . "errata/3x/i386.html")
     ("errata.3x.ppc" . "errata/3x/ppc.html")
     ("errata.3x.alpha" . "errata/3x/alpha.html")
     ("errata.25x.i386" . "errata/25x/i386.html")
