@@ -1,6 +1,6 @@
 ;;; sb-yahoo.el --- shimbun backend for news.yahoo.co.jp -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2005 Kazuyoshi KOREEDA
+;; Copyright (C) 2001, 2002, 2003, 2005, 2006 Kazuyoshi KOREEDA
 
 ;; Author: Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>,
 ;;         Katsumi Yamaoka <yamaoka@jpl.org>
@@ -68,8 +68,12 @@
   (mapcar 'car shimbun-yahoo-groups-table))
 
 (defvar shimbun-yahoo-from-address "nobody@example.com")
-(defvar shimbun-yahoo-content-start "</font><br><br>\n")
-(defvar shimbun-yahoo-content-end   "\n<center>\n")
+(defvar shimbun-yahoo-content-start "<!---記事-->\
+\\(?:[\t\n ]*<h[0-9][^>]*>[^[<]+</h[0-9]>[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*\
+\[^<]+[0-9]分配信[^<]*<a[\t\n ]+href=[^>]+>[^<]+</a>\\)?\
+\\(?:[\t\n ]*<[^>i]+>\\)*[\t\n ]*")
+(defvar shimbun-yahoo-content-end "[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*\
+\\(?:最終更新:[01]?[0-9]月\\|<!---コブランド-->\\|<!---/記事-->\\)")
 
 (defvar shimbun-yahoo-x-face-alist
   '(("default" . "X-Face: \"Qj}=TahP*`:b#4o_o63:I=\"~wbql=kpF1a>Sp62\
