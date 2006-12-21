@@ -49,6 +49,8 @@
     ("\\`http://linux\\.ascii24\\.com/linux/"
      w3m-filter-delete-regions
      "<!-- DAC CHANNEL AD START -->" "<!-- DAC CHANNEL AD END -->")
+    ("\\`http://\\(www\\|images\\|news\\|maps\\|groups\\)\\.google\\."
+     w3m-filter-google)
     ("\\`http://www\\.asahi\\.com/" w3m-filter-asahi-shimbun))
   "Rules to filter advertisements on WEB sites."
   :group 'w3m
@@ -64,6 +66,19 @@
 		 (list :tag "Filter with a user defined function"
 		       function
 		       (repeat :tag "Arguments" sexp))))))
+
+(defcustom w3m-filter-google-use-utf8
+  (or (featurep 'un-define) (fboundp 'utf-translate-cjk-mode)
+      (and (not (equal "Japanese" w3m-language))
+	   (w3m-find-coding-system 'utf-8)))
+  "Use the converting rule to UTF-8 on the site of Google."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-filter-google-use-ruled-line  t
+  "Use the ruled line on the site of Google."
+  :group 'w3m
+  :type 'boolean)
 
 ;;;###autoload
 (defun w3m-filter (url)
@@ -100,5 +115,36 @@
 	  (setq ucs (string-to-number (match-string 1)))
 	  (delete-region (match-beginning 0) (match-end 0))
 	  (insert-char (w3m-ucs-to-char ucs) 1))))))
+
+(defun w3m-filter-google (url)
+  (goto-char (point-min))
+  (let ((endm (make-marker))
+	(case-fold-search t)
+	pos beg end)
+    (when (and w3m-filter-google-use-utf8
+	       (re-search-forward
+     		"<a class=. href=\"http://\\(www\\|images\\|news\\|maps\\|groups\\)\\.google\\."
+     		nil t)
+     	       (setq pos (match-beginning 0))
+     	       (search-backward "<table" nil t)
+     	       (setq beg (match-beginning 0))
+     	       (search-forward "</table" nil t)
+     	       (set-marker endm (match-end 0))
+     	       (< pos (marker-position endm)))
+      (goto-char beg)
+      (while (re-search-forward "[?&][io]e=\\([^&]+\\)&" endm t)
+     	(replace-match "UTF-8" nil nil nil 1))
+      (setq end (marker-position endm)))
+    (when (string-match "\\`http://www\\.google\\.[^/]+/search\\?" url)
+      (goto-char (point-max))
+      (when (and w3m-filter-google-use-ruled-line
+		 (search-backward "<div class=" end t)
+		 (search-forward "</div>" nil t))
+	(insert "<hr>"))
+      (if w3m-filter-google-use-ruled-line
+	  (while (search-backward "<div class=" end t)
+	    (insert "<hr>"))
+	(while (search-backward "<div class=" end t)
+	  (insert "<p>"))))))
 
 ;;; w3m-filter.el ends here

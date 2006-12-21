@@ -1,3 +1,10 @@
+2006-12-21  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-filter.el (w3m-filter-rules): Add rule for the site of Google.
+	(w3m-filter-google-use-utf8): New user option.
+	(w3m-filter-google-use-ruled-line): Ditto.
+	(w3m-filter-google): New function.
+
 2006-12-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-yahoo.el (shimbun-yahoo-content-start)
