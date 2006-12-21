@@ -71,12 +71,12 @@
   (or (featurep 'un-define) (fboundp 'utf-translate-cjk-mode)
       (and (not (equal "Japanese" w3m-language))
 	   (w3m-find-coding-system 'utf-8)))
-  "Use the converting rule to UTF-8 on the site of Google."
+  "*Use the converting rule to UTF-8 on the site of Google."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-filter-google-use-ruled-line  t
-  "Use the ruled line on the site of Google."
+  "*Use the ruled line on the site of Google."
   :group 'w3m
   :type 'boolean)
 
