@@ -1,6 +1,6 @@
 ;;; sb-weeklyworldnews.el --- weekly world news shimbun backend
 
-;; Copyright (C) 2004, 2005 David Hansen
+;; Copyright (C) 2004, 2005, 2007 David Hansen
 
 ;; Author: David Hansen <david.hansen@physik.fu-berlin.de>
 ;; Keywords: news
@@ -27,60 +27,29 @@
 ;;; Code:
 
 (require 'shimbun)
+(require 'sb-rss)
 
-(luna-define-class shimbun-weeklyworldnews (shimbun) ())
+(luna-define-class shimbun-weeklyworldnews (shimbun-rss) ())
 
-(defvar shimbun-weeklyworldnews-url
-  "http://www.weeklyworldnews.com/news/")
+(defconst shimbun-weeklyworldnews-url "http://www.weeklyworldnews.com/rss")
+(defconst shimbun-weeklyworldnews-groups '("news"))
+(defconst shimbun-weeklyworldnews-content-start "<h1>")
+(defconst shimbun-weeklyworldnews-content-end "<a href=\"/\"")
+;; (defconst shimbun-weeklyworldnews-from "Weekly World News")
 
-(defvar shimbun-weeklyworldnews-base-url
-  "http://www.weeklyworldnews.com")
-
-(defvar shimbun-weeklyworldnews-groups '("news"))
-
-(defvar shimbun-weeklyworldnews-content-start
-  "<table[^>]*bgcolor=\"#ffffff\">")
-
-(defvar shimbun-weeklyworldnews-content-end "<\/body>")
-
-
-(defconst shimbun-weeklyworldnews-index-re
-  (concat
-   "<a href=\"/\\(.*?\\)/\\([0-9]+\\)\">"	; link
-   "<span class=\"headsm\">\\(.+?\\)</span></a>") ; headline
-
-  "Regexp to match a Weekly World News article on the summary page.")
-
-
-(defconst shimbun-weeklyworldnews-from
-  "Weekly World News <invalid@weeklyworldnews.com>"
-
-  "From: header for the Weekly World News shimbun")
+(luna-define-method shimbun-index-url ((shimbun shimbun-weeklyworldnews))
+  shimbun-weeklyworldnews-url)
 
 (luna-define-method shimbun-get-headers
-  ((shimbun shimbun-weeklyworldnews) &optional range)
-  (let ((date "") (id) (url) (subject) (headers))
-    (catch 'stop
-      (while (re-search-forward shimbun-weeklyworldnews-index-re nil t nil)
-	(setq url (concat shimbun-weeklyworldnews-base-url
-			  "/" (match-string 1) "/"
-			  (match-string 2) "?printer=1"))
-	(setq id (concat
-		  "<"
-		  (shimbun-replace-in-string (match-string 1) "/" "-")
-		  "-" (match-string 2)
-		  "@weeklyworldnews.com>"))
-	(setq subject (w3m-replace-in-string (match-string 3)
-					     "</?[a-zA-Z]+>" ""))
-	(when (shimbun-search-id shimbun id)
-	  (throw 'stop nil))
-	(push (shimbun-make-header
-	       0 (shimbun-mime-encode-string subject)
-	       (shimbun-mime-encode-string shimbun-weeklyworldnews-from)
-	       date id "" 0 0 url)
-	      headers)))
-    headers))
-
+  :around ((shimbun shimbun-weeklyworldnews) &optional range)
+  (mapcar
+   (lambda (header)
+     (let ((url (shimbun-header-xref header)))
+       (when (string-match "/\\(stories\\)/" url)
+	 (shimbun-header-set-xref
+          header (replace-match "printstory" t nil url 1))))
+     header)
+   (luna-call-next-method)))
 
 (provide 'sb-weeklyworldnews)
 

@@ -34,7 +34,8 @@
 (defvar shimbun-the-register-url "http://www.theregister.co.uk/")
 (defvar shimbun-the-register-from-address  "invalid@theregister.co.uk")
 (defvar shimbun-the-register-content-start "<h2>")
-(defvar shimbun-the-register-content-end "<p class=\"Furniture\">")
+(defvar shimbun-the-register-content-end
+  "<p class=\"Furniture\">\\|<p id=\"Copyright\">")
 
 (defvar shimbun-the-register-path-alist
   '(("news" . "headlines.rss")
@@ -77,16 +78,14 @@
   :before ((shimbun shimbun-the-register) header)
   (save-excursion
     ;; remove annoying stuff
-    (let ((junk '(("(<span class=\"URL\">" . "</span>)")
-		  ("<div class=\"Ad\"" . "</div>"))))
-      (while junk
-	(goto-char (point-min))
-	(let ((beg-str (caar junk)) (end-str (cdar junk)) beg end)
-	  (setq junk (cdr junk))
-	  (while (search-forward beg-str nil t)
-	    (setq beg (match-beginning 0))
-	    (when (setq end (search-forward end-str nil t))
-	      (delete-region beg end))))))))
+    (dolist (junk '(("(?<span class=\"URL\">" . "</span>)?")
+                    ("<div \\(class\\|id\\)=\"[^\"]*Ad\"" . "</div>")))
+      (goto-char (point-min))
+      (message "%s" (car junk))
+      (while (re-search-forward (car junk) nil t)
+        (let ((beg (match-beginning 0)))
+          (when (re-search-forward (cdr junk) nil t)
+            (delete-region beg (point))))))))
 
 (provide 'sb-the-register)
 
