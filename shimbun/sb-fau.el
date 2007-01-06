@@ -1,6 +1,6 @@
 ;;; sb-fau.el --- Freie ArbeiterInnen Union shimbun backend
 
-;; Copyright (C) 2005 David Hansen
+;; Copyright (C) 2005, 2007 David Hansen
 
 ;; Author: David Hansen <david.hansen@physik.fu-berlin.de>
 ;; Keywords: news
@@ -38,13 +38,12 @@
 (defvar shimbun-fau-x-face-alist
   '(("default" .
      "X-Face: 5Nxj%|<|TGh94(OzpKK*3XE{c=jFM9F7Mngs2BJva%Cs2jH>DThKw\
-[h'n|GAMyNEJ~*y%59xj5d31q4(xg_<tOrJ_\"NaXys5yh~3P_u\\]VOC!3:N+O,>=>O+w}\
+\[h'n|GAMyNEJ~*y%59xj5d31q4(xg_<tOrJ_\"NaXys5yh~3P_u\\]VOC!3:N+O,>=>O+w}\
 <l-KjY3.MV#@*}26P^'2$E_8<6'}rz:0,6K")))
 
 (defvar shimbun-fau-content-start "<hr\\s-+size=\"1\">")
 (defvar shimbun-fau-content-end "<hr\\s-+size=\"1\">\\s-*
-<p>\\s-*
-..*?<a\\s-+class=\"red\"\\s-+href=\"javascript:window.print()\"")
+<p>\\s-*")
 
 (defvar shimbun-fau-coding-system
   (or (shimbun-find-coding-system 'windows-1252)
