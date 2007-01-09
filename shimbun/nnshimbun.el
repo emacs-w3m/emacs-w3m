@@ -289,7 +289,7 @@ This simply provides a default value for all the nnshimbun groups.
 You can use the `encapsulate-images' nnshimbun group parameter for
 each nnshimbun group.")
 
-(defvoo nnshimbun-index-range nil
+(defvoo nnshimbun-index-range 2
   "*The number of indices that should be checked to detect new articles.
 `all' or nil is for all indices, `last' is for the last index, and an
 integer N is for the last N pages of indices.  This simply provides a

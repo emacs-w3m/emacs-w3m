@@ -1,3 +1,8 @@
+2007-01-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/nnshimbun.el (nnshimbun-index-range): Changed its
+	default value to 2 from nil.
+
 2007-01-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-modeline-title): Don't use w3m-force-window-update
