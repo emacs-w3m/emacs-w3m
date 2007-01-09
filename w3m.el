@@ -1,6 +1,6 @@
 ;;; w3m.el --- an Emacs interface to w3m
 
-;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006
+;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -7801,10 +7801,7 @@ It currently works only with Emacs 22 and newer."
 		       (lambda (buffer)
 			 (when (buffer-live-p buffer)
 			   (with-current-buffer buffer
-			     (setq w3m-modeline-title-timer nil)
-			     (when (eq (selected-window)
-				       (get-buffer-window buffer))
-			       (w3m-force-window-update)))))
+			     (setq w3m-modeline-title-timer nil))))
 		       (current-buffer))))))
 
 ;;;###autoload
