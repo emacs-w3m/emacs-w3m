@@ -1,6 +1,6 @@
 ;;; sb-asahi.el --- shimbun backend for asahi.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -942,17 +942,15 @@ and tenjin, it tries to fetch the article for that day if it failed."
        (while (re-search-forward "。　?\\(\\cj\\)" nil t)
 	 (replace-match "。<br><br>　\\1"))))
      ((string-equal group "culture.yurufemi")
-      (let (start comics)
-	(while (and (search-forward "alt=\"マンガ\"" nil t)
-		    (re-search-backward "<table[\t\n ]+" nil t)
-		    (progn
-		      (setq start (match-beginning 0))
-		      (search-forward "</table>" nil t))
-		    (push (buffer-substring start (match-end 0)) comics)))
+      (let (comics)
+	(while (re-search-forward
+		"<img[\t\n ]+src=\"[^>]+alt=\"マンガ\"[^>]*>"
+		nil t)
+	  (push (match-string 0) comics))
 	(erase-buffer)
 	(when comics
 	  (insert "<!-- Start of Kiji -->\n"
-		  (mapconcat 'identity comics "\n")
+		  (mapconcat 'identity comics "<br>\n")
 		  "\n<!-- End of Kiji -->\n"))))
      ((string-equal group "editorial")
       (let ((regexp "\

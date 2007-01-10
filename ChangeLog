@@ -1,5 +1,8 @@
 2007-01-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Remove left
+	margin from articles in culture.yurufemi group.
+
 	* w3m-e21.el (w3m-e21-switch-to-buffer): Add iswitchb-mode support.
 
 2007-01-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
