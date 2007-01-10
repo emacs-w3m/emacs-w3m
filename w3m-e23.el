@@ -723,7 +723,9 @@ cleared by a timer.")
 (defun w3m-e23-switch-to-buffer (buffer &optional norecord)
   "Run `switch-to-buffer' and redisplay the header-line.
 Redisplaying is done by wobbling the window size."
-  (interactive "BSwitch to buffer: ")
+  (interactive (list (if iswitchb-mode
+			 (iswitchb-read-buffer "iswitch ")
+		       (read-buffer "Switch to buffer: "))))
   (prog1
       (switch-to-buffer buffer norecord)
     (when (and header-line-format

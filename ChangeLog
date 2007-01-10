@@ -1,3 +1,7 @@
+2007-01-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-e21.el (w3m-e21-switch-to-buffer): Add iswitchb-mode support.
+
 2007-01-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/nnshimbun.el (nnshimbun-index-range): Changed its

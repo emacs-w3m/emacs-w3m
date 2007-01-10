@@ -1,6 +1,6 @@
 ;;; w3m-e21.el --- The stuffs to use emacs-w3m on Emacs 21 and 22
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -809,7 +809,9 @@ cleared by a timer.")
 (defun w3m-e21-switch-to-buffer (buffer &optional norecord)
   "Run `switch-to-buffer' and redisplay the header-line.
 Redisplaying is done by wobbling the window size."
-  (interactive "BSwitch to buffer: ")
+  (interactive (list (if iswitchb-mode
+			 (iswitchb-read-buffer "iswitch ")
+		       (read-buffer "Switch to buffer: "))))
   (prog1
       (switch-to-buffer buffer norecord)
     (when (and header-line-format
