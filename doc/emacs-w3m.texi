@@ -4789,19 +4789,26 @@ wired-jp.news wired-jp.business wired-jp.culture wired-jp.technology
 wired-jp.blog.ogura wired-jp.blog.sasaki wired-jp.blog.takahashi
 
 @item @uref{http://headlines.yahoo.co.jp/, Yahoo! Japan}
-yahoo.politics yahoo.society yahoo.people yahoo.business-all
-yahoo.market yahoo.stock yahoo.industry yahoo.international
-yahoo.entertainment yahoo.sports yahoo.computer yahoo.hokkaido
-yahoo.tohoku yahoo.kanto yahoo.sinetsu yahoo.hokuriku yahoo.tokai
-yahoo.kinki yahoo.chugoku yahoo.sikoku yahoo.kyushu yahoo.okinawa
+yahoo.topnews yahoo.politics yahoo.society yahoo.people
+yahoo.business-all yahoo.market yahoo.stock yahoo.industry
+yahoo.international yahoo.entertainment yahoo.sports yahoo.computer
+yahoo.zenkoku yahoo.hokkaido yahoo.aomori yahoo.iwate yahoo.miyagi
+yahoo.akita yahoo.yamagata yahoo.fukushima yahoo.tokyo yahoo.kanagawa
+yahoo.chiba yahoo.saitama yahoo.ibaraki yahoo.tochigi yahoo.gunma
+yahoo.yamanashi yahoo.nagano yahoo.niigata yahoo.toyama yahoo.ishikawa
+yahoo.fukui yahoo.aichi yahoo.gifu yahoo.shizuoka yahoo.mie yahoo.osaka
+yahoo.hyogo yahoo.kyoto yahoo.shiga yahoo.nara yahoo.wakayama
+yahoo.tottori yahoo.shimane yahoo.okayama yahoo.hiroshima
+yahoo.yamaguchi yahoo.tokushima yahoo.kagawa yahoo.ehime yahoo.kochi
+yahoo.fukuoka yahoo.saga yahoo.nagasaki yahoo.kumamoto yahoo.oita
+yahoo.miyazaki yahoo.kagoshima yahoo.okinawa
 
-Those groups generate articles containing only text by default.  If you
-would like to make them generate HTML articles that contain not only
-text but also photographs, add the following line to your
-@file{~/.emacs} file:
+Those groups generate HTML articles by default.  If you would like to
+make them generate articles containing only text, add the following line
+to your @file{~/.emacs} file:
 
 @lisp
-(setq shimbun-yahoo-prefer-text-plain nil)
+(setq shimbun-yahoo-prefer-text-plain t)
 @end lisp
 
 @item @uref{http://japan.zdnet.com/, ZDNet Japan}

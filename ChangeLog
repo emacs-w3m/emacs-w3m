@@ -1,3 +1,13 @@
+2007-01-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-yahoo.el (shimbun-yahoo-groups-table): Move regexp
+	from shimbun-get-headers and improve; update groups for all
+	prefectures.
+	(shimbun-get-headers): Move regexp to shimbun-yahoo-groups-table;
+	ignore access ranking section; improve handling of old articles;
+	support range.
+	(shimbun-make-contents): Remove headline and garbage.
+
 2007-01-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Remove left
