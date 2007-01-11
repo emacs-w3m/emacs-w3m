@@ -1,6 +1,6 @@
 ;;; sb-yahoo.el --- shimbun backend for news.yahoo.co.jp -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2006 Kazuyoshi KOREEDA
+;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007 Kazuyoshi KOREEDA
 
 ;; Author: Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>,
 ;;         Katsumi Yamaoka <yamaoka@jpl.org>
@@ -41,29 +41,130 @@
 (defvar shimbun-yahoo-url "http://headlines.yahoo.co.jp/")
 
 (defvar shimbun-yahoo-groups-table
-  '(("topnews" "トップ" "topnews")
-    ("politics" "政治" "pol")
-    ("society" "社会" "soci")
-    ("people" "人" "peo")
-    ("business-all" "経済総合" "bus_all")
-    ("market" "市況" "brf")
-    ("stock" "株式" "biz")
-    ("industry" "産業" "ind")
-    ("international" "海外" "int")
-    ("entertainment" "エンターテインメント" "ent")
-    ("sports" "スポーツ" "spo")
-    ("computer" "コンピュータ" "sci")
-    ("hokkaido" "北海道" "hok")
-    ("tohoku" "東北" "toh")
-    ("kanto" "関東" "kan")
-    ("sinetsu" "信越" "sin")
-    ("hokuriku" "北陸" "hor")
-    ("tokai" "東海" "tok")
-    ("kinki" "近畿" "kin")
-    ("chugoku" "中国" "chu")
-    ("sikoku" "四国" "sik")
-    ("kyushu" "九州" "kyu")
-    ("okinawa" "沖縄" "oki")))
+  (let* ((s0 "[\t\n\r ]*")
+	 (s1 "[\t\n\r ]+")
+	 (default (list
+		   (concat
+		    "<a" s1 "href=\""
+		    ;; 1. url
+		    "\\(http://headlines\\.yahoo\\.co\\.jp/hl\\?a="
+		    ;; 2. serial number
+		    "\\("
+		    ;; 3. year
+		    "\\(20[0-9][0-9]\\)"
+		    ;; 4. month
+		    "\\([01][0-9]\\)"
+		    ;; 5. day
+		    "\\([0-3][0-9]\\)"
+		    "[^\"]*\\)\\)"
+		    "\"" s0 ">" s0
+		    ;; 6. subject
+		    "\\([^<]+\\)"
+		    s0 "</a>\\(?:" s0 "<[^>]+>\\)+" s0 "（" s0
+		    "\\(?:<a" s1 "[^>]+>" s0 "\\)?"
+		    ;; 7. source
+		    "\\([^<）]+\\)"
+		    s0 "\\(?:</a>" s0 "\\)?"
+		    s0 "）" s0 "-" s0 "\\(?:[^<]+)" s0 "\\)?"
+		    ;; 8. hour
+		    "\\([012]?[0-9]\\)"
+		    s0 "時" s0
+		    ;; 9. minute
+		    "\\([0-5]?[0-9]\\)"
+		    s0 "分")
+		   1 2 3 4 5 6 7 8 9))
+	 (topnews (list
+		   (concat
+		    "<a" s1 "href=\""
+		    ;; 1. url
+		    "\\(http://headlines\\.yahoo\\.co\\.jp/hl\\?a="
+		    ;; 2. serial number
+		    "\\("
+		    ;; 3. year
+		    "\\(20[0-9][0-9]\\)"
+		    ;; 4. month
+		    "\\([01][0-9]\\)"
+		    ;; 5. day
+		    "\\([0-3][0-9]\\)"
+		    "[^\"]*\\)\\)"
+		    "\"" s0 ">" s0
+		    ;; 6. subject
+		    "\\([^<]+\\)"
+		    s0 "</a>\\(?:" s0 "<[^>]+>\\)*[^<]*)" s0
+		    ;; 7. hour
+		    "\\([012]?[0-9]\\)"
+		    s0 "時" s0
+		    ;; 8. minute
+		    "\\([0-5]?[0-9]\\)"
+		    s0 "分" "[^<]*\\(?:<a" s1 "[^>]+>" s0 "\\)?"
+		    ;; 9. source
+		    "\\([^<）]+\\)")
+		   1 2 3 4 5 6 9 7 8)))
+    `(("topnews" "トップ" "topnews" ,@topnews)
+      ("politics" "政治" "pol" ,@default)
+      ("society" "社会" "soci" ,@default)
+      ("people" "人" "peo" ,@default)
+      ("business-all" "経済総合" "bus_all" ,@default)
+      ("market" "市況" "brf" ,@default)
+      ("stock" "株式" "biz" ,@default)
+      ("industry" "産業" "ind" ,@default)
+      ("international" "海外" "int" ,@default)
+      ("entertainment" "エンターテインメント" "ent" ,@default)
+      ("sports" "スポーツ" "spo" ,@default)
+      ("computer" "コンピュータ" "sci" ,@default)
+      ("zenkoku" "全国" "loc" ,@default)
+      ("hokkaido" "北海道" "hok" ,@default)
+      ("aomori" "青森" "l02" ,@default) ;; not "102" but "l02" ;-)
+      ("iwate" "岩手" "l03" ,@default)
+      ("miyagi" "宮城" "l04" ,@default)
+      ("akita" "秋田" "l05" ,@default)
+      ("yamagata" "山形" "l06" ,@default)
+      ("fukushima" "福島" "l07" ,@default)
+      ("tokyo" "東京" "l13" ,@default)
+      ("kanagawa" "神奈川" "l14" ,@default)
+      ("chiba" "千葉" "l12" ,@default)
+      ("saitama" "埼玉" "l11" ,@default)
+      ("ibaraki" "茨城" "l08" ,@default)
+      ("tochigi" "栃木" "l09" ,@default)
+      ("gunma" "群馬" "l10" ,@default)
+      ("yamanashi" "山梨" "l19" ,@default)
+      ("nagano" "長野" "l20" ,@default)
+      ("niigata" "新潟" "l15" ,@default)
+      ("toyama" "富山" "l16" ,@default)
+      ("ishikawa" "石川" "l17" ,@default)
+      ("fukui" "福井" "l18" ,@default)
+      ("aichi" "愛知" "l23" ,@default)
+      ("gifu" "岐阜" "l21" ,@default)
+      ("shizuoka" "静岡" "l22" ,@default)
+      ("mie" "三重" "l24" ,@default)
+      ("osaka" "大阪" "l27" ,@default)
+      ("hyogo" "兵庫" "l28" ,@default)
+      ("kyoto" "京都" "l26" ,@default)
+      ("shiga" "滋賀" "l25" ,@default)
+      ("nara" "奈良" "l29" ,@default)
+      ("wakayama" "和歌山" "l30" ,@default)
+      ("tottori" "鳥取" "l31" ,@default)
+      ("shimane" "島根" "l32" ,@default)
+      ("okayama" "岡山" "l33" ,@default)
+      ("hiroshima" "広島" "l34" ,@default)
+      ("yamaguchi" "山口" "l35" ,@default)
+      ("tokushima" "徳島" "l36" ,@default)
+      ("kagawa" "香川" "l37" ,@default)
+      ("ehime" "愛媛" "l38" ,@default)
+      ("kochi" "高知" "l39" ,@default)
+      ("fukuoka" "福岡" "l40" ,@default)
+      ("saga" "佐賀" "l41" ,@default)
+      ("nagasaki" "長崎" "l42" ,@default)
+      ("kumamoto" "熊本" "l43" ,@default)
+      ("oita" "大分" "l44" ,@default)
+      ("miyazaki" "宮崎" "l45" ,@default)
+      ("kagoshima" "鹿児島" "l46" ,@default)
+      ("okinawa" "沖縄" "oki" ,@default)))
+  "Alist of group names, their Japanese translations, index pages,
+regexps and numbers.  Where numbers point to the search result in order
+of [0]a url, [1]a serial number, [2]a year, [3]a month, [4]a day,
+\[5]a subject, [6]a news source, [7]an hour and [8]a minute.")
+
 (defvar shimbun-yahoo-groups
   (mapcar 'car shimbun-yahoo-groups-table))
 
@@ -103,69 +204,66 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
   (let* ((case-fold-search t)
 	 (from "Yahoo!ニュース")
 	 (group (shimbun-current-group-internal shimbun))
-	 (jname (nth 1 (assoc group shimbun-yahoo-groups-table)))
-	 id headers)
+	 (numbers (cdr (assoc group shimbun-yahoo-groups-table)))
+	 (jname (pop numbers))
+	 (regexp (progn (pop numbers) (pop numbers)))
+	 (pages (shimbun-header-index-pages range))
+	 (count 0)
+	 (index (shimbun-index-url shimbun))
+	 id headers start)
     (catch 'stop
       (while t
-	(while (re-search-forward
-		(eval-when-compile
-		  (let ((s0 "[\t\n\r ]*")
-			(s1 "[\t\n\r ]+"))
-		    (concat
-		     "<a" s1 "href=\""
-		     ;; 1. url
-		     "\\(http://headlines\\.yahoo\\.co\\.jp/hl\\?a="
-		     ;; 2. serial number
-		     "\\("
-		     ;; 3. year
-		     "\\(20[0-9][0-9]\\)"
-		     ;; 4. month
-		     "\\([01][0-9]\\)"
-		     ;; 5. day
-		     "\\([0-3][0-9]\\)"
-		     "[^\"]*\\)\\)"
-		     "\"" s0 ">" s0
-		     ;; 6. subject
-		     "\\([^<]+\\)"
-		     s0 "</a>\\(?:" s0 "<[^>]+>\\)+" s0 "（" s0
-		     ;; 7. source
-		     "\\([^）]+\\)"
-		     s0 "）" s0 "-" s0 "\\(?:[^<]+)" s0 "\\)?"
-		     ;; 8. hour
-		     "\\([012]?[0-9]\\)"
-		     s0 "時" s0
-		     ;; 9. minute
-		     "\\([0-5]?[0-9]\\)"
-		     s0 "分")))
-		nil t)
+	(shimbun-remove-tags "<!-+[\t\n ]*アクセスランキング[\t\n ]*-+>"
+			     "<!-+[\t\n ]*/アクセスランキング[\t\n ]*-+>")
+	(goto-char (point-min))
+	(while (re-search-forward regexp nil t)
 	  (setq id (concat "<"
 			   (save-match-data
-			     (shimbun-replace-in-string (match-string 2)
-							"-" "."))
+			     (shimbun-replace-in-string
+			      (match-string (nth 1 numbers))
+			      "-" "."))
 			   "%" group ".headlines.yahoo.co.jp>"))
 	  (if (shimbun-search-id shimbun id)
 	      (throw 'stop nil))
 	  (push (shimbun-create-header
 		 0
-		 (match-string 6)
-		 (concat from " (" jname "/" (match-string 7) ")")
+		 (match-string (nth 5 numbers))
+		 (concat from " (" jname "/" (match-string (nth 6 numbers))
+			 ")")
 		 (shimbun-make-date-string
-		  (string-to-number (match-string 3))
-		  (string-to-number (match-string 4))
-		  (string-to-number (match-string 5))
+		  (string-to-number (match-string (nth 2 numbers)))
+		  (string-to-number (match-string (nth 3 numbers)))
+		  (string-to-number (match-string (nth 4 numbers)))
 		  (format "%02d:%02d"
-			  (string-to-number (match-string 8))
-			  (string-to-number (match-string 9))))
+			  (string-to-number (match-string (nth 7 numbers)))
+			  (string-to-number (match-string (nth 8 numbers)))))
 		 id "" 0 0
-		 (match-string 1))
+		 (match-string (nth 0 numbers)))
 		headers))
-	(if (re-search-forward "<a href=\"\\([^\"]+\\)\">次のページ</a>" nil t)
-	    (progn
-	      (shimbun-retrieve-url (prog1
-					(match-string 1)
-				      (erase-buffer))
-				    t)
-	      (goto-char (point-min)))
+	(goto-char (point-min))
+	(if (and (or (not pages)
+		     (< (setq count (1+ count)) pages))
+		 (re-search-forward "<!-+[\t\n ]*過去記事[\t\n ]*-+>" nil t)
+		 (progn
+		   (setq start (match-end 0))
+		   (re-search-forward "<!-+[\t\n ]*/過去記事[\t\n ]*-+>"
+				      nil t))
+		 (progn
+		   (narrow-to-region start (match-beginning 0))
+		   (goto-char start)
+		   (or (re-search-forward "<option[\t\n ]+value=\"\
+20[0-9][0-9][01][0-9][0-3][0-9]\"[\t\n ]+selected[\t\n ]*>"
+					  nil t)
+		       (re-search-forward "<option[\t\n ]+value=\"\
+20[0-9][0-9][01][0-9][0-3][0-9]\"[\t\n ]*>"
+					  nil t)))
+		 (re-search-forward "<option[\t\n ]+value=\"\
+\\(20[0-9][0-9][01][0-9][0-3][0-9]\\)\"[\t\n ]*>"
+				    nil t))
+	    (shimbun-retrieve-url (prog1
+				      (concat index "&d=" (match-string 1))
+				    (erase-buffer))
+				  t)
 	  (throw 'stop nil))))
     (shimbun-sort-headers headers)))
 
@@ -176,6 +274,15 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
 ;;
 ;;(defun shimbun-yahoo-prepare-article (shimbun header)
 ;;;</DEBUG>
+  ;; Remove headline.
+  (shimbun-remove-tags "<h[0-9][\t\n ]+class=\"yjXL\">" "</h[0-9]>")
+  (shimbun-remove-tags
+   "<p[\t\n ]+class=\"yjSt\">[^<]*[0-9]+時[0-9]+分配信" "</p>")
+  ;; Remove garbage.
+  (when (re-search-forward "\
+\[\t\n ]*<p[\t\n ]+class=\"yjSt\">[\t\n ]*拡大写真[\t\n ]*</p>[\t\n ]*"
+			   nil t)
+    (delete-region (match-beginning 0) (match-end 0)))
   (shimbun-with-narrowed-article
    shimbun
    ;; Fix the picture tag.
