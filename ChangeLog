@@ -1,5 +1,10 @@
 2007-01-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-yahoo.el (shimbun-get-headers): Look for articles in
+	next pages in addition to past pages.
+
+2007-01-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* shimbun/sb-yahoo.el (shimbun-yahoo-groups-table): Move regexp
 	from shimbun-get-headers and improve; update groups for all
 	prefectures.
