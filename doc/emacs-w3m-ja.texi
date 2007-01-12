@@ -4164,8 +4164,8 @@ Manual})$B!#(B} $B$K2C$($F!"(B@samp{nnshimbun} $B@lMQ$K@_$1$i$l$?%0%k!<%W%Q
 
 $B%0%k!<%W%Q%i%a!<%?(B @code{index-range} $B$,@_Dj$5$l$F$$$J$$$+!"CM(B
 $B$,(B @code{nil} $B$K$J$C$F$$$k%0%k!<%W$G$O!"JQ(B
-$B?t(B @code{nnshimbun-index-range} $B$NCM(B ($B%G%U%)%k%H$O(B @code{nil}) $B$,;H$o$l(B
-$B$^$9!#(B
+$B?t(B @code{nnshimbun-index-range} $B$NCM(B ($B%G%U%)%k%H$O(B @code{2}) $B$,;H$o$l$^(B
+$B$9!#(B
 
 @item nnshimbun-group-parameters-alist
 @vindex nnshimbun-group-parameters-alist

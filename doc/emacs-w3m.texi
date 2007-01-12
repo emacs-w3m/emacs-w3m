@@ -4090,7 +4090,7 @@ latest index page for checking new articles.
 
 In the group where the @code{index-range} group parameter is not set or
 its value is @code{nil}, the value of the @code{nnshimbun-index-range}
-variable (@code{nil} by default) is used.
+variable (@code{2} by default) is used.
 
 @item nnshimbun-group-parameters-alist
 @vindex nnshimbun-group-parameters-alist
