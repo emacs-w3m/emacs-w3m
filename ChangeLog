@@ -1,3 +1,7 @@
+2007-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-e21.el: Autoload iswitchb-read-buffer when compiling.
+
 2007-01-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-opentechpress-jp.el: Inherit `shimbun-multi' class in

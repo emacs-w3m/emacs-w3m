@@ -73,7 +73,8 @@
   (autoload 'w3m-copy-buffer "w3m")
   (autoload 'w3m-delete-buffer "w3m")
   (autoload 'w3m-image-type "w3m")
-  (autoload 'w3m-retrieve "w3m"))
+  (autoload 'w3m-retrieve "w3m")
+  (autoload 'iswitchb-read-buffer "iswitchb"))
 
 ;;; Coding system.
 
