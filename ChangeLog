@@ -1,3 +1,8 @@
+2007-01-16  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-slashdot-jp.el (shimbun-slashdot-jp-group-alist): Add
+	new group - IT & Hardware section.
+
 2007-01-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-yahoo.el (shimbun-get-headers): Look for articles in

@@ -83,6 +83,8 @@
     ("science"	   . "http://slashdot.jp/science.rss")
     ("security"	   . "http://slashdot.jp/security.rss")
     ("slash"	   . "http://slashdot.jp/slash.rss")
+    ("it"          . "http://slashdot.jp/it.rss")
+    ("hardware"    . "http://slashdot.jp/hardware.rss")
     ("diary.oliver" .
      "http://slashdot.jp/~Oliver/journal/rss"))
   "*Alist of slashdot groups and their RSS feeds."
