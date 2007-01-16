@@ -4827,7 +4827,7 @@ slashdot-jp.story slashdot-jp.askslashdot slashdot-jp.bookreview
 slashdot-jp.bsd slashdot-jp.developers slashdot-jp.interview
 slashdot-jp.linuxkernel slashdot-jp.mac slashdot-jp.mobile
 slashdot-jp.science slashdot-jp.security slashdot-jp.slash
-slashdot-jp.diary.oliver
+slashdot-jp.it slashdot-jp.hardware slashdot-jp.diary.oliver
 
 変数 @code{shimbun-slashdot-jp-group-alist} に適切な設定を加えると、その
 他のユーザーの日記も閲覧できます。

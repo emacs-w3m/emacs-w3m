@@ -4772,7 +4772,7 @@ slashdot-jp.story slashdot-jp.askslashdot slashdot-jp.bookreview
 slashdot-jp.bsd slashdot-jp.developers slashdot-jp.interview
 slashdot-jp.linuxkernel slashdot-jp.mac slashdot-jp.mobile
 slashdot-jp.science slashdot-jp.security slashdot-jp.slash
-slashdot-jp.diary.oliver
+slashdot-jp.it slashdot-jp.hardware slashdot-jp.diary.oliver
 
 Add appropriate configurations to the variable
 @code{shimbun-slashdot-jp-group-alist}, you can browse other diaries
