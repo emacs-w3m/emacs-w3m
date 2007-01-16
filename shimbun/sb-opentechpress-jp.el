@@ -1,4 +1,4 @@
-;;; sb-opentechpress-jp.el --- shimbun backend for japan.linux.com.
+;;; sb-opentechpress-jp.el --- shimbun backend for japan.linux.com -*- coding: iso-2022-7bit -*-
 
 ;; Copyright (C) 2006 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -27,9 +27,10 @@
 ;;; Code:
 
 (require 'shimbun)
+(require 'sb-multi)
 (require 'sb-rss)
 
-(luna-define-class shimbun-opentechpress-jp (shimbun-rss) ())
+(luna-define-class shimbun-opentechpress-jp (shimbun-multi shimbun-rss) ())
 
 (defvar shimbun-opentechpress-jp-table
   '(("general" . "http://opentechpress.jp/index.rss")
@@ -59,6 +60,26 @@
 		(match-string 1 url))
 	  "%" (shimbun-current-group shimbun)
 	  "@" (shimbun-server shimbun) ".shimbun.namazu.org>"))
+
+(luna-define-method shimbun-multi-next-url ((shimbun shimbun-opentechpress-jp)
+					    header url)
+  (goto-char (point-min))
+  (when (re-search-forward "<a href=\"\\([^\"]+\\)\" title=\"次のページ\">"
+			   nil t)
+    (shimbun-expand-url (shimbun-decode-entities-string (match-string 1))
+			url)))
+
+(luna-define-method shimbun-multi-clear-contents ((shimbun
+						   shimbun-opentechpress-jp)
+						  header
+						  has-previous-page
+						  has-next-page)
+  (when (shimbun-clear-contents shimbun header)
+    (when (or has-previous-page has-next-page)
+      (goto-char (point-max))
+      (when (re-search-backward "<br>ページ:\\(<a href[^>]*>\\)?&lt;" nil t)
+	(delete-region (point) (point-max))))
+    t))
 
 (luna-define-method shimbun-clear-contents :before ((shimbun
 						     shimbun-opentechpress-jp)

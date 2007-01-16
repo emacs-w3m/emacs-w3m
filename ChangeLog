@@ -1,3 +1,10 @@
+2007-01-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun/sb-opentechpress-jp.el: Inherit `shimbun-multi' class in
+	addition to `shimbun-rss'.
+	(shimbun-multi-next-url, shimbun-multi-clear-contents): New
+	methods.
+
 2007-01-16  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-slashdot-jp.el (shimbun-slashdot-jp-group-alist): Add
