@@ -1,3 +1,9 @@
+2007-01-18  Friedrich Delgado Friedrichs  <delgado@dfn-cert.de>
+
+	* w3m-proc.el (w3m-process-ssl-passphrase): New variable.
+	(w3m-process-filter): Enable w3m to authenticate itself with a
+	client certificate.
+
 2007-01-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Make

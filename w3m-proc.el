@@ -1,6 +1,6 @@
 ;;; w3m-proc.el --- Functions and macros to control sub-processes
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -95,7 +95,8 @@
 
 (defvar w3m-process-proxy-user nil "User name of the proxy server.")
 (defvar w3m-process-proxy-passwd nil "Password of the proxy server.")
-
+(defvar w3m-process-ssl-passphrase nil
+  "Passphrase for the client certificate.")
 
 (defmacro w3m-process-with-coding-system (&rest body)
   "Set coding systems for `w3m-command', and evaluate BODY."
@@ -654,6 +655,15 @@ Username for \\(.*\\)\n?: ")
 	    (ignore-errors
 	      (process-send-string process
 				   (concat w3m-process-user "\n"))))
+	   ((and (looking-at "Enter PEM pass phrase:")
+		 (= (match-end 0) (point-max)))
+	    (unless (stringp w3m-process-ssl-passphrase)
+	      (setq w3m-process-ssl-passphrase
+		    (read-passwd "PEM pass phrase: ")))
+	    (ignore-errors
+	      (process-send-string process
+				   (concat w3m-process-ssl-passphrase "\n"))
+	      (delete-region (point-min) (point-max))))
 	   ((progn
 	      (or (search-forward "\nW3m-current-url:" nil t)
 		  (goto-char (process-mark process)))
