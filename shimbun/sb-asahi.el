@@ -423,7 +423,9 @@ Every `.' in NAME will be replaced with `/'."
       ("kansai.okan" "母さんの知恵袋" nil ,@default2)
       ("kansai.madam" "夕刊マダム" nil ,@default2)
       ("kansai.heibon" "週刊★平凡★女性" nil ,@default2)
-      ("kansai.sanshi" "三枝の笑ウインドウ" nil ,@default2)
+      ("kansai.sanshi" "三枝の笑ウインドウ"
+       "kansai/entertainment/sanshi/index.html"
+       ,@(shimbun-asahi-make-regexp "kansai.entertainment.sanshi"))
       ("life" "暮らし" "%s/list.html" ,@default)
       ("life.column" "暮らしコラム" nil
        ,(concat

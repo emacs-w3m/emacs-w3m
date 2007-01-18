@@ -1,3 +1,8 @@
+2007-01-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Make
+	kansai.sanshi group follow site change.
+
 2007-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-e21.el: Autoload iswitchb-read-buffer when compiling.
