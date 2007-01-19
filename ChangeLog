@@ -1,3 +1,10 @@
+2007-01-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Update regexps
+	for book.booktimes, book.bunko, book.edu, book.navi, book.ranking
+	and book.special groups.
+	(shimbun-asahi-get-headers): Modify regexps for book.* groups.
+
 2007-01-18  Friedrich Delgado Friedrichs  <delgado@dfn-cert.de>
 
 	* w3m-proc.el (w3m-process-ssl-passphrase): New variable.
