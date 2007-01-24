@@ -677,7 +677,8 @@ name in which \".\" is substituted with \"/\" is used instead.")
 \\|<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
 
 (defvar shimbun-asahi-content-end
-  "<!--[\t\n ]*\\(?:google_ad_section\\|[AD★☆]+\\)\
+  "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<!--[\t\n ]*Start of hatenab[\t\n ]*-->\
+\\|<!--[\t\n ]*\\(?:google_ad_section\\|[AD★☆]+\\)\
 \\|<!--[\t\n ]*End of Kiji[\t\n ]*-->\
 \\|<!--[\t\n ]*End of related link[\t\n ]*-->\
 \\|<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
@@ -690,7 +691,8 @@ name in which \".\" is substituted with \"/\" is used instead.")
 \\|<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
 
 (defvar shimbun-asahi-text-content-end
-  "<!--[\t\n ]*\\(?:google_ad_section\\|[AD★☆]+\\)\
+  "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<!--[\t\n ]*Start of hatenab[\t\n ]*-->\
+\\|<!--[\t\n ]*\\(?:google_ad_section\\|[AD★☆]+\\)\
 \\|<!--[\t\n ]*End of Kiji[\t\n ]*-->\
 \\|<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
 

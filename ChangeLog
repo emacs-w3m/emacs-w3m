@@ -1,7 +1,9 @@
 2007-01-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Fix regexps for
-	car.newcarbywebcg and culture groups.
+	* shimbun/sb-asahi.el (shimbun-asahi-content-end): Update.
+	(shimbun-asahi-text-content-end): Update.
+	(shimbun-asahi-group-table): Fix regexps for car.newcarbywebcg and
+	culture groups.
 
 	* w3m.el (w3m-message): Clear previous message first.  Suggested
 	by David Hansen <david.hansen@gmx.net>.
