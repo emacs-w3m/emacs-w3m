@@ -341,8 +341,29 @@ Every `.' in NAME will be replaced with `/'."
       ("car.italycolumn" "イタリア発アモーレ！モトーレ！" nil ,@default2)
       ("car.motorsports" "モータースポーツ" nil ,@default2)
       ("car.newcar" "新車情報" nil ,@default2)
-      ("car.newcarbywebcg" "新車発表会" nil ,@default2)
-      ("culture" "文化・芸能" "%s/list.html" ,@default)
+      ("car.newcarbywebcg" "新車発表会" "car/cg/index.html"
+       ,@(shimbun-asahi-make-regexp "car.cg"))
+      ("culture" "文化・芸能" "%s/list.html"
+       ,(concat "<a" s1 "href=\"/"
+		;; 1. url
+		"\\(culture/"
+		"\\(?:[^/]+/\\)?"
+		;; 2. serial number
+		"\\([a-z]*"
+		;; 3. year
+		"\\(20[0-9][0-9]\\)"
+		;; 4. month
+		"\\([01][0-9]\\)"
+		;; 5. day
+		"\\([0-3][0-9]\\)"
+		"[0-9]+\\)"
+		"\\.html\\)"
+		"\">" s0
+		;; 6. subject
+		"\\([^<]+\\)"
+		s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>" s0
+		"<\\(?:/dt\\|span\\)")
+       1 nil 2 6 3 4 5)
       ("culture.yurufemi" "ゆるゆるフェミニン" "culture/column/yurufemi/"
        ,@(shimbun-asahi-make-regexp "culture.column.yurufemi"))
       ("digital" "デジタル機器" "digital/av/"
