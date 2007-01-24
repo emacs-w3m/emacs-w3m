@@ -508,10 +508,10 @@ Every `.' in NAME will be replaced with `/'."
       ("politics" "政治" "%s/list.html" ,@default)
       ("rss" "RSS" "http://www3.asahi.com/rss/index.rdf"
        ,(concat
-	 "<title>"
+	 "<title>" s0
 	 ;; 1. subject
 	 "\\([^<]+\\)"
-	 "</title>\n<link>"
+	 s0 "</title>" s0 "<link>" s0
 	 ;; 2. url
 	 "\\(http://www\\.asahi\\.com/"
 	 ;; 3. extra keyword (en)
@@ -520,10 +520,10 @@ Every `.' in NAME will be replaced with `/'."
 	 ;; 4 and 5. serial number
 	 "\\([0-9]+\\)/\\([a-z]*[0-9]+\\)"
 	 "\\.html\\?ref=rss\\)"
-	 "</link>\n<description/>\n<dc:subject>"
+	 s0 "</link>" s0 "<description" s0 "/>" s0 "<dc:subject>" s0
 	 ;; 6. extra keyword (ja)
 	 "\\([^<]+\\)"
-	 "</dc:subject>\n<dc:date>20[0-9][0-9]-"
+	 s0 "</dc:subject>" s0 "<dc:date>" s0 "20[0-9][0-9]-"
 	 ;; 7. month
 	 "\\([01][0-9]\\)"
 	 "-"
