@@ -527,33 +527,72 @@ Every `.' in NAME will be replaced with `/'."
       ("national.trial" "裁判" "national/trial.html" ,@default3)
       ("obituaries" "おくやみ" "obituaries" ,@default)
       ("politics" "政治" "%s/list.html" ,@default)
-      ("rss" "RSS" "http://www3.asahi.com/rss/index.rdf"
+
+      ;; The version using links to www.asahi.com.
+      ("rss" "RSS" "http://feeds.asahi.com/asahi/TopHeadlines"
        ,(concat
-	 "<title>" s0
-	 ;; 1. subject
-	 "\\([^<]+\\)"
-	 s0 "</title>" s0 "<link>" s0
-	 ;; 2. url
+	 "<item" s1 "rdf:about=\""
+	 ;; 1. url
 	 "\\(http://www\\.asahi\\.com/"
-	 ;; 3. extra keyword (en)
+	 ;; 2. extra keyword (en)
 	 "\\([^/]+\\)"
 	 "/update/"
-	 ;; 4 and 5. serial number
+	 ;; 3 and 4. serial number
 	 "\\([0-9]+\\)/\\([a-z]*[0-9]+\\)"
 	 "\\.html\\?ref=rss\\)"
-	 s0 "</link>" s0 "<description" s0 "/>" s0 "<dc:subject>" s0
+	 "\"" s0 ">" s0 "<title>" s0
+	 ;; 5. subject
+	 "\\([^<]+\\)"
+	 s0 "</title>" s0 "<link>[^<]+</link>" s0 "<description" s0 "/>"
+	 s0 "<dc:subject>" s0
 	 ;; 6. extra keyword (ja)
 	 "\\([^<]+\\)"
-	 s0 "</dc:subject>" s0 "<dc:date>" s0 "20[0-9][0-9]-"
-	 ;; 7. month
+	 s0 "</dc:subject>" s0 "<dc:date>" s0
+	 ;; 7. year
+	 "\\(20[0-9][0-9]\\)"
+	 "-"
+	 ;; 8. month
 	 "\\([01][0-9]\\)"
 	 "-"
-	 ;; 8. day
+	 ;; 9. day
 	 "\\([0-3][0-9]\\)"
 	 "T"
-	 ;; 9. hour:min:sec
+	 ;; 10. hour:min:sec
 	 "\\([012][0-9]:[0-5][0-9]:[0-5][0-9]\\)")
-       2 4 5 1 nil 7 8 9 3 nil 6)
+       1 3 4 5 7 8 9 10 2 nil 6)
+      ;; The version using links in feeds.asahi.com.
+      ;;("rss" "RSS" "http://www3.asahi.com/rss/index.rdf"
+      ;; ,(concat
+      ;;   "<title>" s0
+      ;;   ;; 1. subject
+      ;;   "\\([^<]+\\)"
+      ;;   s0 "</title>" s0 "<link>" s0
+      ;;   ;; 2. url
+      ;;   "\\([^<]+\\)"
+      ;;   s0 "</link>" s0 "<description" s0 "/>" s0 "<dc:subject>" s0
+      ;;   ;; 3. extra keyword (ja)
+      ;;   "\\([^<]+\\)"
+      ;;   s0 "</dc:subject>" s0 "<dc:date>" s0
+      ;;   ;; 4. year
+      ;;   "\\(20[0-9][0-9]\\)"
+      ;;   "-"
+      ;;   ;; 5. month
+      ;;   "\\([01][0-9]\\)"
+      ;;   "-"
+      ;;   ;; 6. day
+      ;;   "\\([0-3][0-9]\\)"
+      ;;   "T"
+      ;;   ;; 7. hour:min:sec
+      ;;   "\\([012][0-9]:[0-5][0-9]:[0-5][0-9]\\)"
+      ;;   "\\+[0-2][0-9]:[0-5][0-9]" s0 "</dc:date>" s0
+      ;;   "<feedburner:origLink>" s0 "http://www\\.asahi\\.com/"
+      ;;   ;; 8. extra keyword (en)
+      ;;   "\\([^/]+\\)"
+      ;;   "/update/"
+      ;;   ;; 9 and 10. serial number
+      ;;   "\\([0-9]+\\)/\\([a-z]*[0-9]+\\)")
+      ;; 2 9 10 1 4 5 6 7 8 nil 3)
+
       ("science" "サイエンス" "%s/list.html"
        ,@(shimbun-asahi-make-regexp "science.news"))
       ("shopping" "ショッピング" "%s/"
