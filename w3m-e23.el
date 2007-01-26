@@ -292,8 +292,31 @@ Buffer string between BEG and END are replaced with IMAGE."
   (setq widget-button-pressed-face 'w3m-form-button-pressed-face))
 
 ;;; Toolbar
-(defcustom w3m-use-toolbar (w3m-image-type-available-p 'xpm)
+(defcustom w3m-use-toolbar
+  (and (featurep 'tool-bar)
+       ;; Emacs 22 and greater return t for `(featurep 'tool-bar)'
+       ;; even if being launched with the -nw option.
+       (display-images-p)
+       (or (boundp 'gtk-version-string)
+	   (image-type-available-p 'xpm)))
   "Non-nil activates toolbar of w3m."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-toolbar-icon-preferred-image-types
+  (if (boundp 'gtk-version-string)
+      '(png)
+    '(xpm))
+  "List of image types that you prefer to use for the tool bar icons.
+By default, `png' is most preferred for Emacs built with GTK and `xpm'
+is for others."
+  :group 'w3m
+  :type '(repeat (symbol :tag "Image type")))
+
+(defcustom w3m-toolbar-use-single-image-per-icon nil
+  "Non-nil means use single image (named possibly *-up) per icon.
+If it is nil, subsidiaries, e.g., *-down and *-disabled, if any, are
+used together."
   :group 'w3m
   :type 'boolean)
 
@@ -325,37 +348,74 @@ Buffer string between BEG and END are replaced with IMAGE."
 	      :enable (aref def 2)
 	      :image (symbol-value (aref def 0)))))))
 
+(defun w3m-find-image (name &optional directory)
+  "Find image file for NAME and return cons of file name and type.
+This function searches only in DIRECTORY, that defaults to the value of
+`w3m-icon-directory', for an image file of which the base name is NAME.
+Files of types that Emacs does not support are ignored."
+  (unless directory
+    (setq directory w3m-icon-directory))
+  (when (and directory
+	     (file-directory-p directory)
+	     (display-images-p))
+    (let* ((case-fold-search nil)
+	   (files (directory-files directory t
+				   (concat "\\`" (regexp-quote name) "\\.")))
+	   (types (append w3m-toolbar-icon-preferred-image-types image-types))
+	   file type rest)
+      (while files
+	(when (string-match "\\.\\([^.]+\\)\\'" (setq file (pop files)))
+	  (setq type (intern (downcase (match-string 1 file))))
+	  (setq type (or (cdr (assq type '((tif . tiff)
+					   (jpg . jpeg)
+					   (ps . postscript)
+					   (pgm . pbm)
+					   (ppm . pbm))))
+			 type))
+	  (push (cons file (memq type types)) rest)))
+      (setq rest (car (sort rest (lambda (a b) (> (length a) (length b))))))
+      (when (cdr rest)
+	(cons (car rest) (cadr rest))))))
+
 (defun w3m-e23-make-toolbar-buttons (buttons)
-  (dolist (button buttons)
-    (let ((up (expand-file-name (concat button "-up.xpm")
-				w3m-icon-directory))
-	  (down (expand-file-name (concat button "-down.xpm")
-				  w3m-icon-directory))
-	  (disabled (expand-file-name (concat button "-disabled.xpm")
-				      w3m-icon-directory))
-	  (icon (intern (concat "w3m-toolbar-" button "-icon")))
-	  (props '(:ascent
-		   center
-		   :color-symbols (("backgroundToolBarColor" . "None")))))
+  (let ((xpm-props '(:color-symbols (("backgroundToolBarColor" . "None"))))
+	button icon down disabled up)
+    (while buttons
+      (setq button (pop buttons)
+	    icon (intern (concat "w3m-toolbar-" button "-icon")))
       (unless (boundp icon)
-	(if (file-exists-p up)
+	(setq down (w3m-find-image (concat button "-down"))
+	      disabled (w3m-find-image (concat button "-disabled")))
+	(if (setq up (or (w3m-find-image (concat button "-up"))
+			 (prog1
+			     (or down disabled (w3m-find-image button))
+			   (setq down nil
+				 disabled nil))))
 	    (progn
-	      (setq up (apply 'create-image up 'xpm nil props))
-	      (if (file-exists-p down)
-		  (setq down (apply 'create-image down 'xpm nil props))
-		(setq down nil))
-	      (if (file-exists-p disabled)
-		  (setq disabled (apply 'create-image disabled 'xpm nil props))
-		(setq disabled nil))
-	      (set icon (vector down up disabled disabled)))
-	  (error "Icon file %s not found" up))))))
+	      (setq up (apply 'create-image (car up) (cdr up) nil
+			      :ascent 'center
+			      (when (eq (cdr up) 'xpm)
+				xpm-props)))
+	      (if (or w3m-toolbar-use-single-image-per-icon
+		      (not (or down disabled)))
+		  (set icon up)
+		(when down
+		  (setq down (apply 'create-image (car down) (cdr down) nil
+				    :ascent 'center
+				    (when (eq (cdr up) 'xpm)
+				      xpm-props))))
+		(when disabled
+		  (setq disabled (apply 'create-image
+					(car disabled) (cdr disabled) nil
+					:ascent 'center
+					(when (eq (cdr disabled) 'xpm)
+					  xpm-props))))
+		(set icon (vector down up disabled disabled))))
+	  (error "Icon file %s-up.* not found" button))))))
 
 (defun w3m-setup-toolbar ()
   (when (and w3m-use-toolbar
-	     w3m-icon-directory
-	     (file-directory-p w3m-icon-directory)
-	     (file-exists-p (expand-file-name "antenna-up.xpm"
-					      w3m-icon-directory)))
+	     (w3m-find-image "antenna-up"))
     (w3m-e23-make-toolbar-buttons w3m-toolbar-buttons)
     (w3m-e23-setup-toolbar w3m-mode-map w3m-toolbar)))
 
@@ -772,33 +832,31 @@ italic font in the modeline."
 (defun w3m-initialize-graphic-icons (&optional force)
   "Make icon images which will be displayed in the mode-line."
   (interactive "P")
-  (let ((defs '((w3m-modeline-status-off-icon
-		 "state-00.xpm"
-		 w3m-modeline-status-off)
-		(w3m-modeline-image-status-on-icon
-		 "state-01.xpm"
-		 w3m-modeline-image-status-on)
-		(w3m-modeline-ssl-status-off-icon
-		 "state-10.xpm"
-		 w3m-modeline-ssl-status-off)
-		(w3m-modeline-ssl-image-status-on-icon
-		 "state-11.xpm"
-		 w3m-modeline-ssl-image-status-on)))
-	def icon file status keymap)
+  ;; Prefer xpm icons rather than png icons since Emacs doesn't display
+  ;; background colors of icon images other than xpm images transparently
+  ;; in the mode line.
+  (let* ((w3m-toolbar-icon-preferred-image-types '(xpm))
+	 (defs `((w3m-modeline-status-off-icon
+		  ,(w3m-find-image "state-00")
+		  w3m-modeline-status-off)
+		 (w3m-modeline-image-status-on-icon
+		  ,(w3m-find-image "state-01")
+		  w3m-modeline-image-status-on)
+		 (w3m-modeline-ssl-status-off-icon
+		  ,(w3m-find-image "state-10")
+		  w3m-modeline-ssl-status-off)
+		 (w3m-modeline-ssl-image-status-on-icon
+		  ,(w3m-find-image "state-11")
+		  w3m-modeline-ssl-image-status-on)))
+	 def icon file type status keymap)
     (while defs
       (setq def (car defs)
 	    defs (cdr defs)
 	    icon (car def)
-	    file (nth 1 def)
+	    file (car (nth 1 def))
+	    type (cdr (nth 1 def))
 	    status (nth 2 def))
-      (if (and window-system
-	       w3m-show-graphic-icons-in-mode-line
-	       (display-images-p)
-	       (image-type-available-p 'xpm)
-	       w3m-icon-directory
-	       (file-directory-p w3m-icon-directory)
-	       (file-exists-p
-		(setq file (expand-file-name file w3m-icon-directory))))
+      (if (and w3m-show-graphic-icons-in-mode-line file)
 	  (progn
 	    (when (or force (not (symbol-value icon)))
 	      (unless keymap
@@ -806,7 +864,7 @@ italic font in the modeline."
 						       'w3m-reload-this-page)))
 	      (set icon (propertize
 			 "  "
-			 'display (create-image file 'xpm nil :ascent 'center)
+			 'display (create-image file type nil :ascent 'center)
 			 'local-map keymap
 			 'mouse-face 'mode-line-highlight
 			 'help-echo "mouse-2 reloads this page"))

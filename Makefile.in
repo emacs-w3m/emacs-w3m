@@ -85,7 +85,7 @@ install-icons:
 	  echo "You don't have to install icon files for \"$(EMACS)\".";\
 	else\
 	  $(SHELL) $(srcdir)/mkinstalldirs $(ICONDIR);\
-	  for i in `cd icons && echo *.gif *.xpm`; do\
+	  for i in `cd icons && echo *.gif *.png *.xpm`; do\
 	    echo " $(INSTALL_DATA) icons/$$i $(ICONDIR)/$$i";\
 	    $(INSTALL_DATA) icons/$$i $(ICONDIR)/$$i;\
 	  done;\
@@ -96,7 +96,7 @@ install-icons30:
 	  echo "You don't have to install icon files for \"$(EMACS)\".";\
 	else\
 	  $(SHELL) $(srcdir)/mkinstalldirs $(ICONDIR);\
-	  for i in `cd icons30 && echo *.gif *.xpm`; do\
+	  for i in `cd icons30 && echo *.gif *.png *.xpm`; do\
 	    echo " $(INSTALL_DATA) icons30/$$i $(ICONDIR)/$$i";\
 	    $(INSTALL_DATA) icons30/$$i $(ICONDIR)/$$i;\
 	  done;\

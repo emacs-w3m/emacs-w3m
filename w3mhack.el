@@ -1,6 +1,6 @@
 ;;; w3mhack.el --- a hack to setup the environment for building w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
@@ -414,7 +414,7 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
       (install (expand-file-name (if (featurep 'xemacs)
 				     "icons30"
 				   "icons"))
-	       w3mhack-nonunix-icondir "\\.xpm\\'"))))
+	       w3mhack-nonunix-icondir "\\.\\(?:png\\|xpm\\)\\'"))))
 
 ;; Byte optimizers and version specific functions.
 (condition-case nil
@@ -585,7 +585,7 @@ to remove some obsolete variables in the first argument VARLIST."
 		     (w3mhack-examine-modules)
 		     (split-string (buffer-string) " \\(?:shimbun/\\)?"))))
 	   (icons (directory-files (expand-file-name "icons30/") nil
-				   "^[^#]+\\.xpm\\'"))
+				   "^[^#]+\\.\\(?:png\\|xpm\\)\\'"))
 	   (infos (directory-files (expand-file-name "doc/") nil
 				   "^[^#]+\\.info\\(?:-[0-9]+\\)?\\'"))
 	   (si:message (symbol-function 'message))
@@ -717,7 +717,7 @@ install:
     (unless (string-equal "NONE/" icon-dir)
       (message "
 install-icons:
-  *.gif, *.xpm            -> %s"
+  *.gif, *.png, *.xpm     -> %s"
 	       icon-dir))
     (setq package-dir (file-name-as-directory package-dir))
     (message "
@@ -728,7 +728,7 @@ install-info:
       (message "
 install-package:
   *.el, *.elc, ChangeLog* -> %slisp/w3m/
-  *.gif, *.xpm            -> %setc/images/w3m/
+  *.gif, *.png, *.xpm     -> %setc/images/w3m/
   *.info, *.info-*        -> %sinfo/
   MANIFEST.w3m            -> %spkginfo/"
 	       package-dir package-dir package-dir package-dir)))

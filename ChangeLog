@@ -1,3 +1,21 @@
+2007-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* icons/*.png, icons30/*.png: New files.
+
+	* Makefile.in (install-icons, install-icons30): Install png files.
+
+	* w3mhack.el (w3mhack-nonunix-install, w3mhack-make-package):
+	Install png files.
+	(w3mhack-what-where): Update for png files.
+
+	* w3m-e21.el (w3m-use-toolbar): Check whether tool-bar and
+	gtk-version-string are available.
+	(w3m-toolbar-icon-preferred-image-types)
+	(w3m-toolbar-use-single-image-per-icon): New variables.
+	(w3m-find-image): New function.
+	(w3m-e21-make-toolbar-buttons, w3m-setup-toolbar)
+	(w3m-initialize-graphic-icons): Use it.
+
 2007-01-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Update index
