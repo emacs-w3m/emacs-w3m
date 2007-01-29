@@ -1,3 +1,17 @@
+2007-01-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-toolbar-icon-preferred-image-types)
+	(w3m-toolbar-use-single-image-per-icon): New variables.
+	(w3m-find-image): New function.
+	(w3m-xmas-make-toolbar-buttons): Use it; add force argument.
+	(w3m-setup-toolbar): Use it; add force and buffer arguments.
+	(w3m-initialize-graphic-icons): Use it.
+
+	* w3m-e21.el (w3m-toolbar-icon-preferred-image-types)
+	(w3m-toolbar-use-single-image-per-icon): Apply customized value to
+	tool bar immediately.
+	(w3m-e21-make-toolbar-buttons, w3m-setup-toolbar): Add force arg.
+
 2007-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* icons/*.png, icons30/*.png: New files.

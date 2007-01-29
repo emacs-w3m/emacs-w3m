@@ -311,14 +311,24 @@ Buffer string between BEG and END are replaced with IMAGE."
 By default, `png' is most preferred for Emacs built with GTK and `xpm'
 is for others."
   :group 'w3m
-  :type '(repeat (symbol :tag "Image type")))
+  :type '(repeat (symbol :tag "Image type"))
+  :set (lambda (symbol value)
+	 (prog1
+	     (custom-set-default symbol value)
+	   (when (and (not noninteractive) (boundp 'w3m-toolbar-buttons))
+	     (w3m-setup-toolbar t)))))
 
 (defcustom w3m-toolbar-use-single-image-per-icon nil
   "Non-nil means use single image (named possibly *-up) per icon.
 If it is nil, subsidiaries, e.g., *-down and *-disabled, if any, are
 used together."
   :group 'w3m
-  :type 'boolean)
+  :type 'boolean
+  :set (lambda (symbol value)
+	 (prog1
+	     (custom-set-default symbol value)
+	   (when (and (not noninteractive) (boundp 'w3m-toolbar-buttons))
+	     (w3m-setup-toolbar t)))))
 
 (defvar w3m-e23-toolbar-configurations
   '((auto-resize-tool-bars       . t)
@@ -377,13 +387,13 @@ Files of types that Emacs does not support are ignored."
       (when (cdr rest)
 	(cons (car rest) (cadr rest))))))
 
-(defun w3m-e23-make-toolbar-buttons (buttons)
+(defun w3m-e23-make-toolbar-buttons (buttons &optional force)
   (let ((xpm-props '(:color-symbols (("backgroundToolBarColor" . "None"))))
 	button icon down disabled up)
     (while buttons
       (setq button (pop buttons)
 	    icon (intern (concat "w3m-toolbar-" button "-icon")))
-      (unless (boundp icon)
+      (when (or force (not (boundp icon)))
 	(setq down (w3m-find-image (concat button "-down"))
 	      disabled (w3m-find-image (concat button "-disabled")))
 	(if (setq up (or (w3m-find-image (concat button "-up"))
@@ -413,10 +423,10 @@ Files of types that Emacs does not support are ignored."
 		(set icon (vector down up disabled disabled))))
 	  (error "Icon file %s-up.* not found" button))))))
 
-(defun w3m-setup-toolbar ()
+(defun w3m-setup-toolbar (&optional force)
   (when (and w3m-use-toolbar
 	     (w3m-find-image "antenna-up"))
-    (w3m-e23-make-toolbar-buttons w3m-toolbar-buttons)
+    (w3m-e23-make-toolbar-buttons w3m-toolbar-buttons force)
     (w3m-e23-setup-toolbar w3m-mode-map w3m-toolbar)))
 
 (defalias 'w3m-update-toolbar 'ignore)
