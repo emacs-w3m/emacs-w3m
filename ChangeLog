@@ -1,5 +1,36 @@
 2007-01-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-xmas.el (w3m-define-w3m-make-ccl-coding-system): Rename from
+	w3m-xmas-define-w3m-make-ccl-coding-system.
+	(w3m-toolbar-make-buttons): Rename from
+	w3m-xmas-make-toolbar-buttons.
+	(w3m-define-missing-widgets): Rename from
+	w3m-xmas-define-missing-widgets.
+	(w3m-show-current-title-in-buffer-tab): Rename from
+	w3m-xmas-show-current-title-in-buffer-tab.
+	(w3m-setup-tab-in-gutter): Rename from
+	w3m-xmas-setup-tab-in-gutter.
+	(w3m-update-tab-in-gutter): Rename from
+	w3m-xmas-update-tab-in-gutter.
+
+	* w3m-e21.el (w3m-toolbar-icon-preferred-image-types)
+	(w3m-toolbar-icon-preferred-image-types): Use w3m-update-toolbars
+	instead of w3m-setup-toolbar.
+	(w3m-toolbar-configurations): Rename from
+	w3m-e21-toolbar-configurations; make it customizable for LUCID
+	Emacs.
+	(w3m-toolbar-define-keys): Rename from w3m-e21-setup-toolbar;
+	don't apply w3m-toolbar-configurations here.
+	(w3m-toolbar-make-buttons): Rename from
+	w3m-e21-make-toolbar-buttons.
+	(w3m-toolbar-set-configurations): New function.
+	(w3m-setup-toolbar): Remove force argument; apply
+	w3m-toolbar-configurations here.
+	(w3m-update-toolbars): New function.
+	(w3m-switch-to-buffer): Rename from w3m-e21-switch-to-buffer.
+	(w3m-subst-switch-to-buffer-keys): Rename from
+	w3m-e21-subst-switch-to-buffer-keys.
+
 	* w3m.el (w3m-message): Clear previous message only if it is
 	longer than the window width and running Emacs 22 and greater.
 

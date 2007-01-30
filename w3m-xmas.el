@@ -98,7 +98,7 @@
 ;;  (or (find-coding-system coding-system)
 ;;      (make-ccl-coding-system coding-system args...)))
 (eval-when-compile
-  (defmacro w3m-xmas-define-w3m-make-ccl-coding-system ()
+  (defmacro w3m-define-w3m-make-ccl-coding-system ()
     "Make the source form for the function `w3m-make-ccl-coding-system'."
     (if (and (fboundp 'make-ccl-coding-system)
 	     (fboundp 'find-coding-system))
@@ -113,7 +113,7 @@ NOTE: This function is slightly modified from `make-ccl-coding-system'
 		coding-system mnemonic docstring decoder encoder)))
       '(defalias 'w3m-make-ccl-coding-system 'ignore))))
 
-(w3m-xmas-define-w3m-make-ccl-coding-system)
+(w3m-define-w3m-make-ccl-coding-system)
 
 (eval-and-compile
   (dolist (fn '(coding-priority-list
@@ -555,7 +555,7 @@ Files of types that XEmacs does not support are ignored."
       (when (cdr rest)
 	(cons (car rest) (cadr rest))))))
 
-(defun w3m-xmas-make-toolbar-buttons (buttons &optional force)
+(defun w3m-toolbar-make-buttons (buttons &optional force)
   (let (button icon down disabled up)
     (while buttons
       (setq button (pop buttons)
@@ -579,7 +579,7 @@ Files of types that XEmacs does not support are ignored."
   "Setup toolbar."
   (when (and w3m-use-toolbar
 	     (w3m-find-image "antenna-up"))
-    (w3m-xmas-make-toolbar-buttons w3m-toolbar-buttons force)
+    (w3m-toolbar-make-buttons w3m-toolbar-buttons force)
     (set-specifier default-toolbar
 		   (cons (or buffer (current-buffer)) w3m-toolbar))
     t))
@@ -606,7 +606,7 @@ Files of types that XEmacs does not support are ignored."
 ;;; Widget:
 (eval-when-compile (require 'wid-edit))
 
-(defun w3m-xmas-define-missing-widgets ()
+(defun w3m-define-missing-widgets ()
   "Define some missing widgets."
   (unless (get 'coding-system 'widget-type)
     ;; The following codes are imported from wid-edit.el of Emacs 20.7.
@@ -655,14 +655,14 @@ as the value."
       :format "%t%n"
       :value 'other)))
 
-(eval-after-load "wid-edit" '(w3m-xmas-define-missing-widgets))
+(eval-after-load "wid-edit" '(w3m-define-missing-widgets))
 
 ;;; Header line:
 (defvar w3m-header-line-map (make-sparse-keymap))
 (define-key w3m-header-line-map 'button2 'w3m-goto-url)
 
 ;;; Gutter:
-(defcustom w3m-xmas-show-current-title-in-buffer-tab
+(defcustom w3m-show-current-title-in-buffer-tab
   (and (boundp 'gutter-buffers-tab-enabled)
        gutter-buffers-tab-enabled)
   "If non-nil, show the title strings in the buffers tab.
@@ -678,30 +678,30 @@ It has no effect if your XEmacs does not support the gutter items."
 		 (setq value nil))
 	     (set-default symbol value)
 	   (if value
-	       (add-hook 'w3m-display-functions 'w3m-xmas-update-tab-in-gutter)
-	     (remove-hook 'w3m-display-functions 'w3m-xmas-update-tab-in-gutter))
+	       (add-hook 'w3m-display-functions 'w3m-update-tab-in-gutter)
+	     (remove-hook 'w3m-display-functions 'w3m-update-tab-in-gutter))
 	   (condition-case nil
 	       (progn
 		 (if value
 		     (ad-enable-advice
 		      'format-buffers-tab-line 'around
-		      'w3m-xmas-show-current-title-in-buffer-tab)
+		      'w3m-show-current-title-in-buffer-tab)
 		   (ad-disable-advice
 		    'format-buffers-tab-line 'around
-		    'w3m-xmas-show-current-title-in-buffer-tab))
+		    'w3m-show-current-title-in-buffer-tab))
 		 (if (boundp 'gutter-buffers-tab-enabled)
 		     (mapc #'update-tab-in-gutter (frame-list))))
 	     (error)))))
 
 (when (boundp 'gutter-buffers-tab-enabled)
   (defadvice format-buffers-tab-line
-    (around w3m-xmas-show-current-title-in-buffer-tab (buffer) activate)
+    (around w3m-show-current-title-in-buffer-tab (buffer) activate)
     "Advised by emacs-w3m.
 Show the current title string in the buffer tab.  Unfortunately,
 existing XEmacs does not support showing non-ascii characters.  When a
 title contains non-ascii characters, show a url name by default."
     (with-current-buffer buffer
-      (if (and w3m-xmas-show-current-title-in-buffer-tab
+      (if (and w3m-show-current-title-in-buffer-tab
 	       (symbol-value 'gutter-buffers-tab-enabled)
 	       (eq 'w3m-mode major-mode))
 	  (let* ((len (specifier-instance
@@ -732,25 +732,25 @@ title contains non-ascii characters, show a url name by default."
 		      name))))
 	ad-do-it)))
 
-  (if w3m-xmas-show-current-title-in-buffer-tab
+  (if w3m-show-current-title-in-buffer-tab
       (ad-enable-advice 'format-buffers-tab-line 'around
-			'w3m-xmas-show-current-title-in-buffer-tab)
+			'w3m-show-current-title-in-buffer-tab)
     (ad-disable-advice 'format-buffers-tab-line 'around
-		       'w3m-xmas-show-current-title-in-buffer-tab))
+		       'w3m-show-current-title-in-buffer-tab))
 
-  (defun w3m-xmas-setup-tab-in-gutter ()
+  (defun w3m-setup-tab-in-gutter ()
     "Set up buffers tab in the gutter."
     (set-specifier default-gutter-visible-p
 		   (and w3m-use-tab gutter-buffers-tab-enabled t)
 		   (current-buffer)))
-  (add-hook 'w3m-mode-setup-functions 'w3m-xmas-setup-tab-in-gutter)
-  (add-hook 'w3m-select-buffer-mode-hook 'w3m-xmas-setup-tab-in-gutter)
+  (add-hook 'w3m-mode-setup-functions 'w3m-setup-tab-in-gutter)
+  (add-hook 'w3m-select-buffer-mode-hook 'w3m-setup-tab-in-gutter)
 
-  (defun w3m-xmas-update-tab-in-gutter (&rest args)
+  (defun w3m-update-tab-in-gutter (&rest args)
     "Update the tab control in the gutter area."
     (when (and w3m-use-tab gutter-buffers-tab-enabled)
       (update-tab-in-gutter (selected-frame))))
-  (add-hook 'w3m-display-functions 'w3m-xmas-update-tab-in-gutter))
+  (add-hook 'w3m-display-functions 'w3m-update-tab-in-gutter))
 
 ;;; Graphic icons:
 (defcustom w3m-space-before-modeline-icon ""

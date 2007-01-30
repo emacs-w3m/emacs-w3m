@@ -390,7 +390,7 @@ is for others."
 	 (prog1
 	     (custom-set-default symbol value)
 	   (when (and (not noninteractive) (boundp 'w3m-toolbar-buttons))
-	     (w3m-setup-toolbar t)))))
+	     (w3m-update-toolbars)))))
 
 (defcustom w3m-toolbar-use-single-image-per-icon nil
   "Non-nil means use single image (named possibly *-up) per icon.
@@ -402,20 +402,35 @@ used together."
 	 (prog1
 	     (custom-set-default symbol value)
 	   (when (and (not noninteractive) (boundp 'w3m-toolbar-buttons))
-	     (w3m-setup-toolbar t)))))
+	     (w3m-update-toolbars)))))
 
-(defvar w3m-e21-toolbar-configurations
-  '((auto-resize-tool-bars       . t)
-    (auto-raise-tool-bar-buttons . t)
-    ;;(tool-bar-button-margin      . 0)
-    ;;(tool-bar-button-relief      . 2)
-    ))
+(defcustom w3m-toolbar-configurations
+  (unless (boundp 'gtk-version-string)
+    '((auto-resize-tool-bars       . global)
+      (auto-raise-tool-bar-buttons . global)
+      (tool-bar-button-margin      . global)
+      (tool-bar-button-relief      . global)))
+  "Alist of the variables and the values controls the tool bar appearance.
+The value `global' means to use the global value of the variable.
 
-(defun w3m-e21-setup-toolbar (keymap defs)
-  (let ((configs w3m-e21-toolbar-configurations)
-	config)
-    (while (setq config (pop configs))
-      (set (make-local-variable (car config)) (cdr config))))
+Note: this is currently disabled for GTK Emacs."
+  :group 'w3m
+  :type (if (boundp 'gtk-version-string)
+	    'sexp
+	  '(repeat (cons :format "%v"
+			 (symbol :tag "Variable")
+			 (radio :format "%v"
+				(const :format "%v " global)
+				(sexp :tag "Local Value")))))
+  :set (lambda (symbol value)
+	 (prog1
+	     (if (boundp 'gtk-version-string)
+		 (custom-set-default symbol nil)
+	       (custom-set-default symbol value))
+	   (when (and (not noninteractive) (featurep 'w3m))
+	     (w3m-toolbar-set-configurations)))))
+
+(defun w3m-toolbar-define-keys (keymap defs)
   ;; Invalidate the default bindings.
   (let ((keys (cdr (key-binding [tool-bar] t)))
 	item)
@@ -461,7 +476,7 @@ Files of types that Emacs does not support are ignored."
       (when (cdr rest)
 	(cons (car rest) (cadr rest))))))
 
-(defun w3m-e21-make-toolbar-buttons (buttons &optional force)
+(defun w3m-toolbar-make-buttons (buttons &optional force)
   (let ((xpm-props '(:color-symbols (("backgroundToolBarColor" . "None"))))
 	button icon down disabled up)
     (while buttons
@@ -497,13 +512,35 @@ Files of types that Emacs does not support are ignored."
 		(set icon (vector down up disabled disabled))))
 	  (error "Icon file %s-up.* not found" button))))))
 
-(defun w3m-setup-toolbar (&optional force)
+(defun w3m-toolbar-set-configurations (&optional curbuf)
+  "Set values of variables according to `w3m-toolbar-configurations'.
+If CURBUF is given, this function works only in the current buffer,
+otherwise works in all the emacs-w3m buffers."
+  (if curbuf
+      (dolist (config w3m-toolbar-configurations)
+	(if (eq (cdr config) 'global)
+	    (kill-local-variable (car config))
+	  (set (make-local-variable (car config)) (cdr config))))
+    (save-current-buffer
+      (dolist (buffer (w3m-list-buffers t))
+	(set-buffer buffer)
+	(w3m-toolbar-set-configurations t)))))
+
+(defun w3m-setup-toolbar ()
   (when (and w3m-use-toolbar
 	     (w3m-find-image "antenna-up"))
-    (w3m-e21-make-toolbar-buttons w3m-toolbar-buttons force)
-    (w3m-e21-setup-toolbar w3m-mode-map w3m-toolbar)))
+    (w3m-toolbar-make-buttons w3m-toolbar-buttons)
+    (w3m-toolbar-set-configurations t)
+    (w3m-toolbar-define-keys w3m-mode-map w3m-toolbar)))
 
 (defalias 'w3m-update-toolbar 'ignore)
+
+(defun w3m-update-toolbars ()
+  (when (and w3m-use-toolbar
+	     (w3m-find-image "antenna-up"))
+    (w3m-toolbar-make-buttons w3m-toolbar-buttons t)
+    (w3m-toolbar-set-configurations)
+    (w3m-toolbar-define-keys w3m-mode-map w3m-toolbar)))
 
 ;;; Header line & Tabs
 (defcustom w3m-tab-width 16
@@ -877,7 +914,7 @@ cleared by a timer.")
       (unless (eq (next-window nil 'ignore-minibuf) (selected-window))
 	(shrink-window 1)))))
 
-(defun w3m-e21-switch-to-buffer (buffer &optional norecord)
+(defun w3m-switch-to-buffer (buffer &optional norecord)
   "Run `switch-to-buffer' and redisplay the header-line.
 Redisplaying is done by wobbling the window size."
   (interactive (list (if iswitchb-mode
@@ -889,15 +926,15 @@ Redisplaying is done by wobbling the window size."
 	       (eq major-mode 'w3m-mode))
       (w3m-force-window-update))))
 
-(defun w3m-e21-subst-switch-to-buffer-keys ()
-  "Substitute keys for `switch-to-buffer' with `w3m-e21-switch-to-buffer'."
-  (substitute-key-definition 'switch-to-buffer 'w3m-e21-switch-to-buffer
+(defun w3m-subst-switch-to-buffer-keys ()
+  "Substitute keys for `switch-to-buffer' with `w3m-switch-to-buffer'."
+  (substitute-key-definition 'switch-to-buffer 'w3m-switch-to-buffer
 			     w3m-mode-map global-map))
 
 (add-hook 'w3m-mode-setup-functions 'w3m-tab-make-keymap)
 (add-hook 'w3m-mode-setup-functions 'w3m-setup-header-line)
 (add-hook 'w3m-mode-setup-functions 'w3m-setup-widget-faces)
-(add-hook 'w3m-mode-setup-functions 'w3m-e21-subst-switch-to-buffer-keys)
+(add-hook 'w3m-mode-setup-functions 'w3m-subst-switch-to-buffer-keys)
 (add-hook 'w3m-select-buffer-hook 'w3m-force-window-update)
 
 ;; Graphic icons.
