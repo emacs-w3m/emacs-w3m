@@ -1,3 +1,8 @@
+2007-01-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-message): Clear previous message only if it is
+	longer than the window width and running Emacs 22 and greater.
+
 2007-01-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (w3m-toolbar-icon-preferred-image-types)

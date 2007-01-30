@@ -2889,8 +2889,11 @@ and `w3m-verbose' is nil, it behaves as `format' and simply returns a
 string.  When `w3m-verbose' is non-nil, it behaves identically as
 `message', that displays a given message with logging."
   ;; Always clear previous message in order to shrink the window height
-  ;; for the echo area.  Only Emacs 22 or greater requires it, though.
-  (message nil)
+  ;; for the echo area.
+  (unless (or (featurep 'xemacs)
+	      (< emacs-major-version 22)
+	      (< (string-width (or (current-message) "")) (window-width)))
+    (message nil))
   (if w3m-verbose
       (apply (function message) args)
     (if (when w3m-process-background
