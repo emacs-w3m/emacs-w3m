@@ -158,6 +158,26 @@ Every `.' in NAME will be replaced with `/'."
 		  "\\(" no-nl "\\)"
 		  s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>" s0 "</h[0-9]>")
 		 1 2 nil 6 3 4 5))
+	 (book3 (list
+		 (concat
+		  "<h[0-9]" s1 "class=\"midasi[0-9]+\">" s0
+		  "<a" s1 "href=\"http://book\\.asahi\\.com/"
+		  ;; 1. url
+		  "\\([^/]+/"
+		  ;; 2. serial number
+		  "\\([a-z]*"
+		  ;; 3. year
+		  "\\(20[0-9][0-9]\\)"
+		  ;; 4. month
+		  "\\([01][0-9]\\)"
+		  ;; 5. day
+		  "\\([0-3][0-9]\\)"
+		  "[0-9]+\\)"
+		  "\\.html\\)"
+		  "\"" s0 ">" s0
+		  ;; 6. subject
+		  "\\(" no-nl "\\)")
+		 1 2 nil 6 3 4 5))
 	 (edu (shimbun-asahi-make-regexp "edu.news"))
 	 (health (shimbun-asahi-make-regexp "health.news"))
 	 (international (list
@@ -179,13 +199,12 @@ Every `.' in NAME will be replaced with `/'."
 			  s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
 			 1 4 nil 5 nil 2 3)))
     `(("book.author" "BOOK: 著者に会いたい" nil ,@book1)
-      ("book.bestseller" "BOOK: ベストセラー快読" nil ,@book1)
-      ("book.booktimes" "BOOK: BOOK TIMES" nil ,@book2)
+      ("book.bestseller" "BOOK: 売れてる本" nil ,@book1)
+      ("book.booktimes" "BOOK TIMES" nil ,@book2)
       ("book.bunko" "BOOK: 愛でたい文庫" nil ,@book2)
-      ("book.comic" "BOOK: コミック教養講座" nil ,@book1)
-      ("book.edu" "BOOK: 教育・こどもの本" nil ,@book2)
+      ("book.comic" "BOOK: コミックガイド" nil ,@book1)
       ("book.hondana" "BOOK: 話題の本棚" "book/hondana/index.html" ,@book1)
-      ("book.navi" "BOOK: 読書ナビ" nil ,@book2)
+      ("book.life" "BOOK: 暮らしのお役立ち" nil ,@book2)
       ("book.news" "BOOK: 出版ニュース" nil
        ,(concat
 	 "<a" s1 "href=\"/"
@@ -235,7 +254,16 @@ Every `.' in NAME will be replaced with `/'."
 	 ;; 6. subject
 	 "\\(" no-nl "\\)")
        1 2 nil 6 3 4 5)
+      ("book.newstar" "BOOK: ニュースな新刊" nil ,@book2)
       ("book.review" "BOOK: 書評" nil ,@book1)
+      ("book.review.business" "BOOK: ビジネス" "book/review/business.html"
+       ,@book3)
+      ("book.review.digital" "BOOK: デジタル" "book/review/digital.html"
+       ,@book3)
+      ("book.review.edu" "BOOK: 教育 (児童書)" "book/review/edu.html" ,@book3)
+      ("book.review.international" "BOOK: 国際"
+       "book/review/international.html" ,@book3)
+      ("book.review.life" "BOOK: 暮らし" "book/review/life.html" ,@book3)
       ("book.shinsho" "BOOK: 新書の穴" nil ,@book2)
       ("book.special" "BOOK: 特集" nil
        ,(concat
@@ -257,6 +285,7 @@ Every `.' in NAME will be replaced with `/'."
 	 "\\(" no-nl "\\)")
        1 2 nil 6 3 4 5)
       ("book.topics" "BOOK: ニュースな本" nil ,@book2)
+      ("book.trendwatch" "BOOK: デジタル読書" nil ,@book2)
       ("business" "ビジネス" "%s/list.html" ,@default)
       ("business.aera" "ＡＥＲＡ発マネー" "business/aera/index.html"
        ,(concat
@@ -276,11 +305,32 @@ Every `.' in NAME will be replaced with `/'."
 	 "\"" s0 ">" s0
 	 ;; 7. subject
 	 "\\(" no-nl "\\)"
-	 "</a><span class=\"f80\">"
-	 )
+	 "</a><span class=\"f80\">")
        1 2 nil 7 3 4 5 nil)
       ;; The url should be ended with "index.html".
       ("business.column" "経済気象台" "business/column/index.html" ,@default2)
+      ("business.fund" "投資信託" nil
+       ,(concat
+	 "<a" s1 "href=\""
+	 ;; 1. url
+	 "\\(/business/fund/"
+	 ;; 2. extra keyword
+	 "\\([^/]+\\)"
+	 "/"
+	 ;; 3. serial number
+	 "\\([a-z]*"
+	 ;; 4. year
+	 "\\(20[0-9][0-9]\\)"
+	 ;; 5. month
+	 "\\([01][0-9]\\)"
+	 ;; 6. day
+	 "\\([0-3][0-9]\\)"
+	 "[0-9]+\\)"
+	 "\\.html\\)"
+	 "\"" s0 ">" s0
+	 ;; 7. subject
+	 "\\(" no-nl "\\)")
+       1 nil 3 7 4 5 6 nil 2)
       ("business.reuter" "ロイターニュース" "business/list_reuters.html"
        ,(concat
 	 "<a" s1 "href=\""
@@ -693,8 +743,6 @@ Every `.' in NAME will be replaced with `/'."
 
       ;; The following groups are obsolete, though old articles still
       ;; can be read.
-      ("book.pocket" "BOOK: ポケットから" nil ,@book1)
-      ("book.watch" "BOOK: マガジンウオッチ" nil ,@book1)
       ("culture.column" "もやしのひげ" "culture/column/moyashi/"
        ,@(shimbun-asahi-make-regexp "culture.column.moyashi"))
       ("kansai.kataritsugu" "語りつぐ戦争" nil ,@default2)
@@ -1009,10 +1057,14 @@ and tenjin, it tries to fetch the article for that day if it failed."
 	(group (shimbun-current-group-internal shimbun)))
     (cond
      ((string-match "\\`book\\." group)
-      (when (re-search-forward
-	     "<p class=\"midasi13\">[^<>]+<br>\\[評者\\]\\([^<>]+\\)</p>"
-	     nil t)
-	(shimbun-header-set-from header (match-string 1))
+      (when (re-search-forward "<p class=\"midasi13\">[^<>]+<br>\
+\\[\\(?:文\\(?:・写真\\)?\\|評者\\)\\]\\([^<>[　]+\\)"
+			       nil t)
+	(let ((author (match-string 1)))
+	  (when (and (string-match "（" author)
+		     (not (string-match "）\\'" author)))
+	    (setq author (concat author "）")))
+	  (shimbun-header-set-from header author))
 	(goto-char (point-min)))
       ;; Collect images.
       (let (start end images)
@@ -1042,6 +1094,17 @@ and tenjin, it tries to fetch the article for that day if it failed."
        shimbun
        (while (re-search-forward "。　?\\(\\cj\\)" nil t)
 	 (replace-match "。<br><br>　\\1"))))
+     ((string-match "\\`car\\'\\|\\`car\\." group)
+      (shimbun-with-narrowed-article
+       shimbun
+       (when (re-search-forward "[\t\n ]*<p[\t\n ]+class=\"hide\">[\t\n ]\
+*ここから広告です[\t\n ]*</p>"
+				nil t)
+	 (let ((start (match-beginning 0)))
+	   (when (re-search-forward "<p[\t\n ]+class=\"hide\">[\t\n ]*\
+広告終わり[\t\n ]*</p>[\t\n ]*"
+				    nil t)
+	     (delete-region start (match-end 0)))))))
      ((string-equal group "culture.yurufemi")
       (let (comics)
 	(while (re-search-forward
