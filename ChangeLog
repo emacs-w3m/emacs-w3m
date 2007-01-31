@@ -1,3 +1,16 @@
+2007-01-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Remove book.edu,
+	book.navi, book.pocket and book.watch groups; add book.life,
+	book.newstar, book.review.business, book.review.digital,
+	book.review.edu, book.review.international, book.review.life,
+	book.trendwatch and business.fund groups; update Japanese names of
+	book.bestseller, book.booktimes and book.comic groups.
+	(shimbun-asahi-prepare-article): Fix regexp matching critics' name.
+	(shimbun-asahi-prepare-article): Remove adv for car.* groups.
+
+	* w3m.el (w3m-clean-hook-options): Remove.
+
 2007-01-31  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-search.el (w3m-search-read-query): Check that face property
