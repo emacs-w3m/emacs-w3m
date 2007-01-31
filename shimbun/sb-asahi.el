@@ -416,13 +416,9 @@ Every `.' in NAME will be replaced with `/'."
        1 nil 2 6 3 4 5)
       ("culture.yurufemi" "ゆるゆるフェミニン" "culture/column/yurufemi/"
        ,@(shimbun-asahi-make-regexp "culture.column.yurufemi"))
-      ("digital" "デジタル機器" "digital/av/"
-       ,@(shimbun-asahi-make-regexp "digital.av"))
-      ("digital.apc" "雑誌「ASAHIパソコン」ニュース" nil ,@default2)
       ("digital.av" "デジタル機器" nil ,@default2)
       ("digital.bcnnews" "eビジネス情報 (提供：ＢＣＮ)" nil ,@default2)
       ("digital.column01" "デジタルコラム" nil ,@default2)
-      ("digital.hotwired" "HotWired Japan" nil ,@default2)
       ("digital.internet" "ネット・ウイルス" nil ,@default2)
       ("digital.mobile" "携帯電話" nil ,@default2)
       ("digital.nikkanko" "日刊工業新聞ニュース" nil ,@default2)
@@ -743,8 +739,6 @@ Every `.' in NAME will be replaced with `/'."
 
       ;; The following groups are obsolete, though old articles still
       ;; can be read.
-      ("culture.column" "もやしのひげ" "culture/column/moyashi/"
-       ,@(shimbun-asahi-make-regexp "culture.column.moyashi"))
       ("kansai.kataritsugu" "語りつぐ戦争" nil ,@default2)
       ("nankyoku" "南極プロジェクト" "%s/news/"
        ,@(shimbun-asahi-make-regexp "nankyoku.news"))
@@ -1116,6 +1110,24 @@ and tenjin, it tries to fetch the article for that day if it failed."
 	  (insert "<!-- Start of Kiji -->\n"
 		  (mapconcat 'identity comics "<br>\n")
 		  "\n<!-- End of Kiji -->\n"))))
+     ((string-equal group "digital.column01")
+      (unless (re-search-forward (shimbun-content-end shimbun) nil t)
+	(when (re-search-forward "\\(?:[\t\b ]*<[^>]+>\\)*[\t\n ]*\
+\\(?:<img[\t\n ]+src=\"[^>]*[\t\n ]*alt=\"プロフィール\"\
+\\|<h[0-9]>プロフィール</h[0-9]>\\)"
+				 nil t)
+	  (goto-char (match-beginning 0))
+	  (insert "\n<!-- End of Kiji -->\n")))
+      (shimbun-with-narrowed-article
+       shimbun
+       (when (re-search-forward "[\t\n ]*<p[\t\n ]+class=\"hide\">[\t\n ]\
+*ここから広告です[\t\n ]*</p>"
+				nil t)
+	 (let ((start (match-beginning 0)))
+	   (when (re-search-forward "<p[\t\n ]+class=\"hide\">[\t\n ]*\
+広告終わり[\t\n ]*</p>[\t\n ]*"
+				    nil t)
+	     (delete-region start (match-end 0)))))))
      ((string-equal group "editorial")
       (let ((regexp "\
 <h[0-9]\\(?:[\t\n ]+[^>]+\\)?>[\t\n ]*<a[\t\n ]+name=\"syasetu[0-9]+\">")
