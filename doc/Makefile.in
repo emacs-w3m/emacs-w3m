@@ -4,6 +4,7 @@ INSTALL      = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_INFO = install-info
 prefix       = @prefix@
+datarootdir  = @datarootdir@
 infodir      = @infodir@
 srcdir       = @srcdir@
 subdir       = doc

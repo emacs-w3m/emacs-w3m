@@ -1,6 +1,7 @@
 INSTALL      = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 prefix       = @prefix@
+datarootdir  = @datarootdir@
 datadir      = @datadir@
 infodir      = @infodir@
 lispdir      = @lispdir@
