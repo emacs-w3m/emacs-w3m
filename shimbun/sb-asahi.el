@@ -437,13 +437,15 @@ Every `.' in NAME will be replaced with `/'."
 	 "\\.html\\)"
 	 "\"")
        1 nil nil nil 2 3 4)
-      ("edu" "教育" "%s/news/index.html" ,@edu)
-      ("edu.column" "教育コラム" "edu/column/ikuji/"
+      ("edu.examination" "入試" "edu/news/examination.html" ,@edu)
+      ("edu.ikuji" "子育て応援エッセー" "edu/column/ikuji/"
        ,@(shimbun-asahi-make-regexp "edu.column.ikuji"))
-      ("edu.it" "IT教育" "edu/news/it.html" ,@edu)
+      ("edu.issue" "教育問題" "edu/news/issue.html" ,@edu)
+      ("edu.kiji" "この記事を手がかりに" "edu/nie/kiji/"
+       ,@(shimbun-asahi-make-regexp "edu.nie.kiji.kiji"))
       ("edu.kosodate" "子育て" "edu/news/kosodate.html" ,@edu)
-      ("edu.news" "教育一般" nil ,@edu)
-      ("edu.nyushi" "大学・入試" "edu/news/nyushi.html" ,@edu)
+      ("edu.system" "教育制度・話題" "edu/news/system.html" ,@edu)
+      ("edu.university" "大学" "edu/news/university.html" ,@edu)
       ("edu.tamate" "ののちゃんのふしぎ玉手箱" "edu/nie/tamate/"
        ,@(shimbun-asahi-make-regexp "edu.nie.tamate.kiji"))
       ("english" "ENGLISH" "%s/index.html"
@@ -461,6 +463,11 @@ Every `.' in NAME will be replaced with `/'."
       ("housing.amano" "天野彰のいい家いい家族" nil ,@default2)
       ("housing.column" "住まいのお役立ちコラム" nil ,@default2)
       ("housing.diary" "小さな家の生活日記" nil ,@default2)
+      ("housing.jutaku-s" "住宅新報社ニュース" nil ,@default2)
+      ("housing.kansai" "関西の住まい" "kansai/sumai/news/"
+       ,@(shimbun-asahi-make-regexp "kansai.sumai.news"))
+      ("housing.machi" "街を恋う" "kansai/sumai/machi/"
+       ,@(shimbun-asahi-make-regexp "kansai.sumai.machi"))
       ("housing.soudan" "ここが知りたい！" nil ,@default2)
       ("housing.world" "世界のウチ" nil ,@default2)
       ("igo" "囲碁" "%s/news/" ,@(shimbun-asahi-make-regexp "igo.news"))
@@ -1155,6 +1162,10 @@ and tenjin, it tries to fetch the article for that day if it failed."
 		  (goto-char (point-min)))
 	      (insert "Couldn't retrieve the page.\n")))
 	  (setq retry (1+ retry)))))
+     ((string-match "\\`housing\\'\\|\\`housing\\." group)
+      (shimbun-remove-tags
+       "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<!--広告スキップ -->"
+       "<!--/広告スキップのとび先-->[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*"))
      ((string-equal group "tenjin")
       (let ((retry 0)
 	    index)
