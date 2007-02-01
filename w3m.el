@@ -6767,12 +6767,15 @@ as if the folder command of MH performs with the -pack option."
     (define-key map [(shift return)] 'w3m-view-this-url-new-session)
     (define-key map [(shift kp-enter)] 'w3m-view-this-url-new-session)
     (define-key map [right] 'w3m-view-this-url)
-    (if (featurep 'xemacs)
-	(define-key map [(button3)] 'w3m-mouse-major-mode-menu)
-      ;; Don't use [mouse-3], which gets submenus not working in GTK Emacs.
-      (define-key map [down-mouse-3] 'w3m-mouse-major-mode-menu)
-      (define-key map [drag-mouse-3] 'undefined)
-      (define-key map [mouse-3] 'undefined))
+    (cond ((featurep 'xemacs)
+	   (define-key map [(button3)] 'w3m-mouse-major-mode-menu))
+	  ;; Don't use [mouse-3], which gets submenus not working in GTK Emacs.
+	  ((boundp 'gtk-version-string)
+	   (define-key map [down-mouse-3] 'w3m-mouse-major-mode-menu)
+	   (define-key map [drag-mouse-3] 'undefined)
+	   (define-key map [mouse-3] 'undefined))
+	  (t
+	   (define-key map [mouse-3] 'w3m-mouse-major-mode-menu)))
     (if (featurep 'xemacs)
 	(progn
 	  (define-key map [(button2)] 'w3m-mouse-view-this-url)
@@ -6889,12 +6892,15 @@ as if the folder command of MH performs with the -pack option."
       ;; Support for mouse-1 on Emacs 22.
       (define-key map [follow-link] 'mouse-face)
       (define-key map [S-mouse-2] 'w3m-mouse-view-this-url-new-session))
-    (if (featurep 'xemacs)
-	(define-key map [(button3)] 'w3m-mouse-major-mode-menu)
-      ;; Don't use [mouse-3], which gets submenus not working in GTK Emacs.
-      (define-key map [down-mouse-3] 'w3m-mouse-major-mode-menu)
-      (define-key map [drag-mouse-3] 'undefined)
-      (define-key map [mouse-3] 'undefined))
+    (cond ((featurep 'xemacs)
+	   (define-key map [(button3)] 'w3m-mouse-major-mode-menu))
+	  ;; Don't use [mouse-3], which gets submenus not working in GTK Emacs.
+	  ((boundp 'gtk-version-string)
+	   (define-key map [down-mouse-3] 'w3m-mouse-major-mode-menu)
+	   (define-key map [drag-mouse-3] 'undefined)
+	   (define-key map [mouse-3] 'undefined))
+	  (t
+	   (define-key map [mouse-3] 'w3m-mouse-major-mode-menu)))
     (define-key map "\C-c\C-@" 'w3m-history-store-position)
     (define-key map [?\C-c?\C- ] 'w3m-history-store-position)
     (define-key map "\C-c\C-v" 'w3m-history-restore-position)

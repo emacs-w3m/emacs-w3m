@@ -1,8 +1,8 @@
 2007-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-lynx-like-map, w3m-info-like-map): Use down-mouse-3
-	instead of mouse-3, which gets submenus not working in GTK Emacs;
-	bind drag-mouse-3 and mouse-3 to undefined.
+	instead of mouse-3, and bind drag-mouse-3 and mouse-3 to undefined
+	for GTK Emacs.
 
 	* w3m-e21.el (w3m-toolbar-configurations): Enable it for GTK Emacs;
 	exclude auto-resize-tool-bars and auto-raise-tool-bar-buttons.
