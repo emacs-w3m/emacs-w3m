@@ -405,28 +405,20 @@ used together."
 	     (w3m-update-toolbars)))))
 
 (defcustom w3m-toolbar-configurations
-  (unless (boundp 'gtk-version-string)
-    '((auto-resize-tool-bars       . global)
-      (auto-raise-tool-bar-buttons . global)
-      (tool-bar-button-margin      . global)
-      (tool-bar-button-relief      . global)))
+  `((tool-bar-button-margin      . global)
+    ,@(unless (boundp 'gtk-version-string)
+       '((tool-bar-button-relief      . global))))
   "Alist of the variables and the values controls the tool bar appearance.
-The value `global' means to use the global value of the variable.
-
-Note: this is currently disabled for GTK Emacs."
+The value `global' means to use the global value of the variable."
   :group 'w3m
-  :type (if (boundp 'gtk-version-string)
-	    'sexp
-	  '(repeat (cons :format "%v"
-			 (symbol :tag "Variable")
-			 (radio :format "%v"
-				(const :format "%v " global)
-				(sexp :tag "Local Value")))))
+  :type '(repeat (cons :format "%v"
+		       (symbol :tag "Variable")
+		       (radio :format "%v"
+			      (const :format "%v " global)
+			      (sexp :tag "Local Value"))))
   :set (lambda (symbol value)
 	 (prog1
-	     (if (boundp 'gtk-version-string)
-		 (custom-set-default symbol nil)
-	       (custom-set-default symbol value))
+	     (custom-set-default symbol value)
 	   (when (and (not noninteractive) (featurep 'w3m))
 	     (w3m-toolbar-set-configurations)))))
 

@@ -1,3 +1,8 @@
+2007-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-e21.el (w3m-toolbar-configurations): Enable it for GTK Emacs;
+	exclude auto-resize-tool-bars and auto-raise-tool-bar-buttons.
+
 2007-01-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Remove book.edu,
