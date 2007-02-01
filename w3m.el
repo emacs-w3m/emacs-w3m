@@ -6770,7 +6770,9 @@ as if the folder command of MH performs with the -pack option."
     (if (featurep 'xemacs)
 	(define-key map [(button3)] 'w3m-mouse-major-mode-menu)
       ;; Don't use [mouse-3], which gets submenus not working in GTK Emacs.
-      (define-key map [down-mouse-3] 'w3m-mouse-major-mode-menu))
+      (define-key map [down-mouse-3] 'w3m-mouse-major-mode-menu)
+      (define-key map [drag-mouse-3] 'undefined)
+      (define-key map [mouse-3] 'undefined))
     (if (featurep 'xemacs)
 	(progn
 	  (define-key map [(button2)] 'w3m-mouse-view-this-url)
@@ -6890,7 +6892,9 @@ as if the folder command of MH performs with the -pack option."
     (if (featurep 'xemacs)
 	(define-key map [(button3)] 'w3m-mouse-major-mode-menu)
       ;; Don't use [mouse-3], which gets submenus not working in GTK Emacs.
-      (define-key map [down-mouse-3] 'w3m-mouse-major-mode-menu))
+      (define-key map [down-mouse-3] 'w3m-mouse-major-mode-menu)
+      (define-key map [drag-mouse-3] 'undefined)
+      (define-key map [mouse-3] 'undefined))
     (define-key map "\C-c\C-@" 'w3m-history-store-position)
     (define-key map [?\C-c?\C- ] 'w3m-history-store-position)
     (define-key map "\C-c\C-v" 'w3m-history-restore-position)
