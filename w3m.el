@@ -6770,7 +6770,7 @@ as if the folder command of MH performs with the -pack option."
     (cond ((featurep 'xemacs)
 	   (define-key map [(button3)] 'w3m-mouse-major-mode-menu))
 	  ;; Don't use [mouse-3], which gets submenus not working in GTK Emacs.
-	  ((boundp 'gtk-version-string)
+	  ((featurep 'gtk)
 	   (define-key map [down-mouse-3] 'w3m-mouse-major-mode-menu)
 	   (define-key map [drag-mouse-3] 'undefined)
 	   (define-key map [mouse-3] 'undefined))
@@ -6895,7 +6895,7 @@ as if the folder command of MH performs with the -pack option."
     (cond ((featurep 'xemacs)
 	   (define-key map [(button3)] 'w3m-mouse-major-mode-menu))
 	  ;; Don't use [mouse-3], which gets submenus not working in GTK Emacs.
-	  ((boundp 'gtk-version-string)
+	  ((featurep 'gtk)
 	   (define-key map [down-mouse-3] 'w3m-mouse-major-mode-menu)
 	   (define-key map [drag-mouse-3] 'undefined)
 	   (define-key map [mouse-3] 'undefined))

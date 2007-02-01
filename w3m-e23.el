@@ -297,14 +297,14 @@ Buffer string between BEG and END are replaced with IMAGE."
        ;; Emacs 22 and greater return t for `(featurep 'tool-bar)'
        ;; even if being launched with the -nw option.
        (display-images-p)
-       (or (boundp 'gtk-version-string)
+       (or (featurep 'gtk)
 	   (image-type-available-p 'xpm)))
   "Non-nil activates toolbar of w3m."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-toolbar-icon-preferred-image-types
-  (if (boundp 'gtk-version-string)
+  (if (featurep 'gtk)
       '(png)
     '(xpm))
   "List of image types that you prefer to use for the tool bar icons.
@@ -332,7 +332,7 @@ used together."
 
 (defcustom w3m-toolbar-configurations
   `((tool-bar-button-margin      . global)
-    ,@(unless (boundp 'gtk-version-string)
+    ,@(unless (featurep 'gtk)
        '((tool-bar-button-relief      . global))))
   "Alist of the variables and the values controls the tool bar appearance.
 The value `global' means to use the global value of the variable."
