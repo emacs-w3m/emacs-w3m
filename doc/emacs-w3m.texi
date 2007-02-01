@@ -4508,8 +4508,8 @@ These are newspapers that are supported by @samp{shimbun} library.
 @item @uref{http://www.asahi.com/, Asahi Shimbun}
 asahi.book.author asahi.book.bestseller asahi.book.booktimes
 asahi.book.bunko asahi.book.comic asahi.book.hondana asahi.book.life
-asahi.book.news asahi.book.newstar asahi.book.paperback
-asahi.book.ranking asahi.book.review asahi.book.review.business
+asahi.book.news asahi.book.paperback asahi.book.ranking
+asahi.book.newstar asahi.book.review asahi.book.review.business
 asahi.book.review.digital asahi.book.review.edu
 asahi.book.review.international asahi.book.review.life
 asahi.book.shinsho asahi.book.special asahi.book.topics
@@ -4520,22 +4520,23 @@ asahi.car.motorsports asahi.car.newcar asahi.car.newcarbywebcg
 asahi.culture asahi.culture.yurufemi asahi.digital.av
 asahi.digital.bcnnews asahi.digital.column01 asahi.digital.internet
 asahi.digital.mobile asahi.digital.nikkanko asahi.digital.pc
-asahi.editorial asahi.edu asahi.edu.column asahi.edu.it
-asahi.edu.kosodate asahi.edu.news asahi.edu.nyushi asahi.edu.tamate
-asahi.english asahi.health asahi.health.aged asahi.health.alz
-asahi.health.medical asahi.housing asahi.housing.amano
-asahi.housing.column asahi.housing.diary asahi.housing.soudan
+asahi.editorial asahi.edu.examination asahi.edu.ikuji asahi.edu.issue
+asahi.edu.kiji asahi.edu.kosodate asahi.edu.system asahi.edu.university
+asahi.edu.tamate asahi.english asahi.health asahi.health.aged
+asahi.health.alz asahi.health.medical asahi.housing asahi.housing.amano
+asahi.housing.column asahi.housing.diary asahi.housing.jutaku-s
+asahi.housing.kansai asahi.housing.machi asahi.housing.soudan
 asahi.housing.world asahi.igo asahi.international
 asahi.international.america asahi.international.asia
-asahi.international.asiamachi asahi.international.etc
-asahi.international.europe asahi.international.jinmin
+asahi.international.asiamachi asahi.international.europe
+asahi.international.etc asahi.international.jinmin
 asahi.international.middleeast asahi.international.seoul
 asahi.international.shien asahi.job asahi.job.special asahi.kansai
-asahi.kansai.beichou asahi.kansai.depa asahi.kansai.fuukei
-asahi.kansai.heibon asahi.kansai.honma asahi.kansai.kansaiisan
-asahi.kansai.madam asahi.kansai.okan asahi.kansai.otoriyose
-asahi.kansai.sakana asahi.kansai.sanshi asahi.kansai.sweets
-asahi.kansai.umaimon asahi.life asahi.life.column asahi.life.food
+asahi.kansai.honma asahi.kansai.beichou asahi.kansai.kansaiisan
+asahi.kansai.umaimon asahi.kansai.sweets asahi.kansai.fuukei
+asahi.kansai.otoriyose asahi.kansai.sakana asahi.kansai.depa
+asahi.kansai.okan asahi.kansai.madam asahi.kansai.heibon
+asahi.kansai.sanshi asahi.life asahi.life.column asahi.life.food
 asahi.national asahi.national.calamity asahi.national.etc
 asahi.national.trial asahi.obituaries asahi.politics asahi.rss
 asahi.science asahi.shopping asahi.shopping.kishi asahi.shougi
