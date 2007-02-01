@@ -405,9 +405,9 @@ used together."
 	     (w3m-update-toolbars)))))
 
 (defcustom w3m-toolbar-configurations
-  `((tool-bar-button-margin      . global)
+  `((tool-bar-button-margin . global)
     ,@(unless (featurep 'gtk)
-       '((tool-bar-button-relief      . global))))
+	'((tool-bar-button-relief . global))))
   "Alist of the variables and the values controls the tool bar appearance.
 The value `global' means to use the global value of the variable."
   :group 'w3m
@@ -513,10 +513,26 @@ otherwise works in all the emacs-w3m buffers."
 	(if (eq (cdr config) 'global)
 	    (kill-local-variable (car config))
 	  (set (make-local-variable (car config)) (cdr config))))
-    (save-current-buffer
-      (dolist (buffer (w3m-list-buffers t))
-	(set-buffer buffer)
-	(w3m-toolbar-set-configurations t)))))
+    (let ((cur (selected-frame))
+	  buffer buffers)
+      (walk-windows
+       (lambda (window)
+	 (setq buffer (window-buffer window))
+	 (unless (memq buffer buffers)
+	   (set-buffer buffer)
+	   (when (eq major-mode 'w3m-mode)
+	     (push buffer buffers)
+	     (select-frame (window-frame window))
+	     ;;(set-buffer buffer)
+	     (w3m-toolbar-set-configurations t))))
+       'ignore 'visible)
+      (select-frame-set-input-focus cur)
+      (save-current-buffer
+	(dolist (buffer (w3m-list-buffers t))
+	  (unless (memq buffer buffers)
+	    (set-buffer buffer)
+	    (w3m-toolbar-set-configurations t))))
+      (select-frame-set-input-focus cur))))
 
 (defun w3m-setup-toolbar ()
   (when (and w3m-use-toolbar

@@ -18,7 +18,8 @@
 	* w3m-e21.el (w3m-use-toolbar)
 	(w3m-toolbar-icon-preferred-image-types): Use (featurep 'gtk)
 	instead of (boundp 'gtk-version-string).
-	(w3m-toolbar-configurations): Use (featurep 'gtk) instead of
+	(w3m-toolbar-configurations): Select frame visiting buffer which
+	is about to apply configurations; use (featurep 'gtk) instead of
 	\(boundp 'gtk-version-string); enable it for GTK Emacs; exclude
 	auto-resize-tool-bars and auto-raise-tool-bar-buttons.
 
