@@ -1,5 +1,8 @@
 2007-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* Makefile.in, doc/Makefile.in: Add datarootdir setting that is
+	required for newer autoconfs.
+
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Remove edu,
 	edu.column, edu.it, edu.news and edu.nyushi groups; add
 	edu.examination, edu.ikuji, edu.issue, edu.kiji, edu.system,
