@@ -2911,6 +2911,11 @@ Non-@code{nil} means replace symbols that the @samp{<_SYMBOL>} tags lead
 into.  It is meaningful only when the @samp{w3m-m17n} command is used
 and (X)Emacs handles unicode charsets.
 
+@item w3m-menu-on-forefront
+@vindex w3m-menu-on-forefront
+Non-@code{nil} means place the emacs-w3m menus on the forefront of the
+menu bar.  The default value is @code{nil}.
+
 @item w3m-use-tab
 @c @vindex w3m-use-tab
 Non-@code{nil} means make emacs-w3m a tab browser.  It makes it possible
@@ -3315,8 +3320,8 @@ Value for @code{process-connection-type} used when communicating with
 Format used when displaying the progress of the external @samp{w3m}
 process.  It shows a percentage of the data loaded from the web server.
 
-@item w3m-xmas-show-current-title-in-buffer-tab
-@vindex w3m-xmas-show-current-title-in-buffer-tab
+@item w3m-show-current-title-in-buffer-tab
+@vindex w3m-show-current-title-in-buffer-tab
 If non-@code{nil}, show the title strings in the buffers tab.  It has no
 effect if your XEmacs does not support the gutter items.
 @end table

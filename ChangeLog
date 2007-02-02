@@ -1,3 +1,17 @@
+2007-02-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-menu-on-forefront): New variable.
+	(w3m-setup-menu): Use it.
+
+	* w3m-e21.el (w3m-menu-on-forefront): New function.
+
+	* w3m-xmas.el (w3m-menu-on-forefront): New function.
+	(w3m-setup-menu): Use it.
+
+	* w3m-bookmark.el (w3m-setup-bookmark-menu): Don't arrange the
+	order of the menu items here.
+	* w3m-tabmenu.el (w3m-setup-tab-menu): Ditto.
+
 2007-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in, doc/Makefile.in: Add datarootdir setting that is
