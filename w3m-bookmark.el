@@ -1,6 +1,6 @@
 ;;; w3m-bookmark.el --- Functions to operate bookmark file of w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2006
+;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -485,9 +485,6 @@ The car is used if `w3m-bookmark-mode' is nil, otherwise the cdr is used.")
 	(easy-menu-define w3m-bookmark-menu w3m-mode-map
 	  "" '("Bookmark" ["(empty)" ignore nil]))
 	(easy-menu-add w3m-bookmark-menu)
-	(setq current-menubar
-	      (cons w3m-bookmark-menu
-		    (delq (assoc "Bookmark" current-menubar) current-menubar)))
 	(add-hook 'activate-menubar-hook 'w3m-bookmark-menubar-update))
     (unless (lookup-key w3m-mode-map [menu-bar Bookmark])
       (easy-menu-define w3m-bookmark-menu w3m-mode-map "" '("Bookmark"))

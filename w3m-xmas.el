@@ -53,6 +53,7 @@
   (defvar w3m-default-coding-system)
   (defvar w3m-display-inline-images)
   (defvar w3m-icon-directory)
+  (defvar w3m-menu-on-forefront)
   (defvar w3m-menubar)
   (defvar w3m-modeline-process-status-on)
   (defvar w3m-show-graphic-icons-in-mode-line)
@@ -594,6 +595,31 @@ Files of types that XEmacs does not support are ignored."
 		   (cons (current-buffer) w3m-toolbar))))
 
 ;;; Menu:
+(defun w3m-menu-on-forefront (arg &optional curbuf)
+  "Place emacs-w3m menus on the forfront of the menu bar if ARG is non-nil.
+If CURBUF is given, this function works only in the current buffer,
+otherwise works in all the emacs-w3m buffers."
+  (if curbuf
+      (let ((w3m (car (find-menu-item current-menubar '("w3m"))))
+	    (bookmark (car (find-menu-item current-menubar '("Bookmark"))))
+	    (tab (car (find-menu-item current-menubar '("Tab"))))
+	    (items (copy-sequence current-menubar)))
+	(when (or w3m bookmark tab)
+	  (setq items (delq tab (delq bookmark (delq w3m items))))
+	  (set-buffer-menubar
+	   (cond (arg
+		  (append (delq nil (list w3m bookmark tab)) items))
+		 ((memq nil items)
+		  (append (nreverse (cdr (memq nil (reverse items))))
+			  (delq nil (list w3m bookmark tab))
+			  (memq nil items)))
+		 (t
+		  (nconc items (delq nil (list w3m bookmark tab))))))))
+    (save-current-buffer
+      (dolist (buffer (w3m-list-buffers t))
+	(set-buffer buffer)
+	(w3m-menu-on-forefront arg t)))))
+
 (defun w3m-setup-menu ()
   "Define menubar buttons for XEmacs."
   (when (and (featurep 'menubar)
@@ -601,7 +627,8 @@ Files of types that XEmacs does not support are ignored."
 	     (not (assoc (car w3m-menubar) current-menubar)))
     (when w3m-use-tab-menubar (w3m-setup-tab-menu))
     (w3m-setup-bookmark-menu)
-    (set-buffer-menubar (cons w3m-menubar current-menubar))))
+    (set-buffer-menubar (cons w3m-menubar current-menubar))
+    (w3m-menu-on-forefront w3m-menu-on-forefront t)))
 
 ;;; Widget:
 (eval-when-compile (require 'wid-edit))
