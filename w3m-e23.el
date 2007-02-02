@@ -291,6 +291,22 @@ Buffer string between BEG and END are replaced with IMAGE."
   (setq widget-mouse-face 'w3m-form-button-mouse-face)
   (setq widget-button-pressed-face 'w3m-form-button-pressed-face))
 
+;;; Menu bar
+(defun w3m-menu-on-forefront (arg &optional curbuf)
+  "Place emacs-w3m menus on the forfront of the menu bar if ARG is non-nil.
+If CURBUF is given, this function works only in the current buffer,
+otherwise works in all the emacs-w3m buffers."
+  (if curbuf
+      (if arg
+	  (let ((items (mapcar 'car (cdr (lookup-key global-map [menu-bar])))))
+	    (when items
+	      (set (make-local-variable 'menu-bar-final-items) items)))
+	(kill-local-variable 'menu-bar-final-items))
+    (save-current-buffer
+      (dolist (buffer (w3m-list-buffers t))
+	(set-buffer buffer)
+	(w3m-menu-on-forefront arg t)))))
+
 ;;; Toolbar
 (defcustom w3m-use-toolbar
   (and (featurep 'tool-bar)
