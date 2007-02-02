@@ -1,6 +1,6 @@
 ;;; w3m-search.el --- functions convenient to access web search engines
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Keisuke Nishida    <kxn30@po.cwru.edu>,
