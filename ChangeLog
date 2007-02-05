@@ -1,3 +1,9 @@
+2007-02-04  David Hansen  <david.hansen@physik.fu-berlin.de>
+
+	* w3m.el (w3m-relationship-estimate-rules): Added
+	`w3m-relationship-slashdot-estimate'.
+	(w3m-relationship-slashdot-estimate): New function.
+
 2007-02-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Remove

@@ -1840,7 +1840,8 @@ Here are some predefined functions which can be used for those ways:
      ,(concat "<A HREF=" w3m-html-string-regexp ">\\[&laquo;\\]</A>")
      nil nil)
     (w3m-relationship-oddmuse-estimate)
-    (w3m-relationship-magicpoint-estimate))
+    (w3m-relationship-magicpoint-estimate)
+    (w3m-relationship-slashdot-estimate))
   "*Rules to estimate relationships between a retrieved page and others."
   :group 'w3m
   :type '(repeat
@@ -5584,6 +5585,30 @@ when the URL of the retrieved page matches the REGEXP."
 		   ((= 2 n)
 		    "<a href=\"\\(http://[^\"]+?/wiki\\?search=[^\"]*\\)\""))))
 	(w3m-relationship-search-patterns url next prev)))))
+
+(defun w3m-relationship-slashdot-estimate (url)
+  (goto-char (point-min))
+  (when (and (string-match
+	      "slashdot\\.org/\\(article\\|comments\\)\\.pl\\?"
+	      url)
+	     (search-forward "<div class=\"linkCommentPage\">" nil t))
+    (let ((min (point)) (max (save-excursion (search-forward "</div>" nil t))))
+      ;; move to the position of the current page indicator and then search
+      ;; for the next and previous link within the current <div>
+      (when (and max (re-search-forward "<b>\\(([0-9]+)\\)</b>" max t))
+	(let ((re (concat "<a href=" w3m-html-string-regexp ">")))
+	  (when (save-excursion (re-search-backward re min t))
+	    (setq w3m-previous-url
+		  (w3m-expand-url (w3m-decode-anchor-string
+				   (or (match-string 2)
+				       (match-string 3)
+				       (match-string 1))))))
+	  (when (re-search-forward re max t)
+	    (setq w3m-next-url
+		  (w3m-expand-url (w3m-decode-anchor-string
+				   (or (match-string 2)
+				       (match-string 3)
+				       (match-string 1)))))))))))
 
 (defun w3m-relationship-search-patterns (url next previous
 					     &optional start contents)
