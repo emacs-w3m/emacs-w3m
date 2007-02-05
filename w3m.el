@@ -5474,8 +5474,9 @@ specified in the `w3m-content-type-alist' variable."
   (setq w3m-current-url (w3m-real-url url)
 	w3m-current-title
 	(if (string= "text/html" type)
-	    (setf (w3m-arrived-title url)
-		  (w3m-rendering-buffer charset))
+	    (let ((title (w3m-rendering-buffer charset)))
+	      (setf (w3m-arrived-title url) title)
+	      title)
 	  (or (when (string-match "\\`about://\\(?:source\\|header\\)/" url)
 		(w3m-arrived-title (substring url (match-end 0))))
 	      (file-name-nondirectory (if (string-match "/\\'" url)
