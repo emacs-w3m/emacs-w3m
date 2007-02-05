@@ -197,7 +197,50 @@ Every `.' in NAME will be replaced with `/'."
 			  ;; 5. subject
 			  "\\(" no-nl "\\)"
 			  s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
-			 1 4 nil 5 nil 2 3)))
+			 1 4 nil 5 nil 2 3))
+	 (shopping (list
+		    (concat
+		     "<a" s1 "href=\"/"
+		     ;; 1. url
+		     "\\(shopping/\\(?:[^\"./>]+/\\)+"
+		     ;; 2. serial number
+		     "\\([a-z]*"
+		     ;; 3. year
+		     "\\(20[0-9][0-9]\\)"
+		     ;; 4. month
+		     "\\([01][0-9]\\)"
+		     ;; 5. day
+		     "\\([0-3][0-9]\\)"
+		     "[0-9]*\\)"
+		     "\\.html\\)"
+		     "\">" s0
+		     ;; 6. subject
+		     "\\([^<]+\\)"
+		     "\\(?:" s0 "<[^>]+>\\)*" s0 "([01]?[0-9]/[0-3]?[0-9])")
+		    1 nil 2 6 3 4 5))
+	 (shopping2 (list
+		     (concat
+		      "<a" s1 "href=\"/"
+		      ;; 1. url
+		      "\\(shopping/yakimono/\\(?:ono\\|yellin\\)/"
+		      ;; 2. serial number
+		      "\\([a-z]*"
+		      ;; 3. year
+		      "\\(20[0-9][0-9]\\)"
+		      ;; 4. month
+		      "\\([01][0-9]\\)"
+		      ;; 5. day
+		      "\\([0-3][0-9]\\)"
+		      "[0-9]*\\)"
+		      "\\.html\\)"
+		      "\">\\(?:" s0
+		      "<div" s1 "class=\"keyword\">[^<]+</div>\\)?" s0
+		      ;; 6. subject
+		      "\\(" no-nl "\\)"
+		      "\\(?:" s0 "&#[0-9]+;\\|&#[0-9]+;" s0 "\\)*"
+		      "\\(?:" s0 "<[^>]+>\\)*" s0 "([01]?[0-9]/[0-3]?[0-9])")
+		     1 nil 2 6 3 4 5))
+	 (sports (shimbun-asahi-make-regexp "sports.spo")))
     `(("book.author" "BOOK: 著者に会いたい" nil ,@book1)
       ("book.bestseller" "BOOK: 売れてる本" nil ,@book1)
       ("book.booktimes" "BOOK TIMES" nil ,@book2)
@@ -618,9 +661,14 @@ Every `.' in NAME will be replaced with `/'."
       ("national.calamity" "災害・交通情報" "national/calamity.html"
        ,@default3)
       ("national.etc" "その他・話題" "national/etc.html" ,@default3)
+      ("national.incident" "事件・事故" "national/incident.html" ,@default3)
       ("national.trial" "裁判" "national/trial.html" ,@default3)
       ("obituaries" "おくやみ" "obituaries" ,@default)
       ("politics" "政治" "%s/list.html" ,@default)
+      ("politics.government" "国政" "politics/government.html"
+       ,(format (car default) "politics") ,@(cdr default))
+      ("politics.local" "地方政治" "politics/local.html"
+       ,(format (car default) "politics") ,@(cdr default))
 
       ;; The version using links to www.asahi.com.
       ("rss" "RSS" "http://feeds.asahi.com/asahi/TopHeadlines"
@@ -716,8 +764,11 @@ Every `.' in NAME will be replaced with `/'."
 	 "\\(?:" s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>\\)?"
 	 s0 "<span" s1 "class=\"s\">")
        1 3 nil 7 4 5 6 nil 2)
-      ("shopping.kishi" "岸朝子の気になるお取り寄せ12カ月"
-       "shopping/food/kishi/back.html"
+      ("shopping.interiorlife" "充実の雑貨・インテリア生活"
+       "shopping/living/interiorlife/"
+       ,@shopping)
+      ("shopping.kishi" "岸朝子の日本の名産お取り寄せ12カ月"
+       "shopping/food/kishi/"
        ,(concat
 	 "<a" s1 "href=\"/"
 	 ;; 1. url
@@ -730,18 +781,43 @@ Every `.' in NAME will be replaced with `/'."
 	 "\\([01][0-9]\\)"
 	 ;; 5. day
 	 "\\([0-3][0-9]\\)"
-	 "[0-9]+\\)\\.html\\)\">" s0 "<div" s1 "class=\"keyword\"[^>]*>[^<【]*"
+	 "[0-9]*\\)"
+	 "\\.html\\)"
+	 "\">" s0 "<div" s1 "class=\"keyword\">[^【]+"
 	 ;; 6. subject
-	 "\\([^<]+</div>[^<]+\\)")
+	 "\\(【\\(?:[^<]+\\(?:<[^>]+>\\)?\\)+\\(?:[^<]+\\)?\\)"
+	 s0 "</a>")
        1 nil 2 6 3 4 5)
-      ("shougi" "将棋" "%s/news/" ,@(shimbun-asahi-make-regexp "shougi.news"))
+      ("shopping.master" "楽天こだわり店長に聞く" "shopping/column/master/"
+       ,@shopping)
+      ("shopping.otoriyose" "わくわくお取り寄せ" "shopping/food/otoriyose/"
+       ,@shopping)
+      ("shopping.protalk" "プロの語りごと" "shopping/column/protalk/"
+       ,@shopping)
+      ("shopping.yakimono.ono" "小野公久「やきものガイド」" nil ,@shopping2)
+      ("shopping.yakimono.yellin" "ロバート・イエリン「やきもの散歩道」" nil
+       ,@shopping2)
+      ("shougi" "将棋" nil
+       ,@(shimbun-asahi-make-regexp "shougi.\\(?:books\\|news\\|topics\\)"))
       ("sports" "スポーツ" "%s/list.html" ,@default)
       ("sports.baseball" "野球" "sports/bb/"
        ,@(shimbun-asahi-make-regexp "sports.bb"))
+      ("sports.battle" "格闘技" "sports/spo/battle/list.html"
+       ,@(shimbun-asahi-make-regexp "sports.spo.battle"))
+      ("sports.battle.column" "格闘技コラム" "sports/spo/battle_column.html"
+       ,@(shimbun-asahi-make-regexp "sports.column"))
       ("sports.column" "スポーツコラム" nil ,@default2)
       ("sports.football" "サッカー" "sports/fb/"
        ,@(shimbun-asahi-make-regexp "sports.fb"))
+      ("sports.golf" "ゴルフ" nil
+       ,@(shimbun-asahi-make-regexp "sports.\\(?:column\\|golf\\)"))
+      ("sports.motor" "レーシング" "sports/spo/motor.html" ,@sports)
+      ("sports.rugby" "ラグビー" "sports/spo/rugby.html" ,@sports)
       ("sports.spo" "一般スポーツ" nil ,@default2)
+      ("sports.sumo" "相撲" "sports/spo/sumo.html" ,@sports)
+      ("sports.usa" "米プロスポーツ" "sports/spo/usa.html"
+       ,@(shimbun-asahi-make-regexp "sports.\\(?:nfl\\|spo\\)"))
+      ("sports.winter" "ウインタースポーツ" "sports/spo/winter.html" ,@sports)
       ("tenjin" "天声人語" "paper/column.html"
        ,(concat
 	 "<a" s1 "href=\"\\./"
@@ -1293,6 +1369,15 @@ and tenjin, it tries to fetch the article for that day if it failed."
 \[\t\n ]*\\(?:<!--/作品紹介ここまで-->\\|<!--/特集-->\\)"
 					  nil t)
 		   (insert "<!-- End of Kiji -->")))))))
+     ((string-equal group "shopping.interiorlife")
+      (when (re-search-forward "<p[\t\n ]+class=\"intro\">[\t\n ]*" nil t)
+	(delete-region (point-min) (match-end 0))
+	(insert "<!-- Start of Kiji -->")
+	(when (re-search-forward
+	       "[\t\n ]*<div[\t\n ]+class=\"gotobacknumber\">"
+	       nil t)
+	  (goto-char (match-beginning 0))
+	  (insert "<!-- End of Kiji -->"))))
      ((string-equal group "shopping.kishi")
       (when (re-search-forward "<div[\t\n ]+id=\"kijih\">[\t\n ]*" nil t)
 	(insert "<!-- Start of Kiji -->")))
