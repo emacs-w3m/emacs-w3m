@@ -2584,13 +2584,27 @@ directory."
 
 
 ;;; Managing the arrived URLs database:
+(defmacro w3m-arrived-intern (string &optional soft)
+  "Normalize url by stripping last / and intern it into `w3m-arrived-db'.
+If SOFT is non-nil, use `intern-soft' insted."
+  (let ((fn (if soft 'intern-soft 'intern))
+	(str (if (consp string)
+		 `(let ((string ,string))
+		    (if (eq (aref string (1- (length string))) ?/)
+			(substring string 0 -1)
+		      string))
+	       `(if (eq (aref ,string (1- (length ,string))) ?/)
+		    (substring ,string 0 -1)
+		  ,string))))
+    `(,fn ,str w3m-arrived-db)))
+
 (defun w3m-arrived-add (url &optional title modification-time
 			    arrival-time content-charset content-type)
   "Add URL to the arrived URLs database.
 Optional TITLE, MODIFICATION-TIME, ARRIVAL-TIME, CONTENT-CHARSET and
 CONTENT-TYPE are also be added."
   (unless (string-match w3m-arrived-ignored-regexp url)
-    (let ((ident (intern url w3m-arrived-db)))
+    (let ((ident (w3m-arrived-intern url)))
       (if (string-match "\\`\\([^#]+\\)#" url)
 	  (w3m-arrived-add (substring url 0 (match-end 1))
 			   title modification-time arrival-time
@@ -2608,12 +2622,12 @@ CONTENT-TYPE are also be added."
 (defsubst w3m-arrived-p (url)
   "Return non-nil if a page of URL has arrived."
   (or (string-match w3m-arrived-ignored-regexp url)
-      (intern-soft url w3m-arrived-db)))
+      (w3m-arrived-intern url t)))
 
 (defun w3m-arrived-time (url)
   "Return the arrival time of a page of URL if it has arrived.
 Otherwise return nil."
-  (let ((v (intern-soft url w3m-arrived-db)))
+  (let ((v (w3m-arrived-intern url t)))
     (and v (boundp v) (symbol-value v))))
 (defsetf w3m-arrived-time (url) (value)
   (list 'w3m-arrived-add url nil nil value))
@@ -2622,13 +2636,13 @@ Otherwise return nil."
   "Store VALUE in the arrived URLs database as the PROPERTY of URL.
 Return VALUE if a page of URL has arrived.  Otherwise, VALUE is
 ignored and return nil."
-  (let ((symbol (intern-soft url w3m-arrived-db)))
+  (let ((symbol (w3m-arrived-intern url t)))
     (and symbol (put symbol property value))))
 
 (defsubst w3m-arrived-get (url property)
   "Return the value of URL's PROPERTY stored in the arrived URLs database.
 If a page of URL has not arrived, return nil."
-  (let ((symbol (intern-soft url w3m-arrived-db)))
+  (let ((symbol (w3m-arrived-intern url t)))
     (and symbol (get symbol property))))
 
 (defsetf w3m-arrived-get w3m-arrived-put)

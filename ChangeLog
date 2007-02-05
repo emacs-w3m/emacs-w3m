@@ -1,6 +1,10 @@
 2007-02-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-create-text-page): Make sure to set w3m-current-title.
+	* w3m.el (w3m-arrived-intern): New macro, that normalizes urls by
+	stripping last `/'s.
+	(w3m-arrived-add, w3m-arrived-p, w3m-arrived-time)
+	(w3m-arrived-put, w3m-arrived-get): Use it.
+	(w3m-create-text-page): Make sure to set w3m-current-title.
 
 2007-02-04  David Hansen  <david.hansen@physik.fu-berlin.de>
 
