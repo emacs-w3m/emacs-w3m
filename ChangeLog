@@ -1,5 +1,15 @@
 2007-02-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add
+	national.incident, politics.government, politics.local,
+	shopping.interiorlife, shopping.master, shopping.otoriyose,
+	shopping.protalk, shopping.yakimono.ono, shopping.yakimono.yellin,
+	sports.battle, sports.battle.column, sports.golf, sports.motor,
+	sports.rugby, sports.sumo, sports.usa and sports.winter groups;
+	update index url and regexp for shopping.kishi and shougi groups.
+	(shimbun-asahi-prepare-article): Fix start and end boundaries for
+	shopping.interiorlife group.
+
 	* w3m.el (w3m-arrived-intern): New macro, that normalizes urls by
 	stripping last `/'s.
 	(w3m-arrived-add, w3m-arrived-p, w3m-arrived-time)
