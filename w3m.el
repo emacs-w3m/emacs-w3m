@@ -2584,18 +2584,18 @@ directory."
 
 
 ;;; Managing the arrived URLs database:
-(defmacro w3m-arrived-intern (string &optional soft)
+(defmacro w3m-arrived-intern (url &optional soft)
   "Normalize url by stripping last / and intern it into `w3m-arrived-db'.
 If SOFT is non-nil, use `intern-soft' insted."
   (let ((fn (if soft 'intern-soft 'intern))
-	(str (if (consp string)
-		 `(let ((string ,string))
-		    (if (eq (aref string (1- (length string))) ?/)
-			(substring string 0 -1)
-		      string))
-	       `(if (eq (aref ,string (1- (length ,string))) ?/)
-		    (substring ,string 0 -1)
-		  ,string))))
+	(str (if (consp url)
+		 `(let ((url ,url))
+		    (if (eq (aref url (1- (length url))) ?/)
+			(substring url 0 -1)
+		      url))
+	       `(if (eq (aref ,url (1- (length ,url))) ?/)
+		    (substring ,url 0 -1)
+		  ,url))))
     `(,fn ,str w3m-arrived-db)))
 
 (defun w3m-arrived-add (url &optional title modification-time
