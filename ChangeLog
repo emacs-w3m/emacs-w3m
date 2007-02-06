@@ -1,3 +1,8 @@
+2007-02-06  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-decode-entities): Don't decode things like entities
+	in forms of the text or the select type having the name property.
+
 2007-02-05  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m.el (w3m-fontify): Don't delete things like tags in forms of

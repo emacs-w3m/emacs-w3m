@@ -3677,19 +3677,23 @@ resizing an image."
 If optional RESERVE-PROP is non-nil, text property is reserved."
   (save-excursion
     (goto-char (point-min))
-    (let (start prop value)
+    (let (start fid prop value)
       (while (re-search-forward w3m-entity-regexp nil t)
-	(setq start (match-beginning 0))
-	(if reserve-prop
-	    (setq prop (text-properties-at (match-beginning 0))))
-	;; Note that `w3m-entity-value' breaks `match-data' at the 1st
-	;; time in XEmacs because of the autoloading unicode.elc for
-	;; the `ucs-to-char' function.
-	(when (setq value (w3m-entity-value (match-string 1)
-					    (match-beginning 2)))
-	  (replace-match value nil t))
-	(if (and reserve-prop prop)
-	    (w3m-add-text-properties start (point) prop))))))
+	(setq start (match-beginning 0)
+	      fid (get-text-property start 'w3m-form-field-id))
+	(unless (and fid
+		     (string-match "/type=\\(?:text\\|select\\)/name=[^/]+/"
+				   fid))
+	  (if reserve-prop
+	      (setq prop (text-properties-at (match-beginning 0))))
+	  ;; Note that `w3m-entity-value' breaks `match-data' at the 1st
+	  ;; time in XEmacs because of the autoloading unicode.elc for
+	  ;; the `ucs-to-char' function.
+	  (when (setq value (w3m-entity-value (match-string 1)
+					      (match-beginning 2)))
+	    (replace-match value nil t))
+	  (if (and reserve-prop prop)
+	      (w3m-add-text-properties start (point) prop)))))))
 
 (defun w3m-decode-entities-string (str)
   "Decode entities in the string STR."
