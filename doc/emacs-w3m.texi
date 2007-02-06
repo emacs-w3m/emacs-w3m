@@ -4557,8 +4557,7 @@ asahi.sports.baseball asahi.sports.battle asahi.sports.battle.column
 asahi.sports.column asahi.sports.football asahi.sports.golf
 asahi.sports.motor asahi.sports.rugby asahi.sports.spo asahi.sports.sumo
 asahi.sports.usa asahi.sports.winter asahi.tenjin asahi.travel
-asahi.travel.kaido asahi.travel.zeitaku asahi.wakamiya asahi.world.china
-asahi.world.germany
+asahi.world.china
 
 Those groups generate articles containing only text by default.  If you
 would like to make them generate HTML articles that contain not only

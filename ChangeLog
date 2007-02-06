@@ -1,3 +1,13 @@
+2007-02-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Remove
+	travel.kaido, travel.zeitaku, wakamiya and world.germany groups.
+	(shimbun-asahi-subgroups-alist): New variable.
+	(shimbun-index-url): Remove wakamiya group stuff.
+	(shimbun-asahi-get-headers): Remove nankyoku.whitemail group stuff;
+	fetch headers of articles in groups specified by
+	shimbun-asahi-subgroups-alist.
+
 2007-02-06  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m.el (w3m-decode-entities): Don't decode things like entities

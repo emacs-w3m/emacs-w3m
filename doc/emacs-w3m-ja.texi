@@ -4615,8 +4615,7 @@ asahi.sports.baseball asahi.sports.battle asahi.sports.battle.column
 asahi.sports.column asahi.sports.football asahi.sports.golf
 asahi.sports.motor asahi.sports.rugby asahi.sports.spo asahi.sports.sumo
 asahi.sports.usa asahi.sports.winter asahi.tenjin asahi.travel
-asahi.travel.kaido asahi.travel.zeitaku asahi.wakamiya asahi.world.china
-asahi.world.germany
+asahi.world.china
 
 これらのグループは、デフォルトでテキストだけの記事を作ります。それらに、
 テキストだけでなく写真をも含む HTML の記事を生成させたいならば、以下の行
