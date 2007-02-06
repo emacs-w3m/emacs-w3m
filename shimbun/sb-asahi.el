@@ -33,6 +33,8 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl))
+
 (require 'shimbun)
 
 (luna-define-class shimbun-asahi (shimbun-japanese-newspaper shimbun) ())
@@ -834,36 +836,8 @@ Every `.' in NAME will be replaced with `/'."
        1 nil nil nil 2 3 4)
       ("travel" "トラベル" "%s/news/"
        ,@(shimbun-asahi-make-regexp "travel.news"))
-      ("travel.kaido" "司馬遼太郎・街道をゆく" nil ,@default2)
-      ("travel.zeitaku" "地球の贅たく" nil
-       ,(concat "<a" s1 "href=\""
-		;; 1. url
-		"\\(http://www\\.asahi\\.com/travel/zeitaku/"
-		;; 2. serial number
-		"\\([a-z]*"
-		;; 3. year
-		"\\(20[0-9][0-9]\\)"
-		;; 4. month
-		"\\([01][0-9]\\)"
-		;; 5. day
-		"\\([0-3][0-9]\\)"
-		"[0-9]+\\)"
-		"\\.html\\)"
-		"\">" s0
-		;; 6. subject
-		"\\(" no-nl "\\)"
-		s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
-       1 nil 2 6 3 4 5)
-      ("wakamiya" "風考計 (論説主幹・若宮啓文)" nil
-       ,@(shimbun-asahi-make-regexp "column.wakamiya"))
       ("world.china" "中国特集" nil
-       ,@(shimbun-asahi-make-regexp "world.china.news"))
-      ("world.germany" "ドイツ年特集" nil
-       ,@(shimbun-asahi-make-regexp "world.germany.news"))
-
-      ;; The following groups are obsolete, though old articles still
-      ;; can be read.
-      ))
+       ,@(shimbun-asahi-make-regexp "world.china.news"))))
   "Alist of group names, their Japanese translations, index pages,
 regexps and numbers.  Where index pages and regexps may contain the
 \"%s\" token which is replaced with group names, numbers point to the
@@ -871,6 +845,45 @@ search result in order of [0]a url, [1,2]a serial number, [3]a subject,
 \[4]a year, [5]a month, [6]a day, [7]an hour:minute, [8,9,10]an extra
 keyword, [11]hour and [12]minute.  If an index page is nil, a group
 name in which \".\" is substituted with \"/\" is used instead.")
+
+(defvar shimbun-asahi-subgroups-alist
+  (let* ((s0 "[\t\n 　]*")
+	 (s1 "[\t\n ]+")
+	 (travel (list
+		  (concat "<a" s1 "href=\"/"
+			  ;; 1. url
+			  "\\(%s/"
+			  ;; 2. serial number
+			  "\\([a-z]*"
+			  ;; 3. year
+			  "\\(20[0-9][0-9]\\)"
+			  ;; 4. month
+			  "\\([01][0-9]\\)"
+			  ;; 5. day
+			  "\\([0-3][0-9]\\)"
+			  "[0-9]+\\)"
+			  "\\.html\\)"
+			  "\">" s0
+			  ;; 6. subject
+			  "\\([^<]+\\)"
+			  s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
+		  1 nil 2 6 3 4 5)))
+    `(("travel"
+       ("旅する人のアペリティフ" "http://www.asahi.com/travel/aperitif/"
+	,(format (car travel) "travel/aperitif") ,@(cdr travel))
+       ("ぽれぽれサファリ" "http://www.asahi.com/travel/porepore/"
+	,@(shimbun-asahi-make-regexp "travel.porepore"))
+       ("スパイシー！ソウル" "http://www.asahi.com/travel/seoul/"
+	,@(shimbun-asahi-make-regexp "travel.seoul"))
+       ("島旅たび" "http://www.asahi.com/travel/shima/"
+	,(format (car travel) "travel/shima") ,@(cdr travel))
+       ("週刊シルクロード紀行" "http://www.asahi.com/travel/silkroad/"
+	,@(shimbun-asahi-make-regexp "travel.silkroad"))
+       ("愛の旅人" "http://www.asahi.com/travel/traveler/"
+	,(format (car travel) "travel/traveler") ,@(cdr travel)))))
+  "Alist of parent groups and lists of tables for subgroups.
+Each table is the same as the `cdr' of the element of
+`shimbun-asahi-group-table'.")
 
 (defvar shimbun-asahi-content-start
   "<!--[\t\n ]*End of Headline[\t\n ]*-->\
@@ -933,8 +946,6 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	   index)
 	  ((string-match "\\`book\\." group)
 	   (shimbun-expand-url (substring index 5) "http://book.asahi.com/"))
-	  ((string-equal "wakamiya" group)
-	   "http://www.asahi.com/column/wakamiya/")
 	  (t
 	   (shimbun-expand-url (format index group) shimbun-asahi-url)))))
 
@@ -946,7 +957,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	(case-fold-search t)
 	regexp jname numbers book-p cyear cmonth rss-p paper-p en-category
 	hour-min month year day serial num extra rgroup id headers
-	backnumbers kishi-p)
+	kishi-p travel-p subgroups)
     (setq regexp (assoc group shimbun-asahi-group-table)
 	  jname (nth 1 regexp)
 	  numbers (nthcdr 4 regexp)
@@ -961,7 +972,9 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	  cyear (nth 5 cyear)
 	  rss-p (string-equal group "rss")
 	  paper-p (member group '("editorial" "tenjin"))
-	  kishi-p (string-equal group "shopping.kishi"))
+	  kishi-p (string-equal group "shopping.kishi")
+	  travel-p (string-equal group "travel")
+	  subgroups (cdr (assoc group shimbun-asahi-subgroups-alist)))
     (catch 'stop
       ;; The loop for fetching all the articles in the whitemail group.
       (while t
@@ -1024,12 +1037,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 			       shimbun-asahi-top-level-domain ">")
 		     (concat "<" serial "%" rgroup "."
 			     shimbun-asahi-top-level-domain ">")))
-	  (unless (and (shimbun-search-id shimbun id)
-		       (if backnumbers
-			   (throw 'stop nil)
-			 ;; Don't stop it since there might be more new
-			 ;; articles even if the same links are repeated.
-			 t))
+	  (unless (shimbun-search-id shimbun id)
 	    (push (shimbun-create-header
 		   ;; number
 		   0
@@ -1054,6 +1062,11 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 			    (shimbun-replace-in-string
 			     (match-string (nth 3 numbers))
 			     "[\t\n 　]+" " ")))
+			 (travel-p
+			  (save-match-data
+			    (shimbun-replace-in-string
+			     (match-string (nth 3 numbers))
+			     "\\(?:[\t\n 　]*&#[0-9]+;\\)*[\t\n 　]*" "")))
 			 (t
 			  (match-string (nth 3 numbers))))
 		   ;; from
@@ -1094,26 +1107,15 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 			  (t
 			   shimbun-asahi-url))))
 		  headers)))
-	(if (string-equal group "nankyoku.whitemail")
+	(if subgroups
 	    (progn
-	      (cond ((eq backnumbers 'stop)
-		     (throw 'stop nil))
-		    ((null backnumbers)
-		     (while (re-search-forward "<a[\t\n ]+href=\"\
-\\(http://www\\.asahi\\.com/nankyoku/whitemail/\
-backnum0[345][01][0-9]\\.html\\)\">"
-					       nil t)
-		       (unless (member (setq id (match-string 1)) backnumbers)
-			 (push id backnumbers)))))
-	      (if backnumbers
-		  (progn
-		    (shimbun-retrieve-url
-		     (prog1
-			 (car backnumbers)
-		       (erase-buffer)
-		       (unless (setq backnumbers (cdr backnumbers))
-			 (setq backnumbers 'stop)))))
-		(throw 'stop nil)))
+	      (erase-buffer)
+	      (setq from (concat (shimbun-server-name shimbun)
+				 " (" (caar subgroups) ")"))
+	      (shimbun-retrieve-url (cadar subgroups))
+	      (setq regexp (caddar subgroups)
+		    numbers (cdddar subgroups)
+		    subgroups (cdr subgroups)))
 	  (throw 'stop nil))))
     (append (shimbun-sort-headers headers)
 	    (shimbun-asahi-get-headers-for-today group jname from))))
