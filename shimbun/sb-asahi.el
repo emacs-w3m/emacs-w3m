@@ -671,8 +671,6 @@ Every `.' in NAME will be replaced with `/'."
        ,(format (car default) "politics") ,@(cdr default))
       ("politics.local" "地方政治" "politics/local.html"
        ,(format (car default) "politics") ,@(cdr default))
-
-      ;; The version using links to www.asahi.com.
       ("rss" "RSS" "http://feeds.asahi.com/asahi/TopHeadlines"
        ,(concat
 	 "<item" s1 "rdf:about=\""
@@ -687,9 +685,10 @@ Every `.' in NAME will be replaced with `/'."
 	 "\"" s0 ">" s0 "<title>" s0
 	 ;; 5. subject
 	 "\\([^<]+\\)"
-	 s0 "</title>" s0 "<link>[^<]+</link>" s0
-	 "\\(?:<description" s0 "/>\\|<description>[^<]*</description>\\)"
-	 s0 "<dc:subject>" s0
+	 s0 "</title>\\(?:" s0 "\\(?:"
+	 "<link>[^<]+</link>\\|<description>[^<]+</description>"
+	 "\\|<content[^>]*>\\(?:[^<]*<[^d][^>]*>\\)*[^<]*</content[^>]*>"
+	 "\\)\\)*" s0 "<dc:subject>" s0
 	 ;; 6. extra keyword (ja)
 	 "\\([^<]+\\)"
 	 s0 "</dc:subject>" s0 "<dc:date>" s0
@@ -705,41 +704,6 @@ Every `.' in NAME will be replaced with `/'."
 	 ;; 10. hour:min:sec
 	 "\\([012][0-9]:[0-5][0-9]:[0-5][0-9]\\)")
        1 3 4 5 7 8 9 10 2 nil 6)
-      ;; The version using links in feeds.asahi.com.
-      ;;("rss" "RSS" "http://www3.asahi.com/rss/index.rdf"
-      ;; ,(concat
-      ;;   "<title>" s0
-      ;;   ;; 1. subject
-      ;;   "\\([^<]+\\)"
-      ;;   s0 "</title>" s0 "<link>" s0
-      ;;   ;; 2. url
-      ;;   "\\([^<]+\\)"
-      ;;   s0 "</link>" s0
-      ;;   "\\(?:<description" s0 "/>\\|<description>[^<]*</description>\\)"
-      ;;   s0 "<dc:subject>" s0
-      ;;   ;; 3. extra keyword (ja)
-      ;;   "\\([^<]+\\)"
-      ;;   s0 "</dc:subject>" s0 "<dc:date>" s0
-      ;;   ;; 4. year
-      ;;   "\\(20[0-9][0-9]\\)"
-      ;;   "-"
-      ;;   ;; 5. month
-      ;;   "\\([01][0-9]\\)"
-      ;;   "-"
-      ;;   ;; 6. day
-      ;;   "\\([0-3][0-9]\\)"
-      ;;   "T"
-      ;;   ;; 7. hour:min:sec
-      ;;   "\\([012][0-9]:[0-5][0-9]:[0-5][0-9]\\)"
-      ;;   "\\+[0-2][0-9]:[0-5][0-9]" s0 "</dc:date>" s0
-      ;;   "<feedburner:origLink>" s0 "http://www\\.asahi\\.com/"
-      ;;   ;; 8. extra keyword (en)
-      ;;   "\\([^/]+\\)"
-      ;;   "/update/"
-      ;;   ;; 9 and 10. serial number
-      ;;   "\\([0-9]+\\)/\\([a-z]*[0-9]+\\)")
-      ;; 2 9 10 1 4 5 6 7 8 nil 3)
-
       ("science" "サイエンス" "%s/list.html"
        ,@(shimbun-asahi-make-regexp "science.news"))
       ("shopping" "ショッピング" "%s/"
@@ -975,6 +939,8 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	  kishi-p (string-equal group "shopping.kishi")
 	  travel-p (string-equal group "travel")
 	  subgroups (cdr (assoc group shimbun-asahi-subgroups-alist)))
+    (shimbun-strip-cr)
+    (goto-char (point-min))
     (catch 'stop
       ;; The loop for fetching all the articles in the whitemail group.
       (while t

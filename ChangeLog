@@ -1,3 +1,9 @@
+2007-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Update regexp
+	for rss group.
+	(shimbun-asahi-get-headers): Strip CRs.
+
 2007-02-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Remove
