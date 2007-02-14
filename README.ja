@@ -51,7 +51,7 @@
 
       APEL を前もってインストールしておく必要があります．
 
-          ftp://ftp.m17n.org/pub/mule/apel/apel-10.6.tar.gz
+      http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/apel/apel-10.7.tar.gz
 
       注意: APEL XEmacs パッケージ (SUMO に含まれています) のバージョン
        1.32 より古いものは使えません．もしすでにそのような版のパッケージ
@@ -60,7 +60,7 @@
        (新規に APEL をインストールする場合も同じ命令を使うことができます):
 
           % rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
-          % cd apel-10.6
+          % cd apel-10.7
           % make install-package XEMACS=xemacs-21.4.x\
             PACKAGEDIR=/usr/local/lib/xemacs/xemacs-packages
 
@@ -213,11 +213,12 @@
 7. 関連情報
 
    [1] APEL
-       ftp://ftp.m17n.org/pub/mule/apel/ から入手できます．
+       http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/apel/ から
+       入手できます．
 
    [2] FLIM
-       ftp://ftp.m17n.org/pub/mule/flim/ から入手できます．APEL に依存し
-       ています．
+       ftp://ftp.m17n.org/pub/mule/flim/ から入手できます．APEL に依存
+       しています．
 
    [3] gifsicle
        http://www.lcdf.org/gifsicle/ から入手できます．

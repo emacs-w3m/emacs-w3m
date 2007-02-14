@@ -315,7 +315,7 @@ Emacs-w3m $B$O30It%3%^%s%I(B w3m $B$r!"%&%'%V%3%s%F%s%D$r<hF@$9$k$?$a$N%P%C%/
 XEmacs $B$KIT2D7g$G$9!#(BEmacs-w3m $B$r9=C[$9$kA0$K(B @acronym{APEL} $B$r%$%s%9%H!<(B
 $B%k$7$J$1$l$P$J$j$^$;$s!#(B@acronym{APEL} $B$O0J2<$N>l=j$K$"$j$^$9(B:
 
-@uref{ftp://ftp.m17n.org/pub/mule/apel/apel-10.6.tar.gz}
+@uref{http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/apel/apel-10.7.tar.gz}
 
 @acronym{APEL} XEmacs $B%Q%C%1!<%8(B (SUMO $B$K4^$^$l$F$$$^$9(B) $B$N%P!<%8%g(B
 $B%s(B 1.32 $B$h$j8E$$$b$N$O;H$($J$$$3$H$KCm0U$7$F2<$5$$!#$b$7$9$G$K$=$N$h$&$J(B
@@ -326,7 +326,7 @@ XEmacs $B$KIT2D7g$G$9!#(BEmacs-w3m $B$r9=C[$9$kA0$K(B @acronym{APEL} $B$r%$
 
 @example
 % rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
-% cd apel-10.6
+% cd apel-10.7
 % make install-package XEMACS=xemacs-21.4.x\
   PACKAGEDIR=/usr/local/lib/xemacs/xemacs-packages
 @end example

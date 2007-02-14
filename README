@@ -48,7 +48,7 @@
 
       APEL package is required.  It is available at:
 
-          ftp://ftp.m17n.org/pub/mule/apel/apel-10.6.tar.gz
+        http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/apel/apel-10.7.tar.gz
 
       Note: You must not use the APEL XEmacs package (which is contained
        in SUMO) of the versions older than 1.32.  If you have already
@@ -57,7 +57,7 @@
        directives in order to newly install APEL):
 
           % rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
-          % cd apel-10.6
+          % cd apel-10.7
           % make install-package XEMACS=xemacs-21.4.x\
             PACKAGEDIR=/usr/local/lib/xemacs/xemacs-packages
 
@@ -214,14 +214,15 @@
 7. Related Information
 
    [1] APEL
-       It can be downloaded from ftp://ftp.m17n.org/pub/mule/apel/.
+       It can be downloaded from:
+       http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/apel/
 
    [2] FLIM
-       It can be downloaded from ftp://ftp.m17n.org/pub/mule/flim/.
+       It can be downloaded from: ftp://ftp.m17n.org/pub/mule/flim/
        Before installing it, it is necessary to install APEL.
 
    [3] gifsicle
-       It can be downloaded from http://www.lcdf.org/gifsicle/.
+       It can be downloaded from: http://www.lcdf.org/gifsicle/
 
 
 Local Variables:
