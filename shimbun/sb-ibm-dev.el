@@ -33,14 +33,12 @@
 
 (luna-define-class shimbun-ibm-dev (shimbun) ())
 
-(defvar shimbun-ibm-dev-url "http://www-6.ibm.com/jp/developerworks/")
+(defvar shimbun-ibm-dev-url "http://www.ibm.com/jp/developerworks/")
 (defvar shimbun-ibm-dev-groups
   '("autonomic" "java" "linux" "opensource" "webservices" "xml"))
 (defvar shimbun-ibm-dev-coding-system 'japanese-shift-jis-unix)
-(defvar shimbun-ibm-dev-content-start "<!--[ 　]*Contents[ 　]*-->")
-(defvar shimbun-ibm-dev-content-end
-  "\\(<form name=\"DW_TEST\" action=\"/cgi-bin/jp/feedback\\.pl\" method=\"post\">\\|\
-<!--[ 　]*\\(\\(//\\|End[ 　]+of[ 　]\\)[ 　]*Contents\\|PDF Mail\\)[ 　]*-->\\)")
+(defvar shimbun-ibm-dev-content-start "<!--Contents-->")
+(defvar shimbun-ibm-dev-content-end "<!--// Contents-->")
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-ibm-dev))
   (shimbun-expand-url (concat (shimbun-current-group shimbun) "/library.html")
@@ -59,45 +57,54 @@
       (let ((pages (shimbun-header-index-pages range)))
 	(goto-char (point-min))
 	(while (when (or (not pages)
-			 (< (length indexes) (1- pages)))
+			 (< (length indexes) pages))
 		 (re-search-forward "<a +class=\"[^\"]+\" +\
-href=\"\\(library[0-9]*\\.s?html\\)\">\\([0-9]+\\)年</a>" nil t))
-	  (push (cons (string-to-number (match-string 2))
-		      (shimbun-expand-url (match-string 1) base))
-		indexes)))
-      (dolist (pair (nreverse indexes))
-	(let ((year (car pair))
-	      (index (cdr pair)))
+href=\"\\(library[0-9]*\\.s?html\\)\">[0-9]+年</a>" nil t))
+	  (push (shimbun-expand-url (match-string 1) base) indexes)))
+      (let ((pattern (format "/jp/developerworks/%s/"
+			     (regexp-quote (shimbun-current-group shimbun)))))
+	(dolist (index (nreverse indexes))
 	  (unless (string= index base)
 	    (erase-buffer)
 	    (shimbun-fetch-url shimbun index))
 	  (goto-char (point-min))
-	  (while (re-search-forward ">\\([0-9]+\\)月\\([0-9]+\\)日</th>
-<td[^>]*><a href=\"\\([^\"]+\\)\" class=\"fbox\">\\(.*\\)</a>" nil t)
-	    (let* ((url (shimbun-expand-url (match-string 3) index))
-		   (id (concat "<" (md5 url)
-			       "%" (shimbun-current-group shimbun)
-			       "@www-6.ibm.com>")))
-	      (when (shimbun-search-id shimbun id)
-		(throw 'stop headers))
-	      (push (shimbun-create-header nil
-					   (match-string 4)
-					   (shimbun-from-address shimbun)
-					   (shimbun-make-date-string
-					    year
-					    (string-to-number (match-string 1))
-					    (string-to-number (match-string 2)))
-					   id "" 0 0 url)
-		    headers)))))
+	  (while (re-search-forward
+		  "<a href=\"\\([^\"]+\\)\"><b>\\([^<>]+\\)</b></a>" nil t)
+	    (let ((url (shimbun-expand-url (match-string 1) index))
+		  (subject (match-string 2)))
+	      (when (string-match pattern url)
+		(let ((id (concat "<" (md5 url)
+				  "%" (shimbun-current-group shimbun)
+				  "@" (shimbun-server shimbun)
+				  ".shimbun.namazu.org>")))
+		  (when (shimbun-search-id shimbun id)
+		    (throw 'stop headers))
+		  (push (shimbun-create-header nil subject
+					       (shimbun-from-address shimbun)
+					       nil id "" 0 0 url)
+			headers)))))))
       headers)))
 
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-ibm-dev)
 						    header)
+  (goto-char (point-min))
+  (when (re-search-forward "<meta name=\"DC.Date\" scheme=\"iso8601\" \
+content=\"\\([0-9]+\\)-\\([0-9]+\\)-\\([0-9]+\\)\" />" nil t)
+    (shimbun-header-set-date header
+			     (shimbun-make-date-string
+			      (string-to-number (match-string 1))
+			      (string-to-number (match-string 2))
+			      (string-to-number (match-string 3)))))
+  (when (re-search-forward "<a href=\"#author[0-9]+\">\\([^<>]+\\)</a>" nil t)
+    (let ((name (match-string 1)))
+      (shimbun-header-set-from header
+			       (if (looking-at
+				    "[^\n]*<a href=\"mailto:\\([^\"?]+\\)[\"?]>")
+				   (concat name " <" (match-string 1) ">")
+				 name))))
   (when (luna-call-next-method)
-    (goto-char (point-min))
-    (when (re-search-forward "<p><a href=\"[^\"]*#author1\">" nil t)
-      (search-backward "<h2>" nil t)
-      (delete-region (point-min) (match-beginning 0)))
+    (shimbun-remove-tags "<!-- LEFTNAV_BEGIN -->" "<!-- LEFTNAV_END -->")
+    (shimbun-remove-tags "<script" "</script>")
     t))
 
 (provide 'sb-ibm-dev)
