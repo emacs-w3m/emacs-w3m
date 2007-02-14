@@ -4629,23 +4629,21 @@ nikkansports.society nikkansports.leisure
 
 @item @uref{http://www.nikkei.co.jp/, Nihon Keizai Shimbun}
 nikkei.top nikkei.main nikkei.keizai nikkei.sangyo nikkei.tento
-nikkei.zinzi nikkei.report nikkei.kansai nikkei.it.business
-nikkei.it.busi_gyoukai nikkei.it.biz-system nikkei.it.sox nikkei.it.data
-nikkei.it.taidan nikkei.it.management nikkei.it.analyst
+nikkei.kansai nikkei.it.business nikkei.it.busi_gyoukai
+nikkei.it.biz-system nikkei.it.sox nikkei.it.data nikkei.it.taidan
 nikkei.it.internet nikkei.it.broad nikkei.it.net_gyoukai nikkei.it.iptel
 nikkei.it.tele nikkei.it.broadcast nikkei.it.internet-column
-nikkei.it.contents nikkei.it.literacy nikkei.it.ec nikkei.it.policy
-nikkei.it.e-gov nikkei.it.mobile nikkei.it.mob_gyoukai nikkei.it.mobsoft
-nikkei.it.mobcon nikkei.it.money nikkei.it.wirelesslan nikkei.it.one
-nikkei.it.kougengaku nikkei.it.world nikkei.it.media nikkei.it.security
-nikkei.it.net_crime nikkei.it.digital nikkei.it.digi_contents
-nikkei.it.pc nikkei.kokunai nikkei.markets nikkei.kawase nikkei.kinri
-nikkei.ft nikkei.dj nikkei.ngyoseki nikkei.gyosuuchi nikkei.gyoseki
-nikkei.china nikkei.market nikkei.kaigai nikkei.seiji nikkei.shakai
-nikkei.retto nikkei.sports nikkei.newpro nikkei.release
-nikkei.release.it.comp nikkei.release.it.peri nikkei.release.it.sys
-nikkei.release.it.cont nikkei.release.it.net nikkei.release.it.lsi
-nikkei.release.it.game nikkei.release.it.etc nikkei.release.dist.depart
+nikkei.it.contents nikkei.it.ec nikkei.it.policy nikkei.it.e-gov
+nikkei.it.mobile nikkei.it.mob_gyoukai nikkei.it.mobsoft
+nikkei.it.mobcon nikkei.it.money nikkei.it.one nikkei.it.security
+nikkei.it.net_crime nikkei.it.digital nikkei.it.pc nikkei.kokunai
+nikkei.markets nikkei.kawase nikkei.kinri nikkei.ft nikkei.dj
+nikkei.ngyoseki nikkei.gyosuuchi nikkei.gyoseki nikkei.china
+nikkei.market nikkei.kaigai nikkei.seiji nikkei.shakai nikkei.retto
+nikkei.sports nikkei.newpro nikkei.release nikkei.release.it.comp
+nikkei.release.it.peri nikkei.release.it.sys nikkei.release.it.cont
+nikkei.release.it.net nikkei.release.it.lsi nikkei.release.it.game
+nikkei.release.it.etc nikkei.release.dist.depart
 nikkei.release.dist.ryohan nikkei.release.dist.zakka
 nikkei.release.dist.cosme nikkei.release.dist.car
 nikkei.release.dist.book nikkei.release.dist.record
@@ -4667,7 +4665,6 @@ nikkei.release.service.life nikkei.release.service.media
 nikkei.release.service.lease nikkei.release.service.travel
 nikkei.release.service.etc nikkei.release.const.const
 nikkei.release.const.house nikkei.release.const.etc nikkei.shasetsu
-nikkei.okuyami
 
 @item @uref{http://www.sponichi.co.jp/, Sponichi}
 sponichi.baseball sponichi.soccer sponichi.usa sponichi.others
