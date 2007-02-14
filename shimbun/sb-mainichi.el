@@ -1,6 +1,6 @@
 ;;; sb-mainichi.el --- shimbun backend for MSN-Mainichi -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007
 ;; Koichiro Ohba <koichiro@meadowy.org>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
@@ -226,11 +226,7 @@
 	 ;; 8. minute
 	 "\\([0-5]?[0-9]\\)"))
      2 3 4 5 6 1 7 8)
-    ("yougo" "ニュースな言葉")
-
-    ;; The following groups are obsolete, though old articles still
-    ;; can be read.
-    ("keizai.wadai.seika.archive" "「成果主義」って何ですか"))
+    ("yougo" "ニュースな言葉"))
   "Alist of group names, their Japanese translations, index pages, regexps
 and numbers.  Where numbers point to the regexp search result in order
 of [0]a url, [1]a serial number, [2]a year, [3]a month, [4]a day,
