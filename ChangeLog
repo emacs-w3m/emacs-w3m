@@ -1,3 +1,24 @@
+2007-02-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-group-table): Use
+	shimbun-nikkei-prepare-article-top for top group.
+	(shimbun-get-headers): Modify base url according to group; sort
+	headers for every group here; pass shimbun and range arguments to
+	header functions.
+	(shimbun-nikkei-expand-url): Strip redirect part.
+	(shimbun-nikkei-tmp-ids)
+	(shimbun-nikkei-tmp-subjects): New variables.
+	(shimbun-nikkei-get-headers-*): Add shimbun and range arguments;
+	improve regexp; downcase Message-IDs; don't sort headers there.
+	(shimbun-nikkei-get-headers-default): Remove duplicates.
+	(shimbun-nikkei-get-headers-top): Fetch many headers as much as
+	possible.
+	(shimbun-make-contents): Remove garbage.
+	(shimbun-nikkei-prepare-article-*): Improve regexp.
+	(shimbun-nikkei-prepare-article-default4): Rename ftom
+	shimbun-nikkei-prepare-article-okuyami.
+	(shimbun-nikkei-prepare-article-top): New function.
+
 2007-02-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun/sb-ibm-dev.el (shimbun-ibm-dev-url): Follow page layout
