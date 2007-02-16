@@ -15,7 +15,7 @@
 	possible.
 	(shimbun-make-contents): Remove garbage.
 	(shimbun-nikkei-prepare-article-*): Improve regexp.
-	(shimbun-nikkei-prepare-article-default4): Rename ftom
+	(shimbun-nikkei-prepare-article-default4): Rename from
 	shimbun-nikkei-prepare-article-okuyami.
 	(shimbun-nikkei-prepare-article-top): New function.
 
