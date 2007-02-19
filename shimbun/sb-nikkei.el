@@ -1875,7 +1875,7 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 	     (concat "<" (downcase (match-string 2)) "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
-	     (match-string 1))
+	     (shimbun-nikkei-expand-url (match-string 1) folder))
 	    headers))
     (nreverse headers)))
 
@@ -2146,6 +2146,16 @@ tokushu[\t\n ]*\""
 	   (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
 <!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME[\t\n ]*\
 =[\t\n ]*\"[\t\n ]*HONBUN[\t\n ]*\"[\t\n ]*-+>"
+				  nil t)
+	       (prog1 nil (goto-char (point-min)))))
+	 (when (or (re-search-forward
+		    "<!-+[\t\n ]*特集記事大[\t\n ]*-+>[\t\n ]*"
+		    nil t)
+		   (re-search-forward "<!-+[\t\n ]*記事[\t\n ]*-+>[\t\n ]*"
+				      nil t))
+	   (setq start (match-end 0))
+	   (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
+<!-+[\t\n ]*\\(?://記事\\|特集記事フッタ\\)[\t\n ]*-+>"
 				  nil t)
 	       (prog1 nil (goto-char (point-min))))))
 	(progn
