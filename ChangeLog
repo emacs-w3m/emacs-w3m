@@ -1,5 +1,14 @@
 2007-02-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-nikkei.el (shimbun-nikkei-zenkaku-to-hankaku)
+	(shimbun-nikkei-char-code-property-table): New variables.
+	(shimbun-get-headers): Convert zenkaku ASCII characters in
+	subjects into hankaku.
+	(shimbun-make-contents): Convert zenkaku ASCII characters into
+	hankaku.
+
+2007-02-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-decode-buffer): Encode urls containing non-ASCII
 	characters.
 

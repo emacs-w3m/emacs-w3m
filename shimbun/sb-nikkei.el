@@ -473,6 +473,19 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAATBAMAAAAkFJMsAAAABGdBTUEAALGPC/xhBQAAABJ
 
 (defvar shimbun-nikkei-expiration-days 7)
 
+(defvar shimbun-nikkei-zenkaku-to-hankaku t
+  "*Non-nil means convert zenkaku ASCII characters into hankaku.")
+
+(defvar shimbun-nikkei-char-code-property-table
+  (let ((char-code-property-table
+	 (if (fboundp 'copy-char-table) ;; XEmacs
+	     (eval '(copy-char-table char-code-property-table))
+	   (copy-sequence char-code-property-table)))
+	(zenkaku '(?　 ?、 ?。 ?〜 ?￥)))
+    (while zenkaku
+      (put-char-code-property (pop zenkaku) 'ascii nil))
+    char-code-property-table))
+
 (luna-define-method shimbun-groups ((shimbun shimbun-nikkei))
   (mapcar 'car shimbun-nikkei-group-table))
 
@@ -492,7 +505,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAATBAMAAAAkFJMsAAAABGdBTUEAALGPC/xhBQAAABJ
 	 (shimbun-nikkei-from-address
 	  (concat (shimbun-server-name shimbun)
 		  " (" (shimbun-current-group-name shimbun) ")"))
-	 (folder (nth 2 (assoc group shimbun-nikkei-group-table))))
+	 (folder (nth 2 (assoc group shimbun-nikkei-group-table)))
+	 headers)
     (when (and (not (string-match "\\`http://markets\\.nikkei\\.co\\.jp/"
 				  folder))
 	       (or (member group '("kaigai" "seiji"))
@@ -503,7 +517,16 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAATBAMAAAAkFJMsAAAABGdBTUEAALGPC/xhBQAAABJ
       (delete-backward-char 1))
     (goto-char (point-min))
     (when (fboundp fn)
-      (shimbun-sort-headers (funcall fn group folder shimbun range)))))
+      (setq headers
+	    (shimbun-sort-headers (funcall fn group folder shimbun range)))
+      (if shimbun-nikkei-zenkaku-to-hankaku
+	  (let ((char-code-property-table
+		 shimbun-nikkei-char-code-property-table))
+	    (dolist (header headers headers)
+	      (shimbun-header-set-subject-internal
+	       header
+	       (japanese-hankaku (shimbun-header-subject-internal header) t))))
+	headers))))
 
 (defun shimbun-nikkei-expand-url (url folder)
   "Make a fullname of URL relative to FOLDER.
@@ -1897,8 +1920,21 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 			      nil t)
       (delete-region (match-beginning 0) (match-end 0)))
     (goto-char (point-min))
-    (unless (and (fboundp fn)
-		 (funcall fn header))
+    (if (and (fboundp fn)
+	     (funcall fn header))
+	(when shimbun-nikkei-zenkaku-to-hankaku
+	  (goto-char (point-min))
+	  (while (search-forward "＜" nil t)
+	    (replace-match "&lt;"))
+	  (goto-char (point-min))
+	  (while (search-forward "＞" nil t)
+	    (replace-match "&gt;"))
+	  (goto-char (point-min))
+	  (while (search-forward "＆" nil t)
+	    (replace-match "&amp;"))
+	  (let ((char-code-property-table
+		 shimbun-nikkei-char-code-property-table))
+	    (japanese-hankaku-region (point-min) (point-max) t)))
       (erase-buffer)
       (insert "<html><body>\
 Couldn't extract the body for this article.<br>\
