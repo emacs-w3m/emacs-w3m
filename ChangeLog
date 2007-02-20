@@ -1,5 +1,8 @@
 2007-02-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-decode-buffer): Encode urls containing non-ASCII
+	characters.
+
 	* shimbun/sb-nikkei.el (shimbun-make-contents): Display only a
 	link to the original page if it failed to extract the body of an
 	article.

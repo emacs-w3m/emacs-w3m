@@ -4336,7 +4336,30 @@ for decoding when the cdr that the data specify is not available.")
      (prog1
 	 (decode-coding-string (buffer-string) w3m-current-coding-system)
        (erase-buffer)
-       (set-buffer-multibyte t)))))
+       (set-buffer-multibyte t)))
+
+    ;; Encode urls containing non-ASCII characters.
+    (when (or (featurep 'xemacs)
+	      ;; For the unknown reason Emacs 21.* causes segfault by this.
+	      (>= emacs-major-version 22))
+      (goto-char (point-min))
+      (let ((case-fold-search t))
+	(while (re-search-forward
+		;; "<\\(?:a .* href=\\|img .* src=\\)=\"\\(.+\\)\""
+		(eval-when-compile
+		  (let ((s0 "[\t\n\r ]*") (s1 "[\t\n\r ]+")
+			(asc "[\000-\041\043-\177]*"))
+		    (concat "<" s0 "\\(?:a\\(?:" s1 "[^>]+\\)*" s1 "href"
+			    "\\|img\\(?:" s1 "[^>]+\\)*" s1 "src\\)" s0 "="
+			    s0 "\"" "\\(" asc "\\(?:[^\000-\177]+" asc "\\)+"
+			    asc "\\)\"")))
+		nil t)
+	  (insert (w3m-url-encode-string
+		   (prog1
+		       (match-string 1)
+		     (delete-region (goto-char (match-beginning 1))
+				    (match-end 1)))
+		   w3m-current-coding-system)))))))
 
 (defun w3m-x-moe-decode-buffer ()
   (let ((args '("-i" "-cs" "x-moe-internal"))
