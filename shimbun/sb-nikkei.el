@@ -1898,11 +1898,7 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
       (delete-region (match-beginning 0) (match-end 0)))
     (goto-char (point-min))
     (unless (and (fboundp fn)
-		 (progn
-		   (funcall fn header)
-		   (goto-char (point-min))
-		   (and (search-forward shimbun-nikkei-content-start nil t)
-			(search-forward shimbun-nikkei-content-end nil t))))
+		 (funcall fn header))
       (erase-buffer)
       (insert "<html><body>\
 Couldn't extract the body for this article.<br>\
@@ -1948,7 +1944,8 @@ Please visit <a href=\""
 	      (replace-match "<img src=\"\\1\""))
 	    (goto-char (point-min)))
 	(goto-char body))
-      (insert shimbun-nikkei-content-start))))
+      (insert shimbun-nikkei-content-start)
+      t)))
 
 (defun shimbun-nikkei-prepare-article-default2 (&rest args)
   "Function used to prepare contents of an article for some groups."
@@ -1976,7 +1973,8 @@ Please visit <a href=\""
 \\|<a[\t\n ]+name=\"newslist\"></a>\n"
 			     nil t)
       (goto-char (match-beginning 0))
-      (insert shimbun-nikkei-content-end))))
+      (insert shimbun-nikkei-content-end)
+      t)))
 
 (defun shimbun-nikkei-prepare-article-kansai (&rest args)
   "Function used to prepare contents of an article for the kansai group."
@@ -1991,7 +1989,8 @@ Please visit <a href=\""
 \"0\"[\t\n ]+cellpadding=\"0\"[\t\n ]+width=\"720\">\\)"
 			     nil t)
       (goto-char (match-beginning 0))
-      (insert shimbun-nikkei-content-end))))
+      (insert shimbun-nikkei-content-end)
+      t)))
 
 (defun shimbun-nikkei-prepare-article-default3 (&rest args)
   "Function used to prepare contents of an article for the market groups."
@@ -2018,7 +2017,8 @@ class=\"column\"\\(?:[\t\n ]+[^>]+\\)*>"
 \\(?:<li>\\|<a[\t\n ]+href=\"/ranking/\\|<img[\t\n ]+src=\\)"
 				    nil t))
 	     (goto-char (match-beginning 0))))
-    (insert shimbun-nikkei-content-end)))
+    (insert shimbun-nikkei-content-end)
+    t))
 
 (defun shimbun-nikkei-prepare-article-bunkatsu2 (&rest args)
   "Function used to prepare contents of an article for the gyosuuchi group."
@@ -2026,7 +2026,8 @@ class=\"column\"\\(?:[\t\n ]+[^>]+\\)*>"
     (insert shimbun-nikkei-content-start)
     (when (re-search-forward "[\t\n ]<div[\t\n ]+class=\"column\">" nil t)
       (goto-char (match-beginning 0))
-      (insert shimbun-nikkei-content-end))))
+      (insert shimbun-nikkei-content-end)
+      t)))
 
 (defun shimbun-nikkei-prepare-article-sports (&rest args)
   "Function used to prepare contents of an article for the sports group."
@@ -2038,7 +2039,8 @@ class=\"column\"\\(?:[\t\n ]+[^>]+\\)*>"
 <!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-+>"
 			     nil t)
       (goto-char (match-beginning 0))
-      (insert shimbun-nikkei-content-end))))
+      (insert shimbun-nikkei-content-end)
+      t)))
 
 (defun shimbun-nikkei-prepare-article-newpro (&rest args)
   "Function used to prepare contents of an article for the newpro group."
@@ -2061,7 +2063,8 @@ class=\"column\"\\(?:[\t\n ]+[^>]+\\)*>"
 	    (delete-region photo-end body)
 	    (goto-char (point-min)))
 	(goto-char body))
-      (insert shimbun-nikkei-content-start))))
+      (insert shimbun-nikkei-content-start)
+      t)))
 
 (defun shimbun-nikkei-prepare-article-release (&rest args)
   "Function used to prepare contents of an article for the release group."
@@ -2071,7 +2074,8 @@ class=\"column\"\\(?:[\t\n ]+[^>]+\\)*>"
     (insert shimbun-nikkei-content-start)
     (when (re-search-forward "[\t\n ]*<div[\t\n ]+class=\"tokushu\">" nil t)
       (goto-char (match-beginning 0))
-      (insert shimbun-nikkei-content-end))))
+      (insert shimbun-nikkei-content-end)
+      t)))
 
 (defun shimbun-nikkei-prepare-article-release2 (&rest args)
   "Function used to prepare contents of an article for the release groups."
@@ -2086,8 +2090,8 @@ class=\"column\"\\(?:[\t\n ]+[^>]+\\)*>"
 tokushu[\t\n ]*\""
 			    nil t)
 	 (goto-char (match-beginning 0)))
-
-    (insert shimbun-nikkei-content-end)))
+    (insert shimbun-nikkei-content-end)
+    t))
 
 (defun shimbun-nikkei-prepare-article-market (header)
   "Function used to prepare contents of an article for the market group."
@@ -2107,7 +2111,8 @@ tokushu[\t\n ]*\""
 		(shimbun-header-set-date
 		 header (replace-match new nil nil date)))))
 	(goto-char (match-beginning 0)))
-      (insert shimbun-nikkei-content-end))))
+      (insert shimbun-nikkei-content-end)
+      t)))
 
 (defun shimbun-nikkei-prepare-article-default4 (&rest args)
   "Function used to prepare contents of an article for some groups."
@@ -2119,78 +2124,81 @@ tokushu[\t\n ]*\""
 <!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-+>"
 			     nil t)
       (goto-char (match-beginning 0))
-      (insert shimbun-nikkei-content-end))))
+      (insert shimbun-nikkei-content-end)
+      t)))
 
 (defun shimbun-nikkei-prepare-article-top (&rest args)
   "Function used to prepare contents of an article for the top group."
-  (let (start)
-    (if	(or
-	 (when (re-search-forward
-		"<!-+[\t\n ]*コンテンツ枠[\t\n ]*-+>[\t\n ]*"
-		nil t)
-	   (setq start (match-end 0))
-	   (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
+  (let (start end)
+    (when (or
+	   (when (re-search-forward
+		  "<!-+[\t\n ]*コンテンツ枠[\t\n ]*-+>[\t\n ]*"
+		  nil t)
+	     (setq start (match-end 0))
+	     (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
 <!-+[\t\n ]*//コンテンツ枠[\t\n ]*-+>[\t\n ]*"
-				  nil t)
-	       (prog1 nil (goto-char (point-min)))))
-	 (when (re-search-forward
-		"<!-+[\t\n ]*編成コンテンツ枠[\t\n ]*-+>[\t\n ]*"
-		nil t)
-	   (setq start (match-end 0))
-	   (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
+				    nil t)
+		 (prog1 nil (goto-char (point-min)))))
+	   (when (re-search-forward
+		  "<!-+[\t\n ]*編成コンテンツ枠[\t\n ]*-+>[\t\n ]*"
+		  nil t)
+	     (setq start (match-end 0))
+	     (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
 <!-+[\t\n ]*//編成コンテンツ枠[\t\n ]*-+>[\t\n ]*"
-				  nil t)
-	       (prog1 nil (goto-char (point-min)))))
-	 (when (re-search-forward "<!--photo-->[\t\n ]*" nil t)
-	   (setq start (match-end 0))
-	   (or (re-search-forward "\
+				    nil t)
+		 (prog1 nil (goto-char (point-min)))))
+	   (when (re-search-forward "<!--photo-->[\t\n ]*" nil t)
+	     (setq start (match-end 0))
+	     (or (re-search-forward "\
 \\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\\[[01]?[0-9]月[0-3]?[0-9]日[/／][^]]+\\]"
-				  nil t)
-	       (prog1 nil (goto-char (point-min)))))
-	 (when (re-search-forward "\
+				    nil t)
+		 (prog1 nil (goto-char (point-min)))))
+	   (when (re-search-forward "\
 <[^>]*[\t\n ]+summary=\"写真ニュース\"[^>]*>\\(?:[\t\n ]*<[^\t\n >]+>\\)*\
 \[\t\n ]*\
 \\|<!-+[\t\n ]*FJZONE[\t\n ]+START[\t\n ]+NAME[\t\n ]*\
 =[\t\n ]*\"[\t\n ]*HONBUN[\t\n ]*\"[\t\n ]*-+>"
-				  nil t)
-	   (setq start (match-end 0))
-	   (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
+				    nil t)
+	     (setq start (match-end 0))
+	     (or (re-search-forward "\\(?:[\t\n ]*<[^/][^>]*>\\)*[\t\n ]*\
 <!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME[\t\n ]*\
 =[\t\n ]*\"[\t\n ]*HONBUN[\t\n ]*\"[\t\n ]*-+>"
-				  nil t)
-	       (prog1 nil (goto-char (point-min)))))
-	 (when (or (re-search-forward
-		    "<!-+[\t\n ]*特集記事大[\t\n ]*-+>[\t\n ]*"
-		    nil t)
-		   (re-search-forward "<!-+[\t\n ]*記事[\t\n ]*-+>[\t\n ]*"
-				      nil t))
-	   (setq start (match-end 0))
-	   (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
+				    nil t)
+		 (prog1 nil (goto-char (point-min)))))
+	   (when (or (re-search-forward
+		      "<!-+[\t\n ]*特集記事大[\t\n ]*-+>[\t\n ]*"
+		      nil t)
+		     (re-search-forward "<!-+[\t\n ]*記事[\t\n ]*-+>[\t\n ]*"
+					nil t))
+	     (setq start (match-end 0))
+	     (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
 <!-+[\t\n ]*\\(?://記事\\|特集記事フッタ\\)[\t\n ]*-+>"
-				  nil t)
-	       (prog1 nil (goto-char (point-min)))))
-	 (when (or (re-search-forward "\
+				    nil t)
+		 (prog1 nil (goto-char (point-min)))))
+	   (setq end (apply 'shimbun-nikkei-prepare-article-default args))
+	   (prog1 nil (goto-char (point-min)))
+	   ;; Filters having a potential to mistakenly extract the body follow.
+	   (when (or (re-search-forward "\
 <a[\t\n ]+href=\"\\./\">[\t\n ]*トップ[\t\n ]*</a>[\t\n ]*"
-				      nil t)
-		   (re-search-forward "\
+					nil t)
+		     (re-search-forward "\
 <div[\t\n ]+class=\"title[^\"]*\">\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*"
-				      nil t)
-		   (re-search-forward "\
+					nil t)
+		     (re-search-forward "\
 <a[\t\n ]+href=\"\\./\">\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*</a>\
 \\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*"
-				      nil t))
-	   (setq start (match-end 0))
-	   (or (re-search-forward "\
+					nil t))
+	     (setq start (match-end 0))
+	     (or (re-search-forward "\
 \[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*<p\\(?:[\t\n ]+[^>]+\\)*[\t\n ]align="
-				  nil t)
-	       (prog1 nil (goto-char (point-min))))))
-	(progn
-	  (goto-char (match-beginning 0))
-	  (insert shimbun-nikkei-content-end)
-	  (goto-char start)
-	  (insert shimbun-nikkei-content-start))
-      (goto-char (point-min))
-      (apply 'shimbun-nikkei-prepare-article-default args))))
+				    nil t)
+		 (prog1 nil (goto-char (point-min))))))
+      (unless end
+	(goto-char (match-beginning 0))
+	(insert shimbun-nikkei-content-end)
+	(goto-char start)
+	(insert shimbun-nikkei-content-start))
+      t)))
 
 (provide 'sb-nikkei)
 

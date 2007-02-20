@@ -3,8 +3,11 @@
 	* shimbun/sb-nikkei.el (shimbun-make-contents): Display only a
 	link to the original page if it failed to extract the body of an
 	article.
+	(shimbun-nikkei-prepare-article-*): Return t if the article is
+	successfully extracted.
 	(shimbun-nikkei-prepare-article-top): Add a filter for special
-	articles.
+	articles; fix a regexp; run shimbun-nikkei-prepare-article-default
+	before filters having a potential to mistakenly extract the body.
 
 2007-02-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
