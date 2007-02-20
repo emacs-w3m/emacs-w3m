@@ -1897,9 +1897,20 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 			      nil t)
       (delete-region (match-beginning 0) (match-end 0)))
     (goto-char (point-min))
-    (when (fboundp fn)
-      (funcall fn header)
-      (goto-char (point-min)))))
+    (unless (and (fboundp fn)
+		 (progn
+		   (funcall fn header)
+		   (goto-char (point-min))
+		   (and (search-forward shimbun-nikkei-content-start nil t)
+			(search-forward shimbun-nikkei-content-end nil t))))
+      (erase-buffer)
+      (insert "<html><body>\
+Couldn't extract the body for this article.<br>\
+Please visit <a href=\""
+	      (shimbun-header-xref header)
+	      "\"><u>the original page</u></a>.\
+</body></html>\n"))
+    (goto-char (point-min))))
 
 (defun shimbun-nikkei-prepare-article-default (&rest args)
   "Default function used to prepare contents of an article."
@@ -2156,6 +2167,21 @@ tokushu[\t\n ]*\""
 	   (setq start (match-end 0))
 	   (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
 <!-+[\t\n ]*\\(?://記事\\|特集記事フッタ\\)[\t\n ]*-+>"
+				  nil t)
+	       (prog1 nil (goto-char (point-min)))))
+	 (when (or (re-search-forward "\
+<a[\t\n ]+href=\"\\./\">[\t\n ]*トップ[\t\n ]*</a>[\t\n ]*"
+				      nil t)
+		   (re-search-forward "\
+<div[\t\n ]+class=\"title[^\"]*\">\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*"
+				      nil t)
+		   (re-search-forward "\
+<a[\t\n ]+href=\"\\./\">\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*</a>\
+\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*"
+				      nil t))
+	   (setq start (match-end 0))
+	   (or (re-search-forward "\
+\[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*<p\\(?:[\t\n ]+[^>]+\\)*[\t\n ]align="
 				  nil t)
 	       (prog1 nil (goto-char (point-min))))))
 	(progn
