@@ -1,6 +1,7 @@
 2007-02-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-decode-buffer): Comment the last change temporarily.
+	* w3m.el (w3m-decode-buffer): Improve regexp matching urls
+	containing non-ASCII characters.
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-default)
 	(shimbun-nikkei-get-headers-top): Improve regexps and Message-IDs
