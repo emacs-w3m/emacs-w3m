@@ -481,7 +481,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAATBAMAAAAkFJMsAAAABGdBTUEAALGPC/xhBQAAABJ
 	 (if (fboundp 'copy-char-table) ;; XEmacs
 	     (eval '(copy-char-table char-code-property-table))
 	   (copy-sequence char-code-property-table)))
-	(zenkaku '(?　 ?、 ?。 ?〜 ?￥)))
+	(zenkaku '(?　 ?、 ?。 ?ー ?〜 ?￥)))
     (while zenkaku
       (put-char-code-property (pop zenkaku) 'ascii nil))
     char-code-property-table))
