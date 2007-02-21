@@ -1,3 +1,10 @@
+2007-02-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-get-headers-default)
+	(shimbun-nikkei-get-headers-top): Improve regexps and Message-IDs
+	to prevent fetching the same articles.
+	(shimbun-nikkei-prepare-article-top): Add a filter.
+
 2007-02-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-zenkaku-to-hankaku)
