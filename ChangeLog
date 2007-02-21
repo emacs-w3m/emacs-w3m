@@ -4,7 +4,9 @@
 	containing non-ASCII characters.
 
 	* shimbun/sb-nikkei.el (shimbun-nikkei-char-code-property-table):
-	Don't convert Japanese hyphen character into hankaku.
+	Remove.
+	(shimbun-nikkei-japanese-hankaku-buffer): New function.
+	(shimbun-get-headers, shimbun-make-contents): Use it.
 	(shimbun-nikkei-get-headers-default)
 	(shimbun-nikkei-get-headers-top): Improve regexps and Message-IDs
 	to prevent fetching the same articles.
