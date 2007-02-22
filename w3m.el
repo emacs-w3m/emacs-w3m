@@ -4344,23 +4344,23 @@ for decoding when the cdr that the data specify is not available.")
 	      (>= emacs-major-version 22))
       (goto-char (point-min))
       (let ((case-fold-search t))
-	(while (re-search-forward
-		;; "<\\(?:a .* href=\\|img .* src=\\)=\"\\(.+\\)\""
-		(eval-when-compile
-		  (let ((spc "[\t\n\r ]*")
-			(params "\\(?:[\t\n\r ]+[\t\n\r >]+\\)*[\t\n\r ]+")
-			(asc "[\000-\041\043-\177]*"))
-		    (concat "<" spc "\\(?:a" params "href"
-			    "\\|img" params "src\\)" spc "="
-			    spc "\"" "\\(" asc "\\(?:[^\000-\177]+" asc "\\)+"
-			    asc "\\)\"")))
-		nil t)
-	  (insert (w3m-url-encode-string
-		   (prog1
-		       (match-string 1)
-		     (delete-region (goto-char (match-beginning 1))
-				    (match-end 1)))
-		   w3m-current-coding-system)))))))
+	(while (re-search-forward "\
+<[\t\n\r ]*\\(?:\\(a\\)\\|\\(img\\)\\)[\t\n\r ]+\
+\\(?:[\000-\075\077-\177]*[^\000-\177]+\\)+[\000-\075\077-\177]*>"
+				  nil t)
+	  (when (if (match-end 1)
+		    (re-search-backward "[\t\n\r ]href[\t\n\r ]*=[\t\n\r ]*\
+\"\\(\\(?:[\000-\041\043-\177]*[^\000-\177]+\\)+[\000-\041\043-\177]*\\)"
+					(match-end 1) t)
+		  (re-search-backward "[\t\n\r ]src[\t\n\r ]*=[\t\n\r ]*\
+\"\\(\\(?:[\000-\041\043-\177]*[^\000-\177]+\\)+[\000-\041\043-\177]*\\)"
+				      (match-end 2) t))
+	    (insert (w3m-url-encode-string
+		     (prog1
+			 (match-string 1)
+		       (delete-region (goto-char (match-beginning 1))
+				      (match-end 1)))
+		     w3m-current-coding-system))))))))
 
 (defun w3m-x-moe-decode-buffer ()
   (let ((args '("-i" "-cs" "x-moe-internal"))

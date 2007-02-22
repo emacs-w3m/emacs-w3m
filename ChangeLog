@@ -1,3 +1,8 @@
+2007-02-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-decode-buffer): Improve further regexp matching urls
+	containing non-ASCII characters.
+
 2007-02-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-decode-buffer): Improve regexp matching urls
