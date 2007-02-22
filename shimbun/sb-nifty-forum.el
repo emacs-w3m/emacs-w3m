@@ -1,6 +1,6 @@
 ;;; sb-nifty-forum.el --- shimbun backend for nifty forum
 
-;; Copyright (C) 2005 YOSIDA Kozi
+;; Copyright (C) 2005, 2006 YOSIDA Kozi
 
 ;; Author: YOSIDA Kozi
 ;; Keywords: news

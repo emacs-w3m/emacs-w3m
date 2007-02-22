@@ -1,6 +1,6 @@
 ;;; sb-msdn.el --- shimbun backend for MSDN
 
-;; Copyright (C) 2004, 2005 Yoichi NAKAYAMA <yoichi@geiin.org>
+;; Copyright (C) 2004, 2005, 2006 Yoichi NAKAYAMA <yoichi@geiin.org>
 
 ;; Author: Yoichi NAKAYAMA <yoichi@geiin.org>
 ;; Keywords: news

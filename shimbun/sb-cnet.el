@@ -1,6 +1,6 @@
 ;;; sb-cnet.el --- shimbun backend for CNET
 
-;; Copyright (C) 2004 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2004, 2006 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,

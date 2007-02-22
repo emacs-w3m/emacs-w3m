@@ -1,6 +1,6 @@
 ;;; sb-fau.el --- Freie ArbeiterInnen Union shimbun backend
 
-;; Copyright (C) 2005, 2007 David Hansen
+;; Copyright (C) 2005, 2006, 2007 David Hansen
 
 ;; Author: David Hansen <david.hansen@physik.fu-berlin.de>
 ;; Keywords: news

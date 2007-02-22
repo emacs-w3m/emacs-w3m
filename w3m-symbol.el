@@ -1,6 +1,7 @@
 ;;; w3m-symbol.el --- Stuffs to replace symbols for emacs-w3m -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2002, 2003, 2004, 2005 ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2002, 2003, 2004, 2005, 2006
+;; ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
 
 ;; Author: ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
 ;; Keywords: w3m, WWW, hypermedia, i18n

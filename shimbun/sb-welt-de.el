@@ -1,6 +1,6 @@
 ;;; sb-welt-de.el --- shimbun backend for <http://www.welt.de>
 
-;; Copyright (C) 2004, 2005 Andreas Seltenreich <seltenreich@gmx.de>
+;; Copyright (C) 2004, 2005, 2006 Andreas Seltenreich <seltenreich@gmx.de>
 
 ;; Author: Andreas Seltenreich <seltenreich@gmx.de>
 ;; Keywords: news, shimbun

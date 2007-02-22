@@ -1,6 +1,6 @@
 ;;; sb-msports-nifty.el --- shimbun backend for motorsports.nifty.com
 
-;; Copyright (C) 2004, 2005 MIYOSHI Masanori <miyoshi@meadowy.org>
+;; Copyright (C) 2004, 2005, 2006 MIYOSHI Masanori <miyoshi@meadowy.org>
 
 ;; Author: MIYOSHI Masanori <miyoshi@meadowy.org>
 ;; Keywords: news

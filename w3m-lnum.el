@@ -1,6 +1,6 @@
 ;;; w3m-lnum.el --- Operations using link numbers
 
-;; Copyright (C) 2004, 2005 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2004, 2005, 2006 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia

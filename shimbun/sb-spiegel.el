@@ -1,6 +1,6 @@
 ;;; sb-spiegel.el --- spiegel online shimbun backend
 
-;; Copyright (C) 2004 David Hansen
+;; Copyright (C) 2004, 2006 David Hansen
 
 ;; Author: David Hansen <david.hansen@physik.fu-berlin.de>
 ;; Keywords: news

@@ -1,6 +1,6 @@
 ;;; sb-the-register.el --- The Register shimbun backend
 
-;; Copyright (C) 2004, 2005 David Hansen
+;; Copyright (C) 2004, 2005, 2006, 2007 David Hansen
 
 ;; Author: David Hansen <david.hansen@physik.fu-berlin.de>
 ;; Keywords: news

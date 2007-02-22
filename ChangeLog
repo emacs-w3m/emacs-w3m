@@ -758,8 +758,8 @@
 
 2006-09-06  David Hansen  <david.hansen@physik.fu-berlin.de>
 
-	* sb-spiegel.el (shimbun-spiegel-content-start): Follow page layout
-	changes.
+	* shimbun/sb-spiegel.el (shimbun-spiegel-content-start): Follow
+	page layout changes.
 	(shimbun-spiegel-content-end): ditto.
 
 2006-09-05  David Hansen  <david.hansen@gmx.net>

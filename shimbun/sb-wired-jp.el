@@ -1,6 +1,6 @@
 ;;; sb-wired-jp.el --- shimbun backend for Hotwired Japan -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2005 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2005, 2006 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: news

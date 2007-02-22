@@ -1,6 +1,6 @@
 ;;; sb-opentechpress-jp.el --- shimbun backend for japan.linux.com -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2006 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2006, 2007 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: news

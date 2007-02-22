@@ -1,6 +1,6 @@
 ;;; sb-haiku-os.el --- shimbun backend for haiku-os.org
 
-;; Copyright (C) 2004 Yoichi NAKAYAMA <yoichi@geiin.org>
+;; Copyright (C) 2004, 2006 Yoichi NAKAYAMA <yoichi@geiin.org>
 
 ;; Author: Yoichi NAKAYAMA <yoichi@geiin.org>
 ;; Keywords: news

@@ -1,6 +1,6 @@
 ;;; sb-makanai.el --- shimbun backend for www.makanai.com -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
 ;; MIYOSHI Masanori <miyoshi@meadowy.org>
 
 ;; Author: MIYOSHI Masanori <miyoshi@meadowy.org>

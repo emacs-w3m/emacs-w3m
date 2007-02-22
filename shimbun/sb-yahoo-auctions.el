@@ -1,6 +1,6 @@
 ;;; sb-yahoo-auctions.el --- shimbun backend for Yahoo! AUCTIONS
 
-;; Copyright (C) 2005  ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2005, 2006 ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
 
 ;; Author: ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
 ;; Keywords: news
