@@ -68,7 +68,6 @@ will never log in.  See also `shimbun-tech-on-user-name'.")
 (defvar shimbun-tech-on-content-start "\
 <!-+[\t\n ]*▼.*行テキストアド開始[\t\n ]*-+>[\t\n ]*\
 \\|\
-<!-+[\t\n ]*▼見出し[\t\n ]*-+>\n?\\(?:.+\n\\)+.*\
 <!-+[\t\n ]*▼記事本文[\t\n ]*-+>[\t\n ]*")
 
 (defvar shimbun-tech-on-content-end "\
