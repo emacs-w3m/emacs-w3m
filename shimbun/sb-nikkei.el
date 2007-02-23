@@ -473,27 +473,6 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAATBAMAAAAkFJMsAAAABGdBTUEAALGPC/xhBQAAABJ
 
 (defvar shimbun-nikkei-expiration-days 7)
 
-(defvar shimbun-nikkei-zenkaku-to-hankaku t
-  "*Non-nil means convert zenkaku ASCII characters into hankaku.")
-
-(defun shimbun-nikkei-japanese-hankaku-buffer (&optional quote)
-  "Convert Japanese zenkaku chars in the current buffer to hankaku chars.
-There are exceptions; some chars aren't converted, and \"＜\", \"＞\" and
-\"＆\" are quoted after being converted if QUOTE is non-nil."
-  (goto-char (point-min))
-  (when quote
-    (while (search-forward "＜" nil t)
-      (replace-match "&lt;"))
-    (goto-char (point-min))
-    (while (search-forward "＞" nil t)
-      (replace-match "&gt;"))
-    (goto-char (point-min))
-    (while (search-forward "＆" nil t)
-      (replace-match "&amp;"))
-    (goto-char (point-min)))
-  (while (re-search-forward "[^　、。ー〜￥]+" nil t)
-    (japanese-hankaku-region (match-beginning 0) (match-end 0) t)))
-
 (luna-define-method shimbun-groups ((shimbun shimbun-nikkei))
   (mapcar 'car shimbun-nikkei-group-table))
 
@@ -513,8 +492,7 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
 	 (shimbun-nikkei-from-address
 	  (concat (shimbun-server-name shimbun)
 		  " (" (shimbun-current-group-name shimbun) ")"))
-	 (folder (nth 2 (assoc group shimbun-nikkei-group-table)))
-	 headers)
+	 (folder (nth 2 (assoc group shimbun-nikkei-group-table))))
     (when (and (not (string-match "\\`http://markets\\.nikkei\\.co\\.jp/"
 				  folder))
 	       (or (member group '("kaigai" "seiji"))
@@ -525,16 +503,7 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
       (delete-backward-char 1))
     (goto-char (point-min))
     (when (fboundp fn)
-      (setq headers
-	    (shimbun-sort-headers (funcall fn group folder shimbun range)))
-      (if shimbun-nikkei-zenkaku-to-hankaku
-	  (with-temp-buffer
-	    (dolist (header headers headers)
-	      (insert (shimbun-header-subject-internal header))
-	      (shimbun-nikkei-japanese-hankaku-buffer)
-	      (shimbun-header-set-subject-internal header (buffer-string))
-	      (erase-buffer)))
-	headers))))
+      (shimbun-sort-headers (funcall fn group folder shimbun range)))))
 
 (defun shimbun-nikkei-expand-url (url folder)
   "Make a fullname of URL relative to FOLDER.
@@ -1965,12 +1934,8 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 			      nil t)
       (delete-region (match-beginning 0) (match-end 0)))
     (goto-char (point-min))
-    (if (and (fboundp fn)
-	     (funcall fn header))
-	(when shimbun-nikkei-zenkaku-to-hankaku
-	  (shimbun-with-narrowed-article
-	   shimbun
-	   (shimbun-nikkei-japanese-hankaku-buffer t)))
+    (unless (and (fboundp fn)
+		 (funcall fn header))
       (erase-buffer)
       (insert "<html><body>\
 Couldn't extract the body for this article.<br>\
@@ -2199,92 +2164,108 @@ tokushu[\t\n ]*\""
       (insert shimbun-nikkei-content-end)
       t)))
 
-(defun shimbun-nikkei-prepare-article-top (&rest args)
+(defun shimbun-nikkei-prepare-article-top (header)
   "Function used to prepare contents of an article for the top group."
   (let (start end)
-    (when (or
-	   (when (re-search-forward
-		  "<!-+[\t\n ]*コンテンツ枠[\t\n ]*-+>[\t\n ]*"
-		  nil t)
-	     (setq start (match-end 0))
-	     (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
+    (if (or
+	 (when (re-search-forward
+		"<!-+[\t\n ]*コンテンツ枠[\t\n ]*-+>[\t\n ]*"
+		nil t)
+	   (setq start (match-end 0))
+	   (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
 <!-+[\t\n ]*//コンテンツ枠[\t\n ]*-+>[\t\n ]*"
-				    nil t)
-		 (prog1 nil (goto-char (point-min)))))
-	   (when (re-search-forward
-		  "<!-+[\t\n ]*編成コンテンツ枠[\t\n ]*-+>[\t\n ]*"
-		  nil t)
-	     (setq start (match-end 0))
-	     (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
+				  nil t)
+	       (prog1 nil (goto-char (point-min)))))
+	 (when (re-search-forward
+		"<!-+[\t\n ]*編成コンテンツ枠[\t\n ]*-+>[\t\n ]*"
+		nil t)
+	   (setq start (match-end 0))
+	   (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
 <!-+[\t\n ]*//編成コンテンツ枠[\t\n ]*-+>[\t\n ]*"
-				    nil t)
-		 (prog1 nil (goto-char (point-min)))))
-	   (when (re-search-forward "<!--photo-->[\t\n ]*" nil t)
-	     (setq start (match-end 0))
-	     (or (re-search-forward "\
+				  nil t)
+	       (prog1 nil (goto-char (point-min)))))
+	 (when (re-search-forward "<!--photo-->[\t\n ]*" nil t)
+	   (setq start (match-end 0))
+	   (or (re-search-forward "\
 \\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\\[[01]?[0-9]月[0-3]?[0-9]日[/／][^]]+\\]"
-				    nil t)
-		 (prog1 nil (goto-char (point-min)))))
-	   (when (re-search-forward "\
+				  nil t)
+	       (prog1 nil (goto-char (point-min)))))
+	 (when (re-search-forward "\
 <[^>]*[\t\n ]+summary=\"写真ニュース\"[^>]*>\\(?:[\t\n ]*<[^\t\n >]+>\\)*\
 \[\t\n ]*\
 \\|<!-+[\t\n ]*FJZONE[\t\n ]+START[\t\n ]+NAME[\t\n ]*\
 =[\t\n ]*\"[\t\n ]*HONBUN[\t\n ]*\"[\t\n ]*-+>"
-				    nil t)
-	     (setq start (match-end 0))
-	     (or (re-search-forward "\\(?:[\t\n ]*<[^/][^>]*>\\)*[\t\n ]*\
+				  nil t)
+	   (setq start (match-end 0))
+	   (or (re-search-forward "\\(?:[\t\n ]*<[^/][^>]*>\\)*[\t\n ]*\
 <!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME[\t\n ]*\
 =[\t\n ]*\"[\t\n ]*HONBUN[\t\n ]*\"[\t\n ]*-+>"
-				    nil t)
-		 (prog1 nil (goto-char (point-min)))))
-	   (when (or (re-search-forward
-		      "<!-+[\t\n ]*特集記事大[\t\n ]*-+>[\t\n ]*"
-		      nil t)
-		     (re-search-forward "<!-+[\t\n ]*記事[\t\n ]*-+>[\t\n ]*"
-					nil t))
-	     (setq start (match-end 0))
-	     (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
+				  nil t)
+	       (prog1 nil (goto-char (point-min)))))
+	 (when (or (re-search-forward
+		    "<!-+[\t\n ]*特集記事大[\t\n ]*-+>[\t\n ]*"
+		    nil t)
+		   (re-search-forward "<!-+[\t\n ]*記事[\t\n ]*-+>[\t\n ]*"
+				      nil t))
+	   (setq start (match-end 0))
+	   (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
 <!-+[\t\n ]*\\(?://記事\\|特集記事フッタ\\)[\t\n ]*-+>"
-				    nil t)
-		 (prog1 nil (goto-char (point-min)))))
-	   (setq end (apply 'shimbun-nikkei-prepare-article-default args))
-	   (prog1 nil (goto-char (point-min)))
+				  nil t)
+	       (prog1 nil (goto-char (point-min)))))
+	 (setq end (shimbun-nikkei-prepare-article-default header))
+	 (prog1 nil (goto-char (point-min)))
 
-	   ;; Filters having a potential to mistakenly extract the body follow.
-	   (when (or (re-search-forward "\
+	 ;; Filters having a potential to mistakenly extract the body follow.
+	 (when (or (re-search-forward "\
 <a[\t\n ]+href=\"\\./\">[\t\n ]*トップ[\t\n ]*</a>[\t\n ]*"
-					nil t)
-		     (re-search-forward "\
+				      nil t)
+		   (re-search-forward "\
 <div[\t\n ]+class=\"title[^\"]*\">\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*"
-					nil t)
-		     (re-search-forward "\
+				      nil t)
+		   (re-search-forward "\
 <a[\t\n ]+href=\"\\./\">\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*</a>\
 \\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*"
-					nil t))
-	     (setq start (match-end 0))
-	     (or (re-search-forward "\
+				      nil t))
+	   (setq start (match-end 0))
+	   (or (re-search-forward "\
 \[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*<p\\(?:[\t\n ]+[^>]+\\)*[\t\n ]align="
-				    nil t)
-		 (prog1 nil (goto-char (point-min)))))
-	   (when (or (re-search-forward "\
+				  nil t)
+	       (prog1 nil (goto-char (point-min)))))
+	 (when (or (re-search-forward "\
 <!-+[\t\n ]*写真[\t\n ]*-+>\\(?:[\t\n ]*<[^i][^>]*>\\)*[\t\n ]*"
-					nil t)
-		     (re-search-forward "<!-+[\t\n ]*本文[\t\n ]*-+>" nil t)
-		     (re-search-forward "<div[\t\n ]+class=[^>]+>[\t\n ]*"
-					nil t))
-	     (setq start (match-end 0))
-	     (set-match-data nil)
-	     (while (re-search-forward "[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*\
+				      nil t)
+		   (re-search-forward "<!-+[\t\n ]*本文[\t\n ]*-+>" nil t)
+		   (re-search-forward "<div[\t\n ]+class=[^>]+>[\t\n ]*"
+				      nil t))
+	   (setq start (match-end 0))
+	   (set-match-data nil)
+	   (while (re-search-forward "[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*\
 <!-+[\t\n ]*本文[\t\n ]*-+>"
-				       nil t))
-	     (or (match-beginning 0)
-		 (prog1 nil (goto-char (point-min))))))
-      (unless end
-	(goto-char (match-beginning 0))
-	(insert shimbun-nikkei-content-end)
-	(goto-char start)
-	(insert shimbun-nikkei-content-start))
-      t)))
+				     nil t))
+	   (or (match-beginning 0)
+	       (prog1 nil (goto-char (point-min))))))
+	(progn
+	  (unless end
+	    (goto-char (match-beginning 0))
+	    (insert shimbun-nikkei-content-end)
+	    (goto-char start)
+	    (insert shimbun-nikkei-content-start))
+	  t)
+      (when (and (re-search-forward "\
+<a[\t\n ]+[^>]+>[\t\n ]*＞＞記事を読む[\t\n ]*</a>"
+				    nil t)
+		 (re-search-backward "href=\"\\([^\"]+\\)"
+				     (match-beginning 0) t))
+	(let ((new (match-string 1))
+	      (old (shimbun-header-xref header)))
+	  (when (string-match "[^/]/[^/]" old)
+	    (setq new (shimbun-nikkei-expand-url
+		       new (substring old 0 (1- (match-end 0)))))
+	    (shimbun-header-set-xref header new)
+	    (erase-buffer)
+	    (shimbun-retrieve-url new t)
+	    (goto-char (point-min))
+	    (shimbun-nikkei-prepare-article-top header)))))))
 
 (provide 'sb-nikkei)
 

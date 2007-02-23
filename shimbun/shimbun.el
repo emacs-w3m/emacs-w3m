@@ -1,6 +1,6 @@
 ;;; shimbun.el --- interfacing with web newspapers -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -86,8 +86,15 @@
 			  url coding-system from-address
 			  content-start content-end
 			  expiration-days server-name
+			  ;; Say whether to prefer text/plain articles.
 			  prefer-text-plain
-			  text-content-start text-content-end))
+			  ;; Similar to `content-start' and `content-end'
+			  ;; but are used to extract html contents for
+			  ;; text/plain articles.
+			  text-content-start text-content-end
+			  ;; Say whether to convert Japanese zenkaku
+			  ;; ASCII charas into hankaku.
+			  japanese-hankaku))
   (luna-define-internal-accessors 'shimbun))
 
 (defgroup shimbun nil
@@ -719,7 +726,8 @@ you want to use no database."
 (defconst shimbun-attributes
   '(url groups coding-system server-name from-address
 	content-start content-end x-face-alist expiration-days
-	prefer-text-plain text-content-start text-content-end))
+	prefer-text-plain text-content-start text-content-end
+	japanese-hankaku))
 
 (defun shimbun-open (server &optional mua)
   "Open a shimbun for SERVER.
@@ -804,17 +812,31 @@ integer n:    Retrieve n pages of header indices.")
 (defmacro shimbun-header-index-pages (range)
   "Return number of pages to retrieve according to RANGE.
 Return nil if all pages should be retrieved."
-  (` (if (eq 'last (, range)) 1
-       (if (eq 'all (, range)) nil
-	 (, range)))))
+  (if (consp range)
+      `(let ((range ,range))
+	 (if (eq 'last range) 1
+	   (if (eq 'all range) nil
+	     range)))
+    `(if (eq 'last ,range) 1
+       (if (eq 'all ,range) nil
+	 ,range))))
 
 (luna-define-method shimbun-headers ((shimbun shimbun) &optional range)
   (shimbun-message shimbun (concat shimbun-checking-new-news-format "..."))
   (prog1
       (with-temp-buffer
-	(let ((w3m-verbose (if shimbun-verbose nil w3m-verbose)))
+	(let ((w3m-verbose (if shimbun-verbose nil w3m-verbose))
+	      (hankaku (shimbun-japanese-hankaku-internal shimbun))
+	      headers)
 	  (shimbun-fetch-url shimbun (shimbun-index-url shimbun) 'reload)
-	  (shimbun-get-headers shimbun range)))
+	  (setq headers (shimbun-get-headers shimbun range))
+	  (if (and hankaku (not (eq hankaku 'body)))
+	      (dolist (header headers headers)
+		(erase-buffer)
+		(insert (shimbun-header-subject-internal header))
+		(shimbun-japanese-hankaku-buffer)
+		(shimbun-header-set-subject-internal header (buffer-string)))
+	    headers)))
     (shimbun-message shimbun (concat shimbun-checking-new-news-format
 				     "...done"))))
 
@@ -955,7 +977,8 @@ Return nil, unless a content is cleared successfully.")
 (luna-define-method shimbun-clear-contents ((shimbun shimbun) header)
   (let ((start (shimbun-content-start shimbun))
 	(end (shimbun-content-end shimbun))
-	(case-fold-search t))
+	(case-fold-search t)
+	hankaku)
     (goto-char (point-min))
     (when (and (stringp start)
 	       (re-search-forward start nil t)
@@ -965,6 +988,10 @@ Return nil, unless a content is cleared successfully.")
 	       (re-search-forward end nil t))
       (delete-region (match-beginning 0) (point-max))
       (delete-region (point-min) start)
+      (setq hankaku (shimbun-japanese-hankaku-internal shimbun))
+      (when (and hankaku (not (memq hankaku '(header subject))))
+	(shimbun-japanese-hankaku-buffer t)
+	(goto-char (point-min)))
       t)))
 
 (luna-define-generic shimbun-footer (shimbun header &optional html)
@@ -1251,6 +1278,27 @@ it considers the buffer has already been narrowed to an article."
 	   ,@forms
 	   (widen))
 	 (goto-char (point-min))))))
+
+(defun shimbun-japanese-hankaku-buffer (&optional quote)
+  "Convert Japanese zenkaku ASCII chars in the current buffer into hankaku.
+There are exceptions; some chars aren't converted, and \"＜\", \"＞\" and
+\"＆\" are quoted after being converted if QUOTE is non-nil."
+  (goto-char (point-min))
+  (when quote
+    (while (search-forward "＜" nil t)
+      (replace-match "&lt;"))
+    (goto-char (point-min))
+    (while (search-forward "＞" nil t)
+      (replace-match "&gt;"))
+    (goto-char (point-min))
+    (while (search-forward "＆" nil t)
+      (replace-match "&amp;"))
+    (goto-char (point-min)))
+  (while (re-search-forward "[^　、。ー〜￥]+" nil t)
+    (japanese-hankaku-region (match-beginning 0) (match-end 0) t))
+  (goto-char (point-min))
+  (while (re-search-forward "\\([!-~]\\)　\\([!-~]\\)" nil t)
+    (replace-match "\\1&nbsp;\\2")))
 
 (provide 'shimbun)
 
