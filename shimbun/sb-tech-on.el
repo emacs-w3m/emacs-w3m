@@ -66,7 +66,7 @@ will never log in.  See also `shimbun-tech-on-user-name'.")
 (defvar shimbun-tech-on-server-name "Tech-On!")
 
 (defvar shimbun-tech-on-content-start "\
-<!-+[\t\n ]*▼.*行テキストアド開始[\t\n ]*-+>[\t\n ]*\
+<!-+[\t\n ]*▼写真＆キャプション[^>]*-+>[\t\n ]*\
 \\|\
 <!-+[\t\n ]*▼記事本文[\t\n ]*-+>[\t\n ]*")
 
