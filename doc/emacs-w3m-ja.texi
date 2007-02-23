@@ -4825,14 +4825,19 @@ laut-de.platten_dance laut-de.platten_hiphop platten_jazz
 laut-de.platten_metal laut-de.platten_pop laut-de.platten_rnb
 laut-de.platten_rock
 
+@item @uref{http://www.n24.de/, N24}
+n24-de.boerse n24-de.boulevard n24-de.nachrichten n24-de.netnews
+n24-de.politik n24-de.sport n24-de.wirtschaft
+
+@item @uref{http://ohmynews.co.jp/, $B%*!<%^%$%K%e!<%9(B}
+ohmynews-jp.shakai ohmynews-jp.keizai ohmynews-jp.seiji
+ohmynews-jp.kokusai ohmynews-jp.entame ohmynews-jp.life
+ohmynews-jp.science ohmynews-jp.sports ohmynews-jp.books ohmynews-jp.all
+
 @item @uref{http://opentechpress.jp/, Open Tech Press}
 opentechpress-jp.general opentechpress-jp.enterprise
 opentechpress-jp.opensource opentechpress-jp.security
 opentechpress-jp.news opentechpress-jp.pr
-
-@item @uref{http://www.n24.de/, N24}
-n24-de.boerse n24-de.boulevard n24-de.nachrichten n24-de.netnews
-n24-de.politik n24-de.sport n24-de.wirtschaft
 
 @item @uref{http://www.rediff.com/, Rediff.com}
 rediff.news
@@ -4847,11 +4852,44 @@ slashdot-jp.it slashdot-jp.hardware slashdot-jp.diary.oliver
 $BJQ?t(B @code{shimbun-slashdot-jp-group-alist} $B$KE,@Z$J@_Dj$r2C$($k$H!"$=$N(B
 $BB>$N%f!<%6!<$NF|5-$b1\Mw$G$-$^$9!#(B
 
-@item @uref{http://www.weeklyworldnews.com/news/, Weekly World News}
-weeklyworldnews.news
+@item @uref{http://techon.nikkeibp.co.jp/, Tech-On! $BF|7P(BBP$B<R(B}
+
+tech-on.mobile tech-on.bbint tech-on.d-ce tech-on.AT tech-on.edaonline
+tech-on.device tech-on.lsi tech-on.silicon tech-on.observer tech-on.fpd
+tech-on.mono tech-on.embedded tech-on.mecha tech-on.MEMS tech-on.nano
+tech-on.carele tech-on.board
+
+Tech-On! $B$OF|7P(BBP$B<R$,Ds6!$9$k5;=Q%K%e!<%9%5%$%H$G$9!#@dBP$KI,MW$H$$$&$o(B
+$B$1$G$O$"$j$^$;$s$,!"$=$l$i$N5-;v$K4X?4$,$"$k$J$i$P!"%m%0%$%s!&%"%+%&%s%H(B
+$B$r;}$C$F$$$kJ}$,NI$$$G$7$g$&!#$=$l$O5-;v$NFbMF$rA4ItFI$`$?$a$KI,MW$G$9!#(B
+$BF~<j$9$k$K$O(B @uref{http://techon.nikkeibp.co.jp/guide/inf_regi.html,
+$BEPO?%Z!<%8(B} $B$K9T$C$F2<$5$$!#<!$NFs$D$NJQ?t$G!"$I$&$d$C$F%m%0%$%s$9$k$+$r(B
+$B@)8f$7$^$9(B:
+
+@table @code
+@item shimbun-tech-on-user-name
+@vindex shimbun-tech-on-user-name
+Tech-On! $B$K%m%0%$%s$9$k$?$a$N%f!<%6!<L>$G$9!#(B@code{nil} $B$@$H(B Tech-On! $B$K(B
+$B%m%0%$%s$9$k$H$-$K!"%f!<%6!<L>$NF~NO$rMW5a$5$l$^$9!#J8;zNs$@$C$?$i$=$l$,(B
+$B%f!<%6!<L>$H$7$F;H$o$l!"F~NO$rMW5a$5$l$k$3$H$O$"$j$^$;$s!#(B@code{nil} $B$G(B
+$B$bJ8;zNs$G$b$J$$>l9g(B ($B$3$l$,%G%U%)%k%H$G$9(B)$B!"%m%0%$%s$r9T$J$$$^$;$s!#(B
+
+@item shimbun-tech-on-password
+@vindex shimbun-tech-on-password
+Tech-On! $B$K%m%0%$%s$9$k$?$a$N%Q%9%o!<%I$G$9!#(B@code{nil} $B$@$H(B Tech-On! $B$K(B
+$B%m%0%$%s$9$k$H$-$K!"%Q%9%o!<%I$NF~NO$rMW5a$5$l$^$9!#J8;zNs$@$C$?$i$=$l$,(B
+$B%Q%9%o!<%I$H$7$F;H$o$l!"F~NO$rMW5a$5$l$k$3$H$O$"$j$^$;$s!#(B@code{nil} $B$G(B
+$B$bJ8;zNs$G$b$J$$>l9g(B ($B$3$l$,%G%U%)%k%H$G$9(B)$B!"%m%0%$%s$r9T$J$$$^$;$s!#(B
+@end table
+
+$B$3$l$i$NF~NO$O!"$=$N(B Emacs $B%;%C%7%g%s$G:G=i$K(B Tech-On! $B$N5-;v$rFI$_;O$a(B
+$B$k$H$-$K0l2s$@$1MW5a$5$l$^$9!#(B
 
 @item @uref{http://www.welt.de/, Die Welt}
 welt-de.news
+
+@item @uref{http://www.weeklyworldnews.com/news/, Weekly World News}
+weeklyworldnews.news
 
 @item @uref{http://hotwired.goo.ne.jp/, HotWired Japan}
 wired-jp.news wired-jp.business wired-jp.culture wired-jp.technology
@@ -4896,11 +4934,6 @@ zeit-de.auto zeit-de.computer zeit-de.deutschland zeit-de.feuilleton
 zeit-de.gesundheit zeit-de.international zeit-de.leben zeit-de.literatur
 zeit-de.musik zeit-de.news zeit-de.reisen zeit-de.schule zeit-de.sport
 zeit-de.studium zeit-de.wirtschaft zeit-de.wissen zeit-de.zuender
-
-@item @uref{http://ohmynews.co.jp/, $B%*!<%^%$%K%e!<%9(B}
-ohmynews-jp.shakai ohmynews-jp.keizai ohmynews-jp.seiji
-ohmynews-jp.kokusai ohmynews-jp.entame ohmynews-jp.life
-ohmynews-jp.science ohmynews-jp.sports ohmynews-jp.books ohmynews-jp.all
 
 @item @uref{http://www.theonion.com/, The Onion}
 the-onion.news
@@ -5500,6 +5533,7 @@ Mew $B$J$I$N(B MUA $B$rMxMQ$7!"%&%'%V%3%s%F%s%D$r%a!<%k$HF1$8%f!<%6%$%s%?!<%U
 * Displaying an article::       $B5-;v$NI=<((B
 * Inheriting shimbun module::   shimbun $B%b%8%e!<%k$N7Q>5(B
 * Making text/plain articles::  text/plain $B$N5-;v$r:n$k$K$O(B
+* Zenkaku to hankaku conversion:: $BA43QJ8;z$rH>3QJ8;z$KJQ49$9$k(B
 * Coding convention of Shimbun:: $B%3!<%G%#%s%05,Ls(B
 @end menu
 
@@ -5913,6 +5947,24 @@ fml mailing list server/manager.  $B>\:Y(B
 @noindent
 $B$I$A$i$NJ}<0$r;H$&$K$7$F$b!"(B@samp{text/plain} $B$N5-;v$O!"2hA|$d%j%s%/$J$I(B
 $B$r4^$`$3$H$,$G$-$J$$$3$H$KCm0U$7$F2<$5$$!#(B
+
+@node Zenkaku to hankaku conversion
+@subsection $BA43QJ8;z$rH>3QJ8;z$KJQ49$9$k(B
+
+$B!VA43Q!W$^$?$O!VA43QJ8;z!W$O!"I}$,9-$$F|K\8l$NJ8;z$r8F$V$?$a$NB/>N$G$9!#(B
+$B$^$?!VH>3Q!W$O!"DL>o$N(B ASCII $BJ8;z$N$?$a$NBP8l$G$9!#>/$J$/$H$b(B ASCII $BJ8;z(B
+$B%;%C%H$KBP1~$9$k!"A43QJ8;z$N40A4$J%;%C%H$,$"$j$^$9!#(B
+
+$B$$$/$D$+$NF|K\$N%&%'%V%5%$%H$OA43QJ8;z$rB?MQ$9$k798~$,$"$j!"$=$l$i$N5-;v(B
+$B$OI,$:$7$bFI$_0W$/$J$$$+$b$7$l$^$;$s!#$b$7$=$&46$8$?$i!"$=$l$iA43Q$N1Q?t(B
+$B;z$rH>3Q$KJQ49$9$k$3$N5!G=$r;H$&$3$H$,$G$-$^$9!#$=$l$K(B
+$B$O(B @code{shimbun-foobar-japanese-hankaku} $BJQ?t$r(B @code{t} $B$K@_Dj$7$F2<$5(B
+$B$$!#$3$3$G(B @code{foobar} $B$O!"?7J9$N5-;v$r9VFI$9$k%5!<%P!<L>$G$9!#$D$^$j!"(B
+$B%5!<%P!<Kh$K$=$&$7$J$1$l$P$J$i$J$$$H$$$&$3$H$G$9!#(B
+
+$BA43Q$+$iH>3Q$X$NJQ49$r5-;v$N%\%G%#$@$1$G9T$J$o$;$?$$$J$i$P!"(B@code{t} $B$N(B
+$BBe$o$j$KCM(B @code{body} $B$r;H$C$F2<$5$$!#5U$KCM(B @code{header} $B$^$?(B
+$B$O(B @code{subject} $B$O!"%5%V%8%'%/%H$@$1$G$=$l$r9T$J$&$3$H$r;XDj$7$^$9!#(B
 
 @node Coding convention of Shimbun
 @subsection Shimbun $B%i%$%V%i%j$N%3!<%G%#%s%05,Ls(B

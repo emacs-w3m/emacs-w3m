@@ -1,3 +1,20 @@
+2007-02-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-tech-on.el: New file.
+
+	* shimbun/shimbun.el (japanese-hankaku): New shimbun class.
+	(shimbun-header-index-pages): Work even if the argument range is
+	not a variable symbol.
+	(shimbun-headers): Convert zenkaku chars in subjects into hankaku.
+	(shimbun-clear-contents): Convert zenkaku ASCII chars into hankaku.
+	(shimbun-japanese-hankaku-buffer): Move from sb-nikkei.el; convert
+	zenkaku space between ASCII chars into &nbsp;.
+
+	* shimbun/sb-nikkei.el (shimbun-nikkei-zenkaku-to-hankaku): Remove.
+	(shimbun-nikkei-japanese-hankaku-buffer): Move to shimbun.el.
+	(shimbun-get-headers, shimbun-make-contents): Don't use it here.
+	(shimbun-nikkei-prepare-article-top): Add a filter.
+
 2007-02-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-decode-buffer): Improve further regexp matching urls

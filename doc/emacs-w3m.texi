@@ -4770,14 +4770,19 @@ laut-de.platten_dance laut-de.platten_hiphop platten_jazz
 laut-de.platten_metal laut-de.platten_pop laut-de.platten_rnb
 laut-de.platten_rock
 
+@item @uref{http://www.n24.de/, N24}
+n24-de.boerse n24-de.boulevard n24-de.nachrichten n24-de.netnews
+n24-de.politik n24-de.sport n24-de.wirtschaft
+
+@item @uref{http://ohmynews.co.jp/, OhmyNews Japan}
+ohmynews-jp.shakai ohmynews-jp.keizai ohmynews-jp.seiji
+ohmynews-jp.kokusai ohmynews-jp.entame ohmynews-jp.life
+ohmynews-jp.science ohmynews-jp.sports ohmynews-jp.books ohmynews-jp.all
+
 @item @uref{http://opentechpress.jp/, Open Tech Press}
 opentechpress-jp.general opentechpress-jp.enterprise
 opentechpress-jp.opensource opentechpress-jp.security
 opentechpress-jp.news opentechpress-jp.pr
-
-@item @uref{http://www.n24.de/, N24}
-n24-de.boerse n24-de.boulevard n24-de.nachrichten n24-de.netnews
-n24-de.politik n24-de.sport n24-de.wirtschaft
 
 @item @uref{http://www.rediff.com/, Rediff.com}
 rediff.news
@@ -4793,11 +4798,46 @@ Add appropriate configurations to the variable
 @code{shimbun-slashdot-jp-group-alist}, you can browse other diaries
 provided at @uref{http://slashdot.jp/}.
 
-@item @uref{http://www.weeklyworldnews.com/news/, Weekly World News}
-weeklyworldnews.news
+@item @uref{http://techon.nikkeibp.co.jp/, Tech-On! by NikkeiBP}
+
+tech-on.mobile tech-on.bbint tech-on.d-ce tech-on.AT tech-on.edaonline
+tech-on.device tech-on.lsi tech-on.silicon tech-on.observer tech-on.fpd
+tech-on.mono tech-on.embedded tech-on.mecha tech-on.MEMS tech-on.nano
+tech-on.carele tech-on.board
+
+Tech-On! is a technology news site brought by NikkeiBP.  Although it is
+not necessarily required, you had better have an account to log in on
+the site with if you are interested in those articles.  It is necessary
+in order to read the whole contents of articles.  To have it, visit
+@uref{http://techon.nikkeibp.co.jp/guide/inf_regi.html, the registration
+page}.  The following two variables control how you log in:
+
+@table @code
+@item shimbun-tech-on-user-name
+@vindex shimbun-tech-on-user-name
+User name to log in on Tech-On! with.  If it is @code{nil}, you will be
+prompted for a user name when logging in on Tech-On! with.  If it is a
+string, it will be used as a user name and you will never be prompted.
+If it is neither @code{nil} nor a string (that is the default), you will
+never log in.
+
+@item shimbun-tech-on-password
+@vindex shimbun-tech-on-password
+Password to use to log in on Tech-On! with.  If it is @code{nil}, you
+will be prompted for a password when logging in on Tech-On! with.  If it
+is a string, it will be used as a password and you will never be
+prompted.  If it is neither @code{nil} nor a string (that is the
+default), you will never log in.
+@end table
+
+Entering them is required only once in the Emacs session at the first
+time to start reading a Tech-On! article.
 
 @item @uref{http://www.welt.de/, Die Welt}
 welt-de.news
+
+@item @uref{http://www.weeklyworldnews.com/news/, Weekly World News}
+weeklyworldnews.news
 
 @item @uref{http://hotwired.goo.ne.jp/, HotWired Japan}
 wired-jp.news wired-jp.business wired-jp.culture wired-jp.technology
@@ -4842,11 +4882,6 @@ zeit-de.auto zeit-de.computer zeit-de.deutschland zeit-de.feuilleton
 zeit-de.gesundheit zeit-de.international zeit-de.leben zeit-de.literatur
 zeit-de.musik zeit-de.news zeit-de.reisen zeit-de.schule zeit-de.sport
 zeit-de.studium zeit-de.wirtschaft zeit-de.wissen zeit-de.zuender
-
-@item @uref{http://ohmynews.co.jp/, OhmyNews Japan}
-ohmynews-jp.shakai ohmynews-jp.keizai ohmynews-jp.seiji
-ohmynews-jp.kokusai ohmynews-jp.entame ohmynews-jp.life
-ohmynews-jp.science ohmynews-jp.sports ohmynews-jp.books ohmynews-jp.all
 
 @item @uref{http://www.theonion.com/, The Onion}
 the-onion.news
@@ -5440,6 +5475,7 @@ module.
 * Displaying an article::
 * Inheriting shimbun module::
 * Making text/plain articles::
+* Zenkaku to hankaku conversion::
 * Coding convention of Shimbun::
 @end menu
 
@@ -5871,6 +5907,26 @@ those values default to the latter values.
 @noindent
 Whichever the ways you use, you should note that the @samp{text/plain}
 articles cannot contain images, links, etc.
+
+@node Zenkaku to hankaku conversion
+@subsection Zenkaku to hankaku conversion
+
+``Zenkaku'' or ``zenkaku character(s)'' is a term commonly used to call
+Japanese wide characters, and ``hankaku'' is an opposite term for
+ordinary ASCII characters.  There is a complete set of zenkaku
+characters corresponding to at least the ASCII character set.
+
+Some Japanese web sites tend to use zenkaku characters a lot, and those
+articles might not necessarily be comfortable to read.  If you feel so,
+you can use this feature that converts those zenkaku ASCII characters
+into hankaku.  To do that, set the @code{shimbun-foobar-japanese-hankaku}
+variable to @code{t}.  Where @code{foobar} is a server name to which you
+subscribe for shimbun articles.  That is, you have to use it per server.
+
+If you prefer to convert zenkaku to hankaku only in the body of
+articles, use the value @code{body} instead of @code{t}.  Contrarily the
+value @code{header} or @code{subject} specifies to perform it only in
+subjects.
 
 @node Coding convention of Shimbun
 @subsection Coding convention of Shimbun
