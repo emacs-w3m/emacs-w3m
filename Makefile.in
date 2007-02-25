@@ -171,7 +171,8 @@ tarball: CVS/Root CVS/Repository
 clean:
 	-rm -rf $(PACKAGE)* ;\
 	rm -f *~ *.elc shimbun/*.elc w3m-load.el ;\
-	rm -f doc/*~ doc/*.info doc/*.info-[0-9] doc/*.info-[0-9][0-9]
+	rm -f doc/*~ doc/*.info doc/*.info-[0-9] doc/*.info-[0-9][0-9]\
+ doc/version.texi
 
 distclean: clean
 	-rm -f config.log config.status config.cache Makefile doc/Makefile;\

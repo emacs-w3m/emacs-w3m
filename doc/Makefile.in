@@ -131,8 +131,9 @@ emacs-w3m-ja.pdf: version.texi emacs-w3m-ja.texi
 	esac
 
 clean:
-	-rm -rf *~ *.info *.info-[0-9] *.info-[0-9][0-9] *.dvi missfont.log\
- *.pdf *.aux *.cp *.cps *.fn *.fns *.ky *.kys *.log *.pg *.toc *.tp *.vr *.vrs
+	-rm -rf *~ *.info *.info-[0-9] *.info-[0-9][0-9] version.texi *.dvi\
+ missfont.log *.pdf *.aux *.cp *.cps *.fn *.fns *.ky *.kys *.log *.pg *.toc\
+ *.tp *.vr *.vrs
 
 distclean: clean
 	-rm -f Makefile
