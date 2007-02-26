@@ -1177,17 +1177,6 @@ and tenjin, it tries to fetch the article for that day if it failed."
        shimbun
        (while (re-search-forward "。　?\\(\\cj\\)" nil t)
 	 (replace-match "。<br><br>　\\1"))))
-     ((string-match "\\`car\\'\\|\\`car\\." group)
-      (shimbun-with-narrowed-article
-       shimbun
-       (when (re-search-forward "[\t\n ]*<p[\t\n ]+class=\"hide\">[\t\n ]\
-*ここから広告です[\t\n ]*</p>"
-				nil t)
-	 (let ((start (match-beginning 0)))
-	   (when (re-search-forward "<p[\t\n ]+class=\"hide\">[\t\n ]*\
-広告終わり[\t\n ]*</p>[\t\n ]*"
-				    nil t)
-	     (delete-region start (match-end 0)))))))
      ((string-equal group "culture.yurufemi")
       (let (comics)
 	(while (re-search-forward
@@ -1206,17 +1195,7 @@ and tenjin, it tries to fetch the article for that day if it failed."
 \\|<h[0-9]>プロフィール</h[0-9]>\\)"
 				 nil t)
 	  (goto-char (match-beginning 0))
-	  (insert "\n<!-- End of Kiji -->\n")))
-      (shimbun-with-narrowed-article
-       shimbun
-       (when (re-search-forward "[\t\n ]*<p[\t\n ]+class=\"hide\">[\t\n ]\
-*ここから広告です[\t\n ]*</p>"
-				nil t)
-	 (let ((start (match-beginning 0)))
-	   (when (re-search-forward "<p[\t\n ]+class=\"hide\">[\t\n ]*\
-広告終わり[\t\n ]*</p>[\t\n ]*"
-				    nil t)
-	     (delete-region start (match-end 0)))))))
+	  (insert "\n<!-- End of Kiji -->\n"))))
      ((string-equal group "editorial")
       (let ((regexp "\
 <h[0-9]\\(?:[\t\n ]+[^>]+\\)?>[\t\n ]*<a[\t\n ]+name=\"syasetu[0-9]+\">")
@@ -1399,6 +1378,16 @@ and tenjin, it tries to fetch the article for that day if it failed."
 			      nil t)
        (goto-char (match-beginning 0))
        (insert "\n<!-- End of Kiji -->"))
+     ;; Remove adv.
+     (goto-char (point-min))
+     (when (re-search-forward "[\t\n ]*<p[\t\n ]+class=\"hide\">[\t\n ]\
+*ここから広告です[\t\n ]*</p>"
+			      nil t)
+       (let ((start (match-beginning 0)))
+	 (when (re-search-forward "<p[\t\n ]+class=\"hide\">[\t\n ]*\
+広告終わり[\t\n ]*</p>[\t\n ]*"
+				  nil t)
+	   (delete-region start (match-end 0)))))
      ;; Break long lines.
      (unless (shimbun-prefer-text-plain-internal shimbun)
        (shimbun-break-long-japanese-lines)))))
