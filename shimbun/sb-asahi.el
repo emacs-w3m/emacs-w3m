@@ -1385,7 +1385,7 @@ and tenjin, it tries to fetch the article for that day if it failed."
 			      nil t)
        (let ((start (match-beginning 0)))
 	 (when (re-search-forward "<p[\t\n ]+class=\"hide\">[\t\n ]*\
-広告終わり[\t\n ]*</p>[\t\n ]*"
+広告終わり\\(?:[\t\n ]*</p>[\t\n ]*\\|\\'\\)"
 				  nil t)
 	   (delete-region start (match-end 0)))))
      ;; Break long lines.
