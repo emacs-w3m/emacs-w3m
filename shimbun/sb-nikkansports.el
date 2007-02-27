@@ -1,6 +1,6 @@
 ;;; sb-nikkansports.el --- shimbun backend for www.nikkansports.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007
 ;; MIYOSHI Masanori <miyoshi@meadowy.org>
 
 ;; Author: MIYOSHI Masanori <miyoshi@meadowy.org>
@@ -37,30 +37,35 @@
 		   (shimbun-japanese-newspaper shimbun) ())
 
 (defvar shimbun-nikkansports-url "http://www.nikkansports.com/")
-(defvar shimbun-nikkansports-server-name "日刊スポーツ")
-(defvar shimbun-nikkansports-group-table
-  '(("baseball" "野球" "ns/baseball/top-bb.html")
-    ("mlb" "大リーグ" "ns/baseball/mlb/top-tp2-bb.html")
-    ("soccer" "サッカー" "ns/soccer/top-sc.html")
-    ("sports" "スポーツ" "ns/sports/top-sp.html")
-    ("battle" "バトル" "ns/battle/top-bt.html")
-    ("horseracing" "競馬" "ns/horseracing/top-hr.html")
-    ("entertainment" "芸能" "ns/entertainment/top-et.html")
-    ("society" "社会" "ns/general/top-so.html")
-    ("leisure" "釣り" "ns/leisure/top-ls.html")))
-(defvar shimbun-nikkansports-content-start
-  "<!--emacs-w3m-shimbun-nikkansports-content-start-->")
-(defvar shimbun-nikkansports-content-end
-  "<!--emacs-w3m-shimbun-nikkansports-content-end-->")
-(defvar shimbun-nikkansports-expiration-days 17)
 
-(defvar shimbun-nikkansports-end-of-header-regexp
-  (concat "\n<!--\\("
-	  " End of Header "	"\\|"
-	  "header"		"\\|"
-	  "◆◆◆◆◆◆ここまでヘッダー◆◆◆◆◆◆"
-	  "\\)-->\n")
-  "*Regexp used to look for the end of the header in a html contents.")
+(defvar shimbun-nikkansports-server-name "日刊スポーツ")
+
+(defvar shimbun-nikkansports-group-table
+  '(("baseball" "野球" "baseball/top-baseball.html")
+    ("soccer" "サッカー" "soccer/top-soccer.html")
+    ("sports" "スポーツ" "sports/top-sports.html")
+    ("battle" "バトル" "battle/top-battle.html")
+    ("horseracing" "競馬" "race/top-race.html")
+    ("entertainment" "芸能" "entertainment/top-entertainment.html")
+    ("society" "社会" "general/top-general.html")
+    ("lifestyle" "ライフ" "http://lifestyle.nikkansports.com/")))
+
+(defvar shimbun-nikkansports-content-start
+  "<!-+[\t\n ]*\\++[\t\n ]*\
+\\(?:ニュース本文エリア\\|トップニュース\\|コンテンツここから\\)[\t\n ]*\
+\\++[\t\n ]*-+>\\(?:[\t\n ]*<[^>h][^>]*>\\)*[\t\n ]*<h[0-9]\
+\\(?:[\t\n ]+[^>]+\\)*>\[^<]+</h[0-9]>\\(?:[\t\n ]*<![^>]*>\\)*[\t\n ]*")
+
+(defvar shimbun-nikkansports-content-end
+  "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\\(?:\
+\［20[0-9][0-9]年[ 01]?[0-9]月[ 0-3]?[0-9]日\
+\\(?:[012]?[0-9]時[0-5]?[0-9]分\\|[\t\n ]*[012]?[0-9]:[0-5][0-9]\\)[^］]*］\
+\\|<!-+[\t\n ]*google_ad_section_end\
+\\|<script[\t\n ]+type=\"text/javascript\"\
+\\|<!-+[\t\n ]*\\++[\t\n ]*関連情報[\t\n ]*\\++[\t\n ]*-+>\
+\\|<!-+[\t\n ]*/\\++[\t\n ]*ニュース本文エリア[\t\n ]*\\++[\t\n ]*-+>\\)")
+
+(defvar shimbun-nikkansports-expiration-days 17)
 
 (luna-define-method shimbun-groups ((shimbun shimbun-nikkansports))
   (mapcar 'car shimbun-nikkansports-group-table))
@@ -70,95 +75,82 @@
 		shimbun-nikkansports-group-table)))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-nikkansports))
-  (concat (shimbun-url-internal shimbun)
-	  (nth 2 (assoc (shimbun-current-group-internal shimbun)
-			shimbun-nikkansports-group-table))))
+  (let ((index (nth 2 (assoc (shimbun-current-group-internal shimbun)
+			     shimbun-nikkansports-group-table))))
+    (if (string-match "\\`http:" index)
+	index
+      (concat shimbun-nikkansports-url index))))
+
+(defun shimbun-nikkansports-expand-url (url group)
+  (cond ((string-match "\\`http:" url)
+	 url)
+	((string-equal group "life")
+	 (shimbun-expand-url url "http://lifestyle.nikkansports.com/"))
+	(t
+	 (shimbun-expand-url url shimbun-nikkansports-url))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-nikkansports)
 					 &optional range)
-;;;<DEBUG>
-;;  (shimbun-nikkansports-get-headers shimbun))
-;;
-;;(defun shimbun-nikkansports-get-headers (shimbun)
-;;;</DEBUG>
-  (when (re-search-forward shimbun-nikkansports-end-of-header-regexp nil t)
-    (delete-region (point-min) (point))
-    (when (re-search-forward
-	   "\n<!--\\( Start of Footer \\|footer-\\)-->\n" nil t)
-      (forward-line -1)
-      (delete-region (point) (point-max))
-      (goto-char (point-min))
-      (let* ((case-fold-search t)
-	     (group (shimbun-current-group-internal shimbun))
-	     (from (concat shimbun-nikkansports-server-name " ("
-			   (nth 1 (assoc group
-					 shimbun-nikkansports-group-table))
-			   ")"))
-	     year month day headers)
-	(while (re-search-forward
-		(eval-when-compile
-		  (concat
-		   "<li><a href=\"/"
-		   ;; 1. url
-		   "\\("
-		   "[^>]+"
-		   ;; 2. year
-		   "\\([0-9][0-9]\\)"
-		   ;; 3. month
-		   "\\([0-9][0-9]\\)"
-		   ;; 4. day
-		   "\\([0-9][0-9]\\)"
-		   "-"
-		   ;; 5. serial number
-		   "\\([0-9]+\\)"
-		   "\\.html\\)"
-		   "\">"
-		   ;; 6. subject
-		   "\\([^<]+\\)"
-		   "</a>\\([^<]+［[0-3]?[0-9]日"
-		   ;; 8. hour:minute
-		   "\\([012]?[0-9]:[0-5]?[0-9]\\)"
-		   "］\\)?"))
-		nil t)
-	  (setq year (string-to-number (match-string 2))
-		month (string-to-number (match-string 3))
-		day (string-to-number (match-string 4)))
-	  (push (shimbun-create-header
-		 0
-		 (match-string 6)
-		 from
-		 (shimbun-make-date-string year month day (match-string 8))
-		 (format "<20%02d%02d%02d%s.%s%%nikkansports.com>"
-			 year month day (match-string 5) group)
-		 "" 0 0
-		 (concat (shimbun-url-internal shimbun)
-			 (match-string 1)))
-		headers))
-	(shimbun-sort-headers headers)))))
+  (let* ((case-fold-search t)
+	 (group (shimbun-current-group-internal shimbun))
+	 (from (concat shimbun-nikkansports-server-name " ("
+		       (nth 1 (assoc group shimbun-nikkansports-group-table))
+		       ")"))
+	 headers)
+    (while (re-search-forward
+	    (eval-when-compile
+	      (let ((s0 "[\t\n ]*") (s1 "[\t\n ]+"))
+		(concat
+		 "<a" s1 "href=\""
+		 ;; 1. url
+		 "\\(\\(?:http:/\\)?/\\(?:[^\"/>]+/\\)+"
+		 ;; 2. serial number
+		 "\\(\\(?:[^\"/>]+-\\)?"
+		 ;; 3. year
+		 "\\(20[0-9][0-9]\\)"
+		 ;; 4. month
+		 "\\([01][0-9]\\)"
+		 "[0-3][0-9]-[0-9]+\\)"
+		 "\\.html\\)"
+		 "\">" s0
+		 ;; 5. subject
+		 "\\([^<]+\\)"
+		 s0 "</a>[^<]*［" s0
+		 ;; 6. day
+		 "\\([0-3]?[0-9]\\)"
+		 s0 "日" s0
+		 ;; 7. time
+		 "\\([012][0-9]:[0-5][0-9]\\)"
+		 s0 "］")))
+	    nil t)
+      (push (shimbun-create-header
+	     0
+	     (match-string 5)
+	     from
+	     (shimbun-make-date-string
+	      (string-to-number (match-string 3))
+	      (string-to-number (match-string 4))
+	      (string-to-number (match-string 6))
+	      (match-string 7))
+	     (concat "<" (shimbun-subst-char-in-string ?- ?. (match-string 2))
+		     "%" group ".nikkansports.com>")
+	     "" 0 0
+	     (shimbun-nikkansports-expand-url (match-string 1) group))
+	    headers))
+    (shimbun-sort-headers headers)))
 
-(luna-define-method shimbun-make-contents
-  :before ((shimbun shimbun-nikkansports) header)
-;;;<DEBUG>
-;;  (shimbun-nikkansports-prepare-article shimbun header))
-;;
-;;(defun shimbun-nikkansports-prepare-article (shimbun header)
-;;;</DEBUG>
-  (let ((case-fold-search t)
-	start)
-    (when (or (re-search-forward "<img[\t\n ]+[^>]*class=\"photo\"" nil t)
-	      (re-search-forward "<p[\t\n ]+class=\"txt2h\">" nil t))
-      (setq start (match-beginning 0))
-      (goto-char (point-max))
-      (when (and (re-search-backward "<p[\t\n ]+class=\"txt2h\">" nil t)
-		 (search-forward "</p>" nil t))
-	(save-restriction
-	  (narrow-to-region start (point))
-	  (shimbun-break-long-japanese-lines)
-	  (goto-char (point-min))
-	  (insert shimbun-nikkansports-content-start)
-	  (goto-char (point-max))
-	  (insert shimbun-nikkansports-content-end)))
-      (goto-char (point-min)))))
+(luna-define-method shimbun-clear-contents :after ((shimbun
+						    shimbun-nikkansports)
+						   header)
+  ;; Remove garbage.
+  (goto-char (point-min))
+  (while (re-search-forward
+	  "[\t\n ]*<p>[^<]画像クリックで拡大表示[\t\n ]*</p>[\t\n ]*"
+	  nil t)
+    (delete-region (match-beginning 0) (match-end 0)))
+  ;; Break long lines.
+  (unless (shimbun-prefer-text-plain-internal shimbun)
+    (shimbun-break-long-japanese-lines)))
 
 (provide 'sb-nikkansports)
 

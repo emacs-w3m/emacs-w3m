@@ -1,6 +1,6 @@
 ;;; sb-gendai-net.el --- shimbun backend for Gendai Net -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2006 Katsumi Yamaoka
+;; Copyright (C) 2006, 2007 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -323,36 +323,39 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAYBAMAAABO02PvAAAAGFBMVEX+6ctRUVH7qDX416T
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-gendai-net)
 						   header)
-  (let (start end)
-    (if (string-equal (shimbun-current-group-internal shimbun) "today")
-	(when (and (re-search-forward "<!-+[\t\n\r ]*記事部[\t\n\r ]*-+>"
-				      nil t)
-		   (re-search-forward "<span[\t\n\r ]+[^>]+>[\t\n\r ]*"	nil t))
-	  (setq start (match-end 0))
-	  (when (re-search-forward "[\t\n\r ]*</span>" nil t)
-	    (setq end (match-beginning 0))))
-      (when (re-search-forward "<!-+[\t\n\r ]*記事部[\t\n\r ]*-+>[\t\n\r ]*"
-			       nil t)
-	(setq start (match-end 0))
-	(when (re-search-forward "<img[\t\n\r ]+src=[^>]+>\
+  (let (start)
+    (if (if (string-equal (shimbun-current-group-internal shimbun) "today")
+	    (when (and (re-search-forward "<!-+[\t\n\r ]*記事部[\t\n\r ]*-+>"
+					  nil t)
+		       (re-search-forward "<span[\t\n\r ]+[^>]+>[\t\n\r ]*"
+					  nil t))
+	      (setq start (match-end 0))
+	      (re-search-forward "[\t\n\r ]*</span>" nil t))
+	  (when (re-search-forward
+		 "<!-+[\t\n\r ]*記事部[\t\n\r ]*-+>[\t\n\r ]*"
+		 nil t)
+	    (setq start (match-end 0))
+	    (when (re-search-forward "<img[\t\n\r ]+src=[^>]+>\
 \\(?:[\t\n\r ]*<[^>]+>[\t\n\r ]*\\)?"
-				 nil t)
-	  (setq start (match-end 0)))
-	(when (re-search-forward "[\t\n\r ]*</span>" nil t)
-	  (setq end (match-beginning 0)))))
-    (if end
-	(save-restriction
-	  (narrow-to-region start end)
-	  (shimbun-break-long-japanese-lines)
-	  (goto-char (point-min))
-	  (insert shimbun-gendai-net-content-start)
-	  (goto-char (point-max))
-	  (insert shimbun-gendai-net-content-end))
+				     nil t)
+	      (setq start (match-end 0)))
+	    (re-search-forward "[\t\n\r ]*</span>" nil t)))
+	(progn
+	  (goto-char (match-beginning 0))
+	  (insert shimbun-gendai-net-content-end)
+	  (goto-char start)
+	  (insert shimbun-gendai-net-content-start))
       (erase-buffer)
       (insert "<html><body>\
 This article seems to have been canceled or expired.\
 </body></html>\n")))
   (goto-char (point-min)))
+
+(luna-define-method shimbun-clear-contents :after ((shimbun shimbun-gendai-net)
+						   header)
+  ;; Break long lines.
+  (unless (shimbun-prefer-text-plain-internal shimbun)
+    (shimbun-break-long-japanese-lines)))
 
 (provide 'sb-gendai-net)
 

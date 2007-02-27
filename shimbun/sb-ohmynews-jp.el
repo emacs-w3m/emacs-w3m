@@ -1,6 +1,6 @@
 ;;; sb-ohmynews-jp.el --- shimbun backend for OhmyNews Japan -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2006 Katsumi Yamaoka
+;; Copyright (C) 2006, 2007 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -210,9 +210,12 @@ v*[xW.y6Tt/r=U{a?+nH20N{)a/w145kJxfhqf}Jd<p\n `bP:u\\Awi^xGQ3pUOrsPL.';\
 	  (throw 'stop nil))))
     (shimbun-sort-headers headers)))
 
-(luna-define-method shimbun-make-contents
-  :before ((shimbun shimbun-ohmynews-jp) header)
-  (shimbun-break-long-japanese-lines shimbun))
+(luna-define-method shimbun-clear-contents :after ((shimbun
+						    shimbun-ohmynews-jp)
+						   header)
+  ;; Break long lines.
+  (unless (shimbun-prefer-text-plain-internal shimbun)
+    (shimbun-break-long-japanese-lines)))
 
 (provide 'sb-ohmynews-jp)
 

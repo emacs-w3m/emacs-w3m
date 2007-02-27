@@ -449,14 +449,17 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 	    (goto-char (point-min))
 	    (while (search-forward "▲" nil t)
 	      (replace-match "。<br><br>　")))))
-   (if (shimbun-prefer-text-plain-internal shimbun)
-       (progn
-	 ;; Replace images with text.
-	 (goto-char (point-min))
-	 (while (re-search-forward "[\t\n ]*<img[\t\n ]+[^>]+>[\t\n ]*" nil t)
-	   (replace-match "(写真)")))
-     ;; Break long lines.
-     (shimbun-break-long-japanese-lines))))
+   (when (shimbun-prefer-text-plain-internal shimbun)
+     ;; Replace images with text.
+     (goto-char (point-min))
+     (while (re-search-forward "[\t\n ]*<img[\t\n ]+[^>]+>[\t\n ]*" nil t)
+       (replace-match "(写真)")))))
+
+(luna-define-method shimbun-clear-contents :after ((shimbun shimbun-mainichi)
+						   header)
+  ;; Break long lines.
+  (unless (shimbun-prefer-text-plain-internal shimbun)
+    (shimbun-break-long-japanese-lines)))
 
 (provide 'sb-mainichi)
 

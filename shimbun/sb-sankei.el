@@ -1,6 +1,6 @@
 ;;; sb-sankei.el --- shimbun backend for the Sankei Shimbun -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003, 2004, 2005, 2006 Katsumi Yamaoka
+;; Copyright (C) 2003, 2004, 2005, 2006, 2007 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -295,8 +295,13 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACUAAAAlAgMAAAC48MiQAAAADFBMVEUDU4CnwdA3dpr///9
 	   (while (re-search-forward "<img[\t\n ]+src=[^>]+>" nil 'move)
 	     (insert "<br>"))
 	   (widen)
-	   (insert "<!--hbnend-->"))))
-  (shimbun-break-long-japanese-lines shimbun))
+	   (insert "<!--hbnend-->")))))
+
+(luna-define-method shimbun-clear-contents :after ((shimbun shimbun-sankei)
+						   header)
+  ;; Break long lines.
+  (unless (shimbun-prefer-text-plain-internal shimbun)
+    (shimbun-break-long-japanese-lines)))
 
 (provide 'sb-sankei)
 

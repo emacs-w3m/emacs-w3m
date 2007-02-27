@@ -1387,14 +1387,17 @@ and tenjin, it tries to fetch the article for that day if it failed."
 	 (when (re-search-forward "<p[\t\n ]+class=\"hide\">[\t\n ]*\
 広告終わり\\(?:[\t\n ]*</p>[\t\n ]*\\|\\'\\)"
 				  nil t)
-	   (delete-region start (match-end 0)))))
-     ;; Break long lines.
-     (unless (shimbun-prefer-text-plain-internal shimbun)
-       (shimbun-break-long-japanese-lines)))))
+	   (delete-region start (match-end 0))))))))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-asahi)
 						   header)
   (shimbun-asahi-prepare-article shimbun header))
+
+(luna-define-method shimbun-clear-contents :after ((shimbun shimbun-asahi)
+						   header)
+  ;; Break long lines.
+  (unless (shimbun-prefer-text-plain-internal shimbun)
+    (shimbun-break-long-japanese-lines)))
 
 (provide 'sb-asahi)
 

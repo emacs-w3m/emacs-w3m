@@ -175,6 +175,26 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAADFBMVEUAAAB/gP+ttr7///8
 		  shimbun-tech-on-password nil)
 	    (shimbun-tech-on-login)))))))
 
+(luna-define-method shimbun-clear-contents :before ((shimbun shimbun-tech-on)
+						    header)
+  ;; Remove useless images and lines.
+  (shimbun-with-narrowed-article
+   shimbun
+   (when (re-search-forward "\
+<!-+[\t\n ]*▼写真＆キャプション[\t\n ]*[(（]下画像[)）][\t\n ]*-+>"
+			    nil t)
+     (let ((start (point)))
+       (while (re-search-forward "[\t\n ]*<img[\t\n ]+\\([^>]+\\)>[\t\n ]*"
+				 nil t)
+	 (when (save-match-data
+		 (re-search-backward "src=\"[^\"]+/spacer\\.gif\""
+				     (match-beginning 1) t))
+	   (delete-region (match-beginning 0) (match-end 0))))
+       (goto-char start)
+       (while (re-search-forward "[\t\n ]*<hr\\(?:[\t\n ]+[^>]+\\)*>[\t\n ]*"
+				 nil t)
+	 (delete-region (match-beginning 0) (match-end 0)))))))
+
 (luna-define-method shimbun-article :before ((shimbun shimbun-tech-on)
 					     &rest args)
   (shimbun-tech-on-login))

@@ -1294,11 +1294,36 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
     (while (search-forward "＆" nil t)
       (replace-match "&amp;"))
     (goto-char (point-min)))
-  (while (re-search-forward "[^　、。ー〜￥]+" nil t)
+  (while (re-search-forward
+	  "[^　、。，．＿ー―‐〜‘’“”（）［］｛｝〈〉′″￥]+"
+	  nil t)
     (japanese-hankaku-region (match-beginning 0) (match-end 0) t))
   (goto-char (point-min))
   (while (re-search-forward "\\([!-~]\\)　\\([!-~]\\)" nil t)
-    (replace-match "\\1&nbsp;\\2")))
+    (replace-match "\\1 \\2")
+    (backward-char 1))
+  (goto-char (point-min))
+  (while (re-search-forward "\\([!-~]\\)、\\([!-~]\\)" nil t)
+    (replace-match "\\1, \\2")
+    (backward-char 1))
+  (goto-char (point-min))
+  (while (re-search-forward "，\\(\\cj\\)" nil t)
+    (replace-match "、\\1")
+    (backward-char 1))
+  (goto-char (point-min))
+  (while (re-search-forward "\\(\\cj\\)，" nil t)
+    (replace-match "\\1、"))
+  (goto-char (point-min))
+  (while (re-search-forward "\\([0-9]\\)，\\([0-9][0-9][0-9][^0-9]\\)" nil t)
+    (replace-match "\\1,\\2")
+    (backward-char 2))
+  (goto-char (point-min))
+  (while (search-forward "，" nil t)
+    (insert (if (prog1
+		    (looking-at "[ 　]\\|&nbsp;")
+		  (delete-backward-char 1))
+		","
+	      ", "))))
 
 (provide 'shimbun)
 
