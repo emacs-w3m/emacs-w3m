@@ -1,3 +1,49 @@
+2007-02-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-nikkansports.el (shimbun-nikkansports-group-table):
+	Remove mlb and leisure groups; add lifestyle group; update index
+	urls.
+	(shimbun-nikkansports-content-start)
+	(shimbun-nikkansports-content-end): Update.
+	(shimbun-nikkansports-end-of-header-regexp): Remove.
+	(shimbun-index-url): Work for lifestyle group.
+	(shimbun-nikkansports-expand-url): New function.
+	(shimbun-get-headers): Rewrite.
+	(shimbun-make-contents): Remove.
+	(shimbun-clear-contents): Remove garbage; run
+	shimbun-break-long-japanese-lines after converting Japanese
+	zenkaku characters into hankaku.
+
+	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Move
+	shimbun-break-long-japanese-lines to shimbun-clear-contents.
+	(shimbun-clear-contents): Run shimbun-break-long-japanese-lines
+	after converting Japanese zenkaku characters into hankaku.
+
+	* shimbun/sb-gendai-net.el (shimbun-make-contents): Move
+	shimbun-break-long-japanese-lines to shimbun-clear-contents.
+	(shimbun-clear-contents): Run shimbun-break-long-japanese-lines
+	after converting Japanese zenkaku characters into hankaku.
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-prepare-article): Move
+	shimbun-break-long-japanese-lines to shimbun-clear-contents.
+	(shimbun-clear-contents): Run shimbun-break-long-japanese-lines
+	after converting Japanese zenkaku characters into hankaku.
+
+	* shimbun/sb-ohmynews-jp.el (shimbun-make-contents): Move
+	shimbun-break-long-japanese-lines to shimbun-clear-contents.
+	(shimbun-clear-contents): Run shimbun-break-long-japanese-lines
+	after converting Japanese zenkaku characters into hankaku.
+
+	* shimbun/sb-sankei.el (shimbun-clear-contents): Run
+	shimbun-break-long-japanese-lines after rather than before
+	converting Japanese zenkaku characters into hankaku.
+
+	* shimbun/sb-tech-on.el (shimbun-clear-contents): Remove useless
+	images and lines.
+
+	* shimbun/shimbun.el (shimbun-japanese-hankaku-buffer): Work
+	cleverly.
+
 2007-02-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Remove adv.

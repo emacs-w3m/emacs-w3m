@@ -4622,10 +4622,9 @@ add the following line to your @file{~/.emacs} file:
 @end lisp
 
 @item @uref{http://www.nikkansports.com/, Nikkan Sports}
-nikkansports.baseball nikkansports.mlb nikkansports.soccer
-nikkansports.world-soccer nikkansports.sports nikkansports.battle
-nikkansports.horseracing nikkansports.entertainment
-nikkansports.society nikkansports.leisure
+nikkansports.baseball nikkansports.soccer nikkansports.sports
+nikkansports.battle nikkansports.horseracing nikkansports.entertainment
+nikkansports.society nikkansports.lifestyle
 
 @item @uref{http://www.nikkei.co.jp/, Nihon Keizai Shimbun}
 nikkei.top nikkei.main nikkei.keizai nikkei.sangyo nikkei.tento

@@ -4678,10 +4678,9 @@ mainichi.sports.soccer mainichi.today mainichi.yougo
 @end lisp
 
 @item @uref{http://www.nikkansports.com/, 日刊スポーツ}
-nikkansports.baseball nikkansports.mlb nikkansports.soccer
-nikkansports.world-soccer nikkansports.sports nikkansports.battle
-nikkansports.horseracing nikkansports.entertainment
-nikkansports.society nikkansports.leisure
+nikkansports.baseball nikkansports.soccer nikkansports.sports
+nikkansports.battle nikkansports.horseracing nikkansports.entertainment
+nikkansports.society nikkansports.lifestyle
 
 @item @uref{http://www.nikkei.co.jp/, 日本経済新聞}
 nikkei.top nikkei.main nikkei.keizai nikkei.sangyo nikkei.tento
