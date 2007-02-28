@@ -1,3 +1,13 @@
+2007-02-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/shimbun.el (shimbun-japanese-hankaku): New user option.
+	(shimbun-japanese-hankaku): New function.
+	(shimbun-headers, shimbun-clear-contents): Use it.
+	(shimbun-break-long-japanese-lines): Don't break line at Japanese
+	period or comma which follows ascii text since it causes an extra
+	space in rendered text.
+	(shimbun-japanese-hankaku-buffer): Work cleverly more.
+
 2007-02-28  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-filter.el (w3m-filter-rules): Add rules for the site of

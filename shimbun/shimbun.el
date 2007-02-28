@@ -93,7 +93,7 @@
 			  ;; text/plain articles.
 			  text-content-start text-content-end
 			  ;; Say whether to convert Japanese zenkaku
-			  ;; ASCII charas into hankaku.
+			  ;; ASCII chars into hankaku.
 			  japanese-hankaku))
   (luna-define-internal-accessors 'shimbun))
 
@@ -130,6 +130,14 @@ while shimbun is waiting for a server's response."
 
 (defcustom shimbun-message-enable-logging nil
   "*Non-nil means preserve echo messages in the *Message* buffer."
+  :group 'shimbun
+  :type 'boolean)
+
+(defcustom shimbun-japanese-hankaku nil
+  "Non-nil means convert Japanese zenkaku ASCII chars into hankaku.
+A non-nil value of this variable affects all shimbun articles.
+Another way is to set `shimbun-SERVER-japanese-hankaku' to non-nil per
+SERVER."
   :group 'shimbun
   :type 'boolean)
 
@@ -802,6 +810,13 @@ Optional MUA is a `shimbun-mua' instance."
   (when (shimbun-current-group-internal shimbun)
     (shimbun-set-current-group-internal shimbun nil)))
 
+(luna-define-generic shimbun-japanese-hankaku (shimbun)
+  "Say whether to convert Japanese zenkaku ASCII chars into hankaku.")
+
+(luna-define-method shimbun-japanese-hankaku ((shimbun shimbun))
+  (or shimbun-japanese-hankaku
+      (shimbun-japanese-hankaku-internal shimbun)))
+
 (luna-define-generic shimbun-headers (shimbun &optional range)
   "Return a SHIMBUN header list.
 Optional argument RANGE is one of following:
@@ -826,7 +841,7 @@ Return nil if all pages should be retrieved."
   (prog1
       (with-temp-buffer
 	(let ((w3m-verbose (if shimbun-verbose nil w3m-verbose))
-	      (hankaku (shimbun-japanese-hankaku-internal shimbun))
+	      (hankaku (shimbun-japanese-hankaku shimbun))
 	      headers)
 	  (shimbun-fetch-url shimbun (shimbun-index-url shimbun) 'reload)
 	  (setq headers (shimbun-get-headers shimbun range))
@@ -988,7 +1003,7 @@ Return nil, unless a content is cleared successfully.")
 	       (re-search-forward end nil t))
       (delete-region (match-beginning 0) (point-max))
       (delete-region (point-min) start)
-      (setq hankaku (shimbun-japanese-hankaku-internal shimbun))
+      (setq hankaku (shimbun-japanese-hankaku shimbun))
       (when (and hankaku (not (memq hankaku '(header subject))))
 	(shimbun-japanese-hankaku-buffer t)
 	(goto-char (point-min)))
@@ -1254,9 +1269,13 @@ it considers the buffer has already been narrowed to an article."
 		   (re-search-forward (shimbun-content-end shimbun) nil t))
 	  (narrow-to-region start (match-beginning 0)))))
     (goto-char (point-min))
-    (while (re-search-forward "<p[^>]*>\\|</p>\\|[、。）」]+" nil t)
-      (unless (eolp)
-	(insert "\n"))))
+    (while (re-search-forward
+	    "<p[\t\n ]+[^>]*>\\|</p>\\|\\([、。）」]+\\)\\(\\cj\\)"
+	    nil t)
+      (if (match-beginning 1)
+	  (replace-match "\\1\n\\2")
+	(unless (eolp)
+	  (insert "\n")))))
   (goto-char (point-min)))
 
 (defmacro shimbun-with-narrowed-article (shimbun &rest forms)
@@ -1299,11 +1318,13 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
 	  nil t)
     (japanese-hankaku-region (match-beginning 0) (match-end 0) t))
   (goto-char (point-min))
-  (while (re-search-forward "\\([!-~]\\)　\\([!-~]\\)" nil t)
-    (replace-match "\\1 \\2")
-    (backward-char 1))
+  (while (re-search-forward "\\([ -~]\\)　\\|　\\([ -~]\\)" nil t)
+    (if (match-beginning 1)
+	(replace-match "\\1")
+      (replace-match "\\2")
+      (backward-char 1)))
   (goto-char (point-min))
-  (while (re-search-forward "\\([!-~]\\)、\\([!-~]\\)" nil t)
+  (while (re-search-forward "\\([!-~]\\)、[ 　]*\\([!-~]\\)" nil t)
     (replace-match "\\1, \\2")
     (backward-char 1))
   (goto-char (point-min))
@@ -1318,12 +1339,34 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
     (replace-match "\\1,\\2")
     (backward-char 2))
   (goto-char (point-min))
-  (while (search-forward "，" nil t)
-    (insert (if (prog1
-		    (looking-at "[ 　]\\|&nbsp;")
-		  (delete-backward-char 1))
-		","
-	      ", "))))
+  (while (re-search-forward "\\([0-9]\\)．\\([0-9]\\)" nil t)
+    (replace-match "\\1.\\2"))
+
+  ;; Do wakachi-gaki.
+  (goto-char (point-min))
+  (while (re-search-forward
+	  "\\(\\cj\\)\\(?:[ 　]\\|&nbsp;\\)\\([])>}]\\|&gt;\\)\
+\\|\\([(<[{]\\|&lt;\\)\\(?:[ 　]\\|&nbsp;\\)\\(\\cj\\)"
+	  nil t)
+    (replace-match (if (match-beginning 1) "\\1\\2" "\\3\\4"))
+    (backward-char 1))
+  (goto-char (point-min))
+  (while (re-search-forward "\\(\\cj\\)\\([(0-9<A-Z[a-z{]\\|&lt;\\)\
+\\|\\([]%)0-9>A-Za-z}]\\|&gt;\\)\\(\\cj\\)"
+			    nil t)
+    (replace-match (if (match-beginning 1) "\\1 \\2" "\\3 \\4"))
+    (backward-char 1))
+
+  (goto-char (point-min))
+  (while (re-search-forward
+	  (eval-when-compile
+	    (let ((chars "‘“〔〈《「『〖【°（　、。，．゛゜〜‘’“”（）\
+\〔〕［］｛｝〈〉《》「」『』【】°′″"))
+	      (concat "\\(?:[ 　]\\|&nbsp;\\)\\([" chars "]\\)"
+		      "\\|\\([" chars "]\\)\\(?:[ 　]\\|&nbsp;\\)")))
+	  nil t)
+    (replace-match (if (match-beginning 1) "\\1" "\\2"))
+    (backward-char 1)))
 
 (provide 'shimbun)
 
