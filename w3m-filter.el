@@ -51,6 +51,9 @@
      "<!-- DAC CHANNEL AD START -->" "<!-- DAC CHANNEL AD END -->")
     ("\\`http://\\(www\\|images\\|news\\|maps\\|groups\\)\\.google\\."
      w3m-filter-google)
+    ("\\`https?://\\(?:www\\.\\)?amazon\\.\\(?:com\\|co\\.\\(?:jp\\|uk\\)\\|fr\\|de\\)/"
+     w3m-filter-amazon)
+    ("\\`http://mixi\\.jp" w3m-filter-mixi)
     ("\\`http://www\\.asahi\\.com/" w3m-filter-asahi-shimbun))
   "Rules to filter advertisements on WEB sites."
   :group 'w3m
@@ -77,6 +80,28 @@
 
 (defcustom w3m-filter-google-use-ruled-line  t
   "*Use the ruled line on the site of Google."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-filter-amazon-regxp (concat
+				    "\\`\\(https?://\\(?:www\\.\\)?amazon\\."
+				    "\\(?:com\\|co\\.\\(?:jp\\|uk\\)\\|fr\\|de\\)"
+				    ;; "Joyo.com" 
+				    "\\)/"
+				    "\\(?:"
+				    "\\(?:exec/obidos\\|o\\)/ASIN"
+				    "\\|"
+				    "gp/product"
+				    "\\|"
+				    "\\(?:[^/]+/\\)?dp"
+				    "\\)"
+				    "/\\([0-9]+\\)")
+  "*Regexp to extract ASIN number for Amazon."
+  :group 'w3m
+  :type '(string :size 0))
+
+(defcustom w3m-filter-amazon-short-url-bottom nil
+  "*Amazon short URLs insert bottom position."
   :group 'w3m
   :type 'boolean)
 
@@ -117,6 +142,7 @@
 	  (insert-char (w3m-ucs-to-char ucs) 1))))))
 
 (defun w3m-filter-google (url)
+  "Insert separator within items."
   (goto-char (point-min))
   (let ((endm (make-marker))
 	(case-fold-search t)
@@ -146,5 +172,42 @@
 	    (insert "<hr>"))
 	(while (search-backward "<div class=" end t)
 	  (insert "<p>"))))))
+
+(defun w3m-filter-amazon (url)
+  "Insert Amazon short URIs."
+  (when (string-match w3m-filter-amazon-regxp url)
+    (let* ((base (match-string 1 url))
+	   (asin (match-string 2 url))
+	   (shorturls `(,(concat base "/dp/" asin "/")
+			,(concat base "/o/ASIN/" asin "/")
+			,(concat base "/gp/product/" asin "/")))
+	   (case-fold-search t)
+	   shorturl)
+      (goto-char (point-min))
+      (setq url (file-name-as-directory url))
+      (when (or (and (not w3m-filter-amazon-short-url-bottom)
+		     (search-forward "<body>" nil t))
+		(and w3m-filter-amazon-short-url-bottom
+		     (search-forward "</body>" nil t)
+		     (goto-char (match-beginning 0))))
+	(insert "\n")
+	(while (setq shorturl (car shorturls))
+	  (setq shorturls (cdr shorturls))
+	  (unless (string= url shorturl)
+	    (insert (format "Amazon Short URL: <a href=\"%s\">%s</a><br>\n"
+			    shorturl shorturl))))
+	(insert "\n")))))
+
+(defun w3m-filter-mixi (url)
+  "Direct jump to the external diary."
+  (goto-char (point-min))
+  (let (newurl)
+    (while (re-search-forward "<a href=view_diary\\.pl\\?url=\\([^>]+\\)>" nil t)
+      (setq newurl (match-string 1))
+      (when newurl
+	(delete-region (match-beginning 0) (match-end 0))
+	(when (string-match "&owner_id=[0-9]+\\'" newurl)
+	  (setq newurl (substring newurl 0 (match-beginning 0))))
+	(insert (format "<a href=\"%s\">" (w3m-url-readable-string newurl)))))))
 
 ;;; w3m-filter.el ends here
