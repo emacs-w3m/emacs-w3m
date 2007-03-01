@@ -1301,7 +1301,7 @@ it considers the buffer has already been narrowed to an article."
 (defun shimbun-japanese-hankaku-buffer (&optional quote)
   "Convert Japanese zenkaku ASCII chars in the current buffer into hankaku.
 There are exceptions; some chars aren't converted, and \"＜\", \"＞\" and
-\"＆\" are quoted after being converted if QUOTE is non-nil."
+\"＆\" are quoted if QUOTE is non-nil."
   (goto-char (point-min))
   (when quote
     (while (re-search-forward "＜\\(?:[ 　]\\|&nbsp;\\)?" nil t)
