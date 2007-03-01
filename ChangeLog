@@ -1,5 +1,10 @@
 2007-02-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/shimbun.el (shimbun-japanese-hankaku-buffer): Work
+	cleverly more.
+
+2007-02-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* shimbun/shimbun.el (shimbun-japanese-hankaku): New user option.
 	(shimbun-japanese-hankaku): New function.
 	(shimbun-headers, shimbun-clear-contents): Use it.
