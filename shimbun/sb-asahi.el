@@ -1250,7 +1250,7 @@ and tenjin, it tries to fetch the article for that day if it failed."
 		(insert "<!-- Start of Kiji -->")
 		(when index
 		  (insert "\
-\n<p>(指定された&nbsp;url&nbspが&nbspまだ/すでに&nbsp無いので、\
+\n<p>(指定された&nbsp;url&nbsp;が&nbsp;まだ/すでに&nbsp;無いので、\
 <a href=\"" index "\">トップページ</a> から記事を取得しました)</p>\n"))
 		(while (re-search-forward "[\t\n ]*<SPAN STYLE=[^>]+>[\t\n ]*"
 					  nil t)
