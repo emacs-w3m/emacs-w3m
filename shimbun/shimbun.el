@@ -1383,8 +1383,12 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
   ;; Do wakachi-gaki.
   (goto-char (point-min))
   (while (re-search-forward
-	  "\\(\\cj\\)\\(?:[ 　]\\|&nbsp;\\)\\([])>}]\\|&gt;\\)\
-\\|\\([(<[{]\\|&lt;\\)\\(?:[ 　]\\|&nbsp;\\)\\(\\cj\\)"
+	  "\\(\\cj\\)\\(?:[ 　]\\|&nbsp;\\)\\([])>}]\
+\\|&#\\(?:62\\|187\\|8217\\|8221\\|8250\\|8969\\|8971\\|9002\\);\
+\\|&\\(?:gt\\|raquo\\|rsquo\\|rdquo\\|rsaquo\\|rceil\\|rfloor\\|rang\\);\\)\
+\\|\\([(<[{]\\|&#\\(?:60\\|171\\|8216\\|8220\\|8249\\|8968\\|8970\\|9001\\);\
+\\|&\\(?:lt\\|laquo\\|lsquo\\|ldquo\\|lsaquo\\|lceil\\|lfloor\\|lang\\);\\)\
+\\(?:[ 　]\\|&nbsp;\\)\\(\\cj\\)"
 	  nil t)
     (replace-match (if (match-beginning 1) "\\1\\2" "\\3\\4"))
     (backward-char 1))
@@ -1393,9 +1397,14 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
 	  "\\([^0-9]\\cj\\)\\([0-9]+\\(?:[,.][0-9]+\\)*[^0-9]\\)\
 \\|\\([^0-9][!-/:-=?-~][0-9]+\\(?:[,.][0-9]+\\)*\\)\\(\\cj\\)\
 \\|\\([0-9]\\)\\(\\(?:\\cH\\|\\cK\\)[^0-9]\\)\
-\\|\\(\\cj\\)\\([(<A-Z[a-z{]\\|&lt;\\)\
-\\|\\([]%)>A-Za-z}]\\|&gt;\\)\\(\\cj\\)"
-			    nil t)
+\\|\\(\\cj\\)\\([(<A-Z[a-z{]\
+\\|&#\\(?:60\\|171\\|8216\\|8220\\|8249\\|8968\\|8970\\|9001\\);\
+\\|&\\(?:lt\\|laquo\\|lsquo\\|ldquo\\|lsaquo\\|lceil\\|lfloor\\|lang\\);\\)\
+\\|\\([]%)>A-Za-z}]\
+\\|&#\\(?:62\\|187\\|8217\\|8221\\|8250\\|8969\\|8971\\|9002\\);\
+\\|&\\(?:gt\\|raquo\\|rsquo\\|rdquo\\|rsaquo\\|rceil\\|rfloor\\|rang\\);\\)\
+\\(\\cj\\)"
+	  nil t)
     (cond ((match-beginning 1)
 	   (unless (and (member (match-string 1)
 				'("明治" "大正" "昭和" "平成"))

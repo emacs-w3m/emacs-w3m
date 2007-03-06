@@ -1,5 +1,8 @@
 2007-03-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/shimbun.el (shimbun-japanese-hankaku-buffer): Do wakachi-
+	gaki with some entities.
+
 	* shimbun/sb-asahi.el (shimbun-asahi-prepare-article): Add missing
 	semicolon to &nbsp.
 
