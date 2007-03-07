@@ -210,12 +210,14 @@ v*[xW.y6Tt/r=U{a?+nH20N{)a/w145kJxfhqf}Jd<p\n `bP:u\\Awi^xGQ3pUOrsPL.';\
 	  (throw 'stop nil))))
     (shimbun-sort-headers headers)))
 
-(luna-define-method shimbun-clear-contents :after ((shimbun
-						    shimbun-ohmynews-jp)
-						   header)
-  ;; Break long lines.
-  (unless (shimbun-prefer-text-plain-internal shimbun)
-    (shimbun-break-long-japanese-lines)))
+(luna-define-method shimbun-clear-contents :around ((shimbun
+						     shimbun-ohmynews-jp)
+						    header)
+  (when (luna-call-next-method)
+    ;; Break long lines.
+    (unless (shimbun-prefer-text-plain-internal shimbun)
+      (shimbun-break-long-japanese-lines))
+    t))
 
 (provide 'sb-ohmynews-jp)
 

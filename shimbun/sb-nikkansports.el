@@ -139,18 +139,20 @@
 	    headers))
     (shimbun-sort-headers headers)))
 
-(luna-define-method shimbun-clear-contents :after ((shimbun
-						    shimbun-nikkansports)
-						   header)
-  ;; Remove garbage.
-  (goto-char (point-min))
-  (while (re-search-forward
-	  "[\t\n ]*<p>[^<]画像クリックで拡大表示[\t\n ]*</p>[\t\n ]*"
-	  nil t)
-    (delete-region (match-beginning 0) (match-end 0)))
-  ;; Break long lines.
-  (unless (shimbun-prefer-text-plain-internal shimbun)
-    (shimbun-break-long-japanese-lines)))
+(luna-define-method shimbun-clear-contents :around ((shimbun
+						     shimbun-nikkansports)
+						    header)
+  (when (luna-call-next-method)
+    ;; Remove garbage.
+    (goto-char (point-min))
+    (while (re-search-forward
+	    "[\t\n ]*<p>[^<]画像クリックで拡大表示[\t\n ]*</p>[\t\n ]*"
+	    nil t)
+      (delete-region (match-beginning 0) (match-end 0)))
+    ;; Break long lines.
+    (unless (shimbun-prefer-text-plain-internal shimbun)
+      (shimbun-break-long-japanese-lines))
+    t))
 
 (provide 'sb-nikkansports)
 

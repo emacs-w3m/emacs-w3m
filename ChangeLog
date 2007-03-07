@@ -1,3 +1,31 @@
+2007-03-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-clear-contents): Return the result
+	of the parent function.
+	* shimbun/sb-mainichi.el (shimbun-clear-contents): Ditto.
+	* shimbun/sb-nikkansports.el (shimbun-clear-contents): Ditto.
+	* shimbun/sb-ohmynews-jp.el (shimbun-clear-contents): Ditto.
+	* shimbun/sb-sankei.el (shimbun-clear-contents): Ditto.
+
+	* shimbun/sb-gendai-net.el (shimbun-gendai-net-get-headers-today):
+	Work even when the headers are in the reverse order.
+	(shimbun-clear-contents): Return the result of the parent function.
+
+	* shimbun/sb-itmedia.el (shimbun-headers): Convert Japanese
+	zenkaku characters into hankaku.
+	(shimbun-clear-contents): Ditto; return the result of the parent
+	function correctly.
+
+	* shimbun/sb-kantei.el (shimbun-clear-contents): Convert Japanese
+	zenkaku characters into hankaku; return the result of the parent
+	function.
+
+	* shimbun/shimbun.el (shimbun-japanese-hankaku): Fix doc string
+	and custom type.
+	(shimbun-japanese-hankaku): Prefer per-server value.
+	(shimbun-char-category-list): New function.
+	(shimbun-japanese-hankaku-buffer): Work cleverly more.
+
 2007-03-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-japanese-hankaku-buffer): Do wakachi-

@@ -455,11 +455,13 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
      (while (re-search-forward "[\t\n ]*<img[\t\n ]+[^>]+>[\t\n ]*" nil t)
        (replace-match "(写真)")))))
 
-(luna-define-method shimbun-clear-contents :after ((shimbun shimbun-mainichi)
-						   header)
-  ;; Break long lines.
-  (unless (shimbun-prefer-text-plain-internal shimbun)
-    (shimbun-break-long-japanese-lines)))
+(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-mainichi)
+						    header)
+  (when (luna-call-next-method)
+    ;; Break long lines.
+    (unless (shimbun-prefer-text-plain-internal shimbun)
+      (shimbun-break-long-japanese-lines))
+    t))
 
 (provide 'sb-mainichi)
 

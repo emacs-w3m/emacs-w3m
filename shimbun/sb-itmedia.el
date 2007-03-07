@@ -1,6 +1,6 @@
 ;;; sb-itmedia.el --- shimbun backend for ITmedia -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2004, 2005, 2006 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2004, 2005, 2006, 2007 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
@@ -85,7 +85,15 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 	(luna-call-next-method)
       (with-temp-buffer
 	(shimbun-fetch-url shimbun (nth 2 elem) t)
-	(funcall (nth 3 elem) shimbun)))))
+	(let ((headers (funcall (nth 3 elem) shimbun))
+	      (hankaku (shimbun-japanese-hankaku shimbun)))
+	  (if (and hankaku (not (eq hankaku 'body)))
+	      (dolist (header headers headers)
+		(erase-buffer)
+		(insert (shimbun-header-subject-internal header))
+		(shimbun-japanese-hankaku-buffer)
+		(shimbun-header-set-subject-internal header (buffer-string)))
+	    headers))))))
 
 (defun shimbun-itmedia-anchordesk-get-headers (shimbun)
   (let ((case-fold-search t)
@@ -140,24 +148,26 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
       t)))
 
 (luna-define-method shimbun-clear-contents ((shimbun shimbun-itmedia) header)
-  (let ((case-fold-search t) (start))
-    (goto-char (point-min))
-    (when (and (search-forward "<!--BODY-->" nil t)
-	       (setq start (match-end 0))
-	       (re-search-forward "<!--BODY ?END-->" nil t))
-      (delete-region (match-beginning 0) (point-max))
-      (delete-region (point-min) start)
-      ;; Remove anchors to both the next page and the previous page.
-      ;; These anchors are inserted into the head and the tail of the
-      ;; article body.
-      (skip-chars-backward " \t\r\f\n")
-      (forward-line 0)
-      (when (looking-at "<P ALIGN=\"CENTER\"><[AB]")
-	(delete-region (point) (point-max)))
-      (goto-char (point-min))
-      (skip-chars-forward " \t\r\f\n")
-      (when (looking-at "<P ALIGN=\"CENTER\"><[AB]")
-	(delete-region (point-min) (point-at-eol))))
+  (prog1
+      (let ((case-fold-search t) (start))
+	(goto-char (point-min))
+	(when (and (search-forward "<!--BODY-->" nil t)
+		   (setq start (match-end 0))
+		   (re-search-forward "<!--BODY ?END-->" nil t))
+	  (delete-region (match-beginning 0) (point-max))
+	  (delete-region (point-min) start)
+	  ;; Remove anchors to both the next page and the previous page.
+	  ;; These anchors are inserted into the head and the tail of the
+	  ;; article body.
+	  (skip-chars-backward " \t\r\f\n")
+	  (forward-line 0)
+	  (when (looking-at "<P ALIGN=\"CENTER\"><[AB]")
+	    (delete-region (point) (point-max)))
+	  (goto-char (point-min))
+	  (skip-chars-forward " \t\r\f\n")
+	  (when (looking-at "<P ALIGN=\"CENTER\"><[AB]")
+	    (delete-region (point-min) (point-at-eol)))
+	  t))
     (shimbun-remove-tags "<!-- AD START -->" "<!-- AD END -->")
     (shimbun-remove-tags "\
 <IMG [^>]*SRC=\"http:/[^\"]*/\\(ad\\.itmedia\\.co\\.jp\\|\
@@ -165,7 +175,9 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>")
     (shimbun-remove-tags "\
 <A [^>]*HREF=\"http:/[^\"]*/\\(ad\\.itmedia\\.co\\.jp\\|\
 a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>")
-    t))
+    (let ((hankaku (shimbun-japanese-hankaku shimbun)))
+      (when (and hankaku (not (memq hankaku '(header subject))))
+	(shimbun-japanese-hankaku-buffer t)))))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-itmedia)
 						   header)

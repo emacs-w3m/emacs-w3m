@@ -135,11 +135,38 @@ while shimbun is waiting for a server's response."
 
 (defcustom shimbun-japanese-hankaku nil
   "Non-nil means convert Japanese zenkaku ASCII chars into hankaku.
-A non-nil value of this variable affects all shimbun articles.
+A non-nil value of this variable affects all shimbun articles except
+ones fetched by shimbun modules that override the `shimbun-headers'
+method or the `shimbun-clear-contents' method.  Valid values include:
+
+`header' or `subject':
+    Perform the hankaku conversion on only subjects.
+`body':
+    Perform the hankaku conversion on only bodies.
+non-nil values excluding `header', `subject', `body', and `never':
+    Perform the hankaku conversion on both subjects and bodies.
+nil:
+    Don't perform the hankaku conversion.
+`never':
+    Never perform the hankaku conversion.
+
 Another way is to set `shimbun-SERVER-japanese-hankaku' to non-nil per
-SERVER."
+SERVER.  If you want to perform the hankaku conversion on articles
+except ones fetched from SERVER for example, set this variable to t
+and set `shimbun-SERVER-japanese-hankaku' to `never'."
   :group 'shimbun
-  :type 'boolean)
+  :type '(radio
+	  (sexp :format "Header only\n" :value header
+		:match
+		(lambda (widget value)
+		  (memq value '(header subject))))
+	  (const :tag "Body only" body)
+	  (sexp :format "Header and Body\n" :value t
+		:match
+		(lambda (widget value)
+		  (and value (not (memq value '(header subject body never))))))
+	  (const :tag "Don't convert" nil)
+	  (const :tag "Never convert" never)))
 
 (defun shimbun-servers-list ()
   "Return a list of shimbun servers."
@@ -814,8 +841,10 @@ Optional MUA is a `shimbun-mua' instance."
   "Say whether to convert Japanese zenkaku ASCII chars into hankaku.")
 
 (luna-define-method shimbun-japanese-hankaku ((shimbun shimbun))
-  (or shimbun-japanese-hankaku
-      (shimbun-japanese-hankaku-internal shimbun)))
+  (let ((hankaku (or (shimbun-japanese-hankaku-internal shimbun)
+		     shimbun-japanese-hankaku)))
+    (unless (eq hankaku 'never)
+      hankaku)))
 
 (luna-define-generic shimbun-headers (shimbun &optional range)
   "Return a SHIMBUN header list.
@@ -1298,6 +1327,12 @@ it considers the buffer has already been narrowed to an article."
 	   (widen))
 	 (goto-char (point-min))))))
 
+(static-if (featurep 'xemacs)
+    (defalias 'shimbun-char-category-list 'char-category-list)
+  (defun shimbun-char-category-list (char)
+    "Return a list of category mnemonics for CHAR."
+    (append (category-set-mnemonics (char-category-set char)) nil)))
+
 (defun shimbun-japanese-hankaku-buffer (&optional quote)
   "Convert Japanese zenkaku ASCII chars in the current buffer into hankaku.
 There are exceptions; some chars aren't converted, and \"＜\", \"＞\" and
@@ -1381,6 +1416,7 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
 	  (insert " ")))))
 
   ;; Do wakachi-gaki.
+  ;; FIXME:“花の中 3トリオ”“ベスト 8進出”
   (goto-char (point-min))
   (while (re-search-forward
 	  "\\(\\cj\\)\\(?:[ 　]\\|&nbsp;\\)\\([])>}]\
@@ -1396,7 +1432,7 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
   (while (re-search-forward
 	  "\\([^0-9]\\cj\\)\\([0-9]+\\(?:[,.][0-9]+\\)*[^0-9]\\)\
 \\|\\([^0-9][!-/:-=?-~][0-9]+\\(?:[,.][0-9]+\\)*\\)\\(\\cj\\)\
-\\|\\([0-9]\\)\\(\\(?:\\cH\\|\\cK\\)[^0-9]\\)\
+\\|\\([0-9]\\)\\(\\cH[^0-9]\\)\
 \\|\\(\\cj\\)\\([(<A-Z[a-z{]\
 \\|&#\\(?:60\\|171\\|8216\\|8220\\|8249\\|8968\\|8970\\|9001\\);\
 \\|&\\(?:lt\\|laquo\\|lsquo\\|ldquo\\|lsaquo\\|lceil\\|lfloor\\|lang\\);\\)\
@@ -1406,16 +1442,24 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
 \\(\\cj\\)"
 	  nil t)
     (cond ((match-beginning 1)
-	   (unless (and (member (match-string 1)
-				'("明治" "大正" "昭和" "平成"))
-			(eq (char-before) ?年))
+	   (unless (or (and (member (match-string 1)
+				    '("明治" "大正" "昭和" "平成"))
+			    (eq (char-before) ?年))
+		       (and (member (match-string 1) '("午前" "午後"))
+			    (eq (char-before) ?時))
+		       (memq (char-before (match-end 1))
+			     '(?＋ ?− ?± ?× ?÷ ?＝ ?≠ ?≦ ?≧ ?≒
+				   ?≪ ?≫))
+		       (and (memq (char-before (match-end 1)) '(?第 ?約))
+			    (memq ?j
+				  (shimbun-char-category-list (char-before)))))
 	     (replace-match "\\1 \\2"))
 	   (goto-char (match-end 1)))
 	  ((match-beginning 3)
 	   (replace-match "\\3 \\4")
 	   (goto-char (match-end 3)))
 	  ((match-beginning 5)
-	   (unless (memq (char-after (match-beginning 6)) '(?ヵ ?ヶ))
+	   (unless (memq (char-after (match-beginning 6)) '(?つ))
 	     (replace-match "\\5 \\6"))
 	   (goto-char (match-end 5)))
 	  ((match-beginning 7)
@@ -1425,16 +1469,15 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
 	   (replace-match (concat "\\9 " (match-string 10)))
 	   (goto-char (match-end 9)))))
   (goto-char (point-min))
-  (if (eq w3m-output-coding-system 'utf-8)
-      (while (re-search-forward
-	      "\\(\\cG\\|\\cg\\)\\(\\cj\\)\\|\\(\\cj\\)\\(\\cG\\|\\cg\\)"
-	      nil t)
-	(replace-match (if (match-beginning 1) "\\1 \\2" "\\3 \\4"))
-	(backward-char 1))
-    (while (re-search-forward
-	    "\\(\\cg\\)\\(\\cj\\)\\|\\(\\cj\\)\\(\\cg\\)"
-	    nil t)
-      (replace-match (if (match-beginning 1) "\\1 \\2" "\\3 \\4"))
+  (let ((regexp (if (eq w3m-output-coding-system 'utf-8)
+		    "\\(\\cG\\|\\cg\\)\\(\\cj\\)\\|\\(\\cj\\)\\(\\cG\\|\\cg\\)"
+		  "\\(\\cg\\)\\(\\cj\\)\\|\\(\\cj\\)\\(\\cg\\)")))
+    (while (re-search-forward regexp nil t)
+      (if (match-beginning 1)
+	  (unless (eq (char-before) ?　)
+	    (replace-match "\\1 \\2"))
+	(unless (eq (char-after (match-beginning 3)) ?　)
+	  (replace-match "\\3 \\4")))
       (backward-char 1)))
 
   ;; Finally strip useless space.

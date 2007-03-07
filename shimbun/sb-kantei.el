@@ -1,6 +1,6 @@
 ;;; sb-kantei.el --- shimbun backend for kantei mail magazine backnumber -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2003, 2003, 2004, 2005, 2006
+;; Copyright (C) 2001, 2003, 2003, 2004, 2005, 2006, 2007
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
@@ -161,7 +161,7 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 
 (luna-define-method shimbun-clear-contents ((shimbun shimbun-kantei) header)
   (let ((case-fold-search t)
-	start)
+	start hankaku)
     (when (and (re-search-forward (shimbun-content-start shimbun) nil t)
 	       (setq start (match-beginning 0))
 	       (re-search-forward (shimbun-content-end shimbun) nil t))
@@ -171,7 +171,11 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 		    '("m-magazine-en"))
 	(goto-char (point-min))
 	(while (re-search-forward "</?center>" nil t)
-	  (delete-region (match-beginning 0) (match-end 0)))))))
+	  (delete-region (match-beginning 0) (match-end 0))))
+      (setq hankaku (shimbun-japanese-hankaku shimbun))
+      (when (and hankaku (not (memq hankaku '(header subject))))
+	(shimbun-japanese-hankaku-buffer t))
+      t)))
 
 (provide 'sb-kantei)
 

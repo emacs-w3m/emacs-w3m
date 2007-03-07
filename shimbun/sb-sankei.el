@@ -297,11 +297,13 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACUAAAAlAgMAAAC48MiQAAAADFBMVEUDU4CnwdA3dpr///9
 	   (widen)
 	   (insert "<!--hbnend-->")))))
 
-(luna-define-method shimbun-clear-contents :after ((shimbun shimbun-sankei)
-						   header)
-  ;; Break long lines.
-  (unless (shimbun-prefer-text-plain-internal shimbun)
-    (shimbun-break-long-japanese-lines)))
+(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-sankei)
+						    header)
+  (when (luna-call-next-method)
+    ;; Break long lines.
+    (unless (shimbun-prefer-text-plain-internal shimbun)
+      (shimbun-break-long-japanese-lines))
+    t))
 
 (provide 'sb-sankei)
 

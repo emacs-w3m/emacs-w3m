@@ -1393,11 +1393,12 @@ and tenjin, it tries to fetch the article for that day if it failed."
 						   header)
   (shimbun-asahi-prepare-article shimbun header))
 
-(luna-define-method shimbun-clear-contents :after ((shimbun shimbun-asahi)
-						   header)
-  ;; Break long lines.
-  (unless (shimbun-prefer-text-plain-internal shimbun)
-    (shimbun-break-long-japanese-lines)))
+(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-asahi)
+						    header)
+  (when (luna-call-next-method)
+    (unless (shimbun-prefer-text-plain-internal shimbun)
+      (shimbun-break-long-japanese-lines))
+    t))
 
 (provide 'sb-asahi)
 
