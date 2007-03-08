@@ -1,3 +1,7 @@
+2007-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/shimbun.el (shimbun-japanese-hankaku-buffer): Fix regexps.
+
 2007-03-08  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (autoload): Add w3m-session-select, w3m-session-save and

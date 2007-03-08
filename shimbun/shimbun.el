@@ -1431,7 +1431,8 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
   (goto-char (point-min))
   (while (re-search-forward
 	  "\\([^0-9]\\cj\\)\\([0-9]+\\(?:[,.][0-9]+\\)*[^0-9]\\)\
-\\|\\([^0-9][!-/:-=?-~][0-9]+\\(?:[,.][0-9]+\\)*\\)\\(\\cj\\)\
+\\|\\(\\(?:[^0-9]\\|\\`[0-9]*\\)[!-/:-=?-~][0-9]+\\(?:[,.][0-9]+\\)*\\)\
+\\(\\cj\\)\
 \\|\\([0-9]\\)\\(\\cH[^0-9]\\)\
 \\|\\(\\cj\\)\\([(<A-Z[a-z{]\
 \\|&#\\(?:60\\|171\\|8216\\|8220\\|8249\\|8968\\|8970\\|9001\\);\
@@ -1448,7 +1449,7 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
 		       (and (member (match-string 1) '("午前" "午後"))
 			    (eq (char-before) ?時))
 		       (memq (char-before (match-end 1))
-			     '(?＋ ?− ?± ?× ?÷ ?＝ ?≠ ?≦ ?≧ ?≒
+			     '(?　 ?＋ ?− ?± ?× ?÷ ?＝ ?≠ ?≦ ?≧ ?≒
 				   ?≪ ?≫))
 		       (and (memq (char-before (match-end 1)) '(?第 ?約))
 			    (memq ?j
