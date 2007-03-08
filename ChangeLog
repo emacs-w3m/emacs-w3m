@@ -1,3 +1,8 @@
+2007-03-08  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-session.el (w3m-session-select): Use next-command-event and
+	event-key for XEmacs with checked surely.
+
 2007-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-session.el (w3m-session-automatic-save): Remove unused vars.

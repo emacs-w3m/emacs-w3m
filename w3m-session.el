@@ -239,9 +239,15 @@
 			       'face 'w3m-session-selected-face)
 	    (while (null c)
 	      (set-buffer-modified-p nil)
-	      (setq c (w3m-static-if (fboundp 'next-command-event)
-			  (event-key (next-command-event nil minimsg))
-			(read-event minimsg)))
+	      (setq c (w3m-static-cond
+		       ((and (fboundp 'next-command-event)
+			     (fboundp 'event-key))
+			(event-key (next-command-event nil minimsg)))
+		       ((fboundp 'read-event)
+			(read-event minimsg))
+		       (t
+			(message minimsg)
+			(read-char-exclusive))))
 	      (cond
 	       ((memq c '(?q ?Q ?  space))
 		(setq num-or-sym 'exit))
