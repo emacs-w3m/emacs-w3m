@@ -1,3 +1,15 @@
+2007-03-08  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (autoload): Add w3m-session-select, w3m-session-save and
+	w3m-session-automatic-save.
+	(w3m-lynx-like-map): Add w3m-session-select and w3m-session-save
+	to map.
+	(w3m-info-like-map): Ditto.
+	(w3m-arrived-shutdown-functions): Add w3m-session-automatic-save.
+	(w3m-quit): Call w3m-session-automatic-save.
+
+	* w3m-session.el: New file.
+
 2007-03-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-clear-contents): Return the result

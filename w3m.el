@@ -173,7 +173,12 @@
   (autoload 'w3m-cookie-shutdown "w3m-cookie" nil t)
   (autoload 'report-emacs-w3m-bug "w3m-bug" nil t)
   (autoload 'w3m-replace-symbol "w3m-symbol" nil t)
-  (autoload 'w3m-mail "w3m-mail" nil t))
+  (autoload 'w3m-mail "w3m-mail" nil t)
+  (autoload 'w3m-session-select "w3m-session"
+    "Select session from session list." t)
+  (autoload 'w3m-session-save "w3m-session"
+    "Save list of displayed session." t)
+  (autoload 'w3m-session-automatic-save "w3m-session"))
 
 ;; Avoid byte-compile warnings.
 (eval-when-compile
@@ -2761,7 +2766,7 @@ is specified by `w3m-arrived-file'."
     (run-hooks 'w3m-arrived-shutdown-functions)))
 
 (add-hook 'kill-emacs-hook 'w3m-arrived-shutdown)
-
+(add-hook 'w3m-arrived-shutdown-functions 'w3m-session-automatic-save)
 
 ;;; Generic macros and inline functions:
 (defun w3m-attributes (url &optional no-cache handler)
@@ -5997,7 +6002,8 @@ point."
 	  (w3m-toggle-inline-image)
 	(w3m-view-image)))
      ((setq url (w3m-active-region-or-url-at-point))
-      (unless (eq 'quit (setq url (w3m-input-url nil url 'quit nil 'feeling-lucky)))
+      (unless (eq 'quit (setq url (w3m-input-url nil url 'quit nil
+						 'feeling-lucky)))
 	(w3m-view-this-url-1 url arg new-session)))
      (t (w3m-message "No URL at point")))))
 
@@ -6899,6 +6905,8 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "\C-c\M-r" 'w3m-delete-right-tabs)
     (define-key map "\C-c\C-s" 'w3m-select-buffer)
     (define-key map "\C-c\C-a" 'w3m-switch-buffer)
+    (define-key map "\M-s" 'w3m-session-select)
+    (define-key map "\M-S" 'w3m-session-save)
     (define-key map "r" 'w3m-redisplay-this-page)
     (define-key map "R" 'w3m-reload-this-page)
     (define-key map "\C-tR" 'w3m-reload-all-pages)
@@ -7023,6 +7031,8 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "\C-c\M-r" 'w3m-delete-right-tabs)
     (define-key map "\C-c\C-s" 'w3m-select-buffer)
     (define-key map "\C-c\C-a" 'w3m-switch-buffer)
+    (define-key map "\M-s" 'w3m-session-select)
+    (define-key map "\M-S" 'w3m-session-save)
     (define-key map "o" 'w3m-history)
     (define-key map "O" 'w3m-db-history)
     (define-key map "p" 'w3m-view-previous-page)
@@ -7102,6 +7112,7 @@ is specified, otherwise prompt you for the confirmation.  See also
 	  (when (or force
 		    (prog1 (y-or-n-p "Do you want to exit emacs-w3m? ")
 		      (message nil)))
+	    (w3m-session-automatic-save)
 	    (w3m-delete-frames-and-windows)
 	    (sit-for 0) ;; Delete frames seemingly fast.
 	    (dolist (buffer all-buffers)
@@ -7118,6 +7129,7 @@ is specified, otherwise prompt you for the confirmation.  See also
 	    (when w3m-use-cookies
 	      (w3m-cookie-shutdown))
 	    (w3m-kill-all-buffer)))
+      (w3m-session-automatic-save)
       (w3m-fb-delete-frame-buffers)
       (w3m-fb-select-buffer))))
 
@@ -8431,7 +8443,8 @@ interactive command in the batch mode."
 	  (let ((default (if (w3m-alive-p) 'popup w3m-home-page)))
 	    (setq new (if current-prefix-arg
 			  default
-			(w3m-input-url nil nil default w3m-quick-start 'feeling-lucky)))))
+			(w3m-input-url nil nil default w3m-quick-start
+				       'feeling-lucky)))))
       ;; new-session
       (and w3m-make-new-session
 	   (w3m-alive-p)
