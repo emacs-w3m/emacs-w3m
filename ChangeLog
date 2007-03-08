@@ -1,5 +1,9 @@
 2007-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-session.el (w3m-session-automatic-save): Remove unused vars.
+	(w3m-session-select): Use next-command-event for XEmacs; clear the
+	echo area after entering command.
+
 	* shimbun/shimbun.el (shimbun-japanese-hankaku-buffer): Fix regexps.
 
 2007-03-08  Hideyuki SHIRAI  <shirai@meadowy.org>

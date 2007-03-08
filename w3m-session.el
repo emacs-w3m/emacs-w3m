@@ -142,10 +142,9 @@
     (let ((sessions (w3m-load-list w3m-session-file))
 	  (bufs (w3m-list-buffers))
 	  (title w3m-session-automatic-title)
-	  (prompt "New session title: ")
 	  (cnum 0)
 	  (i 0)
-	  title titles urls len buf cbuf)
+	  urls buf cbuf)
       (when bufs
 	(setq cbuf (current-buffer))
 	(save-excursion
@@ -158,7 +157,6 @@
 	      (setq i (1+ i))
 	      (setq urls (cons w3m-current-url urls)))))
 	(when urls
-	  (setq len (length urls))
 	  (setq urls (nreverse urls))
 	  (when (assoc title sessions)
 	    (setq sessions (delete (assoc title sessions) sessions)))
@@ -175,7 +173,7 @@
 	 (minimsg "Select Session(return), (S)ave, (D)elete or (Q)uit" )
 	 (num 0)
 	 (max 0)
-	 c title titles time times maxw wid
+	 c title titles time times wid
 	 window last-window num-or-sym pos)
     (if (not sessions)
 	(message "No saved session")
@@ -241,13 +239,11 @@
 			       'face 'w3m-session-selected-face)
 	    (while (null c)
 	      (set-buffer-modified-p nil)
-	      (setq c (w3m-static-if (fboundp 'read-event)
-			  (read-event minimsg)
-			(message minimsg)
-			(read-char-exclusive)))
-
+	      (setq c (w3m-static-if (fboundp 'next-command-event)
+			  (event-key (next-command-event nil minimsg))
+			(read-event minimsg)))
 	      (cond
-	       ((memq c '(?q ?Q ? ))
+	       ((memq c '(?q ?Q ?  space))
 		(setq num-or-sym 'exit))
 	       ((memq c '(?\C-m ?m return))
 		(beginning-of-line)
@@ -280,7 +276,8 @@
 	       ((memq c '(?\C-p ?p up))
 		(setq c nil)
 		(put-text-property (point)
-				   (next-single-property-change (point) 'w3m-session-number)
+				   (next-single-property-change
+				    (point) 'w3m-session-number)
 				   'face 'w3m-session-select-face)
 		(forward-line -1)
 		(beginning-of-line)
@@ -296,7 +293,8 @@
 	       (t
 		(setq c nil)
 		(unless (string-match "retry$" minimsg)
-		  (setq minimsg (concat minimsg ", retry")))))))
+		  (setq minimsg (concat minimsg ", retry"))))))
+	    (message nil))
 	(kill-buffer showbuf))
       (cond
        ((numberp num-or-sym)
