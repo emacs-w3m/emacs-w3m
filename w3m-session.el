@@ -319,6 +319,7 @@
 	(urls (nth 2 session))
 	(cnum (nth 3 session))
 	(i 0)
+	(w3m-async-exec (and w3m-async-exec-with-many-urls w3m-async-exec))
 	url cbuf)
     (message "Session goto(%s)..." title)
     (while (setq url (car urls))

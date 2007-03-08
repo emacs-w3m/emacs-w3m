@@ -1,3 +1,13 @@
+2007-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-async-exec-with-many-urls): New variable; default to
+	t except for XEmacs 21.5.
+	(w3m-goto-url): Bind w3m-async-exec to nil when retrieving group:*
+	urls if w3m-async-exec-with-many-urls is nil.
+
+	* w3m-session.el (w3m-session-goto-session): Bind w3m-async-exec
+	to nil if w3m-async-exec-with-many-urls is nil.
+
 2007-03-08  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-session.el (w3m-session-select): Use next-command-event and

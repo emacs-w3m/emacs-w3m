@@ -1010,6 +1010,17 @@ way of `post-command-hook'."
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-async-exec-with-many-urls
+  ;; XEmacs 21.5 tends to freeze when retrieving many urls at a time. :-<
+  (not (and (featurep 'xemacs) (not (featurep 'sxemacs))
+	    (= emacs-major-version 21) (= emacs-minor-version 5)))
+  "Non-nil means allow retrieving many urls asynchronously.
+The value affects how emacs-w3m will work with group:* urls and the
+`w3m-session-select' feature.  If it is nil, the asynchronous operation
+is inhibited in those cases even if `w3m-async-exec' is non-nil."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-default-content-type "text/html"
   "*Default value assumed as the content type of local files."
   :group 'w3m
@@ -7989,7 +8000,9 @@ Cannot run two w3m processes simultaneously \
     ;; Access url group
     (if (string-match "\\`group:" url)
 	(let ((urls (mapcar 'w3m-url-decode-string
-			    (split-string (substring url (match-end 0)) "&"))))
+			    (split-string (substring url (match-end 0)) "&")))
+	      (w3m-async-exec (and w3m-async-exec-with-many-urls
+				   w3m-async-exec)))
 	  (w3m-process-do
 	      (type (prog1
 			(w3m-goto-url (car urls))
