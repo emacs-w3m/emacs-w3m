@@ -1,5 +1,9 @@
 2007-03-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/shimbun.el (shimbun-japanese-hankaku-region): New function.
+	(shimbun-japanese-hankaku-buffer): Use it; don't process sections
+	surrounded by the <pre>...</pre> tags.
+
 	* w3mhack.el (w3mhack-generate-load-file): Advise make-autoload to
 	support define-minor-mode if it should be necessary.
 
