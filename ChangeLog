@@ -1,3 +1,8 @@
+2007-03-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-generate-load-file): Advise make-autoload to
+	support define-minor-mode if it should be necessary.
+
 2007-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-async-exec-with-many-urls): New variable; default to

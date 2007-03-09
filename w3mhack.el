@@ -230,7 +230,7 @@ than subr.el."
   (let ((apel (locate-library "path-util"))
 	(emu (locate-library "pccl")))
     (if (and apel emu)
-	(when (featurep 'xemacs)
+	(progn
 	  (setq apel (file-name-directory apel)
 		emu (file-name-directory emu))
 	  (if (not (string-equal apel emu))
@@ -902,6 +902,21 @@ NOTE: This function must be called from the top directory."
 (defun w3mhack-generate-load-file ()
   "Generate a file including all autoload stubs."
   (require 'autoload)
+
+  (unless (make-autoload '(define-minor-mode foo "bar") "baz")
+    ;; for XEmacs 21.4.
+    (defadvice make-autoload (around support-unsupported-forms (form file)
+				     activate)
+      "Support unsupported forms."
+      (unless ad-do-it
+	(setq ad-return-value
+	      (cond ((eq (car form) 'define-minor-mode)
+		     (put 'define-minor-mode 'doc-string-elt 3)
+		     (list 'autoload (list 'quote (nth 1 form))
+			   file (nth 2 form) t nil))
+		    (t
+		     nil))))))
+
   (let ((files (w3mhack-module-list))
 	(generated-autoload-file (expand-file-name w3mhack-load-file))
 	(make-backup-files nil)
