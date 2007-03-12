@@ -1,6 +1,6 @@
 ;;; w3m-bug.el --- command to report emacs-w3m bugs -*- coding: euc-japan -*-
 
-;; Copyright (C) 2002, 2003, 2005 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2002, 2003, 2005, 2007 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -100,7 +100,7 @@ Prompts for bug subject.  Leaves you in a mail buffer."
   (let (after-load-alist)
     ;; See the comment for `report-emacs-w3m-bug-system-informations'.
     (load "w3m-bug"))
-  (compose-mail report-emacs-w3m-bug-address topic)
+  (compose-mail report-emacs-w3m-bug-address topic nil 'new)
   (goto-char (point-min))
   (re-search-forward (concat "^" (regexp-quote mail-header-separator) "$"))
   (forward-line 1)

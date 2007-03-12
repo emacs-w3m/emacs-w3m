@@ -1,3 +1,9 @@
+2007-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-bug.el (report-emacs-w3m-bug): Use a new buffer to compose a
+	mail if at least mail-user-agent is sendmail-user-agent that is
+	the default.  cf. http://article.gmane.org/gmane.emacs.devel/67501
+
 2007-03-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-japanese-hankaku-region): New function.
