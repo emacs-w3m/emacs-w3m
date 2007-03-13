@@ -43,6 +43,11 @@
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-session-deleted-save t
+  "*Non-nil means save deleted sessions."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-session-time-format
   (if (and (equal "Japanese" w3m-language)
 	   (not (featurep 'xemacs)))
@@ -55,10 +60,23 @@
 (defcustom w3m-session-automatic-title
   (if (equal "Japanese" w3m-language)
       "自動保存"
-    "Automatic saved session")
-  "*String to save session automatically."
+    "Automatic saved sessions")
+  "*String of title to save session automatically."
   :group 'w3m
   :type '(string :size 0))
+
+(defcustom w3m-session-deleted-title
+  (if (equal "Japanese" w3m-language)
+      "削除セッション"
+    "Removed sessions")
+  "*String of title to save session when buffer delete."
+  :group 'w3m
+  :type '(string :size 0))
+
+(defcustom w3m-session-deleted-keep-number 5
+  "*Number to keep sessions when buffers delete."
+  :group 'w3m
+  :type '(integer :size 0))
 
 (defface w3m-session-select-face
   `((((class color) (type tty))
@@ -136,31 +154,38 @@
 	  (message "%s: 1 session save...done" title)
 	(message "%s: %d sessions save...done" title len)))))
 
-(defun w3m-session-automatic-save ()
-  "Save list of displayed session automatically."
-  (when w3m-session-autosave
+(defun w3m-session-deleted-save (bufs)
+  "Save list of deleted session."
+  (when w3m-session-deleted-save
     (let ((sessions (w3m-load-list w3m-session-file))
-	  (bufs (w3m-list-buffers))
-	  (title w3m-session-automatic-title)
-	  (cnum 0)
-	  (i 0)
-	  urls buf cbuf)
+	  (title (concat w3m-session-deleted-title "-1"))
+	  (titleregex (concat "^"
+			      (regexp-quote w3m-session-deleted-title)
+			      "-[0-9]+$"))
+	  (i 2)
+	  urls buf session
+	  tmp tmptitle tmptime tmpurls)
       (when bufs
-	(setq cbuf (current-buffer))
 	(save-excursion
 	  (while (setq buf (car bufs))
 	    (setq bufs (cdr bufs))
 	    (set-buffer buf)
 	    (when w3m-current-url
-	      (when (eq cbuf (current-buffer))
-		(setq cnum i))
-	      (setq i (1+ i))
 	      (setq urls (cons w3m-current-url urls)))))
 	(when urls
+	  (while (setq session (car sessions))
+	    (setq sessions (cdr sessions))
+	    (if (string-match titleregex (nth 0 session))
+		(when (<= i w3m-session-deleted-keep-number)
+		  (setq tmptitle (format (concat w3m-session-deleted-title "-%d") i))
+		  (setq tmptime (nth 1 session))
+		  (setq tmpurls (nth 2 session))
+		  (setq tmp (cons (list tmptitle tmptime tmpurls nil) tmp))
+		  (setq i (1+ i)))
+	      (setq tmp (cons session tmp))))
+	  (setq sessions (nreverse tmp))
 	  (setq urls (nreverse urls))
-	  (when (assoc title sessions)
-	    (setq sessions (delete (assoc title sessions) sessions)))
-	  (setq sessions (cons (list title (current-time) urls cnum) sessions))
+	  (setq sessions (cons (list title (current-time) urls nil) sessions))
 	  (w3m-save-list w3m-session-file sessions))))))
 
 ;;;###autoload
@@ -173,7 +198,7 @@
 	 (minimsg "Select Session(return), (S)ave, (D)elete or (Q)uit" )
 	 (num 0)
 	 (max 0)
-	 c title titles time times wid
+	 c title titles time times url urls wid
 	 window last-window num-or-sym pos)
     (if (not sessions)
 	(message "No saved session")
@@ -185,10 +210,13 @@
 		(setq titles (cons title titles))
 		(setq times (cons (format-time-string w3m-session-time-format
 						      (nth 1 x))
-				  times)))
+				  times))
+		(setq urls (cons (mapconcat 'identity (nth 2 x) ", ")
+				 urls)))
 	      sessions)
       (setq titles (nreverse titles))
       (setq times (nreverse times))
+      (setq urls (nreverse urls))
       (setq max (+ max 2))
       (unwind-protect
 	  (save-window-excursion
@@ -218,9 +246,11 @@
 	    (shrink-window (- (window-height) wheight))
 	    (insert "Select session:\n\n")
 	    (while (and (setq title (car titles))
-			(setq time (car times)))
+			(setq time (car times))
+			(setq url (car urls)))
 	      (setq titles (cdr titles))
 	      (setq times (cdr times))
+	      (setq urls (cdr urls))
 	      (setq pos (point))
 	      (insert title)
 	      (add-text-properties pos (point)
@@ -228,8 +258,7 @@
 					  w3m-session-number ,num))
 	      (setq num (1+ num))
 	      (insert (make-string (- max (string-width title)) ?\ ))
-	      (insert time "\n"))
-
+	      (insert time "  " url "\n"))
 	    (goto-char (point-min))
 	    (goto-char (next-single-property-change
 			(point) 'w3m-session-number))
@@ -264,7 +293,7 @@
 	       ((and (memq c '(?s ?S))
 		     (y-or-n-p "Save this sessions? "))
 		(setq num-or-sym 'save))
-	       ((memq c '(?\C-n ?n down))
+	       ((memq c '(?\C-n ?n ?j down))
 		(setq c nil)
 		(beginning-of-line)
 		(put-text-property (point)
@@ -279,7 +308,7 @@
 				   (next-single-property-change
 				    (point) 'w3m-session-number)
 				   'face 'w3m-session-selected-face))
-	       ((memq c '(?\C-p ?p up))
+	       ((memq c '(?\C-p ?p ?k up))
 		(setq c nil)
 		(put-text-property (point)
 				   (next-single-property-change

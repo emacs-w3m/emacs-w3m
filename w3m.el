@@ -178,7 +178,8 @@
     "Select session from session list." t)
   (autoload 'w3m-session-save "w3m-session"
     "Save list of displayed session." t)
-  (autoload 'w3m-session-automatic-save "w3m-session"))
+  (autoload 'w3m-session-automatic-save "w3m-session")
+  (autoload 'w3m-session-deleted-save "w3m-session"))
 
 ;; Avoid byte-compile warnings.
 (eval-when-compile
@@ -6737,6 +6738,7 @@ passed to the `w3m-quit' function (which see)."
 		   (w3m-next-buffer -1)
 		 (unless (one-window-p t)
 		   (delete-window))))))
+      (w3m-session-deleted-save (list cur))
       (w3m-process-stop cur)
       (kill-buffer cur)
       (when w3m-use-form
@@ -6785,15 +6787,7 @@ as if the folder command of MH performs with the -pack option."
     (setq buffer (current-buffer)))
   (w3m-delete-frames-and-windows buffer)
   (let ((buffers (delq buffer (w3m-list-buffers t))))
-    (while buffers
-      (setq buffer (pop buffers))
-      (w3m-process-stop buffer)
-      (kill-buffer buffer)
-      (when w3m-use-form
-	(w3m-form-kill-buffer buffer))))
-  (run-hooks 'w3m-delete-buffer-hook)
-  (w3m-select-buffer-update)
-  (w3m-force-window-update))
+    (w3m-delete-buffers buffers)))
 
 (defun w3m-delete-left-tabs ()
   "Delete tabs of left side from current tab."
@@ -6818,6 +6812,8 @@ as if the folder command of MH performs with the -pack option."
 (defun w3m-delete-buffers (buffers)
   "Delete emacs-w3m buffers."
   (let (buffer)
+    (when buffers
+      (w3m-session-deleted-save buffers))
     (while buffers
       (setq buffer (pop buffers))
       (w3m-process-stop buffer)

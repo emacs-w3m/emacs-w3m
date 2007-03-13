@@ -1,3 +1,18 @@
+2007-03-13  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (autoload): Add w3m-session-deleted-save.
+	(w3m-delete-buffer): Call w3m-session-deleted-save.
+	(w3m-delete-other-buffers): Call w3m-delete-buffers instead of
+	piece of code.
+	(w3m-delete-buffers): Call w3m-session-deleted-save.
+
+	* w3m-session.el (w3m-session-deleted-save): New option.
+	(w3m-session-deleted-title): Ditto.
+	(w3m-session-deleted-keep-number): Ditto.
+	(w3m-session-deleted-save): New function.
+	(w3m-session-select): Display URLs.
+	(w3m-session-select): Add key assignment; `k' and `j'.
+
 2007-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bug.el (report-emacs-w3m-bug): Use a new buffer to compose a
