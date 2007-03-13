@@ -154,6 +154,33 @@
 	  (message "%s: 1 session save...done" title)
 	(message "%s: %d sessions save...done" title len)))))
 
+(defun w3m-session-automatic-save ()
+  "Save list of displayed session automatically."
+  (when w3m-session-autosave
+    (let ((sessions (w3m-load-list w3m-session-file))
+	  (bufs (w3m-list-buffers))
+	  (title w3m-session-automatic-title)
+	  (cnum 0)
+	  (i 0)
+	  urls buf cbuf)
+      (when bufs
+	(setq cbuf (current-buffer))
+	(save-excursion
+	  (while (setq buf (car bufs))
+	    (setq bufs (cdr bufs))
+	    (set-buffer buf)
+	    (when w3m-current-url
+	      (when (eq cbuf (current-buffer))
+		(setq cnum i))
+	      (setq i (1+ i))
+	      (setq urls (cons w3m-current-url urls)))))
+	(when urls
+	  (setq urls (nreverse urls))
+	  (when (assoc title sessions)
+	    (setq sessions (delete (assoc title sessions) sessions)))
+	  (setq sessions (cons (list title (current-time) urls cnum) sessions))
+	  (w3m-save-list w3m-session-file sessions))))))
+
 (defun w3m-session-deleted-save (bufs)
   "Save list of deleted session."
   (when w3m-session-deleted-save
