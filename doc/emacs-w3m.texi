@@ -1047,15 +1047,15 @@ Follow the link under the mouse pointer in a new session
 Scrollbar, menubar and toolbar are helpful in emacs-w3m when you use a
 mouse (your Emacs must support them, and you must have enabled them).
 You can scroll an emacs-w3m window using the scrollbar.  You can invoke
-many emacs-w3m commands described in this manual from the ``W3M'' menu
-which appears in the leftmost menubar next to the ``File'' menu.  Note:
-it's not necessary to use the menubar for most emacs-w3m commands, you
-can use the toolbar icons instead.
+many emacs-w3m commands described in this manual from the ``w3m'' menu
+which appears at the top of the Emacs frame.  Note: it's not necessary
+to use the menubar for most emacs-w3m commands, you can use the toolbar
+icons instead.
 
 To switch between buffers in an emacs-w3m window using ``Tabs''
 (@pxref{Using Tabs}), click on the topmost line in an emacs-w3m window
-directory using @kbd{mouse-2} or choose one from the ``TAB'' menu which
-appears next to the ``W3M'' menu.
+directory using @kbd{mouse-2} or choose one from the ``Tab'' menu which
+appears next but one to the ``w3m'' menu.
 
 @node Going Back to Daily Hacking and/or Daily Writing
 @subsection Return to an Ordinary Life
