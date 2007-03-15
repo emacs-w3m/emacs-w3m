@@ -1,3 +1,8 @@
+2007-03-15  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-session.el (w3m-session-deleted-save): Sort buffers to use
+	their name.
+
 2007-03-13  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (autoload): Add w3m-session-deleted-save.

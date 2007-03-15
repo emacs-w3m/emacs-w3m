@@ -181,7 +181,7 @@
 	  (setq sessions (cons (list title (current-time) urls cnum) sessions))
 	  (w3m-save-list w3m-session-file sessions))))))
 
-(defun w3m-session-deleted-save (bufs)
+(defun w3m-session-deleted-save (buffers)
   "Save list of deleted session."
   (when w3m-session-deleted-save
     (let ((sessions (w3m-load-list w3m-session-file))
@@ -189,10 +189,12 @@
 	  (titleregex (concat "^"
 			      (regexp-quote w3m-session-deleted-title)
 			      "-[0-9]+$"))
+	  (bufs (copy-sequence buffers))
 	  (i 2)
 	  urls buf session
 	  tmp tmptitle tmptime tmpurls)
       (when bufs
+	(setq bufs (sort bufs 'w3m-buffer-name-lessp))
 	(save-excursion
 	  (while (setq buf (car bufs))
 	    (setq bufs (cdr bufs))
