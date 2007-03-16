@@ -1,3 +1,22 @@
+2007-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_SET_XEMACSDEBUG): New function; set XEMACSDEBUG
+	environment variable, which is eval'd when XEmacs 21.5 starts, to
+	the Lisp form, which sets `log-warning-minimum-level' to `error',
+	in order to suppress warnings for Lisp shadows when XEmacs 21.5
+	starts.
+	(AC_PATH_EMACS): Run AC_SET_XEMACSDEBUG.
+	(AC_EMACS_LISP, AC_ADD_LOAD_PATH): Use XEMACSDEBUG.
+
+	* Makefile.in (XEMACSDEBUG): New variable.
+	(lisp, what-where, install-package, install-package-ja, dist)
+	(.el.elc, slow, very-slow): Use it.
+
+	* doc/Makefile.in (XEMACSDEBUG): New variable.
+	(EMACSINFO, version.texi, install-en, install-ja): Use it.
+
+	* w3mhack.el: Reset `log-warning-minimum-level' to `info'.
+
 2007-03-15  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-session.el (w3m-session-deleted-save): Sort buffers to use
