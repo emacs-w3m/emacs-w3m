@@ -54,6 +54,10 @@
 
 ;;; Code:
 
+(when (featurep 'xemacs)
+  (setq log-warning-minimum-level 'info)
+  (setenv "XEMACSDEBUG" nil))
+
 (defvar w3mhack-nonunix-lispdir nil
   "*Directory to where emacs-w3m lisp programs are installed.
 nil means that all programs are installed to the default directory.")

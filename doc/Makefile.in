@@ -23,7 +23,13 @@ TEXI2PDF     = @TEXI2PDF@
 EMACS        = @EMACS@
 VANILLA_FLAG = @VANILLA_FLAG@
 FLAGS        = $(VANILLA_FLAG) -batch -l ./w3mhack.el $(ADDITIONAL_LOAD_PATH)
-EMACSINFO    = cd $(top_srcdir) && $(EMACS) $(FLAGS) -f w3mhack-makeinfo
+
+## This is used to set the environment variable XEMACSDEBUG for
+## XEmacs 21.5 in order to suppress warnings for Lisp shadows
+## when XEmacs 21.5 starts.
+XEMACSDEBUG = @XEMACSDEBUG@
+
+EMACSINFO    = cd $(top_srcdir) && $(XEMACSDEBUG)$(EMACS) $(FLAGS) -f w3mhack-makeinfo
 
 INFO_DEPS_EN = emacs-w3m.info
 INFO_DEPS_JA = emacs-w3m-ja.info
@@ -37,7 +43,7 @@ ja: $(INFO_DEPS_JA)
 
 version.texi: $(top_srcdir)/w3m.el
 	@version=`cd $(top_srcdir)\
-		&& $(EMACS) $(FLAGS) -f w3mhack-version 2>/dev/null`;\
+		&& $(XEMACSDEBUG)$(EMACS) $(FLAGS) -f w3mhack-version 2>/dev/null`;\
 	echo "@set VERSION $$version"> version.texi
 
 emacs-w3m.info: version.texi emacs-w3m.texi
@@ -84,11 +90,11 @@ install: $(INFO_DEPS)
 	else : ; fi
 
 install-en: $(INFO_DEPS_EN)
-	$(MAKE) INFO_DEPS='$(INFO_DEPS_EN)' EMACS="$(EMACS)"\
+	$(MAKE) INFO_DEPS='$(INFO_DEPS_EN)' $(XEMACSDEBUG)EMACS="$(EMACS)"\
 		infodir="$(infodir)" install
 
 install-ja: $(INFO_DEPS_JA)
-	$(MAKE) INFO_DEPS='$(INFO_DEPS_JA)' EMACS="$(EMACS)"\
+	$(MAKE) INFO_DEPS='$(INFO_DEPS_JA)' $(XEMACSDEBUG)EMACS="$(EMACS)"\
 		infodir="$(infodir)" install
 
 dvi: dvi-en dvi-ja
