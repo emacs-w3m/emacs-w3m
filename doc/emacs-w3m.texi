@@ -425,6 +425,7 @@ You can ensure that with the @samp{--with-addpath} option as follows:
 @end example
 
 If you've installed @acronym{APEL}, @acronym{FLIM} or something in
+
 non-standard directories other than the default @code{load-path}, you
 must specify them using the @samp{--with-addpath} option as follows (you
 may also include the Gnus directory in it separated with @samp{:}):
@@ -3811,17 +3812,18 @@ Q. Why doesn't the emacs-w3m frame pop up to the front?
 It is quite convenient that the @kbd{M-x w3m RET} command makes the
 emacs-w3m frame pop to the front even if it is hidden under the other
 frames.  However, it was reported that it does not work when running
-Emacs 21 on some platforms, e.g., Fedora Core 4, 5 and 6.  In those
-systems, other features which raise the Emacs frames will not work,
-either.  If you are in such a miserable circumstance, it might be worth
-trying the following advice:
+Emacs on some platforms (e.g., Fedora Core Linux) in which the
+@samp{metacity} window manager is used.  In those systems, other
+features which raise the Emacs frames will not work, either.  If you are
+in such a miserable circumstance, it might be worth trying the following
+advice:
 
 @lisp
-(if (or (featurep 'xemacs) (< emacs-major-version 22))
+(if (or (featurep 'xemacs) (not window-system))
     nil
   (defadvice raise-frame
     (after make-it-work (&optional frame) activate)
-    "Make it work."
+    "Make it work with the aid of wmctrl."
     (call-process
      "wmctrl" nil nil nil "-i" "-R"
      (frame-parameter (or frame (selected-frame))
@@ -3834,6 +3836,28 @@ Where @samp{wmctrl} is the external command which you can get from:
 
 Note that you have to install the @samp{wmctrl} command before putting
 the advice into the @file{~/.emacs} file.
+
+In addition to this, if your Emacs has been built with the
+@samp{--with-gtk} option, the following advice also might be necessary:
+
+@lisp
+(if (or (featurep 'xemacs)
+        (not window-system)
+        (not (featurep 'gtk)))
+    nil
+  (defadvice select-frame (around set-input-focus
+                                  (frame) activate)
+    "Run `select-frame-set-input-focus'."
+    (setq ad-return-value (and (framep frame)
+                               (frame-live-p frame)))
+    (ad-deactivate 'select-frame)
+    (unwind-protect
+        (select-frame-set-input-focus frame)
+      (ad-activate 'select-frame))))
+@end lisp
+
+It is said that those workarounds will become needless when the next
+version of Emacs 22.1 is released.
 @end itemize
 
 @node Shimbun FAQ

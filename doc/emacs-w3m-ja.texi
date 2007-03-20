@@ -3894,18 +3894,18 @@ Q. なぜ emacs-w3m のフレームがポップアップしないのですか?
 
 Emacs-w3m のフレームが他のフレームの下に隠れていても、それ
 が @kbd{M-x w3m RET} コマンドでポップアップするのは、かなり便利です。し
-かし、いくつかのプラットフォーム、例えば Fedora Core 4〜6 上で Emacs
-21 を走らせる場合に、それが働かないという報告がありました。それらのシス
-テムでは、Emacs のフレームをポップアップさせる他の機能も動かないでしょう。
-もしあなたがそんな惨めな境遇にあるならば、以下の advice を試す価値がある
-かもしれません。
+かし、@samp{metacity} ウィンドウ・マネージャーが使われるいくつかのプラッ
+トフォーム (例えば Fedora Core Linux) 上で Emacs を走らせる場合に、それ
+が働かないという報告がありました。それらのシステムでは、Emacs のフレーム
+をポップアップさせる他の機能も動かないでしょう。もしあなたがそんな惨めな
+境遇にあるならば、以下の advice を試す価値があるかもしれません。
 
 @lisp
-(if (or (featurep 'xemacs) (< emacs-major-version 22))
+(if (or (featurep 'xemacs) (not window-system))
     nil
   (defadvice raise-frame
     (after make-it-work (&optional frame) activate)
-    "Make it work."
+    "Make it work with the aid of wmctrl."
     (call-process
      "wmctrl" nil nil nil "-i" "-R"
      (frame-parameter (or frame (selected-frame))
@@ -3918,6 +3918,28 @@ Emacs-w3m のフレームが他のフレームの下に隠れていても、それ
 
 Advice を @file{~/.emacs} ファイルに書き込む前に、@samp{wmctrl} コマンド
 をインストールしなければならないことに、注意して下さい。
+
+これに加えて、もしあなたの Emacs が @samp{--with-gtk} オプションで作られ
+たのならば、さらに以下の advice も必要かもしれません。
+
+@lisp
+(if (or (featurep 'xemacs)
+        (not window-system)
+        (not (featurep 'gtk)))
+    nil
+  (defadvice select-frame (around set-input-focus
+                                  (frame) activate)
+    "Run `select-frame-set-input-focus'."
+    (setq ad-return-value (and (framep frame)
+                               (frame-live-p frame)))
+    (ad-deactivate 'select-frame)
+    (unwind-protect
+        (select-frame-set-input-focus frame)
+      (ad-activate 'select-frame))))
+@end lisp
+
+これらの対策は、Emacs 22.1 の次のバージョンがリリースされたときに不要に
+なると言われています。
 @end itemize
 
 @node Shimbun FAQ
