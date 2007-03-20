@@ -3849,7 +3849,8 @@ In addition to this, if your Emacs has been built with the
                                   (frame) activate)
     "Run `select-frame-set-input-focus'."
     (setq ad-return-value (and (framep frame)
-                               (frame-live-p frame)))
+                               (frame-live-p frame)
+                               frame))
     (ad-deactivate 'select-frame)
     (unwind-protect
         (select-frame-set-input-focus frame)
