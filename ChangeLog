@@ -1,3 +1,7 @@
+2007-03-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_SET_XEMACSDEBUG): Quote VANILLA_FLAG.
+
 2007-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* aclocal.m4 (AC_SET_XEMACSDEBUG): New function; set XEMACSDEBUG
