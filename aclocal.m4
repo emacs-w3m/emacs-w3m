@@ -13,7 +13,7 @@ AC_DEFUN(AC_SET_XEMACSDEBUG,
   dnl XEmacs 21.5 starts, in order to suppress warnings for Lisp shadows
   dnl when XEmacs 21.5 starts.
   if test "${VANILLA_FLAG}" = "-vanilla"; then
-	XEMACSDEBUG="XEMACSDEBUG=\"(setq log-warning-minimum-level (quote error))\" "
+	XEMACSDEBUG='XEMACSDEBUG='\''(setq log-warning-minimum-level (quote error))'\'' '
   else
 	XEMACSDEBUG=
   fi
