@@ -125,7 +125,7 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
 	     (if (r1 == ,(charset-id 'mule-unicode-0100-24ff))
 		 ((r1 = ((((r0 & #x3f80) >> 7) - 32) * 96))
 		  (r0 &= #x7f)
-		  (r1 += (r0 + 224)))	; 224 == -32 + #x0100
+		  (r1 += (r0 + 224)))		; 224 == -32 + #x0100
 	       (if (r1 == ,(charset-id 'mule-unicode-2500-33ff))
 		   ((r1 = ((((r0 & #x3f80) >> 7) - 32) * 96))
 		    (r0 &= #x7f)
@@ -133,14 +133,14 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
 		 (if (r1 == ,(charset-id 'mule-unicode-e000-ffff))
 		     ((r1 = ((((r0 & #x3f80) >> 7) - 32) * 96))
 		      (r0 &= #x7f)
-		      (r1 += (r0 + 57312))); 57312 == -32 + #xe000
+		      (r1 += (r0 + 57312)))	; 57312 == -32 + #xe000
 		   ,(if (fboundp 'ccl-compile-lookup-character)
 			'((lookup-character utf-subst-table-for-encode r1 r0)
-			  (if (r7 == 0)	; lookup failed
+			  (if (r7 == 0)		; lookup failed
 			      (r1 = #xfffd)))
 		      '((r1 = #xfffd)))))))
 	   (if (r1 == #xfffd)
-	       (write-repeat ?~)	; unknown character.
+	       (write-repeat ?~)		; unknown character.
 	     (r0 = r1)))))
     (if (get 'utf-translation-table-for-encode 'translation-table-id)
 	;; Emacs 21.3 and later.
