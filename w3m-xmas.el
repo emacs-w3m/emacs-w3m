@@ -1,4 +1,4 @@
-;;; w3m-xmas.el --- The stuffs to use emacs-w3m on XEmacs
+;;; w3m-xmas.el --- XEmacs stuff for emacs-w3m
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -28,7 +28,7 @@
 
 ;;; Commentary:
 
-;; This file contains the stuffs to use emacs-w3m on XEmacs.  For more
+;; This file contains XEmacs stuff that emacs-w3m uses.  For more
 ;; detail about emacs-w3m, see:
 ;;
 ;;    http://emacs-w3m.namazu.org/

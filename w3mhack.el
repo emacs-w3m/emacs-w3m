@@ -284,33 +284,15 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 (push default-directory load-path)
 (push (expand-file-name shimbun-module-directory default-directory) load-path)
 
-(defun w3mhack-mdelete (elts list)
-  "Like `delete', except that it also works for a list of subtractions."
-  (if elts
-      (if (consp elts)
-	  (let ((rest (delete (car elts) list)))
-	    (while (setq elts (cdr elts))
-	      (setq rest (delete (car elts) rest))
-	      (delete (car elts) list))
-	    rest)
-	(delete elts list))
-    list))
-
 (defun w3mhack-module-list ()
   "Returna a list of w3m modules should be byte-compile'd."
   (let* ((modules (directory-files default-directory nil "^[^#]+\\.el$"))
-	 (version-specific-modules '("w3m-e21.el" "w3m-e23.el" "w3m-fsf.el"
-				     "w3m-xmas.el"))
+	 (version-specific-modules '("w3m-ems.el" "w3m-xmas.el"))
 	 (ignores;; modules not to be byte-compiled.
 	  (append
 	   (list "w3mhack.el" "w3m-setup.el" w3mhack-load-file)
-	   (w3mhack-mdelete (cond ((featurep 'xemacs)
-				   "w3m-xmas.el")
-				  ((>= emacs-major-version 23)
-				   '("w3m-e23.el" "w3m-fsf.el"))
-				  (t
-				   '("w3m-e21.el" "w3m-fsf.el")))
-			    (copy-sequence version-specific-modules))))
+	   (delete (if (featurep 'xemacs) "w3m-xmas.el" "w3m-ems.el")
+		   (copy-sequence version-specific-modules))))
 	 (shimbun-dir (file-name-as-directory shimbun-module-directory))
 	 print-level print-length)
     (unless (locate-library "mew")

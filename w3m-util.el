@@ -1,6 +1,6 @@
 ;;; w3m-util.el --- Utility macros and functions for emacs-w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -1032,7 +1032,7 @@ deactivated after evaluating the current command."
 	(1+ i)))))
 
 (eval-and-compile
-  ;; This function will be redefined in w3m-e21.el.
+  ;; This function will be redefined in w3m-ems.el.
   (unless (fboundp 'w3m-force-window-update)
     (defalias 'w3m-force-window-update 'ignore)))
 
