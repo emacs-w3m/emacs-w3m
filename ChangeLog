@@ -1,5 +1,25 @@
 2007-03-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-ems.el: New file merging w3m-e21.el, w3m-e23.el and w3m-fsf.el.
+	(image-size): No need to silence the byte compiler.
+	(w3m-ccl-get-ucs-codepoint-with-emacs-unicode): Remove.
+	(w3m-euc-japan-encoder, w3m-euc-japan-encoder)
+	(w3m-iso-latin-1-encoder, w3m-iso-latin-1-encoder): Redefine them
+	only for Emacs 22 and earlier.
+
+	* w3m-e21.el, w3m-e23.el, w3m-fsf.el: Remove.
+
+	* w3m.el: Load w3m-ems.el instead of w3m-e21.el or w3m-e23.el.
+	(w3m-fontify-strike-through): Remove variable.
+
+	* w3mhack.el (w3mhack-mdelete): Remove.
+	(w3mhack-module-list): Use w3m-ems.el instead of w3m-fsf.el and
+	w3m-e21.el or w3m-e23.el.
+
+	* Makefile.in (tarball): No need to exclude w3m-e23.el.
+
+2007-03-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* aclocal.m4 (AC_SET_XEMACSDEBUG): Fix the way to quote the value
 	of XEMACSDEBUG.  Reported by Norbert Koch <nk@viteno.net>.
 

@@ -1,4 +1,4 @@
-;;; w3m-e21.el --- The stuffs to use emacs-w3m on Emacs 21 and 22
+;;; w3m-ems.el --- GNU Emacs stuff for emacs-w3m
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -28,11 +28,14 @@
 
 ;;; Commentary:
 
-;; This file contains the stuffs to use emacs-w3m on Emacs 21 and 22.
-;; For more detail about emacs-w3m, see:
+;; This file contains GNU Emacs stuff that emacs-w3m uses.  For more
+;; detail about emacs-w3m, see:
 ;;
 ;;    http://emacs-w3m.namazu.org/
-
+;;
+;; We can use w3m-static- switches to make the byte code differ between
+;; Emacs 2[12] and 23, if anything, it is impossible to share the byte
+;; code with those versions of Emacsen.
 
 ;;; Code:
 
@@ -43,7 +46,6 @@
 (require 'w3m-proc)
 (require 'w3m-image)
 (require 'w3m-favicon)
-(require 'w3m-fsf)
 (require 'w3m-ccl)
 (require 'wid-edit)
 
@@ -80,11 +82,31 @@
   (unless (fboundp 'frame-current-scroll-bars)
     (defalias 'frame-current-scroll-bars 'ignore))
   (unless (fboundp 'window-fringes)
-    (defalias 'window-fringes 'ignore))
-  (unless (fboundp 'image-size)
-    (defalias 'image-size 'ignore)))
+    (defalias 'window-fringes 'ignore)))
 
-;;; Coding system.
+;;; Coding system and charset.
+
+(defsubst w3m-find-coding-system (obj)
+  "Return OBJ if it is a coding-system."
+  (if (coding-system-p obj) obj))
+
+(defun w3m-detect-coding-region (start end &optional priority-list)
+  "Detect coding system of the text in the region between START and END.
+Return the first possible coding system.
+
+PRIORITY-LIST is a list of coding systems ordered by priority."
+  (let (category categories)
+    (dolist (codesys priority-list)
+      (setq category (coding-system-category codesys))
+      (unless (or (null category) (assq category categories))
+	(push (cons category codesys) categories)))
+    (car (detect-coding-with-priority start end (nreverse categories)))))
+
+(defun w3m-mule-unicode-p ()
+  "Check the existence as charsets of mule-unicode."
+  (and (charsetp 'mule-unicode-0100-24ff)
+       (charsetp 'mule-unicode-2500-33ff)
+       (charsetp 'mule-unicode-e000-ffff)))
 
 (defun w3m-make-ccl-coding-system
   (coding-system mnemonic docstring decoder encoder)
@@ -93,71 +115,67 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
   (make-coding-system coding-system 4 mnemonic docstring
 		      (cons decoder encoder)))
 
-(eval-and-compile
-  (defconst w3m-ccl-get-ucs-codepoint-with-emacs-unicode
-    `((if (r1 == ,(charset-id 'latin-iso8859-1))
-	  ((r1 = (r0 + 128)))
-	(if (r1 == ,(charset-id 'mule-unicode-0100-24ff))
-	    ((r1 = ((((r0 & #x3f80) >> 7) - 32) * 96))
-	     (r0 &= #x7f)
-	     (r1 += (r0 + 224)))	; 224 == -32 + #x0100
-	  (if (r1 == ,(charset-id 'mule-unicode-2500-33ff))
-	      ((r1 = ((((r0 & #x3f80) >> 7) - 32) * 96))
-	       (r0 &= #x7f)
-	       (r1 += (r0 + 9440)))	; 9440 == -32 + #x2500
-	    (if (r1 == ,(charset-id 'mule-unicode-e000-ffff))
-		((r1 = ((((r0 & #x3f80) >> 7) - 32) * 96))
-		 (r0 &= #x7f)
-		 (r1 += (r0 + 57312)))	; 57312 == -32 + #xe000
-	      ,(if (fboundp 'ccl-compile-lookup-character)
-		   '((lookup-character utf-subst-table-for-encode r1 r0)
-		     (if (r7 == 0)	; lookup failed
-			 (r1 = #xfffd)))
-		 '((r1 = #xfffd)))))))
-      (if (r1 == #xfffd)
-	  (write-repeat ?~)		; unknown character.
-	(r0 = r1)))
-    "CCL program to convert multibyte char to ucs with emacs-unicode."))
-
-(if (get 'utf-translation-table-for-encode 'translation-table-id)
-    ;; For Emacs 21.3 and later.
-    (eval
-     ;; Compute the ccl program in each time to load this module in order to
-     ;; keep the compatibility of this module between Emacs 21.3 and later.
-     '(define-ccl-program w3m-euc-japan-encoder
-	`(4
-	  (loop
-	   ,@w3m-ccl-write-euc-japan-character
-	   (translate-character utf-translation-table-for-encode r1 r0)
-	   ,@w3m-ccl-get-ucs-codepoint-with-emacs-unicode
-	   ,@w3m-ccl-generate-ncr))))
-  ;; For Emacs 21.[12] that does not have `utf-translation-table-for-encode'.
-  (define-ccl-program w3m-euc-japan-encoder
-    `(4
-      (loop
-       ,@w3m-ccl-write-euc-japan-character
-       ,@w3m-ccl-get-ucs-codepoint-with-emacs-unicode
-       ,@w3m-ccl-generate-ncr))))
-
-(if (get 'utf-translation-table-for-encode 'translation-table-id)
-    ;; For Emacs 21.3 and later.
-    (eval
-     ;; Compute the ccl program in each time to load this module in order to
-     ;; keep the compatibility of this module between Emacs 21.3 and later.
-     '(define-ccl-program w3m-iso-latin-1-encoder
-	`(4
-	  (loop
-	   ,@w3m-ccl-write-iso-latin-1-character
-	   (translate-character utf-translation-table-for-encode r1 r0)
-	   ,@w3m-ccl-get-ucs-codepoint-with-emacs-unicode
-	   ,@w3m-ccl-generate-ncr))))
-  ;; For Emacs 21.[12] that does not have `utf-translation-table-for-encode'.
-  (define-ccl-program w3m-iso-latin-1-encoder
-    `(4
-      (loop
-       ,@w3m-ccl-write-iso-latin-1-character
-       ,@w3m-ccl-get-ucs-codepoint-with-emacs-unicode
-       ,@w3m-ccl-generate-ncr))))
+;; For Emacsen prior to 23, redefine the ccl programs having been
+;; defined in w3m-ccl.el.
+(w3m-static-when (<= emacs-major-version 22)
+  (let ((source
+	 ;; CCL program to convert multibyte char to ucs with emacs-unicode.
+	 `((if (r1 == ,(charset-id 'latin-iso8859-1))
+	       ((r1 = (r0 + 128)))
+	     (if (r1 == ,(charset-id 'mule-unicode-0100-24ff))
+		 ((r1 = ((((r0 & #x3f80) >> 7) - 32) * 96))
+		  (r0 &= #x7f)
+		  (r1 += (r0 + 224)))		; 224 == -32 + #x0100
+	       (if (r1 == ,(charset-id 'mule-unicode-2500-33ff))
+		   ((r1 = ((((r0 & #x3f80) >> 7) - 32) * 96))
+		    (r0 &= #x7f)
+		    (r1 += (r0 + 9440)))	; 9440 == -32 + #x2500
+		 (if (r1 == ,(charset-id 'mule-unicode-e000-ffff))
+		     ((r1 = ((((r0 & #x3f80) >> 7) - 32) * 96))
+		      (r0 &= #x7f)
+		      (r1 += (r0 + 57312)))	; 57312 == -32 + #xe000
+		   ,(if (fboundp 'ccl-compile-lookup-character)
+			'((lookup-character utf-subst-table-for-encode r1 r0)
+			  (if (r7 == 0)		; lookup failed
+			      (r1 = #xfffd)))
+		      '((r1 = #xfffd)))))))
+	   (if (r1 == #xfffd)
+	       (write-repeat ?~)		; unknown character.
+	     (r0 = r1)))))
+    (if (get 'utf-translation-table-for-encode 'translation-table-id)
+	;; Emacs 21.3 and later.
+	(progn
+	  (eval
+	   `(define-ccl-program w3m-euc-japan-encoder
+	      '(4
+		(loop
+		 ,@w3m-ccl-write-euc-japan-character
+		 (translate-character utf-translation-table-for-encode r1 r0)
+		 ,@source
+		 ,@w3m-ccl-generate-ncr))))
+	  (eval
+	   `(define-ccl-program w3m-iso-latin-1-encoder
+	      '(4
+		(loop
+		 ,@w3m-ccl-write-iso-latin-1-character
+		 (translate-character utf-translation-table-for-encode r1 r0)
+		 ,@source
+		 ,@w3m-ccl-generate-ncr)))))
+      ;; Emacs 21.2 and earlier.
+      (eval
+       `(define-ccl-program w3m-euc-japan-encoder
+	  '(4
+	    (loop
+	     ,@w3m-ccl-write-euc-japan-character
+	     ,@source
+	     ,@w3m-ccl-generate-ncr))))
+      (eval
+       `(define-ccl-program w3m-iso-latin-1-encoder
+	  '(4
+	    (loop
+	     ,@w3m-ccl-write-iso-latin-1-character
+	     ,@source
+	     ,@w3m-ccl-generate-ncr)))))))
 
 (unless (fboundp 'w3m-ucs-to-char)
   (defun w3m-ucs-to-char (codepoint)
@@ -1080,6 +1098,6 @@ It should be called periodically in order to spin the spinner."
 			'help-echo w3m-spinner-map-help-echo))
       image)))
 
-(provide 'w3m-e21)
+(provide 'w3m-ems)
 
-;;; w3m-e21.el ends here
+;;; w3m-ems.el ends here

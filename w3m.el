@@ -88,32 +88,8 @@
   (cond
    ((featurep 'xemacs)
     (require 'w3m-xmas))
-   ((>= emacs-major-version 23)
-    ;; Emacs-w3m of the released version does not support Emacs 23+.
-    ;; We load w3m-e23.el(c) that exists in the same directory as
-    ;; w3m.el(c) so as to exclude ones in other places.
-    (unless (featurep 'w3m-e23)
-      (let ((files (list (and (boundp 'byte-compile-current-file)
-			      (symbol-value 'byte-compile-current-file))
-			 (and (boundp 'load-file-name)
-			      (symbol-value 'load-file-name))
-			 (locate-library "w3m")))
-	    file)
-	(while files
-	  (when (stringp (setq file (pop files)))
-	    (if (condition-case nil
-		    ;; `load' returns t if the file exists.
-		    (load (expand-file-name "w3m-e23"
-					    (file-name-directory file))
-			  nil t)
-		  (error nil))
-		(setq files nil)
-	      (unless files
-		(error "Emacs-w3m of this version does not support Emacs %d;\
- try the development version"
-		       emacs-major-version))))))))
    ((>= emacs-major-version 21)
-    (require 'w3m-e21))
+    (require 'w3m-ems))
    (t
     (error "Emacs-w3m of this version no longer supports Emacs %d"
 	   emacs-major-version))))
@@ -507,7 +483,7 @@ terminal.)"
    ((eq w3m-type 'w3m-m17n)
     (cond
      ((and (equal "Japanese" w3m-language)
-	   (featurep 'w3m-e21)
+	   (featurep 'w3m-ems)
 	   (not (featurep 'un-define))
 	   (fboundp 'utf-translate-cjk-mode))
       'utf-8)
@@ -529,12 +505,12 @@ terminal.)"
     (if w3m-accept-japanese-characters
 	(if w3m-use-mule-ucs
 	    'w3m-euc-japan-mule-ucs
-	  (if (featurep 'w3m-e21)
+	  (if (featurep 'w3m-ems)
 	      'w3m-euc-japan
 	    'euc-japan))
       (if w3m-use-mule-ucs
 	  'w3m-iso-latin-1-mule-ucs
-	(if (featurep 'w3m-e21)
+	(if (featurep 'w3m-ems)
 	    'w3m-iso-latin-1
 	  'iso-8859-1))))
   "*Coding system used when writing to w3m processes.
@@ -930,10 +906,6 @@ of the original request method."
     (((class color) (background dark)) (:foreground "orchid")))
   "Face used for displaying insert text."
   :group 'w3m-face)
-
-(defvar w3m-fontify-strike-through (or (featurep 'w3m-e21)
-				       (featurep 'w3m-xmas))
-  "Non-nil means use `strike-through' attribute to display deleted text.")
 
 (defvar w3m-fontify-insert nil
   "Non-nil means display inserted text.")
@@ -3252,8 +3224,7 @@ For example:
 
 (defun w3m-fontify-strike-through ()
   "Fontify strike-through text in the buffer containing halfdump."
-  (when (and w3m-fontify-strike-through
-	     (w3m-device-on-window-system-p))
+  (when (w3m-device-on-window-system-p)
     (goto-char (point-min))
     (while (re-search-forward "\\[\\(?:DEL\\|S\\):" nil t)
       (let ((start (match-beginning 0))
