@@ -1,5 +1,12 @@
 2007-03-27  Hideyuki SHIRAI  <shirai@meadowy.org>
 
+	* w3m.el (w3m-add-tab-number): New user option.
+
+	* w3m-ems.el (top): Add w3m-add-tab-number to avoid byte-compile
+	warnings.
+	(w3m-tab-line): Display sequential number on tab title when
+	w3m-add-tab-number is not nil.
+
 	* w3m.el (w3m-menubar): Add w3m-session-save and
 	w3m-session-select.
 	(w3m-tab-button-menu-commands): Ditto.

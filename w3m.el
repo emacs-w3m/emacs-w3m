@@ -1424,6 +1424,11 @@ See also `w3m-use-tab-menubar'."
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-add-tab-number nil
+  "Non-nil means put sequential number to a title on tab."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-use-tab-menubar t
   "Non-nil means use the TAB pull-down menu in the menubar.
 It makes it possible to show all emacs-w3m buffers in a single window,

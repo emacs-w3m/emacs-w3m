@@ -69,6 +69,7 @@
   (defvar w3m-use-favicon)
   (defvar w3m-use-header-line)
   (defvar w3m-use-tab)
+  (defvar w3m-add-tab-number)
   (defvar w3m-work-buffer-name)
   (defvar w3m-work-buffer-list)
   (defvar w3m-new-session-in-background)
@@ -828,6 +829,7 @@ cleared by a timer.")
       (let* ((current (current-buffer))
 	     (buffers (w3m-list-buffers))
 	     (breadth 1)
+	     (number 0)
 	     (fringes (window-fringes))
 	     (width (+ (window-width)
 		       (/ (float (+ (or (car fringes) 0)
@@ -861,7 +863,10 @@ cleared by a timer.")
 	(save-current-buffer
 	  (while buffers
 	    (set-buffer (setq buffer (pop buffers)))
-	    (setq title (w3m-current-title))
+	    (setq number (1+ number))
+	    (setq title (if w3m-add-tab-number
+			    (format "%d.%s" number (w3m-current-title))
+			  (w3m-current-title)))
 	    (setq breadth
 		  (max breadth
 		       ;; There may be a wide character in the beginning of
