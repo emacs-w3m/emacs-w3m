@@ -1,3 +1,22 @@
+2007-03-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-ems.el (w3m-tab-unselected-face)
+	(w3m-tab-unselected-retrieving-face, w3m-tab-selected-face)
+	(w3m-tab-selected-retrieving-face, w3m-tab-mouse-face): Make
+	background colors bright.
+	(w3m-tab-mouse-position-adjuster): New variable.
+	(w3m-tab-mouse-track-selected-tab, w3m-tab-next-buffer)
+	(w3m-tab-previous-buffer, w3m-tab-move-right, w3m-tab-move-left):
+	New functions.
+	(w3m-tab-map): Bind C-wheel-up and C-mouse-4 to w3m-tab-move-left;
+	bind C-wheel-down and C-mouse-5 to w3m-tab-move-right.
+	(w3m-tab-separator): Add tab-separator property.
+
+	* w3m.el (w3m-next-buffer): Fix calculation.
+	(w3m-lynx-like-map, w3m-info-like-map): Bind `C-c C-,' and `C-c
+	C-<' to w3m-tab-move-left, and bind `C-c C-.' and `C-c C->' to
+	w3m-tab-move-right for GNU Emacs.
+
 2007-03-27  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-add-tab-number): New user option.

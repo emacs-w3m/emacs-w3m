@@ -77,6 +77,7 @@
   (autoload 'w3m-delete-buffer "w3m")
   (autoload 'w3m-image-type "w3m")
   (autoload 'w3m-retrieve "w3m")
+  (autoload 'w3m-select-buffer-update "w3m")
   (autoload 'iswitchb-read-buffer "iswitchb"))
 
 (eval-and-compile
@@ -598,7 +599,7 @@ otherwise works in all the emacs-w3m buffers."
 
 (defface w3m-tab-unselected-face
   '((((type x w32 mac) (class color))
-     :background "Gray50" :foreground "Gray20"
+     :background "Gray70" :foreground "Gray20"
      :box (:line-width -1 :style released-button))
     (((class color))
      (:background "blue" :foreground "black")))
@@ -607,7 +608,7 @@ otherwise works in all the emacs-w3m buffers."
 
 (defface w3m-tab-unselected-retrieving-face
   '((((type x w32 mac) (class color))
-     :background "Gray50" :foreground "OrangeRed"
+     :background "Gray70" :foreground "OrangeRed"
      :box (:line-width -1 :style released-button))
     (((class color))
      (:background "blue" :foreground "OrangeRed")))
@@ -616,7 +617,7 @@ otherwise works in all the emacs-w3m buffers."
 
 (defface w3m-tab-selected-face
   '((((type x w32 mac) (class color))
-     :background "Gray85" :foreground "black"
+     :background "Gray90" :foreground "black"
      :box (:line-width -1 :style released-button))
     (((class color))
      (:background "cyan" :foreground "black"))
@@ -626,7 +627,7 @@ otherwise works in all the emacs-w3m buffers."
 
 (defface w3m-tab-selected-retrieving-face
   '((((type x w32 mac) (class color))
-     :background "Gray85" :foreground "red"
+     :background "Gray90" :foreground "red"
      :box (:line-width -1 :style released-button))
     (((class color))
      (:background "cyan" :foreground "red"))
@@ -652,7 +653,7 @@ otherwise works in all the emacs-w3m buffers."
 
 (defface w3m-tab-mouse-face
   '((((type x w32 mac) (class color))
-     :background "Gray65" :foreground "white"
+     :background "Gray75" :foreground "white"
      :box (:line-width -1 :style released-button)))
   "*Face used to highlight tabs under the mouse."
   :group 'w3m-face)
@@ -712,15 +713,15 @@ Wobble the selected window size to force redisplay of the header-line."
       (setq window nil
 	    mpos (mouse-position))
       (and (framep (car mpos))
- 	   (car (cdr mpos))
- 	   (cdr (cdr mpos))
- 	   (setq window (window-at (car (cdr mpos))
- 				   (cdr (cdr mpos))
- 				   (car mpos))))
+	   (car (cdr mpos))
+	   (cdr (cdr mpos))
+	   (setq window (window-at (car (cdr mpos))
+				   (cdr (cdr mpos))
+				   (car mpos))))
       (unless window
- 	(when (one-window-p 'nomini)
- 	  (split-window))
- 	(setq window (next-window))))
+	(when (one-window-p 'nomini)
+	  (split-window))
+	(setq window (next-window))))
     (unless (eq (window-buffer window) buffer)
       (select-window window)
       (switch-to-buffer buffer)
@@ -746,6 +747,130 @@ Wobble the selected window size to force redisplay of the header-line."
     (when (eq major-mode 'w3m-mode)
       (w3m-delete-buffer))
     (w3m-force-window-update window)))
+
+(defvar w3m-tab-line-format nil
+  "Internal variable used to keep contents to be shown in the header-line.
+This is a buffer-local variable.")
+(make-variable-buffer-local 'w3m-tab-line-format)
+
+(defvar w3m-tab-timer nil
+  "Internal variable used to say time has not gone by after the tab-line
+was updated last time.  It is used to control the `w3m-tab-line'
+function running too frequently, set by the function itself and
+cleared by a timer.")
+(make-variable-buffer-local 'w3m-tab-timer)
+
+(defcustom w3m-tab-mouse-position-adjuster '(0.1 . -0.5)
+  "Values used to adjust the mouse position on tabs.
+It is used when the command `w3m-tab-previous-buffer',
+`w3m-tab-next-buffer', `w3m-tab-move-right', or `w3m-tab-move-left' is
+invoked by the mouse.  The value consists of the cons of the number M
+and the number N that are applied to the calculation as follows:
+
+  (TAB_WIDTH + M) * ORDER + N
+
+Where TAB_WIDTH is the character width of a tab and ORDER is the order
+number in tabs.  The result is rounded towards zero."
+  :group 'w3m
+  :type '(cons (number :tag "M") (number :tag "N")))
+
+(defun w3m-tab-mouse-track-selected-tab (event order &optional buffers)
+  "Make the mouse track the selected tab.
+EVENT is a command event.  ORDER is the order number in tabs.
+The optional BUFFERS is a list of emacs-w3m buffers."
+  (when (and w3m-use-tab window-system
+	     (consp event) (symbolp (car event)))
+    (let ((e (get (car event) 'event-symbol-elements))
+	  (len (* (car w3m-tab-mouse-position-adjuster) order))
+	  posn tab start end disp next)
+      (when (and (consp e) (symbolp (car e))
+		 (string-match "\\`mouse-" (symbol-name (car e))))
+	(setq posn (mouse-position))
+	;; Update the header line.
+	(setq w3m-tab-timer nil)
+	(sit-for 0)
+	(setq tab w3m-tab-line-format)
+	(with-temp-buffer
+	  (insert tab)
+	  (setq start (point-min)
+		end (point))
+	  (while (and (> order  0)
+		      (setq start (text-property-any start end
+						     'tab-separator t))
+		      (setq start (text-property-not-all start end
+							 'tab-separator t)))
+	    (setq order (1- order)))
+	  (setq end (1- start)
+		start (point-min)
+		next start
+		disp (get-text-property start 'display))
+	  (while (and (< next end)
+		      (setq next (next-single-property-change
+				  start 'display nil end)))
+	    (setq len (+ (cond ((eq (car disp) 'image)
+				(/ (float (or w3m-favicon-size
+					      (frame-char-height)))
+				   (frame-char-width)))
+			       ((eq (car disp) 'space)
+				(or (plist-get (cdr disp) :width) 1))
+			       (t
+				(string-width (buffer-substring start next))))
+			 len)
+		  start next
+		  disp (get-text-property start 'display))))
+	(set-mouse-position
+	 (car posn)
+	 (truncate (+ len (cdr w3m-tab-mouse-position-adjuster)))
+	 (cddr posn))))))
+
+(defun w3m-tab-next-buffer (&optional n event)
+  "Turn N pages of emacs-w3m buffers ahead."
+  (interactive (list (prefix-numeric-value current-prefix-arg)
+		     last-command-event))
+  (unless n (setq n 1))
+  (when (and (/= n 0) (eq major-mode 'w3m-mode))
+    (let ((buffers (w3m-list-buffers)))
+      (switch-to-buffer
+       (nth (mod (+ n (w3m-buffer-number (current-buffer)) -1)
+		 (length buffers))
+	    buffers))
+      (run-hooks 'w3m-select-buffer-hook)
+      (w3m-select-buffer-update)
+      (w3m-tab-mouse-track-selected-tab
+       event (w3m-buffer-number (current-buffer)) buffers))))
+
+(defun w3m-tab-previous-buffer (&optional n event)
+  "Turn N pages of emacs-w3m buffers behind."
+  (interactive (list (prefix-numeric-value current-prefix-arg)
+		     last-command-event))
+  (w3m-tab-next-buffer (- n) event))
+
+(defun w3m-tab-move-right (&optional n event)
+  "Move this tab N times to the right (to the left if N is negative)."
+  (interactive (list (prefix-numeric-value current-prefix-arg)
+		     last-command-event))
+  (unless n (setq n 1))
+  (when (and (/= n 0) (eq major-mode 'w3m-mode))
+    (let* ((buffers (if (> n 0)
+			(w3m-list-buffers)
+		      (setq n (- n))
+		      (nreverse (w3m-list-buffers))))
+	   (dest (or (nth n (memq (current-buffer) buffers))
+		     (car (last buffers))))
+	   (next (w3m-buffer-number dest))
+	   (cur (w3m-buffer-number (current-buffer)))
+	   e posn start)
+      (rename-buffer "*w3m*<0>")
+      (w3m-buffer-set-number dest cur)
+      (w3m-buffer-set-number (current-buffer) next)
+      (w3m-select-buffer-update)
+      (w3m-tab-mouse-track-selected-tab event next buffers))))
+
+(defun w3m-tab-move-left (&optional n event)
+  "Move this tab N times to the left (to the right if N is negative)."
+  (interactive (list (prefix-numeric-value current-prefix-arg)
+		     last-command-event))
+  (w3m-tab-move-right (- n) event))
 
 (defvar w3m-tab-map nil)
 (make-variable-buffer-local 'w3m-tab-map)
@@ -784,10 +909,14 @@ Wobble the selected window size to force redisplay of the header-line."
       (define-key w3m-tab-map [header-line double-mouse-1] double-action1)
       (define-key w3m-tab-map [header-line double-mouse-2] double-action2)
       (define-key w3m-tab-map [header-line mouse-3] menu-action)
-      (define-key w3m-tab-map [header-line wheel-up] 'w3m-previous-buffer)
-      (define-key w3m-tab-map [header-line wheel-down] 'w3m-next-buffer)
-      (define-key w3m-tab-map [header-line mouse-4] 'w3m-previous-buffer)
-      (define-key w3m-tab-map [header-line mouse-5] 'w3m-next-buffer)
+      (define-key w3m-tab-map [header-line wheel-up] 'w3m-tab-previous-buffer)
+      (define-key w3m-tab-map [header-line wheel-down] 'w3m-tab-next-buffer)
+      (define-key w3m-tab-map [header-line mouse-4] 'w3m-tab-previous-buffer)
+      (define-key w3m-tab-map [header-line mouse-5] 'w3m-tab-next-buffer)
+      (define-key w3m-tab-map [header-line C-wheel-up] 'w3m-tab-move-left)
+      (define-key w3m-tab-map [header-line C-wheel-down] 'w3m-tab-move-right)
+      (define-key w3m-tab-map [header-line C-mouse-4] 'w3m-tab-move-left)
+      (define-key w3m-tab-map [header-line C-mouse-5] 'w3m-tab-move-right)
       (define-key w3m-mode-map [header-line double-mouse-1]
 	'w3m-goto-new-session-url)
       (define-key w3m-mode-map [header-line mouse-3] menu-action2))
@@ -801,18 +930,6 @@ Wobble the selected window size to force redisplay of the header-line."
 	     (set-buffer ,(current-buffer))
 	     (call-interactively 'w3m-process-stop)))))))
 
-(defvar w3m-tab-line-format nil
-  "Internal variable used to keep contents to be shown in the header-line.
-This is a buffer-local variable.")
-(make-variable-buffer-local 'w3m-tab-line-format)
-
-(defvar w3m-tab-timer nil
-  "Internal variable used to say time has not gone by after the tab-line
-was updated last time.  It is used to control the `w3m-tab-line'
-function running too frequently, set by the function itself and
-cleared by a timer.")
-(make-variable-buffer-local 'w3m-tab-timer)
-
 (defvar w3m-tab-half-space
   (propertize " " 'display '(space :width 0.5))
   "The space of half width.")
@@ -821,7 +938,8 @@ cleared by a timer.")
   (propertize " "
 	      'face (list 'w3m-tab-background-face)
 	      'mouse-face 'w3m-tab-selected-background-face
-	      'display '(space :width 0.5))
+	      'display '(space :width 0.5)
+	      'tab-separator t)
   "String used to separate tabs.")
 
 (defun w3m-tab-line ()
@@ -943,7 +1061,8 @@ cleared by a timer.")
 	      (concat (apply 'concat (apply 'nconc line))
 		      (propertize (make-string (window-width) ?\ )
 				  'face (list 'w3m-tab-background-face)
-				  'mouse-face 'w3m-tab-selected-background-face))))))
+				  'mouse-face
+				  'w3m-tab-selected-background-face))))))
 
 (defun w3m-update-tab-line ()
   "Update tab line by a side effect."
