@@ -2317,6 +2317,10 @@ nil value means it has not been initialized.")
        [,(w3m-make-menu-item "他のセッションを閉じる" "Close Other Sessions")
 	w3m-delete-other-buffers
 	(> (safe-length (w3m-list-buffers)) 1)]
+       [,(w3m-make-menu-item "現在のセッションを保存する" "Save Displayed Sessions")
+	w3m-session-save t]
+       [,(w3m-make-menu-item "セッションを選択する" "Select Sessions")
+	w3m-session-select t]
        ) ;; end session
       [,(w3m-make-menu-item "この URL を新しいセッションで開く"
 	  "Open This URL in a new session")
@@ -7211,6 +7215,13 @@ closed.  See also `w3m-quit'."
       (w3m-view-url-with-external-browser
        ,(w3m-make-menu-item "外部ブラウザで開く" "View with external browser")
        ,currentp ,w3m-new-session-in-background w3m-current-url)
+      -
+      (w3m-session-save
+       ,(w3m-make-menu-item "すべてのタブを保存する" "Save All Tabs...")
+       t)
+      (w3m-session-select
+       ,(w3m-make-menu-item "タブリストを選択する" "Select List of Tabs...")
+       t)
       (w3m-bookmark-add-current-url
        ,(w3m-make-menu-item "このタブをブックマーク" "Bookmark This Tab...")
        ,currentp ,w3m-new-session-in-background)
