@@ -9,7 +9,9 @@
 	(w3m-tab-previous-buffer, w3m-tab-move-right, w3m-tab-move-left):
 	New functions.
 	(w3m-tab-map): Bind C-wheel-up and C-mouse-4 to w3m-tab-move-left;
-	bind C-wheel-down and C-mouse-5 to w3m-tab-move-right.
+	bind C-wheel-down and C-mouse-5 to w3m-tab-move-right; use
+	w3m-tab-previous-buffer and w3m-tab-next-buffer instead of
+	w3m-previous-buffer and w3m-next-buffer.
 	(w3m-tab-separator): Add tab-separator property.
 
 	* w3m.el (w3m-next-buffer): Fix calculation.
