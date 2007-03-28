@@ -6,6 +6,8 @@
 	(w3m-tab-mouse-track-selected-tab): Be controlled by
 	w3m-tab-track-mouse; calculate the mouse position in pixel units
 	rather than the number of characters.
+	(w3m-tab-make-keymap): Make the buffer selected by a tab the
+	current buffer before performing w3m-tab-move-(left|right).
 	(w3m-tab-separator-map): New keymap.
 	(w3m-tab-separator): Use it as the local-map property.
 	(w3m-tab-line): Use it as the local-map property in trailing space.
