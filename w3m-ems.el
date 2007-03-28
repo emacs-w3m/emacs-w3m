@@ -760,32 +760,48 @@ function running too frequently, set by the function itself and
 cleared by a timer.")
 (make-variable-buffer-local 'w3m-tab-timer)
 
-(defcustom w3m-tab-mouse-position-adjuster '(0.1 . -0.5)
+(defcustom w3m-tab-track-mouse t
+  "Say whether to make the mouse track the selected tab.
+It controls the behavior of the commands `w3m-tab-previous-buffer',
+`w3m-tab-next-buffer', `w3m-tab-move-right', and `w3m-tab-move-left'
+invoked by the mouse.
+
+You may want to set this to nil if you use a proportional font for the
+tab faces.  See also `w3m-tab-mouse-position-adjuster'."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-tab-mouse-position-adjuster '(0.5 . -4)
   "Values used to adjust the mouse position on tabs.
 It is used when the command `w3m-tab-previous-buffer',
 `w3m-tab-next-buffer', `w3m-tab-move-right', or `w3m-tab-move-left' is
-invoked by the mouse.  The value consists of the cons of the number M
-and the number N that are applied to the calculation as follows:
+invoked by the mouse.  The value consists of the cons of a floating
+point number M and an integer N that are applied to calculating of the
+mouse position, which is given in pixel units, as follows:
 
   (TAB_WIDTH + M) * ORDER + N
 
-Where TAB_WIDTH is the character width of a tab and ORDER is the order
-number in tabs.  The result is rounded towards zero."
+Where TAB_WIDTH is the pixel width of a tab and ORDER is the order
+number in tabs.  The result is rounded towards zero.
+
+Note that the calculation will always fail if you use a proportional
+font for the tab faces.  See also `w3m-tab-track-mouse'."
   :group 'w3m
-  :type '(cons (number :tag "M") (number :tag "N")))
+  :type '(cons (number :tag "M") (integer :tag "N")))
 
 (defun w3m-tab-mouse-track-selected-tab (event order &optional buffers)
   "Make the mouse track the selected tab.
 EVENT is a command event.  ORDER is the order number in tabs.
 The optional BUFFERS is a list of emacs-w3m buffers."
-  (when (and w3m-use-tab window-system
+  (when (and w3m-use-tab window-system w3m-tab-track-mouse
 	     (consp event) (symbolp (car event)))
     (let ((e (get (car event) 'event-symbol-elements))
 	  (len (* (car w3m-tab-mouse-position-adjuster) order))
+	  (fcw (frame-char-width))
 	  posn tab start end disp next)
       (when (and (consp e) (symbolp (car e))
 		 (string-match "\\`mouse-" (symbol-name (car e))))
-	(setq posn (mouse-position))
+	(setq posn (mouse-pixel-position))
 	;; Update the header line.
 	(setq w3m-tab-timer nil)
 	(sit-for 0)
@@ -807,18 +823,18 @@ The optional BUFFERS is a list of emacs-w3m buffers."
 	  (while (and (< next end)
 		      (setq next (next-single-property-change
 				  start 'display nil end)))
-	    (setq len (+ (cond ((eq (car disp) 'image)
-				(/ (float (or w3m-favicon-size
-					      (frame-char-height)))
-				   (frame-char-width)))
-			       ((eq (car disp) 'space)
-				(or (plist-get (cdr disp) :width) 1))
-			       (t
-				(string-width (buffer-substring start next))))
+	    (setq len (+ (cond
+			  ((eq (car disp) 'image)
+			   (or w3m-favicon-size (frame-char-height)))
+			  ((eq (car disp) 'space)
+			   (* (or (plist-get (cdr disp) :width) 1) fcw))
+			  (t
+			   (* (string-width (buffer-substring start next))
+			      fcw)))
 			 len)
 		  start next
 		  disp (get-text-property start 'display))))
-	(set-mouse-position
+	(set-mouse-pixel-position
 	 (car posn)
 	 (truncate (+ len (cdr w3m-tab-mouse-position-adjuster)))
 	 (cddr posn))))))
@@ -934,12 +950,27 @@ The optional BUFFERS is a list of emacs-w3m buffers."
   (propertize " " 'display '(space :width 0.5))
   "The space of half width.")
 
+(defvar w3m-tab-separator-map nil)
+
+(unless w3m-tab-separator-map
+  (let ((map (make-sparse-keymap)))
+    (setq w3m-tab-separator-map map)
+    (define-key map [header-line wheel-up] 'w3m-tab-previous-buffer)
+    (define-key map [header-line wheel-down] 'w3m-tab-next-buffer)
+    (define-key map [header-line mouse-4] 'w3m-tab-previous-buffer)
+    (define-key map [header-line mouse-5] 'w3m-tab-next-buffer)
+    (define-key map [header-line C-wheel-up] 'w3m-tab-move-left)
+    (define-key map [header-line C-wheel-down] 'w3m-tab-move-right)
+    (define-key map [header-line C-mouse-4] 'w3m-tab-move-left)
+    (define-key map [header-line C-mouse-5] 'w3m-tab-move-right)))
+
 (defvar w3m-tab-separator
   (propertize " "
 	      'face (list 'w3m-tab-background-face)
 	      'mouse-face 'w3m-tab-selected-background-face
 	      'display '(space :width 0.5)
-	      'tab-separator t)
+	      'tab-separator t
+	      'local-map w3m-tab-separator-map)
   "String used to separate tabs.")
 
 (defun w3m-tab-line ()
@@ -1061,8 +1092,8 @@ The optional BUFFERS is a list of emacs-w3m buffers."
 	      (concat (apply 'concat (apply 'nconc line))
 		      (propertize (make-string (window-width) ?\ )
 				  'face (list 'w3m-tab-background-face)
-				  'mouse-face
-				  'w3m-tab-selected-background-face))))))
+				  'mouse-face 'w3m-tab-selected-background-face
+				  'local-map w3m-tab-separator-map))))))
 
 (defun w3m-update-tab-line ()
   "Update tab line by a side effect."

@@ -1,3 +1,15 @@
+2007-03-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-ems.el (w3m-tab-track-mouse): New variable.
+	(w3m-tab-mouse-position-adjuster): Express the values in pixel
+	units rather than the number of characters.
+	(w3m-tab-mouse-track-selected-tab): Be controlled by
+	w3m-tab-track-mouse; calculate the mouse position in pixel units
+	rather than the number of characters.
+	(w3m-tab-separator-map): New keymap.
+	(w3m-tab-separator): Use it as the local-map property.
+	(w3m-tab-line): Use it as the local-map property in trailing space.
+
 2007-03-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-ems.el (w3m-tab-unselected-face)
