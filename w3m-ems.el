@@ -808,7 +808,6 @@ The optional BUFFERS is a list of emacs-w3m buffers."
 	(let ((frame (selected-frame)))
 	  (while (not (cadr (setq posn (mouse-pixel-position))))
 	    (select-frame-set-input-focus frame)))
-	(setq posn (mouse-pixel-position))
 	;; Update the header line.
 	(setq w3m-tab-timer nil)
 	(sit-for 0)

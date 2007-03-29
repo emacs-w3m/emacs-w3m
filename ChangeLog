@@ -1,3 +1,7 @@
+2007-03-29  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-ems.el (w3m-tab-mouse-track-selected-tab): Tiny fix.
+
 2007-03-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-ems.el (w3m-tab-mouse-track-selected-tab): Ignore mouse
