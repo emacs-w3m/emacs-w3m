@@ -1284,8 +1284,7 @@ car and the cdr in each element if it is available."
 
 (defcustom w3m-track-mouse t
   "*Whether to track the mouse and message the url under the mouse.
-This feature does not work under Emacs or XEmacs versions prior to 21.
-See also `show-help-function' if you are using Emacs 21 or later.
+See also `show-help-function' if you are using GNU Emacs.
 
 A tip for XEmacs users:
 
@@ -2089,13 +2088,11 @@ The value will be modified for displaying the graphic icon.")
 
 (defvar w3m-modeline-favicon nil
   "Modeline control for displaying a favicon.
-This variable will be made buffer-local under Emacs 21 and later or
-XEmacs.")
+This variable will be made buffer-local.")
 
 (defvar w3m-favicon-image nil
   "Favicon image of the page.
-This variable will be made buffer-local under Emacs 21 and later or
-XEmacs.")
+This variable will be made buffer-local")
 
 (defvar w3m-current-process nil
   "Flag used to say whether the external process is running in the buffer.
@@ -6850,7 +6847,7 @@ as if the folder command of MH performs with the -pack option."
 	  (define-key map [(shift button2)]
 	    'w3m-mouse-view-this-url-new-session))
       (define-key map [mouse-2] 'w3m-mouse-view-this-url)
-      ;; Support for mouse-1 on Emacs 22.
+      ;; Support for mouse-1 on Emacs 22 and greater.
       (define-key map [follow-link] 'mouse-face)
       (define-key map [S-mouse-2] 'w3m-mouse-view-this-url-new-session))
     (define-key map "\C-c\C-@" 'w3m-history-store-position)
@@ -6964,7 +6961,7 @@ as if the folder command of MH performs with the -pack option."
 	  (define-key map [(shift button2)]
 	    'w3m-mouse-view-this-url-new-session))
       (define-key map [mouse-2] 'w3m-mouse-view-this-url)
-      ;; Support for mouse-1 on Emacs 22.
+      ;; Support for mouse-1 on Emacs 22 and greater.
       (define-key map [follow-link] 'mouse-face)
       (define-key map [S-mouse-2] 'w3m-mouse-view-this-url-new-session))
     (cond ((featurep 'xemacs)
@@ -7784,15 +7781,14 @@ this function will prompt user for it."
 (eval-and-compile
   (unless (fboundp 'w3m-add-local-hook)
     ;; Silence the byte compiler; `w3m-add-local-hook' will be defined
-    ;; in another place for Emacs in which `make-local-hook' is obsolete.
+    ;; in w3m-ems.el for GNU Emacs.
     (eval-when-compile
       (when (eq 'byte-compile-obsolete (get 'make-local-hook 'byte-compile))
 	(put 'make-local-hook 'byte-compile nil)
 	(put 'make-local-hook 'byte-obsolete-info nil)))
     (defun w3m-add-local-hook (hook function &optional append)
       "Add to the buffer-local value of HOOK the function FUNCTION.
-Note: this function is designed for Emacsen other than Emacs 21 and
-later."
+This function is designed for XEmacs."
       (make-local-hook hook)
       (add-hook hook function append t))))
 
@@ -9281,7 +9277,7 @@ passed to the `w3m-quit' function (which see)."
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map w3m-mode-map)
     (define-key map [mouse-2] 'w3m-goto-url)
-    ;; Prevent tool-bar from being doubled under Emacs 21 and later.
+    ;; Prevent tool-bar from being doubled under GNU Emacs.
     (define-key map [tool-bar] 'undefined)
     (setq w3m-header-line-map map)))
 
