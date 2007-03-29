@@ -1,8 +1,9 @@
 2007-03-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m-ems.el (w3m-tab-mouse-track-selected-tab): Recognize
-	wheel-up and wheel-down in addition to mouse-4 and mouse-5; don't
-	respond to too fast operation of mouse wheel for moving a tab.
+	* w3m-ems.el (w3m-tab-mouse-track-selected-tab): Ignore mouse
+	position info if mouse points to other frame; recognize wheel-up
+	and wheel-down in addition to mouse-4 and mouse-5; don't respond
+	to too fast operation of mouse wheel for moving a tab.
 
 2007-03-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 

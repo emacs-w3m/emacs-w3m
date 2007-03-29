@@ -802,6 +802,12 @@ The optional BUFFERS is a list of emacs-w3m buffers."
       (when (and (consp e) (symbolp (car e))
 		 (or (memq (car e) '(mouse-4 mouse-5 wheel-up wheel-down))
 		     (string-match "\\`mouse-" (symbol-name (car e)))))
+	;; Ignore values gotten by the mouse pointing to other frames.
+	;; It might happen if the frame in question gets out of focus
+	;; by a certain desktop tool such as unclutter.
+	(let ((frame (selected-frame)))
+	  (while (not (cadr (setq posn (mouse-pixel-position))))
+	    (select-frame-set-input-focus frame)))
 	(setq posn (mouse-pixel-position))
 	;; Update the header line.
 	(setq w3m-tab-timer nil)
