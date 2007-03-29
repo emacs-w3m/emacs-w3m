@@ -226,13 +226,8 @@ You can run emacs-w3m in various versions of Emacsen listed below:
 
 @table @samp
 
-@item Emacs 21.x
+@item Emacs 21.1 or greater
 No additional packages are required.
-
-@c @item Emacs 22.x
-@c No additional packages are required.  If you're using a prerelease version
-@c of Emacs 22 (such as versions 21.3.50 or 22.0), make sure it is newer
-@c than March 2004.
 
 @item XEmacs 21.x
 First of all, you should note that emacs-w3m supports only XEmacs
@@ -249,9 +244,9 @@ Emacs-w3m no longer supports those Emacs versions.
 
 @end table
 
-If you use the development version of GNU Emacs (``Emacs 22''), perhaps
-you should run the CVS version of emacs-w3m on it.  In that case, it is
-strongly recommended that you join the @ref{Mailing List}.
+If you use the development version of GNU Emacs, perhaps you should run
+the CVS version of emacs-w3m on it.  In that case, it is strongly
+recommended that you join the @ref{Mailing List}.
 
 @node You Need w3m
 @section Using w3m: the reason why emacs-w3m is fast
@@ -329,7 +324,7 @@ reading web newspapers, you can use it with Gnus, Mew, Nana-gnus,
 T-gnus, Wanderlust, etc. @xref{Shimbun Library}.
 
 Note that the @acronym{FLIM} package requires the @acronym{APEL} package
-even if you are using Emacs 21.x or Emacs 22.x.  Therefore, you must
+regardless of the version of Emacs you are using.  Therefore, you must
 install both @acronym{APEL} and @acronym{FLIM} if you would like to use
 the @samp{shimbun} library.  The @acronym{FLIM} package is available at:
 
@@ -451,8 +446,8 @@ beforehand, use this:
 % make what-where
 @end example
 
-If you are using Emacs 21, 22 or XEmacs, you had better install icon
-image files.  To do this:
+If you are using Emacs or XEmacs capable of displaying images, you had
+better install icon image files.  To do this:
 
 @example
 % make install-icons
@@ -736,10 +731,10 @@ use Gnus or Mew (@code{w3m-goto-url}).
 @findex w3m-goto-url-new-session
 Prompt for a URL in the minibuffer, and display it in a new session.
 This function works just like @kbd{g}(@key{M-x w3m-goto-url}), except
-that it opens a new session.  When you use emacs-w3m on Emacs 21, 22 or
-XEmacs, opening a new session means displaying the page in a new tab.
-For more information about tabs, please refer to @ref{Using Tabs}
-(@code{w3m-goto-url-new-session}).
+that it opens a new session.  Unless you are using emacs-w3m on the
+character terminal, opening a new session means displaying the page in a
+new tab.  For more information about tabs, please refer to @ref{Using
+Tabs} (@code{w3m-goto-url-new-session}).
 
 @item c
 @kindex c
@@ -1380,11 +1375,12 @@ example): now you have two of these rectangles.  These are tabs.
 
 The most obvious use of tabs is switching: by clicking with the
 @kbd{mouse-1} button on a tab, you make the buffer it represents active.
-It also works with the @kbd{mouse-2} button.  It's a very quick and easy
-way to work with several emacs-w3m buffers, you just have to point and
-click.  (Yeah yeah, I hear you.  You want to switch using the keyboard.
-Don't worry, it's also possible.  It's explained in the next section.
-Now keep quiet and read on!)
+It also works with the @kbd{mouse-2} button, or with rolling the mouse
+wheel if you are using GNU Emacs.  It's a very quick and easy way to
+work with several emacs-w3m buffers, you just have to point and click,
+or to roll the mouse wheel.  (Yeah yeah, I hear you.  You want to switch
+using the keyboard.  Don't worry, it's also possible.  It's explained in
+the next section.  Now keep quiet and read on!)
 
 Another nifty feature is the feedback it provides.  If you are on a
 color terminal or window system, emacs-w3m shows the text in the tab in
@@ -1407,6 +1403,39 @@ User options:
 @item w3m-use-tab
 @vindex w3m-use-tab
 Whether to activate tabbed browsing or not.
+@end table
+
+If you are a GNU Emacs user, the mouse wheel allows you not only to go
+to an adjacent buffer but also to move a buffer to the adjacent place.
+To do that, press and hold down the control key while you roll the mouse
+wheel on the tabs line.  There are two variables that control how
+emacs-w3m behaves by the mouse wheel:
+
+@table @code
+@item w3m-tab-track-mouse
+@vindex w3m-tab-track-mouse
+This variable controls whether to make the mouse track the selected tab.
+The default value is @code{t}.  You may want to set this to @code{nil}
+if you use a proportional font for the tab faces.  See also
+@code{w3m-tab-mouse-position-adjuster}.
+
+@item w3m-tab-mouse-position-adjuster
+@vindex w3m-tab-mouse-position-adjuster
+This variable contains the values used to adjust the mouse position on
+tabs when the mouse pointer tracks the selected tab.  The default value
+is @code{(0.5 . -4)}.  It consists of the cons of a floating point
+number @var{m} and an integer @var{n} that are applied to calculating of
+the mouse position, which is given in pixel units, as follows:
+
+@example
+(TAB_WIDTH + M) * ORDER + N
+@end example
+
+Where @var{tab_width} is the pixel width of a tab and @var{order} is the
+order number in tabs.  The result is rounded towards zero.
+
+Note that the calculation will always fail if you use a proportional
+font for the tab faces.  See also @code{w3m-tab-track-mouse}.
 @end table
 
 @node Working with buffers
@@ -1484,16 +1513,34 @@ in emacs-w3m buffers.}.
 @kindex C-c C-p
 @findex w3m-previous-buffer
 Move to the previous emacs-w3m buffer.  This is usually the next buffer
-to the left in the tabs line under Emacs 21 and later.  If called with a
-numeric argument N, move N buffers to the previous
-(@code{w3m-previous-buffer}).
+to the left in the tabs line.  If called with a numeric argument N, move
+N buffers to the previous (@code{w3m-previous-buffer}).
 
 @item C-c C-n
 @kindex C-c C-n
 @findex w3m-next-buffer
 Move to the next emacs-w3m buffer.  This is usually the next buffer to
-the right in the tabs line under Emacs 21 and later.  If called with a
-numeric argument N, move N buffers to the next (@code{w3m-next-buffer}).
+the right in the tabs line.  If called with a numeric argument N, move N
+buffers to the next (@code{w3m-next-buffer}).
+@end table
+
+If you are a GNU Emacs user, you can also move an emacs-w3m buffer to
+the adjacent place on the tabs line using the following commands:
+
+@table @kbd
+@item C-c C-.
+@item C-c C->
+@findex w3m-tab-move-right
+Move the selected emacs-w3m buffer to the right hand adjacent place on
+the tabs line.  If called with a numeric argument N, move N tabs to the
+right (@code{w3m-tab-move-right}).
+
+@item C-c C-,
+@item C-c C-<
+@findex w3m-tab-move-left
+Move the selected emacs-w3m buffer to the left hand adjacent place on
+the tabs line.  If called with a numeric argument N, move N tabs to the
+left (@code{w3m-tab-move-left}).
 @end table
 
 Also note that if these commands don't fit you well despite our efforts,
@@ -2705,9 +2752,8 @@ option.
 
 @item w3m-track-mouse
 @vindex w3m-track-mouse
-Whether to track the mouse and message the url under the mouse.  This
-feature does not work under Emacs or XEmacs versions prior to 21.  See
-also @code{show-help-function} if you are using Emacs 21 or later.
+Whether to track the mouse and message the url under the mouse.  See
+also @code{show-help-function} if you are using GNU Emacs.
 
 @noindent
 A tip for XEmacs users:
@@ -3763,13 +3809,13 @@ Install w3mmee and put the following line in your @file{~/.emacs} file:
 @end lisp
 
 @item
-Q. Why are favicon images not displayed in the Emacs 21 tab bar?
+Q. Why are favicon images not displayed in the tabs line on GNU Emacs?
 
 Install the @samp{convert} program which is included in ImageMagick.
 It is available from: @uref{http://www.imagemagick.org/}
 
 @item
-Q. Why does Emacs 21 get locked when a favicon image is going to be
+Q. Why does GNU Emacs get locked when a favicon image is going to be
 displayed?
 @item
 Q. My computer accesses the disk drive violently and says @samp{process
@@ -3858,7 +3904,8 @@ In addition to this, if your Emacs has been built with the
 @end lisp
 
 It is said that those workarounds will become needless when the next
-version of Emacs 22.1 is released.
+version of Emacs 22.1 (i.e., 22.2, 23.1, or something other) is
+released.
 @end itemize
 
 @node Shimbun FAQ
@@ -6113,12 +6160,11 @@ with the @code{yahtml-mode}.  Here is an example:
 
 You can use JIS X 0213 character set in Emacs using the @code{jis0213}
 module which is bundled in the Mule-UCS package.  Although the
-@code{decode-char} function in Emacs 21 and later is overridden by
-@code{mucs} (@code{jis0213} loads @code{mucs}) and it stops working
-properly for the @code{ucs} coded character set, it has been reported
-that also to load the @code{unicode} module seems to solve the problem.
-The reason has not been made clear yet.  Here is an example for the
-@file{~/.emacs} file:
+@code{decode-char} function is overridden by @code{mucs} (@code{jis0213}
+loads @code{mucs}) and it stops working properly for the @code{ucs}
+coded character set, it has been reported that also to load the
+@code{unicode} module seems to solve the problem. The reason has not
+been made clear yet.  Here is an example for the @file{~/.emacs} file:
 
 @lisp
 (require 'unicode)
