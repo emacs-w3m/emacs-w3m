@@ -800,7 +800,8 @@ The optional BUFFERS is a list of emacs-w3m buffers."
 	  (fcw (frame-char-width))
 	  posn tab start end disp next)
       (when (and (consp e) (symbolp (car e))
-		 (string-match "\\`mouse-" (symbol-name (car e))))
+		 (or (memq (car e) '(mouse-4 mouse-5 wheel-up wheel-down))
+		     (string-match "\\`mouse-" (symbol-name (car e)))))
 	(setq posn (mouse-pixel-position))
 	;; Update the header line.
 	(setq w3m-tab-timer nil)
@@ -837,7 +838,11 @@ The optional BUFFERS is a list of emacs-w3m buffers."
 	(set-mouse-pixel-position
 	 (car posn)
 	 (truncate (+ len (cdr w3m-tab-mouse-position-adjuster)))
-	 (cddr posn))))))
+	 (cddr posn))
+	(unless (memq this-command '(w3m-tab-next-buffer
+				     w3m-tab-previous-buffer))
+	  (sleep-for 0.1)
+	  (discard-input))))))
 
 (defun w3m-tab-next-buffer (&optional n event)
   "Turn N pages of emacs-w3m buffers ahead."
