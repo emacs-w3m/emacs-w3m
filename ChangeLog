@@ -1,6 +1,8 @@
 2007-03-29  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-ems.el (w3m-tab-mouse-track-selected-tab): Tiny fix.
+	(w3m-tab-make-keymap): Use next|previous-buffer-action instead of
+	w3m-tab-next|previous-buffer.
 
 2007-03-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
