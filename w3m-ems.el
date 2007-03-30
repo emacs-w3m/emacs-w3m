@@ -688,7 +688,7 @@ otherwise works in all the emacs-w3m buffers."
 		   'help-echo "mouse-2 prompts to input URL")))))))
 
 (eval-when-compile
-  ;; Shut up the byte-compiler in old Emacs 21.
+  ;; Shut up the byte-compiler for old Emacsen.
   (unless (fboundp 'force-window-update)
     (defalias 'force-window-update 'ignore)))
 
@@ -700,11 +700,9 @@ otherwise works in all the emacs-w3m buffers."
 Force redisplay of WINDOW which defaults to the selected window."
 	  (force-window-update (or window (selected-window))))
       (lambda (&optional ignore) "\
-Wobble the selected window size to force redisplay of the header-line."
-	(let ((window-min-height 0))
-	  (enlarge-window 1)
-	  (unless (eq (next-window nil 'ignore-minibuf) (selected-window))
-	    (shrink-window 1)))))))
+Wobble the selected window to force redisplay of the header-line."
+	(save-window-excursion
+	  (split-window-vertically))))))
 
 (defun w3m-tab-drag-mouse-function (event buffer)
   (let ((window (posn-window (event-end event)))
@@ -1104,22 +1102,6 @@ is non-nil means not to respond to too fast operation of mouse wheel."
 				  'face (list 'w3m-tab-background-face)
 				  'mouse-face 'w3m-tab-selected-background-face
 				  'local-map w3m-tab-separator-map))))))
-
-(defun w3m-update-tab-line ()
-  "Update tab line by a side effect."
-  (when w3m-use-tab
-    ;; The following form will cause a problem if a user doesn't set the
-    ;; cursor color explicitly, because the `cursor-color' value is always
-    ;; black in such a case whatever the color of the default face may be.
-    ;; cf. <URL:http://news.gmane.org/group/gmane.emacs.w3m/thread=4605>
-
-    ;;(set-cursor-color (frame-parameter (selected-frame) 'cursor-color))))
-
-    ;; We use wobbling of the window size instead.
-    (let ((window-min-height 0))
-      (enlarge-window 1)
-      (unless (eq (next-window nil 'ignore-minibuf) (selected-window))
-	(shrink-window 1)))))
 
 (defun w3m-switch-to-buffer (buffer &optional norecord)
   "Run `switch-to-buffer' and redisplay the header-line.

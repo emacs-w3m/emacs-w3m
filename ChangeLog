@@ -3,10 +3,16 @@
 	* w3m-bug.el (report-emacs-w3m-bug-system-informations): Add gtk.
 	(report-emacs-w3m-bug): Bind print-quoted to t.
 
-	* w3m-ems.el (w3m-tab-mouse-track-selected-tab): Add `decelerate'
-	argument; use it instead of to check the value of this-command.
+	* w3m-ems.el (w3m-force-window-update): Do split-window-vertically
+	instead of performing enlarge-window/shrink-window for Emacs 21.
+	(w3m-tab-mouse-track-selected-tab): Add `decelerate' argument; use
+	it instead of to check the value of this-command.
 	(w3m-tab-move-right): Set it.
 	(w3m-tab-make-keymap): Rearrange.
+	(w3m-update-tab-line): Remove.
+
+	* w3m.el (w3m-select-buffer-update): Use w3m-force-window-update
+	instead of w3m-update-tab-line.
 
 2007-03-29  Hideyuki SHIRAI  <shirai@meadowy.org>
 

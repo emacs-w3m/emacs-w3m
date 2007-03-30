@@ -8987,14 +8987,12 @@ buffer list.  The following command keys are available:
   (w3m-select-buffer-mode)
   (or nomsg (w3m-message w3m-select-buffer-message)))
 
-(unless (fboundp 'w3m-update-tab-line)
-  (defalias 'w3m-update-tab-line 'ignore))
-
 (defun w3m-select-buffer-update (&rest args)
   (when (get-buffer-window w3m-select-buffer-name)
     (save-selected-window
       (w3m-select-buffer nil 'update)))
-  (w3m-update-tab-line))
+  (when w3m-use-tab
+    (w3m-force-window-update)))
 
 (defun w3m-select-buffer-generate-contents (current-buffer)
   (let ((i 0)
