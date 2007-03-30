@@ -3903,9 +3903,8 @@ In addition to this, if your Emacs has been built with the
       (ad-activate 'select-frame))))
 @end lisp
 
-It is said that those workarounds will become needless when the next
-version of Emacs 22.1 (i.e., 22.2, 23.1, or something other) is
-released.
+These workarounds will become unnecessary in subsequent Emacs releases
+(22.2 or 23.1).
 @end itemize
 
 @node Shimbun FAQ
