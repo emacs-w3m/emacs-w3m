@@ -845,8 +845,8 @@ is non-nil means not to respond to too fast operation of mouse wheel."
 	 (truncate (+ len (cdr w3m-tab-mouse-position-adjuster)))
 	 (cddr posn))
 	(when decelerate
-	  (sleep-for 0.1)
-	  (discard-input))))))
+	  (sleep-for 0.1))
+	(discard-input)))))
 
 (defun w3m-tab-next-buffer (&optional n event)
   "Turn N pages of emacs-w3m buffers ahead."
@@ -943,7 +943,19 @@ is non-nil means not to respond to too fast operation of mouse wheel."
       (define-key w3m-tab-map [header-line C-mouse-5] move-right-action)
       (define-key w3m-mode-map [header-line double-mouse-1]
 	'w3m-goto-new-session-url)
-      (define-key w3m-mode-map [header-line mouse-3] menu-action2))
+      (define-key w3m-mode-map [header-line mouse-3] menu-action2)
+      ;; The following bindings in `w3m-mode-map', not `w3m-tab-map',
+      ;; are required for some platforms, in which mouse wheel events
+      ;; sometimes pass by `w3m-tab-map' for the unresolved reason and
+      ;; see `w3m-mode-map', or else the `undefined' errors will arise.
+      (define-key w3m-mode-map [header-line mouse-4] 'w3m-tab-previous-buffer)
+      (define-key w3m-mode-map [header-line mouse-5] 'w3m-tab-next-buffer)
+      (define-key w3m-mode-map [header-line wheel-up] 'w3m-tab-previous-buffer)
+      (define-key w3m-mode-map [header-line wheel-down] 'w3m-tab-next-buffer)
+      (define-key w3m-mode-map [header-line C-wheel-up] 'w3m-tab-move-left)
+      (define-key w3m-mode-map [header-line C-wheel-down] 'w3m-tab-move-right)
+      (define-key w3m-mode-map [header-line C-mouse-4] 'w3m-tab-move-left)
+      (define-key w3m-mode-map [header-line C-mouse-5] 'w3m-tab-move-right))
     (unless w3m-tab-spinner-map
       (setq w3m-tab-spinner-map (make-sparse-keymap))
       (define-key w3m-tab-spinner-map [header-line mouse-2]

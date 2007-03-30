@@ -1,3 +1,9 @@
+2007-03-30  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-ems.el (w3m-tab-mouse-track-selected-tab): Sleep anyway.
+	(w3m-tab-make-keymap): Add key-bindings for mouse wheel-up|down to
+	w3m-mode-map.
+
 2007-03-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bug.el (report-emacs-w3m-bug-system-informations): Add gtk.
