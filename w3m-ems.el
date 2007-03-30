@@ -789,10 +789,12 @@ font for the tab faces.  See also `w3m-tab-track-mouse'."
   :group 'w3m
   :type '(cons (number :tag "M") (integer :tag "N")))
 
-(defun w3m-tab-mouse-track-selected-tab (event order &optional buffers)
+(defun w3m-tab-mouse-track-selected-tab (event order
+					       &optional buffers decelerate)
   "Make the mouse track the selected tab.
 EVENT is a command event.  ORDER is the order number in tabs.
-The optional BUFFERS is a list of emacs-w3m buffers."
+The optional BUFFERS is a list of emacs-w3m buffers, DECELERATE if it
+is non-nil means not to respond to too fast operation of mouse wheel."
   (when (and w3m-use-tab window-system w3m-tab-track-mouse
 	     (consp event) (symbolp (car event)))
     (let ((e (get (car event) 'event-symbol-elements))
@@ -844,8 +846,7 @@ The optional BUFFERS is a list of emacs-w3m buffers."
 	 (car posn)
 	 (truncate (+ len (cdr w3m-tab-mouse-position-adjuster)))
 	 (cddr posn))
-	(unless (memq this-command '(w3m-tab-next-buffer
-				     w3m-tab-previous-buffer))
+	(when decelerate
 	  (sleep-for 0.1)
 	  (discard-input))))))
 
@@ -890,7 +891,7 @@ The optional BUFFERS is a list of emacs-w3m buffers."
       (w3m-buffer-set-number dest cur)
       (w3m-buffer-set-number (current-buffer) next)
       (w3m-select-buffer-update)
-      (w3m-tab-mouse-track-selected-tab event next buffers))))
+      (w3m-tab-mouse-track-selected-tab event next buffers t))))
 
 (defun w3m-tab-move-left (&optional n event)
   "Move this tab N times to the left (to the right if N is negative)."
@@ -907,45 +908,24 @@ The optional BUFFERS is a list of emacs-w3m buffers."
 (defun w3m-tab-make-keymap ()
   (unless w3m-tab-map
     (setq w3m-tab-map (make-sparse-keymap))
-    (let* ((buffer (current-buffer))
-	   (drag-action `(lambda (e)
-			   (interactive "e")
-			   (w3m-tab-drag-mouse-function e ,buffer)))
-	   (single-action `(lambda (e)
-			     (interactive "e")
-			     (w3m-tab-click-mouse-function e ,buffer)))
-	   (double-action1 `(lambda (e)
-			      (interactive "e")
-			      (w3m-tab-double-click-mouse1-function e ,buffer)))
-	   (double-action2 `(lambda (e)
-			      (interactive "e")
-			      (w3m-tab-double-click-mouse2-function e ,buffer)))
-	   (menu-action `(lambda (e)
-			   (interactive "e")
-			   (w3m-tab-button-menu e ,buffer)))
-	   (menu-action2 `(lambda (e)
-			    (interactive "e")
-			    (w3m-tab-button-menu2 e ,buffer)))
-	   (next-buffer-action `(lambda (e)
-				  (interactive "e")
-				  (w3m-tab-click-mouse-function e ,buffer)
-				  (let ((this-command 'w3m-tab-next-buffer))
-				    (w3m-tab-next-buffer 1 e))))
-	   (previous-buffer-action `(lambda (e)
-				      (interactive "e")
-				      (w3m-tab-click-mouse-function e ,buffer)
-				      (let ((this-command 'w3m-tab-previous-buffer))
-					(w3m-tab-previous-buffer 1 e))))
-	   (move-left-action `(lambda (e)
-				(interactive "e")
-				(w3m-tab-click-mouse-function e ,buffer)
-				(let ((this-command 'w3m-tab-move-left))
-				  (w3m-tab-move-left 1 e))))
-	   (move-right-action `(lambda (e)
-				 (interactive "e")
-				 (w3m-tab-click-mouse-function e ,buffer)
-				 (let ((this-command 'w3m-tab-move-right))
-				   (w3m-tab-move-right 1 e)))))
+    (let* ((cur (current-buffer))
+	   (f1 (lambda (fn) `(lambda (e) (interactive "e") (,fn e ,cur))))
+	   (f2 (lambda (fn) `(lambda (e)
+			       (interactive "e")
+			       (select-window (posn-window (event-start e)))
+			       (switch-to-buffer ,cur)
+			       (setq this-command ',fn)
+			       (,fn 1 e))))
+	   (drag-action (funcall f1 'w3m-tab-drag-mouse-function))
+	   (single-action (funcall f1 'w3m-tab-click-mouse-function))
+	   (double-action1 (funcall f1 'w3m-tab-double-click-mouse1-function))
+	   (double-action2 (funcall f1 'w3m-tab-double-click-mouse2-function))
+	   (menu-action (funcall f1 'w3m-tab-button-menu))
+	   (menu-action2 (funcall f1 'w3m-tab-button-menu2))
+	   (next-buffer-action (funcall f2 'w3m-tab-next-buffer))
+	   (previous-buffer-action (funcall f2 'w3m-tab-previous-buffer))
+	   (move-left-action (funcall f2 'w3m-tab-move-left))
+	   (move-right-action (funcall f2 'w3m-tab-move-right)))
       (define-key w3m-tab-map [header-line down-mouse-1] 'ignore)
       (define-key w3m-tab-map [header-line down-mouse-2] 'ignore)
       (define-key w3m-tab-map [header-line mouse-1] single-action)
