@@ -49,6 +49,7 @@
 		   (functionp 'Meadow-version))
 	       '(Meadow-version)))
       system-type
+      (featurep 'gtk)
       w3m-version
       w3m-type
       w3m-compile-options
@@ -156,6 +157,7 @@ Please also include any Lisp back-traces that you may have.\n"))
   (insert "Dear Bug Team!\n\n")
   (let ((user-point (point))
 	(print-escape-newlines t)
+	(print-quoted t)
 	infos print-length print-level)
     (insert "\n
 ================================================================
