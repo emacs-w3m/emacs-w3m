@@ -1,3 +1,8 @@
+2007-03-31  Andreas Seltenreich  <seltenreich@gmx.de>
+
+	* w3m.el (w3m-external-view-file): Actually kill the temporary
+	buffer.
+
 2007-03-30  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-ems.el (w3m-tab-mouse-track-selected-tab): Sleep anyway.

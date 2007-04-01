@@ -6129,13 +6129,14 @@ No method to view `%s' is registered. Use `w3m-edit-this-url'"
 	    (set-process-sentinel
 	     proc
 	     (lambda (proc event)
-	       (and (string-match "^\\(?:finished\\|exited\\)" event)
-		    (buffer-name (process-buffer proc))
-		    (with-current-buffer (process-buffer proc)
-		      (and (stringp file)
-			   (file-exists-p file)
-			   (delete-file file)))
-		    (kill-buffer (process-buffer proc))))))
+	       (let ((buffer (process-buffer proc)))
+		 (when (and (string-match "^\\(?:finished\\|exited\\)" event)
+			    (buffer-name buffer))
+		   (with-current-buffer buffer
+		     (and (stringp file)
+			  (file-exists-p file)
+			  (delete-file file)))
+		   (kill-buffer buffer))))))
 	(and (stringp file)
 	     (file-exists-p file)
 	     (unless (and (processp proc)
