@@ -1195,10 +1195,9 @@ and tenjin, it tries to fetch the article for that day if it failed."
 	  (goto-char (match-beginning 0))
 	  (insert "\n<!-- End of Kiji -->\n"))))
      ((string-equal group "editorial")
-      (let ((regexp "\
-<h[0-9]\\(?:[\t\n ]+[^>]+\\)?>[\t\n ]*<a[\t\n ]+name=\"syasetu[0-9]+\">")
+      (let ((regexp "<h[0-9][\t\n ]+class=\"topi\">")
 	    (retry 0)
-	    index)
+	    index from)
 	(while (<= retry 1)
 	  (if (re-search-forward regexp nil t)
 	      (progn
@@ -1208,10 +1207,11 @@ and tenjin, it tries to fetch the article for that day if it failed."
 		  (insert "\
 \n<p>(指定された&nbsp;url&nbsp;が&nbsp;まだ/すでに&nbsp;無いので、\
 <a href=\"" index "\">トップページ</a> から記事を取得しました)</p>\n"))
-		(search-forward "</a>" nil t)
-		(while (re-search-forward regexp nil t))
-		(when (re-search-forward "[\n\t ]*</p>" nil t)
-		  (insert "\n<!-- End of Kiji -->"))
+		(while (search-forward "</p>" nil t)
+		  (setq from (match-end 0))
+		  (when (re-search-forward regexp nil t)
+		    (delete-region from (match-beginning 0))))
+		(insert "\n<!-- End of Kiji -->")
 		(setq retry 255))
 	    (erase-buffer)
 	    (if (zerop retry)
