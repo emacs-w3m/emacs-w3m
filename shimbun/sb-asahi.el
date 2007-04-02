@@ -252,34 +252,34 @@ Every `.' in NAME will be replaced with `/'."
 		      "\\(?:" s0 "<[^>]+>\\)*" s0 "([01]?[0-9]/[0-3]?[0-9])")
 		     1 nil 2 6 3 4 5))
 	 (sports (shimbun-asahi-make-regexp "sports.spo")))
-    `(("book.asahi" "BOOK: 朝日新聞社の新刊" nil ,@book1)
-      ("book.author" "BOOK: 著者に会いたい" nil ,@book1)
-      ("book.bestseller" "BOOK: 売れてる本" nil ,@book1)
+    `(("book.asahi" "朝日新聞社の新刊" nil ,@book1)
+      ("book.author" "著者に会いたい" nil ,@book1)
+      ("book.bestseller" "売れてる本" nil ,@book1)
       ("book.booktimes" "BOOK TIMES" nil ,@book1)
-      ("book.bunko" "BOOK: 愛でたい文庫" nil ,@book1)
+      ("book.bunko" "愛でたい文庫" nil ,@book1)
       ("book.business" "ビジネス書" nil ,@book1)
       ("book.clip" "ひと・流行・話題" nil ,@book1)
-      ("book.comic" "BOOK: コミックガイド" nil ,@book1)
-      ("book.hondana" "BOOK: 話題の本棚" nil ,@book1)
-      ("book.life" "BOOK: 暮らしのお役立ち" nil ,@book1)
-      ("book.mybook" "BOOK: たいせつな本" nil ,@book1)
-      ("book.news" "BOOK: 出版ニュース" nil ,@book1)
+      ("book.comic" "コミックガイド" nil ,@book1)
+      ("book.hondana" "話題の本棚" nil ,@book1)
+      ("book.life" "暮らしのお役立ち" nil ,@book1)
+      ("book.mybook" "たいせつな本" nil ,@book1)
+      ("book.news" "出版ニュース" nil ,@book1)
       ;; See `shimbun-asahi-subgroups-alist'.
-      ("book.paperback" "BOOK: 文庫・新書")
-      ("book.ranking" "BOOK: 売れ筋ランキング" nil ,@book1)
-      ("book.newstar" "BOOK: ニュースな新刊" nil ,@book1)
-      ("book.review" "BOOK: 書評" nil ,@book1)
-      ("book.review.business" "BOOK: ビジネス" "book/review/business.html"
+      ("book.paperback" "文庫・新書")
+      ("book.ranking" "売れ筋ランキング" nil ,@book1)
+      ("book.newstar" "ニュースな新刊" nil ,@book1)
+      ("book.review" "書評" nil ,@book1)
+      ("book.review.business" "ビジネス" "book/review/business.html"
        ,@book2)
-      ("book.review.digital" "BOOK: デジタル" "book/review/digital.html"
+      ("book.review.digital" "デジタル" "book/review/digital.html"
        ,@book2)
-      ("book.review.edu" "BOOK: 教育 (児童書)" "book/review/edu.html" ,@book2)
-      ("book.review.international" "BOOK: 国際"
+      ("book.review.edu" "教育 (児童書)" "book/review/edu.html" ,@book2)
+      ("book.review.international" "国際"
        "book/review/international.html" ,@book2)
-      ("book.review.life" "BOOK: 暮らし" "book/review/life.html" ,@book2)
-      ("book.rss" "BOOK: RSS" "http://feeds.asahi.com/asahi/Book" ,@rss)
-      ("book.shinsho" "BOOK: 新書の穴" nil ,@book1)
-      ("book.special" "BOOK: 特集" nil
+      ("book.review.life" "暮らし" "book/review/life.html" ,@book2)
+      ("book.rss" "RSS" "http://feeds.asahi.com/asahi/Book" ,@rss)
+      ("book.shinsho" "新書の穴" nil ,@book1)
+      ("book.special" "特集" nil
        ,(concat
 	 "<a" s1 "href=\"\\(?:http://book\\.asahi\\.com\\)?/"
 	 ;; 1. url
@@ -298,8 +298,8 @@ Every `.' in NAME will be replaced with `/'."
 	 ;; 6. subject
 	 "\\(" no-nl "\\)")
        1 2 nil 6 3 4 5)
-      ("book.topics" "BOOK: ニュースな本" nil ,@book1)
-      ("book.trendwatch" "BOOK: デジタル読書" nil ,@book1)
+      ("book.topics" "ニュースな本" nil ,@book1)
+      ("book.trendwatch" "デジタル読書" nil ,@book1)
       ("business" "ビジネス" "%s/list.html" ,@default)
       ("business.aera" "ＡＥＲＡ発マネー" "business/aera/index.html"
        ,(concat
@@ -792,9 +792,9 @@ name in which \".\" is substituted with \"/\" is used instead.")
 			  s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
 		  1 nil 2 6 3 4 5)))
     `(("book.paperback"
-       ("BOOK: 文庫" "http://book.asahi.com/paperback/bunko.html"
+       ("文庫" "http://book.asahi.com/paperback/bunko.html"
 	,@paperback)
-       ("BOOK: 新書" "http://book.asahi.com/paperback/shinsho.html"
+       ("新書" "http://book.asahi.com/paperback/shinsho.html"
 	,@paperback))
       ("travel"
        ("旅する人のアペリティフ" "http://www.asahi.com/travel/aperitif/"
@@ -1008,8 +1008,14 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 			      (setq num (nth 10 numbers))
 			      (setq num (match-string num)))
 			 (save-match-data
+			   (when (and book-p
+				      (string-match
+				       "\\`書評　\\[評者\\]\\(その他\\)?" num))
+			     (setq num (if (match-beginning 1)
+					   "書評"
+					 (substring num (match-end 0)))))
 			   (shimbun-replace-in-string
-			    from "(RSS" (concat "\\&:" num)))
+			    from "(RSS" (concat "(" num)))
 		       from)
 		     ;; date
 		     (shimbun-make-date-string
