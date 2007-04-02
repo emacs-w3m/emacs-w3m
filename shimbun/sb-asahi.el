@@ -260,6 +260,7 @@ Every `.' in NAME will be replaced with `/'."
       ("book.business" "ビジネス書" nil ,@book1)
       ("book.clip" "ひと・流行・話題" nil ,@book1)
       ("book.comic" "コミックガイド" nil ,@book1)
+      ("book.fair" "オンラインブックフェア" nil ,@book1)
       ("book.hondana" "話題の本棚" nil ,@book1)
       ("book.life" "暮らしのお役立ち" nil ,@book1)
       ("book.mybook" "たいせつな本" nil ,@book1)
