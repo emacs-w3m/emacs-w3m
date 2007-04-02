@@ -1,3 +1,8 @@
+2007-04-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Update regexp
+	for rss group.
+
 2007-03-31  Andreas Seltenreich  <seltenreich@gmx.de>
 
 	* w3m.el (w3m-external-view-file): Actually kill the temporary

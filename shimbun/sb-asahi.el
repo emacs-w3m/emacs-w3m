@@ -685,10 +685,8 @@ Every `.' in NAME will be replaced with `/'."
 	 "\"" s0 ">" s0 "<title>" s0
 	 ;; 5. subject
 	 "\\([^<]+\\)"
-	 s0 "</title>\\(?:" s0 "\\(?:"
-	 "<link>[^<]+</link>\\|<description>[^<]+</description>"
-	 "\\|<content[^>]*>\\(?:[^<]*<[^d][^>]*>\\)*[^<]*</content[^>]*>"
-	 "\\)\\)*" s0 "<dc:subject>" s0
+	 s0 "</title>\\(?:" s0 "\\(?:<[^>]+/>\\|<[^>]+>[^<]+</[^>]+>\\)\\)*"
+	 s0 "<dc:subject>" s0
 	 ;; 6. extra keyword (ja)
 	 "\\([^<]+\\)"
 	 s0 "</dc:subject>" s0 "<dc:date>" s0
