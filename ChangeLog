@@ -2,7 +2,8 @@
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Update regexp
 	for rss group.
-	(shimbun-asahi-prepare-article): Work with revised editorial group.
+	(shimbun-asahi-prepare-article): Work with revised editorial and
+	tenjin groups.
 
 2007-03-31  Andreas Seltenreich  <seltenreich@gmx.de>
 

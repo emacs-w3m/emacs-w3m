@@ -1243,8 +1243,7 @@ and tenjin, it tries to fetch the article for that day if it failed."
       (let ((retry 0)
 	    index)
 	(while (<= retry 1)
-	  (if (and (search-forward "【天声人語】" nil t)
-		   (re-search-forward "<SPAN STYLE=[^>]+>[\t\n ]*" nil t))
+	  (if (re-search-forward "<SPAN STYLE=[^>]+>[\t\n ]*" nil t)
 	      (progn
 		(insert "<!-- Start of Kiji -->")
 		(when index
