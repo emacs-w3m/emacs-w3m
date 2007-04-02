@@ -200,6 +200,38 @@ Every `.' in NAME will be replaced with `/'."
 			  "\\(" no-nl "\\)"
 			  s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
 			 1 4 nil 5 nil 2 3))
+	 (rss (list
+	       (concat
+		"<item" s1 "rdf:about=\""
+		;; 1. url
+		"\\(http://\\(?:book\\|www\\)\\.asahi\\.com/"
+		;; 2. extra keyword (en)
+		"\\([^/]+\\)"
+		"\\(?:/update/"
+		;; 3 and 4. serial number
+		"\\([0-9]+\\)\\)?/\\([a-z]*[0-9]+\\)"
+		"\\.html\\?ref=rss\\)"
+		"\"" s0 ">" s0 "<title>" s0
+		;; 5. subject
+		"\\([^<]+\\)"
+		s0 "</title>\\(?:"
+		s0 "\\(?:<[^>]+/>\\|<[^>]+>[^<]+</[^>]+>\\)\\)*"
+		s0 "<dc:subject>" s0
+		;; 6. extra keyword (ja)
+		"\\([^<]+\\)"
+		s0 "</dc:subject>" s0 "<dc:date>" s0
+		;; 7. year
+		"\\(20[0-9][0-9]\\)"
+		"-"
+		;; 8. month
+		"\\([01][0-9]\\)"
+		"-"
+		;; 9. day
+		"\\([0-3][0-9]\\)"
+		"T"
+		;; 10. hour:min:sec
+		"\\([012][0-9]:[0-5][0-9]:[0-5][0-9]\\)")
+	       1 3 4 5 7 8 9 10 2 nil 6))
 	 (shopping (list
 		    (concat
 		     "<a" s1 "href=\"/"
@@ -309,6 +341,7 @@ Every `.' in NAME will be replaced with `/'."
       ("book.review.international" "BOOK: 国際"
        "book/review/international.html" ,@book3)
       ("book.review.life" "BOOK: 暮らし" "book/review/life.html" ,@book3)
+      ("book.rss" "BOOK: RSS" "http://feeds.asahi.com/asahi/Book" ,@rss)
       ("book.shinsho" "BOOK: 新書の穴" nil ,@book2)
       ("book.special" "BOOK: 特集" nil
        ,(concat
@@ -671,37 +704,7 @@ Every `.' in NAME will be replaced with `/'."
        ,(format (car default) "politics") ,@(cdr default))
       ("politics.local" "地方政治" "politics/local.html"
        ,(format (car default) "politics") ,@(cdr default))
-      ("rss" "RSS" "http://feeds.asahi.com/asahi/TopHeadlines"
-       ,(concat
-	 "<item" s1 "rdf:about=\""
-	 ;; 1. url
-	 "\\(http://www\\.asahi\\.com/"
-	 ;; 2. extra keyword (en)
-	 "\\([^/]+\\)"
-	 "/update/"
-	 ;; 3 and 4. serial number
-	 "\\([0-9]+\\)/\\([a-z]*[0-9]+\\)"
-	 "\\.html\\?ref=rss\\)"
-	 "\"" s0 ">" s0 "<title>" s0
-	 ;; 5. subject
-	 "\\([^<]+\\)"
-	 s0 "</title>\\(?:" s0 "\\(?:<[^>]+/>\\|<[^>]+>[^<]+</[^>]+>\\)\\)*"
-	 s0 "<dc:subject>" s0
-	 ;; 6. extra keyword (ja)
-	 "\\([^<]+\\)"
-	 s0 "</dc:subject>" s0 "<dc:date>" s0
-	 ;; 7. year
-	 "\\(20[0-9][0-9]\\)"
-	 "-"
-	 ;; 8. month
-	 "\\([01][0-9]\\)"
-	 "-"
-	 ;; 9. day
-	 "\\([0-3][0-9]\\)"
-	 "T"
-	 ;; 10. hour:min:sec
-	 "\\([012][0-9]:[0-5][0-9]:[0-5][0-9]\\)")
-       1 3 4 5 7 8 9 10 2 nil 6)
+      ("rss" "RSS" "http://feeds.asahi.com/asahi/TopHeadlines" ,@rss)
       ("science" "サイエンス" "%s/list.html"
        ,@(shimbun-asahi-make-regexp "science.news"))
       ("shopping" "ショッピング" "%s/"
@@ -932,7 +935,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	  cyear (shimbun-decode-time nil 32400)
 	  cmonth (nth 4 cyear)
 	  cyear (nth 5 cyear)
-	  rss-p (string-equal group "rss")
+	  rss-p (member group '("book.rss" "rss"))
 	  paper-p (member group '("editorial" "tenjin"))
 	  kishi-p (string-equal group "shopping.kishi")
 	  travel-p (string-equal group "travel")
