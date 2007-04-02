@@ -4584,8 +4584,8 @@ These are newspapers that are supported by @samp{shimbun} library.
 @item @uref{http://www.asahi.com/, Asahi Shimbun}
 asahi.book.asahi asahi.book.author asahi.book.bestseller
 asahi.book.booktimes asahi.book.bunko asahi.book.business
-asahi.book.clip asahi.book.comic asahi.book.hondana asahi.book.life
-asahi.book.mybook asahi.book.news asahi.book.paperback
+asahi.book.clip asahi.book.comic asahi.book.fair asahi.book.hondana
+asahi.book.life asahi.book.mybook asahi.book.news asahi.book.paperback
 asahi.book.ranking asahi.book.newstar asahi.book.review
 asahi.book.review.business asahi.book.review.digital
 asahi.book.review.edu asahi.book.review.international

@@ -1,8 +1,8 @@
 2007-04-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add book.asahi,
-	book.business, book.clip, book.mybook and book.rss groups; remove
-	BOOK: prefix; update regexps for book.* and rss groups.
+	book.business, book.clip, book.fair, book.mybook, book.rss groups;
+	remove BOOK: prefix; update regexps for book.* and rss groups.
 	(shimbun-asahi-subgroups-alist): Add subgroups for book.paperback
 	group.
 	(shimbun-index-url): Return about:blank if there's no url.
