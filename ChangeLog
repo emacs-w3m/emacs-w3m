@@ -1,8 +1,13 @@
 2007-04-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add book.rss
-	group; update regexp for rss groups.
-	(shimbun-asahi-get-headers): Work with book.rss.group.
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add book.asahi,
+	book.business, book.clip, book.mybook and book.rss groups; update
+	regexps for book.* and rss groups.
+	(shimbun-asahi-subgroups-alist): Add subgroups for book.paperback
+	group.
+	(shimbun-index-url): Return about:blank if there's no url.
+	(shimbun-asahi-get-headers): Work even if there's no regexp; work
+	with book.rss group.
 	(shimbun-asahi-prepare-article): Work with revised editorial and
 	tenjin groups.
 

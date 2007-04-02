@@ -4582,27 +4582,28 @@ These are newspapers that are supported by @samp{shimbun} library.
 
 @table @asis
 @item @uref{http://www.asahi.com/, Asahi Shimbun}
-asahi.book.author asahi.book.bestseller asahi.book.booktimes
-asahi.book.bunko asahi.book.comic asahi.book.hondana asahi.book.life
-asahi.book.news asahi.book.paperback asahi.book.ranking
-asahi.book.newstar asahi.book.review asahi.book.review.business
-asahi.book.review.digital asahi.book.review.edu
-asahi.book.review.international asahi.book.review.life asahi.book.rss
-asahi.book.shinsho asahi.book.special asahi.book.topics
-asahi.book.trendwatch asahi.business asahi.business.aera
-asahi.business.column asahi.business.fund asahi.business.reuter
-asahi.business.toyo asahi.car asahi.car.italycolumn
-asahi.car.motorsports asahi.car.newcar asahi.car.newcarbywebcg
-asahi.culture asahi.culture.yurufemi asahi.digital.av
-asahi.digital.bcnnews asahi.digital.column01 asahi.digital.internet
-asahi.digital.mobile asahi.digital.nikkanko asahi.digital.pc
-asahi.editorial asahi.edu.examination asahi.edu.ikuji asahi.edu.issue
-asahi.edu.kiji asahi.edu.kosodate asahi.edu.system asahi.edu.university
-asahi.edu.tamate asahi.english asahi.health asahi.health.aged
-asahi.health.alz asahi.health.medical asahi.housing asahi.housing.amano
-asahi.housing.column asahi.housing.diary asahi.housing.jutaku-s
-asahi.housing.kansai asahi.housing.machi asahi.housing.soudan
-asahi.housing.world asahi.igo asahi.international
+asahi.book.asahi asahi.book.author asahi.book.bestseller
+asahi.book.booktimes asahi.book.bunko asahi.book.business
+asahi.book.clip asahi.book.comic asahi.book.hondana asahi.book.life
+asahi.book.mybook asahi.book.news asahi.book.paperback
+asahi.book.ranking asahi.book.newstar asahi.book.review
+asahi.book.review.business asahi.book.review.digital
+asahi.book.review.edu asahi.book.review.international
+asahi.book.review.life asahi.book.rss asahi.book.shinsho
+asahi.book.special asahi.book.topics asahi.book.trendwatch
+asahi.business asahi.business.aera asahi.business.column
+asahi.business.fund asahi.business.reuter asahi.business.toyo asahi.car
+asahi.car.italycolumn asahi.car.motorsports asahi.car.newcar
+asahi.car.newcarbywebcg asahi.culture asahi.culture.yurufemi
+asahi.digital.av asahi.digital.bcnnews asahi.digital.column01
+asahi.digital.internet asahi.digital.mobile asahi.digital.nikkanko
+asahi.digital.pc asahi.editorial asahi.edu.examination asahi.edu.ikuji
+asahi.edu.issue asahi.edu.kiji asahi.edu.kosodate asahi.edu.system
+asahi.edu.university asahi.edu.tamate asahi.english asahi.health
+asahi.health.aged asahi.health.alz asahi.health.medical asahi.housing
+asahi.housing.amano asahi.housing.column asahi.housing.diary
+asahi.housing.jutaku-s asahi.housing.kansai asahi.housing.machi
+asahi.housing.soudan asahi.housing.world asahi.igo asahi.international
 asahi.international.africa asahi.international.asia
 asahi.international.asiamachi asahi.international.briefing
 asahi.international.europe asahi.international.etc
