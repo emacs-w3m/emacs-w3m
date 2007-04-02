@@ -1207,10 +1207,11 @@ and tenjin, it tries to fetch the article for that day if it failed."
 		  (insert "\
 \n<p>(指定された&nbsp;url&nbsp;が&nbsp;まだ/すでに&nbsp;無いので、\
 <a href=\"" index "\">トップページ</a> から記事を取得しました)</p>\n"))
-		(while (search-forward "</p>" nil t)
-		  (setq from (match-end 0))
-		  (when (re-search-forward regexp nil t)
-		    (delete-region from (match-beginning 0))))
+		(while (and (search-forward "</p>" nil t)
+			    (progn
+			      (setq from (match-end 0))
+			      (re-search-forward regexp nil t)))
+		  (delete-region from (match-beginning 0)))
 		(insert "\n<!-- End of Kiji -->")
 		(setq retry 255))
 	    (erase-buffer)
