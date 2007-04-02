@@ -1,7 +1,8 @@
 2007-04-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Update regexp
-	for rss group.
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add book.rss
+	group; update regexp for rss groups.
+	(shimbun-asahi-get-headers): Work with book.rss.group.
 	(shimbun-asahi-prepare-article): Work with revised editorial and
 	tenjin groups.
 

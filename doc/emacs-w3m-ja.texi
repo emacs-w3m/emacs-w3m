@@ -4644,7 +4644,7 @@ asahi.book.bunko asahi.book.comic asahi.book.hondana asahi.book.life
 asahi.book.news asahi.book.paperback asahi.book.ranking
 asahi.book.newstar asahi.book.review asahi.book.review.business
 asahi.book.review.digital asahi.book.review.edu
-asahi.book.review.international asahi.book.review.life
+asahi.book.review.international asahi.book.review.life asahi.book.rss
 asahi.book.shinsho asahi.book.special asahi.book.topics
 asahi.book.trendwatch asahi.business asahi.business.aera
 asahi.business.column asahi.business.fund asahi.business.reuter
