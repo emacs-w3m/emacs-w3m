@@ -258,11 +258,6 @@ Every `.' in NAME will be replaced with `/'."
        1 2 nil 6 3 4 5)
       ("business" "ビジネス" "%s/list.html" ,@default)
       ("car" "愛車" "%s/news/" ,@(shimbun-asahi-make-regexp "car.news"))
-      ("car.italycolumn" "イタリア発アモーレ！モトーレ！" nil ,@default2)
-      ("car.motorsports" "モータースポーツ" nil ,@default2)
-      ("car.newcar" "新車情報" nil ,@default2)
-      ("car.newcarbywebcg" "新車発表会" "car/cg/index.html"
-       ,@(shimbun-asahi-make-regexp "car.cg"))
       ("culture" "文化・芸能" "%s/list.html"
        ,(concat "<a" s1 "href=\"/"
 		;; 1. url
@@ -769,6 +764,16 @@ name in which \".\" is substituted with \"/\" is used instead.")
 	,(format (car business) "topics") ,@(cdr business))
        ("東洋経済ニュース" "http://www.asahi.com/business/list_toyo.html"
 	,(format (car business) "toyo") ,@(cdr business)))
+      ("car"
+       ("イタリア発アモーレ！モトーレ！"
+	"http://www.asahi.com/car/italycolumn/"
+	,@(shimbun-asahi-make-regexp "car.italycolumn"))
+       ("モータースポーツ" "http://www.asahi.com/car/motorsports/"
+	,@(shimbun-asahi-make-regexp "car.motorsports"))
+       ("新車情報" "http://www.asahi.com/car/newcar/"
+	,@(shimbun-asahi-make-regexp "car.newcar"))
+       ("新車発表会" "http://www.asahi.com/car/cg/index.html"
+	,@(shimbun-asahi-make-regexp "car.cg")))
       ("travel"
        ("旅する人のアペリティフ" "http://www.asahi.com/travel/aperitif/"
 	,(format (car travel) "travel/aperitif") ,@(cdr travel))
@@ -1119,12 +1124,21 @@ and tenjin, it tries to fetch the article for that day if it failed."
 		    (if images
 			"<br>\n"
 		      "\n"))))))
-     ((string-match "東洋経済ニュース" from)
-      ;; Insert newlines.
-      (shimbun-with-narrowed-article
-       shimbun
-       (while (re-search-forward "。　?\\(\\cj\\)" nil t)
-	 (replace-match "。<br><br>　\\1"))))
+     ((string-equal group "car")
+      (shimbun-remove-tags "\
+\[\t\n ]*<![\t\n ]*-+[\t\n ]*[★☆]+[\t\n ]*AD[\t\n ]*[★☆]+[\t\n ]*-+>"
+			   "\
+<![\t\n ]*-+[\t\n ]*/[\t\n ]*[★☆]+[\t\n ]*AD[\t\n ]*[★☆]+[\t\n ]*-+>\
+\[\t\n ]*")
+      (shimbun-remove-tags "[\t\n ]*<form[\t\n ]+" "</form>[\t\n ]*")
+      (goto-char (point-min))
+      (when (and (re-search-forward (shimbun-content-start shimbun) nil t)
+		 (re-search-forward "[\t\n ]*\\(?:\
+<!-+[\t\n ]*Creative[\t\n ]+for[\t\n ]+\\|\
+<script[\t\n ]+type=\"text/javascript\"\\)"
+				    nil t))
+	(goto-char (match-beginning 0))
+	(insert "\n<!-- End of Kiji -->\n")))
      ((string-equal group "culture.yurufemi")
       (let (comics)
 	(while (re-search-forward
@@ -1291,6 +1305,12 @@ and tenjin, it tries to fetch the article for that day if it failed."
 	  (insert "\n<!-- End of Kiji -->")
 	  (delete-region (point-min) (goto-char start))
 	  (insert "<!-- Start of Kiji -->\n"))))
+     ((string-match "東洋経済ニュース" from)
+      ;; Insert newlines.
+      (shimbun-with-narrowed-article
+       shimbun
+       (while (re-search-forward "。　?\\(\\cj\\)" nil t)
+	 (replace-match "。<br><br>　\\1"))))
      (t
       (when (re-search-forward
 	     (eval-when-compile
