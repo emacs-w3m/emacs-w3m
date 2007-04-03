@@ -117,46 +117,26 @@ Every `.' in NAME will be replaced with `/'."
 		     "\\(" no-nl "\\)"
 		     s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
 		    1 nil 2 6 3 4 5))
-	 (book1 (list
-		 (concat
-		  "<a" s1 "href=\"/"
-		  ;; 1. url
-		  "\\(%s/"
-		  ;; 2. serial number
-		  "\\([a-z]*"
-		  ;; 3. year
-		  "\\(20[0-9][0-9]\\)"
-		  ;; 4. month
-		  "\\([01][0-9]\\)"
-		  ;; 5. day
-		  "\\([0-3][0-9]\\)"
-		  "[0-9]+\\)"
-		  "\\.html\\)"
-		  "\"" s0 ">" s0
-		  ;; 6. subject
-		  "\\(" no-nl "\\)"
-		  s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>" s0 "</dt>")
-		 1 2 nil 6 3 4 5))
-	 (book2 (list
-		 (concat
-		  "<a" s1 "href=\"http://book\\.asahi\\.com/"
-		  ;; 1. url
-		  "\\([^/]+/"
-		  ;; 2. serial number
-		  "\\([a-z]*"
-		  ;; 3. year
-		  "\\(20[0-9][0-9]\\)"
-		  ;; 4. month
-		  "\\([01][0-9]\\)"
-		  ;; 5. day
-		  "\\([0-3][0-9]\\)"
-		  "[0-9]+\\)"
-		  "\\.html\\)"
-		  "\"" s0 ">" s0
-		  ;; 6. subject
-		  "\\(" no-nl "\\)"
-		  s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>" s0 "</dt>")
-		 1 2 nil 6 3 4 5))
+	 (book (list
+		(concat
+		 "<a" s1 "href=\"/"
+		 ;; 1. url
+		 "\\(%s/"
+		 ;; 2. serial number
+		 "\\([a-z]*"
+		 ;; 3. year
+		 "\\(20[0-9][0-9]\\)"
+		 ;; 4. month
+		 "\\([01][0-9]\\)"
+		 ;; 5. day
+		 "\\([0-3][0-9]\\)"
+		 "[0-9]+\\)"
+		 "\\.html\\)"
+		 "\"" s0 ">" s0
+		 ;; 6. subject
+		 "\\(" no-nl "\\)"
+		 s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>" s0 "</dt>")
+		1 2 nil 6 3 4 5))
 	 (edu (shimbun-asahi-make-regexp "edu.news"))
 	 (health (shimbun-asahi-make-regexp "health.news"))
 	 (international (list
@@ -252,34 +232,11 @@ Every `.' in NAME will be replaced with `/'."
 		      "\\(?:" s0 "<[^>]+>\\)*" s0 "([01]?[0-9]/[0-3]?[0-9])")
 		     1 nil 2 6 3 4 5))
 	 (sports (shimbun-asahi-make-regexp "sports.spo")))
-    `(("book.asahi" "朝日新聞社の新刊" nil ,@book1)
-      ("book.author" "著者に会いたい" nil ,@book1)
-      ("book.bestseller" "売れてる本" nil ,@book1)
-      ("book.booktimes" "BOOK TIMES" nil ,@book1)
-      ("book.bunko" "愛でたい文庫" nil ,@book1)
-      ("book.business" "ビジネス書" nil ,@book1)
-      ("book.clip" "ひと・流行・話題" nil ,@book1)
-      ("book.comic" "コミックガイド" nil ,@book1)
-      ("book.fair" "オンラインブックフェア" nil ,@book1)
-      ("book.hondana" "話題の本棚" nil ,@book1)
-      ("book.life" "暮らしのお役立ち" nil ,@book1)
-      ("book.mybook" "たいせつな本" nil ,@book1)
-      ("book.news" "出版ニュース" nil ,@book1)
-      ;; See `shimbun-asahi-subgroups-alist'.
+    `(("book.column" "コラム")
+      ("book.news" "出版ニュース" nil ,@book)
       ("book.paperback" "文庫・新書")
-      ("book.ranking" "売れ筋ランキング" nil ,@book1)
-      ("book.newstar" "ニュースな新刊" nil ,@book1)
-      ("book.review" "書評" nil ,@book1)
-      ("book.review.business" "ビジネス" "book/review/business.html"
-       ,@book2)
-      ("book.review.digital" "デジタル" "book/review/digital.html"
-       ,@book2)
-      ("book.review.edu" "教育 (児童書)" "book/review/edu.html" ,@book2)
-      ("book.review.international" "国際"
-       "book/review/international.html" ,@book2)
-      ("book.review.life" "暮らし" "book/review/life.html" ,@book2)
+      ("book.review" "書評" nil ,@book)
       ("book.rss" "RSS" "http://feeds.asahi.com/asahi/Book" ,@rss)
-      ("book.shinsho" "新書の穴" nil ,@book1)
       ("book.special" "特集" nil
        ,(concat
 	 "<a" s1 "href=\"\\(?:http://book\\.asahi\\.com\\)?/"
@@ -299,8 +256,6 @@ Every `.' in NAME will be replaced with `/'."
 	 ;; 6. subject
 	 "\\(" no-nl "\\)")
        1 2 nil 6 3 4 5)
-      ("book.topics" "ニュースな本" nil ,@book1)
-      ("book.trendwatch" "デジタル読書" nil ,@book1)
       ("business" "ビジネス" "%s/list.html" ,@default)
       ("car" "愛車" "%s/news/" ,@(shimbun-asahi-make-regexp "car.news"))
       ("car.italycolumn" "イタリア発アモーレ！モトーレ！" nil ,@default2)
@@ -636,7 +591,6 @@ Every `.' in NAME will be replaced with `/'."
 	 "\\.html\\)"
 	 "\"")
        1 nil nil nil 2 3 4)
-      ;; See `shimbun-asahi-subgroups-alist'.
       ("travel" "トラベル" "%s/news/"
        ,@(shimbun-asahi-make-regexp "travel.news"))
       ("world.china" "中国特集" nil
@@ -653,6 +607,46 @@ name in which \".\" is substituted with \"/\" is used instead.")
   (let* ((s0 "[\t\n 　]*")
 	 (s1 "[\t\n ]+")
 	 (no-nl "[^\n<>]+")
+	 (book1 (list
+		 (concat
+		  "<a" s1 "href=\"/"
+		  ;; 1. url
+		  "\\(%s/"
+		  ;; 2. serial number
+		  "\\([a-z]*"
+		  ;; 3. year
+		  "\\(20[0-9][0-9]\\)"
+		  ;; 4. month
+		  "\\([01][0-9]\\)"
+		  ;; 5. day
+		  "\\([0-3][0-9]\\)"
+		  "[0-9]+\\)"
+		  "\\.html\\)"
+		  "\"" s0 ">" s0
+		  ;; 6. subject
+		  "\\(" no-nl "\\)"
+		  s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>" s0 "</dt>")
+		 1 2 nil 6 3 4 5))
+	 (book2 (list
+		 (concat
+		  "<a" s1 "href=\"http://book\\.asahi\\.com/"
+		  ;; 1. url
+		  "\\([^/]+/"
+		  ;; 2. serial number
+		  "\\([a-z]*"
+		  ;; 3. year
+		  "\\(20[0-9][0-9]\\)"
+		  ;; 4. month
+		  "\\([01][0-9]\\)"
+		  ;; 5. day
+		  "\\([0-3][0-9]\\)"
+		  "[0-9]+\\)"
+		  "\\.html\\)"
+		  "\"" s0 ">" s0
+		  ;; 6. subject
+		  "\\(" no-nl "\\)"
+		  s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>" s0 "</dt>")
+		 1 2 nil 6 3 4 5))
 	 (business (list
 		    (concat
 		     "<a" s1 "href=\""
@@ -712,11 +706,52 @@ name in which \".\" is substituted with \"/\" is used instead.")
 			  "\\([^<]+\\)"
 			  s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
 		  1 nil 2 6 3 4 5)))
-    `(("book.paperback"
-       ("文庫" "http://book.asahi.com/paperback/bunko.html"
-	,@paperback)
-       ("新書" "http://book.asahi.com/paperback/shinsho.html"
-	,@paperback))
+    `(("book.column"
+       ("著者に会いたい" "http://book.asahi.com/author/"
+	,(format (car book1) "author") ,@(cdr book1))
+       ("売れてる本" "http://book.asahi.com/bestseller/"
+	,(format (car book1) "bestseller") ,@(cdr book1))
+       ("愛でたい文庫" "http://book.asahi.com/bunko/"
+	,(format (car book1) "bunko") ,@(cdr book1))
+       ("ビジネス書" "http://book.asahi.com/business/"
+	,(format (car book1) "business") ,@(cdr book1))
+       ("コミックガイド" "http://book.asahi.com/comic/"
+	,(format (car book1) "comic") ,@(cdr book1))
+       ("話題の本棚" "http://book.asahi.com/hondana/"
+	,(format (car book1) "hondana") ,@(cdr book1))
+       ("暮らしのお役立ち" "http://book.asahi.com/life/"
+	,(format (car book1) "life") ,@(cdr book1))
+       ("たいせつな本" "http://book.asahi.com/mybook/"
+	,(format (car book1) "mybook") ,@(cdr book1))
+       ("ニュースな新刊" "http://book.asahi.com/newstar/"
+	,(format (car book1) "newstar") ,@(cdr book1))
+       ("新書の穴" "http://book.asahi.com/shinsho/"
+	,(format (car book1) "shinsho") ,@(cdr book1))
+       ("ニュースな本" "http://book.asahi.com/topics/"
+	,(format (car book1) "topics") ,@(cdr book1))
+       ("デジタル読書" "http://book.asahi.com/trendwatch/"
+	,(format (car book1) "trendwatch") ,@(cdr book1)))
+      ("book.news"
+       ("朝日新聞社の新刊" "http://book.asahi.com/asahi/"
+	,(format (car book1) "asahi") ,@(cdr book1))
+       ("ひと・流行・話題" "http://book.asahi.com/clip/"
+	,(format (car book1) "clip") ,@(cdr book1))
+       ("オンラインブックフェア" "http://book.asahi.com/fair/"
+	,(format (car book1) "fair") ,@(cdr book1)))
+      ("book.paperback"
+       ("文庫" "http://book.asahi.com/paperback/bunko.html" ,@paperback)
+       ("新書" "http://book.asahi.com/paperback/shinsho.html" ,@paperback))
+      ("book.review"
+       ("ビジネス" "http://book.asahi.com/review/business.html" ,@book2)
+       ("デジタル" "http://book.asahi.com/review/digital.html" ,@book2)
+       ("教育 (児童書)" "http://book.asahi.com/review/edu.html" ,@book2)
+       ("国際" "http://book.asahi.com/review/international.html" ,@book2)
+       ("暮らし" "http://book.asahi.com/review/life.html" ,@book2))
+      ("book.special"
+       ("BOOK TIMES" "http://book.asahi.com/booktimes/"
+	,(format (car book1) "booktimes") ,@(cdr book1))
+       ("売れ筋ランキング" "http://book.asahi.com/ranking/"
+	,(format (car book1) "ranking") ,@(cdr book1)))
       ("business"
        ("ＡＥＲＡ発マネー" "http://www.asahi.com/business/aera/"
 	,(format (car business) "aera") ,@(cdr business))
