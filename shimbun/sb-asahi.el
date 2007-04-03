@@ -279,8 +279,6 @@ Every `.' in NAME will be replaced with `/'."
 		s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>" s0
 		"<\\(?:/dt\\|span\\)")
        1 nil 2 6 3 4 5)
-      ("culture.yurufemi" "ゆるゆるフェミニン" "culture/column/yurufemi/"
-       ,@(shimbun-asahi-make-regexp "culture.column.yurufemi"))
       ("digital.av" "デジタル機器" nil ,@default2)
       ("digital.bcnnews" "eビジネス情報 (提供：ＢＣＮ)" nil ,@default2)
       ("digital.column01" "デジタルコラム" nil ,@default2)
@@ -662,6 +660,27 @@ name in which \".\" is substituted with \"/\" is used instead.")
 		     "\\(" no-nl "\\)"
 		     "</a><span class=\"")
 		    1 2 nil 6 3 4 5))
+	 (culture (list
+		   (concat
+		    "<a" s1 "href=\"/"
+		    ;; 1. url
+		    "\\(culture\\(?:/[^\"/]+\\)+/"
+		    ;; 2. serial number
+		    "\\([a-z]*"
+		    ;; 3. year
+		    "\\(20[0-9][0-9]\\)"
+		    ;; 4. month
+		    "\\([01][0-9]\\)"
+		    ;; 5. day
+		    "\\([0-3][0-9]\\)"
+		    "[0-9]+\\)"
+		    "\\.html\\)"
+		    "\">" s0
+		    ;; 6. subject
+		    "\\(" no-nl "\\)"
+		    s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>"
+		    "[\t\n ]*\\(?:</dt>\\|<span[\t\n ]+\\)")
+		   1 nil 2 6 3 4 5))
 	 (paperback (list
 		     (concat
 		      "<a" s1 "href=\"/"
@@ -765,15 +784,33 @@ name in which \".\" is substituted with \"/\" is used instead.")
        ("東洋経済ニュース" "http://www.asahi.com/business/list_toyo.html"
 	,(format (car business) "toyo") ,@(cdr business)))
       ("car"
+       ("新車発表会" "http://www.asahi.com/car/cg/"
+	,@(shimbun-asahi-make-regexp "car.cg"))
        ("イタリア発アモーレ！モトーレ！"
 	"http://www.asahi.com/car/italycolumn/"
 	,@(shimbun-asahi-make-regexp "car.italycolumn"))
        ("モータースポーツ" "http://www.asahi.com/car/motorsports/"
 	,@(shimbun-asahi-make-regexp "car.motorsports"))
        ("新車情報" "http://www.asahi.com/car/newcar/"
-	,@(shimbun-asahi-make-regexp "car.newcar"))
-       ("新車発表会" "http://www.asahi.com/car/cg/index.html"
-	,@(shimbun-asahi-make-regexp "car.cg")))
+	,@(shimbun-asahi-make-regexp "car.newcar")))
+      ("culture"
+       ("文化" "http://www.asahi.com/culture/list_culture.html" ,@culture)
+       ("芸能" "http://www.asahi.com/culture/list_entertainment.html"
+	,@culture)
+       ("藤沢周平の世界" "http://www.asahi.com/culture/fujisawa/"
+	,@(shimbun-asahi-make-regexp "culture.fujisawa"))
+       ("人間国宝" "http://www.asahi.com/culture/kokuhou/"
+	,@(shimbun-asahi-make-regexp "culture.kokuhou"))
+       ("いつかは名人会" "http://www.asahi.com/culture/column/rakugo/guide/"
+	,@(shimbun-asahi-make-regexp "culture.column.rakugo.guide"))
+       ("落語って" "http://www.asahi.com/culture/column/rakugo/kyosu/"
+	,@(shimbun-asahi-make-regexp "culture.column.rakugo.kyosu"))
+       ("ラクゴロク" "http://www.asahi.com/culture/column/rakugo/rakugoroku/"
+	,@(shimbun-asahi-make-regexp "culture.column.rakugo.rakugoroku"))
+       ("連載記事" "http://www.asahi.com/culture/serial_backnumber.html"
+	,@culture)
+       ("ゆるゆるフェミニン" "http://www.asahi.com/culture/column/yurufemi/"
+	,@(shimbun-asahi-make-regexp "culture.column.yurufemi")))
       ("travel"
        ("旅する人のアペリティフ" "http://www.asahi.com/travel/aperitif/"
 	,(format (car travel) "travel/aperitif") ,@(cdr travel))
@@ -1139,17 +1176,6 @@ and tenjin, it tries to fetch the article for that day if it failed."
 				    nil t))
 	(goto-char (match-beginning 0))
 	(insert "\n<!-- End of Kiji -->\n")))
-     ((string-equal group "culture.yurufemi")
-      (let (comics)
-	(while (re-search-forward
-		"<img[\t\n ]+src=\"[^>]+alt=\"マンガ\"[^>]*>"
-		nil t)
-	  (push (match-string 0) comics))
-	(erase-buffer)
-	(when comics
-	  (insert "<!-- Start of Kiji -->\n"
-		  (mapconcat 'identity comics "<br>\n")
-		  "\n<!-- End of Kiji -->\n"))))
      ((string-equal group "digital.column01")
       (unless (re-search-forward (shimbun-content-end shimbun) nil t)
 	(when (re-search-forward "\\(?:[\t\b ]*<[^>]+>\\)*[\t\n ]*\
@@ -1305,12 +1331,34 @@ and tenjin, it tries to fetch the article for that day if it failed."
 	  (insert "\n<!-- End of Kiji -->")
 	  (delete-region (point-min) (goto-char start))
 	  (insert "<!-- Start of Kiji -->\n"))))
+     ((string-match "ゆるゆるフェミニン" from)
+      (let (comics)
+	(while (re-search-forward
+		"<img[\t\n ]+src=\"[^>]+alt=\"マンガ\"[^>]*>"
+		nil t)
+	  (push (match-string 0) comics))
+	(erase-buffer)
+	(when comics
+	  (insert "<!-- Start of Kiji -->\n"
+		  (mapconcat 'identity comics "<br>\n")
+		  "\n<!-- End of Kiji -->\n"))))
      ((string-match "東洋経済ニュース" from)
       ;; Insert newlines.
       (shimbun-with-narrowed-article
        shimbun
        (while (re-search-forward "。　?\\(\\cj\\)" nil t)
 	 (replace-match "。<br><br>　\\1"))))
+     ((string-match "藤沢周平の世界\\|人間国宝" from)
+      (when (re-search-forward "\
+<div[\t\n ]+\\(?:class=\"kiji\"\\|id=\"kokuhou-waza\"\\)>[\t\n ]*"
+			       nil t)
+	(insert "\n<!-- Start of Kiji -->\n")
+	(when (re-search-forward "\
+\\(?:[\t\n ]*<[^>]+>\\)?\\(?:[\t\n ]*20[0-9][0-9]年[01]?[0-9]月[0-3]?[0-9]日\
+\\(?:[\t\n ]*<[^>]+>\\)*\\)?[\t\n ]*<!-+[\t\n ]*google"
+				 nil t)
+	  (goto-char (match-beginning 0))
+	  (insert "\n<!-- End of Kiji -->\n"))))
      (t
       (when (re-search-forward
 	     (eval-when-compile
