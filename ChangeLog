@@ -1,8 +1,9 @@
 2007-04-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Move business
-	subgroups to shimbun-asahi-subgroups-alist.
-	(shimbun-asahi-subgroups-alist): Add subgroups for business group.
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Move subgroups
+	of book and business groups to shimbun-asahi-subgroups-alist.
+	(shimbun-asahi-subgroups-alist): Add subgroups for book and
+	business groups.
 
 2007-04-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
