@@ -1,10 +1,10 @@
 2007-04-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Move subgroups
-	of book, business, car, culture and digital groups to
+	of book, business, car, culture, digital and edu groups to
 	shimbun-asahi-subgroups-alist.
 	(shimbun-asahi-subgroups-alist): Add subgroups for book, business,
-	car, culture and digital groups.
+	car, culture, digital and edu groups.
 	(shimbun-asahi-prepare-article): Add start and end flags for
 	culture subgroups; remove ads for car and digital groups; use from
 	header split subgroups.

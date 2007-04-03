@@ -295,17 +295,7 @@ Every `.' in NAME will be replaced with `/'."
 	 "\\.html\\)"
 	 "\"")
        1 nil nil nil 2 3 4)
-      ("edu.examination" "入試" "edu/news/examination.html" ,@edu)
-      ("edu.ikuji" "子育て応援エッセー" "edu/column/ikuji/"
-       ,@(shimbun-asahi-make-regexp "edu.column.ikuji"))
-      ("edu.issue" "教育問題" "edu/news/issue.html" ,@edu)
-      ("edu.kiji" "この記事を手がかりに" "edu/nie/kiji/"
-       ,@(shimbun-asahi-make-regexp "edu.nie.kiji.kiji"))
-      ("edu.kosodate" "子育て" "edu/news/kosodate.html" ,@edu)
-      ("edu.system" "教育制度・話題" "edu/news/system.html" ,@edu)
-      ("edu.university" "大学" "edu/news/university.html" ,@edu)
-      ("edu.tamate" "ののちゃんのふしぎ玉手箱" "edu/nie/tamate/"
-       ,@(shimbun-asahi-make-regexp "edu.nie.tamate.kiji"))
+      ("edu" "教育" "%s/list.html" ,@edu)
       ("english" "ENGLISH" "%s/index.html"
        ,@(let ((rest (shimbun-asahi-make-regexp "english.Herald-asahi")))
 	   (cons (concat
@@ -676,6 +666,7 @@ name in which \".\" is substituted with \"/\" is used instead.")
 		    s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>"
 		    "[\t\n ]*\\(?:</dt>\\|<span[\t\n ]+\\)")
 		   1 nil 2 6 3 4 5))
+	 (edu (nthcdr 3 (assoc "edu" shimbun-asahi-group-table)))
 	 (paperback (list
 		     (concat
 		      "<a" s1 "href=\"/"
@@ -821,6 +812,18 @@ name in which \".\" is substituted with \"/\" is used instead.")
 	,@(shimbun-asahi-make-regexp "digital.nikkanko"))
        ("ＰＣ・ゲーム" "http://www.asahi.com/digital/pc/"
 	,@(shimbun-asahi-make-regexp "digital.pc")))
+      ("edu"
+       ("入試" "http://www.asahi.com/edu/news/examination.html" ,@edu)
+       ("ゆき姐の子育て応援エッセー" "http://www.asahi.com/edu/column/ikuji/"
+	,@(shimbun-asahi-make-regexp "edu.column.ikuji"))
+       ("教育問題" "http://www.asahi.com/edu/news/issue.html" ,@edu)
+       ("この記事を手がかりに" "http://www.asahi.com/edu/nie/kiji/"
+	,@(shimbun-asahi-make-regexp "edu.nie.kiji.kiji"))
+       ("子育て" "http://www.asahi.com/edu/news/kosodate.html" ,@edu)
+       ("教育制度・話題" "http://www.asahi.com/edu/news/system.html" ,@edu)
+       ("ののちゃんのＤＯ科学" "http://www.asahi.com/edu/nie/tamate/"
+	,@(shimbun-asahi-make-regexp "edu.nie.tamate.kiji"))
+       ("大学" "http://www.asahi.com/edu/news/university.html" ,@edu))
       ("travel"
        ("旅する人のアペリティフ" "http://www.asahi.com/travel/aperitif/"
 	,(format (car travel) "travel/aperitif") ,@(cdr travel))
