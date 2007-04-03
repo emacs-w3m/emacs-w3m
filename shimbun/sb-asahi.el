@@ -279,13 +279,8 @@ Every `.' in NAME will be replaced with `/'."
 		s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>" s0
 		"<\\(?:/dt\\|span\\)")
        1 nil 2 6 3 4 5)
-      ("digital.av" "デジタル機器" nil ,@default2)
-      ("digital.bcnnews" "eビジネス情報 (提供：ＢＣＮ)" nil ,@default2)
-      ("digital.column01" "デジタルコラム" nil ,@default2)
-      ("digital.internet" "ネット・ウイルス" nil ,@default2)
-      ("digital.mobile" "携帯電話" nil ,@default2)
-      ("digital.nikkanko" "日刊工業新聞ニュース" nil ,@default2)
-      ("digital.pc" "ＰＣ・ゲーム" nil ,@default2)
+      ("digital" "デジタル" "%s/list.html"
+       ,@(shimbun-asahi-make-regexp "digital/[^\"/]+"))
       ("editorial" "社説" "paper/editorial.html"
        ,(concat
 	 "<a" s1 "href=\"\\./"
@@ -811,6 +806,21 @@ name in which \".\" is substituted with \"/\" is used instead.")
 	,@culture)
        ("ゆるゆるフェミニン" "http://www.asahi.com/culture/column/yurufemi/"
 	,@(shimbun-asahi-make-regexp "culture.column.yurufemi")))
+      ("digital"
+       ("機器" "http://www.asahi.com/digital/av/"
+	,@(shimbun-asahi-make-regexp "digital.av"))
+       ("e-ビジネス情報 (提供: BCN)" "http://www.asahi.com/digital/bcnnews/"
+	,@(shimbun-asahi-make-regexp "digital.bcnnews"))
+       ("コラム" "http://www.asahi.com/digital/column01/"
+	,@(shimbun-asahi-make-regexp "digital.column01"))
+       ("ネット・ウイルス" "http://www.asahi.com/digital/internet/"
+	,@(shimbun-asahi-make-regexp "digital.internet"))
+       ("携帯電話" "http://www.asahi.com/digital/mobile/"
+	,@(shimbun-asahi-make-regexp "digital.mobile"))
+       ("日刊工業新聞ニュース" "http://www.asahi.com/digital/nikkanko/"
+	,@(shimbun-asahi-make-regexp "digital.nikkanko"))
+       ("ＰＣ・ゲーム" "http://www.asahi.com/digital/pc/"
+	,@(shimbun-asahi-make-regexp "digital.pc")))
       ("travel"
        ("旅する人のアペリティフ" "http://www.asahi.com/travel/aperitif/"
 	,(format (car travel) "travel/aperitif") ,@(cdr travel))
@@ -1176,14 +1186,20 @@ and tenjin, it tries to fetch the article for that day if it failed."
 				    nil t))
 	(goto-char (match-beginning 0))
 	(insert "\n<!-- End of Kiji -->\n")))
-     ((string-equal group "digital.column01")
-      (unless (re-search-forward (shimbun-content-end shimbun) nil t)
-	(when (re-search-forward "\\(?:[\t\b ]*<[^>]+>\\)*[\t\n ]*\
+     ((string-equal group "digital")
+      (shimbun-remove-tags "\
+\[\t\n ]*<![\t\n ]*-+[\t\n ]*[★☆]+[\t\n ]*AD[\t\n ]*[★☆]+[\t\n ]*-+>"
+			   "\
+<![\t\n ]*-+[\t\n ]*/[\t\n ]*[★☆]+[\t\n ]*AD[\t\n ]*[★☆]+[\t\n ]*-+>\
+\[\t\n ]*")
+      (cond ((string-match "コラム" from)
+	     (unless (re-search-forward (shimbun-content-end shimbun) nil t)
+	       (when (re-search-forward "\\(?:[\t\b ]*<[^>]+>\\)*[\t\n ]*\
 \\(?:<img[\t\n ]+src=\"[^>]*[\t\n ]*alt=\"プロフィール\"\
 \\|<h[0-9]>プロフィール</h[0-9]>\\)"
-				 nil t)
-	  (goto-char (match-beginning 0))
-	  (insert "\n<!-- End of Kiji -->\n"))))
+					nil t)
+		 (goto-char (match-beginning 0))
+		 (insert "\n<!-- End of Kiji -->\n"))))))
      ((string-equal group "editorial")
       (let ((regexp "<h[0-9][\t\n ]+class=\"topi\">")
 	    (retry 0)

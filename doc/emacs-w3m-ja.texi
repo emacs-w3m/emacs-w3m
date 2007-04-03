@@ -4641,9 +4641,7 @@ Folder, wl-ja, The Wanderlust-ja Manual})。
 @item @uref{http://www.asahi.com/, 朝日新聞}
 asahi.book.column asahi.book.news asahi.book.paperback asahi.book.review
 asahi.book.rss asahi.book.special asahi.business asahi.car asahi.culture
-asahi.digital.av asahi.digital.bcnnews asahi.digital.column01
-asahi.digital.internet asahi.digital.mobile asahi.digital.nikkanko
-asahi.digital.pc asahi.editorial asahi.edu.examination asahi.edu.ikuji
+asahi.digital asahi.editorial asahi.edu.examination asahi.edu.ikuji
 asahi.edu.issue asahi.edu.kiji asahi.edu.kosodate asahi.edu.system
 asahi.edu.university asahi.edu.tamate asahi.english asahi.health
 asahi.health.aged asahi.health.alz asahi.health.medical asahi.housing
