@@ -302,6 +302,7 @@ Every `.' in NAME will be replaced with `/'."
 		  (car rest)
 		  "\\(?:" s0 "<[^>]+>\\)*" s0 "([01]?[0-9]/[0-3]?[0-9])")
 		 (cdr rest))))
+      ("food" "食" "%s/news/" ,@(shimbun-asahi-make-regexp "food.news"))
       ("health" "健康・生活" "%s/news/" ,@health)
       ("health.aged" "福祉・高齢" "health/news/aged.html" ,@health)
       ("health.alz" "認知症特集" "health/news/alz.html" ,@health)
@@ -442,26 +443,6 @@ Every `.' in NAME will be replaced with `/'."
 	 "\\(" no-nl "\\)"
 	 s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
        1 nil 2 6 3 4 5)
-      ("life.food" "食と料理" nil
-       ,(concat
-	 "<a" s1 "href=\"/"
-	 ;; 1. url
-	 "\\(life/food/"
-	 ;; 2. serial number
-	 "\\(.+/[a-z]*"
-	 ;; 3. year
-	 "\\(20[0-9][0-9]\\)"
-	 ;; 4. month
-	 "\\([01][0-9]\\)"
-	 ;; 5. day
-	 "\\([0-3][0-9]\\)"
-	 "[0-9]+\\)"
-	 "\\.html\\)"
-	 "\">" s0
-	 ;; 6. subject
-	 "\\(" no-nl "\\)"
-	 s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
-       1 nil 2 6 3 4 5)
       ("national" "社会" "%s/list.html" ,@default)
       ("national.calamity" "災害・交通情報" "national/calamity.html"
        ,@default3)
@@ -504,27 +485,6 @@ Every `.' in NAME will be replaced with `/'."
       ("shopping.interiorlife" "充実の雑貨・インテリア生活"
        "shopping/living/interiorlife/"
        ,@shopping)
-      ("shopping.kishi" "岸朝子の日本の名産お取り寄せ12カ月"
-       "shopping/food/kishi/"
-       ,(concat
-	 "<a" s1 "href=\"/"
-	 ;; 1. url
-	 "\\(shopping/food/kishi/"
-	 ;; 2. serial number
-	 "\\([a-z]*"
-	 ;; 3. year
-	 "\\(20[0-9][0-9]\\)"
-	 ;; 4. month
-	 "\\([01][0-9]\\)"
-	 ;; 5. day
-	 "\\([0-3][0-9]\\)"
-	 "[0-9]*\\)"
-	 "\\.html\\)"
-	 "\">" s0 "<div" s1 "class=\"keyword\">[^【]+"
-	 ;; 6. subject
-	 "\\(【\\(?:[^<]+\\(?:<[^>]+>\\)?\\)+\\(?:[^<]+\\)?\\)"
-	 s0 "</a>")
-       1 nil 2 6 3 4 5)
       ("shopping.master" "楽天こだわり店長に聞く" "shopping/column/master/"
        ,@shopping)
       ("shopping.otoriyose" "わくわくお取り寄せ" "shopping/food/otoriyose/"
@@ -824,6 +784,42 @@ name in which \".\" is substituted with \"/\" is used instead.")
        ("ののちゃんのＤＯ科学" "http://www.asahi.com/edu/nie/tamate/"
 	,@(shimbun-asahi-make-regexp "edu.nie.tamate.kiji"))
        ("大学" "http://www.asahi.com/edu/news/university.html" ,@edu))
+      ("food"
+       ("季節のおいしいコラム" "http://www.asahi.com/food/cooking/"
+	,@(shimbun-asahi-make-regexp "food.cooking"))
+       ("岸朝子「暮らしを楽しむお取り寄せ」"
+	"http://www.asahi.com/shopping/food/kishi/"
+	,(concat "<a" s1 "href=\"/"
+		 ;; 1. url
+		 "\\(shopping/food/kishi/"
+		 ;; 2. serial number
+		 "\\([a-z]*"
+		 ;; 3. year
+		 "\\(20[0-9][0-9]\\)"
+		 ;; 4. month
+		 "\\([01][0-9]\\)"
+		 ;; 5. day
+		 "\\([0-3][0-9]\\)"
+		 "[0-9]+\\)"
+		 "\\.html\\)"
+		 "\">" s0
+		 ;; 6. subject
+		 "\\(" no-nl "\\)"
+		 "\\(?:" s0 "<[^>]+>\\)*[^<]*([01]?[0-9]/[0-3]?[0-9])")
+	1 nil 2 6 3 4 5)
+       ("料理メモ" "http://www.asahi.com/food/memo/"
+	,@(shimbun-asahi-make-regexp "food.memo"))
+       ("「神の雫」作者のノムリエ日記"
+	"http://www.asahi.com/food/column/nommelier/"
+	,@(shimbun-asahi-make-regexp "food.column.nommelier"))
+       ("おいしさ発見" "http://www.asahi.com/food/column/oishisa/"
+	,@(shimbun-asahi-make-regexp "food.column.oishisa"))
+       ("論より、おやつ" "http://www.asahi.com/food/column/oyatsu/"
+	,@(shimbun-asahi-make-regexp "food.column.oyatsu"))
+       ("スイーツの心得" "http://www.asahi.com/food/column/sweets/"
+	,@(shimbun-asahi-make-regexp "food.column.sweets"))
+       ("ワインの歳時記" "http://www.asahi.com/food/column/wine_saijiki/"
+	,@(shimbun-asahi-make-regexp "food.column.wine_saijiki")))
       ("travel"
        ("旅する人のアペリティフ" "http://www.asahi.com/travel/aperitif/"
 	,(format (car travel) "travel/aperitif") ,@(cdr travel))
@@ -915,7 +911,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	(case-fold-search t)
 	regexp jname numbers book-p cyear cmonth rss-p paper-p en-category
 	hour-min month year day serial num extra rgroup id headers
-	kishi-p travel-p subgroups)
+	travel-p subgroups)
     (setq regexp (assoc group shimbun-asahi-group-table)
 	  jname (nth 1 regexp)
 	  numbers (nthcdr 4 regexp)
@@ -931,7 +927,6 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	  cyear (nth 5 cyear)
 	  rss-p (member group '("book.rss" "rss"))
 	  paper-p (member group '("editorial" "tenjin"))
-	  kishi-p (string-equal group "shopping.kishi")
 	  travel-p (string-equal group "travel")
 	  subgroups (cdr (assoc group shimbun-asahi-subgroups-alist)))
     (shimbun-strip-cr)
@@ -1019,11 +1014,6 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 				    (match-string (nth 3 numbers))))
 			   (paper-p
 			    (concat jname (format " (%d/%d)" month day)))
-			   (kishi-p
-			    (save-match-data ;; XEmacs 21.4 needs it.
-			      (shimbun-replace-in-string
-			       (match-string (nth 3 numbers))
-			       "[\t\n 　]+" " ")))
 			   (travel-p
 			    (save-match-data
 			      (shimbun-replace-in-string
@@ -1231,6 +1221,15 @@ and tenjin, it tries to fetch the article for that day if it failed."
 		  (goto-char (point-min)))
 	      (insert "Couldn't retrieve the page.\n")))
 	  (setq retry (1+ retry)))))
+     ((string-equal group "food")
+      (shimbun-remove-tags "[\t\n ]*<script[\t\n ]" "</script>[\t\n ]*")
+      (shimbun-remove-tags "[\t\n ]*<noscript>" "</noscript>[\t\n ]*")
+      (goto-char (point-min))
+      (when (and (re-search-forward (shimbun-content-start shimbun) nil t)
+		 (re-search-forward "[\t\n ]*<!-+[\t\n ]+Creative[\t\n ]+for"
+				    nil t))
+	(goto-char (match-beginning 0))
+	(insert "\n<!-- End of Kiji -->\n")))
      ((string-match "\\`housing\\'\\|\\`housing\\." group)
       (shimbun-remove-tags
        "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<!--広告スキップ -->"
@@ -1332,9 +1331,6 @@ and tenjin, it tries to fetch the article for that day if it failed."
 	       nil t)
 	  (goto-char (match-beginning 0))
 	  (insert "<!-- End of Kiji -->"))))
-     ((string-equal group "shopping.kishi")
-      (when (re-search-forward "<div[\t\n ]+id=\"kijih\">[\t\n ]*" nil t)
-	(insert "<!-- Start of Kiji -->")))
      ((string-equal group "rss"))
      ((string-equal group "world.china")
       (let (start)

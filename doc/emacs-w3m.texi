@@ -4584,12 +4584,12 @@ These are newspapers that are supported by @samp{shimbun} library.
 @item @uref{http://www.asahi.com/, Asahi Shimbun}
 asahi.book.column asahi.book.news asahi.book.paperback asahi.book.review
 asahi.book.rss asahi.book.special asahi.business asahi.car asahi.culture
-asahi.digital asahi.editorial asahi.edu asahi.english asahi.health
-asahi.health.aged asahi.health.alz asahi.health.medical asahi.housing
-asahi.housing.amano asahi.housing.column asahi.housing.diary
-asahi.housing.jutaku-s asahi.housing.kansai asahi.housing.machi
-asahi.housing.soudan asahi.housing.world asahi.igo asahi.international
-asahi.international.africa asahi.international.asia
+asahi.digital asahi.editorial asahi.edu asahi.english asahi.food
+asahi.health asahi.health.aged asahi.health.alz asahi.health.medical
+asahi.housing asahi.housing.amano asahi.housing.column
+asahi.housing.diary asahi.housing.jutaku-s asahi.housing.kansai
+asahi.housing.machi asahi.housing.soudan asahi.housing.world asahi.igo
+asahi.international asahi.international.africa asahi.international.asia
 asahi.international.asiamachi asahi.international.briefing
 asahi.international.europe asahi.international.etc
 asahi.international.jinmin asahi.international.kawakami
@@ -4602,19 +4602,18 @@ asahi.kansai.beichou asahi.kansai.depa asahi.kansai.fuukei
 asahi.kansai.heibon asahi.kansai.honma asahi.kansai.kansaiisan
 asahi.kansai.madam asahi.kansai.okan asahi.kansai.otoriyose
 asahi.kansai.sakana asahi.kansai.sanshi asahi.kansai.sweets
-asahi.kansai.umaimon asahi.life asahi.life.column asahi.life.food
-asahi.national asahi.national.calamity asahi.national.etc
-asahi.national.incident asahi.national.trial asahi.obituaries
-asahi.politics asahi.politics.government asahi.politics.local asahi.rss
-asahi.science asahi.shopping asahi.shopping.interiorlife
-asahi.shopping.kishi asahi.shopping.master asahi.shopping.otoriyose
-asahi.shopping.protalk asahi.shopping.yakimono.ono
-asahi.shopping.yakimono.yellin asahi.shougi asahi.sports
-asahi.sports.baseball asahi.sports.battle asahi.sports.battle.column
-asahi.sports.column asahi.sports.football asahi.sports.golf
-asahi.sports.motor asahi.sports.rugby asahi.sports.spo asahi.sports.sumo
-asahi.sports.usa asahi.sports.winter asahi.tenjin asahi.travel
-asahi.world.china
+asahi.kansai.umaimon asahi.life asahi.life.column asahi.national
+asahi.national.calamity asahi.national.etc asahi.national.incident
+asahi.national.trial asahi.obituaries asahi.politics
+asahi.politics.government asahi.politics.local asahi.rss asahi.science
+asahi.shopping asahi.shopping.interiorlife asahi.shopping.master
+asahi.shopping.otoriyose asahi.shopping.protalk
+asahi.shopping.yakimono.ono asahi.shopping.yakimono.yellin asahi.shougi
+asahi.sports asahi.sports.baseball asahi.sports.battle
+asahi.sports.battle.column asahi.sports.column asahi.sports.football
+asahi.sports.golf asahi.sports.motor asahi.sports.rugby asahi.sports.spo
+asahi.sports.sumo asahi.sports.usa asahi.sports.winter asahi.tenjin
+asahi.travel asahi.world.china
 
 Those groups generate articles containing only text by default.  If you
 would like to make them generate HTML articles that contain not only

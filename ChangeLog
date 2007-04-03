@@ -1,13 +1,15 @@
 2007-04-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Move subgroups
-	of book, business, car, culture, digital and edu groups to
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add food group;
+	remove life.food and shopping.kishi groups; move subgroups of
+	book, business, car, culture, digital and edu groups to
 	shimbun-asahi-subgroups-alist.
 	(shimbun-asahi-subgroups-alist): Add subgroups for book, business,
-	car, culture, digital and edu groups.
+	car, culture, digital, edu and food groups.
+	(shimbun-asahi-get-headers): Remove shopping.kishi stuff.
 	(shimbun-asahi-prepare-article): Add start and end flags for
-	culture subgroups; remove ads for car and digital groups; use from
-	header split subgroups.
+	culture subgroups; remove ads for car, digital and food groups;
+	use from header to split subgroups; remove shopping.kishi stuff.
 
 2007-04-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
