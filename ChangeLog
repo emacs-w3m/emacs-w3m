@@ -4,6 +4,7 @@
 	of book and business groups to shimbun-asahi-subgroups-alist.
 	(shimbun-asahi-subgroups-alist): Add subgroups for book and
 	business groups.
+	(shimbun-asahi-prepare-article): Use from for business subgroup.
 
 2007-04-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 

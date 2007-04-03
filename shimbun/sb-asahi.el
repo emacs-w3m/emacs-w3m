@@ -1084,7 +1084,8 @@ Extract the article core on some groups or adjust a date header if
 there is a correct information available.  For the groups editorial
 and tenjin, it tries to fetch the article for that day if it failed."
   (let ((case-fold-search t)
-	(group (shimbun-current-group-internal shimbun)))
+	(group (shimbun-current-group-internal shimbun))
+	(from (shimbun-header-from-internal header)))
     (cond
      ((string-match "\\`book\\." group)
       (when (re-search-forward "<p class=\"midasi13\">[^<>]+<br>\
@@ -1118,7 +1119,7 @@ and tenjin, it tries to fetch the article for that day if it failed."
 		    (if images
 			"<br>\n"
 		      "\n"))))))
-     ((string-equal group "business.toyo")
+     ((string-match "東洋経済ニュース" from)
       ;; Insert newlines.
       (shimbun-with-narrowed-article
        shimbun
