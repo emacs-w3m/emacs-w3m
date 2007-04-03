@@ -302,106 +302,6 @@ Every `.' in NAME will be replaced with `/'."
       ("book.topics" "ニュースな本" nil ,@book1)
       ("book.trendwatch" "デジタル読書" nil ,@book1)
       ("business" "ビジネス" "%s/list.html" ,@default)
-      ("business.aera" "ＡＥＲＡ発マネー" "business/aera/index.html"
-       ,(concat
-	 "<a" s1 "href=\""
-	 ;; 1. url
-	 "\\(/business/aera/TKY"
-	 ;; 2. serial number
-	 "\\("
-	 ;; 3. year
-	 "\\(20[0-9][0-9]\\)"
-	 ;; 4. month
-	 "\\([01][0-9]\\)"
-	 ;; 5. day
-	 "\\([0-3][0-9]\\)"
-	 "\\([0-9]+\\)"
-	 "\\.html\\)\\)"
-	 "\"" s0 ">" s0
-	 ;; 7. subject
-	 "\\(" no-nl "\\)"
-	 "</a><span class=\"f80\">")
-       1 2 nil 7 3 4 5 nil)
-      ;; The url should be ended with "index.html".
-      ("business.column" "経済気象台" "business/column/index.html" ,@default2)
-      ("business.fund" "投資信託" nil
-       ,(concat
-	 "<a" s1 "href=\""
-	 ;; 1. url
-	 "\\(/business/fund/"
-	 ;; 2. extra keyword
-	 "\\([^/]+\\)"
-	 "/"
-	 ;; 3. serial number
-	 "\\([a-z]*"
-	 ;; 4. year
-	 "\\(20[0-9][0-9]\\)"
-	 ;; 5. month
-	 "\\([01][0-9]\\)"
-	 ;; 6. day
-	 "\\([0-3][0-9]\\)"
-	 "[0-9]+\\)"
-	 "\\.html\\)"
-	 "\"" s0 ">" s0
-	 ;; 7. subject
-	 "\\(" no-nl "\\)")
-       1 nil 3 7 4 5 6 nil 2)
-      ("business.reuter" "ロイターニュース" "business/list_reuters.html"
-       ,(concat
-	 "<a" s1 "href=\""
-	 ;; 1. url
-	 "\\(/business/reuters/RTR"
-	 ;; 2. serial number
-	 "\\("
-	 ;; 3. year
-	 "\\(20[0-9][0-9]\\)"
-	 ;; 4. month
-	 "\\([01][0-9]\\)"
-	 ;; 5. day
-	 "\\([0-3][0-9]\\)"
-	 "\\([0-9]+\\)"
-	 "\\.html\\)\\)"
-	 "\"" s0 ">" s0
-	 ;; 7. subject
-	 "\\(" no-nl "\\)"
-	 "</a><span class=\"f80\">"  s0 "("
-	 ;; 8 month
-	 "\\([01][0-9]\\)"
-	 "/"
-	 ;; 9.day
-	 "\\([0-3][0-9]\\)" s1
-	 ;; 10. hour:min
-	 "\\([012][0-9]:[0-5][0-9]\\)"
-	 ")")
-       1 2 nil 7 3 4 5 10)
-      ("business.toyo" "東洋経済ニュース" "business/list_toyo.html"
-       ,(concat
-	 "<a" s1 "href=\""
-	 ;; 1. url
-	 "\\(/business/toyo/[a-z]+/TKZ"
-	 ;; 2. serial number
-	 "\\("
-	 ;; 3. year
-	 "\\(20[0-9][0-9]\\)"
-	 ;; 4. month
-	 "\\([01][0-9]\\)"
-	 ;; 5. day
-	 "\\([0-3][0-9]\\)"
-	 "\\([0-9]+\\)"
-	 "\\.html\\)\\)"
-	 "\"" s0 ">" s0
-	 ;; 7. subject
-	 "\\(" no-nl "\\)"
-	 "</a><span class=\"f80\">"  s0 "("
-	 ;; 8 month
-	 "\\([01][0-9]\\)"
-	 "/"
-	 ;; 9.day
-	 "\\([0-3][0-9]\\)" s1
-	 ;; 10. hour:min
-	 "\\([012][0-9]:[0-5][0-9]\\)"
-	 ")")
-       1 2 nil 7 3 4 5 10)
       ("car" "愛車" "%s/news/" ,@(shimbun-asahi-make-regexp "car.news"))
       ("car.italycolumn" "イタリア発アモーレ！モトーレ！" nil ,@default2)
       ("car.motorsports" "モータースポーツ" nil ,@default2)
@@ -753,6 +653,26 @@ name in which \".\" is substituted with \"/\" is used instead.")
   (let* ((s0 "[\t\n 　]*")
 	 (s1 "[\t\n ]+")
 	 (no-nl "[^\n<>]+")
+	 (business (list
+		    (concat
+		     "<a" s1 "href=\""
+		     ;; 1. url
+		     "\\(/business/%s/\\(?:[^/]+/\\)?"
+		     ;; 2. serial number
+		     "\\([a-z]+"
+		     ;; 3. year
+		     "\\(20[0-9][0-9]\\)"
+		     ;; 4. month
+		     "\\([01][0-9]\\)"
+		     ;; 5. day
+		     "\\([0-3][0-9]\\)"
+		     "\\(?:[0-9]+\\)"
+		     "\\.html\\)\\)"
+		     "\"" s0 ">" s0
+		     ;; 6. subject
+		     "\\(" no-nl "\\)"
+		     "</a><span class=\"")
+		    1 2 nil 6 3 4 5))
 	 (paperback (list
 		     (concat
 		      "<a" s1 "href=\"/"
@@ -797,6 +717,23 @@ name in which \".\" is substituted with \"/\" is used instead.")
 	,@paperback)
        ("新書" "http://book.asahi.com/paperback/shinsho.html"
 	,@paperback))
+      ("business"
+       ("ＡＥＲＡ発マネー" "http://www.asahi.com/business/aera/"
+	,(format (car business) "aera") ,@(cdr business))
+       ("投資信託" "http://www.asahi.com/business/fund/"
+	,(format (car business) "fund") ,@(cdr business))
+       ("商品ファイル" "http://www.asahi.com/business/products/"
+	,(format (car business) "products") ,@(cdr business))
+       ("ロイターニュース" "http://www.asahi.com/business/list_reuters.html"
+	,(format (car business) "reuters") ,@(cdr business))
+       ("今日の視点" "http://www.asahi.com/business/today_eye/"
+	,(format (car business) "today_eye") ,@(cdr business))
+       ("今日の市況" "http://www.asahi.com/business/today_shikyo/"
+	,(format (car business) "today_shikyo") ,@(cdr business))
+       ("経済を読む" "http://www.asahi.com/business/topics/"
+	,(format (car business) "topics") ,@(cdr business))
+       ("東洋経済ニュース" "http://www.asahi.com/business/list_toyo.html"
+	,(format (car business) "toyo") ,@(cdr business)))
       ("travel"
        ("旅する人のアペリティフ" "http://www.asahi.com/travel/aperitif/"
 	,(format (car travel) "travel/aperitif") ,@(cdr travel))
