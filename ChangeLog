@@ -1,3 +1,8 @@
+2007-04-04  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-view-parent-page): Use numbered prefix argument to
+	move the parent directory according to input number.
+
 2007-04-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Add food group;

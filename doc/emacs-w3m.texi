@@ -946,7 +946,8 @@ component from the URL by using the @key{DEL} key, etc. several times
 manually.  In emacs-w3m, this operation can be performed in only one
 keystroke, by typing @kbd{^}!
 
-Also, you type this command with prefix as ''C-u ^'', you visit the top
+Also, you type this command with prefix as ``2 ^'', you visit the upper
+directory according to input number. you type ``0 ^'', you visit the top
 of this site.
 @end table
 

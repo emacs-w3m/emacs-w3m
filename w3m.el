@@ -5712,33 +5712,44 @@ when the URL of the retrieved page matches the REGEXP."
     (save-match-data
       (string-match "\\`[a-z]+://?[^/]+/." w3m-current-url))))
 
-(defun w3m-view-parent-page (&optional top)
+(defun w3m-view-parent-page (&optional count)
   "Attempt to move to the parent directory of the page currently displayed.
 For instance, it will let you visit \"http://foo/bar/\" if you are currently
 viewing \"http://foo/bar/baz\".
-If TOP is non-nil, you visit the top of this site."
-  (interactive "P")
+If COUNT is a integer, you will visit the parent directory to step up the COUNT.
+If COUNT is zero, you will visit the top of this site."
+  (interactive "p")
+  (unless (integerp count)
+    (setq count 1))
+  (setq count (abs count))
   (cond
-   ((and top
-	 w3m-current-url
+   ((and w3m-current-url
+	 (eq count 0)
 	 (string-match "\\`[a-z]+:///?[^/]+/" w3m-current-url))
     (w3m-goto-url (match-string 0 w3m-current-url)))
    (w3m-start-url (w3m-goto-url w3m-start-url))
    (w3m-contents-url (w3m-goto-url w3m-contents-url))
    (w3m-current-url
-    (let (parent-url)
-      ;; Check whether http://foo/bar/ or http://foo/bar
-      (if (string-match "/$" w3m-current-url)
-	  (if (string-match "\\(.*\\)/[^/]+/$" w3m-current-url)
-	      ;; http://foo/bar/ -> http://foo/
-	      (setq parent-url (concat (match-string 1 w3m-current-url) "/")))
-	(if (string-match "\\(.*\\)/.+$" w3m-current-url)
-	    ;; http://foo/bar -> http://foo/
-	    (setq parent-url (concat (match-string 1 w3m-current-url) "/"))))
-      ;; Ignore "http:/"
-      (if (and parent-url
-	       (string-match "^[a-z]+:/+$" parent-url))
-	  (setq parent-url nil))
+    (let ((parent-url w3m-current-url))
+      (catch 'loop
+	(while (not (zerop count))
+	  (setq count (1- count))
+	  ;; Check whether http://foo/bar/ or http://foo/bar
+	  (if (string-match "/$" parent-url)
+	      (if (string-match "\\(.*\\)/[^/]+/$" parent-url)
+		  ;; http://foo/bar/ -> http://foo/
+		  (setq parent-url (concat (match-string 1 parent-url) "/")))
+	    (if (string-match "\\(.*\\)/.+$" parent-url)
+		;; http://foo/bar -> http://foo/
+		(setq parent-url (concat (match-string 1 parent-url) "/"))))
+	  ;; Ignore "http:/"
+	  (cond
+	   ((string-match "\\`[a-z]+:///?[^/]+/\\'" parent-url)
+	    (throw 'loop t))
+	   ((and parent-url
+		 (string-match "\\`[a-z]+:/+\\'" parent-url))
+	    (setq parent-url nil)
+	    (throw 'loop nil)))))
       (if parent-url
 	  (w3m-goto-url parent-url)
 	(error "No parent page for: %s" w3m-current-url))))
