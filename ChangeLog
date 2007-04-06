@@ -1,3 +1,7 @@
+2007-04-06  Matt Hodges <M.P.Hodges@rl.ac.uk>
+
+	* w3m.el (w3m-next-buffer): Fix last change when w3m-fb-mode.
+
 2007-04-04  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-view-parent-page): Use numbered prefix argument to
