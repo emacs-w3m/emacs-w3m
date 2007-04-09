@@ -1,4 +1,16 @@
-2007-04-06  Matt Hodges <M.P.Hodges@rl.ac.uk>
+2007-04-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Move subgroups
+	of health group to shimbun-asahi-subgroups-alist.
+	(shimbun-asahi-subgroups-alist): Add subgroups for health group.
+	(shimbun-asahi-prepare-article): Remove ads, don't fetch useless
+	images, and don't replace From with reviewer for book groups;
+	remove useless things for all groups.
+
+	* shimbun/shimbun.el (shimbun-japanese-hankaku-region): Add a
+	special treatment for zenkaku apostrophes.
+
+2007-04-06  Matt Hodges  <M.P.Hodges@rl.ac.uk>
 
 	* w3m.el (w3m-next-buffer): Fix last change when w3m-fb-mode.
 
