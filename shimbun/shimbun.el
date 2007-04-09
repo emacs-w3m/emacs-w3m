@@ -1364,6 +1364,10 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
       (unless (looking-at "[ 　]\\|&nbsp;")
 	(insert " ")))
     (goto-char start)
+    ;; Ｉ’ｍ -> Ｉ'ｍ
+    (while (re-search-forward "\\(\\cA\\)’\\(\\cA\\)" nil t)
+      (replace-match "\\1'\\2"))
+    (goto-char start)
     (while (re-search-forward
 	    "[^　、。，．＿ー―‐〜‘’“”（）［］｛｝〈〉＝′″￥]+"
 	    nil t)

@@ -138,7 +138,6 @@ Every `.' in NAME will be replaced with `/'."
 		 s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>" s0 "</dt>")
 		1 2 nil 6 3 4 5))
 	 (edu (shimbun-asahi-make-regexp "edu.news"))
-	 (health (shimbun-asahi-make-regexp "health.news"))
 	 (international (list
 			 (concat
 			  "<a" s1 "href=\"/"
@@ -303,10 +302,8 @@ Every `.' in NAME will be replaced with `/'."
 		  "\\(?:" s0 "<[^>]+>\\)*" s0 "([01]?[0-9]/[0-3]?[0-9])")
 		 (cdr rest))))
       ("food" "食" "%s/news/" ,@(shimbun-asahi-make-regexp "food.news"))
-      ("health" "健康・生活" "%s/news/" ,@health)
-      ("health.aged" "福祉・高齢" "health/news/aged.html" ,@health)
-      ("health.alz" "認知症特集" "health/news/alz.html" ,@health)
-      ("health.medical" "医療・病気" "health/news/medical.html" ,@health)
+      ("health" "健康" "%s/list.html"
+       ,@(shimbun-asahi-make-regexp "health.news"))
       ("housing" "住まい" "%s/news/"
        ,@(shimbun-asahi-make-regexp "housing.news"))
       ("housing.amano" "天野彰のいい家いい家族" nil ,@default2)
@@ -627,6 +624,7 @@ name in which \".\" is substituted with \"/\" is used instead.")
 		    "[\t\n ]*\\(?:</dt>\\|<span[\t\n ]+\\)")
 		   1 nil 2 6 3 4 5))
 	 (edu (nthcdr 3 (assoc "edu" shimbun-asahi-group-table)))
+	 (health (nthcdr 3 (assoc "health" shimbun-asahi-group-table)))
 	 (paperback (list
 		     (concat
 		      "<a" s1 "href=\"/"
@@ -820,6 +818,11 @@ name in which \".\" is substituted with \"/\" is used instead.")
 	,@(shimbun-asahi-make-regexp "food.column.sweets"))
        ("ワインの歳時記" "http://www.asahi.com/food/column/wine_saijiki/"
 	,@(shimbun-asahi-make-regexp "food.column.wine_saijiki")))
+      ("health"
+       ("健康・生活" "http://www.asahi.com/health/news/" ,@health)
+       ("福祉・高齢" "http://www.asahi.com/health/news/aged.html" ,@health)
+       ("認知症特集" "http://www.asahi.com/health/news/alz.html" ,@health)
+       ("医療・病気" "http://www.asahi.com/health/news/medical.html" ,@health))
       ("travel"
        ("旅する人のアペリティフ" "http://www.asahi.com/travel/aperitif/"
 	,(format (car travel) "travel/aperitif") ,@(cdr travel))
@@ -1133,49 +1136,30 @@ and tenjin, it tries to fetch the article for that day if it failed."
 	(from (shimbun-header-from-internal header)))
     (cond
      ((string-match "\\`book\\." group)
-      (when (re-search-forward "<p class=\"midasi13\">[^<>]+<br>\
-\\[\\(?:文\\(?:・写真\\)?\\|評者\\)\\]\\([^<>[　]+\\)"
-			       nil t)
-	(let ((author (match-string 1)))
-	  (when (and (string-match "（" author)
-		     (not (string-match "）\\'" author)))
-	    (setq author (concat author "）")))
-	  (shimbun-header-set-from header author))
-	(goto-char (point-min)))
-      ;; Collect images.
-      (let (start end images)
-	(while (re-search-forward "<div[\t\n ]+class=\"bokp\">" nil t)
-	  (setq start (match-beginning 0))
-	  (when (and (search-forward "</div>" nil t)
-		     (re-search-forward "\\([\t\n ]*<!--購入-->\\)\\|</div>"
-					nil t))
-	    (setq images
-		  (nconc images
-			 (list (buffer-substring start (or (match-beginning 1)
-							   (match-end 0))))))
-	    (delete-region start (point))))
-	(when (and images
-		   (progn
-		     (goto-char (point-min))
-		     (re-search-forward shimbun-asahi-content-start nil t)))
-	  (insert "\n")
-	  (while images
-	    (insert (pop images)
-		    (if images
-			"<br>\n"
-		      "\n"))))))
+      (when (and (re-search-forward "[\t\n ]*<div[\t\n ]+class=[^>]+>[\t\n ]*\
+<img[\t\n ]+[^>]+>[\t\n ]*</div>[\t\n ]*"
+				    nil t)
+		 (save-match-data
+		   (search-backward "src=\"/images/honjp-logo.gif"
+				    (match-beginning 0) t)))
+	(delete-region (match-beginning 0) (match-end 0)))
+      (goto-char (point-min))
+      (while (re-search-forward "\\(<a[\t\n ]+[^>]+>\\)\
+\[\t\n ]*<img[\t\n ]+[^>]+>[\t\n ]*</a>"
+				nil t)
+	(when (save-match-data
+		(search-backward "alt=\"No image\"" (match-beginning 0) t))
+	  (replace-match "\\1No image</a>"))))
      ((string-equal group "car")
       (shimbun-remove-tags "\
 \[\t\n ]*<![\t\n ]*-+[\t\n ]*[★☆]+[\t\n ]*AD[\t\n ]*[★☆]+[\t\n ]*-+>"
 			   "\
 <![\t\n ]*-+[\t\n ]*/[\t\n ]*[★☆]+[\t\n ]*AD[\t\n ]*[★☆]+[\t\n ]*-+>\
 \[\t\n ]*")
-      (shimbun-remove-tags "[\t\n ]*<form[\t\n ]+" "</form>[\t\n ]*")
       (goto-char (point-min))
       (when (and (re-search-forward (shimbun-content-start shimbun) nil t)
-		 (re-search-forward "[\t\n ]*\\(?:\
-<!-+[\t\n ]*Creative[\t\n ]+for[\t\n ]+\\|\
-<script[\t\n ]+type=\"text/javascript\"\\)"
+		 (re-search-forward "\
+\[\t\n ]*<!-+[\t\n ]*Creative[\t\n ]+for[\t\n ]+"
 				    nil t))
 	(goto-char (match-beginning 0))
 	(insert "\n<!-- End of Kiji -->\n")))
@@ -1222,9 +1206,6 @@ and tenjin, it tries to fetch the article for that day if it failed."
 	      (insert "Couldn't retrieve the page.\n")))
 	  (setq retry (1+ retry)))))
      ((string-equal group "food")
-      (shimbun-remove-tags "[\t\n ]*<script[\t\n ]" "</script>[\t\n ]*")
-      (shimbun-remove-tags "[\t\n ]*<noscript>" "</noscript>[\t\n ]*")
-      (goto-char (point-min))
       (when (and (re-search-forward (shimbun-content-start shimbun) nil t)
 		 (re-search-forward "[\t\n ]*<!-+[\t\n ]+Creative[\t\n ]+for"
 				    nil t))
@@ -1418,7 +1399,17 @@ and tenjin, it tries to fetch the article for that day if it failed."
 	 (when (re-search-forward "<p[\t\n ]+class=\"hide\">[\t\n ]*\
 広告終わり\\(?:[\t\n ]*</p>[\t\n ]*\\|\\'\\)"
 				  nil t)
-	   (delete-region start (match-end 0))))))))
+	   (delete-region start (match-end 0)))))
+     ;; Remove any other useless things.
+     (shimbun-remove-tags "[\t\n ]*<form[\t\n ]+" "</form>[\t\n ]*")
+     (shimbun-remove-tags "[\t\n ]*<noscript>" "</noscript>[\t\n ]*")
+     (shimbun-remove-tags "[\t\n ]*<script[\t\n ]" "</script>[\t\n ]*")
+     (goto-char (point-min))
+     (while (re-search-forward "[\t\n ]*\
+\\(?:<div[\t\n ]+[^>]+>\\|</div>\\|<ul>[\t\n ]*</ul>\\)\
+\[\t\n ]*"
+			       nil t)
+       (delete-region (match-beginning 0) (match-end 0))))))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-asahi)
 						   header)
