@@ -1,5 +1,15 @@
 2007-04-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Move subgroups
+	of housing and international groups to
+	shimbun-asahi-subgroups-alist.
+	(shimbun-asahi-subgroups-alist): Add subgroups for housing, igo
+	and international groups.
+	(shimbun-asahi-get-headers): Use http://www2.asahi.com/ to expand
+	urls for articles in Iraq subgroup.
+	(shimbun-asahi-prepare-article): Extract article for housing
+	subgroups.
+
 	* shimbun/sb-itmedia.el (shimbun-get-headers): New method; replace
 	article urls with the ones to be redirected to.
 

@@ -4586,18 +4586,9 @@ These are newspapers that are supported by @samp{shimbun} library.
 asahi.book.column asahi.book.news asahi.book.paperback asahi.book.review
 asahi.book.rss asahi.book.special asahi.business asahi.car asahi.culture
 asahi.digital asahi.editorial asahi.edu asahi.english asahi.food
-asahi.health asahi.housing asahi.housing.amano asahi.housing.column
-asahi.housing.diary asahi.housing.jutaku-s asahi.housing.kansai
-asahi.housing.machi asahi.housing.soudan asahi.housing.world asahi.igo
-asahi.international asahi.international.africa asahi.international.asia
-asahi.international.asiamachi asahi.international.briefing
-asahi.international.europe asahi.international.etc
-asahi.international.jinmin asahi.international.kawakami
-asahi.international.korea asahi.international.middleeast
-asahi.international.namerica asahi.international.oceania
-asahi.international.samerica asahi.international.seoul
-asahi.international.shien asahi.international.shizuki
-asahi.international.weekly-asia asahi.job asahi.job.special asahi.kansai
+asahi.health asahi.housing asahi.igo asahi.international
+asahi.international.asia asahi.international.column
+asahi.international.world asahi.job asahi.job.special asahi.kansai
 asahi.kansai.beichou asahi.kansai.depa asahi.kansai.fuukei
 asahi.kansai.heibon asahi.kansai.honma asahi.kansai.kansaiisan
 asahi.kansai.madam asahi.kansai.okan asahi.kansai.otoriyose
