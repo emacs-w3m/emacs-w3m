@@ -1,3 +1,8 @@
+2007-04-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-itmedia.el (shimbun-get-headers): New method; replace
+	article urls with the ones to be redirected to.
+
 2007-04-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Move subgroups
