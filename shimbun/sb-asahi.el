@@ -306,83 +306,11 @@ Every `.' in NAME will be replaced with `/'."
        ,@(shimbun-asahi-make-regexp "health.news"))
       ("housing" "住まい" "%s/news/"
        ,@(shimbun-asahi-make-regexp "housing.news"))
-      ("housing.amano" "天野彰のいい家いい家族" nil ,@default2)
-      ("housing.column" "住まいのお役立ちコラム" nil ,@default2)
-      ("housing.diary" "小さな家の生活日記" nil ,@default2)
-      ("housing.jutaku-s" "住宅新報社ニュース" nil ,@default2)
-      ("housing.kansai" "関西の住まい" "kansai/sumai/news/"
-       ,@(shimbun-asahi-make-regexp "kansai.sumai.news"))
-      ("housing.machi" "街を恋う" "kansai/sumai/machi/"
-       ,@(shimbun-asahi-make-regexp "kansai.sumai.machi"))
-      ("housing.soudan" "ここが知りたい！" nil ,@default2)
-      ("housing.world" "世界のウチ" nil ,@default2)
-      ("igo" "囲碁" "%s/news/"
-       ,@(shimbun-asahi-make-regexp "igo/\\(?:news\\|topics\\)"))
+      ("igo" "囲碁" "%s/news/" ,@(shimbun-asahi-make-regexp "igo.news"))
       ("international" "国際" "%s/list.html" ,@default)
-      ("international.africa" "アフリカ" "international/africa.html"
-       ,@international)
       ("international.asia" "アジア" "international/asia.html" ,@international)
-      ("international.asiamachi" "アジアの街角" nil ,@default2)
-      ("international.briefing" "船橋洋一の世界ブリーフィング"
-       "http://opendoors.asahi.com/syukan/briefing/index.shtml"
-       ,(concat
-	 "<a href=\""
-	 ;; 1. url
-	 "\\("
-	 ;; 2. serial number
-	 "\\([0-9]+\\)"
-	 "\\.shtml\\)"
-	 "\">No\\.[0-9]+　\\[ 週刊朝日"
-	 ;; 3. year
-	 "\\(20[0-9][0-9]\\)"
-	 "年"
-	 ;; 4. month
-	 "\\([01]?[0-9]\\)"
-	 "月"
-	 ;; 5. day
-	 "\\([0-3]?[0-9]\\)"
-	 "[^]]+\\] <br>"
-	 ;; 6. subject
-	 "\\([^<]+\\)")
-       1 2 nil 6 3 4 5)
-      ("international.europe" "ヨーロッパ" "international/europe.html"
-       ,@international)
-      ("international.etc" "国連・その他" "international/etc.html"
-       ,@international)
-      ("international.jinmin" "人民日報" "international/jinmin/index.html"
-       ,@default2)
-      ("international.kawakami" "中東ウオッチ" nil ,@default2)
-      ("international.korea" "コリアうめーや！！" nil ,@default2)
-      ("international.middleeast" "中東" "international/middleeast.html"
-       ,@international)
-      ("international.namerica" "北米" "international/namerica.html"
-       ,@international)
-      ("international.oceania" "オセアニア" "international/oceania.html"
-       ,@international)
-      ("international.samerica" "中南米" "international/samerica.html"
-       ,@international)
-      ("international.seoul" "スパイシー！ソウル" nil ,@default2)
-      ("international.shien" "国際支援の現場から" nil
-       ,(concat
-	 "【＠[^】]+】[\t\n -]*<a" s1 "href=\"/"
-	 ;; 1. url
-	 "\\(international/shien/"
-	 ;; 2. serial number
-	 "\\([a-z]*"
-	 ;; 3. year
-	 "\\(20[0-9][0-9]\\)"
-	 ;; 4. month
-	 "\\([01][0-9]\\)"
-	 ;; 5. day
-	 "\\([0-3][0-9]\\)"
-	 "[0-9]+\\)"
-	 "\\.html\\)"
-	 "\">\\(?:" s0 "<[^>]+>\\)*" s0
-	 ;; 6. subject
-	 "\\([^\n<>]+\\)")
-       1 nil 2 6 3 4 5)
-      ("international.shizuki" "姿月あさとの「独り言」" nil ,@default2)
-      ("international.weekly-asia" "週刊アジア" nil ,@default2)
+      ("international.column" "国際コラム")
+      ("international.world" "世界")
       ("job" "就職・転職" "%s/news/"
        ,@(shimbun-asahi-make-regexp "job.news"))
       ("job.special" "週刊朝日・ＡＥＲＡから" nil
@@ -625,6 +553,8 @@ name in which \".\" is substituted with \"/\" is used instead.")
 		   1 nil 2 6 3 4 5))
 	 (edu (nthcdr 3 (assoc "edu" shimbun-asahi-group-table)))
 	 (health (nthcdr 3 (assoc "health" shimbun-asahi-group-table)))
+	 (international (nthcdr 3 (assoc "international.asia"
+					 shimbun-asahi-group-table)))
 	 (paperback (list
 		     (concat
 		      "<a" s1 "href=\"/"
@@ -823,6 +753,116 @@ name in which \".\" is substituted with \"/\" is used instead.")
        ("福祉・高齢" "http://www.asahi.com/health/news/aged.html" ,@health)
        ("認知症特集" "http://www.asahi.com/health/news/alz.html" ,@health)
        ("医療・病気" "http://www.asahi.com/health/news/medical.html" ,@health))
+      ("housing"
+       ("戸建て" "http://www.asahi.com/ad/clients/kodatenavi/news/"
+	,@(shimbun-asahi-make-regexp "ad.clients.kodatenavi.news"))
+       ("マンション" "http://www.asahi.com/ad/clients/mansionnavi/news/"
+	,@(shimbun-asahi-make-regexp "ad.clients.mansionnavi.news"))
+       ("天野彰のいい家いい家族" "http://www.asahi.com/housing/amano/"
+	,@(shimbun-asahi-make-regexp "housing.amano"))
+       ("住まいのお役立ちコラム" "http://www.asahi.com/housing/column/"
+	,@(shimbun-asahi-make-regexp "housing.column"))
+       ("小さな家の生活日記" "http://www.asahi.com/housing/diary/"
+	,@(shimbun-asahi-make-regexp "housing.diary"))
+       ("住宅新報社ニュース" "http://www.asahi.com/housing/jutaku-s/"
+	,@(shimbun-asahi-make-regexp "housing.jutaku-s"))
+       ("ここが知りたい" "http://www.asahi.com/housing/soudan/index_s.html"
+	,@(shimbun-asahi-make-regexp "housing.soudan"))
+       ("世界のウチ" "http://www.asahi.com/housing/world/"
+	,@(shimbun-asahi-make-regexp "housing.world"))
+       ("街を恋う" "http://www.asahi.com/kansai/sumai/machi/"
+	,@(shimbun-asahi-make-regexp "kansai.sumai.machi"))
+       ("関西の住まい" "http://www.asahi.com/kansai/sumai/news/"
+	,@(shimbun-asahi-make-regexp "kansai.sumai.news")))
+      ("igo"
+       ("トピックス" "http://www.asahi.com/igo/topics/"
+	,@(shimbun-asahi-make-regexp "igo.topics")))
+      ("international.asia"
+       ("アジアの街角" "http://www.asahi.com/international/asiamachi/"
+	,@(shimbun-asahi-make-regexp "international.asiamachi"))
+       ("人民日報" "http://www.asahi.com/international/jinmin/"
+	,@(shimbun-asahi-make-regexp "international.jinmin"))
+       ("コリアうめーや！！" "http://www.asahi.com/international/korea/"
+	,@(shimbun-asahi-make-regexp "international.korea"))
+       ("スパイシー！ソウル" "http://www.asahi.com/international/seoul/"
+	,@(shimbun-asahi-make-regexp "international.seoul"))
+       ("週刊アジア" "http://www.asahi.com/international/weekly-asia/"
+	,@(shimbun-asahi-make-regexp "international.weekly-asia")))
+      ("international.column"
+       ("船橋洋一の世界ブリーフィング"
+	"http://opendoors.asahi.com/syukan/briefing/index.shtml"
+	,(concat
+	  "<a href=\""
+	  ;; 1. url
+	  "\\("
+	  ;; 2. serial number
+	  "\\([0-9]+\\)"
+	  "\\.shtml\\)"
+	  "\">No\\.[0-9]+　\\[ 週刊朝日"
+	  ;; 3. year
+	  "\\(20[0-9][0-9]\\)"
+	  "年"
+	  ;; 4. month
+	  "\\([01]?[0-9]\\)"
+	  "月"
+	  ;; 5. day
+	  "\\([0-3]?[0-9]\\)"
+	  "[^]]+\\] <br>"
+	  ;; 6. subject
+	  "\\([^<]+\\)")
+	1 2 nil 6 3 4 5)
+       ("国際支援の現場から" "http://www.asahi.com/international/shien/"
+	,(concat
+	  "【＠[^】]+】[\t\n -]*<a" s1 "href=\"/"
+	  ;; 1. url
+	  "\\(international/shien/"
+	  ;; 2. serial number
+	  "\\([a-z]*"
+	  ;; 3. year
+	  "\\(20[0-9][0-9]\\)"
+	  ;; 4. month
+	  "\\([01][0-9]\\)"
+	  ;; 5. day
+	  "\\([0-3][0-9]\\)"
+	  "[0-9]+\\)"
+	  "\\.html\\)"
+	  "\">\\(?:" s0 "<[^>]+>\\)*" s0
+	  ;; 6. subject
+	  "\\([^\n<>]+\\)")
+	1 nil 2 6 3 4 5)
+       ("姿月あさとの「独り言」" "http://www.asahi.com/international/shizuki/"
+	,@(shimbun-asahi-make-regexp "international.shizuki"))
+       ("日中関係" "http://www.asahi.com/special/050410/"
+	,@(shimbun-asahi-make-regexp "special.050410"))
+       ("北朝鮮拉致事件" "http://www.asahi.com/special/abductees/"
+	,@(shimbun-asahi-make-regexp "special.abductees"))
+       ("北朝鮮核問題" "http://www.asahi.com/special/nuclear/"
+	,@(shimbun-asahi-make-regexp "special.nuclear")))
+      ("international.world"
+       ("アフリカ" "http://www.asahi.com/international/africa.html"
+	,@international)
+       ("国連・その他" "http://www.asahi.com/international/etc.html"
+	,@international)
+       ("ヨーロッパ" "http://www.asahi.com/international/europe.html"
+	,@international)
+       ("中東" "http://www.asahi.com/international/middleeast.html"
+	,@international)
+       ("北米" "http://www.asahi.com/international/namerica.html"
+	,@international)
+       ("オセアニア" "http://www.asahi.com/international/oceania.html"
+	,@international)
+       ("中南米" "http://www.asahi.com/international/samerica.html"
+	,@international)
+       ("鳥インフルエンザ" "http://www.asahi.com/special/051102/"
+	,@(shimbun-asahi-make-regexp "special.051102"))
+       ("地球環境" "http://www.asahi.com/special/070110/"
+	,@(shimbun-asahi-make-regexp "special.070110"))
+       ("中東和平" "http://www.asahi.com/special/MiddleEast/"
+	,@(shimbun-asahi-make-regexp "special.MiddleEast"))
+       ("ＢＳＥ問題" "http://www.asahi.com/special/bse/"
+	,@(shimbun-asahi-make-regexp "special.bse"))
+       ("イラク情勢" "http://www2.asahi.com/special/iraq/"
+	,@(shimbun-asahi-make-regexp "special.iraq")))
       ("travel"
        ("旅する人のアペリティフ" "http://www.asahi.com/travel/aperitif/"
 	,(format (car travel) "travel/aperitif") ,@(cdr travel))
@@ -914,7 +954,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	(case-fold-search t)
 	regexp jname numbers book-p cyear cmonth rss-p paper-p en-category
 	hour-min month year day serial num extra rgroup id headers
-	travel-p subgroups)
+	travel-p subgroups iraq-p)
     (setq regexp (assoc group shimbun-asahi-group-table)
 	  jname (nth 1 regexp)
 	  numbers (nthcdr 4 regexp)
@@ -1065,6 +1105,8 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 			     "http://book.asahi.com/")
 			    ((string-equal group "international.briefing")
 			     "http://opendoors.asahi.com/syukan/briefing/")
+			    (iraq-p
+			     "http://www2.asahi.com/")
 			    (t
 			     shimbun-asahi-url))))
 		    headers))))
@@ -1072,7 +1114,8 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	    (progn
 	      (erase-buffer)
 	      (setq from (concat (shimbun-server-name shimbun)
-				 " (" (caar subgroups) ")"))
+				 " (" (caar subgroups) ")")
+		    iraq-p (string-equal (caar subgroups) "イラク情勢"))
 	      (shimbun-retrieve-url (cadar subgroups))
 	      (setq regexp (caddar subgroups)
 		    numbers (cdddar subgroups)
@@ -1211,10 +1254,20 @@ and tenjin, it tries to fetch the article for that day if it failed."
 				    nil t))
 	(goto-char (match-beginning 0))
 	(insert "\n<!-- End of Kiji -->\n")))
-     ((string-match "\\`housing\\'\\|\\`housing\\." group)
+     ((string-equal group "housing")
       (shimbun-remove-tags
        "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<!--広告スキップ -->"
-       "<!--/広告スキップのとび先-->[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*"))
+       "<!--/広告スキップのとび先-->[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*")
+      (when (string-match "マンション\\|戸建て" from)
+	(goto-char (point-min))
+	(re-search-forward "<td[\t\n ]+valign=\"top\">[\t\n ]*\
+\\(?:<[^>]+>[\t\n ]*\\)*"
+			   nil t)
+	(insert "<!-- Start of Kiji -->")
+	(when (re-search-forward "[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*</td>"
+				 nil 'move)
+	  (goto-char (match-beginning 0))
+	  (insert "<!-- End of Kiji -->"))))
      ((string-equal group "international.briefing")
       (when (re-search-forward "\
 <img[\t\n ]+src=\"[^>]+[\t\n ]+alt=\"船橋洋一顔写真\">"
