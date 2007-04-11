@@ -2,10 +2,12 @@
 
 	* shimbun/sb-asahi.el (shimbun-asahi-group-table): Rename book.rss
 	with book; add international.special group; move world.china group
-	to shimbun-asahi-subgroups-alist; move subgroups of job and kansai
-	groups to shimbun-asahi-subgroups-alist.
+	to shimbun-asahi-subgroups-alist; move subgroups of job, kansai,
+	national, politics, shopping and sports groups to
+	shimbun-asahi-subgroups-alist; fix regexp for science group.
 	(shimbun-asahi-subgroups-alist): Rearrange international subgroups;
-	add subgroups for job and kansai groups.
+	add subgroups for job, kansai, life.column, national, politics,
+	shopping and sports groups.
 	(shimbun-asahi-prepare-article): Follow
 	shimbun-asahi-subgroups-alist change.
 
