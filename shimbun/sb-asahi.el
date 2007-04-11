@@ -231,11 +231,11 @@ Every `.' in NAME will be replaced with `/'."
 		      "\\(?:" s0 "<[^>]+>\\)*" s0 "([01]?[0-9]/[0-3]?[0-9])")
 		     1 nil 2 6 3 4 5))
 	 (sports (shimbun-asahi-make-regexp "sports.spo")))
-    `(("book.column" "コラム")
+    `(("book" "RSS" "http://feeds.asahi.com/asahi/Book" ,@rss)
+      ("book.column" "コラム")
       ("book.news" "出版ニュース" nil ,@book)
       ("book.paperback" "文庫・新書")
       ("book.review" "書評" nil ,@book)
-      ("book.rss" "RSS" "http://feeds.asahi.com/asahi/Book" ,@rss)
       ("book.special" "特集" nil
        ,(concat
 	 "<a" s1 "href=\"\\(?:http://book\\.asahi\\.com\\)?/"
@@ -309,7 +309,8 @@ Every `.' in NAME will be replaced with `/'."
       ("igo" "囲碁" "%s/news/" ,@(shimbun-asahi-make-regexp "igo.news"))
       ("international" "国際" "%s/list.html" ,@default)
       ("international.asia" "アジア" "international/asia.html" ,@international)
-      ("international.column" "国際コラム")
+      ("international.column" "コラム")
+      ("international.special" "特集")
       ("international.world" "世界")
       ("job" "就職・転職" "%s/news/"
        ,@(shimbun-asahi-make-regexp "job.news"))
@@ -455,9 +456,7 @@ Every `.' in NAME will be replaced with `/'."
 	 "\"")
        1 nil nil nil 2 3 4)
       ("travel" "トラベル" "%s/news/"
-       ,@(shimbun-asahi-make-regexp "travel.news"))
-      ("world.china" "中国特集" nil
-       ,@(shimbun-asahi-make-regexp "world.china.news"))))
+       ,@(shimbun-asahi-make-regexp "travel.news"))))
   "Alist of group names, their Japanese translations, index pages,
 regexps and numbers.  Where index pages and regexps may contain the
 \"%s\" token which is replaced with group names, numbers point to the
@@ -811,6 +810,9 @@ name in which \".\" is substituted with \"/\" is used instead.")
 	  ;; 6. subject
 	  "\\([^<]+\\)")
 	1 2 nil 6 3 4 5)
+       ("姿月あさとの「独り言」" "http://www.asahi.com/international/shizuki/"
+	,@(shimbun-asahi-make-regexp "international.shizuki")))
+      ("international.special"
        ("国際支援の現場から" "http://www.asahi.com/international/shien/"
 	,(concat
 	  "【＠[^】]+】[\t\n -]*<a" s1 "href=\"/"
@@ -830,14 +832,24 @@ name in which \".\" is substituted with \"/\" is used instead.")
 	  ;; 6. subject
 	  "\\([^\n<>]+\\)")
 	1 nil 2 6 3 4 5)
-       ("姿月あさとの「独り言」" "http://www.asahi.com/international/shizuki/"
-	,@(shimbun-asahi-make-regexp "international.shizuki"))
+       ("鳥インフルエンザ" "http://www.asahi.com/special/051102/"
+	,@(shimbun-asahi-make-regexp "special.051102"))
        ("日中関係" "http://www.asahi.com/special/050410/"
 	,@(shimbun-asahi-make-regexp "special.050410"))
+       ("地球環境" "http://www.asahi.com/special/070110/"
+	,@(shimbun-asahi-make-regexp "special.070110"))
        ("北朝鮮拉致事件" "http://www.asahi.com/special/abductees/"
 	,@(shimbun-asahi-make-regexp "special.abductees"))
+       ("ＢＳＥ問題" "http://www.asahi.com/special/bse/"
+	,@(shimbun-asahi-make-regexp "special.bse"))
+       ("イラク情勢" "http://www2.asahi.com/special/iraq/"
+	,@(shimbun-asahi-make-regexp "special.iraq"))
+       ("中東和平" "http://www.asahi.com/special/MiddleEast/"
+	,@(shimbun-asahi-make-regexp "special.MiddleEast"))
        ("北朝鮮核問題" "http://www.asahi.com/special/nuclear/"
-	,@(shimbun-asahi-make-regexp "special.nuclear")))
+	,@(shimbun-asahi-make-regexp "special.nuclear"))
+       ("中国特集" "http://www.asahi.com/world/china/"
+	,@(shimbun-asahi-make-regexp "world.china.news")))
       ("international.world"
        ("アフリカ" "http://www.asahi.com/international/africa.html"
 	,@international)
@@ -852,17 +864,7 @@ name in which \".\" is substituted with \"/\" is used instead.")
        ("オセアニア" "http://www.asahi.com/international/oceania.html"
 	,@international)
        ("中南米" "http://www.asahi.com/international/samerica.html"
-	,@international)
-       ("鳥インフルエンザ" "http://www.asahi.com/special/051102/"
-	,@(shimbun-asahi-make-regexp "special.051102"))
-       ("地球環境" "http://www.asahi.com/special/070110/"
-	,@(shimbun-asahi-make-regexp "special.070110"))
-       ("中東和平" "http://www.asahi.com/special/MiddleEast/"
-	,@(shimbun-asahi-make-regexp "special.MiddleEast"))
-       ("ＢＳＥ問題" "http://www.asahi.com/special/bse/"
-	,@(shimbun-asahi-make-regexp "special.bse"))
-       ("イラク情勢" "http://www2.asahi.com/special/iraq/"
-	,@(shimbun-asahi-make-regexp "special.iraq")))
+	,@international))
       ("travel"
        ("旅する人のアペリティフ" "http://www.asahi.com/travel/aperitif/"
 	,(format (car travel) "travel/aperitif") ,@(cdr travel))
@@ -968,7 +970,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
     (setq cyear (shimbun-decode-time nil 32400)
 	  cmonth (nth 4 cyear)
 	  cyear (nth 5 cyear)
-	  rss-p (member group '("book.rss" "rss"))
+	  rss-p (member group '("book" "rss"))
 	  paper-p (member group '("editorial" "tenjin"))
 	  travel-p (string-equal group "travel")
 	  subgroups (cdr (assoc group shimbun-asahi-subgroups-alist)))
@@ -1103,7 +1105,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 			     (concat shimbun-asahi-url "paper/"))
 			    (book-p
 			     "http://book.asahi.com/")
-			    ((string-equal group "international.briefing")
+			    ((string-match "船橋洋一の世界ブリーフィング" from)
 			     "http://opendoors.asahi.com/syukan/briefing/")
 			    (iraq-p
 			     "http://www2.asahi.com/")
@@ -1268,7 +1270,7 @@ and tenjin, it tries to fetch the article for that day if it failed."
 				 nil 'move)
 	  (goto-char (match-beginning 0))
 	  (insert "<!-- End of Kiji -->"))))
-     ((string-equal group "international.briefing")
+     ((string-match "船橋洋一の世界ブリーフィング" from)
       (when (re-search-forward "\
 <img[\t\n ]+src=\"[^>]+[\t\n ]+alt=\"船橋洋一顔写真\">"
 			       nil t)
@@ -1366,7 +1368,7 @@ and tenjin, it tries to fetch the article for that day if it failed."
 	  (goto-char (match-beginning 0))
 	  (insert "<!-- End of Kiji -->"))))
      ((string-equal group "rss"))
-     ((string-equal group "world.china")
+     ((string-match "中国特集" from)
       (let (start)
 	(when (and (re-search-forward "\
 <H2>中国最新ニュース</H2>[\t\n ]*<H1>[^>]+</H1>[\t\n ]*"
