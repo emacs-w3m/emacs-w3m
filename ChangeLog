@@ -8,6 +8,7 @@
 	(shimbun-asahi-subgroups-alist): Rearrange international subgroups;
 	add subgroups for job, kansai, life.column, national, politics,
 	shopping and sports groups.
+	(shimbun-asahi-get-headers): Fix Message-ID string for book group.
 	(shimbun-asahi-prepare-article): Follow
 	shimbun-asahi-subgroups-alist change.
 

@@ -1038,10 +1038,12 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 				cyear)))
 		  day (string-to-number (match-string (nth 6 numbers)))
 		  serial (cond (rss-p
-				(format "%d%s.%s"
-					year
-					(match-string (nth 1 numbers))
-					(match-string (nth 2 numbers))))
+				(if (match-beginning (nth 1 numbers))
+				    (format "%d%s.%s"
+					    year
+					    (match-string (nth 1 numbers))
+					    (match-string (nth 2 numbers)))
+				  (match-string (nth 2 numbers))))
 			       (paper-p
 				(format "%d%02d%02d" year month day))
 			       ((and (setq num (nth 1 numbers))
