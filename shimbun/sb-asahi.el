@@ -50,7 +50,7 @@
   "Name of the parent url.")
 
 (defun shimbun-asahi-make-regexp (name)
-  "Return a list of a regexp and numbers for the kansai.NAME group.
+  "Return a list of a regexp and numbers for the group NAME.
 Every `.' in NAME will be replaced with `/'."
   (list (let ((s0 "[\t\n 　]*")
 	      (s1 "[\t\n ]+")
@@ -314,40 +314,11 @@ Every `.' in NAME will be replaced with `/'."
       ("international.world" "世界")
       ("job" "就職・転職" "%s/news/"
        ,@(shimbun-asahi-make-regexp "job.news"))
-      ("job.special" "週刊朝日・ＡＥＲＡから" nil
-       ,(concat
-	 (car default2)
-	 "\\(?:" s0 "<[^>]+>\\)*" s0 "（" s0
-	 ;; 7. extra
-	 "\\(" no-nl "\\)"
-	 "：")
-       ,@(cdr default2) nil 7)
       ("kansai" "関西" "%s/news/" ,@(shimbun-asahi-make-regexp "kansai.news"))
-      ("kansai.beichou" "米朝口まかせ" "kansai/entertainment/beichou/"
-       ,@(shimbun-asahi-make-regexp "kansai.entertainment.beichou"))
-      ("kansai.depa" "デパ地下ＮＥＷＳ" "kansai/taberu/depa/"
-       ,@(shimbun-asahi-make-regexp "kansai.taberu.depa"))
-      ("kansai.fuukei" "新 風景を歩く" "kansai/sumai/fuukei2/"
-       ,@(shimbun-asahi-make-regexp "kansai.sumai.fuukei2"))
-      ("kansai.heibon" "週刊★平凡★女性" "kansai/entertainment/heibon/"
-       ,@(shimbun-asahi-make-regexp "kansai.entertainment.heibon"))
-      ("kansai.honma" "かきくけこどものはひふへほんま？" nil ,@default2)
-      ("kansai.kansaiisan" "勝手に関西世界遺産"
-       "kansai/entertainment/kansaiisan/"
-       ,@(shimbun-asahi-make-regexp "kansai.entertainment.kansaiisan"))
-      ("kansai.madam" "夕刊マダム" nil ,@default2)
-      ("kansai.okan" "母さんの知恵袋" "kansai/sumai/chiebukuro/"
-       ,@(shimbun-asahi-make-regexp "kansai.sumai.chiebukuro"))
-      ("kansai.otoriyose" "わくわくお取り寄せ" "kansai/taberu/otoriyose/"
-       ,@(shimbun-asahi-make-regexp "kansai.taberu.otoriyose"))
-      ("kansai.sakana" "やさしい肴" "kansai/taberu/sakana/"
-       ,@(shimbun-asahi-make-regexp "kansai.taberu.sakana"))
-      ("kansai.sanshi" "三枝の笑ウインドウ" "kansai/entertainment/sanshi/"
-       ,@(shimbun-asahi-make-regexp "kansai.entertainment.sanshi"))
-      ("kansai.sweets" "粋・すいーつ" "kansai/taberu/sweets/"
-       ,@(shimbun-asahi-make-regexp "kansai.taberu.sweets"))
-      ("kansai.umaimon" "うまいもん" "kansai/taberu/umaimon/"
-       ,@(shimbun-asahi-make-regexp "kansai.taberu.umaimon"))
+      ("kansai.entertainment" "楽しむ")
+      ("kansai.kokoro" "こころ")
+      ("kansai.sumai" "住まい")
+      ("kansai.taberu" "食べる")
       ("life" "暮らし" "%s/list.html" ,@default)
       ("life.column" "暮らしコラム" nil
        ,(concat
@@ -768,11 +739,7 @@ name in which \".\" is substituted with \"/\" is used instead.")
        ("ここが知りたい" "http://www.asahi.com/housing/soudan/index_s.html"
 	,@(shimbun-asahi-make-regexp "housing.soudan"))
        ("世界のウチ" "http://www.asahi.com/housing/world/"
-	,@(shimbun-asahi-make-regexp "housing.world"))
-       ("街を恋う" "http://www.asahi.com/kansai/sumai/machi/"
-	,@(shimbun-asahi-make-regexp "kansai.sumai.machi"))
-       ("関西の住まい" "http://www.asahi.com/kansai/sumai/news/"
-	,@(shimbun-asahi-make-regexp "kansai.sumai.news")))
+	,@(shimbun-asahi-make-regexp "housing.world")))
       ("igo"
        ("トピックス" "http://www.asahi.com/igo/topics/"
 	,@(shimbun-asahi-make-regexp "igo.topics")))
@@ -865,6 +832,64 @@ name in which \".\" is substituted with \"/\" is used instead.")
 	,@international)
        ("中南米" "http://www.asahi.com/international/samerica.html"
 	,@international))
+      ("job"
+       ("週刊朝日・ＡＥＲＡから" "http://www.asahi.com/job/special/"
+	,@(let ((def (shimbun-asahi-make-regexp "job.special")))
+	    (cons (concat (car def)
+			  "\\(?:" s0 "<[^>]+>\\)*" s0 "（" s0
+			  ;; 7. extra
+			  "\\(" no-nl "\\)"
+			  "：")
+		  (append (cdr def) '(nil 7))))))
+      ("kansai"
+       ("関西芸能ニュース" "http://www.asahi.com/kansai/entertainment/news/"
+	,@(shimbun-asahi-make-regexp "kansai.entertainment.news"))
+       ("イベント" "http://www.asahi.com/kansai/event/"
+	,@(shimbun-asahi-make-regexp "kansai.event")))
+      ("kansai.entertainment"
+       ("米朝口まかせ" "http://www.asahi.com/kansai/entertainment/beichou/"
+	,@(shimbun-asahi-make-regexp "kansai.entertainment.beichou"))
+       ("勝手に関西世界遺産"
+	"http://www.asahi.com/kansai/entertainment/kansaiisan/"
+	,@(shimbun-asahi-make-regexp "kansai.entertainment.kansaiisan"))
+       ("教えて！関西っ子"
+	"http://www.asahi.com/kansai/entertainment/kansaikko/"
+	,@(shimbun-asahi-make-regexp "kansai.entertainment.kansaikko"))
+       ("三枝の笑ウインドウ"
+	"http://www.asahi.com/kansai/entertainment/sanshi/"
+	,@(shimbun-asahi-make-regexp "kansai.entertainment.sanshi"))
+       ("千客万歳！" "http://www.asahi.com/kansai/entertainment/senkyaku/"
+	,@(shimbun-asahi-make-regexp "kansai.entertainment.senkyaku")))
+      ("kansai.kokoro"
+       ("○○のひみつ" "http://www.asahi.com/kansai/kokoro/himitsu/"
+	,@(shimbun-asahi-make-regexp "kansai.kokoro.himitsu"))
+       ("祈りの美" "http://www.asahi.com/kansai/kokoro/inori/"
+	,@(shimbun-asahi-make-regexp "kansai.kokoro.inori"))
+       ("ピンホールの目" "http://www.asahi.com/kansai/kokoro/pinhole/"
+	,@(shimbun-asahi-make-regexp "kansai.kokoro.pinhole"))
+       ("語りあう" "http://www.asahi.com/kansai/kokoro/taidan/"
+	,@(shimbun-asahi-make-regexp "kansai.kokoro.taidan"))
+       ("とみこうみ" "http://www.asahi.com/kansai/kokoro/tomikoumi/"
+	,@(shimbun-asahi-make-regexp "kansai.kokoro.tomikoumi")))
+      ("kansai.sumai"
+       ("ぷらっと沿線紀行" "http://www.asahi.com/kansai/sumai/ensen/"
+	,@(shimbun-asahi-make-regexp "kansai.sumai.ensen"))
+       ("街を恋う" "http://www.asahi.com/kansai/sumai/machi/"
+	,@(shimbun-asahi-make-regexp "kansai.sumai.machi"))
+       ("関西の住まい" "http://www.asahi.com/kansai/sumai/news/"
+	,@(shimbun-asahi-make-regexp "kansai.sumai.news")))
+      ("kansai.taberu"
+       ("デパ地下ＮＥＷＳ" "http://www.asahi.com/kansai/taberu/depa/"
+	,@(shimbun-asahi-make-regexp "kansai.taberu.depa"))
+       ("季語をいただく" "http://www.asahi.com/kansai/taberu/kigo/"
+	,@(shimbun-asahi-make-regexp "kansai.taberu.kigo"))
+       ("まんぷく会のランチタイム"
+	"http://www.asahi.com/kansai/taberu/manpuku/"
+	,@(shimbun-asahi-make-regexp "kansai.taberu.manpuku"))
+       ("パーンとスイーツ" "http://www.asahi.com/kansai/taberu/pan_sweets/"
+	,@(shimbun-asahi-make-regexp "kansai.taberu.pan_sweets"))
+       ("やさしい肴" "http://www.asahi.com/kansai/taberu/sakana/"
+	,@(shimbun-asahi-make-regexp "kansai.taberu.sakana")))
       ("travel"
        ("旅する人のアペリティフ" "http://www.asahi.com/travel/aperitif/"
 	,(format (car travel) "travel/aperitif") ,@(cdr travel))
@@ -1034,7 +1059,9 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 						(split-string group "\\.")))
 				    ".")
 		  id (if (and extra
-			      (not (member group '("job.special"))))
+			      (not (save-match-data
+				     (string-match "週刊朝日・ＡＥＲＡから"
+						   from))))
 			 (concat "<" serial "%" extra "." rgroup "."
 				 shimbun-asahi-top-level-domain ">")
 		       (concat "<" serial "%" rgroup "."
