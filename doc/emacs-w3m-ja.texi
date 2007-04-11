@@ -4646,11 +4646,8 @@ asahi.culture asahi.digital asahi.editorial asahi.edu asahi.english
 asahi.food asahi.health asahi.housing asahi.igo asahi.international
 asahi.international.asia asahi.international.column
 asahi.international.special asahi.international.world asahi.job
-asahi.job.special asahi.kansai asahi.kansai.beichou asahi.kansai.depa
-asahi.kansai.fuukei asahi.kansai.heibon asahi.kansai.honma
-asahi.kansai.kansaiisan asahi.kansai.madam asahi.kansai.okan
-asahi.kansai.otoriyose asahi.kansai.sakana asahi.kansai.sanshi
-asahi.kansai.sweets asahi.kansai.umaimon asahi.life asahi.life.column
+asahi.kansai asahi.kansai.entertainment asahi.kansai.kokoro
+asahi.kansai.sumai asahi.kansai.taberu asahi.life asahi.life.column
 asahi.national asahi.national.calamity asahi.national.etc
 asahi.national.incident asahi.national.trial asahi.obituaries
 asahi.politics asahi.politics.government asahi.politics.local asahi.rss
