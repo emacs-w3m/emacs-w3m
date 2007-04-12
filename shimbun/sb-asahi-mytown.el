@@ -1,6 +1,6 @@
 ;;; sb-asahi-mytown.el --- mytown.asahi.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003, 2004, 2005, 2006 Katsumi Yamaoka
+;; Copyright (C) 2003, 2004, 2005, 2006, 2007 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -79,8 +79,7 @@
     ("oita" "大分" "4500000")
     ("miyazaki" "宮崎" "4600000")
     ("kagoshima" "鹿児島" "4700000")
-    ("okinawa" "沖縄" "4800000")
-    ("usa" "ＵＳＡ" "4900000"))
+    ("okinawa" "沖縄" "4800000"))
   "Alist of group names, their Japanese translations and ids.")
 
 (defvar shimbun-asahi-mytown-server-name "朝日新聞")
