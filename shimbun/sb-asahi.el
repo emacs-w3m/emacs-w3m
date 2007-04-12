@@ -899,8 +899,6 @@ name in which \".\" is substituted with \"/\" is used instead.")
 	,(format (car travel) "travel/aperitif") ,@(cdr travel))
        ("ぽれぽれサファリ" "http://www.asahi.com/travel/porepore/"
 	,@(shimbun-asahi-make-regexp "travel.porepore"))
-       ("スパイシー！ソウル" "http://www.asahi.com/travel/seoul/"
-	,@(shimbun-asahi-make-regexp "travel.seoul"))
        ("島旅たび" "http://www.asahi.com/travel/shima/"
 	,(format (car travel) "travel/shima") ,@(cdr travel))
        ("週刊シルクロード紀行" "http://www.asahi.com/travel/silkroad/"
