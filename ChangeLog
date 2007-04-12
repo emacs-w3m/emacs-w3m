@@ -1,5 +1,8 @@
 2007-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/sb-asahi-mytown.el (shimbun-asahi-mytown-group-table):
+	Remove usa group.
+
 	* shimbun/sb-asahi.el (shimbun-asahi-subgroups-alist): Remove
 	seoul subgroup.
 

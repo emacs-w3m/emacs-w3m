@@ -4668,9 +4668,9 @@ asahi.sports.usa asahi.sports.winter asahi.tenjin asahi.travel
 て下さい。
 
 @item @uref{http://mytown.asahi.com/, 朝日新聞}
-asahi-mytown.(hokkaido@dots{}okinawa) asahi-mytown.usa
+asahi-mytown.(hokkaido@dots{}okinawa)
 
-米国と日本の全都道府県を網羅する朝日新聞の地方版です。
+日本の全都道府県を網羅する朝日新聞の地方版です。
 
 @item @uref{http://www.mainichi-msn.co.jp/, 毎日新聞}
 mainichi.entertainment mainichi.entertainment.car

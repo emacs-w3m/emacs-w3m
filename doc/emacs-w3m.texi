@@ -4612,10 +4612,10 @@ generate HTML articles.  In order to use it, specify
 name for example.
 
 @item @uref{http://mytown.asahi.com/, Asahi Shimbun}
-asahi-mytown.(hokkaido@dots{}okinawa) asahi-mytown.usa
+asahi-mytown.(hokkaido@dots{}okinawa)
 
-The Asahi Shimbun local-news sections including US and all the
-prefectures of Japan.
+The Asahi Shimbun local-news sections including all the prefectures of
+Japan.
 
 @item @uref{http://www.mainichi-msn.co.jp/, MSN-Mainichi INTERACTIVE}
 mainichi.entertainment mainichi.entertainment.car
