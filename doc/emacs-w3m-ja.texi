@@ -4763,9 +4763,9 @@ sponichi.baseball sponichi.soccer sponichi.usa sponichi.others
 sponichi.society sponichi.entertainment sponichi.horseracing
 
 @item @uref{http://www.yomiuri.co.jp/, 讀売新聞}
-yomiuri.atmoney yomiuri.entertainment yomiuri.editorial yomiuri.kyoiku
-yomiuri.national yomiuri.obit yomiuri.politics yomiuri.science
-yomiuri.sports yomiuri.world
+yomiuri.atmoney yomiuri.editorial yomiuri.entertainment yomiuri.iryou
+yomiuri.kyoiku yomiuri.national yomiuri.obit yomiuri.politics
+yomiuri.science yomiuri.sports yomiuri.world
 
 これらのグループは、デフォルトでテキストだけの記事を作ります。それらに、
 テキストだけでなく写真をも含む HTML の記事を生成させたいならば、以下の行

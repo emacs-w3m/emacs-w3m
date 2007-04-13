@@ -4,8 +4,17 @@
 	special treatment for zenkaku symbols.
 
 	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Update
-	regexp for editorial group.
+	regexp for editorial group; add iryou group.
 	(shimbun-yomiuri-get-headers): Follow editorial group change.
+	(shimbun-yomiuri-subgroups-alist): New variable.
+	(shimbun-yomiuri-content-start, shimbun-yomiuri-content-end)
+	(shimbun-yomiuri-text-content-start): Update.
+	(shimbun-index-url): Default to about:blank.
+	(shimbun-yomiuri-get-top-header): Ignore headers having already
+	been fetched.
+	(shimbun-yomiuri-get-headers): Also fetch headers for subgroups.
+	(shimbun-yomiuri-prepare-article): Remove garbage for
+	entertainment group.
 
 2007-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
