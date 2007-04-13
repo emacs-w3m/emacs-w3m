@@ -1,5 +1,8 @@
 2007-04-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun/shimbun.el (shimbun-japanese-hankaku-region): Add a
+	special treatment for zenkaku symbols.
+
 	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Update
 	regexp for editorial group.
 	(shimbun-yomiuri-get-headers): Follow editorial group change.

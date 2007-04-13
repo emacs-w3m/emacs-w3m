@@ -1364,9 +1364,16 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
       (unless (looking-at "[ 　]\\|&nbsp;")
 	(insert " ")))
     (goto-char start)
-    ;; Ｉ’ｍ -> Ｉ'ｍ
-    (while (re-search-forward "\\(\\cA\\)’\\(\\cA\\)" nil t)
-      (replace-match "\\1'\\2"))
+    ;; Ｚ＠Ｚ -> Ｚ@Ｚ
+    ;; where Ｚ is a zenkaku alphanumeric, ＠ is a zenkaku symbol.
+    (while (re-search-forward "\\cA[．´｀＾＿―‐／＼｜’＠]\\cA" nil t)
+      (backward-char 2)
+      (insert (prog1
+		  (cdr (assq (char-after) '((?． . ?.) (?´ . ?') (?｀ . ?`)
+					    (?＾ . ?^) (?＿ . ?_) (?― . ?-)
+					    (?‐ . ?-) (?／ . ?/) (?＼ . ?\\)
+					    (?｜ . ?|) (?’ . ?') (?＠ . ?@))))
+		(delete-char 1))))
     (goto-char start)
     (while (re-search-forward
 	    "[^　、。，．＿ー―‐〜‘’“”（）［］｛｝〈〉＝′″￥]+"
