@@ -1,3 +1,9 @@
+2007-04-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Update
+	regexp for editorial group.
+	(shimbun-yomiuri-get-headers): Follow editorial group change.
+
 2007-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-asahi-mytown.el (shimbun-asahi-mytown-group-table):

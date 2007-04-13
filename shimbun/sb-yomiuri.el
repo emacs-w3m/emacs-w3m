@@ -1,6 +1,6 @@
 ;;; sb-yomiuri.el --- shimbun backend for www.yomiuri.co.jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006 Authors
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007 Authors
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -90,16 +90,18 @@
 		"\\([^.]+\\)"
 		"[^\"]+\\)"
 		"\"[^>]*>" s0
-		;; 5. ja month
-		"\\([０１]?[０-９]\\)"
+		;; 5. month
+		;; 6. ja month
+		"\\(?:\\([01]?[0-9]\\)\\|\\([０１]?[０-９]\\)\\)"
 		"月"
-		;; 6. ja day
-		"\\([０-３]?[０-９]\\)"
-		"日付・"
-		;; 7. subject
+		;; 7. day
+		;; 8. ja day
+		"\\(?:\\([0-3]?[0-9]\\)\\|\\([０-３]?[０-９]\\)\\)"
+		"日付[\t\n 　・]*"
+		;; 9. subject
 		"\\([^<]+\\)"
 		s0)
-       1 2 4 3 7 nil nil nil 5 6)
+       1 2 4 3 9 5 7 nil 6 8)
       ("entertainment" "エンターテインメント" "news/" ,@default) ;; culture
       ("kyoiku" "教育" ""
        ,(concat "<a" s1 "href=\"/"
@@ -331,11 +333,11 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 	  regexp (format (nth 3 regexp) (regexp-quote group)))
     (while (re-search-forward regexp nil t)
       (setq subject (match-string (nth 4 numbers))
-	    month (if (nth 8 numbers)
+	    month (if (and (nth 8 numbers) (match-beginning (nth 8 numbers)))
 		      (shimbun-yomiuri-japanese-string-to-number
 		       (match-string (nth 8 numbers)))
 		    (string-to-number (match-string (nth 5 numbers))))
-	    day (if (nth 9 numbers)
+	    day (if (and (nth 9 numbers) (match-beginning (nth 9 numbers)))
 		    (shimbun-yomiuri-japanese-string-to-number
 		     (match-string (nth 9 numbers)))
 		  (string-to-number (match-string (nth 6 numbers))))
