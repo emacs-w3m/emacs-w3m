@@ -1004,7 +1004,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
     (shimbun-strip-cr)
     (goto-char (point-min))
     (catch 'stop
-      ;; The loop for fetching all the articles in the whitemail group.
+      ;; The loop for fetching all the articles in the subgroups.
       (while t
 	(when regexp
 	  (while (re-search-forward regexp nil t)
