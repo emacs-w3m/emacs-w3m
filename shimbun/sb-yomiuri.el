@@ -76,7 +76,7 @@
 	     ;; 8. hour:minute
 	     "\\([012][0-9]:[0-5][0-9]\\)")
 	    1 2 4 3 5 6 7 8)))
-    `(("atmoney" "マネー・経済" "news/" ,@default) ;; business
+    `(("atmoney" "マネー・経済")
       ("editorial" "社説・コラム" ""
        ,(concat "<a" s1 "href=\"/"
 		;; 1. url
@@ -102,7 +102,34 @@
 		"\\([^<]+\\)"
 		s0)
        1 2 4 3 9 5 7 nil 6 8)
-      ("entertainment" "エンターテインメント" "news/" ,@default) ;; culture
+      ("entertainment" "エンターテインメント")
+      ("iryou" "医療と介護" "news/"
+       ,(concat ">" s0
+		;; 1. ja genre
+		"\\(\\cj+\\)"
+		"[^<]*</a>[^<]*<a" s1 "href=\"/"
+		;; 2. url
+		"\\(%s/news/"
+		;; 3. genre
+		"\\([^_]+\\)"
+		"_news/"
+		;; 4. serial number[1]
+		"\\("
+		;; 5. year
+		"\\(20[0-9][0-9]\\)"
+		;; 6. month
+		"\\([01][0-9]\\)"
+		;; 7. day
+		"\\([0-3][0-9]\\)"
+		"\\)"
+		;; 8. serial number[2]
+		"\\([^.]+\\)"
+		"[^\"]+\\)"
+		"\"[^>]*>" s0
+		;; 9. subject
+		"\\([^<]+\\)"
+		s0)
+       2 4 8 5 9 6 7 nil nil nil 3 1)
       ("kyoiku" "教育" ""
        ,(concat "<a" s1 "href=\"/"
 		;; 1. url
@@ -157,7 +184,7 @@
 	 "<a" s1 "href=\"/"
 	 ;; 1. url
 	 "\\(%s/"
-	 ;; 2. subgroup
+	 ;; 2. genre
 	 "\\([^/]+\\)"
 	 "/news/"
 	 ;; 3. serial number[1]
@@ -187,18 +214,211 @@ regexps and numbers.
 Regexp may contain the \"%s\" token which is replaced with a
 regexp-quoted group name.  Numbers point to the search result in order
 of [0]url, [1,2]serial numbers, [3]year, [4]subject, [5]month, [6]day,
-\[7]hour:minute, [8]ja month, [9]ja day and [10]subgroup.")
+\[7]hour:minute, [8]ja month, [9]ja day, [10]genre and [11]ja genre.")
+
+(defvar shimbun-yomiuri-subgroups-alist
+  (let* ((s0 "[\t\n 　]*")
+	 (s1 "[\t\n ]+")
+	 (default
+	   (list
+	    (concat
+	     "<a" s1 "href=\"/"
+	     ;; 1. url
+	     "\\(%s/"
+	     ;; 2. serial number[1]
+	     "\\("
+	     ;; 3. year
+	     "\\(20[0-9][0-9]\\)"
+	     "[01][0-9][0-3][0-9]\\)"
+	     ;; 4. serial number[2]
+	     "\\([^.]+\\)"
+	     "[^\"]+\\)"
+	     "\"[^>]*>" s0
+	     ;; 5. subject
+	     "\\([^<]+\\)"
+	     s0 "</a>[^<（]*（" s0
+	     ;; 6. month
+	     "\\([01]?[0-9]\\)"
+	     s0 "月" s0
+	     ;; 7. day
+	     "\\([0-3]?[0-9]\\)"
+	     s0 "日\\(?:" s0
+	     ;; 8. hour:minute
+	     "\\([012][0-9]:[0-5][0-9]\\)\\)?")
+	    1 2 4 3 5 6 7 8))
+	 (default2
+	   (list
+	    (concat
+	     "<a" s1 "href=\"/"
+	     ;; 1. url
+	     "\\(%s/"
+	     ;; 2. serial number[1]
+	     "\\("
+	     ;; 3. year
+	     "\\(20[0-9][0-9]\\)"
+	     ;; 4. month
+	     "\\([01][0-9]\\)"
+	     ;; 5. day
+	     "\\([0-3][0-9]\\)"
+	     "\\)"
+	     ;; 6. serial number[2]
+	     "\\([^.]+\\)"
+	     "[^\"]+\\)"
+	     "\"[^>]*>" s0
+	     ;; 7. subject
+	     "\\([^<]+\\)"
+	     s0)
+	    1 2 6 3 7 4 5))
+	 (default3
+	   (list
+	    (concat
+	     "<a" s1 "href=\"/"
+	     ;; 1. url
+	     "\\(%s/"
+	     ;; 2. genre
+	     "\\([^/]+\\)"
+	     "/"
+	     ;; 3. serial number[1]
+	     "\\("
+	     ;; 4. year
+	     "\\(20[0-9][0-9]\\)"
+	     ;; 5. month
+	     "\\([01][0-9]\\)"
+	     ;; 6. day
+	     "\\([0-3][0-9]\\)"
+	     "\\)"
+	     ;; 7. serial number[2]
+	     "\\([^.]+\\)"
+	     "[^\"]+\\)"
+	     "\"[^>]*>" s0
+	     ;; 8. subject
+	     "\\([^<]+\\)"
+	     s0)
+	    1 3 7 4 8 5 6 nil nil nil 2))
+	 (entertainment
+	  (list
+	   (concat
+	    "alt=\""
+	    ;; 1. ja genre
+	    "\\([^\"]+\\)"
+	    "\"[^>]+>" s0 "</a>\\(?:" s0 "</[^>]+>\\)?[^<]*<a" s1 "href=\"/"
+	    ;; 2. url
+	    "\\(entertainment/%s/"
+	    ;; 3. genre
+	    "\\([^/]+\\)"
+	    "/"
+	    ;; 4. serial number[1]
+	    "\\("
+	    ;; 5. year
+	    "\\(20[0-9][0-9]\\)"
+	    "[01][0-9][0-3][0-9]\\)"
+	    ;; 6. serial number[2]
+	    "\\([^.]+\\)"
+	    "[^\"]+\\)"
+	    "\"[^>]*>" s0
+	    ;; 7. subject
+	    "\\([^<]+\\)"
+	    s0 "</a>[^<（]*（" s0
+	    ;; 8. month
+	    "\\([01]?[0-9]\\)"
+	    s0 "月" s0
+	    ;; 9. day
+	    "\\([0-3]?[0-9]\\)"
+	    s0 "日")
+	   2 4 6 5 7 8 9 nil nil nil 3 1)))
+    `(("atmoney"
+       ("宝くじ" "lottery" "http://www.yomiuri.co.jp/atmoney/lottery/"
+	,(format (car default2) "atmoney/lottery") ,@(cdr default2))
+       ("金融ニュース" "mnews" "http://www.yomiuri.co.jp/atmoney/mnews/"
+	,(format (car default) "atmoney/mnews") ,@(cdr default))
+       ("経済ニュース" "news" "http://www.yomiuri.co.jp/atmoney/news/"
+	,(format (car default) "atmoney/news") ,@(cdr default))
+       ("新製品情報" "pnews" "http://www.yomiuri.co.jp/atmoney/pnews/"
+	,(format (car default) "atmoney/pnews") ,@(cdr default)))
+      ("entertainment"
+       ("映画" nil "http://www.yomiuri.co.jp/entertainment/cinema/"
+	,(format (car entertainment) "cinema") ,@(cdr entertainment))
+       ("ｄｏｎｎａ" "donna" "http://www.yomiuri.co.jp/donna/"
+	,(concat
+	  "<a" s1 "href=\"/"
+	  ;; 1. url
+	  "\\(donna/"
+	  ;; 2. serial number[1]
+	  "\\(do\\)"
+	  "_"
+	  ;; 3. serial number[2]
+	  "\\("
+	  ;; 4. year
+	  "\\([0-9][0-9]\\)"
+	  ;; 5. month
+	  "\\([01][0-9]\\)"
+	  ;; 6. day
+	  "\\([0-3][0-9]\\)"
+	  "\\)"
+	  "[^\"]+\\)"
+	  "[^>]*>" s0
+	  ;; 7. subject
+	  "\\([^<]+\\)")
+	1 2 3 4 7 5 6)
+       ("DVD情報" "dvd" "http://www.yomiuri.co.jp/entertainment/cinema/dvd/"
+	,(format (car default) "entertainment/cinema/dvd") ,@(cdr default))
+       ("ジブリをいっぱい" "ghibli"
+	"http://www.yomiuri.co.jp/entertainment/ghibli/"
+	,(concat
+	  "<a" s1 "href=\""
+	  ;; 1. url
+	  "\\(cnt_"
+	  ;; 2. genre
+	  "\\([^_]+\\)"
+	  "_"
+	  ;; 3. serial number[1]
+	  "\\(20[0-9][0-9][01][0-9][0-3][0-9]\\)"
+	  ;; 4. serial number[2]
+	  "\\([^.]+\\)"
+	  "[^\"]+\\)"
+	  "[^>]*>" s0
+	  ;; 5. subject
+	  "\\([^<]+\\)"
+	  "</a>" s0 "（"
+	  ;; 6. year
+	  "\\(20[0-9][0-9]\\)" "年"
+	  ;; 7. month
+	  "\\([01]?[0-9]\\)" "月"
+	  ;; 8. day
+	  "\\([0-3]?[0-9]\\)" "日")
+	1 3 4 6 5 7 8 nil nil nil 2)
+       ("ヘザーの映画館" "heather"
+	"http://www.yomiuri.co.jp/entertainment/heather/"
+	,(format (car entertainment) "heather") ,@(cdr entertainment))
+       ("音楽" "music" "http://www.yomiuri.co.jp/entertainment/music/"
+	,(format (car default3) "entertainment/music") ,@(cdr default3))
+       ("ニュース" "news" "http://www.yomiuri.co.jp/entertainment/news/"
+	,(format (car default) "entertainment/news") ,@(cdr default))
+       ("舞台" "stage" "http://www.yomiuri.co.jp/entertainment/stage/"
+	,(format (car entertainment) "stage") ,@(cdr entertainment))
+       ("ＴＶ" "tv" "http://www.yomiuri.co.jp/entertainment/tv/"
+	,(format (car default) "entertainment/tv") ,@(cdr default))
+       ("Ｙ＆Ｙテレビ" "yy" "http://www.yomiuri.co.jp/entertainment/yy/"
+	,(format (car default3) "entertainment/yy") ,@(cdr default3)))))
+  "Alist of parent groups and lists of subgenres and tables for subgroups.
+Each table is the same as the `cdr' of the element of
+`shimbun-yomiuri-group-table'.")
 
 (defvar shimbun-yomiuri-content-start
-  "\n<!--// article_start //-->\n\
+  "\n<!--// contents_area_start //-->\n\
+\\|\n<!--// article_start //-->\n\
 \\|\n<!-- ▼写真テーブル▼ -->\n\
 \\|\n<!--  honbun start  -->\n")
 
 (defvar shimbun-yomiuri-content-end
-  "\n<!--// article_end //-->\n\\|\n<!--  honbun end  -->\n")
+  "\n<!--// contents_area_end //-->\n\
+\\|\n<!--// article_end //-->\n\
+\\|\n<!--  honbun end  -->\n")
 
 (defvar shimbun-yomiuri-text-content-start
-  "\n<!--// article_start //-->\n\\|\n<!--  honbun start  -->\n")
+  "\n<!--// contents_area_start //-->\n\
+\\|\n<!--// article_start //-->\n\
+\\|\n<!--  honbun start  -->\n")
 
 (defvar shimbun-yomiuri-text-content-end shimbun-yomiuri-content-end)
 
@@ -232,9 +452,12 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 (luna-define-method shimbun-index-url ((shimbun shimbun-yomiuri))
   (let* ((group (shimbun-current-group-internal shimbun))
 	 (index (nth 2 (assoc group shimbun-yomiuri-group-table))))
-    (if (string-match "\\`http:" index)
-	index
-      (concat shimbun-yomiuri-url group "/" index))))
+    (cond ((not index)
+	   "about:blank")
+	  ((string-match "\\`http:" index)
+	   index)
+	  (t
+	   (concat shimbun-yomiuri-url group "/" index)))))
 
 (defun shimbun-yomiuri-japanese-string-to-number (string)
   "Convert a Japanese zenkaku number to just a number."
@@ -248,7 +471,7 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 	    idx (1+ idx)))
     num))
 
-(defun shimbun-yomiuri-get-top-header (group from)
+(defun shimbun-yomiuri-get-top-header (group from shimbun)
   "Return a list of a header for the top news."
   (when (and (search-forward "<!--// top_news_start -->" nil t)
 	     (re-search-forward
@@ -260,7 +483,7 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 		    "<a" s1 "href=\"/"
 		    ;; 1. url
 		    "\\(%s/"
-		    ;; 2. subgroup
+		    ;; 2. genre
 		    "\\(?:\\([^/]+\\)/\\)?"
 		    "news/"
 		    ;; 3. serial number[1]
@@ -278,99 +501,132 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 	       group)
 	      nil t))
     (let* ((url (shimbun-expand-url (match-string 1) shimbun-yomiuri-url))
-	   (subgroup (match-string 2))
+	   (genre (match-string 2))
 	   (id (concat "<" (match-string 3) "." (match-string 5)
-		       "%" (when subgroup
-			     (concat subgroup "."))
+		       "%" (when genre
+			     (concat genre "."))
 		       group "." shimbun-yomiuri-top-level-domain ">"))
-	   (year (string-to-number (match-string 4)))
-	   (subject (if subgroup
-			(concat "[" subgroup "] " (match-string 6))
-		      (match-string 6))))
+	   year subject)
       (prog1
-	  (when (re-search-forward
-		 (eval-when-compile
-		   (let ((s0 "[\t\n ]*"))
-		     (concat
-		      ">" s0 "（" s0
-		      ;; 1. month
-		      "\\([01]?[0-9]\\)"
-		      s0 "月" s0
-		      ;; 2. day
-		      "\\([0-3][0-9]\\)"
-		      s0 "日" s0
-		      ;; 3. hour:minute
-		      "\\([012][0-9]:[0-5][0-9]\\)"
-		      s0 "）" s0 "<")))
-		 nil t)
-	    (list (shimbun-create-header
-		   0
-		   subject
-		   from
-		   (shimbun-make-date-string
-		    year
-		    (string-to-number (match-string 1))
-		    (string-to-number (match-string 2))
-		    (match-string 3))
-		   id "" 0 0 url)))
+	  (unless (shimbun-search-id shimbun id)
+	    (setq year (string-to-number (match-string 4))
+		  subject (match-string 6))
+	    (when (re-search-forward
+		   (eval-when-compile
+		     (let ((s0 "[\t\n ]*"))
+		       (concat
+			">" s0 "（" s0
+			;; 1. month
+			"\\([01]?[0-9]\\)"
+			s0 "月" s0
+			;; 2. day
+			"\\([0-3][0-9]\\)"
+			s0 "日" s0
+			;; 3. hour:minute
+			"\\([012][0-9]:[0-5][0-9]\\)"
+			s0 "）" s0 "<")))
+		   nil t)
+	      (list (shimbun-create-header
+		     0
+		     subject
+		     from
+		     (shimbun-make-date-string
+		      year
+		      (string-to-number (match-string 1))
+		      (string-to-number (match-string 2))
+		      (match-string 3))
+		     id "" 0 0 url))))
 	(search-forward "<!--// top_news_end //-->" nil t)))))
 
 (defun shimbun-yomiuri-get-headers (shimbun)
   "Return a list of headers."
-  (shimbun-strip-cr)
-  (goto-char (point-min))
-  (let ((group (shimbun-current-group-internal shimbun))
-	(from (concat (shimbun-server-name shimbun)
-		      " (" (shimbun-current-group-name shimbun) ")"))
-	(case-fold-search t)
-	headers regexp numbers subject month day subgroup)
-    ;; Extract top news.
-    (when (member group '("atmoney" "entertainment" "national" "politics"
-			  "science" "sports" "world"))
-      (setq headers (shimbun-yomiuri-get-top-header group from)))
-    (setq regexp (assoc group shimbun-yomiuri-group-table)
-	  numbers (nthcdr 4 regexp)
-	  regexp (format (nth 3 regexp) (regexp-quote group)))
-    (while (re-search-forward regexp nil t)
-      (setq subject (match-string (nth 4 numbers))
-	    month (if (and (nth 8 numbers) (match-beginning (nth 8 numbers)))
-		      (shimbun-yomiuri-japanese-string-to-number
-		       (match-string (nth 8 numbers)))
-		    (string-to-number (match-string (nth 5 numbers))))
-	    day (if (and (nth 9 numbers) (match-beginning (nth 9 numbers)))
-		    (shimbun-yomiuri-japanese-string-to-number
-		     (match-string (nth 9 numbers)))
-		  (string-to-number (match-string (nth 6 numbers))))
-	    subgroup (when (nth 10 numbers)
-		       (match-string (nth 10 numbers))))
-      (cond ((string-equal group "editorial")
-	     (setq subject
-		   (format
-		    "%02d/%02d %s"
-		    month day
-		    (save-match-data
-		      (if (string-match "\\`［\\(.+\\)］「\\(.+\\)」\\'"
-					subject)
-			  (replace-match "\\1: \\2" nil nil subject)
-			subject)))))
-	    (subgroup
-	     (setq subject (concat "[" subgroup "] " subject))))
-      (push (shimbun-create-header
-	     0 subject from
-	     (shimbun-make-date-string
-	      (string-to-number (match-string (nth 3 numbers)))
-	      month day
-	      (when (nth 7 numbers)
-		(match-string (nth 7 numbers))))
-	     (concat "<" (match-string (nth 1 numbers))
-		     "." (match-string (nth 2 numbers))
-		     "%" (when subgroup
-			   (concat subgroup "."))
-		     group "." shimbun-yomiuri-top-level-domain ">")
-	     "" 0 0
-	     (shimbun-expand-url (match-string (nth 0 numbers))
-				 shimbun-yomiuri-url))
-	    headers))
+  (let* ((group (shimbun-current-group-internal shimbun))
+	 (from (concat (shimbun-server-name shimbun)
+		       " (" (shimbun-current-group-name shimbun) ")"))
+	 (case-fold-search t)
+	 (regexp (assoc group shimbun-yomiuri-group-table))
+	 (subgroups (cdr (assoc group shimbun-yomiuri-subgroups-alist)))
+	 numbers headers subject month day genre subgenre jgenre id year
+	 subgrp)
+    (setq regexp
+	  (when (setq numbers (nthcdr 4 regexp))
+	    (format (nth 3 regexp) (regexp-quote group))))
+    (catch 'stop
+      ;; The loop for fetching all the articles in the subgroups.
+      (while t
+	(shimbun-strip-cr)
+	(goto-char (point-min))
+	;; Extract top news.
+	(when (member group '("atmoney" "entertainment" "national" "politics"
+			      "science" "sports" "world"))
+	  (setq headers
+		(nconc headers
+		       (shimbun-yomiuri-get-top-header group from shimbun))))
+	(when regexp
+	  (while (re-search-forward regexp nil t)
+	    (setq subject (match-string (nth 4 numbers))
+		  month (if (and (nth 8 numbers)
+				 (match-beginning (nth 8 numbers)))
+			    (shimbun-yomiuri-japanese-string-to-number
+			     (match-string (nth 8 numbers)))
+			  (string-to-number (match-string (nth 5 numbers))))
+		  day (if (and (nth 9 numbers)
+			       (match-beginning (nth 9 numbers)))
+			  (shimbun-yomiuri-japanese-string-to-number
+			   (match-string (nth 9 numbers)))
+			(string-to-number (match-string (nth 6 numbers))))
+		  genre (or subgenre
+			    (when (nth 10 numbers)
+			      (match-string (nth 10 numbers))))
+		  jgenre (when (nth 11 numbers)
+			   (match-string (nth 11 numbers))))
+	    (cond ((string-equal group "editorial")
+		   (setq subject
+			 (format
+			  "%02d/%02d %s"
+			  month day
+			  (save-match-data
+			    (if (string-match "\\`［\\(.+\\)］「\\(.+\\)」\\'"
+					      subject)
+				(replace-match "\\1: \\2" nil nil subject)
+			      subject)))))
+		  (jgenre
+		   (setq subject (concat "[" jgenre "] " subject))))
+	    (setq id (concat "<" (match-string (nth 1 numbers))
+			     "." (match-string (nth 2 numbers))
+			     "%" (when genre
+				   (concat genre "."))
+			     group "." shimbun-yomiuri-top-level-domain ">"))
+	    (unless (shimbun-search-id shimbun id)
+	      (when (< (setq year (string-to-number
+				   (match-string (nth 3 numbers))))
+		       100)
+		(setq year (+ year 2000)))
+	      (push (shimbun-create-header
+		     0 subject from
+		     (shimbun-make-date-string
+		      year month day
+		      (when (and (nth 7 numbers)
+				 (match-beginning (nth 7 numbers)))
+			(match-string (nth 7 numbers))))
+		     id "" 0 0
+		     (shimbun-expand-url
+		      (match-string (nth 0 numbers))
+		      (if (string-match "ジブリをいっぱい" from)
+			  "http://www.yomiuri.co.jp/entertainment/ghibli/"
+			shimbun-yomiuri-url)))
+		    headers))))
+	(if subgroups
+	    (progn
+	      (erase-buffer)
+	      (setq subgrp (pop subgroups)
+		    from (concat (shimbun-server-name shimbun)
+				 " (" (car subgrp) ")")
+		    subgenre (cadr subgrp))
+	      (shimbun-retrieve-url (caddr subgrp))
+	      (setq regexp (cadddr subgrp)
+		    numbers (cddddr subgrp)))
+	  (throw 'stop nil))))
     (shimbun-sort-headers headers)))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-yomiuri)
@@ -453,13 +709,23 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 	   nil t)
      (delete-region (match-beginning 1) (match-end 1)))
    (goto-char (point-min))
-   ;; Break continuous lines in editorial articles.
-   (when (and (string-equal "editorial"
-			    (shimbun-current-group-internal shimbun))
-	      (string-match " \\(?:よみうり寸評\\|編集手帳\\)\\'"
-			    (shimbun-header-subject header 'no-encode)))
-     (while (search-forward "◆" nil t)
-       (replace-match "。<br><br>\n　")))))
+   (let ((group (shimbun-current-group-internal shimbun)))
+     (cond ((string-equal group "editorial")
+	    ;; Break continuous lines.
+	    (when (string-match " \\(?:よみうり寸評\\|編集手帳\\)\\'"
+				(shimbun-header-subject header 'no-encode))
+	      (while (search-forward "◆" nil t)
+		(replace-match "。<br><br>\n　"))))
+	   ((string-equal group "entertainment")
+	    ;; Remove trailing garbage.
+	    (when (re-search-forward "[\t\n ]*\
+<!-+<p[\t\n ]+class=\"align-c\">◇+</p>-+>[\t\n ]*"
+				     nil t)
+	      (delete-region (match-beginning 0) (match-end 0)))
+	    ;; Remove nav and track-back button, etc.
+	    (shimbun-remove-tags
+	     "[\t\n ]*<div[\t\n ]+class=\"\\(?:cl\\|nav-bn\\|track-back\\)\">"
+	     "</div>[\t\n ]*"))))))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-yomiuri)
 						   header)
