@@ -5433,13 +5433,26 @@ palmfan.news
 dennou.report
 
 @item @uref{http://pcweb.mycom.co.jp/column/, PCWEB COLUMN Square}
-pcweb-column.architecture pcweb-column.asia pcweb-column.benri
-pcweb-column.bytes pcweb-column.ebook pcweb-column.game
-pcweb-column.hitech pcweb-column.itshihonron pcweb-column.java
-pcweb-column.jisakuparts pcweb-column.kaden pcweb-column.nihongoprog
-pcweb-column.objc pcweb-column.osx pcweb-column.rikei
-pcweb-column.scramble pcweb-column.sopinion pcweb-column.svalley
-pcweb-column.toolexp pcweb-column.winxp pcweb-column.yetanother
+pcweb-column.jsr pcweb-column.yume pcweb-column.hreceipe
+pcweb-column.kita pcweb-column.shonanlife pcweb-column.kaden
+pcweb-column.nemurenai pcweb-column.komono pcweb-column.js
+pcweb-column.en pcweb-column.motherboard pcweb-column.svalley
+pcweb-column.architecture pcweb-column.motorlife
+pcweb-column.nihongoprog pcweb-column.objc pcweb-column.ide
+pcweb-column.music pcweb-column.itsecurity pcweb-column.soundvisual
+pcweb-column.osx pcweb-column.sopinion pcweb-column.ebook
+pcweb-column.orerobo pcweb-column.zsh pcweb-column.rikei
+pcweb-column.lifehack pcweb-column.world pcweb-column.guutara
+pcweb-column.volt pcweb-column.textclean pcweb-column.person
+pcweb-column.web20 pcweb-column.system
+
+below items are also available for the backward compatibility.
+pcweb-column.itshihonron pcweb-column.yetanother pcweb-column.asia
+pcweb-column.benri pcweb-column.bytes pcweb-column.game
+pcweb-column.hitech pcweb-column.java pcweb-column.jisakuparts
+pcweb-column.scramble pcweb-column.toolexp pcweb-column.winvista
+pcweb-column.winxp pcweb-column.interview pcweb-column.ityougo
+pcweb-column.kimeuchi pcweb-column.stratesys pcweb-column.toyagain
 
 @item @uref{http://tsuruo.dominohosting.biz/members/tsuruo/, Notes Exhibition}
 lotusex.news lotusex.library lotusex.operation lotusex.primer

@@ -1,3 +1,11 @@
+2007-04-16  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* shimbun/sb-pcweb-column.el: Add comment(Author)
+	(shimbun-pcweb-column-groups): Add new groups and move obsolete
+	groups.
+	(shimbun-get-headers): Fix index url regexp pattern.
+	(shimbun-make-contents): Fix author and date regexp pattern.
+
 2007-04-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-japanese-hankaku-region): Add a
