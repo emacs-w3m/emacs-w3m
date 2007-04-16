@@ -75,7 +75,37 @@
 	     s0 "日" s0
 	     ;; 8. hour:minute
 	     "\\([012][0-9]:[0-5][0-9]\\)")
-	    1 2 4 3 5 6 7 8)))
+	    1 2 4 3 5 6 7 8))
+	 (default2
+	   (list
+	    (concat
+	     "<a" s1 "href=\"/"
+	     ;; 1. url
+	     "\\(%s/"
+	     ;; 2. serial number[1]
+	     "\\("
+	     ;; 3. year
+	     "\\(20[0-9][0-9]\\)"
+	     "[01][0-9][0-3][0-9]\\)"
+	     ;; 4. serial number[2]
+	     "\\([^.]+\\)"
+	     "[^\"]+\\)"
+	     "\"[^>]*>" s0
+	     ;; 5. subject
+	     "\\([^<]+\\)"
+	     s0 "</a>" s0 "<span" s1 "class=\"date\">"
+	     "\\(?:" s0 "<span" s1 "[^>]+>[^<]+</span>\\)?"
+	     s0 "<span" s1 "class=\"m\">" s0
+	     ;; 6. month
+	     "\\([01]?[0-9]\\)"
+	     s0 "月" s0 "</span>" s0 "<span" s1 "class=\"d\">" s0
+	     ;; 7. day
+	     "\\([0-3]?[0-9]\\)"
+	     s0 "日" s0 "</span>")
+	    1 2 4 3 5 6 7))
+	 (kyoiku
+	  (cons (format (car default2) "kyoiku\\(?:/[^\"./]+\\)+")
+		(cdr default2))))
     `(("atmoney" "マネー・経済")
       ("editorial" "社説・コラム" ""
        ,(concat "<a" s1 "href=\"/"
@@ -130,53 +160,16 @@
 		"\\([^<]+\\)"
 		s0)
        2 4 8 5 9 6 7 nil nil nil 3 1)
-      ("kyoiku" "教育" ""
-       ,(concat "<a" s1 "href=\"/"
-		;; 1. url
-		"\\(%s/\\(?:[^\t\n /]+/\\)+"
-		;; 2. serial number[1]
-		"\\("
-		;; 3. year
-		"\\(20[0-9][0-9]\\)"
-		"[01][0-9][0-3][0-9]\\)"
-		;; 4. serial number[2]
-		"\\([^.]+\\)"
-		"[^\"]+\\.htm\\)"
-		"\"[^>]*>" s0
-		;; 5. subject
-		"\\([^<]+\\)"
-		s0 "</a>"
-		s0 "<span" s1 "class=\"date\">" s0 "<span class=\"m\">" s0
-		;; 6. month
-		"\\([01]?[0-9]\\)"
-		s0 "月" s0 "</span>" s0 "<span" s1 "class=\"d\">" s0
-		;; 7. day
-		"\\([0-3]?[0-9]\\)")
-       1 2 4 3 5 6 7)
+      ("kyoiku" "教育" "" ,@kyoiku)
+      ("kyoiku.children" "こども")
+      ("kyoiku.english" "英語"
+       "http://www.yomiuri.co.jp/kyoiku/learning/english/"
+       ,@kyoiku)
+      ("kyoiku.qanda" "教育Q&A")
+      ("kyoiku.renaissance" "教育ルネサンス"
+       "http://www.yomiuri.co.jp/kyoiku/renai/")
+      ("kyoiku.special" "特集")
       ("national" "社会" "" ,@default)
-      ("obit" "おくやみ" "http://www.yomiuri.co.jp/national/obit/"
-       ,(concat
-	 "<a" s1 "href=\"/"
-	 ;; 1. url
-	 "\\(national/%s/news/"
-	 ;; 2. serial number[1]
-	 "\\("
-	 ;; 3. year
-	 "\\(20[0-9][0-9]\\)"
-	 "[01][0-9][0-3][0-9]\\)"
-	 ;; 4. serial number[2]
-	 "\\([^.]+\\)"
-	 "[^\"]+\\)"
-	 "\"[^>]*>" s0
-	 ;; 5. subject
-	 "\\([^<]+\\)"
-	 s0 "</a>[^<（]*（" s0
-	 ;; 6. month
-	 "\\([01]?[0-9]\\)"
-	 s0 "月" s0
-	 ;; 7. day
-	 "\\([0-3]?[0-9]\\)")
-       1 2 4 3 5 6 7)
       ("politics" "政治" "" ,@default)
       ("science" "科学" "" ,@default)
       ("sports" "スポーツ" ""
@@ -295,6 +288,33 @@ of [0]url, [1,2]serial numbers, [3]year, [4]subject, [5]month, [6]day,
 	     "\\([^<]+\\)"
 	     s0)
 	    1 3 7 4 8 5 6 nil nil nil 2))
+	 (default4
+	   (list
+	    (concat
+	     "<a" s1 "href=\"/"
+	     ;; 1. url
+	     "\\(%s/"
+	     ;; 2. serial number[1]
+	     "\\("
+	     ;; 3. year
+	     "\\(20[0-9][0-9]\\)"
+	     "[01][0-9][0-3][0-9]\\)"
+	     ;; 4. serial number[2]
+	     "\\([^.]+\\)"
+	     "[^\"]+\\)"
+	     "\"[^>]*>" s0
+	     ;; 5. subject
+	     "\\([^<]+\\)"
+	     s0 "</a>" s0 "<span" s1 "class=\"date\">"
+	     "\\(?:" s0 "<span" s1 "[^>]+>[^<]+</span>\\)?"
+	     s0 "<span" s1 "class=\"m\">" s0
+	     ;; 6. month
+	     "\\([01]?[0-9]\\)"
+	     s0 "月" s0 "</span>" s0 "<span" s1 "class=\"d\">" s0
+	     ;; 7. day
+	     "\\([0-3]?[0-9]\\)"
+	     s0 "日" s0 "</span>")
+	    1 2 4 3 5 6 7))
 	 (entertainment
 	  (list
 	   (concat
@@ -399,7 +419,52 @@ of [0]url, [1,2]serial numbers, [3]year, [4]subject, [5]month, [6]day,
        ("ＴＶ" "tv" "http://www.yomiuri.co.jp/entertainment/tv/"
 	,(format (car default) "entertainment/tv") ,@(cdr default))
        ("Ｙ＆Ｙテレビ" "yy" "http://www.yomiuri.co.jp/entertainment/yy/"
-	,(format (car default3) "entertainment/yy") ,@(cdr default3)))))
+	,(format (car default3) "entertainment/yy") ,@(cdr default3)))
+      ("kyoiku"
+       ("ニュース" nil "http://www.yomiuri.co.jp/kyoiku/news/"
+	,(format (car default4) "kyoiku/news") ,@(cdr default4))
+       ("教育行政" nil "http://www.yomiuri.co.jp/kyoiku/news2/06.htm"
+	,(format (car default4) "kyoiku/news2") ,@(cdr default4))
+       ("ボランティア・その他" nil
+	"http://www.yomiuri.co.jp/kyoiku/news2/08.htm"
+	,(format (car default4) "kyoiku/news2") ,@(cdr default4)))
+      ("kyoiku.children"
+       ("Ｊキッズ通信" "jkids"
+	"http://www.yomiuri.co.jp/kyoiku/children/jkids/"
+	,(format (car default4) "kyoiku/children/jkids") ,@(cdr default4))
+       ("子どもの心" "kodomo.hagukumu"
+	"http://www.yomiuri.co.jp/kyoiku/hagukumu/kodomo/"
+	,(format (car default4) "kyoiku/hagukumu/kodomo") ,@(cdr default4))
+       ("ニュースウィークリー" "weekly"
+	"http://www.yomiuri.co.jp/kyoiku/children/weekly/"
+	,(format (car default4) "kyoiku/children/weekly") ,@(cdr default4)))
+      ("kyoiku.qanda"
+       ("教育相談" "consul" "http://www.yomiuri.co.jp/kyoiku/qanda/consul/"
+	,(format (car default4) "kyoiku/qanda/consul") ,@(cdr default4))
+       ("悩みのち晴れ" "worries"
+	"http://www.yomiuri.co.jp/kyoiku/qanda/worries/"
+	,(format (car default4) "kyoiku/qanda/worries") ,@(cdr default4)))
+      ("kyoiku.special"
+       ("受験ＡＢＣ" "s06" "http://www.yomiuri.co.jp/kyoiku/special/s06/"
+	,(format (car default4) "kyoiku/special/s06") ,@(cdr default4)))
+      ("national"
+       ("文化" "culture" "http://www.yomiuri.co.jp/national/culture/"
+	,(format (car default) "national/culture/news") ,@(cdr default))
+       ("おくやみ" "obit" "http://www.yomiuri.co.jp/national/obit/"
+	,(format (car default2) "national/obit/news") ,@(cdr default2)))
+      ("sports"
+       ("エトセトラ" "etc" "http://www.yomiuri.co.jp/sports/etc/"
+	,(format (car default) "sports/etc/news") ,@(cdr default))
+       ("ゴルフ" "golf" "http://www.yomiuri.co.jp/sports/golf/"
+	,(format (car default) "sports/golf/news") ,@(cdr default))
+       ("大リーグ" "mlb" "http://www.yomiuri.co.jp/sports/mlb/"
+	,(format (car default) "sports/mlb/news") ,@(cdr default))
+       ("プロ野球" "npb" "http://www.yomiuri.co.jp/sports/npb/"
+	,(format (car default) "sports/npb/news") ,@(cdr default))
+       ("サッカー" "soccer" "http://www.yomiuri.co.jp/sports/soccer/"
+	,(format (car default) "sports/soccer/news") ,@(cdr default))
+       ("東京六大学野球07" "ubb07" "http://www.yomiuri.co.jp/sports/ubb07/"
+	,(format (car default) "sports/ubb07/news") ,@(cdr default)))))
   "Alist of parent groups and lists of subgenres and tables for subgroups.
 Each table is the same as the `cdr' of the element of
 `shimbun-yomiuri-group-table'.")
@@ -596,7 +661,12 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 			     "." (match-string (nth 2 numbers))
 			     "%" (when genre
 				   (concat genre "."))
-			     group "." shimbun-yomiuri-top-level-domain ">"))
+			     (mapconcat
+			      'identity
+			      (nreverse (save-match-data
+					  (split-string group "\\.")))
+			      ".")
+			     "." shimbun-yomiuri-top-level-domain ">"))
 	    (unless (shimbun-search-id shimbun id)
 	      (when (< (setq year (string-to-number
 				   (match-string (nth 3 numbers))))
@@ -629,9 +699,59 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 	  (throw 'stop nil))))
     (shimbun-sort-headers headers)))
 
+(defun shimbun-yomiuri-get-headers-kyoiku-renaissance (shimbun)
+  (let ((from (concat (shimbun-server-name shimbun)
+		      " (%s/" (shimbun-current-group-name shimbun) ")"))
+	(case-fold-search t)
+	next genre start end id headers)
+    (while (cond ((eq next 'none)
+		  nil)
+		 (next
+		  (set-match-data next)
+		  (goto-char (match-end 0)))
+		 (t
+		  (re-search-forward
+		   "<h3[\t\n ]+class=\"hdst\">[\t\n ]*\\([^<]+\\)[\t\n ]*</h3>"
+		   nil t)))
+      (setq genre (match-string 1)
+	    start (match-end 0))
+      (if (re-search-forward
+	   "<h3[\t\n ]+class=\"hdst\">[\t\n ]*\\([^<]+\\)[\t\n ]*</h3>"
+	   nil t)
+	  (setq end (match-beginning 0)
+		next (match-data))
+	(setq end nil
+	      next 'none))
+      (goto-char start)
+      (while (re-search-forward "\
+<a[\t\n ]+href=\"/\\(kyoiku/renai/\\(20[0-9][0-9][01][0-9][0-3][0-9]\\)\
+\\([^.]+\\)[^\"]+\\)\"[^>]*>[\t\n ]*\\([^<]+\\)[\t\n ]*</a>[\t\n ]*\
+<span[\t\n ]+class=\"date\">[\t\n ]*<span[\t\n ]+class=\"y\">[\t\n ]*\
+\\(20[0-9][0-9]\\)[\t\n ]*年[\t\n ]*</span>[\t\n ]*<span[\t\n ]+class=\"m\">\
+\[\t\n ]*\\([01]?[0-9]\\)[\t\n ]*月[\t\n ]*</span>[\t\n ]*\
+<span[\t\n ]+class=\"d\">[\t\n ]*\\([0-3]?[0-9]\\)[\t\n ]*日[\t\n ]*</span>"
+				end t)
+	(setq id (concat "<" (match-string 2) "." (match-string 3)
+			 "%renai.kyoiku." shimbun-yomiuri-top-level-domain
+			 ">"))
+	(unless (shimbun-search-id shimbun id)
+	  (push (shimbun-create-header
+		 0 (match-string 4) (format from genre)
+		 (shimbun-make-date-string
+		  (string-to-number (match-string 5))
+		  (string-to-number (match-string 6))
+		  (string-to-number (match-string 7)))
+		 id "" 0 0
+		 (shimbun-expand-url (match-string 1) shimbun-yomiuri-url))
+		headers))))
+    headers))
+
 (luna-define-method shimbun-get-headers ((shimbun shimbun-yomiuri)
 					 &optional range)
-  (shimbun-yomiuri-get-headers shimbun))
+  (if (string-equal (shimbun-current-group-internal shimbun)
+		    "kyoiku.renaissance")
+      (shimbun-yomiuri-get-headers-kyoiku-renaissance shimbun)
+    (shimbun-yomiuri-get-headers shimbun)))
 
 (defun shimbun-yomiuri-prepare-article (shimbun header)
   (shimbun-with-narrowed-article
