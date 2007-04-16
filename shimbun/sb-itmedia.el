@@ -46,8 +46,7 @@
 	 (list (concat "news." group) (concat "news_" group)))
        '("bursts" "domestic" "foreign" "products" "technology" "web20"
 	 "nettopics" "society" "security" "industry" "research" "sp_amd"))
-    ("anchordesk" nil "http://www.itmedia.co.jp/anchordesk/"
-     shimbun-itmedia-anchordesk-get-headers)
+    ("anchordesk" "anchordesk")
     ("bizid" "bizid")
     ("enterprise" "enterprise")
     ,@(mapcar
@@ -71,29 +70,9 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
   (format "ITmedia (%s)" (shimbun-current-group shimbun)))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-itmedia))
-  (let ((elem (assoc (shimbun-current-group shimbun)
-		     shimbun-itmedia-group-alist)))
-    (if (nth 1 elem)
-	(format "http://rss.itmedia.co.jp/rss/2.0/%s.xml" (nth 1 elem))
-      (nth 2 elem))))
-
-(luna-define-method shimbun-headers :around ((shimbun shimbun-itmedia)
-					     &optional range)
-  (let ((elem (assoc (shimbun-current-group shimbun)
-		     shimbun-itmedia-group-alist)))
-    (if (nth 1 elem)
-	(luna-call-next-method)
-      (with-temp-buffer
-	(shimbun-fetch-url shimbun (nth 2 elem) t)
-	(let ((headers (funcall (nth 3 elem) shimbun))
-	      (hankaku (shimbun-japanese-hankaku shimbun)))
-	  (if (and hankaku (not (eq hankaku 'body)))
-	      (dolist (header headers headers)
-		(erase-buffer)
-		(insert (shimbun-header-subject-internal header))
-		(shimbun-japanese-hankaku-buffer)
-		(shimbun-header-set-subject-internal header (buffer-string)))
-	    headers))))))
+  (format "http://rss.itmedia.co.jp/rss/2.0/%s.xml"
+	  (nth 1 (assoc (shimbun-current-group shimbun)
+			shimbun-itmedia-group-alist))))
 
 (luna-define-method shimbun-get-headers :around ((shimbun shimbun-itmedia)
 						 &optional range)

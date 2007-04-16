@@ -1,3 +1,13 @@
+2007-04-16  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* shimbun/sb-itmedia.el (shimbun-itmedia-group-alist): Use rss for
+	anchordesk group.
+	(shimbun-index-url): Simplify.
+	(shimbun-headers): Remove.
+
+	* shimbun/sb-impress.el (shimbun-impress-groups-alist):
+	Add kaden group.
+
 2007-04-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Add

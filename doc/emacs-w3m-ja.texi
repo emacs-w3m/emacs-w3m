@@ -4842,7 +4842,7 @@ infoshop.news
 @item @uref{http://www.watch.impress.co.jp/, インプレス}
 impress.enterprise impress.pc impress.dc impress.akiba impress.av
 impress.game impress.k-tai impress.internet impress.bb impress.forest
-impress.robot
+impress.robot impress.kaden
 
 @item @uref{http://www.itmedia.co.jp/, ITmedia}
 itmedia.news.bursts, itmedia.news.domestic, itmedia.news.foreign,
