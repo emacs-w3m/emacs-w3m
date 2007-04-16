@@ -1,4 +1,4 @@
-2007-04-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+2007-04-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Add
 	kyoiku.children, kyoiku.english, kyoiku.qanda, kyoiku.renaissance
