@@ -1,3 +1,15 @@
+2007-04-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-yomiuri.el (shimbun-yomiuri-group-table): Add
+	kyoiku.children, kyoiku.english, kyoiku.qanda, kyoiku.renaissance
+	and kyoiku.special groups; move obit group to
+	shimbun-yomiuri-subgroups-alist.
+	(shimbun-yomiuri-subgroups-alist): Add subgroups for kyoiku*,
+	national and sports groups.
+	(shimbun-yomiuri-get-headers): Reverse group names in Message-ID.
+	(shimbun-yomiuri-get-headers-kyoiku-renaissance): New function.
+	(shimbun-get-headers): Use it.
+
 2007-04-16  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* shimbun/sb-pcweb-column.el: Add comment(Author)

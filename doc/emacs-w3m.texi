@@ -4357,12 +4357,12 @@ before the @code{(require 'mew-shimbun)} line.}
 ;; @code{last}, and a number for the @code{range} item.
 
 (setq mew-shimbun-folder-groups
-      '(;; Fetching @samp{yomiuri.shakai}, @samp{yomiuri.sports}, etc.
+      '(;; Fetching @samp{yomiuri.national}, @samp{yomiuri.sports}, etc.
         ;; into the @samp{+shimbun/yomiuri} folder collectively.
         ("yomiuri"
-         ("yomiuri.shakai" . 2)
+         ("yomiuri.national" . 2)
          ("yomiuri.sports". 2)
-         ("yomiuri.kokusai". 2))
+         ("yomiuri.world". 2))
         ;; Fetching @samp{security-memo.memo}
         ;; into @samp{+shimbun/security-memo}.
         ("security-memo"
@@ -4709,8 +4709,10 @@ sponichi.society sponichi.entertainment sponichi.horseracing
 
 @item @uref{http://www.yomiuri.co.jp/, Yomiuri Shimbun}
 yomiuri.atmoney yomiuri.editorial yomiuri.entertainment yomiuri.iryou
-yomiuri.kyoiku yomiuri.national yomiuri.obit yomiuri.politics
-yomiuri.science yomiuri.sports yomiuri.world
+yomiuri.kyoiku yomiuri.kyoiku.children yomiuri.kyoiku.english
+yomiuri.kyoiku.qanda yomiuri.kyoiku.renaissance yomiuri.kyoiku.special
+yomiuri.national yomiuri.politics yomiuri.science yomiuri.sports
+yomiuri.world
 
 Those groups generate articles containing only text by default.  If you
 would like to make them generate HTML articles that contain not only

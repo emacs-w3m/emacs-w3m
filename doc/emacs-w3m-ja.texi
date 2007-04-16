@@ -4426,12 +4426,12 @@ Mew Shimbun $B$O(B @samp{shimbun} $B$H(B Mew (version 2.1 $B0J9_(B) $B$H$
 ;; @code{all}, @code{last}, $B$*$h$S?t;z$,;XDj$G$-$^$9!#(B
 
 (setq mew-shimbun-folder-groups
-      '(;; @samp{+shimbun/yomiuri} $B$H$$$&(B folder $B$K(B @samp{yomiuri.shakai},
+      '(;; @samp{+shimbun/yomiuri} $B$H$$$&(B folder $B$K(B @samp{yomiuri.national},
         ;; @samp{yomiuri.sports} $B$J$I$r0l3g$7$F<hF@$7$^$9!#(B
         ("yomiuri"
-         ("yomiuri.shakai" . 2)
+         ("yomiuri.national" . 2)
          ("yomiuri.sports". 2)
-         ("yomiuri.kokusai". 2))
+         ("yomiuri.world". 2))
         ;; @samp{+shimbun/security-memo} $B$K(B @samp{security-memo.memo} $B$r<hF@$7$^$9!#(B
         ("security-memo"
          ("security-memo.memo" . 2))
@@ -4764,8 +4764,10 @@ sponichi.society sponichi.entertainment sponichi.horseracing
 
 @item @uref{http://www.yomiuri.co.jp/, $Bl&Gd?7J9(B}
 yomiuri.atmoney yomiuri.editorial yomiuri.entertainment yomiuri.iryou
-yomiuri.kyoiku yomiuri.national yomiuri.obit yomiuri.politics
-yomiuri.science yomiuri.sports yomiuri.world
+yomiuri.kyoiku yomiuri.kyoiku.children yomiuri.kyoiku.english
+yomiuri.kyoiku.qanda yomiuri.kyoiku.renaissance yomiuri.kyoiku.special
+yomiuri.national yomiuri.politics yomiuri.science yomiuri.sports
+yomiuri.world
 
 $B$3$l$i$N%0%k!<%W$O!"%G%U%)%k%H$G%F%-%9%H$@$1$N5-;v$r:n$j$^$9!#$=$l$i$K!"(B
 $B%F%-%9%H$@$1$G$J$/<L??$r$b4^$`(B HTML $B$N5-;v$r@8@.$5$;$?$$$J$i$P!"0J2<$N9T(B
