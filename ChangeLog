@@ -1,3 +1,10 @@
+2007-04-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-group-table): Move
+	entertainment.* groups to himbun-mainichi-subgroups-alist.
+	(shimbun-mainichi-subgroups-alist): New variable.
+	(shimbun-mainichi-get-headers): Work for subgroups.
+
 2007-04-16  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* shimbun/sb-itmedia.el (shimbun-itmedia-group-alist): Use rss for

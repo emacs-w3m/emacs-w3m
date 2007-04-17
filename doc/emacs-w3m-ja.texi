@@ -4673,17 +4673,12 @@ asahi-mytown.(hokkaido@dots{}okinawa)
 日本の全都道府県を網羅する朝日新聞の地方版です。
 
 @item @uref{http://www.mainichi-msn.co.jp/, 毎日新聞}
-mainichi.entertainment mainichi.entertainment.car
-mainichi.entertainment.cinema mainichi.entertainment.game
-mainichi.entertainment.geinou mainichi.entertainment.igo
-mainichi.entertainment.manga mainichi.entertainment.music
-mainichi.entertainment.shougi mainichi.entertainment.tv
-mainichi.eye.closeup mainichi.eye.hassinbako mainichi.eye.hito
-mainichi.eye.kaisetsu mainichi.eye.kinji mainichi.eye.kishanome
-mainichi.eye.mieru mainichi.eye.newsup mainichi.eye.shasetsu
-mainichi.eye.shasetsu.archive mainichi.eye.yoroku mainichi.eye.yuuraku
-mainichi.kansai.sanshi mainichi.keizai mainichi.keizai.it
-mainichi.keizai.kaigai mainichi.keizai.kigyou
+mainichi.entertainment mainichi.eye.closeup mainichi.eye.hassinbako
+mainichi.eye.hito mainichi.eye.kaisetsu mainichi.eye.kinji
+mainichi.eye.kishanome mainichi.eye.mieru mainichi.eye.newsup
+mainichi.eye.shasetsu mainichi.eye.shasetsu.archive mainichi.eye.yoroku
+mainichi.eye.yuuraku mainichi.kansai.sanshi mainichi.keizai
+mainichi.keizai.it mainichi.keizai.kaigai mainichi.keizai.kigyou
 mainichi.keizai.kigyou.info mainichi.keizai.kinyu
 mainichi.keizai.seisaku mainichi.keizai.wadai
 mainichi.keizai.wadai.kansoku.archive mainichi.kokusai
