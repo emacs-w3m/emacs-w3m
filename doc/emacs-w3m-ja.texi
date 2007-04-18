@@ -4673,25 +4673,12 @@ asahi-mytown.(hokkaido@dots{}okinawa)
 日本の全都道府県を網羅する朝日新聞の地方版です。
 
 @item @uref{http://www.mainichi-msn.co.jp/, 毎日新聞}
-mainichi.entertainment mainichi.eye.closeup mainichi.eye.hassinbako
-mainichi.eye.hito mainichi.eye.kaisetsu mainichi.eye.kinji
-mainichi.eye.kishanome mainichi.eye.mieru mainichi.eye.newsup
-mainichi.eye.shasetsu mainichi.eye.shasetsu.archive mainichi.eye.yoroku
-mainichi.eye.yuuraku mainichi.kansai.sanshi mainichi.keizai
-mainichi.keizai.it mainichi.keizai.kaigai mainichi.keizai.kigyou
-mainichi.keizai.kigyou.info mainichi.keizai.kinyu
-mainichi.keizai.seisaku mainichi.keizai.wadai
-mainichi.keizai.wadai.kansoku.archive mainichi.kokusai
-mainichi.kokusai.afro-ocea mainichi.kokusai.america
-mainichi.kokusai.asia mainichi.kokusai.europe mainichi.kokusai.mideast
-mainichi.kurashi mainichi.kurashi.bebe mainichi.kurashi.fashion
-mainichi.kurashi.katei mainichi.kurashi.kenko mainichi.kurashi.kokoro
-mainichi.kurashi.shoku mainichi.kurashi.shumi mainichi.kurashi.travel
-mainichi.kurashi.women mainichi.science mainichi.science.env
-mainichi.science.kagaku mainichi.science.medical mainichi.science.rikei
-mainichi.seiji mainichi.seiji.feature mainichi.seiji.gyousei
-mainichi.seiji.kokkai mainichi.seiji.seitou mainichi.seiji.senkyo
-mainichi.shakai mainichi.shakai.edu mainichi.shakai.edu.mori
+mainichi.entertainment mainichi.eye mainichi.eye.shasetsu
+mainichi.kansai mainichi.kansai.tigers mainichi.keizai mainichi.kokusai
+mainichi.kurashi mainichi.science mainichi.seiji mainichi.seiji.feature
+mainichi.seiji.gyousei mainichi.seiji.kokkai mainichi.seiji.seitou
+mainichi.seiji.senkyo mainichi.shakai mainichi.shakai.edu
+mainichi.shakai.edu.mori
 mainichi.shakai.edu.elearningschool.nyushi.archive
 mainichi.shakai.edu.net.morals.archive mainichi.shakai.fu
 mainichi.shakai.gakugei mainichi.shakai.ji mainichi.shakai.jiken

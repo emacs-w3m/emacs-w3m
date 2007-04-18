@@ -1,3 +1,15 @@
+2007-04-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun/sb-mainichi.el (shimbun-mainichi-group-table): Add eye
+	and kansai groups; move eye.* except eye.shasetsu, kansai.sanshi,
+	keizai.*, kokusai.*, kurashi.* and science.* groups to
+	shimbun-mainichi-subgroups-alist.
+	(shimbun-mainichi-subgroups-alist): Add some subgroups; use
+	shimbun-mainichi-header-regexp-default for the default.
+	(shimbun-mainichi-content-start): Update.
+	(shimbun-mainichi-get-headers): Follow group-table change.
+	(shimbun-mainichi-prepare-article): Ditto.
+
 2007-04-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-mainichi.el (shimbun-mainichi-group-table): Move
