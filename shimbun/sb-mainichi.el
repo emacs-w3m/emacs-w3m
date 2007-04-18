@@ -97,69 +97,14 @@
 
 (defvar shimbun-mainichi-group-table
   `(("entertainment" "エンターテインメント" "about:blank" none)
-    ("eye.closeup" "クローズアップ")
-    ("eye.hassinbako" "発信箱")
-    ("eye.hito" "ひと")
-    ("eye.kaisetsu" "土曜解説")
-    ("eye.kinji" "近事片々")
-    ("eye.kishanome" "記者の目")
-    ("eye.mieru" "！")
-    ("eye.newsup" "ニュースＵＰ")
+    ("eye" "毎日の視点" "about:blank" none)
     ("eye.shasetsu" "社説")
-    ("eye.shasetsu.archive" "社説アーカイブ")
-    ("eye.yoroku" "余録")
-    ("eye.yuuraku" "憂楽帳")
-    ("kansai.sanshi" "三枝の楽屋へいらっしゃ〜い！" "kansai/sanshi/archive/"
-     ,(let ((s0 "[\t\n ]*")
-	    (s1 "[\t\n ]+"))
-	(concat
-	 "<a" s1 "href=\"/"
-	 ;; 1. url
-	 "\\(kansai/sanshi/archive/news/20[0-9][0-9]/"
-	 ;; 2. serial number
-	 "\\("
-	 ;; 3. year
-	 "\\(20[0-9][0-9]\\)"
-	 ;; 4. month
-	 "\\([01][0-9]\\)"
-	 ;; 5. day
-	 "\\([0-3][0-9]\\)"
-	 "\\(?:[^\t\n \"./]\\)+\\)"
-	 "\\.html\\)"
-	 "[^>]*>" s0
-	 ;; 6 subject
-	 "\\([^<]+\\)" s0))
-     1 2 3 4 5 6)
-    ("keizai" "経済")
-    ("keizai.it" "IT")
-    ("keizai.kaigai" "経済・海外")
-    ("keizai.kigyou" "企業")
-    ("keizai.kigyou.info" "企業情報")
-    ("keizai.kinyu" "金融・株")
-    ("keizai.seisaku" "経済・政策")
-    ("keizai.wadai" "経済・話題")
-    ("keizai.wadai.kansoku.archive" "経済観測")
-    ("kokusai" "国際")
-    ("kokusai.afro-ocea" "アフリカ・オセアニア")
-    ("kokusai.america" "南北アメリカ")
-    ("kokusai.asia" "アジア")
-    ("kokusai.europe" "ヨーロッパ")
-    ("kokusai.mideast" "中近東・ロシア")
-    ("kurashi" "暮らし")
-    ("kurashi.bebe" "子育て")
-    ("kurashi.fashion" "ファッション")
-    ("kurashi.katei" "家庭")
-    ("kurashi.kenko" "健康")
-    ("kurashi.kokoro" "こころ")
-    ("kurashi.shoku" "食")
-    ("kurashi.shumi" "趣味")
-    ("kurashi.travel" "旅")
-    ("kurashi.women" "女と男")
-    ("science" "サイエンス")
-    ("science.env" "環境")
-    ("science.kagaku" "科学")
-    ("science.medical" "医療")
-    ("science.rikei" "理系白書")
+    ("kansai" "めっちゃ関西" "about:blank" none)
+    ("kansai.tigers" "がんばれ！タイガース" "about:blank" none)
+    ("keizai" "経済・IT" "about:blank" none)
+    ("kokusai" "国際" "about:blank" none)
+    ("kurashi" "暮らし" "about:blank" none)
+    ("science" "サイエンス" "about:blank" none)
     ("seiji" "政治")
     ("seiji.feature" "政治・その他")
     ("seiji.gyousei" "行政")
@@ -230,30 +175,124 @@ can be found in the subgroups).  In that case, the index page should be
 set to \"about:blank\".")
 
 (defvar shimbun-mainichi-subgroups-alist
-  (let ((default shimbun-mainichi-header-regexp-default))
+  (let* ((s0 "[\t\n ]*")
+	 (s1 "[\t\n ]+")
+	 (kansai
+	  (list
+	   (concat
+	    "<a" s1 "href=\"/"
+	    ;; 1. url
+	    "\\(kansai\\(?:/[^\"/]+\\)+/archive/news/"
+	    "\\(?:20[0-9][0-9]/\\(?:[01][0-9]/\\)?\\)?"
+	    ;; 2. serial number
+	    "\\("
+	    ;; 3. year
+	    "\\(20[0-9][0-9]\\)"
+	    ;; 4. month
+	    "\\([01][0-9]\\)"
+	    ;; 5. day
+	    "\\([0-3][0-9]\\)"
+	    "[^\".]+\\)"
+	    "[^\"]+\\)"
+	    "[^>]*>" s0
+	    ;; 6. subject
+	    "\\([^<]+\\)")
+	   1 2 3 4 5 6)))
     `(("entertainment"
-       ("車" "car" "http://www.mainichi-msn.co.jp/entertainment/car/"
-	,@default)
-       ("映画" "cinema" "http://www.mainichi-msn.co.jp/entertainment/cinema/"
-	,@default)
-       ("ゲーム" "game" "http://www.mainichi-msn.co.jp/entertainment/game/"
-	,@default)
-       ("芸能" "geinou" "http://www.mainichi-msn.co.jp/entertainment/geinou/"
-	,@default)
-       ("碁" "igo" "http://www.mainichi-msn.co.jp/entertainment/igo/"
-	,@default)
+       ("車" "car" "http://www.mainichi-msn.co.jp/entertainment/car/")
+       ("映画" "cinema" "http://www.mainichi-msn.co.jp/entertainment/cinema/")
+       ("ゲーム" "game" "http://www.mainichi-msn.co.jp/entertainment/game/")
+       ("芸能" "geinou" "http://www.mainichi-msn.co.jp/entertainment/geinou/")
+       ("碁" "igo" "http://www.mainichi-msn.co.jp/entertainment/igo/")
        ("アニメ・マンガ" "manga"
-	"http://www.mainichi-msn.co.jp/entertainment/manga/"
-	,@default)
-       ("音楽" "music" "http://www.mainichi-msn.co.jp/entertainment/music/"
-	,@default)
-       ("将棋" "shougi" "http://www.mainichi-msn.co.jp/entertainment/shougi/"
-	,@default)
-       ("テレビ" "tv" "http://www.mainichi-msn.co.jp/entertainment/tv/"
-	,@default))))
+	"http://www.mainichi-msn.co.jp/entertainment/manga/")
+       ("音楽" "music" "http://www.mainichi-msn.co.jp/entertainment/music/")
+       ("将棋" "shougi" "http://www.mainichi-msn.co.jp/entertainment/shougi/")
+       ("テレビ" "tv" "http://www.mainichi-msn.co.jp/entertainment/tv/"))
+      ("eye"
+       ("クローズアップ" "closeup"
+	"http://www.mainichi-msn.co.jp/eye/closeup/")
+       ("発信箱" "hassinbako" "http://www.mainichi-msn.co.jp/eye/hassinbako/")
+       ("ひと" "hito" "http://www.mainichi-msn.co.jp/eye/hito/")
+       ("土曜解説" "kaisetsu" "http://www.mainichi-msn.co.jp/eye/kaisetsu/")
+       ("近事片々" "kinji" "http://www.mainichi-msn.co.jp/eye/kinji/")
+       ("記者の目" "kishanome" "http://www.mainichi-msn.co.jp/eye/kishanome/")
+       ("！" "mieru" "http://www.mainichi-msn.co.jp/eye/mieru/")
+       ("ニュースＵＰ" "newsup" "http://www.mainichi-msn.co.jp/eye/newsup/")
+       ("余録" "yoroku" "http://www.mainichi-msn.co.jp/eye/yoroku/")
+       ("憂楽帳" "yuuraku" "http://www.mainichi-msn.co.jp/eye/yuuraku/"))
+      ("eye.shasetsu"
+       ("社説" "archive"
+	"http://www.mainichi-msn.co.jp/eye/shasetsu/archive/"))
+      ("kansai"
+       ("21世紀フォーラム" "21cen.wukansai"
+	"http://www.mainichi-msn.co.jp/kansai/wukansai/21cen/archive/"
+	,@kansai)
+       ("あなたと歩きたい" "aruki"
+	"http://www.mainichi-msn.co.jp/kansai/aruki/archive/" ,@kansai)
+       ("元気が出る商売の話" "genki.salon"
+	"http://www.mainichi-msn.co.jp/kansai/salon/genki/archive/" ,@kansai)
+       ("ふらっと〜女ひとり旅" "hitoritabi"
+	"http://www.mainichi-msn.co.jp/kansai/hitoritabi/archive/" ,@kansai)
+       ("酩酊八十八カ所〜大人の遠足" "meitei"
+	"http://www.mainichi-msn.co.jp/kansai/meitei/archive/" ,@kansai)
+       ("フォトジャーナル" "photojournal"
+	"http://www.mainichi-msn.co.jp/kansai/photojournal/archive/" ,@kansai)
+       ("三枝の楽屋へいらっしゃ〜い！" "sanshi"
+	"http://www.mainichi-msn.co.jp/kansai/sanshi/archive/" ,@kansai))
+      ("kansai.tigers"
+       ("熱闘録2007" "netouroku2007"
+	"http://www.mainichi-msn.co.jp/kansai/tigers/netouroku2007/archive/"
+	,@kansai)
+       ("トラ・とぴ" "topics"
+	"http://www.mainichi-msn.co.jp/kansai/tigers/topics/archive/"
+	,@kansai)
+       ("トラ・トラ・フィーバー" "toratora2"
+	"http://www.mainichi-msn.co.jp/kansai/tigers/toratora2/archive/"
+	,@kansai)
+       ("やじうまタイガース2007" "yajiuma2007"
+	"http://www.mainichi-msn.co.jp/kansai/tigers/yajiuma2007/archive/"
+	,@kansai))
+      ("keizai"
+       ("IT" "it" "http://www.mainichi-msn.co.jp/keizai/it/")
+       ("海外" "kaigai" "http://www.mainichi-msn.co.jp/keizai/kaigai/")
+       ("企業" "kigyou" "http://www.mainichi-msn.co.jp/keizai/kigyou/")
+       ("企業情報" "info.kigyou"
+	"http://www.mainichi-msn.co.jp/keizai/kigyou/info/")
+       ("金融・株" "kinyu" "http://www.mainichi-msn.co.jp/keizai/kinyu/")
+       ("政策" "seisaku" "http://www.mainichi-msn.co.jp/keizai/seisaku/")
+       ("話題" "wadai" "http://www.mainichi-msn.co.jp/keizai/wadai/")
+       ("経済観測" "kansoku.wadai"
+	"http://www.mainichi-msn.co.jp/keizai/wadai/kansoku/archive/"))
+      ("kokusai"
+       ("アフリカ・オセアニア" "afro-ocea"
+	"http://www.mainichi-msn.co.jp/kokusai/afro-ocea/")
+       ("南北アメリカ" "america"
+	"http://www.mainichi-msn.co.jp/kokusai/america/")
+       ("アジア" "asia" "http://www.mainichi-msn.co.jp/kokusai/asia/")
+       ("ヨーロッパ" "europe" "http://www.mainichi-msn.co.jp/kokusai/europe/")
+       ("中近東・ロシア" "mideast"
+	"http://www.mainichi-msn.co.jp/kokusai/mideast/"))
+      ("kurashi"
+       ("子育て" "bebe"	"http://www.mainichi-msn.co.jp/kurashi/bebe/")
+       ("ファッション" "fashion"
+	"http://www.mainichi-msn.co.jp/kurashi/fashion/")
+       ("家庭" "katei" "http://www.mainichi-msn.co.jp/kurashi/katei/")
+       ("健康" "kenko" "http://www.mainichi-msn.co.jp/kurashi/kenko/")
+       ("こころ" "kokoro" "http://www.mainichi-msn.co.jp/kurashi/kokoro/")
+       ("食" "shoku" "http://www.mainichi-msn.co.jp/kurashi/shoku/")
+       ("趣味" "shumi" "http://www.mainichi-msn.co.jp/kurashi/shumi/")
+       ("旅" "travel" "http://www.mainichi-msn.co.jp/kurashi/travel/")
+       ("女と男" "women" "http://www.mainichi-msn.co.jp/kurashi/women/"))
+      ("science"
+       ("環境" "env" "http://www.mainichi-msn.co.jp/science/env/")
+       ("科学" "kagaku" "http://www.mainichi-msn.co.jp/science/kagaku/")
+       ("医療" "medical" "http://www.mainichi-msn.co.jp/science/medical/")
+       ("理系白書" "rikei" "http://www.mainichi-msn.co.jp/science/rikei/"))))
   "Alist of parent groups and lists of subgenres and tables for subgroups.
 Each table is the same as the `cdr' of the element of
-`shimbun-mainichi-group-table'.")
+`shimbun-mainichi-group-table'.  If a table is omitted the value of
+`shimbun-mainichi-header-regexp-default' is used by default.")
 
 (defvar shimbun-mainichi-server-name "毎日新聞")
 
@@ -261,7 +300,7 @@ Each table is the same as the `cdr' of the element of
 
 (defvar shimbun-mainichi-content-start
   (let ((s0 "[\t\n ]*"))
-    (concat "</div>" s0
+    (concat "<!--emacs-w3m-shimbun-mainichi-content-start-->\\|</div>" s0
 	    "\\(?:<div" s0 "class=\"img_[^\"]+\"" s0 ">" s0 "\\|<p>\\)")))
 
 (defvar shimbun-mainichi-content-end
@@ -337,10 +376,10 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 		     shimbun-mainichi-header-regexp-default))
 	 (from (concat (shimbun-server-name shimbun)
 		       " (" (shimbun-current-group-name shimbun) ")"))
-	 (editorial (string-match "\\`eye\\.shasetsu" group))
+	 (editorial (string-equal group "eye.shasetsu"))
 	 (subgroups (cdr (assoc group shimbun-mainichi-subgroups-alist)))
-	 numbers start url urls id subgenre month day subject headers header
-	 date subgrp)
+	 numbers start id subgenre url month day subject urls subjects
+	 headers header date subgrp)
     (if (eq (car regexp) 'none)
 	(setq regexp nil)
       (setq numbers (cdr regexp)
@@ -352,7 +391,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 	  (shimbun-strip-cr)
 	  ;; Ignore unwanted links.
 	  (cond
-	   ((string-equal "eye.shasetsu" group)
+	   (editorial
 	    (goto-char (point-min))
 	    (when (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
 <a[\t\n ]+href=\"/eye/shasetsu/archive/\">"
@@ -360,7 +399,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 	      (delete-region (match-beginning 0) (point-max)))
 	    (goto-char (point-min))
 	    (re-search-forward "<div[\t\n ]+class=\"blocks\">[\t\n ]*" nil t))
-	   ((and (string-match "\\`eye\\." group)
+	   ((and (string-equal group "eye")
 		 (progn
 		   (goto-char (point-min))
 		   (re-search-forward "<td[\t\n ]+class=\"date_md\">" nil t))))
@@ -384,6 +423,13 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 				 "[\t\n ]*")
 			 nil t)))
 	    (delete-region start (match-end 0)))
+	  (when (and (string-match "理系白書" from)
+		     (progn
+		       (goto-char (point-min))
+		       (re-search-forward "\
+\[\t\n ]*<[^>]+>[\t\n ]*理系白書\\(?:の特集\\|シンポ\\)[\t\n ]*<"
+					  nil t)))
+	    (delete-region (match-beginning 0) (point-max)))
 
 	  ;; Remove ranking sections.
 	  (goto-char (point-min))
@@ -394,35 +440,44 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 			(re-search-forward "</div>[\t\n ]*" nil t)))
 	    (delete-region start (match-end 0)))
 
-	  ;; Rearrange the group name so as to be the reverse order.
-	  (when (string-match "\\." group)
-	    (setq group (mapconcat 'identity
-				   (nreverse (split-string group "\\."))
-				   ".")))
+	  ;; Remove commented sections.
+	  (goto-char (point-min))
+	  (while (re-search-forward "\
+\[\t\n ]*<[\t\n ]*!\\(?:[^<>]*<[^<>]+>\\)+[^<>]+>[\t\n ]*"
+				    nil t)
+	    (delete-region (match-beginning 0) (match-end 0)))
 
 	  (goto-char (point-min))
 	  (while (re-search-forward regexp nil t)
-	    (unless ;; Exclude duplications.
-		(or (member (setq url (match-string (nth 0 numbers))) urls)
-		    (progn
-		      (push url urls)
-		      (shimbun-search-id
-		       shimbun
-		       (setq id (concat
-				 "<" (match-string (nth 1 numbers)) "%"
-				 (when subgenre (concat subgenre "."))
-				 group
-				 "." shimbun-mainichi-top-level-domain ">")))))
-	      (setq month (string-to-number (match-string (nth 3 numbers)))
-		    day (string-to-number (match-string (nth 4 numbers)))
-		    subject (match-string (nth 5 numbers)))
+	    (setq id (concat "<" (match-string (nth 1 numbers)) "%"
+			     (when subgenre (concat subgenre "."))
+			     (save-match-data
+			       (if (string-match "\\." group)
+				   (mapconcat
+				    'identity
+				    (nreverse (split-string group "\\."))
+				    ".")
+				 group))
+			     "." shimbun-mainichi-top-level-domain ">")
+		  url (match-string (nth 0 numbers))
+		  month (string-to-number (match-string (nth 3 numbers)))
+		  day (string-to-number (match-string (nth 4 numbers)))
+		  subject (match-string (nth 5 numbers)))
+	    (when editorial
+	      (setq subject (format "%02d/%02d %s" month day subject)))
+	    ;; Exclude duplications.
+	    (unless (or (member url urls)
+			(progn
+			  (push url urls)
+			  (and editorial
+			       (member subject subjects)))
+			(progn
+			  (when editorial
+			    (push subject subjects))
+			  (shimbun-search-id shimbun id)))
 	      (push
 	       (shimbun-create-header
-		0
-		(if editorial
-		    (format "%02d/%02d %s" month day subject)
-		  subject)
-		from
+		0 subject from
 		(shimbun-mainichi-make-date-string
 		 (string-to-number (match-string (nth 2 numbers)))
 		 month day
@@ -444,8 +499,10 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 				 " (" (car subgrp) ")")
 		    subgenre (cadr subgrp))
 	      (shimbun-retrieve-url (caddr subgrp))
-	      (setq regexp (cadddr subgrp)
-		    numbers (cddddr subgrp)))
+	      (setq regexp (or (cadddr subgrp)
+			       (car shimbun-mainichi-header-regexp-default))
+		    numbers (or (cddddr subgrp)
+				(cdr shimbun-mainichi-header-regexp-default))))
 	  (throw 'stop nil))))
     (prog1
 	(setq headers (shimbun-sort-headers headers))
@@ -479,20 +536,33 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
        (format "%02d:%02d"
 	       (string-to-number (or (match-string 8) (match-string 4)))
 	       (string-to-number (or (match-string 9) (match-string 5)))))))
-   (let ((group (shimbun-current-group-internal shimbun))
+   (goto-char (point-min))
+   (let ((from (shimbun-header-from-internal header))
+	 (group (shimbun-current-group-internal shimbun))
 	 (subject (shimbun-header-subject header 'no-encode)))
-     (cond ((or (string-equal "eye.kinji" group)
+     (cond ((or (string-match "近事片々" from)
 		(string-match "\\`近事片々：" subject))
 	    ;; Shorten paragraph separators.
-	    (goto-char (point-min))
 	    (while (search-forward "</p><p>　　　◇</p><p>" nil t)
 	      (replace-match "<br>　　　◇<br>")))
-	   ((or (string-equal "eye.yoroku" group)
+	   ((or (string-match "余録" from)
 		(string-match "\\`余録：" subject))
 	    ;; Break continuous lines.
-	    (goto-char (point-min))
 	    (while (search-forward "▲" nil t)
-	      (replace-match "。<br><br>　")))))
+	      (replace-match "。<br><br>　")))
+	   ((string-equal group "kansai")
+	    ;; Include images.
+	    (let ((start (point-min))
+		  (end (point-max)))
+	      (widen)
+	      (forward-line -3)
+	      (when (prog1
+			(if (re-search-forward "<img[\t\n ]+src=" start t)
+			    (goto-char (match-beginning 0))
+			  (goto-char start)
+			  nil)
+		      (narrow-to-region (point) end))
+		(insert "<!--emacs-w3m-shimbun-mainichi-content-start-->"))))))
    (when (shimbun-prefer-text-plain-internal shimbun)
      ;; Replace images with text.
      (goto-char (point-min))
