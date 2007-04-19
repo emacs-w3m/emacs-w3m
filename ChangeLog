@@ -1101,22 +1101,6 @@
 	(w3m-w3m-retrieve): Don't check status code when the url does not match
 	to http.
 
-2006-02-09  Katsumi Yamaoka  <yamaoka@jpl.org>
-
-	add groups book.booktimes, book.edu, culture.yurufemi, digital.av,
-	edu.news, housing.soudan, international.america,
-	international.asia, international.asiamachi, international.etc,
-	international.europe, international.middleeast,
-	international.seoul, international.shien, kansai.beichou,
-	kansai.heibon, kansai.honma, kansai.kataritsugu, kansai.madam,
-	kansai.otoriyose, kansai.sakana, kansai.sweets, world.china, and
-	world.germany;
-
-	fix index urls of culture.column and kansai.fuukei groups.
-
-	(shimbun-asahi-prepare-article): Add special treatments for
-	culture.yurufemi and world.china groups.
-
 2006-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-url-components-regexp): Move to w3m-util.el.
@@ -1385,27 +1369,6 @@
 	(w3m-bookmark-menu-items-pre): New variable.
 	(w3m-bookmark-menu-items-time): Ditto.
 	(w3m-bookmark-make-menu-items): Use previous items if it available.
-
-2005-07-11  Masaru Nomiya  <nomiyac360@mg.point.ne.jp>
-
-	(shimbun-nikkei-group-table):, Add it.business, it.internet, it.mobile,
-	it.security, it.digital, it.pc, release.it.comp, release.it.peri,
-	release.it.sys, release.it.cont, release.it.net, release.it.lsi,
-	release.it.game, release.it.etc, release.dist.depart,
-	release.dist.ryohan, release.dist.zakka, release.dist.cosme,
-	release.dist.car, release.dist.bookrelease.dist.record,
-	release.dist.food, release.dist.mercha, release.dist.mail,
-	release.dist.netshop, release.dist.etc, release.money.bank,
-	release.money.sec, release.money.am, release.money.insu,
-	release.money.etc, release.maker.chemi, release.maker.mecha,
-	release.maker.car, release.maker.elec, release.maker.food,
-	release.maker.sports, release.maker.apparel, release.maker.commu,
-	release.maker.etc, release.service.medi, release.service.rest,
-	release.service.trans, release.service.energy, release.service.enter,
-	release.service.env, release.service.consul, release.service.edu,
-	release.service.haken, release.service.life, release.service.media,
-	release.service.lease, release.service.travel, release.service.etc,
-	release.const.const, release.const.house and release.const.etc.
 
 2005-07-09  Tsuyoshi CHO  <tsuyoshi_cho@yahoo.co.jp>
 
@@ -2600,16 +2563,6 @@
 	(w3m-input-url): Don't use w3m-canonicalize-url for non-string url
 	which may be the symbol popup.
 
-2004-06-26  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
-
-	* sb-squeak-ja.el: Inherit `shimbun-mailman-ja' instead of
-	`shimbun-mailman'.
-	(shimbun-make-contents, shimbun-squeak-ja-make-contents): Removed.
-
-	* sb-namazu.el: Inherit `shimbun-mailman-ja' instead of
-	`shimbun-mailman'.
-	(shimbun-make-contents, shimbun-namazu-make-contents): Removed.
-
 2004-06-25  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-canonicalize-url): New function.
@@ -2707,15 +2660,6 @@
 
 	* w3m-form.el (w3m-form-put-by-name): Overwrite ID value when a name is
 	found.
-
-2004-05-24  MATSUURA Kyo  <kyo@chimons.org>
-
-	* sb-security-memo.el (shimbun-security-memo-url): Reduced.
-	(shimbun-security-memo-group-alist): New variable.
-	(shimbun-security-memo-coding-system): Removed.
-	(shimbun-security-memo-groups): New method.
-	(shimbun-index-url): Ditto.
-	(shimbun-reply-to): Check the current group name.
 
 2004-05-22  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
@@ -3294,8 +3238,6 @@
 	displaying text/html messages, because w3m-message() was too silent.
 
 2004-01-11  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
-
-	* sb-bbc.el: Renamed from sb-bbc-rss.el.
 
 	* w3m.el (w3m-safe-view-this-url): Bind `w3m-pop-up-windows' to nil
 	locally, in order to keep MUA's window configuration.
@@ -4186,24 +4128,6 @@
 	* w3m.el (w3m-base-url): Removed.
 	(w3m-attributes, w3m-local-attributes, w3m-w3m-attributes): Do not
 	return a base URI of retrieved page.
-
-2003-10-16  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
-
-	* shimbun.el: Define LUNA classes that represent MIME entities such as
-	text/html, image/png etc.
-	(shimbun-entitiy, shimbun-multipart-entity, shimbun-text-entity,
-	shimbun-image-entity): New classes.
-	(shimbun-entity-type, shimbun-entity-cid, shimbun-entity-insert): New
-	methods.
-	(shimbun-make-multipart-entity, shimbun-make-text-entity,
-	shimbun-make-image-entity): New constructors.
-	(shimbun-entity-add-child): New function.
-	(shimbun-mime-replace-image-tags): New function.
-	(shimbun-make-mime-article): Rewritten to use the above classes and
-	functions.
-	(shimbun-mime-boundary-counter): Removed.
-	(shimbun-mime-make-multipart-message): Removed.
-	(shimbun-mime-retrieve-images): Removed.
 
 2003-10-14  Jose A. Ortega Ruiz  <jao@abra.uab.es>
 
@@ -5488,41 +5412,6 @@
 
 	* w3m-form.el (w3m-form-parse-and-fontify): Apply
 	`w3m-decode-anchor-string' to the form action url.
-
-2003-06-07  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
-
-	* shimbun.el (toplevel): Slot definition order of `shimbun' class is
-	changed to avoid mismatching.
-
-	* shimbun.el: Changes to eliminate dependence between modules caused by
-	compiled macros of internal accesors.
-	(shimbun-server, shimbun-current-group, shimbun-mua-shimbun): New
-	function.
-	(shimbun-header-subject, shimbun-header-set-subject,
-	shimbun-header-from, shimbun-header-set-from, shimbun-header-date,
-	shimbun-header-set-date, shimbun-header-id, shimbun-header-set-id,
-	shimbun-header-references, shimbun-header-set-references,
-	shimbun-header-chars, shimbun-header-set-chars, shimbun-header-lines,
-	shimbun-header-set-lines, shimbun-header-xref, shimbun-header-set-xref,
-	shimbun-header-extra, shimbun-header-set-extra): Use `defun' instead of
-	`defsubst'.
-	(shimbun-header-field-value): Removed.
-
-	* nnshimbun.el (shimbun-mua-search-id): Call `shimbun-current-group'
-	instead of `shimbun-current-group-internal'; Call `shimbun-mua-shimbun'
-	instead of `shimbun-mua-shimbun-internal'.
-	(nnshimbun-current-group): Call `shimbun-current-group' instead of
-	`shimbun-current-group-internal'.
-
-	* mew-shimbun.el (mew-shimbun-retrieve-article): Call `shimbun-server'
-	instead of `shimbun-server-internal'; Call `shimbun-current-group'
-	instead of `shimbun-current-group-internal'; Call `shimbun-mua-shimbun'
-	instead of `shimbun-mua-shimbun-internal'.
-	(mew-shimbun-re-retrieve-article): Ditto.
-
-	* sb-mhonarc.el (shimbun-mhonarc-header-value): New function.
-	(shimbun-make-contents): Call `shimbun-mhonarc-header-value' instead of
-	`shimbun-header-field-value'.
 
 2003-06-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
@@ -7073,11 +6962,6 @@
 	* w3m.el (w3m-w3m-retrieve-1): Specify -no-cookie option only when the
 	w3m command is configured to accept it.
 
-2002-06-03  Hidetaka Iwai <tyuyu@mb6.seikyou.ne.jp>
-
-	* sb-texfaq.el (shimbun-texfaq-group-path-alist): Fix path to get
-	latest articles.
-
 2002-06-20  Yuuichi Teranishi  <teranisi@gohome.org>
 
 	* octet.el (octet-type-filter-alist): Fixed parenthesis.
@@ -7187,13 +7071,6 @@
 
 	* w3m-weather.el (w3m-weather-completion-table): Fix "niigata-kaetsu".
 
-2002-05-30  Kenichi SATO <ksato@iijmio-mail.jp>
-
-	* sb-sponichi.el (shimbun-sponichi-groups): Add golf and battle.
-	(shimbun-get-headers): Follow the change of the Web site.  Modify
-	regexp to get flash articles.
-	(shimbun-get-headers): Change Message-ID format.
-
 2002-05-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (w3m-make-ccl-coding-system): Make it recallable for the
@@ -7217,18 +7094,6 @@
 
 	* w3m-xmas.el (unicode-to-char): Shut XEmacs 21.5-b5 and earlier up
 	when compiling.
-
-2002-05-28  Kenichi SATO <ksato@iijmio-mail.jp>
-
-	* sb-zdnet.el (shimbun-zdnet-group-url-alist): Abolishded.
-	(shimbun-zdnet-group-alist): New variable.
-	(shimbun-zdnet-groups): Refer `shimbun-zdnet-group-alist'.
-	(shimbun-index-url): Ditto.
-	(shimbun-zdnet-content-end): Relaxed.
-	(shimbun-zdnet-comp-get-headers): Removed.
-	(shimbun-zdnet-gamespot-get-headers): Ditto.
-	(shimbun-get-headers): Reimplemented.
-	(shimbun-make-contents): Remove links and images at `ad.zdnet.co.jp'.
 
 2002-05-28  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
