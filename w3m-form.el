@@ -1066,21 +1066,24 @@ character."
     'w3m-form-input-textarea-save))
 
 (defun w3m-form-input-textarea-filename (url id)
-  (let ((file "")
-	;; Interdit chars of Windows
-	(replace (regexp-opt '("\\" "/" ":" "*" "?" "\"" "<" ">" "|")))
-	(max-file-path 254))
-    (while (string-match replace url)
-      (setq file (concat file (substring url 0 (match-beginning 0)) "_"))
-      (setq url (substring url (match-end 0))))
-    (setq file (concat file url "-"))
-    (while (string-match replace id)
-      (setq file (concat file (substring id 0 (match-beginning 0)) "_"))
-      (setq id (substring id (match-end 0))))
-    (if (< (- max-file-path 4) (length file))
-	(setq file (substring file 0 (- max-file-path 4 (length id)))))
-    (setq file (concat file id ".txt"))
-    (convert-standard-filename file)))
+  (condition-case nil
+      (concat (md5 (concat url id) nil nil w3m-current-coding-system) ".txt")
+    (error
+     (let ((file "")
+	   ;; Interdit chars of Windows
+	   (replace (regexp-opt '("\\" "/" ":" "*" "?" "\"" "<" ">" "|")))
+	   (max-file-path 254))
+       (while (string-match replace url)
+	 (setq file (concat file (substring url 0 (match-beginning 0)) "_"))
+	 (setq url (substring url (match-end 0))))
+       (setq file (concat file url "-"))
+       (while (string-match replace id)
+	 (setq file (concat file (substring id 0 (match-beginning 0)) "_"))
+	 (setq id (substring id (match-end 0))))
+       (if (< (- max-file-path 4) (length file))
+	   (setq file (substring file 0 (- max-file-path 4 (length id)))))
+       (setq file (concat file id ".txt"))
+       (convert-standard-filename file)))))
 
 (defun w3m-form-input-textarea-save (&optional buffer file)
   "Save textarea buffer."

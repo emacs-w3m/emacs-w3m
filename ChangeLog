@@ -1,3 +1,7 @@
+2007-04-19  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-form.el (w3m-form-input-textarea-filename): Use MD5 first.
+
 2007-04-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/sb-mainichi.el (shimbun-mainichi-group-table): Add eye
