@@ -1,6 +1,6 @@
 ;;; w3m-form.el --- Stuffs to handle <form> tag
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -1068,7 +1068,8 @@ character."
 (defun w3m-form-input-textarea-filename (url id)
   (let ((file "")
 	;; Interdit chars of Windows
-	(replace (regexp-opt '("\\" "/" ":" "*" "?" "\"" "<" ">" "|"))))
+	(replace (regexp-opt '("\\" "/" ":" "*" "?" "\"" "<" ">" "|")))
+	(max-file-path 254))
     (while (string-match replace url)
       (setq file (concat file (substring url 0 (match-beginning 0)) "_"))
       (setq url (substring url (match-end 0))))
@@ -1076,6 +1077,8 @@ character."
     (while (string-match replace id)
       (setq file (concat file (substring id 0 (match-beginning 0)) "_"))
       (setq id (substring id (match-end 0))))
+    (if (< (- max-file-path 4) (length file))
+	(setq file (substring file 0 (- max-file-path 4 (length id)))))
     (setq file (concat file id ".txt"))
     (convert-standard-filename file)))
 

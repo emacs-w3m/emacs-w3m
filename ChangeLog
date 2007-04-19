@@ -47,6 +47,11 @@
 	(shimbun-get-headers): Fix index url regexp pattern.
 	(shimbun-make-contents): Fix author and date regexp pattern.
 
+2007-04-14  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-form.el (w3m-form-input-textarea-filename): Truncate
+	filename into less than or equal to 255 bytes long.
+
 2007-04-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun/shimbun.el (shimbun-japanese-hankaku-region): Add a
