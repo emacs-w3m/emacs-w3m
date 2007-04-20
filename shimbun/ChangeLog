@@ -1,3 +1,18 @@
+2007-04-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-mainichi.el (shimbun-mainichi-header-regexp-default): Update.
+	(shimbun-mainichi-group-table): Add shakai.edu.campal and sports.column
+	groups; move seiji.*, shakai.* and sports.* groups to
+	shimbun-mainichi-subgroups-alist; update regexp for eye.shasetsu group.
+	(shimbun-mainichi-subgroups-alist): Update eye.shasetsu entry; add many
+	subgroups.
+	(shimbun-mainichi-get-headers): Improve duplication check; remove
+	special treatment for eye.shasetsu group.
+
+	* shimbun.el (shimbun-retrieve-url): Keep buffer's multibyteness even
+	if retrieving failed.
+	(shimbun-japanese-hankaku-region): Don't break paragraph start.
+
 2007-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* ChangeLog: New file.
