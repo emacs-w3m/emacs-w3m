@@ -207,11 +207,15 @@ and set `shimbun-SERVER-japanese-hankaku' to `never'."
   "Rertrieve URL contents and insert to current buffer.
 Return content-type of URL as string when retrieval succeeded."
   (let (type)
-    (when (and url (setq type (w3m-retrieve url nil no-cache nil referer)))
+    (if (and url (setq type (w3m-retrieve url nil no-cache nil referer)))
+	(progn
+	  (unless no-decode
+	    (w3m-decode-buffer url)
+	    (goto-char (point-min)))
+	  type)
       (unless no-decode
-	(w3m-decode-buffer url)
-	(goto-char (point-min)))
-      type)))
+	(set-buffer-multibyte t)
+	nil))))
 
 (defun shimbun-fetch-url (shimbun url &optional no-cache no-decode referer)
   "Retrieve contents specified by URL for SHIMBUN.
@@ -1382,7 +1386,12 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
     (goto-char start)
     (while (re-search-forward "\\([!-~]\\)　\\|　\\([!-~]\\)" nil t)
       (if (match-beginning 1)
-	  (replace-match "\\1 ")
+	  (unless (string-equal
+		   (buffer-substring (max (- (match-beginning 1) 2)
+					  (point-min))
+				     (match-end 1))
+		   "<p>")
+	    (replace-match "\\1 "))
 	(unless (memq (char-before (match-beginning 0)) '(nil ?\n))
 	  (replace-match " \\2"))
 	(backward-char 1)))
@@ -1481,7 +1490,12 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
 	     (replace-match "\\7 \\8")
 	     (goto-char (match-end 7)))
 	    (t
-	     (replace-match (concat "\\9 " (match-string 10)))
+	     (unless (string-equal (buffer-substring
+				    (max (- (match-beginning 10) 3)
+					 (point-min))
+				    (match-beginning 10))
+				   "<p>")
+	       (replace-match (concat "\\9 " (match-string 10))))
 	     (goto-char (match-end 9)))))
     (goto-char start)
     (let ((regexp
