@@ -54,7 +54,7 @@
       "<a" s1 "href=\"/"
       ;; 1. url
       "\\("
-      "\\(?:[^\t\n \"/]+/\\)+news/\\(?:20[0-9][0-9]/[01]?[0-9]/\\)?"
+      "\\(?:[^\t\n \"/]+/\\)+news/\\(?:20[0-9][0-9]/\\(?:[01]?[0-9]/\\)?\\)?"
       ;; 2. serial number
       "\\("
       ;; 3. year
@@ -98,41 +98,50 @@
 (defvar shimbun-mainichi-group-table
   `(("entertainment" "エンターテインメント" "about:blank" none)
     ("eye" "毎日の視点" "about:blank" none)
-    ("eye.shasetsu" "社説")
+    ("eye.shasetsu" "社説" nil
+     ,(let ((s0 "[\t\n ]*")
+	    (s1 "[\t\n ]+"))
+	(concat
+	 "<a" s1 "href=\"/"
+	 ;; 1. url
+	 "\\(eye/shasetsu/\\(?:news\\|archive/news/20[0-9][0-9]/[01][0-9]\\)/"
+	 ;; 2. serial number
+	 "\\("
+	 ;; 3. year
+	 "\\(20[0-9][0-9]\\)"
+	 ;; 4. month
+	 "\\([01][0-9]\\)"
+	 ;; 5. day
+	 "\\([0-3][0-9]\\)"
+	 "\\)"
+	 "[^\"]+\\)"
+	 "\"[^>]*>" s0
+	 ;; 6 subject
+	 "\\([^<]+\\)"
+	 s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>"
+	 "\\(?:" s0 "</td>" s0 "<td" s1 "class=\"time\">"
+	 s0 "<span" s1 "[^>]+>" s0
+	 ;; 7?. hour
+	 "\\([012]?[0-9]\\)"
+	 ":"
+	 ;; 8?. minute
+	 "\\([0-5]?[0-9]\\)"
+	 "\\)?"))
+     1 2 3 4 5 6 7 8)
     ("kansai" "めっちゃ関西" "about:blank" none)
     ("kansai.tigers" "がんばれ！タイガース" "about:blank" none)
     ("keizai" "経済・IT" "about:blank" none)
     ("kokusai" "国際" "about:blank" none)
     ("kurashi" "暮らし" "about:blank" none)
     ("science" "サイエンス" "about:blank" none)
-    ("seiji" "政治")
-    ("seiji.feature" "政治・その他")
-    ("seiji.gyousei" "行政")
-    ("seiji.kokkai" "国会")
-    ("seiji.seitou" "政党")
-    ("seiji.senkyo" "選挙")
-    ("shakai" "社会")
-    ("shakai.edu" "教育")
-    ("shakai.edu.mori" "教育の森")
-    ("shakai.edu.elearningschool.nyushi.archive" "ITで入試が変わる")
-    ("shakai.edu.net.morals.archive" "ネット社会と子供たち")
-    ("shakai.fu" "訃報")
-    ("shakai.gakugei" "学芸")
-    ("shakai.ji" "人事")
-    ("shakai.jiken" "事件")
-    ("shakai.koushitsu" "皇室")
-    ("shakai.tenki" "天気")
-    ("shakai.wadai" "社会・話題")
+    ("seiji" "政治" "about:blank" none)
+    ("shakai" "社会" "about:blank" none)
+    ("shakai.edu" "教育" "about:blank" none)
+    ("shakai.edu.campal" "キャンパる"
+     "http://www.mainichi-msn.co.jp/shakai/edu/campal/archive/")
     ("sokuhou" "速報")
-    ("sports" "スポーツ")
-    ("sports.ama" "アマ野球")
-    ("sports.battle" "格闘技")
-    ("sports.feature" "スポーツ・その他")
-    ("sports.field" "陸上競技")
-    ("sports.keiba" "競馬")
-    ("sports.major" "大リーグ")
-    ("sports.pro" "野球")
-    ("sports.soccer" "サッカー")
+    ("sports" "スポーツ" "about:blank" none)
+    ("sports.column" "コラム" "about:blank" none)
     ("today" "今日の話題" "rss/wadai.rdf"
      ,(let ((s0 "[\t\n ]*"))
 	(concat
@@ -222,8 +231,8 @@ set to \"about:blank\".")
        ("余録" "yoroku" "http://www.mainichi-msn.co.jp/eye/yoroku/")
        ("憂楽帳" "yuuraku" "http://www.mainichi-msn.co.jp/eye/yuuraku/"))
       ("eye.shasetsu"
-       ("社説" "archive"
-	"http://www.mainichi-msn.co.jp/eye/shasetsu/archive/"))
+       ("社説" nil "http://www.mainichi-msn.co.jp/eye/shasetsu/archive/"
+	,@(nthcdr 3 (assoc "eye.shasetsu" shimbun-mainichi-group-table))))
       ("kansai"
        ("21世紀フォーラム" "21cen.wukansai"
 	"http://www.mainichi-msn.co.jp/kansai/wukansai/21cen/archive/"
@@ -288,7 +297,100 @@ set to \"about:blank\".")
        ("環境" "env" "http://www.mainichi-msn.co.jp/science/env/")
        ("科学" "kagaku" "http://www.mainichi-msn.co.jp/science/kagaku/")
        ("医療" "medical" "http://www.mainichi-msn.co.jp/science/medical/")
-       ("理系白書" "rikei" "http://www.mainichi-msn.co.jp/science/rikei/"))))
+       ("理系白書" "rikei" "http://www.mainichi-msn.co.jp/science/rikei/"))
+      ("seiji"
+       ("その他" "feature" "http://www.mainichi-msn.co.jp/seiji/feature/")
+       ("行政" "gyousei" "http://www.mainichi-msn.co.jp/seiji/gyousei/")
+       ("国会" "kokkai" "http://www.mainichi-msn.co.jp/seiji/kokkai/")
+       ("政党" "seitou" "http://www.mainichi-msn.co.jp/seiji/seitou/")
+       ("選挙" "senkyo" "http://www.mainichi-msn.co.jp/seiji/senkyo/"))
+      ("shakai"
+       ("訃報" "fu" "http://www.mainichi-msn.co.jp/shakai/fu/")
+       ("学芸" "gakugei" "http://www.mainichi-msn.co.jp/shakai/gakugei/")
+       ("人事" "ji" "http://www.mainichi-msn.co.jp/shakai/ji/")
+       ("事件" "jiken" "http://www.mainichi-msn.co.jp/shakai/jiken/")
+       ("皇室" "koushitsu" "http://www.mainichi-msn.co.jp/shakai/koushitsu/")
+       ("天気" "tenki" "http://www.mainichi-msn.co.jp/shakai/tenki/")
+       ("話題" "wadai" "http://www.mainichi-msn.co.jp/shakai/wadai/"))
+      ("shakai.edu"
+       ("本と読書" "book"
+	"http://www.mainichi-msn.co.jp/shakai/edu/book/archive/")
+       ("'07年センター試験" "center07"
+	"http://www.mainichi-msn.co.jp/shakai/edu/jyuken/center07/")
+       ("ITのある教室" "class.elearningschool" "\
+ttp://www.mainichi-msn.co.jp/shakai/edu/elearningschool/class/archive/")
+       ("学校と私" "gakkou"
+	"http://www.mainichi-msn.co.jp/shakai/edu/gakkou/archive/")
+       ("学力とは何か" "gakuryoku"
+	"http://www.mainichi-msn.co.jp/shakai/edu/gakuryoku/archive/")
+       ("教育行政" "gyousei"
+	"http://www.mainichi-msn.co.jp/shakai/edu/gyousei/archive/")
+       ("高校" "high" "http://www.mainichi-msn.co.jp/shakai/edu/high/archive/")
+       ("中学校" "junior"
+	"http://www.mainichi-msn.co.jp/shakai/edu/junior/archive/")
+       ("受験・入試" "jyuken"
+	"http://www.mainichi-msn.co.jp/shakai/edu/jyuken/")
+       ("毎日小学生新聞" "maishou"
+	"http://www.mainichi-msn.co.jp/shakai/edu/maishou/")
+       ("ネット社会と子供たち" "morals.net"
+	"http://www.mainichi-msn.co.jp/shakai/edu/net/morals/archive/")
+       ("教育の森" "mori"
+	"http://www.mainichi-msn.co.jp/shakai/edu/mori/archive/")
+       ("ITで入試が変わる" "nyushi.elearningschool" "\
+ttp://www.mainichi-msn.co.jp/shakai/edu/elearningschool/nyushi/archive/")
+       ("情報パケット" "packet"
+	"http://www.mainichi-msn.co.jp/shakai/edu/packet/archive/")
+       ("小学校" "primary"
+	"http://www.mainichi-msn.co.jp/shakai/edu/primary/archive/")
+       ("育ち直しの歌" "sodachi"
+	"http://www.mainichi-msn.co.jp/shakai/edu/sodachi/")
+       ("単位不足問題" "tanni"
+	"http://www.mainichi-msn.co.jp/shakai/edu/tanni/archive/")
+       ("大学" "university"
+	"http://www.mainichi-msn.co.jp/shakai/edu/university/archive/")
+       ("話題" "wadai"
+	"http://www.mainichi-msn.co.jp/shakai/edu/wadai/archive/"))
+      ("shakai.edu.campal"
+       ("大楽人" "dairakujin"
+	"http://www.mainichi-msn.co.jp/shakai/edu/campal/dairakujin/archive/")
+       ("読見しました。" "dokumi"
+	"http://www.mainichi-msn.co.jp/shakai/edu/campal/dokumi/archive/")
+       ("情報伝言板" "jouho"
+	"http://www.mainichi-msn.co.jp/shakai/edu/campal/jouho/archive/")
+       ("斬る" "kiru"
+	"http://www.mainichi-msn.co.jp/shakai/edu/campal/kiru/archive/")
+       ("なにコレ？！" "nanikore"
+	"http://www.mainichi-msn.co.jp/shakai/edu/campal/nanikore/archive/")
+       ("すた・こら" "sutakora"
+	"http://www.mainichi-msn.co.jp/shakai/edu/campal/sutakora/archive/"))
+      ("sports"
+       ("アマ野球" "ama" "http://www.mainichi-msn.co.jp/sports/ama/")
+       ("格闘技" "battle" "http://www.mainichi-msn.co.jp/sports/battle/")
+       ("その他" "feature" "http://www.mainichi-msn.co.jp/sports/feature/")
+       ("陸上競技" "field" "http://www.mainichi-msn.co.jp/sports/field/")
+       ("競馬" "keiba" "http://www.mainichi-msn.co.jp/sports/keiba/")
+       ("大リーグ" "major" "http://www.mainichi-msn.co.jp/sports/major/")
+       ("プロ野球" "pro" "http://www.mainichi-msn.co.jp/sports/pro/")
+       ("サッカー" "soccer" "http://www.mainichi-msn.co.jp/sports/soccer/"))
+      ("sports.column"
+       ("ベンチ" "benchi"
+	"http://www.mainichi-msn.co.jp/sports/benchi/archive/")
+       ("遺伝子は飛ぶ" "gene2.keiba"
+	"http://www.mainichi-msn.co.jp/sports/keiba/gene2/")
+       ("冨重圭以子の納得の一言" "hitokoto"
+	"http://www.mainichi-msn.co.jp/sports/hitokoto/archive/")
+       ("佐藤典夫の超ウルトラ馬券" "horsenews.keiba"
+	"http://www.mainichi-msn.co.jp/sports/keiba/horsenews/")
+       ("井崎脩五郎の予想上手の馬券ベタ" "jouzu.keiba"
+	"http://www.mainichi-msn.co.jp/sports/keiba/jouzu/")
+       ("マリヨンのＮＹ発・球界インサイド" "mariyon.major"
+	"http://www.mainichi-msn.co.jp/sports/major/mariyon/archive/")
+       ("予想小説" "novel.keiba"
+	"http://www.mainichi-msn.co.jp/sports/keiba/novel/archive/")
+       ("プレスルーム" "pressroom"
+	"http://www.mainichi-msn.co.jp/sports/pressroom/archive/")
+       ("松沢一憲のＶデータ" "vdata.keiba"
+	"http://www.mainichi-msn.co.jp/sports/keiba/vdata/"))))
   "Alist of parent groups and lists of subgenres and tables for subgroups.
 Each table is the same as the `cdr' of the element of
 `shimbun-mainichi-group-table'.  If a table is omitted the value of
@@ -376,10 +478,11 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 		     shimbun-mainichi-header-regexp-default))
 	 (from (concat (shimbun-server-name shimbun)
 		       " (" (shimbun-current-group-name shimbun) ")"))
-	 (editorial (string-equal group "eye.shasetsu"))
+	 (editorial (when (string-equal group "eye.shasetsu")
+		      (list nil)))
 	 (subgroups (cdr (assoc group shimbun-mainichi-subgroups-alist)))
-	 numbers start id subgenre url month day subject urls subjects
-	 headers header date subgrp)
+	 numbers start serial snum id subgenre url month day subject urls
+	 subjects headers header date subgrp)
     (if (eq (car regexp) 'none)
 	(setq regexp nil)
       (setq numbers (cdr regexp)
@@ -391,14 +494,6 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 	  (shimbun-strip-cr)
 	  ;; Ignore unwanted links.
 	  (cond
-	   (editorial
-	    (goto-char (point-min))
-	    (when (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
-<a[\t\n ]+href=\"/eye/shasetsu/archive/\">"
-				     nil t)
-	      (delete-region (match-beginning 0) (point-max)))
-	    (goto-char (point-min))
-	    (re-search-forward "<div[\t\n ]+class=\"blocks\">[\t\n ]*" nil t))
 	   ((and (string-equal group "eye")
 		 (progn
 		   (goto-char (point-min))
@@ -449,7 +544,16 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 
 	  (goto-char (point-min))
 	  (while (re-search-forward regexp nil t)
-	    (setq id (concat "<" (match-string (nth 1 numbers)) "%"
+	    (setq serial (match-string (nth 1 numbers)))
+	    (when editorial
+	      (setq serial
+		    (concat serial "."
+			    (if (setq snum (assoc serial editorial))
+				(number-to-string
+				 (setcdr snum (1+ (cdr snum))))
+			      (push (setq snum (cons serial 1)) editorial)
+			      "1"))))
+	    (setq id (concat "<" serial "%"
 			     (when subgenre (concat subgenre "."))
 			     (save-match-data
 			       (if (string-match "\\." group)
@@ -466,15 +570,19 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 	    (when editorial
 	      (setq subject (format "%02d/%02d %s" month day subject)))
 	    ;; Exclude duplications.
-	    (unless (or (member url urls)
-			(progn
-			  (push url urls)
-			  (and editorial
-			       (member subject subjects)))
-			(progn
-			  (when editorial
-			    (push subject subjects))
-			  (shimbun-search-id shimbun id)))
+	    (unless (or (if editorial
+			    (and (or (or (member subject subjects)
+					 (progn
+					   (push subject subjects)
+					   nil))
+				     (member url urls))
+				 (progn
+				   (setcdr snum (1- (cdr snum)))
+				   t))
+			  (member url urls))
+			(prog1
+			    (shimbun-search-id shimbun id)
+			  (push url urls)))
 	      (push
 	       (shimbun-create-header
 		0 subject from
