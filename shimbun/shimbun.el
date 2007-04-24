@@ -1393,11 +1393,15 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
     (goto-char start)
     (while (re-search-forward "\\([!-~]\\)　\\|　\\([!-~]\\)" nil t)
       (if (match-beginning 1)
-	  (unless (string-equal
-		   (buffer-substring (max (- (match-beginning 1) 2)
-					  (point-min))
-				     (match-end 1))
-		   "<p>")
+	  ;; Don't break paragraph start.
+	  (unless (and (eq (char-after (match-beginning 1)) ?>)
+		       (eq (prog1
+			       (save-match-data
+				 (re-search-backward "<p\\(?:[\t\n ]+[^>]+\\)?"
+						     nil t)
+				 (match-end 0))
+			     (goto-char (match-end 0)))
+			   (match-beginning 1)))
 	    (replace-match "\\1 "))
 	(unless (memq (char-before (match-beginning 0)) '(nil ?\n))
 	  (replace-match " \\2"))
