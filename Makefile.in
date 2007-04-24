@@ -76,6 +76,10 @@ install-lisp: lisp
 	  fi;\
 	done;\
 	if test -f shimbun/shimbun.elc; then\
+	  for p in `cd shimbun && echo ChangeLog*`; do\
+	    echo " $(INSTALL_DATA) shimbun/$$p $(lispdir)/s$$p";\
+	    $(INSTALL_DATA) shimbun/$$p $(lispdir)/s$$p;\
+	  done;\
 	  for p in `cd shimbun && echo *.el`; do\
 	    echo " $(INSTALL_DATA) shimbun/$$p $(lispdir)/$$p";\
 	    $(INSTALL_DATA) shimbun/$$p $(lispdir)/$$p;\

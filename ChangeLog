@@ -1,3 +1,7 @@
+2007-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (install-lisp): Install shimbun/ChangeLog file.
+
 2007-04-24  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-support-emacs-w3m): New variable.
