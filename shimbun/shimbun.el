@@ -1354,6 +1354,13 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
       (while (search-forward "＆" nil t)
 	(replace-match "&amp;"))
       (goto-char start))
+    (while (re-search-forward "\
+\\(?:[Ｆｆ][Ｉｉ][Ｌｌ][Ｅｅ]\\|[Ｆｆ][Ｔｔ][Ｐｐ]\
+\\|[Ｈｈ][Ｔｔ][Ｔｔ][Ｐｐ][Ｓｓ]?\\|[Ｍｍ][Ａａ][Ｉｉ][Ｌｌ][Ｔｔ][Ｏｏ]\\)\
+：\\cA+"
+			      nil t)
+      (japanese-hankaku-region (match-beginning 0) (match-end 0) t))
+    (goto-char start)
     (while (re-search-forward "\\([^0-9０-９]\\)：\\|：\\([^ 0-9　０-９]\\)"
 			      nil t)
       (if (match-beginning 1)
