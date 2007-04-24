@@ -1,3 +1,14 @@
+2007-04-24  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-support-emacs-w3m): New variable.
+	(w3m-compile-options): Set w3m-support-emacs-w3m to t if w3m compiled
+	with emacsdump.
+	(w3m-strike-through-face-no-windowsystem): New face.
+	(w3m-halfdump-command-arguments): Use '-emacsdump' instead of
+	'-halfdump' when w3m has it.
+	(w3m-fontify-strike-through): Support w3m-support-emacs-w3m.
+	(w3m-fontify-insert): Ditto.
+
 2007-04-24  Naohiro Aota <nao.aota@gmail.com>
 
 	* w3m.el (w3m-goto-url): Set truncate-lines to nil, if a source or

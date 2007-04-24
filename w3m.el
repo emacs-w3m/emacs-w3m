@@ -205,6 +205,8 @@ The valid values include `w3m', `w3mmee', and `w3m-m17n'.")
   "Compile options that the w3m command was built with.")
 (defvar w3m-version nil
   "Version string of the w3m command.")
+(defvar w3m-support-emacs-w3m nil
+  "W3m suppert emacs-w3m for fontify.")
 
 ;; Set w3m-command, w3m-type, w3m-version and w3m-compile-options
 (if noninteractive ;; Don't call the external command when compiling.
@@ -242,6 +244,8 @@ The valid values include `w3m', `w3mmee', and `w3m-m17n'.")
 						     (point)))
 				    ",")
 		      (list nil)))
+	    (when (member "emacsdump" w3m-compile-options)
+	      (setq w3m-support-emacs-w3m t))
 	    (when (member "m17n" w3m-compile-options)
 	      (setq w3m-type 'w3m-m17n))))))))
 
@@ -899,6 +903,10 @@ of the original request method."
 	   :strike-through)
 	t)))
   "Face used for displaying strike-through text."
+  :group 'w3m-face)
+
+(defface w3m-strike-through-face-no-windowsystem '((t (:underline t)))
+  "Face used for displaying underlined text on no window system."
   :group 'w3m-face)
 
 (defface w3m-insert-face
@@ -2458,7 +2466,9 @@ If it is nil, the command specified to `w3m-command' is used.")
 		    (list "-I" 'charset)))
 	       "-o" "concurrent=0"))
 	((eq w3m-type 'w3m-m17n)
-	 (list "-halfdump"
+	 (list '(if w3m-support-emacs-w3m
+		    (list "-emacsdump")
+		  (list "-halfdump"))
 	       "-o" "ext_halfdump=1"
 	       "-o" "strict_iso2022=0"
 	       "-o" "fix_width_conv=1"
@@ -2482,8 +2492,13 @@ If it is nil, the command specified to `w3m-command' is used.")
 		 (t
 		  "ISO-2022-JP-2"))))
 	((eq w3m-input-coding-system 'w3m-euc-japan)
-	 (list "-halfdump" "-I" "e"))
-	(t (list "-halfdump")))
+	 (list '(if w3m-support-emacs-w3m
+		    (list "-emacsdump")
+		  (list "-halfdump"))
+	       "-I" "e"))
+	(t (list '(if w3m-support-emacs-w3m
+		    (list "-emacsdump")
+		  (list "-halfdump")))))
   "Arguments passed to the w3m command to run \"halfdump\".")
 
 (defconst w3m-halfdump-command-common-arguments
@@ -3230,45 +3245,61 @@ For example:
 
 (defun w3m-fontify-strike-through ()
   "Fontify strike-through text in the buffer containing halfdump."
-  (when (w3m-device-on-window-system-p)
+  (let ((face (if (w3m-device-on-window-system-p)
+		  'w3m-strike-through-face
+		'w3m-strike-through-face-no-windowsystem)))
     (goto-char (point-min))
-    (while (re-search-forward "\\[\\(?:DEL\\|S\\):" nil t)
-      (let ((start (match-beginning 0))
-	    (indent 1))
-	(delete-region start (match-end 0))
-	(while (and (< 0 indent)
-		    (re-search-forward
-		     "\\(\\[\\(?:DEL\\|S\\):\\)\\|\\(:\\(?:DEL\\|S\\)\\]\\)"
-		     nil t))
-	  (if (match-string 1)
-	      (progn
-		(delete-region (match-beginning 0) (match-end 0))
-		(setq indent (1+ indent)))
-	    (delete-region (match-beginning 0) (match-end 0))
-	    (setq indent (1- indent))))
-	(w3m-add-face-property start (match-beginning 0)
-			       'w3m-strike-through-face)))))
+    (if w3m-support-emacs-w3m
+	(while (search-forward "<s>" nil t)
+	  (let ((start (match-beginning 0)))
+	    (delete-region start (match-end 0))
+	    (when (re-search-forward "</s[ \t\r\f\n]*>" nil t)
+	      (delete-region (match-beginning 0) (match-end 0))
+	      (w3m-add-face-property start (match-beginning 0) face))))
+      (while (re-search-forward "\\[\\(?:DEL\\|S\\):" nil t)
+	(let ((start (match-beginning 0))
+	      (indent 1))
+	  (delete-region start (match-end 0))
+	  (while (and (< 0 indent)
+		      (re-search-forward
+		       "\\(\\[\\(?:DEL\\|S\\):\\)\\|\\(:\\(?:DEL\\|S\\)\\]\\)"
+		       nil t))
+	    (if (match-string 1)
+		(progn
+		  (delete-region (match-beginning 0) (match-end 0))
+		  (setq indent (1+ indent)))
+	      (delete-region (match-beginning 0) (match-end 0))
+	      (setq indent (1- indent))))
+	  (w3m-add-face-property start (match-beginning 0) face))))))
 
 (defun w3m-fontify-insert ()
   "Fontify insert text in the buffer containing halfdump."
-  (when w3m-fontify-insert
-    (goto-char (point-min))
-    (while (re-search-forward "\\[INS:" nil t)
-      (let ((start (match-beginning 0))
-	    (indent 1))
-	(delete-region start (match-end 0))
-	(while (and (< 0 indent)
-		    (re-search-forward
-		     "\\(\\[INS:\\)\\|\\(:INS\\]\\)"
-		     nil t))
-	  (if (match-string 1)
-	      (progn
-		(delete-region (match-beginning 0) (match-end 0))
-		(setq indent (1+ indent)))
+  (goto-char (point-min))
+  (if w3m-support-emacs-w3m
+      (while (search-forward "<ins>" nil t)
+	(let ((start (match-beginning 0)))
+	  (delete-region start (match-end 0))
+	  (when (re-search-forward "</ins[ \t\r\f\n]*>" nil t)
 	    (delete-region (match-beginning 0) (match-end 0))
-	    (setq indent (1- indent))))
-	(w3m-add-face-property start (match-beginning 0)
-			       'w3m-insert-face)))))
+	    (w3m-add-face-property start (match-beginning 0)
+				   'w3m-insert-face))))
+    (when w3m-fontify-insert
+      (while (re-search-forward "\\[INS:" nil t)
+	(let ((start (match-beginning 0))
+	      (indent 1))
+	  (delete-region start (match-end 0))
+	  (while (and (< 0 indent)
+		      (re-search-forward
+		       "\\(\\[INS:\\)\\|\\(:INS\\]\\)"
+		       nil t))
+	    (if (match-string 1)
+		(progn
+		  (delete-region (match-beginning 0) (match-end 0))
+		  (setq indent (1+ indent)))
+	      (delete-region (match-beginning 0) (match-end 0))
+	      (setq indent (1- indent))))
+	  (w3m-add-face-property start (match-beginning 0)
+				 'w3m-insert-face))))))
 
 (defsubst w3m-decode-anchor-string (str)
   ;; FIXME: This is a quite ad-hoc function to process encoded url string.
