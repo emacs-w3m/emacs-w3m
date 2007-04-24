@@ -8129,6 +8129,11 @@ Cannot run two w3m processes simultaneously \
 		(run-hook-with-args 'w3m-display-functions real-url)
 		(run-hook-with-args 'w3m-display-hook real-url))
 	      ;; restore position must call after hooks for localcgi.
+	      (when (and w3m-current-url
+			 (stringp w3m-current-url)
+			 (string-match "\\`about://\\(?:header\\|source\\)/"
+				       w3m-current-url))
+		(setq truncate-lines nil))
 	      (when (or reload redisplay)
 		(w3m-history-restore-position))
 	      (w3m-refresh-at-time)))))))
@@ -8597,11 +8602,9 @@ works on Emacs.
 	  (w3m-goto-url (substring w3m-current-url (match-end 0))))
 	 ((string-match "\\`about://header/" w3m-current-url)
 	  (w3m-goto-url (concat "about://source/"
-				(substring w3m-current-url (match-end 0))))
-	  (setq truncate-lines nil))
+				(substring w3m-current-url (match-end 0)))))
 	 (t
-	  (w3m-goto-url  (concat "about://source/" w3m-current-url))
-	  (setq truncate-lines nil))))
+	  (w3m-goto-url  (concat "about://source/" w3m-current-url)))))
     (w3m-message "Can't view page source")))
 
 (defun w3m-make-separator ()
@@ -8675,13 +8678,11 @@ works on Emacs.
 	  (w3m-goto-url (substring w3m-current-url (match-end 0))))
 	 ((string-match "\\`about://source/" w3m-current-url)
 	  (w3m-goto-url (concat "about://header/"
-				(substring w3m-current-url (match-end 0))))
-	  (setq truncate-lines nil))
+				(substring w3m-current-url (match-end 0)))))
 	 ((string-match "\\`about:" w3m-current-url)
 	  (error "Can't load a header for %s" w3m-current-url))
 	 (t
-	  (w3m-goto-url (concat "about://header/" w3m-current-url))
-	  (setq truncate-lines nil))))
+	  (w3m-goto-url (concat "about://header/" w3m-current-url)))))
     (w3m-message "Can't view page header")))
 
 (defvar w3m-about-history-max-indentation '(/ (* (window-width) 2) 3)
