@@ -1,6 +1,13 @@
 2007-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* shimbun.el (shimbun-japanese-hankaku-region): Convert urls first.
+	* sb-sankei.el (shimbun-sankei-group-table): Add special.tamura group.
+	(shimbun-clear-contents): Merge the :before around method into the
+	:before method (luna-define-method doesn't allow two or more methods
+	for the identical parent function); remove adv for news.sports group;
+	improve the cleaner for special.kiko group.
+
+	* shimbun.el (shimbun-japanese-hankaku-region): Convert urls first;
+	improve the way not to break paragraph start.
 
 2007-04-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
