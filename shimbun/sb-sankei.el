@@ -169,6 +169,8 @@
       ("special.kuroda" "黒田勝弘のソウル報告" "special/kuroda/kuroda.htm"
        ,@special)
       ("special.ito" "伊藤正の北京報告" "special/ito/ito.htm" ,@special)
+      ("special.tamura" "田村秀男の「経済がわかれば世界がわかる」"
+       "special/tamura/tamura.htm" ,@special)
       ("special.jieitai" "自衛隊特集" "special/jieitai/jieitai.htm" ,@special)
       ("special.kenpo" "憲法" "special/kenpo/kenpo.htm" ,@special)
       ("special.kyouiku" "教育を考える" "special/kyouiku/kyouiku.htm"
@@ -275,16 +277,34 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACUAAAAlAgMAAAC48MiQAAAADFBMVEUDU4CnwdA3dpr///9
 	      headers)))
     (shimbun-sort-headers headers)))
 
-(luna-define-method shimbun-clear-contents :before ((shimbun shimbun-sankei)
+(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-sankei)
 						    header)
   (let ((group (shimbun-current-group-internal shimbun))
 	start)
-    (cond ((string-equal group "special.kiko")
-	   (when (re-search-forward "<p[\t\n ]+class=\"paragraph\">" nil t)
+    (cond ((string-equal group "news.sports")
+	   (when (re-search-forward "\
+\\(?:[\t\n ]*\\(?:&nbsp\;[\t\n ]*\\)?<[^>]+>\\)*\
+\[\t\n ]*\\(?:プロ野球\\|大リーグ\\)関連サイト＆ＰＲ[\t\n ]*<"
+				    nil t)
 	     (goto-char (match-beginning 0))
-	     (insert "<!--hombun-->")
-	     (setq start (point))
-	     (forward-line 1))
+	     (insert "<!--hbnend-->")))
+	  ((string-equal group "special.kiko")
+	   ;; Remove commented sections.
+	   (when (re-search-forward "\
+\[\t\n ]*<[\t\n ]*!-+\\(?:[^<>]*<[^>]+>\\)+[^<>]*-+[\t\n ]*>[\t\n ]*"
+				    nil t)
+	     (delete-region (match-beginning 0) (match-end 0))
+	     (goto-char (point-min)))
+	   (if (re-search-forward
+		"<p[\t\n ]+class=\\(?:\"paragraph\"\\|'paragraph'\\)>"
+		nil t)
+	       (progn
+		 (goto-char (match-beginning 0))
+		 (insert "<!--hombun-->")
+		 (setq start (point))
+		 (forward-line 1))
+	     (re-search-forward shimbun-sankei-content-start nil t)
+	     (setq start (point)))
 	   (when (re-search-forward "\
 \[\t\n ]*\\(?:</div>\\)?[\t\n ]*<!--▲記事本文▲-->"
 				    nil 'move)
@@ -295,10 +315,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACUAAAAlAgMAAAC48MiQAAAADFBMVEUDU4CnwdA3dpr///9
 	   (while (re-search-forward "<img[\t\n ]+src=[^>]+>" nil 'move)
 	     (insert "<br>"))
 	   (widen)
-	   (insert "<!--hbnend-->")))))
-
-(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-sankei)
-						    header)
+	   (insert "<!--hbnend-->"))))
   (when (luna-call-next-method)
     ;; Break long lines.
     (unless (shimbun-prefer-text-plain-internal shimbun)
