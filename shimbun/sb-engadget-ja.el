@@ -30,17 +30,20 @@
 (require 'shimbun)
 (require 'sb-rss)
 
-
 (defvar shimbun-engadget-ja-group-alist
   '(("top" ."http://japanese.engadget.com/rss.xml")))
 
 (luna-define-class shimbun-engadget-ja (shimbun-rss) ())
 
 (defvar shimbun-engadget-ja-content-start
-  "<div id=\"incontent\">")
+  (eval-when-compile
+    (regexp-opt '("<div id=\"incontent\">"
+		"<div id=\"content\">"))))
 (defvar shimbun-engadget-ja-content-end
-  (regexp-opt '("<h3>Recent Posts</h3>"
-		"<a name=\"comments\"></a>")))
+  (eval-when-compile
+    (regexp-opt '("<h3>Recent Posts</h3>"
+		"<h3 id=\"recentheadlines\">Recent Posts</h3>"
+		"<a name=\"comments\"></a>"))))
 
 (luna-define-method shimbun-groups ((shimbun shimbun-engadget-ja))
   (mapcar 'car shimbun-engadget-ja-group-alist))

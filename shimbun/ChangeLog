@@ -1,3 +1,9 @@
+2007-04-25  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* sb-engadget-ja.el
+	(shimbun-engadget-ja-content-start,shimbun-engadget-ja-content-end):
+	Fix new regexp.
+
 2007-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-group-table): Add special.tamura group.
