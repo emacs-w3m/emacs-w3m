@@ -4311,14 +4311,14 @@ the car is what the data specify as the encoding.  Or, the car is used
 for decoding when the cdr that the data specify is not available.")
 
 (defun w3m-decode-buffer (url &optional content-charset content-type)
-  (let (cs)
+  (let ((sourcep (string-match "\\`about://source/" url))
+	cs)
     (unless content-type
       (setq content-type (w3m-content-type url)))
     (unless content-charset
       (setq content-charset
 	    (or (w3m-content-charset url)
-		(when (or (string= "text/html" content-type)
-			  (string-match "\\`about://source/" url))
+		(when (or (string= "text/html" content-type) sourcep)
 		  (w3m-detect-meta-charset))
 		(w3m-detect-xml-charset))))
     (cond
@@ -4365,9 +4365,11 @@ for decoding when the cdr that the data specify is not available.")
        (set-buffer-multibyte t)))
 
     ;; Encode urls containing non-ASCII characters.
-    (when (or (featurep 'xemacs)
-	      ;; For the unknown reason Emacs 21.* causes segfault by this.
-	      (>= emacs-major-version 22))
+    (when (and (not sourcep)
+	       (or (featurep 'xemacs)
+		   ;; For the unknown reason Emacs 21.* causes segfault
+		   ;; by this.
+		   (>= emacs-major-version 22)))
       (goto-char (point-min))
       (let ((case-fold-search t))
 	(while (re-search-forward "\
