@@ -4317,7 +4317,8 @@ for decoding when the cdr that the data specify is not available.")
     (unless content-charset
       (setq content-charset
 	    (or (w3m-content-charset url)
-		(when (string= "text/html" content-type)
+		(when (or (string= "text/html" content-type)
+			  (string-match "\\`about://source/" url))
 		  (w3m-detect-meta-charset))
 		(w3m-detect-xml-charset))))
     (cond

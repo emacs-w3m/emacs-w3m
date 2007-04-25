@@ -1,3 +1,8 @@
+2007-04-24  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-decode-buffer): Use charset specified in meta tag even
+	for decoding html source.
+
 2007-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (install-lisp): Install shimbun/ChangeLog file.
@@ -13,7 +18,7 @@
 	(w3m-fontify-strike-through): Support w3m-support-emacs-w3m.
 	(w3m-fontify-insert): Ditto.
 
-2007-04-24  Naohiro Aota <nao.aota@gmail.com>
+2007-04-24  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m.el (w3m-goto-url): Set truncate-lines to nil, if a source or
 	header view.
