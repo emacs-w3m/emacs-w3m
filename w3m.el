@@ -4376,19 +4376,34 @@ for decoding when the cdr that the data specify is not available.")
 <[\t\n\r ]*\\(?:\\(a\\)\\|\\(img\\)\\)[\t\n\r ]+\
 \\(?:[\000-\075\077-\177]*[^\000-\177]+\\)+[\000-\075\077-\177]*>"
 				  nil t)
+	  (save-match-data
+	    (save-excursion
+	      (when (if (match-end 1)
+			(re-search-backward "[\t\n\r ]href[\t\n\r ]*=[\t\n\r ]*\
+\"\\(\\(?:[\000-\041\043-\177]*[^\000-\177]+\\)+[\000-\041\043-\177]*\\)"
+					    (match-end 1) t)
+		      (re-search-backward "[\t\n\r ]src[\t\n\r ]*=[\t\n\r ]*\
+\"\\(\\(?:[\000-\041\043-\177]*[^\000-\177]+\\)+[\000-\041\043-\177]*\\)"
+					  (match-end 2) t))
+		(insert (w3m-url-encode-string
+			 (prog1
+			     (match-string 1)
+			   (delete-region (goto-char (match-beginning 1))
+					  (match-end 1)))
+			 w3m-current-coding-system)))))
 	  (when (if (match-end 1)
-		    (re-search-backward "[\t\n\r ]href[\t\n\r ]*=[\t\n\r ]*\
-\"\\(\\(?:[\000-\041\043-\177]*[^\000-\177]+\\)+[\000-\041\043-\177]*\\)"
-					(match-end 1) t)
-		  (re-search-backward "[\t\n\r ]src[\t\n\r ]*=[\t\n\r ]*\
-\"\\(\\(?:[\000-\041\043-\177]*[^\000-\177]+\\)+[\000-\041\043-\177]*\\)"
-				      (match-end 2) t))
-	    (insert (w3m-url-encode-string
-		     (prog1
-			 (match-string 1)
-		       (delete-region (goto-char (match-beginning 1))
-				      (match-end 1)))
-		     w3m-current-coding-system))))))))
+			(re-search-backward "[\t\n\r ]href[\t\n\r ]*=[\t\n\r ]*\
+'\\(\\(?:[\000-\046\048-\177]*[^\000-\177]+\\)+[\000-\046\048-\177]*\\)"
+					    (match-end 1) t)
+		      (re-search-backward "[\t\n\r ]src[\t\n\r ]*=[\t\n\r ]*\
+'\\(\\(?:[\000-\046\048-\177]*[^\000-\177]+\\)+[\000-\046\048-\177]*\\)"
+					  (match-end 2) t))
+		(insert (w3m-url-encode-string
+			 (prog1
+			     (match-string 1)
+			   (delete-region (goto-char (match-beginning 1))
+					  (match-end 1)))
+			 w3m-current-coding-system))))))))
 
 (defun w3m-x-moe-decode-buffer ()
   (let ((args '("-i" "-cs" "x-moe-internal"))
@@ -7989,6 +8004,9 @@ the current page."
   (unless (or (w3m-url-local-p url)
 	      (string-match "\\`about:" url))
     (setq url (w3m-url-transfer-encode-string url w3m-default-coding-system)))
+  (when (and (w3m-url-local-p url)
+	     (not(string-match "[^\000-\177]" url)))
+    (setq url (w3m-url-decode-string url)))
   (cond
    ;; process mailto: protocol
    ((string-match "\\`mailto:" url)

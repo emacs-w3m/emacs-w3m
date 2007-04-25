@@ -1,3 +1,9 @@
+2007-04-25  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-decode-buffer): Encode urls containing non-ASCII
+	characters quoted with '' as well as those quoted with "".
+	(w3m-goto-url): Decode urls when url is local.
+
 2007-04-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-decode-buffer): Don't encode urls containing non-ASCII
