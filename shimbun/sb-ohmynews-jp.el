@@ -27,38 +27,34 @@
 ;;; Code:
 
 (require 'shimbun)
+(require 'sb-rss)
 
-(luna-define-class shimbun-ohmynews-jp (shimbun-japanese-newspaper shimbun) ())
+(luna-define-class shimbun-ohmynews-jp
+		   (shimbun-japanese-newspaper shimbun-rss) ())
 
-(defvar shimbun-ohmynews-jp-top-level-domain "ohmynews.co.jp"
-  "Name of the top level domain for Ohmynews Japan.")
-
-(defvar shimbun-ohmynews-jp-url
-  (concat "http://www." shimbun-ohmynews-jp-top-level-domain "/")
+(defvar shimbun-ohmynews-jp-url "http://www.ohmynews.co.jp/"
   "Name of the parent url.")
 
 (defvar shimbun-ohmynews-jp-server-name "オーマイニュース")
 
-(defvar shimbun-ohmynews-jp-from-address "nobody@example.com")
-
 (defvar shimbun-ohmynews-jp-content-start
-  "\\(?:<div[\t\n\r ]+class=\"news-sub[bt]itle\">[\t\n\r ]*\
-\\|<!-+[\t\n\r ]*\\(?:編集者注\\|記事本文\\)[\t\n\r ]*-+>[\t\n\r ]*\\)")
+  "<!--emacs-w3m-shimbun-ohmynews-jp-content-start-->")
 
 (defvar shimbun-ohmynews-jp-content-end
-  "[\t\n\r ]*<!-+[\t\n\r ]*記事フッタ[\t\n\r ]*-+>")
+  "<!--emacs-w3m-shimbun-ohmynews-jp-content-end-->")
 
 (defvar shimbun-ohmynews-jp-group-table
-  '(("shakai" "社会" "NewsList.aspx?newstype_id=0&type_id=COM")
-    ("keizai" "経済" "NewsList.aspx?newstype_id=0&type_id=ECN")
-    ("seiji" "政治" "NewsList.aspx?newstype_id=0&type_id=POL")
-    ("kokusai" "国際" "NewsList.aspx?newstype_id=0&type_id=INT")
-    ("entame" "エンタメ" "NewsList.aspx?newstype_id=0&type_id=ENT")
-    ("life" "ライフ" "NewsList.aspx?newstype_id=0&type_id=LIF")
-    ("science" "サイエンス" "NewsList.aspx?newstype_id=0&type_id=SIE")
-    ("sports" "スポーツ" "NewsList.aspx?newstype_id=0&type_id=SPO")
-    ("books" "BOOKS" "NewsList.aspx?newstype_id=0&type_id=BOK")
-    ("all" "全記事" "NewsList.aspx")))
+  '(("watashi" "わたし" 100)
+    ("life" "生活・医療" 110)
+    ("shakai" "社会" 120)
+    ("seiji" "政治" 130)
+    ("keizai" "経済" 140)
+    ("kaigai" "海外" 150)
+    ("culture" "カルチャー" 160)
+    ("style" "スタイル" 170)
+    ("sports" "スポーツ" 180)
+    ("it" "IT" 190)
+    ("local" "地域版" 200)))
 
 (defvar shimbun-ohmynews-jp-x-face-alist
   '(("default" . "X-Face: o|vpDA-})w*TrtnFk9lZ\",j\"y_kn<xZy+LC\\zH(wC$\
@@ -76,143 +72,66 @@ v*[xW.y6Tt/r=U{a?+nH20N{)a/w145kJxfhqf}Jd<p\n `bP:u\\Awi^xGQ3pUOrsPL.';\
 		shimbun-ohmynews-jp-group-table)))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-ohmynews-jp))
-  (shimbun-expand-url (nth 2 (assoc (shimbun-current-group-internal shimbun)
-				    shimbun-ohmynews-jp-group-table))
-		      (shimbun-url-internal shimbun)))
-
-(luna-define-method shimbun-get-headers ((shimbun shimbun-ohmynews-jp)
-					 &optional range)
-  (let ((regexp1
-	 (eval-when-compile
-	   (let ((s0 "[\t\n\r ]*")
-		 (s1 "[\t\n\r ]+"))
-	     (concat
-	      "<a" s1 "href=[\"']?"
-	      ;; 1. url
-	      "\\(http://www\\.ohmynews\\.co\\.jp/News\\.aspx\\?news_id="
-	      ;; 2. serial
-	      "\\([0-9]+\\)"
-	      "\\)"
-	      "[\"']?" s0 ">" s0 "<h1>" s0
-	      ;; 3. subject
-	      "\\([^<]+\\)"
-	      s0 "</h1>"))))
-	(regexp2
-	 (eval-when-compile
-	   (let ((s0 "[\t\n\r ]*")
-		 (s1 "[\t\n\r ]+"))
-	     (concat
-	      "/" s0 ">" s0
-	      ;; 1. author
-	      "\\([^(]+\\)"
-	      s0 "("
-	      ;; 2. year
-	      "\\(20[0-9][0-9]\\)"
-	      "/"
-	      ;; 3. month
-	      "\\([01]?[0-9]\\)"
-	      "/"
-	      ;; 4. day
-	      "\\([0-3]?[0-9]\\)"
-	      s1
-	      ;; 5. time
-	      "\\([012]?[0-9]:[0-5]?[0-9]\\(?::[0-5]?[0-9]\\)\\)"
-	      s0 ")" s0 "<"))))
-	(regexp3
-	 (eval-when-compile
-	   (let ((s0 "[\t\n\r ]*")
-		 (s1 "[\t\n\r ]+"))
-	     (concat
-	      "<a" s1 "class=\"pager-link\"" s1 "href=\""
-	      "\\(/NewsList\\.aspx\\?"
-	      "\\(?:newstype_id=[0-9]+&amp;type_id=[A-Z]+&amp;\\)?"
-	      "list_page=[0-9]+\\)"
-	      "\"" s0 ">" s0 "[0-9]+" s0 "</a>"))))
-	(group (shimbun-current-group-internal shimbun))
-	(gname (shimbun-current-group-name shimbun))
-	(pages (shimbun-header-index-pages range))
-	(count 0)
-	md start url serial subject end author year month day time id
-	backnumbers headers)
-    (catch 'stop
-      (while t
-	(while (cond ((eq md 'end)
-		      nil)
-		     (md
-		      (set-match-data md)
-		      (goto-char (setq start (match-end 0))))
-		     ((re-search-forward regexp1 nil t)
-		      (setq start (match-end 0))))
-	  (setq url (match-string 1)
-		serial (match-string 2)
-		subject (match-string 3))
-	  (if (re-search-forward regexp1 nil t)
-	      (progn
-		(setq end (match-beginning 0)
-		      md (match-data))
-		(goto-char start))
-	    (setq end nil
-		  md 'end))
-	  (when (re-search-forward regexp2 end t)
-	    (setq author (match-string 1)
-		  year (string-to-number (match-string 2))
-		  month (string-to-number (match-string 3))
-		  day (string-to-number (match-string 4))
-		  time (match-string 5)
-		  id (format "<%d%02d%02d.%s.%s%%%s.%s>"
-			     year month day
-			     (mapconcat
-			      (lambda (elem)
-				(format "%02d" (string-to-number elem)))
-			      (split-string time ":")
-			      "")
-			     serial group
-			     shimbun-ohmynews-jp-top-level-domain))
-	    (unless (and (shimbun-search-id shimbun id)
-			 (if backnumbers
-			     (throw 'stop nil)
-			   t))
-	      (push (shimbun-create-header
-		     0 subject
-		     (concat shimbun-ohmynews-jp-server-name ":"
-			     gname " (" author ")")
-		     (shimbun-make-date-string year month day time)
-		     id "" 0 0 url)
-		    headers))))
-	(cond ((eq backnumbers 'stop)
-	       (throw 'stop nil))
-	      ((null backnumbers)
-	       (while (re-search-forward regexp3 nil t)
-		 (unless (member (setq id (match-string 1)) backnumbers)
-		   (setq backnumbers (nconc backnumbers (list id)))))))
-	(if (and backnumbers
-		 (or (not pages)
-		     (< (setq count (1+ count)) pages)))
-	    (progn
-	      (erase-buffer)
-	      (shimbun-retrieve-url
-	       (shimbun-expand-url (shimbun-decode-entities-string
-				    (car backnumbers))
-				   (shimbun-url-internal shimbun)))
-	      (when (and (cdr backnumbers)
-			 (re-search-forward
-			  (concat "<a[\t\n\r ]+href=[\"']"
-				  (regexp-quote (cadr backnumbers))
-				  "[\"'][\t\n\r ]*>[\t\n\r ]*[0-9]")
-			  nil t))
-		(while (re-search-forward regexp3 nil t)
-		  (unless (member (setq id (match-string 1)) backnumbers)
-		    (setq backnumbers (nconc backnumbers (list id)))))
-		(goto-char (point-min)))
-	      (unless (setq backnumbers (cdr backnumbers))
-		(setq backnumbers 'stop))
-	      (setq md nil))
-	  (throw 'stop nil))))
-    (shimbun-sort-headers headers)))
+  (shimbun-expand-url
+   (format "rss/news_c%03d.xml"
+	   (nth 2 (assoc (shimbun-current-group-internal shimbun)
+			 shimbun-ohmynews-jp-group-table)))
+   (shimbun-url-internal shimbun)))
 
 (luna-define-method shimbun-clear-contents :around ((shimbun
 						     shimbun-ohmynews-jp)
 						    header)
+  (while (search-forward "\r" nil t) ;; There are CRs not followed LFs.
+    (delete-region (match-beginning 0) (match-end 0)))
+  (goto-char (point-min))
+  (when (or (re-search-forward "<\\(?:!-+#+[\t\n ]*top_entry_sub/[\t\n ]*#+-+\
+\\|div\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+class=\"top_entry_sub\"\
+\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*\\|div[\t\n ]+class=\"title\"\\)>\
+\\(?:[\t\n ]*<[^>h][^>]*>\\)*[\t\n ]*<h[^>]*>[^<]+<[^>]+>[\t\n ]*"
+			       nil t)
+	    (re-search-forward "<!-+#+[\t\n ]*news_tmp_box[^/>]+/[\t\n ]*#+-+>\
+\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<h[^>]*>[^<]+<[^>]+>[\t\n ]*"
+			       nil t))
+    (insert shimbun-ohmynews-jp-content-start)
+    (let ((start (point))
+	  end)
+      (when (cond ((re-search-forward "\
+\\(?:[\t\n 　＊]\\|&nbsp\;\\|<br>\\|<p\\(?:[\t\n ]+[^>]+\\)?>\\|</p>\\)*\
+\\(?:\\(?:<a[\t\n ]+[^>]+>[^<]+</a>\\|<[^>]+>\\)\
+\\(?:[\t\n 　＊]\\|&nbsp\;\\|<br>\\|<p\\(?:[\t\n ]+[^>]+\\)?>\\|</p>\\)*\\)*\
+\【[^】]*関連\\(?:リンク\\|記事\\)[^】]*】"
+				      nil t)
+		   (goto-char (match-beginning 0))
+		   t)
+		  ((re-search-forward "\
+\\(?:[\t\n 　＊]\\|&nbsp\;\\|<br>\\|<p\\(?:[\t\n ]+[^>]+\\)?>\\|</p>\\)*\
+\\(?:\\(?:\\(?:<a[\t\n ]+[^>]+>[^<]+</a>\\|<[^>]+>\\)\
+\\(?:[\t\n 　＊]\\|&nbsp\;\\|<br>\\|<p\\(?:[\t\n ]+[^>]+\\)?>\\|</p>\\)*\\)*\
+\【[^】]+】\
+\\(?:[\t\n 　＊]\\|&nbsp\;\\|<br>\\|<p\\(?:[\t\n ]+[^>]+\\)?>\\|</p>\\)*\\)?\
+\\(?:\\(?:<a[\t\n ]+[^>]+>[^<]+</a>\\|<[^>]+>\\)\
+\\(?:[\t\n 　＊]\\|&nbsp\;\\|<br>\\|<p\\(?:[\t\n ]+[^>]+\\)?>\\|</p>\\)*\\)*\
+<!-+#+[\t\n ]*/\\(?:news_entry_body\\|news_tmp_box[^>]+\\)[\t\n ]*#+-+>"
+				      nil t)
+		   (goto-char (match-beginning 0))
+		   (when (looking-at "\
+\\(?:[\t\n 　＊]\\|&nbsp\;\\|<br>\\|<p\\(?:[\t\n ]+[^>]+\\)?>\\|</p>\\)*\
+<a[\t\n ]+[^>]+>[^<]+</a>")
+		     (goto-char (match-end 0)))
+		   t))
+	(setq end (point-marker))
+	(insert shimbun-ohmynews-jp-content-end)
+	(goto-char start)
+	(when (and (re-search-forward "[\t\n ]*<div[\t\n ]+class=\"news_btn\">"
+				      end t)
+		   (progn
+		     (setq start (match-beginning 0))
+		     (re-search-forward "<\
+\\(?:!-+#*[\t\n ]*news_entry_body/[\t\n ]*#+-+\
+\\|div[\t\n ]+class=\"news_entry_body\"\\)>[\t\n ]*"
+					end t)))
+	  (delete-region start (point))
+	  (insert "\n<p>")))))
   (when (luna-call-next-method)
     ;; Break long lines.
     (unless (shimbun-prefer-text-plain-internal shimbun)
