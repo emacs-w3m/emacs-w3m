@@ -1,3 +1,17 @@
+2007-04-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-ohmynews-jp.el (toplevel): Use sb-rss.el.
+	(shimbun-ohmynews-jp-top-level-domain)
+	(shimbun-ohmynews-jp-from-address): Remove.
+	(shimbun-ohmynews-jp-content-start)
+	(shimbun-ohmynews-jp-content-end): Update.
+	(shimbun-ohmynews-jp-group-table): Add watashi, style, it and local
+	groups; remove science, books and all groups; rename kokusai and entame
+	groups to kaigai and culture groups respectively.
+	(shimbun-index-url): Update.
+	(shimbun-get-headers): Remove.
+	(shimbun-clear-contents): Rewrite.
+
 2007-04-25  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* sb-engadget-ja.el
@@ -450,7 +464,7 @@
 	(shimbun-asahi-group-table): Fix regexps for car.newcarbywebcg and
 	culture groups.
 
-2007-01-24  NOMIYA Masaru <nomiya@galaxy.dti.ne.jp>
+2007-01-24  NOMIYA Masaru  <nomiya@galaxy.dti.ne.jp>
 
 	* sb-asahi.el (shimbun-asahi-group-table): Relax regexp for rss group.
 
@@ -5579,7 +5593,7 @@
 
 	* Release emacs-w3m-1.3 from emacs-w3m-1_3 branch.
 
-2002-06-03  Hidetaka Iwai <tyuyu@mb6.seikyou.ne.jp>
+2002-06-03  Hidetaka Iwai  <tyuyu@mb6.seikyou.ne.jp>
 
 	* sb-texfaq.el (shimbun-texfaq-group-path-alist): Fix path to get
 	latest articles.
@@ -5630,7 +5644,7 @@
 	(shimbun-get-headers): Set URL properly.  Do not use `nreverse' for
 	HEADERS.
 
-2002-05-30  Kenichi SATO <ksato@iijmio-mail.jp>
+2002-05-30  Kenichi SATO  <ksato@iijmio-mail.jp>
 
 	* sb-sponichi.el (shimbun-sponichi-groups): Add golf and battle.
 	(shimbun-get-headers): Follow the change of the Web site.  Modify
@@ -5657,7 +5671,7 @@
 	(shimbun-groups): New method.
 	(shimbun-get-headers): Small clean up.
 
-2002-05-28  Kenichi SATO <ksato@iijmio-mail.jp>
+2002-05-28  Kenichi SATO  <ksato@iijmio-mail.jp>
 
 	* sb-zdnet.el (shimbun-zdnet-group-url-alist): Abolishded.
 	(shimbun-zdnet-group-alist): New variable.
@@ -5738,11 +5752,11 @@
 	is "palmwarefan".
 	(shimbun-palmfan-news-headers): Do not use nreverse for HEADERS.
 
-2002-05-16  Hidetaka Iwai <tyuyu@mb6.seikyou.ne.jp>
+2002-05-16  Hidetaka Iwai  <tyuyu@mb6.seikyou.ne.jp>
 
 	* sb-japantimes.el, sb-texfaq.el: New files.
 
-2002-05-14  SAITO Takuya <reed@lily.freemail.ne.jp>
+2002-05-14  SAITO Takuya  <reed@lily.freemail.ne.jp>
 
 	* sb-vinelinux.el (shimbun-vinelinux-group-path-alist): Add entry for
 	Vine Linux 2.5 errata.
@@ -5897,7 +5911,7 @@
 	(mew-shimbun-goto-folder, mew-shimbun-retrieve-article): Support Mew
 	3.0.55 or later.
 
-2002-03-24  SAITO Takuya <reed@lily.freemail.ne.jp>
+2002-03-24  SAITO Takuya  <reed@lily.freemail.ne.jp>
 
 	* sb-yahoo.el (shimbun-get-headers): Changed date format.
 
@@ -5935,11 +5949,11 @@
 	of the master site.
 	(shimbun-tcup-make-id): Ditto.
 
-2002-03-18  Masamichi Goudge M.D. <Matanuki@Goudge.org>
+2002-03-18  Masamichi Goudge M.D.  <Matanuki@Goudge.org>
 
 	* sb-orca.el: New file.
 
-2002-03-13  SAITO Takuya <reed@lily.freemail.ne.jp>
+2002-03-13  SAITO Takuya  <reed@lily.freemail.ne.jp>
 
 	* sb-ruby.el (shimbun-get-headers): Make regexp more flexible.
 
@@ -5953,7 +5967,7 @@
 	(mew-shimbun-re-retrieve, mew-shimbun-re-retrieve-all)
 	(mew-shimbun-unseen-check): Call `mew-shimbun-scan' with folder name.
 
-2002-03-12  SAITO Takuya <reed@lily.freemail.ne.jp>
+2002-03-12  SAITO Takuya  <reed@lily.freemail.ne.jp>
 
 	* sb-ruby.el (shimbun-index-url): Search articles from `(point-max)'
 	for checking all articles.
@@ -6210,7 +6224,7 @@
 	(mew-shimbun-re-retrieve-article, mew-shimbun-unseen-check): Use
 	`mew-shimbun-scan' instead of `mew-scan'.
 
-2001-12-09  HARAGUCHI Shuugou <haraguti@nd.net.fujitsu.co.jp>
+2001-12-09  HARAGUCHI Shuugou  <haraguti@nd.net.fujitsu.co.jp>
 
 	* sb-mainichi.el (shimbun-get-headers): Exclude "./" from url.
 
@@ -6821,7 +6835,7 @@
 	"ding-cvslog".
 	(shimbun-ding-x-face-alist): New variable.
 
-2001-05-31  Koichiro Ohba <koichiro@meadowy.org>
+2001-05-31  Koichiro Ohba  <koichiro@meadowy.org>
 
 	* sb-mainichi.el: New backend.
 
@@ -6871,7 +6885,7 @@
 
 	* sb-yahoo.el (shimbun-get-headers): Ditto.
 
-2001-05-27  NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+2001-05-27  NAKAJIMA Mikio  <minakaji@osaka.email.ne.jp>
 
 	* sb-ruby.el: New file.
 
@@ -7021,7 +7035,7 @@
 	(shimbun-tcup-groups): Ditto.
 	(shimbun-groups): Define.
 
-2001-05-07  Taiki SUGAWARA <taiki.s@cityfujisawa.ne.jp>
+2001-05-07  Taiki SUGAWARA  <taiki.s@cityfujisawa.ne.jp>
 
 	* sb-tcup.el: Changes for other tcup groups [emacs-w3m: 00713].
 	(shimbun-tcup-group-alist): Define as variable; Changed structure.
@@ -7033,7 +7047,7 @@
 	(shimbun-tcup-get-group-key): Follow changes above.
 	(shimbun-headers): Ditto.
 
-2001-05-06  Mito <mit@nines.nec.co.jp>
+2001-05-06  Mito  <mit@nines.nec.co.jp>
 
 	* sb-hns.el (shimbun-hns-x-face-alist): New variable.
 

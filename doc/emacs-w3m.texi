@@ -4787,9 +4787,10 @@ n24-de.boerse n24-de.boulevard n24-de.nachrichten n24-de.netnews
 n24-de.politik n24-de.sport n24-de.wirtschaft
 
 @item @uref{http://ohmynews.co.jp/, OhmyNews Japan}
-ohmynews-jp.shakai ohmynews-jp.keizai ohmynews-jp.seiji
-ohmynews-jp.kokusai ohmynews-jp.entame ohmynews-jp.life
-ohmynews-jp.science ohmynews-jp.sports ohmynews-jp.books ohmynews-jp.all
+ohmynews-jp.watashi ohmynews-jp.life ohmynews-jp.shakai
+ohmynews-jp.seiji ohmynews-jp.keizai ohmynews-jp.kaigai
+ohmynews-jp.culture ohmynews-jp.style ohmynews-jp.sports ohmynews-jp.it
+ohmynews-jp.local
 
 @item @uref{http://opentechpress.jp/, Open Tech Press}
 opentechpress-jp.general opentechpress-jp.enterprise
