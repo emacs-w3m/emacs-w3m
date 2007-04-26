@@ -1,12 +1,16 @@
+2007-04-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-view-source-decode-level): New variable.
+	(w3m-decode-buffer): Control how much it decodes an html source
+	according to w3m-view-source-decode-level.
+	(w3m-view-source): Bind w3m-view-source-decode-level with prefix arg.
+
 2007-04-25  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m.el (w3m-decode-buffer): Encode urls containing non-ASCII
 	characters quoted with '' as well as those quoted with "".
 	(w3m-goto-url): Decode urls when url is local.
 
-2007-04-25  Katsumi Yamaoka  <yamaoka@jpl.org>
-
-	* w3m.el (w3m-decode-buffer): Don't encode urls containing non-ASCII
 	characters when displaying an html source.
 
 2007-04-24  Naohiro Aota  <nao.aota@gmail.com>

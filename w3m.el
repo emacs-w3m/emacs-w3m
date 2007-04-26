@@ -4310,100 +4310,109 @@ The cdr of each element is used to decode data if it is available when
 the car is what the data specify as the encoding.  Or, the car is used
 for decoding when the cdr that the data specify is not available.")
 
-(defun w3m-decode-buffer (url &optional content-charset content-type)
-  (let ((sourcep (string-match "\\`about://source/" url))
-	cs)
-    (unless content-type
-      (setq content-type (w3m-content-type url)))
-    (unless content-charset
-      (setq content-charset
-	    (or (w3m-content-charset url)
-		(when (or (string= "text/html" content-type) sourcep)
-		  (w3m-detect-meta-charset))
-		(w3m-detect-xml-charset))))
-    (cond
-     ((and (eq w3m-type 'w3mmee)
-	   (or (and (stringp content-charset)
-		    (string= "x-moe-internal" (downcase content-charset)))
-	       (eq content-charset 'x-moe-internal)))
-      (setq cs (w3m-x-moe-decode-buffer))
-      (setq content-charset (symbol-name cs)))
-     (content-charset
-      (setq content-charset (w3m-correct-charset content-charset))
-      (setq cs (w3m-charset-to-coding-system content-charset))))
-    (setq w3m-current-content-charset content-charset)
-    (unless cs
-      (setq cs (w3m-detect-coding-region (point-min) (point-max)
-					 (if (w3m-url-local-p url)
-					     nil
-					   w3m-coding-system-priority-list))))
-    (setq w3m-current-coding-system
-	  (or (w3m-find-coding-system
-	       (cdr (assq cs w3m-compatible-encoding-alist)))
-	      (w3m-find-coding-system cs)
-	      (w3m-find-coding-system
-	       (car (rassq cs w3m-compatible-encoding-alist)))))
-    ;; Decode `&#nnn;' entities in 128..159 and 160.
-    (when (rassq w3m-current-coding-system w3m-compatible-encoding-alist)
-      (goto-char (point-min))
-      (let ((case-fold-search t))
-	(while (re-search-forward "\
-\\(?:&#\\(12[89]\\|1[3-5][0-9]\\)\;\\)\\|\\(?:&#x\\([89][0-9a-f]\\)\;\\)"
-				  nil t)
-	  (insert (prog1
-		      (if (match-beginning 1)
-			  (string-to-number (match-string 1))
-			(string-to-number (match-string 2) 16))
-		    (delete-region (match-beginning 0) (match-end 0)))))
-	(goto-char (point-min))
-	(while (re-search-forward "\240\\|&#160;\\|&#xa0;" nil t)
-	  (replace-match "&nbsp;"))))
-    (insert
-     (prog1
-	 (decode-coding-string (buffer-string) w3m-current-coding-system)
-       (erase-buffer)
-       (set-buffer-multibyte t)))
+(defvar w3m-view-source-decode-level 0
+  "Say whether `w3m-view-source' decodes html sources.
+Users should never modify the value.  See also `w3m-view-source'.")
 
-    ;; Encode urls containing non-ASCII characters.
-    (when (and (not sourcep)
-	       (or (featurep 'xemacs)
-		   ;; For the unknown reason Emacs 21.* causes segfault
-		   ;; by this.
-		   (>= emacs-major-version 22)))
-      (goto-char (point-min))
-      (let ((case-fold-search t))
-	(while (re-search-forward "\
+(defun w3m-decode-buffer (url &optional content-charset content-type)
+  (let* ((sourcep (string-match "\\`about://source/" url))
+	 (level (if sourcep w3m-view-source-decode-level 0))
+	 cs)
+    (when (< level 4)
+      (unless content-type
+	(setq content-type (w3m-content-type url)))
+      (unless content-charset
+	(setq content-charset
+	      (or (w3m-content-charset url)
+		  (when (or (string= "text/html" content-type) sourcep)
+		    (w3m-detect-meta-charset))
+		  (w3m-detect-xml-charset))))
+      (cond
+       ((and (eq w3m-type 'w3mmee)
+	     (or (and (stringp content-charset)
+		      (string= "x-moe-internal" (downcase content-charset)))
+		 (eq content-charset 'x-moe-internal)))
+	(setq cs (w3m-x-moe-decode-buffer))
+	(setq content-charset (symbol-name cs)))
+       (content-charset
+	(setq content-charset (w3m-correct-charset content-charset))
+	(setq cs (w3m-charset-to-coding-system content-charset))))
+      (setq w3m-current-content-charset content-charset)
+      (unless cs
+	(setq cs (w3m-detect-coding-region
+		  (point-min) (point-max) (if (w3m-url-local-p url)
+					      nil
+					    w3m-coding-system-priority-list))))
+      (setq w3m-current-coding-system
+	    (or (w3m-find-coding-system
+		 (cdr (assq cs w3m-compatible-encoding-alist)))
+		(w3m-find-coding-system cs)
+		(w3m-find-coding-system
+		 (car (rassq cs w3m-compatible-encoding-alist)))))
+      ;; Decode `&#nnn;' entities in 128..159 and 160.
+      (when (and (< level 2)
+		 (rassq w3m-current-coding-system
+			w3m-compatible-encoding-alist))
+	(goto-char (point-min))
+	(let ((case-fold-search t))
+	  (while (re-search-forward "\
+\\(?:&#\\(12[89]\\|1[3-5][0-9]\\)\;\\)\\|\\(?:&#x\\([89][0-9a-f]\\)\;\\)"
+				    nil t)
+	    (insert (prog1
+			(if (match-beginning 1)
+			    (string-to-number (match-string 1))
+			  (string-to-number (match-string 2) 16))
+		      (delete-region (match-beginning 0) (match-end 0)))))
+	  (goto-char (point-min))
+	  (while (re-search-forward "\240\\|&#160;\\|&#xa0;" nil t)
+	    (replace-match "&nbsp;"))))
+      (insert
+       (prog1
+	   (decode-coding-string (buffer-string) w3m-current-coding-system)
+	 (erase-buffer)
+	 (set-buffer-multibyte t)))
+
+      ;; Encode urls containing non-ASCII characters.
+      (when (and (< level 0)
+		 (or (featurep 'xemacs)
+		     ;; For the unknown reason Emacs 21.* causes
+		     ;; segfault by this.
+		     (>= emacs-major-version 22)))
+	(goto-char (point-min))
+	(let ((case-fold-search t))
+	  (while (re-search-forward "\
 <[\t\n\r ]*\\(?:\\(a\\)\\|\\(img\\)\\)[\t\n\r ]+\
 \\(?:[\000-\075\077-\177]*[^\000-\177]+\\)+[\000-\075\077-\177]*>"
-				  nil t)
-	  (save-match-data
-	    (save-excursion
-	      (when (if (match-end 1)
-			(re-search-backward "[\t\n\r ]href[\t\n\r ]*=[\t\n\r ]*\
+				    nil t)
+	    (save-match-data
+	      (save-excursion
+		(when (if (match-end 1)
+			  (re-search-backward "\
+\[\t\n\r ]href[\t\n\r ]*=[\t\n\r ]*\
 \"\\(\\(?:[\000-\041\043-\177]*[^\000-\177]+\\)+[\000-\041\043-\177]*\\)"
-					    (match-end 1) t)
-		      (re-search-backward "[\t\n\r ]src[\t\n\r ]*=[\t\n\r ]*\
+					      (match-end 1) t)
+			(re-search-backward "[\t\n\r ]src[\t\n\r ]*=[\t\n\r ]*\
 \"\\(\\(?:[\000-\041\043-\177]*[^\000-\177]+\\)+[\000-\041\043-\177]*\\)"
-					  (match-end 2) t))
-		(insert (w3m-url-encode-string
-			 (prog1
-			     (match-string 1)
-			   (delete-region (goto-char (match-beginning 1))
-					  (match-end 1)))
-			 w3m-current-coding-system)))))
-	  (when (if (match-end 1)
-			(re-search-backward "[\t\n\r ]href[\t\n\r ]*=[\t\n\r ]*\
+					    (match-end 2) t))
+		  (insert (w3m-url-encode-string
+			   (prog1
+			       (match-string 1)
+			     (delete-region (goto-char (match-beginning 1))
+					    (match-end 1)))
+			   w3m-current-coding-system)))))
+	    (when (if (match-end 1)
+		      (re-search-backward "[\t\n\r ]href[\t\n\r ]*=[\t\n\r ]*\
 '\\(\\(?:[\000-\046\048-\177]*[^\000-\177]+\\)+[\000-\046\048-\177]*\\)"
-					    (match-end 1) t)
-		      (re-search-backward "[\t\n\r ]src[\t\n\r ]*=[\t\n\r ]*\
+					  (match-end 1) t)
+		    (re-search-backward "[\t\n\r ]src[\t\n\r ]*=[\t\n\r ]*\
 '\\(\\(?:[\000-\046\048-\177]*[^\000-\177]+\\)+[\000-\046\048-\177]*\\)"
-					  (match-end 2) t))
-		(insert (w3m-url-encode-string
-			 (prog1
-			     (match-string 1)
-			   (delete-region (goto-char (match-beginning 1))
-					  (match-end 1)))
-			 w3m-current-coding-system))))))))
+					(match-end 2) t))
+	      (insert (w3m-url-encode-string
+		       (prog1
+			   (match-string 1)
+			 (delete-region (goto-char (match-beginning 1))
+					(match-end 1)))
+		       w3m-current-coding-system)))))))))
 
 (defun w3m-x-moe-decode-buffer ()
   (let ((args '("-i" "-cs" "x-moe-internal"))
@@ -8644,11 +8653,17 @@ works on Emacs.
 </html>")
   "text/html")
 
-(defun w3m-view-source ()
-  "Display the html source of the current buffer."
-  (interactive)
+(defun w3m-view-source (&optional arg)
+  "Display an html source of a page visited in the current buffer.
+ARG controls how much this command decodes a source.  A number larger
+than or equal to 4 means don't decode (the `C-u' prefix produces it).
+A number less than or equal to 2 decodes `&#nnn;' entities in 128..159
+and 160.  A number less than or equal to 1 decodes fully (the default).
+A negative number encodes urls containing non-ASCII characters."
+  (interactive "p")
   (if w3m-current-url
-      (let ((w3m-prefer-cache t))
+      (let ((w3m-prefer-cache t)
+	    (w3m-view-source-decode-level (if (numberp arg) arg 0)))
 	(cond
 	 ((string-match "\\`about://source/" w3m-current-url)
 	  (w3m-goto-url (substring w3m-current-url (match-end 0))))
