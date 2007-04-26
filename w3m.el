@@ -8142,7 +8142,11 @@ Cannot run two w3m processes simultaneously \
 				      (list :title (or w3m-current-title
 						       "<no-title>")))
 		    (goto-char (point-min)))
-		(if (and name (w3m-search-name-anchor name))
+		(if (and name
+			 (progn
+			   ;; Redisplay to search an anchor sure.
+			   (sit-for 0)
+			   (w3m-search-name-anchor name)))
 		    (setf (w3m-arrived-time (w3m-url-strip-authinfo orig))
 			  (w3m-arrived-time url))
 		  (goto-char (point-min)))
