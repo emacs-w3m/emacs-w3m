@@ -874,17 +874,16 @@ Return nil if all pages should be retrieved."
   (prog1
       (with-temp-buffer
 	(let ((w3m-verbose (if shimbun-verbose nil w3m-verbose))
-	      (hankaku (shimbun-japanese-hankaku shimbun))
 	      headers)
 	  (shimbun-fetch-url shimbun (shimbun-index-url shimbun) 'reload)
 	  (setq headers (shimbun-get-headers shimbun range))
-	  (if (and hankaku (not (eq hankaku 'body)))
-	      (dolist (header headers headers)
-		(erase-buffer)
-		(insert (shimbun-header-subject-internal header))
-		(shimbun-japanese-hankaku-buffer)
-		(shimbun-header-set-subject-internal header (buffer-string)))
-	    headers)))
+	  (if (memq (shimbun-japanese-hankaku shimbun) '(body nil))
+	      headers
+	    (dolist (header headers headers)
+	      (erase-buffer)
+	      (insert (shimbun-header-subject-internal header))
+	      (shimbun-japanese-hankaku-buffer)
+	      (shimbun-header-set-subject-internal header (buffer-string))))))
     (shimbun-message shimbun (concat shimbun-checking-new-news-format
 				     "...done"))))
 
@@ -1025,8 +1024,7 @@ Return nil, unless a content is cleared successfully.")
 (luna-define-method shimbun-clear-contents ((shimbun shimbun) header)
   (let ((start (shimbun-content-start shimbun))
 	(end (shimbun-content-end shimbun))
-	(case-fold-search t)
-	hankaku)
+	(case-fold-search t))
     (goto-char (point-min))
     (when (and (stringp start)
 	       (re-search-forward start nil t)
@@ -1036,8 +1034,7 @@ Return nil, unless a content is cleared successfully.")
 	       (re-search-forward end nil t))
       (delete-region (match-beginning 0) (point-max))
       (delete-region (point-min) start)
-      (setq hankaku (shimbun-japanese-hankaku shimbun))
-      (when (and hankaku (not (memq hankaku '(header subject))))
+      (unless (memq (shimbun-japanese-hankaku shimbun) '(header subject nil))
 	(shimbun-japanese-hankaku-buffer t)
 	(goto-char (point-min)))
       t)))
@@ -1391,18 +1388,10 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
 	    nil t)
       (japanese-hankaku-region (match-beginning 0) (match-end 0) t))
     (goto-char start)
-    (while (re-search-forward "\\([!-~]\\)　\\|　\\([!-~]\\)" nil t)
+    ;; Exclude ">　" in order not to break paragraph start.
+    (while (re-search-forward "\\([!-=?-~]\\)　\\|　\\([!-~]\\)" nil t)
       (if (match-beginning 1)
-	  ;; Don't break paragraph start.
-	  (unless (and (eq (char-after (match-beginning 1)) ?>)
-		       (eq (prog1
-			       (save-match-data
-				 (re-search-backward "<p\\(?:[\t\n ]+[^>]+\\)?"
-						     nil t)
-				 (match-end 0))
-			     (goto-char (match-end 0)))
-			   (match-beginning 1)))
-	    (replace-match "\\1 "))
+	  (replace-match "\\1 ")
 	(unless (memq (char-before (match-beginning 0)) '(nil ?\n))
 	  (replace-match " \\2"))
 	(backward-char 1)))
@@ -1498,7 +1487,8 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
 	       (replace-match "\\5 \\6"))
 	     (goto-char (match-end 5)))
 	    ((match-beginning 7)
-	     (replace-match "\\7 \\8")
+	     (unless (eq (char-after (match-beginning 7)) ?　)
+	       (replace-match "\\7 \\8"))
 	     (goto-char (match-end 7)))
 	    (t
 	     (unless (string-equal (buffer-substring
@@ -1539,8 +1529,18 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
 		 (concat "\\(?:[ 　]\\|&nbsp;\\)\\([" chars "℃々℃]\\)"
 			 "\\|\\([" chars "]\\)\\(?:[ 　]\\|&nbsp;\\)"))))))
       (while (re-search-forward regexp nil t)
-	(replace-match (if (match-beginning 1) "\\1" "\\2"))
-	(backward-char 1)))
+	(goto-char (match-beginning 0))
+	(if (match-beginning 1)
+	    (if (or (bobp)
+		    (eq (save-match-data
+			  (when (re-search-backward ">[\t\n ]*" nil t)
+			    (match-end 0)))
+			(match-beginning 0)))
+		;; Don't break paragraph start.
+		(goto-char (match-beginning 1))
+	      (delete-region (goto-char (match-beginning 0))
+			     (match-beginning 1)))
+	  (delete-region (match-end 2) (match-end 0)))))
     (goto-char (point-max))))
 
 (defun shimbun-japanese-hankaku-buffer (&optional quote)

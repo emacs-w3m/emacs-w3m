@@ -44,7 +44,8 @@
   "<!--emacs-w3m-shimbun-ohmynews-jp-content-end-->")
 
 (defvar shimbun-ohmynews-jp-group-table
-  '(("watashi" "わたし" 100)
+  '(("news" "最新記事")
+    ("watashi" "わたし" 100)
     ("life" "生活・医療" 110)
     ("shakai" "社会" 120)
     ("seiji" "政治" 130)
@@ -72,11 +73,12 @@ v*[xW.y6Tt/r=U{a?+nH20N{)a/w145kJxfhqf}Jd<p\n `bP:u\\Awi^xGQ3pUOrsPL.';\
 		shimbun-ohmynews-jp-group-table)))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-ohmynews-jp))
-  (shimbun-expand-url
-   (format "rss/news_c%03d.xml"
-	   (nth 2 (assoc (shimbun-current-group-internal shimbun)
-			 shimbun-ohmynews-jp-group-table)))
-   (shimbun-url-internal shimbun)))
+  (let ((index (nth 2 (assoc (shimbun-current-group-internal shimbun)
+			     shimbun-ohmynews-jp-group-table))))
+    (shimbun-expand-url (if (numberp index)
+			    (format "rss/news_c%03d.xml" index)
+			  "rss/news.xml")
+			(shimbun-url-internal shimbun))))
 
 (luna-define-method shimbun-clear-contents :around ((shimbun
 						     shimbun-ohmynews-jp)
