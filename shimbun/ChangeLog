@@ -1,3 +1,15 @@
+2007-04-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-rss.el (shimbun-rss-get-headers): Support japanese-hankaku.
+
+	* shimbun.el (shimbun-headers, shimbun-clear-contents): Simplify a bit.
+	(shimbun-japanese-hankaku-region): Improve the way not to break
+	paragraph start; don't insert a space between a zenkaku space and an
+	ASCII character.
+
+	* sb-ohmynews-jp.el (shimbun-ohmynews-jp-group-table): Add news group.
+	(shimbun-index-url): Follow it.
+
 2007-04-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-ohmynews-jp.el (toplevel): Use sb-rss.el.
