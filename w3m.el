@@ -4318,7 +4318,7 @@ Users should never modify the value.  See also `w3m-view-source'.")
   (let* ((sourcep (string-match "\\`about://source/" url))
 	 (level (if sourcep w3m-view-source-decode-level 0))
 	 cs)
-    (when (< level 4)
+    (unless (>= level 4)
       (unless content-type
 	(setq content-type (w3m-content-type url)))
       (unless content-charset
@@ -4350,7 +4350,7 @@ Users should never modify the value.  See also `w3m-view-source'.")
 		(w3m-find-coding-system
 		 (car (rassq cs w3m-compatible-encoding-alist)))))
       ;; Decode `&#nnn;' entities in 128..159 and 160.
-      (when (and (< level 2)
+      (when (and (<= level 1)
 		 (rassq w3m-current-coding-system
 			w3m-compatible-encoding-alist))
 	(goto-char (point-min))
@@ -4373,7 +4373,7 @@ Users should never modify the value.  See also `w3m-view-source'.")
 	 (set-buffer-multibyte t)))
 
       ;; Encode urls containing non-ASCII characters.
-      (when (and (< level 0)
+      (when (and (<= level 0)
 		 (or (featurep 'xemacs)
 		     ;; For the unknown reason Emacs 21.* causes
 		     ;; segfault by this.
@@ -8659,11 +8659,13 @@ works on Emacs.
 
 (defun w3m-view-source (&optional arg)
   "Display an html source of a page visited in the current buffer.
-ARG controls how much this command decodes a source.  A number larger
-than or equal to 4 means don't decode (the `C-u' prefix produces it).
-A number less than or equal to 2 decodes `&#nnn;' entities in 128..159
-and 160.  A number less than or equal to 1 decodes fully (the default).
-A negative number encodes urls containing non-ASCII characters."
+ARG should be a number (a non-numeric value is treated as `1') which
+controls how much to decode a source.  A number larger than or equal
+to 4 (which the `C-u' prefix produces) means don't decode.  The number
+2 or 3 means decode normal text.  The number 1 means decodes `&#nnn;'
+entities in 128..159 and 160 in addition to normal text (the default).
+A number less than or equal to zero means also encode urls containing
+non-ASCII characters."
   (interactive "p")
   (if w3m-current-url
       (let ((w3m-prefer-cache t)
