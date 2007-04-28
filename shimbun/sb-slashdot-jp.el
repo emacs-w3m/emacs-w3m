@@ -78,7 +78,7 @@
     ("bsd"	   . "http://slashdot.jp/bsd.rss")
     ("developers"  . "http://slashdot.jp/developers.rss")
     ("interview"   . "http://slashdot.jp/interview.rss")
-    ("linuxkernel" . "http://slashdot.jp/linuxkernel.rss")
+    ("linux"       . "http://slashdot.jp/linux.rss")
     ("mac"	   . "http://slashdot.jp/mac.rss")
     ("mobile"	   . "http://slashdot.jp/mobile.rss")
     ("science"	   . "http://slashdot.jp/science.rss")
