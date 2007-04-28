@@ -1,3 +1,13 @@
+2007-04-28  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-decode-buffer): Use w3m-url-transfer-encode-string
+	instead of w3m-url-encode-string.
+
+2007-04-27  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-view-this-url): Check if w3m-current-url is string before
+	matching.
+
 2007-04-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-decode-buffer): Fully decode a source by default.
