@@ -4394,7 +4394,7 @@ Users should never modify the value.  See also `w3m-view-source'.")
 			(re-search-backward "[\t\n\r ]src[\t\n\r ]*=[\t\n\r ]*\
 \"\\(\\(?:[\000-\041\043-\177]*[^\000-\177]+\\)+[\000-\041\043-\177]*\\)"
 					    (match-end 2) t))
-		  (insert (w3m-url-encode-string
+		  (insert (w3m-url-transfer-encode-string
 			   (prog1
 			       (match-string 1)
 			     (delete-region (goto-char (match-beginning 1))
@@ -4407,7 +4407,7 @@ Users should never modify the value.  See also `w3m-view-source'.")
 		    (re-search-backward "[\t\n\r ]src[\t\n\r ]*=[\t\n\r ]*\
 '\\(\\(?:[\000-\046\048-\177]*[^\000-\177]+\\)+[\000-\046\048-\177]*\\)"
 					(match-end 2) t))
-	      (insert (w3m-url-encode-string
+	      (insert (w3m-url-transfer-encode-string
 		       (prog1
 			   (match-string 1)
 			 (delete-region (goto-char (match-beginning 1))
@@ -6047,7 +6047,8 @@ point."
 		 (list current-prefix-arg nil)))
   (let ((w3m-prefer-cache
 	 (or w3m-prefer-cache
-	     (string-match "\\`about://\\(?:db-\\)?history/" w3m-current-url)))
+	     (and (stringp w3m-current-url)
+		  (string-match "\\`about://\\(?:db-\\)?history/" w3m-current-url))))
 	act url)
     (cond
      ((setq act (w3m-action))
@@ -8013,9 +8014,6 @@ the current page."
   (unless (or (w3m-url-local-p url)
 	      (string-match "\\`about:" url))
     (setq url (w3m-url-transfer-encode-string url w3m-default-coding-system)))
-  (when (and (w3m-url-local-p url)
-	     (not(string-match "[^\000-\177]" url)))
-    (setq url (w3m-url-decode-string url)))
   (cond
    ;; process mailto: protocol
    ((string-match "\\`mailto:" url)
@@ -8122,6 +8120,9 @@ Cannot run two w3m processes simultaneously \
 	  (and (match-beginning 8)
 	       (setq name (match-string 9 url)
 		     url (substring url 0 (match-beginning 8))))
+	  (when (and (w3m-url-local-p url)
+		     (not(string-match "[^\000-\177]" url)))
+	    (setq url (w3m-url-decode-string url)))
 	  (w3m-process-do
 	      (action
 	       (if (and (not reload)
