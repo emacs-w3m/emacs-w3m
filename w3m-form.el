@@ -347,7 +347,7 @@ If no field in forward, return nil without moving."
 	  (let ((fid (get-text-property (point) 'w3m-form-field-id)))
 	    (when (and fid
 		       (string-match "\
-fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]+\\)/id=\\(.*\\)$"
+fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
 				     fid))
 	      (let ((form (nth (string-to-number (match-string 1 fid))
 			       forms))
@@ -527,7 +527,7 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]+\\)/id=\\(.*\\)$"
 	      (and
 	       fid
 	       (string-match
-		"fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]+\\)/id=\\(.*\\)$"
+		"fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
 		fid))
 	    (setq form (nth (string-to-number (match-string 1 fid))
 			    w3m-current-forms)
@@ -952,7 +952,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 (defsubst w3m-form-field-parse (fid)
   (when (and fid
 	     (string-match
-	      "fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]+\\)/id=\\(.*\\)$"
+	      "fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
 	      fid))
     (list (match-string 1 fid)
 	  (match-string 2 fid)

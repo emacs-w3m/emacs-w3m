@@ -1,3 +1,10 @@
+2007-04-30  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-form.el (w3m-form-resume): Also resume contents of forms without
+	name.
+	(w3m-fontify-textareas): Also fontify textareas without name.
+	(w3m-form-field-parse): Also parse form fields without name.
+
 2007-04-28  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m.el (w3m-decode-buffer): Use w3m-url-transfer-encode-string
