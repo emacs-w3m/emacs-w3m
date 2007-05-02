@@ -43,6 +43,7 @@
   (eval-when-compile
     (regexp-opt '("<h3>Recent Posts</h3>"
 		"<h3 id=\"recentheadlines\">Recent Posts</h3>"
+		"<h3 id=\"recentheadlines\">最近の記事</h3>"
 		"<a name=\"comments\"></a>"))))
 
 (luna-define-method shimbun-groups ((shimbun shimbun-engadget-ja))

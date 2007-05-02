@@ -1,3 +1,7 @@
+2007-05-02  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
+
+	* sb-engadget-ja.el (shimbun-engadget-ja-content-end): Add new regexp.
+
 2007-04-27  Naohiro Aota  <nao.aota@gmail.com>
 
 	* sb-slashdot-jp.el (shimbun-slashdot-jp-group-alist): Follow the
