@@ -1,3 +1,21 @@
+2007-05-08  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (all): Revert SHIRAI's 2007-04-24 changes and fix it to
+	accompany Ito-san's patch [w3m-dev 04233].
+	(w3m-display-ins-del): New option.
+	(w3m-support-emacs-w3m): Remove this variable.
+	(w3m-strike-through-face): Modify.
+	(w3m-insert-face): Ditto.
+	(w3m-strike-through-face-no-windowsystem): Remove this face.
+	(w3m-fontify-insert): Remove this variable.
+	(w3m-halfdump-command-arguments): Remove w3m-support-emacs-w3m.
+	(w3m-halfdump-command-common-arguments): Add w3m-display-ins-del
+	support.
+	(w3m-fontify-strike-through): Rewrite.
+	(w3m-fontify-insert): Ditto.
+	(w3m-set-display-ins-del): New function.
+	(w3m-rendering-half-dump): Call w3m-set-display-ins-del.
+
 2007-04-30  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m-form.el (w3m-form-resume): Also resume contents of forms without
