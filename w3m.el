@@ -3890,6 +3890,16 @@ invalid url if Gmane doesn't handle the group cannot be helped."
 	     fmt
 	     (w3m-url-encode-string (match-string-no-properties 1)))))))))
 
+(defun w3m-header-line-url ()
+  "Return w3m-current-url if point on header line."
+  (let ((faces (get-text-property (point) 'face)))
+    (when (and (eq major-mode 'w3m-mode)
+	       (listp faces)
+	       (or (memq 'w3m-header-line-location-title-face faces)
+		   (memq 'w3m-header-line-location-content-face faces))
+	       w3m-current-url)
+      w3m-current-url)))
+
 (eval-and-compile
   (autoload 'ffap-url-at-point "ffap")
   (defalias 'w3m-url-at-point
@@ -3898,6 +3908,7 @@ invalid url if Gmane doesn't handle the group cannot be helped."
 Like `ffap-url-at-point', except that text props will be stripped and
 iso646 characters are unified into ascii characters."
 	     (or (w3m-gmane-url-at-point)
+		 (w3m-header-line-url)
 		 (let ((left (buffer-substring-no-properties (point-at-bol)
 							     (point)))
 		       (right (buffer-substring-no-properties (point)
@@ -3921,6 +3932,7 @@ iso646 characters are unified into ascii characters."
 	   (lambda nil "\
 Like `ffap-url-at-point', except that text props will be stripped."
 	     (or (w3m-gmane-url-at-point)
+		 (w3m-header-line-url)
 		 (unless (fboundp 'ffap-url-at-point)
 		   ;; It is necessary to bind `ffap-xemacs'.
 		   (load "ffap" nil t))
@@ -3929,6 +3941,7 @@ Like `ffap-url-at-point', except that text props will be stripped."
 	  (t
 	   (lambda nil
 	     (or (w3m-gmane-url-at-point)
+		 (w3m-header-line-url)
 		 (ffap-url-at-point)))))))
 
 (eval-after-load "ffap"
@@ -8265,15 +8278,25 @@ See `w3m-default-directory'."
 (defun w3m-goto-url-with-timer (url buffer)
   "Run the `w3m-goto-url' function by the refresh timer."
   (when (and (w3m-url-valid url) buffer (get-buffer buffer))
-    (if (get-buffer-window buffer)
-	(save-selected-window
-	  (pop-to-buffer buffer)
-	  (with-current-buffer buffer
-	    (w3m-cancel-refresh-timer buffer)
-	    (w3m-goto-url url (and w3m-current-url
-				   (string= url w3m-current-url)))))
+    (cond
+     ((get-buffer-window buffer)
+      (save-selected-window
+	(pop-to-buffer buffer)
+	(with-current-buffer buffer
+	  (w3m-cancel-refresh-timer buffer)
+	  (w3m-goto-url url (and w3m-current-url
+				 (string= url w3m-current-url))))))
+     ((buffer-live-p buffer)
+      (let* ((cwin (selected-window))
+	     (cbuf (window-buffer cwin)))
+	(with-current-buffer buffer
+	  (w3m-cancel-refresh-timer buffer)
+	  (w3m-goto-url url (and w3m-current-url
+				 (string= url w3m-current-url))))
+	(set-window-buffer cwin cbuf)))
+     (t
       (with-current-buffer buffer
-	(w3m-cancel-refresh-timer buffer)))))
+	(w3m-cancel-refresh-timer buffer))))))
 
 (defun w3m-goto-new-session-url (&optional reload)
   "Open `w3m-new-session-url' in a new session."

@@ -1,3 +1,11 @@
+2007-05-09  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-header-line-url): New function.
+	(w3m-url-at-point): Call w3m-header-line-url after
+	w3m-gmane-url-at-point.
+	(w3m-goto-url-with-timer): Execute w3m-goto-url if its buffer does not
+	exist foreground.
+
 2007-05-08  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (all): Revert SHIRAI's 2007-04-24 changes and fix it to
