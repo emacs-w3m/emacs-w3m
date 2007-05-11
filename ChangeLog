@@ -1,3 +1,9 @@
+2007-05-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-url-encode-string, w3m-url-transfer-encode-string): Use
+	uppercase letters in hexadecimal string.  Suggested by Lukasz Demianiuk
+	<ldemianiuk@gmail.com>.
+
 2007-05-09  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-header-line-url): New function.

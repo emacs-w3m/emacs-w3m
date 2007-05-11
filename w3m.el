@@ -3067,7 +3067,7 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 	     ((char-equal ch ?\x20)	; space
 	      "+")
 	     (t
-	      (format "%%%02x" ch))))	; escape
+	      (format "%%%02X" ch))))	; escape
 	  ;; Coerce a string into a list of chars.
 	  (append (encode-coding-string (or str "")
 					(or coding
@@ -3151,7 +3151,7 @@ use `w3m-url-encode-string' instead."
       (setq buf
 	    (cons (apply 'concat
 			 (mapcar
-			  (lambda (c) (format "%%%02x" c))
+			  (lambda (c) (format "%%%02X" c))
 			  (append (encode-coding-string
 				   (match-string 0 url)
 				   (or coding
