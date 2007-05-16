@@ -77,8 +77,7 @@
   (autoload 'w3m-delete-buffer "w3m")
   (autoload 'w3m-image-type "w3m")
   (autoload 'w3m-retrieve "w3m")
-  (autoload 'w3m-select-buffer-update "w3m")
-  (autoload 'iswitchb-read-buffer "iswitchb"))
+  (autoload 'w3m-select-buffer-update "w3m"))
 
 (eval-and-compile
   (unless (fboundp 'frame-current-scroll-bars)
@@ -1115,14 +1114,15 @@ is non-nil means not to respond to too fast operation of mouse wheel."
 				  'mouse-face 'w3m-tab-selected-background-face
 				  'local-map w3m-tab-separator-map))))))
 
-(defun w3m-switch-to-buffer (buffer &optional norecord)
-  "Run `switch-to-buffer' and redisplay the header-line.
-Redisplaying is done by wobbling the window size."
-  (interactive (list (if iswitchb-mode
-			 (iswitchb-read-buffer "iswitch ")
-		       (read-buffer "Switch to buffer: "))))
+(defun w3m-switch-to-buffer (&optional buffer norecord)
+  "Run `switch-to-buffer' and redisplay the header-line."
+  (interactive)
   (prog1
-      (switch-to-buffer buffer norecord)
+      (if (interactive-p)
+	  (if iswitchb-mode
+	      (call-interactively 'iswitchb-buffer)
+	    (call-interactively 'switch-to-buffer))
+	(switch-to-buffer buffer norecord))
     (when (and header-line-format
 	       (eq major-mode 'w3m-mode))
       (w3m-force-window-update))))
