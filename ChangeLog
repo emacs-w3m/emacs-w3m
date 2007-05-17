@@ -1,3 +1,7 @@
+2007-05-17  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-expand-url): Guard error in aref when url is "". 
+
 2007-05-16  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m.el (w3m-expand-url): Remove query strings when expanding URL like
