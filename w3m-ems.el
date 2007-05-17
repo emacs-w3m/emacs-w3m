@@ -1114,28 +1114,9 @@ is non-nil means not to respond to too fast operation of mouse wheel."
 				  'mouse-face 'w3m-tab-selected-background-face
 				  'local-map w3m-tab-separator-map))))))
 
-(defun w3m-switch-to-buffer (&optional buffer norecord)
-  "Run `switch-to-buffer' and redisplay the header-line."
-  (interactive)
-  (prog1
-      (if (interactive-p)
-	  (if iswitchb-mode
-	      (call-interactively 'iswitchb-buffer)
-	    (call-interactively 'switch-to-buffer))
-	(switch-to-buffer buffer norecord))
-    (when (and header-line-format
-	       (eq major-mode 'w3m-mode))
-      (w3m-force-window-update))))
-
-(defun w3m-subst-switch-to-buffer-keys ()
-  "Substitute keys for `switch-to-buffer' with `w3m-switch-to-buffer'."
-  (substitute-key-definition 'switch-to-buffer 'w3m-switch-to-buffer
-			     w3m-mode-map global-map))
-
 (add-hook 'w3m-mode-setup-functions 'w3m-tab-make-keymap)
 (add-hook 'w3m-mode-setup-functions 'w3m-setup-header-line)
 (add-hook 'w3m-mode-setup-functions 'w3m-setup-widget-faces)
-(add-hook 'w3m-mode-setup-functions 'w3m-subst-switch-to-buffer-keys)
 (add-hook 'w3m-select-buffer-hook 'w3m-force-window-update)
 
 ;; Graphic icons.
