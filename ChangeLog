@@ -1,3 +1,7 @@
+2007-05-17  Tatsuya Kinoshita  <tats@vega.ocn.ne.jp>
+
+	* w3m.el (w3m-view-this-url-1): Check whether the marker buffer exists.
+
 2007-05-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-ems.el (w3m-switch-to-buffer, w3m-subst-switch-to-buffer-keys):

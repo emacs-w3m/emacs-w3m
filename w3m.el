@@ -6056,7 +6056,7 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	    (w3m-delete-buffer-if-empty buffer))
 	  ;; FIXME: what we should actually do is to modify the `w3m-goto-url'
 	  ;; function so that it may return a proper value, and checking it.
-	  (when (buffer-name (marker-buffer pos))
+	  (when (and (marker-buffer pos) (buffer-name (marker-buffer pos)))
 	    (save-excursion
 	      (set-buffer (marker-buffer pos))
 	      (save-excursion
