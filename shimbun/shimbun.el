@@ -956,15 +956,26 @@ Return nil when articles are not expired."
 HEADER is a shimbun-header which is obtained by `shimbun-headers'.
 If OUTBUF is not specified, article is retrieved to the current buffer.")
 
+(defun shimbun-article-1 (shimbun header)
+  "Run `shimbun-fetch-url' and refresh the contents if necessary."
+  (let ((url (shimbun-article-url shimbun header)))
+    (when (shimbun-fetch-url shimbun url nil nil
+			     (shimbun-article-base-url shimbun header))
+      (w3m-check-refresh-attribute)
+      (when (and w3m-current-refresh
+		 (not (equal url (cdr w3m-current-refresh))))
+	(setq url (cdr w3m-current-refresh))
+	(shimbun-header-set-xref header url)
+	(erase-buffer)
+	(set-buffer-multibyte nil)
+	(shimbun-article-1 shimbun header)))))
+
 (luna-define-method shimbun-article ((shimbun shimbun) header &optional outbuf)
   (when (shimbun-current-group-internal shimbun)
     (with-current-buffer (or outbuf (current-buffer))
       (w3m-insert-string
        (or (with-temp-buffer
-	     (shimbun-fetch-url shimbun
-				(shimbun-article-url shimbun header)
-				nil nil
-				(shimbun-article-base-url shimbun header))
+	     (shimbun-article-1 shimbun header)
 	     (shimbun-message shimbun "shimbun: Make contents...")
 	     (goto-char (point-min))
 	     (prog1 (shimbun-make-contents shimbun header)

@@ -74,21 +74,6 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 	  (nth 1 (assoc (shimbun-current-group shimbun)
 			shimbun-itmedia-group-alist))))
 
-(luna-define-method shimbun-get-headers :around ((shimbun shimbun-itmedia)
-						 &optional range)
-  "Replace article urls with the ones to be redirected to."
-  (let ((headers (luna-call-next-method))
-	xref)
-    (dolist (header headers headers)
-      (setq xref (shimbun-header-xref header))
-      (when (string-match
-	     "\\`http://cgi\\.itmedia\\.co\\.jp/rss/[^/]+/\\([^/]+\\)"
-	     xref)
-	(shimbun-header-set-xref
-	 header
-	 (concat "http://" (match-string 1 xref) ".itmedia.co.jp"
-		 (substring xref (match-end 0))))))))
-
 (defun shimbun-itmedia-anchordesk-get-headers (shimbun)
   (let ((case-fold-search t)
 	(base (shimbun-index-url shimbun))

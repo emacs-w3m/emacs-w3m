@@ -1,3 +1,10 @@
+2007-05-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-article-1): New function to support refresh.
+	(shimbun-article): Use it.
+
+	* sb-itmedia.el (shimbun-get-headers): Remove.
+
 2007-05-02  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
 
 	* sb-engadget-ja.el (shimbun-engadget-ja-content-end): Add new regexp.
@@ -6,8 +13,6 @@
 
 	* sb-slashdot-jp.el (shimbun-slashdot-jp-group-alist): Follow the
 	change of news group name and URL.
-
-2007-04-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-rss.el (shimbun-rss-get-headers): Support japanese-hankaku.
 
