@@ -962,10 +962,8 @@ If OUTBUF is not specified, article is retrieved to the current buffer.")
     (when (shimbun-fetch-url shimbun url nil nil
 			     (shimbun-article-base-url shimbun header))
       (w3m-check-refresh-attribute)
-      (when (and w3m-current-refresh
-		 (not (equal url (cdr w3m-current-refresh))))
-	(setq url (cdr w3m-current-refresh))
-	(shimbun-header-set-xref header url)
+      (when w3m-current-refresh
+	(shimbun-header-set-xref header (cdr w3m-current-refresh))
 	(erase-buffer)
 	(set-buffer-multibyte nil)
 	(shimbun-article-1 shimbun header)))))
