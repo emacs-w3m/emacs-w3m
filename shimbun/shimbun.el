@@ -958,7 +958,10 @@ If OUTBUF is not specified, article is retrieved to the current buffer.")
 
 (defun shimbun-article-1 (shimbun header)
   "Run `shimbun-fetch-url' and refresh the contents if necessary."
-  (let ((url (shimbun-article-url shimbun header)))
+  (let* ((url (shimbun-article-url shimbun header))
+	 ;; The default url used when it is not specified for refresh.
+	 (w3m-current-url url)
+	 (w3m-use-refresh t))
     (when (shimbun-fetch-url shimbun url nil nil
 			     (shimbun-article-base-url shimbun header))
       (w3m-check-refresh-attribute)

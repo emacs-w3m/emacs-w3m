@@ -1,3 +1,9 @@
+2007-05-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-article-1): Bind w3m-current-url to the url that
+	is to be retrieved for the default value used when it is not specified
+	in the meta tag; bind w3m-use-refresh to t.
+
 2007-05-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-article-1): New function to support refresh.
