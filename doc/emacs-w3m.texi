@@ -3577,23 +3577,19 @@ See also @ref{Nnshimbun} if you are using T-gnus or Nana-gnus.
 @node VM
 @section VM (vieW maiL) is not Wanderlust
 
-Emacs-w3m is not supporting VM positively.  It is simply because there
-is no VM user in the emacs-w3m team.  However, don't be pessimistic.
-There is the @file{vm-w3m.el} module in the @file{attic} directory of
-the emacs-w3m distribution.  You are a lucky person if it is helpful to
-you.  Try it anyhow.  You can find how to use it in the file itself.
+VM now supports emacs-w3m.  Use 8.x or greater versions of VM, which are
+available in the @uref{http://www.nongnu.org/viewmail/, VM home page}.
+@file{vm-w3m.el} and @file{vm-7.19.patch} included in emacs-w3m formerly
+have been integrated into VM.
 
-To enable also decoding of HTML mails when yanking them into the reply
-message, apply the patch named @file{vm-7.19.patch} (which is included
-in the @file{attic} directory in the emacs-w3m distribution) to
-@file{vm-reply.el} and re-compile it.
-
-If you want to toggle displaying of images in the presentation buffer
-when you are in any VM buffer, use the following:
+@quotation
+Tips: if you want to toggle displaying of images in the presentation
+buffer when you are in any VM buffer, use the following for example:
 
 @lisp
 (define-key vm-mode-map "T" 'vm-w3m-safe-toggle-inline-images)
 @end lisp
+@end quotation
 
 @node Frequently Asked Questions
 @chapter There isn't always an answer

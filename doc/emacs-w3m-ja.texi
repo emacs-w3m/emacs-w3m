@@ -3664,23 +3664,19 @@ T-gnus $B$+(B Nana-gnus $B$r$*;H$$$J$i$P(B @ref{Nnshimbun} $B$b;2>H$7$F2<$5
 @node VM
 @section VM (vieW maiL) $B$O(B Wanderlust $B$K$"$i$:(B
 
-Emacs-w3m $B$O(B VM $B$r@Q6KE*$K%5%]!<%H$7$F$$$^$;$s!#$=$l$OC1$K(B emacs-w3m $B%A!<(B
-$B%`$K(B VM $B%f!<%6$,$$$J$$$+$i$G$9!#$7$+$7Ha4Q$7$J$$$G!#(BEmacs-w3m $B$NG[I[(B
-$B$N(B @file{attic} $B%G%#%l%/%H%j$K(B @file{vm-w3m.el} $B%b%8%e!<%k$,$"$j$^$9!#$=(B
-$B$l$,;H$($l$P$a$C$1$b$s$G$9!#$H$K$+$/;n$7$F8+$F2<$5$$!#;H$$J}$O$=$N%U%!%$(B
-$B%k$K$"$j$^$9!#(B
+VM $B$O8=:_(B emacs-w3m $B$r%5%]!<%H$7$F$$$^$9!#(B8.x $B0J>e$N%P!<%8%g%s$N(B VM $B$r;H$C(B
+$B$F2<$5$$!#$=$l$i$O(B @uref{http://www.nongnu.org/viewmail/,
+VM $B%[!<%`%Z!<%8(B} $B$K$"$j$^$9!#0JA0(B emacs-w3m $B$K4^$^$l$F$$(B
+$B$?(B @file{vm-w3m.el} $B$H(B @file{vm-7.19.patch} $B$O(B VM $B$KE}9g$5$l$^$7$?!#(B
 
-$BJV?.%a%C%;!<%8$NCf$K0zMQ$7$?(B HTML $B%a!<%k$r%G%3!<%I$9$k$K$O!"(B
-@file{vm-7.19.patch} $B$H$$$&%Q%C%A(B (emacs-w3m $B$NG[I[$N(B @file{attic} $B%G%#(B
-$B%l%/%H%j$K4^$^$l$F$$$^$9(B) $B$r(B @file{vm-reply.el} $B$KEv$F$F!":F%3%s%Q%$%k$7(B
-$B$F2<$5$$!#(B
-
-VM $B$N$I$l$+$N%P%C%U%!$K$$$k$H$-$K!"%W%l%<%s%F!<%7%g%s!&%P%C%U%!$N2hA|I=(B
-$B<($r%H%0%k$K@Z$j49$($?$$>l9g$O!"0J2<$r;H$C$F2<$5$$(B:
+@quotation
+$B%R%s%H(B: VM $B$N$I$l$+$N%P%C%U%!$K$$$k$H$-$K!"%W%l%<%s%F!<%7%g%s!&%P%C%U%!(B
+$B$N2hA|I=<($r%H%0%k$K@Z$j49$($?$$>l9g$O!"Nc$($P0J2<$r;H$C$F2<$5$$(B:
 
 @lisp
 (define-key vm-mode-map "T" 'vm-w3m-safe-toggle-inline-images)
 @end lisp
+@end quotation
 
 @node Frequently Asked Questions
 @chapter $BI,$:Ez$,$"$k$H$O8B$i$J$$(B
