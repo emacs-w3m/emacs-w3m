@@ -202,11 +202,11 @@
   "Direct jump to the external diary."
   (goto-char (point-min))
   (let (newurl)
-    (while (re-search-forward "<a href=view_diary\\.pl\\?url=\\([^>]+\\)>" nil t)
+    (while (re-search-forward "<a href=\"?view_diary\\.pl\\?url=\\([^>]+\\)>" nil t)
       (setq newurl (match-string 1))
       (when newurl
 	(delete-region (match-beginning 0) (match-end 0))
-	(when (string-match "&owner_id=[0-9]+\\'" newurl)
+	(when (string-match "&owner_id=[0-9]+\"?\\'" newurl)
 	  (setq newurl (substring newurl 0 (match-beginning 0))))
 	(insert (format "<a href=\"%s\">" (w3m-url-readable-string newurl)))))))
 

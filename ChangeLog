@@ -1,3 +1,7 @@
+2007-06-05  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-filter.el (w3m-filter-mixi): Follow the change of Mixi's HTML.
+
 2007-06-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* attic/vm-w3m.el, attic/vm-7.19.patch: Remove.  They have been
