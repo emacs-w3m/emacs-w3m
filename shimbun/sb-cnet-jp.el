@@ -66,7 +66,8 @@
 (defvar shimbun-cnet-jp-server-name "CNET Networks,Inc.")
 (defvar shimbun-cnet-jp-content-start "<div class=\"leaf_body\">")
 (defvar shimbun-cnet-jp-content-end
-  "\\(<div class=\"article_footer\">\\|<!--h3>トラックバック一覧</h3-->\\)")
+  "\\(<div \\(class=\"article_footer\"\\|id=\"bubble_tooltip\"\\)>\\|\
+<!--h3>トラックバック一覧</h3-->\\)")
 (defvar shimbun-cnet-jp-x-face-alist
   '(("default" . "X-Face: 0p7.+XId>z%:!$ahe?x%+AEm37Abvn]n\
 *GGh+>v=;[3`a{1lqO[$,~3C3xU_ri>[JwJ!9l0\n ~Y`b*eXAQ:*q=bBI\
@@ -97,6 +98,7 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
   (shimbun-remove-tags "<script" "</script>")
   (shimbun-remove-tags "<noscript" "</noscript>")
   (shimbun-remove-tags "<div class=\"photor_thumb_wrap\"" "</div>")
+  (shimbun-remove-tags "<div class=\"block_infocnet_stb\">" "</div>")
   (shimbun-remove-tags "<div class=\"block_ad_print\">"
 		       "<!-- block_ad_print END -->")
   (shimbun-remove-tags "<!--AD_ART_S-->" "<!--AD_ART_S END-->"))

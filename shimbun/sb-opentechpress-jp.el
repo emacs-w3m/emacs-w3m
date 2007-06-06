@@ -41,7 +41,8 @@
     ("news" . "http://opentechpress.jp/news.rss")
     ("pr" . "http://opentechpress.jp/pr.rss")))
 
-(defvar shimbun-opentechpress-jp-content-start "<div class=\"intro\">")
+(defvar shimbun-opentechpress-jp-content-start
+  "<div class=\"\\(intro\\|full\\)\">")
 (defvar shimbun-opentechpress-jp-content-end "<div class=\"google-ad\">")
 
 (luna-define-method shimbun-groups ((shimbun shimbun-opentechpress-jp))
