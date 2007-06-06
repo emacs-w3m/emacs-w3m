@@ -1,6 +1,6 @@
 ;;; w3m-image.el --- Image conversion routines.
 
-;; Copyright (C) 2001, 2002, 2003, 2005
+;; Copyright (C) 2001, 2002, 2003, 2005, 2007
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>
@@ -57,20 +57,53 @@
   (defvar w3m-work-buffer-name)
   (defvar w3m-work-buffer-list))
 
-(defcustom w3m-imagick-convert-program (w3m-which-command "convert")
+(defcustom w3m-imagick-convert-program (if noninteractive
+					   nil
+					 (w3m-which-command "convert"))
   "*Program name of ImageMagick's `convert'."
   :group 'w3m
-  :type '(string :size 0))
+  :set (lambda (symbol value)
+	 (custom-set-default symbol (if (and (not noninteractive)
+					     value)
+					(if (file-name-absolute-p value)
+					    (if (file-executable-p value)
+						value)
+					  (w3m-which-command value)))))
+  :type 'file)
 
 ;;; Image handling functions.
 (defcustom w3m-resize-images (and w3m-imagick-convert-program t)
   "*If non-nil, resize images to the specified width and height."
   :group 'w3m
+  :set (lambda (symbol value)
+	 (custom-set-default symbol (and w3m-imagick-convert-program value)))
   :type 'boolean)
+
+(put 'w3m-imagick-convert-program 'available-p 'unknown)
+
+(defun w3m-imagick-convert-program-available-p ()
+  "Return non-nil if ImageMagick's `convert' program is available.
+If not, `w3m-imagick-convert-program' and `w3m-resize-images' are made
+nil forcibly."
+  (cond ((eq (get 'w3m-imagick-convert-program 'available-p) 'yes)
+	 t)
+	((eq (get 'w3m-imagick-convert-program 'available-p) 'no)
+	 nil)
+	((and (stringp w3m-imagick-convert-program)
+	      (file-executable-p w3m-imagick-convert-program))
+	 (put 'w3m-imagick-convert-program 'available-p 'yes)
+	 t)
+	(t
+	 (message "ImageMagick's `convert' program is not available.")
+	 (sit-for 1)
+	 (setq w3m-imagick-convert-program nil
+	       w3m-resize-images nil)
+	 (put 'w3m-imagick-convert-program 'available-p 'no)
+	 nil)))
 
 ;;; Synchronous image conversion.
 (defun w3m-imagick-convert-buffer (from-type to-type &rest args)
-  (when w3m-imagick-convert-program
+  (when (w3m-imagick-convert-program-available-p)
     (let* ((in-file (make-temp-name
 		     (expand-file-name "w3mel" w3m-profile-directory)))
 	   (buffer-file-coding-system 'binary)
@@ -113,7 +146,7 @@
 (defun w3m-imagick-start-convert-data (handler
 				       data from-type to-type &rest args)
   (w3m-process-do-with-temp-buffer
-      (success (progn
+      (success (when (w3m-imagick-convert-program-available-p)
 		 (set-buffer-multibyte nil)
 		 (insert data)
 		 (apply 'w3m-imagick-start-convert-buffer

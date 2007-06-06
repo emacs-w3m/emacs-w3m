@@ -1,3 +1,15 @@
+2007-06-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-image.el (w3m-imagick-convert-program, w3m-resize-images): Reset
+	them if convert program is not really available.
+	(w3m-imagick-convert-program-available-p): New function.
+	(w3m-imagick-convert-buffer, w3m-imagick-start-convert-data): Use it.
+
+2007-06-05  Yoichi NAKAYAMA  <yoichi@geiin.org>
+
+	* w3m-image.el (w3m-imagick-start-convert-data): Clarify message which
+	is issued when convert program is not available.
+
 2007-06-05  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-filter.el (w3m-filter-mixi): Follow the change of Mixi's HTML.
