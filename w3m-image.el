@@ -94,7 +94,7 @@ nil forcibly."
 	 (put 'w3m-imagick-convert-program 'available-p 'yes)
 	 t)
 	(t
-	 (message "ImageMagick's `convert' program is not available.")
+	 (message "ImageMagick's `convert' program is not available")
 	 (sit-for 1)
 	 (setq w3m-imagick-convert-program nil
 	       w3m-resize-images nil)
