@@ -4481,7 +4481,7 @@ Otherwise, return a list which includes the following elements:
 	  (nth 5 attr)
 	  (w3m-expand-file-name-as-url (file-truename file)))))
 
-(defun w3m-local-retrieve (url &optional no-decode &rest args)
+(defun w3m-local-retrieve (url &optional no-uncompress &rest args)
   "Retrieve contents of local URL and put it into the current buffer.
 This function will return the content-type of URL as a string when
 retrieval is successful."
@@ -4490,7 +4490,7 @@ retrieval is successful."
       (if (file-directory-p file)
 	  (w3m-local-dirlist-cgi url)
 	(let ((coding-system-for-read 'binary))
-	  (if no-decode
+	  (if no-uncompress
 	      (let (jka-compr-compression-info-list
 		    format-alist)
 		(insert-file-contents file))
@@ -4924,12 +4924,12 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
       (setq args (nconc args (list "-header" (concat "Referer: " referer)))))
     args))
 
-(defun w3m-w3m-retrieve (url no-decode no-cache post-data referer handler)
+(defun w3m-w3m-retrieve (url no-uncompress no-cache post-data referer handler)
   "Retrieve web contents pointed to by URL using the external w3m command.
 It will put the retrieved contents into the current buffer.  See
 `w3m-retrieve' for how does it work asynchronously with the arguments."
   (lexical-let ((url (w3m-w3m-canonicalize-url url))
-		(no-decode no-decode)
+		(no-uncompress no-uncompress)
 		(current-buffer (current-buffer)))
     (w3m-process-do-with-temp-buffer
 	(attr (progn
@@ -4938,12 +4938,25 @@ It will put the retrieved contents into the current buffer.  See
 				    (or w3m-follow-redirection 0) handler)))
       (when (or (not (string-match "\\`https?:" url))
 		(memq (car attr) '(200 300)))
-	(if (or no-decode
+	(if (or no-uncompress
 		(w3m-decode-encoded-contents (nth 4 attr)))
 	    (let ((temp-buffer (current-buffer)))
 	      (with-current-buffer current-buffer
 		(insert-buffer-substring temp-buffer))
-	      (cadr attr))
+	      (goto-char (point-min))
+	      ;; Asahi-shimbun sometimes says gif as jpeg mistakenly, for
+	      ;; example.  So, we cannot help trusting the data itself.
+	      (if (and (string-match "^image/" (cadr attr))
+		       (prog2
+			   (setq case-fold-search nil)
+			   (looking-at "\\(GIF8\\)\\|\\(\377\330\\)\\|\211PNG\r\n")
+			 (setq case-fold-search t)))
+		  (progn
+		    (concat "image/"
+			    (cond ((match-beginning 1) "gif")
+				  ((match-beginning 2) "jpeg")
+				  (t "png"))))
+		(cadr attr)))
 	  (ding)
 	  (w3m-message "Can't decode encoded contents: %s" url)
 	  nil)))))
@@ -5017,7 +5030,7 @@ It will put the retrieved contents into the current buffer.  See
 				    (1- counter) handler)))
 	  attr)))))
 
-(defun w3m-about-retrieve (url &optional no-decode no-cache
+(defun w3m-about-retrieve (url &optional no-uncompress no-cache
 			       post-data referer handler)
   "Retrieve the about: page which is pointed to by URL.
 It will put the retrieved contents into the current buffer.  See
@@ -5034,7 +5047,7 @@ It will put the retrieved contents into the current buffer.  See
    ((string-match "\\`about://source/" url)
     (w3m-process-do
 	(type (w3m-retrieve (substring url (match-end 0))
-			    no-decode no-cache post-data referer handler))
+			    no-uncompress no-cache post-data referer handler))
       (when type "text/plain")))
    ((string-match "\\`about:/*blank/?\\'" url)
     "text/plain")
@@ -5049,9 +5062,9 @@ It will put the retrieved contents into the current buffer.  See
 				 (intern-soft (concat "w3m-about-"
 						      (match-string 1 url))))
 			   (fboundp func))
-		      (funcall func url no-decode no-cache
+		      (funcall func url no-uncompress no-cache
 			       post-data referer handler)
-		    (w3m-about url no-decode no-cache))))
+		    (w3m-about url no-uncompress no-cache))))
 	(when type
 	  (when (string-match "\\`text/" type)
 	    (encode-coding-region (point-min) (point-max) w3m-coding-system))
@@ -5062,7 +5075,7 @@ It will put the retrieved contents into the current buffer.  See
 		(insert-buffer-substring temp-buffer))))
 	  type))))))
 
-(defun w3m-cid-retrieve (url &optional no-decode no-cache)
+(defun w3m-cid-retrieve (url &optional no-uncompress no-cache)
   "Retrieve contents pointed to by URL prefixed with the cid: scheme.
 This function is mainly used when displaying text/html MIME parts in
 message user agents, e.g., Gnus, Mew, T-gnus, Wanderlust, and possibly
@@ -5077,14 +5090,14 @@ through this function, extract and insert contents specified by URL
 \(which can be found in the raw message itself) into the current buffer,
 and return the content type of the data.
 
-The optional two arguments can be omitted by functions; NO-DECODE
-specifies whether functions should not decode extracted contents;
+The optional two arguments can be omitted by functions; NO-UNCOMPRESS
+specifies whether functions should not uncompress extracted contents;
 NO-CACHE specifies whether functions should not use cached contents."
   (let ((func (cdr (assq (with-current-buffer w3m-current-buffer major-mode)
 			 w3m-cid-retrieve-function-alist))))
-    (when func (funcall func url no-decode no-cache))))
+    (when func (funcall func url no-uncompress no-cache))))
 
-(defun w3m-data-retrieve (url &optional no-decode no-cache)
+(defun w3m-data-retrieve (url &optional no-uncompress no-cache)
   "Retrieve contents pointed to by URL prefixed with the data: scheme.
 See RFC2397."
   (let ((case-fold-search t) (mime-type "text/plain")
@@ -5123,7 +5136,7 @@ See RFC2397."
     mime-type))
 
 ;;;###autoload
-(defun w3m-retrieve (url &optional no-decode no-cache
+(defun w3m-retrieve (url &optional no-uncompress no-cache
 			 post-data referer handler)
   "Retrieve web contents pointed to by URL.
 It will put the retrieved contents into the current buffer.
@@ -5141,14 +5154,14 @@ HANDLER will be called on the buffer where this function starts.  The
 content type of the retrieved data will be passed to HANDLER as a
 string argument.
 
-NO-DECODE specifies whether this function should not decode contents.
+NO-UNCOMPRESS specifies whether this function should not uncompress contents.
 NO-CACHE specifies whether this function should not use cached contents.
 POST-DATA and REFERER will be sent to the web server with a request."
   (if (not handler)
       (condition-case nil
 	  (w3m-process-with-wait-handler
 	    (w3m-retrieve url
-			  no-decode no-cache post-data referer handler))
+			  no-uncompress no-cache post-data referer handler))
 	(w3m-process-timeout nil))
     (unless (and w3m-safe-url-regexp
 		 (not (string-match w3m-safe-url-regexp url)))
@@ -5157,16 +5170,16 @@ POST-DATA and REFERER will be sent to the web server with a request."
       (cond
        ((string-match "\\`about:" url)
 	(w3m-about-retrieve url
-			    no-decode no-cache post-data referer handler))
+			    no-uncompress no-cache post-data referer handler))
        ((string-match "\\`cid:" url)
-	(w3m-cid-retrieve url no-decode no-cache))
+	(w3m-cid-retrieve url no-uncompress no-cache))
        ((string-match "\\`data:" url)
-	(w3m-data-retrieve url no-decode no-cache))
+	(w3m-data-retrieve url no-uncompress no-cache))
        ((w3m-url-local-p url)
-	(w3m-local-retrieve url no-decode))
+	(w3m-local-retrieve url no-uncompress))
        (t
 	(w3m-w3m-retrieve url
-			  no-decode no-cache post-data referer handler))))))
+			  no-uncompress no-cache post-data referer handler))))))
 
 (defvar w3m-touch-file-available-p 'undecided)
 
@@ -8725,7 +8738,7 @@ non-ASCII characters."
 		   (make-char 'japanese-jisx0208 40 44))
     (make-string (w3m-display-width) ?-)))
 
-(defun w3m-about-header (url &optional no-decode no-cache &rest args)
+(defun w3m-about-header (url &optional no-uncompress no-cache &rest args)
   (when (string-match "\\`about://header/" url)
     (setq url (substring url (match-end 0)))
     (insert "Page Information\n"

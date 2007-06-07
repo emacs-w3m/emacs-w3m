@@ -1,3 +1,19 @@
+2007-06-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-local-retrieve, w3m-w3m-retrieve, w3m-about-retrieve)
+	(w3m-cid-retrieve, w3m-data-retrieve, w3m-retrieve, w3m-about-header):
+	Change the term and the symbol name `no-decode' into `no-uncompress'.
+
+2007-06-08  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-w3m-retrieve): Check if content-type is wrong after
+	decoding encoded contents.
+
+	* w3m-ems.el (w3m-create-image, w3m-create-resized-image): Decode
+	content retrieving image.
+
+	* w3m-xmas.el (w3m-create-image, w3m-create-resized-image): Ditto.
+
 2007-06-07  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m-search.el (w3m-search-engine-alist): Add output encoding argument

@@ -387,7 +387,7 @@ Third optional argument SIZE is currently ignored."
 		  size)
       (w3m-process-do-with-temp-buffer
 	  (type (condition-case err
-		    (w3m-retrieve url 'raw no-cache nil referer handler)
+		    (w3m-retrieve url nil no-cache nil referer handler)
 		  (error (message "While retrieving %s: %s" url err) nil)))
 	(when type
 	  (let ((data (buffer-string))
@@ -441,7 +441,7 @@ and its cdr element is used as height."
 		  (rate rate)
 		  fmt data)
       (w3m-process-do-with-temp-buffer
-	  (type (w3m-retrieve url 'raw nil nil referer handler))
+	  (type (w3m-retrieve url nil nil nil referer handler))
 	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
 	  (setq data (buffer-string)
 		fmt type)

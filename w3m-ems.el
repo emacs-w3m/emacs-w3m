@@ -210,7 +210,7 @@ and its cdr element is used as height."
       (w3m-process-do-with-temp-buffer
 	  (type (progn
 		  (set-buffer-multibyte nil)
-		  (w3m-retrieve url 'raw no-cache nil referer handler)))
+		  (w3m-retrieve url nil no-cache nil referer handler)))
 	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
 	  (setq image (create-image (buffer-string) type t :ascent 'center))
 	  (if (and w3m-resize-images set-size)
@@ -254,7 +254,7 @@ and its cdr element is used as height."
       (w3m-process-do-with-temp-buffer
 	  (type (progn
 		  (set-buffer-multibyte nil)
-		  (w3m-retrieve url 'raw nil nil referer handler)))
+		  (w3m-retrieve url nil nil nil referer handler)))
 	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
 	  (setq image (create-image (buffer-string) type t :ascent 'center))
 	  (progn
