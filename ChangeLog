@@ -1,3 +1,8 @@
+2007-06-07  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-search.el (w3m-search-engine-alist): Add output encoding argument
+	to google search.
+
 2007-06-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-image.el (w3m-imagick-convert-program, w3m-resize-images): Reset
