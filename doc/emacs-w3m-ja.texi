@@ -3406,19 +3406,12 @@ effect if your XEmacs does not support the gutter items.
 @vindex w3m-minor-mode-command-alist
 
 Gnus (Emacs のニューズリーダー) が emacs-w3m をサポートしているって、知っ
-ていましたか?
-
-実際には Emacs に同梱されている Gnus は、(今はまだ) emacs-w3m をサポート
-していません。最新版の Gnus を使うのが良いでしょう。それは以下の場所で手
+ていましたか?  実は、バージョン 22.1 以上の Emacs に同梱されてい
+る Gnus は emacs-w3m をサポートするんです。もしあなたの Emacs がいくらか
+古いのならば、最新版の Gnus を使うのが良いでしょう。それは以下の場所で手
 に入ります:
 
 @uref{ftp://ftp.gnus.org/pub/gnus/gnus.tar.gz}
-
-ご注意: あなたの Emacs に付属している Gnus のバージョンで emacs-w3m がサ
-ポートされているとしたら、この説明書が古い、または非常に古いバージョン
-の emacs-w3m を使っている、のどちらかを意味します。前者であれ
-ば @ref{Mailing List} を参照して、このバグを知らせて下さい。後者の場合に
-は、もっと新しいバージョンに更新するべきです。
 
 @itemize @bullet
 @item
@@ -3939,13 +3932,15 @@ Q. なぜ emacs-w3m のフレームがポップアップしないのですか?
 Emacs-w3m のフレームが他のフレームの下に隠れていても、それ
 が @kbd{M-x w3m RET} コマンドでポップアップするのは、かなり便利です。し
 かし、@samp{metacity} ウィンドウ・マネージャーが使われるいくつかのプラッ
-トフォーム (例えば Fedora Core Linux) 上で Emacs を走らせる場合に、それ
-が働かないという報告がありました。それらのシステムでは、Emacs のフレーム
-をポップアップさせる他の機能も動かないでしょう。もしあなたがそんな惨めな
-境遇にあるならば、以下の advice を試す価値があるかもしれません。
+トフォーム (例えば Fedora Core Linux) 上で LUCID ツールキットを使うよう
+に作られた Emacs を走らせる場合に、それが働かないという報告がありました。
+それらのシステムでは、Emacs のフレームをポップアップさせる他の機能も動か
+ないでしょう。もしあなたがそんな惨めな境遇にあるならば、以下の advice を
+試す価値があるかもしれません。
 
 @lisp
-(if (or (featurep 'xemacs) (not window-system))
+(if (or (featurep 'gtk) (not window-system)
+        (featurep 'xemacs))
     nil
   (defadvice raise-frame
     (after make-it-work (&optional frame) activate)
@@ -3963,13 +3958,11 @@ Emacs-w3m のフレームが他のフレームの下に隠れていても、それ
 Advice を @file{~/.emacs} ファイルに書き込む前に、@samp{wmctrl} コマンド
 をインストールしなければならないことに、注意して下さい。
 
-これに加えて、もしあなたの Emacs が @samp{--with-gtk} オプションで作られ
-たのならば、さらに以下の advice も必要かもしれません。
+これに加えて、さらに以下の advice も必要かもしれません。
 
 @lisp
-(if (or (featurep 'xemacs)
-        (not window-system)
-        (not (featurep 'gtk)))
+(if (or (featurep 'gtk) (not window-system)
+        (featurep 'xemacs))
     nil
   (defadvice select-frame (around set-input-focus
                                   (frame) activate)

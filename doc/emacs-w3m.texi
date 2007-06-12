@@ -3315,18 +3315,11 @@ message is called an @samp{article} by Gnus users.
 @vindex w3m-minor-mode-command-alist
 
 Did you know that Gnus, the Emacs newsreader, supports emacs-w3m?
-
-Actually, the version of Gnus bundled with Emacs does not support
-emacs-w3m (yet).  You'd better use the latest version of Gnus.  It is
-available at:
+Actually, Gnus bundled with Emacs of which the version is 22.1 or
+greater supports emacs-w3m.  If your Emacs is somewhat old, you'd better
+use the latest version of Gnus.  It is available at:
 
 @uref{ftp://ftp.gnus.org/pub/gnus/gnus.tar.gz}
-
-Note: if emacs-w3m @strong{is} supported in the Gnus version that comes
-with your Emacs distribution, it means either that this documentation is
-out-of-date (please report this bug as described in @ref{Mailing List}),
-or that you're using a very old version of emacs-w3m (in which case you
-should update it to a newer version).
 
 @itemize @bullet
 @item
@@ -3855,14 +3848,15 @@ Q. Why doesn't the emacs-w3m frame pop up to the front?
 It is quite convenient that the @kbd{M-x w3m RET} command makes the
 emacs-w3m frame pop to the front even if it is hidden under the other
 frames.  However, it was reported that it does not work when running
-Emacs on some platforms (e.g., Fedora Core Linux) in which the
-@samp{metacity} window manager is used.  In those systems, other
-features which raise the Emacs frames will not work, either.  If you are
-in such a miserable circumstance, it might be worth trying the following
-advice:
+Emacs which has been built so as to use the LUCID toolkit on some
+platforms (e.g., Fedora Linux) in which the @samp{metacity} window
+manager is used.  In those systems, other features which raise the Emacs
+frames will not work, either.  If you are in such a miserable
+circumstance, it might be worth trying the following advice:
 
 @lisp
-(if (or (featurep 'xemacs) (not window-system))
+(if (or (featurep 'gtk) (not window-system)
+        (featurep 'xemacs))
     nil
   (defadvice raise-frame
     (after make-it-work (&optional frame) activate)
@@ -3880,13 +3874,11 @@ Where @samp{wmctrl} is the external command which you can get from:
 Note that you have to install the @samp{wmctrl} command before putting
 the advice into the @file{~/.emacs} file.
 
-In addition to this, if your Emacs has been built with the
-@samp{--with-gtk} option, the following advice also might be necessary:
+In addition to this, the following advice also might be necessary:
 
 @lisp
-(if (or (featurep 'xemacs)
-        (not window-system)
-        (not (featurep 'gtk)))
+(if (or (featurep 'gtk) (not window-system)
+        (featurep 'xemacs))
     nil
   (defadvice select-frame (around set-input-focus
                                   (frame) activate)
