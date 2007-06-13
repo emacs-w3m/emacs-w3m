@@ -3958,7 +3958,31 @@ Emacs-w3m のフレームが他のフレームの下に隠れていても、それ
 Advice を @file{~/.emacs} ファイルに書き込む前に、@samp{wmctrl} コマンド
 をインストールしなければならないことに、注意して下さい。
 
-これに加えて、さらに以下の advice も必要かもしれません。
+次のものは今のところ emacs-w3m では不要ですが、ある種のアプリケーション
+が動作するために必要です。(前のものが必要な環境では、これを加えても失う
+ものはありません。)
+
+@lisp
+(if (or (featurep 'gtk) (not window-system)
+        (featurep 'xemacs))
+    nil
+  (defadvice pop-to-buffer (after enable-it-to-forcus-frame
+                                  activate)
+    "Enable it to focus frame if `pop-up-frames' is non-nil."
+    (when pop-up-frames
+      (let ((id (condition-case nil
+                    (frame-parameter
+                     (window-frame
+                      (get-buffer-window (ad-get-arg 0)))
+                     'outer-window-id)
+                  (error nil))))
+        (when id
+          (call-process
+           "wmctrl" nil nil nil "-i" "-R" id))))))
+@end lisp
+
+最後のものはたぶん要らないでしょう。しかし、いくつかのプラットフォームで
+は試してみる価値があるかもしれません。
 
 @lisp
 (if (or (featurep 'gtk) (not window-system)

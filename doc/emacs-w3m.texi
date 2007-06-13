@@ -3874,7 +3874,31 @@ Where @samp{wmctrl} is the external command which you can get from:
 Note that you have to install the @samp{wmctrl} command before putting
 the advice into the @file{~/.emacs} file.
 
-In addition to this, the following advice also might be necessary:
+The following one is currently unnecessary for emacs-w3m, but a certain
+application needs it to work.  (You will lose nothing by adding it if
+you are in the platform in which the previous one is needed.)
+
+@lisp
+(if (or (featurep 'gtk) (not window-system)
+        (featurep 'xemacs))
+    nil
+  (defadvice pop-to-buffer (after enable-it-to-forcus-frame
+                                  activate)
+    "Enable it to focus frame if `pop-up-frames' is non-nil."
+    (when pop-up-frames
+      (let ((id (condition-case nil
+                    (frame-parameter
+                     (window-frame
+                      (get-buffer-window (ad-get-arg 0)))
+                     'outer-window-id)
+                  (error nil))))
+        (when id
+          (call-process
+           "wmctrl" nil nil nil "-i" "-R" id))))))
+@end lisp
+
+The last one is perhaps unnecessary but it might be worth trying in some
+platforms.
 
 @lisp
 (if (or (featurep 'gtk) (not window-system)
