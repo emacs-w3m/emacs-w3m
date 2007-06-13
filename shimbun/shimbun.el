@@ -1405,7 +1405,7 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
     (while (re-search-forward "\\([!-=?-~]\\)　\\|　\\([!-~]\\)" nil t)
       (if (match-beginning 1)
 	  (replace-match "\\1 ")
-	(unless (memq (char-before (match-beginning 0)) '(nil ?\n))
+	(unless (memq (char-before (match-beginning 0)) '(nil ?\n ?>))
 	  (replace-match " \\2"))
 	(backward-char 1)))
     (goto-char start)

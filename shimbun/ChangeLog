@@ -1,3 +1,7 @@
+2007-06-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-japanese-hankaku-region): Fix indentation.
+
 2007-06-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* sb-opentechpress-jp.el (shimbun-opentechpress-jp-content-start):
