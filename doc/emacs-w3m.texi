@@ -320,8 +320,8 @@ later, previous versions may work but we didn't check them thoroughly.
 @item @acronym{FLIM}
 The @acronym{FLIM} package is required to use the @samp{shimbun}
 library.  The @samp{shimbun} library is a collection of tools for
-reading web newspapers, you can use it with Gnus, Mew, Nana-gnus,
-T-gnus, Wanderlust, etc. @xref{Shimbun Library}.
+reading web newspapers, you can use it with Gnus, Mew or Wanderlust.
+@xref{Shimbun Library}.
 
 Note that the @acronym{FLIM} package requires the @acronym{APEL} package
 regardless of the version of Emacs you are using.  Therefore, you must
@@ -3483,12 +3483,11 @@ See also @ref{Mew Shimbun}.
 @section Reading HTML mails in @acronym{SEMI} MUAs
 
 You can display HTML mails as human-readable, using emacs-w3m and
-@acronym{SEMI} MUAs, for example, Wanderlust, T-gnus, etc.  Since those
-MUAs depend on @acronym{SEMI} (and also @acronym{FLIM}) for MIME
-functions, we generically call them @acronym{SEMI} MUAs.  Although
-@acronym{SEMI} uses Emacs/W3 for rendering HTML mails by default, it can
-easily be altered to emacs-w3m and it will make your cyber life still
-more comfortable.
+@acronym{SEMI} MUA, for example, Wanderlust.  Since that MUA depends on
+@acronym{SEMI} (and also @acronym{FLIM}) for MIME functions, we
+generically call it @acronym{SEMI} MUA.  Although @acronym{SEMI} uses
+Emacs/W3 for rendering HTML mails by default, it can easily be altered
+to emacs-w3m and it will make your cyber life still more comfortable.
 
 @noindent
 You simply need to put the following line in @file{~/.emacs} file:
@@ -3533,24 +3532,10 @@ module and @acronym{SEMI}.  The default value is @code{nil}.
 By the way, even when you are in the summary buffer, you can toggle
 displaying of images in the article buffer (which is what is called the
 message buffer in the Wanderlust community).  It is effective only when
-those images are displayed by emacs-w3m, though.  Here're examples for
-T-gnus, Nana-gnus and Wanderlust:
+those images are displayed by emacs-w3m, though.  Here's an example for
+Wanderlust:
 
 @lisp
-;; T-gnus or Nana-gnus:
-(defun gnus-summary-w3m-safe-toggle-inline-images (&optional arg)
-  "Toggle displaying of all images in the article buffer.
-If the prefix arg is given, all images are considered to be safe."
-  (interactive "P")
-  (save-excursion
-    (set-buffer gnus-article-buffer)
-    (w3m-safe-toggle-inline-images arg)))
-
-(eval-after-load "gnus-sum"
-  '(define-key gnus-summary-mode-map
-     "\C-i" 'gnus-summary-w3m-safe-toggle-inline-images))
-
-;; Wanderlust:
 (defun wl-summary-w3m-safe-toggle-inline-images (&optional arg)
   "Toggle displaying of all images in the message buffer.
 If the prefix arg is given, all images are considered to be safe."
@@ -3563,9 +3548,6 @@ If the prefix arg is given, all images are considered to be safe."
   '(define-key wl-summary-mode-map
      "\M-i" 'wl-summary-w3m-safe-toggle-inline-images))
 @end lisp
-
-@noindent
-See also @ref{Nnshimbun} if you are using T-gnus or Nana-gnus.
 
 @node VM
 @section VM (vieW maiL) is not Wanderlust
@@ -4023,7 +4005,7 @@ boards, etc...  Note that if you want to followup, you still need to use
 emacs-w3m as Gnus can't post via the web with @samp{nnshimbun}.
 
 See also @ref{Gnus} for rendering HTML messages with emacs-w3m if you
-use Gnus, see @ref{SEMI MUAs} for T-gnus or Nana-gnus instead.
+use Gnus.
 
 @findex gnus-group-make-shimbun-group
 @c @kindex G n (Group)
@@ -4041,8 +4023,7 @@ in respectively.  You can complete both of those names by using
 
 You can also bind that to a key if there's enough room in the
 @code{gnus-group-mode-map} map, you can add something like the following
-in your @file{~/.gnus.el} file (T-gnus users, you don't need to bother
-to add it, since there's already the similar thing in T-gnus):
+in your @file{~/.gnus.el} file:
 
 @lisp
 (eval-after-load "gnus-group"

@@ -353,8 +353,8 @@ emacs-w3m $B$O2hA|%5%$%:$NJQ99$d(B @samp{favicon} $B2hA|$r(B Emacs $B$,07$(
 @item @acronym{FLIM}
 @samp{Shimbun} $B%i%$%V%i%j$r;H$&$?$a$K$O(B @acronym{FLIM} $B%Q%C%1!<%8$,I,MW(B
 $B$G$9!#(B@samp{Shimbun} $B%i%$%V%i%j$O%&%'%V>e$N?7J9$rFI$`$?$a$NF;6qN`$N%3%l(B
-$B%/%7%g%s$G!"(BGnus$B!"(BMew$B!"(BNana-gnus$B!"(BT-gnus$B!"(BWanderlust $B$J$I$H$H$b$K;H$&$3(B
-$B$H$,$G$-$^$9!#(B@xref{Shimbun Library}.
+$B%/%7%g%s$G!"(BGnus$B!"(BMew $B$^$?$O(B Wanderlust $B$H$H$b$K;H$&$3$H$,$G$-$^(B
+$B$9!#(B@xref{Shimbun Library}.
 
 $B;H$C$F$$$k(B Emacs $B$N%P!<%8%g%s$K$+$+$o$i$:!"(B@acronym{FLIM} $B%Q%C%1!<%8$K(B
 $B$O(B @acronym{APEL} $B%Q%C%1!<%8$,I,MW$G$"$k$3$H$KCm0U$7$F2<$5$$!#$7$?$,$C(B
@@ -3570,13 +3570,13 @@ Mew $B$K4XO"$9$k$$$/$D$+$N%+%9%?%^%$%:2DG=$JJQ?t$,$"$j$^$9(B:
 @node SEMI MUAs
 @section @acronym{SEMI} MUA $B$G(B HTML $B%a!<%k$rFI$`(B
 
-Emacs-w3m $B$H(B @acronym{SEMI} MUA$B!"Nc$($P(B Wanderlust $B$d(B T-gnus $B$J$I$r;H$&(B
-$B$3$H$K$h$C$F!"(BHTML $B%a!<%k$r?M4V$,FI$a$k$h$&$KI=<($9$k$3$H$,$G$-$^$9!#$=(B
-$B$l$i$N(B MUA $B$O(B MIME $B$N5!G=$r(B @acronym{SEMI} ($B$=$7$F$5$i(B
-$B$K(B @acronym{FLIM}) $B$KMj$C$F$$$k$N$G!"$=$l$i$r(B @acronym{SEMI} MUA $B$HAm>N(B
-$B$7$F$$$^$9!#(B@acronym{SEMI} $B$O(B HTML $B%a!<%k$NIA2h$K%G%U%)%k%H(B
-$B$G(B Emacs/W3 $B$r;H$$$^$9$,!"MF0W$K(B emacs-w3m $B$GCV$-49$($k$3$H$,2DG=$G!"$=(B
-$B$l$K$h$C$F$"$J$?$NEEG>@83h$O$h$j2wE,$K$J$k$G$7$g$&!#(B
+Emacs-w3m $B$H(B @acronym{SEMI} MUA$B!"Nc$($P(B Wanderlust $B$r;H$&$3$H$K$h$C$F!"(B
+HTML $B%a!<%k$r?M4V$,FI$a$k$h$&$KI=<($9$k$3$H$,$G$-$^$9!#$=$&$$(B
+$B$&(B MUA $B$O(B MIME $B$N5!G=$r(B @acronym{SEMI} ($B$=$7$F$5$i$K(B @acronym{FLIM}) $B$K(B
+$BMj$C$F$$$k$N$G!"0lHL$K$=$l$r(B @acronym{SEMI} MUA $B$H8F$s$G$$$^$9!#(B
+@acronym{SEMI} $B$O(B HTML $B%a!<%k$NIA2h$K%G%U%)%k%H$G(B Emacs/W3 $B$r;H$$$^$9$,!"(B
+$BMF0W$K(B emacs-w3m $B$GCV$-49$($k$3$H$,2DG=$G$9!#$=$l$K$h$C$F$"$J$?$NEEG>@8(B
+$B3h$O$h$j2wE,$K$J$k$G$7$g$&!#(B
 
 @noindent
 $BC1$K0J2<$N9T$r(B @file{~/.emacs} $B%U%!%$%k$KF~$l$l$PNI$$$N$G$9(B:
@@ -3620,24 +3620,9 @@ emacs-w3m $B$N$HF1$8<gMW$J%-!<$r;H$&$3$H$,$G$-$^$9!#Nc$($P(B @key{RET} $B$O!"
 $B$H$3$m$G!"(Bsummary $B%P%C%U%!$K$$$k$H$-$G$b!"(Barticle $B%P%C(B
 $B%U%!(B (Wanderlust $B$N%3%_%e%K%F%#$G$O(B message $B%P%C%U%!$H8F$P$l$F$$$k(B) $B$N2h(B
 $BA|I=<($r%H%0%k$K@Z$j49$($k$3$H$,$G$-$^$9!#$=$l$i$N2hA|$,(B emacs-w3m $B$K$h$C(B
-$B$FI=<($5$l$k>l9g$@$1$G$9$1$l$I$M!#(BT-gnus, Nana-gnus $B$*$h$S(B Wanderlust $BMQ(B
-$B$NNc$G$9(B:
+$B$FI=<($5$l$k>l9g$@$1$G$9$1$l$I$M!#(BWanderlust $BMQ$NNc$G$9(B:
 
 @lisp
-;; T-gnus or Nana-gnus:
-(defun gnus-summary-w3m-safe-toggle-inline-images (&optional arg)
-  "Toggle displaying of all images in the article buffer.
-If the prefix arg is given, all images are considered to be safe."
-  (interactive "P")
-  (save-excursion
-    (set-buffer gnus-article-buffer)
-    (w3m-safe-toggle-inline-images arg)))
-
-(eval-after-load "gnus-sum"
-  '(define-key gnus-summary-mode-map
-     "\C-i" 'gnus-summary-w3m-safe-toggle-inline-images))
-
-;; Wanderlust:
 (defun wl-summary-w3m-safe-toggle-inline-images (&optional arg)
   "Toggle displaying of all images in the message buffer.
 If the prefix arg is given, all images are considered to be safe."
@@ -3650,9 +3635,6 @@ If the prefix arg is given, all images are considered to be safe."
   '(define-key wl-summary-mode-map
      "\M-i" 'wl-summary-w3m-safe-toggle-inline-images))
 @end lisp
-
-@noindent
-T-gnus $B$+(B Nana-gnus $B$r$*;H$$$J$i$P(B @ref{Nnshimbun} $B$b;2>H$7$F2<$5$$!#(B
 
 @node VM
 @section VM (vieW maiL) $B$O(B Wanderlust $B$K$"$i$:(B
@@ -4102,8 +4084,7 @@ Lisp $B%W%m%0%i%`$r=q$/$3$H$,$G$-$kI,MW$,$"$j$^$9(B)$B!#(B
 $B$$!#(B
 
 $B$5$i$K(B emacs-w3m $B$G(B HTML $B%a%C%;!<%8$r@07A$9$k$K$O(B @ref{Gnus} $B$b;2>H$7$F(B
-$B2<$5$$!#(BT-gnus $B$+(B Nana-gnus $BMQ$K$O!"Be$o$j$K(B @ref{SEMI MUAs} $B$r8+$F2<$5(B
-$B$$!#(B
+$B2<$5$$!#(B
 
 @findex gnus-group-make-shimbun-group
 @c @kindex G n ($B%0%k!<%W(B)
@@ -4119,8 +4100,7 @@ Lisp $B%W%m%0%i%`$r=q$/$3$H$,$G$-$kI,MW$,$"$j$^$9(B)$B!#(B
 $BJd40$9$k$3$H$,$G$-$^$9!#(B
 
 $B$b$7(B @code{gnus-group-mode-map} $B$K==J,$J6u$-$,$"$k$J$i$P!"0J2<$N$h$&$J$b(B
-$B$N$r(B @file{~/.gnus.el} $B%U%!%$%k$K2C$($F2<$5$$(B (T-gnus $B$K$O$3$l$HF1MM$N$b(B
-$B$N$,$9$G$K$"$k$N$G!"$o$6$o$6DI2C$9$kI,MW$O$"$j$^$;$s(B):
+$B$N$r(B @file{~/.gnus.el} $B%U%!%$%k$K2C$($F2<$5$$(B:
 
 @lisp
 (eval-after-load "gnus-group"
