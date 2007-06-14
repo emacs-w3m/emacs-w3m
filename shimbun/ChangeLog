@@ -1,6 +1,7 @@
 2007-06-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-mainichi.el (shimbun-mainichi-subgroups-alist): Fix typo in urls.
+	(shimbun-mainichi-prepare-article): Remove ruby for maishou subgroup.
 
 2007-06-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 

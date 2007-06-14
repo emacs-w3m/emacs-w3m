@@ -670,7 +670,12 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 			  (goto-char start)
 			  nil)
 		      (narrow-to-region (point) end))
-		(insert "<!--emacs-w3m-shimbun-mainichi-content-start-->"))))))
+		(insert "<!--emacs-w3m-shimbun-mainichi-content-start-->"))))
+	   ((string-match "毎日小学生新聞" from)
+	    ;; Remove ruby.
+	    (shimbun-remove-tags "</rb><rp>（</rp><rt>"
+				 "</rt><rp>）</rp></ruby>")
+	    (shimbun-remove-tags "<ruby><rb>"))))
    (when (shimbun-prefer-text-plain-internal shimbun)
      ;; Replace images with text.
      (goto-char (point-min))
