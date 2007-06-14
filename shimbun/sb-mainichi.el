@@ -318,7 +318,7 @@ set to \"about:blank\".")
        ("'07年センター試験" "center07"
 	"http://www.mainichi-msn.co.jp/shakai/edu/jyuken/center07/")
        ("ITのある教室" "class.elearningschool" "\
-ttp://www.mainichi-msn.co.jp/shakai/edu/elearningschool/class/archive/")
+http://www.mainichi-msn.co.jp/shakai/edu/elearningschool/class/archive/")
        ("学校と私" "gakkou"
 	"http://www.mainichi-msn.co.jp/shakai/edu/gakkou/archive/")
        ("学力とは何か" "gakuryoku"
@@ -337,7 +337,7 @@ ttp://www.mainichi-msn.co.jp/shakai/edu/elearningschool/class/archive/")
        ("教育の森" "mori"
 	"http://www.mainichi-msn.co.jp/shakai/edu/mori/archive/")
        ("ITで入試が変わる" "nyushi.elearningschool" "\
-ttp://www.mainichi-msn.co.jp/shakai/edu/elearningschool/nyushi/archive/")
+http://www.mainichi-msn.co.jp/shakai/edu/elearningschool/nyushi/archive/")
        ("情報パケット" "packet"
 	"http://www.mainichi-msn.co.jp/shakai/edu/packet/archive/")
        ("小学校" "primary"
