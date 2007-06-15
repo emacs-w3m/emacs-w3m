@@ -1242,32 +1242,21 @@ and tenjin, it tries to fetch the article for that day if it failed."
 		 (insert "\n<!-- End of Kiji -->\n"))))))
      ((string-equal group "editorial")
       (let ((regexp "<h[0-9][\t\n ]+class=\"topi\">")
-	    (retry 0)
-	    index from)
-	(while (<= retry 1)
-	  (if (re-search-forward regexp nil t)
-	      (progn
-		(goto-char (match-beginning 0))
-		(insert "<!-- Start of Kiji -->")
-		(when index
-		  (insert "\
+	    (url (shimbun-header-xref header))
+	    from)
+	(when (re-search-forward regexp nil t)
+	  (goto-char (match-beginning 0))
+	  (insert "<!-- Start of Kiji -->")
+	  (when (string-match "/editorial\\.html\\'" url)
+	    (insert "\
 \n<p>(指定された&nbsp;url&nbsp;が&nbsp;まだ/すでに&nbsp;無いので、\
-<a href=\"" index "\">トップページ</a> から記事を取得しました)</p>\n"))
-		(while (and (search-forward "</p>" nil t)
-			    (progn
-			      (setq from (match-end 0))
-			      (re-search-forward regexp nil t)))
-		  (delete-region from (match-beginning 0)))
-		(insert "\n<!-- End of Kiji -->")
-		(setq retry 255))
-	    (erase-buffer)
-	    (if (zerop retry)
-		(progn
-		  (shimbun-retrieve-url (setq index
-					      (shimbun-index-url shimbun)))
-		  (goto-char (point-min)))
-	      (insert "Couldn't retrieve the page.\n")))
-	  (setq retry (1+ retry)))))
+<a href=\"" url "\">トップページ</a> から記事を取得しました)</p>\n"))
+	  (while (and (search-forward "</p>" nil t)
+		      (progn
+			(setq from (match-end 0))
+			(re-search-forward regexp nil t)))
+	    (delete-region from (match-beginning 0)))
+	  (insert "\n<!-- End of Kiji -->"))))
      ((string-equal group "food")
       (when (and (re-search-forward (shimbun-content-start shimbun) nil t)
 		 (re-search-forward "[\t\n ]*<!-+[\t\n ]+Creative[\t\n ]+for"
@@ -1290,31 +1279,19 @@ and tenjin, it tries to fetch the article for that day if it failed."
 	  (insert "<!-- End of Kiji -->"))))
      ((string-equal group "rss"))
      ((string-equal group "tenjin")
-      (let ((retry 0)
-	    index)
-	(while (<= retry 1)
-	  (if (re-search-forward "<SPAN STYLE=[^>]+>[\t\n ]*" nil t)
-	      (progn
-		(insert "<!-- Start of Kiji -->")
-		(when index
-		  (insert "\
+      (let ((url (shimbun-header-xref header)))
+	(when (re-search-forward "<SPAN STYLE=[^>]+>[\t\n ]*" nil t)
+	  (insert "<!-- Start of Kiji -->")
+	  (when (string-match "/column\\.html\\'" url)
+	    (insert "\
 \n<p>(指定された&nbsp;url&nbsp;が&nbsp;まだ/すでに&nbsp;無いので、\
-<a href=\"" index "\">トップページ</a> から記事を取得しました)</p>\n"))
-		(while (re-search-forward "[\t\n ]*<SPAN STYLE=[^>]+>[\t\n ]*"
-					  nil t)
-		  (delete-region (match-beginning 0) (match-end 0)))
-		(when (re-search-forward "[\t\n ]*</SPAN>" nil t)
-		  (goto-char (match-beginning 0))
-		  (insert "\n<!-- End of Kiji -->"))
-		(setq retry 255))
-	    (erase-buffer)
-	    (if (zerop retry)
-		(progn
-		  (shimbun-retrieve-url (setq index
-					      (shimbun-index-url shimbun)))
-		  (goto-char (point-min)))
-	      (insert "Couldn't retrieve the page.\n")))
-	  (setq retry (1+ retry)))))
+<a href=\"" url "\">トップページ</a> から記事を取得しました)</p>\n"))
+	  (while (re-search-forward "[\t\n ]*<SPAN STYLE=[^>]+>[\t\n ]*"
+				    nil t)
+	    (delete-region (match-beginning 0) (match-end 0)))
+	  (when (re-search-forward "[\t\n ]*</SPAN>" nil t)
+	    (goto-char (match-beginning 0))
+	    (insert "\n<!-- End of Kiji -->")))))
      ((string-match "\\`book\\." group)
       (when (and (re-search-forward "[\t\n ]*<div[\t\n ]+class=[^>]+>[\t\n ]*\
 <img[\t\n ]+[^>]+>[\t\n ]*</div>[\t\n ]*"

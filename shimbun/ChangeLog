@@ -1,3 +1,8 @@
+2007-06-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-prepare-article): Simplify the ways to
+	prepare articles in editorial and tenjin groups.
+
 2007-06-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-mainichi.el (shimbun-mainichi-subgroups-alist): Fix typo in urls.
