@@ -645,37 +645,67 @@ Proxy ゲートウェイを通すべきではないホスト (イントラネットのサイトな
 
 @node Browsing Web Pages
 @section ネットサーフィンしよう!
-@vindex w3m-lynx-like-map
-@vindex w3m-info-like-map
 
-Emacs-w3m でのウェブブラウジングは、御期待通り、キー操作で全て行なうこと
-ができます。Emacs-w3m には、既存のウェブブラウザ／ドキュメントブラウザに
-基づいた二種類のキー割当て体系 (キーマップ) が用意されています。一つはテ
-キストベースのウェブブラウザ lynx に基づくものです。このキーマップ
-は emacs-w3m のコード中では、@code{w3m-lynx-like-map} という変数で定義さ
-れています。もう一つは、GNU プロジェクトの標準ドキュメントブラウ
-ザ info に基づくものです。このキーマップは @code{w3m-info-like-map} とい
-う変数で定義されています。ユーザは自分の好みや lynx、info の利用経験に基
-づいて、どちらかのキーマップを選ぶことができます。キーマップを選択する方
-法については @ref{Customizable Variables} を見て下さい。特に選択をしなかっ
-た場合、@code{w3m-lynx-like-map} がデフォルトのキーマップとして使われま
-す。以降では、@code{w3m-lynx-like-map} に基づいて emacs-w3m の使い方を記
-述します。
+すべてのウェブ・ブラウズの操作は、キーで行うことができます。Emacs-w3m は
+デフォルトで @samp{Lynx-like} キーマップ (@pxref{Key Binding}) というも
+のを使います。
 
-@c マウス
-ターミナル以外で Emacs が動作している場合、例えば X Window System のクラ
-イアントとして Emacs が動作している場合、他の GUI ベースのウェブブラウザ
-と同様にマウスを使ってもブラウジングの基本操作を行なうことができます。キー
-操作の方が迅速なブラウジングが可能ですが、マウス操作の方が覚えることは少
-ないです。
+@noindent
+注: このマニュアルでは特に断わりが無い限り、コマンドに割り当てられたキー
+を表現するために @samp{Lynx-like} キーマップで定義されているキーを使いま
+す。
+
+@noindent
+もちろんマウスを使うこともできます。
 
 @menu
+* Key Binding::                 二つのキーバインド
 * Launching and Jumping::       とにかく動かしてみよう
 * Moving in a page::            ページ内を飛びまわる
 * Moving over pages::           ページ間を渡り歩く
 * Browsing With Mouse Operations:: マウスを使ってサーフィン
 * Going back to daily hacking and/or daily writing:: 普段の生活に戻るには
 @end menu
+
+@node Key Binding
+@subsection There are two types of the key bindings
+@cindex Key binding
+@cindex Lynx-like keymap
+@cindex Info-like keymap
+@vindex w3m-key-binding
+
+Emacs-w3m は Emacs ウェブ・ブラウザの歴史の中では後発のブラウザなので、
+ユーザが新しいウェブ・ブラウザに容易に慣れることができるようにするために、
+二種類のキーバインドを用意しました。一つは @samp{Lynx-like} キーマップと
+呼ばれ、もう一つは @samp{Info-like} キーマップです。これらの名前から、そ
+れらが何を意味するかは分かりますね?  前者はテキスト版のウェブ・ブラウザ
+である @samp{Lynx} のものに似ています。そして後者は  GNU の公式ドキュメ
+ント・ブラウザである @samp{Info} のものに似ています。デフォルトで
+は @samp{Lynx-like} キーマップが使われます。@samp{Info-like} キーマップ
+を使いたいのならば、
+
+@example
+@w{@kbd{M-x customize-option RET w3m-key-binding RET}}
+@end example
+
+@noindent
+とタイプして @samp{Info-like} キーマップを選び、変更をセーブして下さい。
+あるいは以下の断片を @file{~/.emacs} ファイル (@file{~/.emacs-w3m.el} ファ
+イルではありません) に加えて下さい:
+
+@lisp
+(setq w3m-key-binding 'info)
+@end lisp
+
+キーバインドを一つずつ変更するには、@file{~/.emacs-w3m.el} ファイルで以
+下のように @code{w3m-mode-map} 変数をいじって下さい:
+
+@lisp
+(define-key w3m-mode-map [up] 'previous-line)
+(define-key w3m-mode-map [down] 'next-line)
+(define-key w3m-mode-map [left] 'backward-char)
+(define-key w3m-mode-map [right] 'forward-char)
+@end lisp
 
 @node Launching and Jumping
 @subsection とにかく動かしてみよう
@@ -2613,10 +2643,10 @@ database keeps.
 Maximum number of pages to be cached in emacs-w3m.
 
 @item w3m-key-binding
-@vindex w3m-key-binding
+@c @vindex w3m-key-binding
 Type of key binding set used in emacs-w3m sessions.  The valid values
-include @code{info} which provides Info-like keys, and @code{nil} which
-provides Lynx-like keys.
+include @code{info} which provides @samp{Info-like} keys, and @code{nil}
+which provides @samp{Lynx-like} keys.
 
 @item w3m-language
 @vindex w3m-language

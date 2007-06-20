@@ -619,13 +619,65 @@ variable for instructions on how to use regexps to specify
 @node Browsing Web Pages
 @section Let's go netsurfing!
 
+You can, by the keys, let emacs-w3m do all the web browsing operations.
+Emacs-w3m uses the @samp{Lynx-like} keymap (@pxref{Key Binding}) by
+default.
+
+@noindent
+Note: we use the keys defined in the @samp{Lynx-like} keymap to express
+the command keys in this manual unless otherwise noted.
+
+@noindent
+Of course, you can use the mouse buttons, too.
+
 @menu
+* Key Binding::                 There are two types of the key bindings
 * Launching and Jumping::       Go ahead, just try it
 * Moving in a page::            Moving from place to place in a page
 * Moving over pages::           Moving from page to page
 * Browsing with Mouse Operations::   Surfing using the mouse
 * Going Back to Daily Hacking and/or Daily Writing::    Return to an Ordinary Life
 @end menu
+
+@node Key Binding
+@subsection There are two types of the key bindings
+@cindex Key binding
+@cindex Lynx-like keymap
+@cindex Info-like keymap
+@vindex w3m-key-binding
+
+Since emacs-w3m is a late-coming web browser in the history of Emacs web
+browsers, we offer two types of the key bindings in order that users can
+get used to the new web browser easily.  One is called the
+@samp{Lynx-like} keymap, the other is the @samp{Info-like} keymap.  You
+can see what they mean from those names, can't you?  The former is
+similar to that of @samp{Lynx} which is the text-based web browser, and
+the later is similar to that of @samp{Info} which is GNU's official
+document browser.  By default, the @samp{Lynx-like} keymap is used.  If
+you would like to use the @samp{Info-like} keymap, type
+
+@example
+@w{@kbd{M-x customize-option RET w3m-key-binding RET}}
+@end example
+
+@noindent
+choose the @samp{Info-like} keymap, and save the changed state.
+Otherwise, add the following snippet to your @file{~/.emacs} file, not
+@file{~/.emacs-w3m.el} file:
+
+@lisp
+(setq w3m-key-binding 'info)
+@end lisp
+
+To change the key binding one by one, modify the @code{w3m-mode-map}
+variable in your @file{~/.emacs-w3m.el} file like the following:
+
+@lisp
+(define-key w3m-mode-map [up] 'previous-line)
+(define-key w3m-mode-map [down] 'next-line)
+(define-key w3m-mode-map [left] 'backward-char)
+(define-key w3m-mode-map [right] 'forward-char)
+@end lisp
 
 @node Launching and Jumping
 @subsection Go ahead, just try it
@@ -2522,10 +2574,10 @@ database keeps.
 Maximum number of pages to be cached in emacs-w3m.
 
 @item w3m-key-binding
-@vindex w3m-key-binding
+@c @vindex w3m-key-binding
 Type of key binding set used in emacs-w3m sessions.  The valid values
-include @code{info} which provides Info-like keys, and @code{nil} which
-provides Lynx-like keys.
+include @code{info} which provides @samp{Info-like} keys, and @code{nil}
+which provides @samp{Lynx-like} keys.
 
 @item w3m-language
 @vindex w3m-language
