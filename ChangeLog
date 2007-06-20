@@ -1,3 +1,8 @@
+2007-06-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-lynx-like-map, w3m-info-like-map): Bind [backtab] to
+	w3m-previous-anchor.
+
 2007-06-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-local-retrieve, w3m-w3m-retrieve, w3m-about-retrieve)
