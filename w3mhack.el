@@ -805,6 +805,11 @@ NOTE: This function must be called from the top directory."
 	    (while (search-forward "\n@iflatex\n" nil t)
 	      (delete-region (1+ (match-beginning 0))
 			     (search-forward "\n@end iflatex\n")))
+	    ;; Format @key{...}.
+	    (goto-char (point-min))
+	    (while (re-search-forward "@key{\\([^}]+\\)}" nil t)
+	      (replace-match "<\\1>"))
+	    ;;
 	    (texinfo-mode)
 	    (texinfo-every-node-update)
 	    (set-buffer-modified-p nil)

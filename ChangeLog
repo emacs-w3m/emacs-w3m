@@ -1,3 +1,7 @@
+2007-06-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-makeinfo): Format @key{...}.
+
 2007-06-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-lynx-like-map, w3m-info-like-map): Bind [backtab] to
