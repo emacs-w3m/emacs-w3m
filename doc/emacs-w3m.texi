@@ -198,7 +198,8 @@ any problems, all responsibility for this program is ours (the emacs-w3m
 development team), but there is absolutely no warranty.  The emacs-w3m
 program was first created by TSUCHIYA Masatoshi in June 2000.
 
-See also @uref{http://emacs-w3m.namazu.org/, the emacs-w3m official page}.
+See also @uref{http://emacs-w3m.namazu.org/, the emacs-w3m official
+page}.
 
 @node Getting Started
 @chapter It's so easy to begin to use emacs-w3m
@@ -621,22 +622,15 @@ variable for instructions on how to use regexps to specify
 
 You can, by the keys, let emacs-w3m do all the web browsing operations.
 Emacs-w3m uses the @samp{Lynx-like} keymap (@pxref{Key Binding}) by
-default.
-
-@noindent
-Note: we use the keys defined in the @samp{Lynx-like} keymap to express
-the command keys in this manual unless otherwise noted.
-
-@noindent
-Of course, you can use the mouse buttons, too.
+default.  Of course, you can use the mouse buttons, too.
 
 @menu
 * Key Binding::                 There are two types of the key bindings
 * Launching and Jumping::       Go ahead, just try it
 * Moving in a page::            Moving from place to place in a page
 * Moving over pages::           Moving from page to page
-* Browsing with Mouse Operations::   Surfing using the mouse
-* Going Back to Daily Hacking and/or Daily Writing::    Return to an Ordinary Life
+* Browsing with Mouse Operations:: Surfing using the mouse
+* Going Back to Daily Hacking and/or Daily Writing:: Return to an Ordinary Life
 @end menu
 
 @node Key Binding
@@ -657,7 +651,7 @@ document browser.  By default, the @samp{Lynx-like} keymap is used.  If
 you would like to use the @samp{Info-like} keymap, type
 
 @example
-@w{@kbd{M-x customize-option RET w3m-key-binding RET}}
+@w{@kbd{M-x customize-option @key{RET} w3m-key-binding @key{RET}}}
 @end example
 
 @noindent
@@ -736,15 +730,17 @@ instance, @kbd{C-n}, @kbd{C-v} and @kbd{C-s} (which are commonly used to
 move down one line, one page, or search downwards for a word) are valid
 keys in an emacs-w3m buffer.
 
-To follow a link, use the @kbd{RET} key.  You have to move the point to
-a link to do this; links are easily recognizable in a buffer because
-they are not displayed like ordinary text: they can be underlined, or
-have a different color.  The face @code{w3m-anchor-face} controls how
-they are to be displayed (@pxref{Customizable Variables}).
+To follow a link, use the @kbd{@key{RET}} key.  You have to move the
+point to a link to do this; links are easily recognizable in a buffer
+because they are not displayed like ordinary text: they can be
+underlined, or have a different color.  The face @code{w3m-anchor-face}
+controls how they are to be displayed (@pxref{Customizable Variables}).
 
-@table @kbd
-@item RET
-@kindex RET
+@table @asis
+@item @kbd{@key{RET}}
+@itemx @kbd{@key{right}} (Lynx-like keymap only)
+@kindex @key{RET}
+@kindex @key{right} (Lynx-like keymap)
 @findex w3m-view-this-url
 Display the page pointed by the link under point
 (@code{w3m-view-this-url}).
@@ -755,22 +751,23 @@ under point, and on whether you give it a prefix argument or not.  See
 @end table
 
 As mentioned above, you can be prompted for a URL when you use the
-command @kbd{M-x w3m}, by setting the @code{w3m-quick-start} variable to
-@code{nil}.  In an emacs-w3m buffer, there are also two popular ways to
-go to new pages by entering their URLs, see below.
+command @w{@kbd{M-x w3m}}, by setting the @code{w3m-quick-start}
+variable to @code{nil}.  In an emacs-w3m buffer, there are also two
+popular ways to go to new pages by entering their URLs, see below.
 
-@table @kbd
-@item RET
-@kindex RET
+@table @asis
+@item @kbd{@key{RET}}
+@kindex @key{RET}
 @findex w3m-view-this-url
 In an emacs-w3m buffer, you can be prompted for a URL in the minibuffer
-and make emacs-w3m display the corresponding page by hitting @key{RET}
-after moving the point to the URL displayed in the @samp{header-line}.
-This feature will feel familiar to you if you are used to GUI-based web
-browsers like Mozilla.  Detailed explanations about this can be found in
-@ref{Emacs-w3m Functions} (@code{w3m-view-this-url}).
+and make emacs-w3m display the corresponding page by hitting
+@kbd{@key{RET}} after moving the point to the URL displayed in the
+@samp{header-line}.  This feature will feel familiar to you if you are
+used to GUI-based web browsers like Mozilla.  Detailed explanations
+about this can be found in @ref{Emacs-w3m Functions}
+(@code{w3m-view-this-url}).
 
-@item g
+@item @kbd{g}
 @kindex g
 @findex w3m-goto-url
 Prompt for a URL in the minibuffer and make emacs-w3m display the
@@ -778,24 +775,28 @@ corresponding page (independently of the position of the point) in an
 emacs-w3m buffer.  This binding will be familiar to you if you already
 use Gnus or Mew (@code{w3m-goto-url}).
 
-@item G
+@item @kbd{G}
 @kindex G
 @findex w3m-goto-url-new-session
 Prompt for a URL in the minibuffer, and display it in a new session.
-This function works just like @kbd{g}(@key{M-x w3m-goto-url}), except
-that it opens a new session.  Unless you are using emacs-w3m on the
-character terminal, opening a new session means displaying the page in a
-new tab.  For more information about tabs, please refer to @ref{Using
-Tabs} (@code{w3m-goto-url-new-session}).
+This function works just like @kbd{g} (@w{@kbd{M-x w3m-goto-url}})),
+except that it opens a new session.  Unless you are using emacs-w3m on
+the character terminal, opening a new session means displaying the page
+in a new tab.  For more information about tabs, please refer to
+@ref{Using Tabs} (@code{w3m-goto-url-new-session}).
 
-@item c
-@kindex c
+@item @kbd{c} (Lynx-like keymap)
+@itemx @kbd{y} (Info-like keymap)
+@kindex c (Lynx-like keymap)
+@kindex y (Info-like keymap)
 @findex w3m-print-current-url
 Display the URL of the page being displayed in the echo area and put it
 in the @code{kill-ring} (@code{w3m-print-current-url}).
 
-@item u
-@kindex u
+@item @kbd{u} (Lynx-like keymap)
+@itemx @kbd{Y} (Info-like keymap)
+@kindex u (Lynx-like keymap)
+@kindex Y (Info-like keymap)
 @findex w3m-print-this-url
 Display the target URL of the link under point in the echo area and put
 it in the @code{kill-ring} (@code{w3m-print-this-url}).
@@ -806,9 +807,11 @@ have been updated since you loaded it.  You can refresh the page using
 the following command.  (This command can also be useful to force a full
 redisplay of the page if it looks broken.)
 
-@table @kbd
-@item R
+@table @asis
+@item @kbd{R}
+@itemx @kbd{C-S-l} (Info-like keymap only)
 @kindex R
+@kindex C-S-l (Info-like keymap)
 @findex w3m-reload-this-page
 Reload the page (@code{w3m-reload-this-page}).
 @end table
@@ -830,22 +833,30 @@ where you can input text are pretty specific in web pages
 assigned to @code{self-insert-command} anymore.
 
 @c Scrolling
-@table @kbd
-@item SPC
-@kindex SPC
+@table @asis
+@item @kbd{@key{SPC}}
+@kindex @key{SPC}
 @findex w3m-scroll-up-or-next-url
 Scroll downwards.  You may be used to this binding if you use the
 @samp{more} or @samp{less} commands, or Emacs's @code{view-mode}
 (@code{w3m-scroll-up-or-next-url}).
 
-@item DEL
-@kindex DEL
+@item @kbd{@key{DEL}}
+@itemx @kbd{b}
+@itemx @kbd{@key{backspace}}
+@itemx @kbd{S-@key{SPC}}
+@itemx @kbd{C-?}
+@kindex @key{DEL}
+@kindex b
+@kindex @key{backspace}
+@kindex S-@key{SPC}
+@kindex C-?
 @findex w3m-scroll-down-or-previous-url
 Scroll upwards.  You may be used to this binding if you use the
 @samp{less} command or Emacs's @code{view-mode}
 (@code{w3m-scroll-down-or-previous-url}).
 
-@item >
+@item @kbd{>}
 @kindex >
 @findex w3m-scroll-left
 @vindex w3m-horizontal-scroll-columns
@@ -853,7 +864,7 @@ Scroll to the left.  The scroll step is given by the
 @code{w3m-horizontal-scroll-columns} variable, default 10
 (@code{w3m-scroll-left}).
 
-@item <
+@item @kbd{<}
 @kindex <
 @findex w3m-scroll-right
 @vindex w3m-horizontal-scroll-columns
@@ -861,23 +872,27 @@ Scroll to the right.  The scroll step is given by the
 @code{w3m-horizontal-scroll-columns} variable, default 10
 (@code{w3m-scroll-right}).
 
-@item .
-@kindex .
+@item @kbd{.} (Lynx-like keymap)
+@itemx @kbd{S-@key{left}} (Info-like keymap)
+@kindex . (Lynx-like keymap)
+@kindex S-@key{left} (Info-like keymap)
 @findex w3m-shift-left
 @vindex w3m-horizontal-shift-columns
 Shift to the left (a fine level horizontal scrolling).  The shift step
 is given by the @code{w3m-horizontal-shift-columns} variable, default 2
 (@code{w3m-shift-left}).
 
-@item ,
-@kindex ,
+@item @kbd{,} (Lynx-like keymap)
+@itemx @kbd{S-@key{right}} (Info-like keymap)
+@kindex , (Lynx-like keymap)
+@kindex S-@key{right} (Info-like keymap)
 @findex w3m-shift-right
 @vindex w3m-horizontal-shift-columns
 Shift to the right (a fine level horizontal scrolling).  The shift step
 is given by the @code{w3m-horizontal-shift-columns} variable, default 2
 (@code{w3m-shift-right}).
 
-@item M-l
+@item @kbd{M-l}
 @kindex M-l
 @findex w3m-horizontal-recenter
 Scroll horizontally so that the current position is centered
@@ -893,47 +908,51 @@ Let's consider this simple example: suppose we want to search for a word
 on the widely-known Google search engine.  Step one: open
 @uref{http://www.google.com} in emacs-w3m.  Step two: once the page is
 loaded, hit @kbd{]}.  Tadaa!  The point has moved to the first form
-input in the page, you can now hit @kbd{RET} to enter something in it,
-and then @kbd{C-c C-c} to submit.  Without this command, you would have
-had to move into the page using @kbd{C-n}, @kbd{C-f} and so forth, it
-would have been a real pain.
+input in the page, you can now hit @kbd{@key{RET}} to enter something in
+it, and then @w{@kbd{C-c C-c}} to submit.  Without this command, you
+would have had to move into the page using @kbd{C-n}, @kbd{C-f} and so
+forth, it would have been a real pain.
 
-@table @key
-@item TAB
-@kindex TAB
+@table @asis
+@item @kbd{@key{TAB}}
+@itemx @kbd{@key{down}} (Lynx-like keymap only)
+@kindex @key{TAB}
+@kindex @key{down} (Lynx-like keymap)
 @findex w3m-next-anchor
 Move the point to the next link (an ``anchor'' in emacs-w3m lingo).
 More strictly speaking, move the point forwards to the nearest anchor.
-@end table
 
-@table @kbd
-@item M-@key{TAB}
-@itemx S-@key{TAB}
+@item @kbd{M-@key{TAB}}
+@itemx @kbd{S-@key{TAB}}
+@itemx @kbd{@key{backtab}}
+@itemx @kbd{@key{up}} (Lynx-like keymap only)
 @kindex M-@key{TAB}
 @kindex S-@key{TAB}
+@kindex @key{backtab}
+@kindex @key{up} (Lynx-like keymap)
 @findex w3m-previous-anchor
 Move the point to the previous anchor.  More strictly speaking, move the
 point backwards to the nearest anchor (@code{w3m-previous-anchor}).
 
-@item ]
+@item @kbd{]}
 @kindex ]
 @findex w3m-next-form
 Move the point to the next form.  More strictly speaking, move the point
 forwards to the nearest form (@code{w3m-next-form}).
 
-@item [
+@item @kbd{[}
 @kindex [
 @findex w3m-previous-form
 Move the point to the previous form.  More strictly speaking, move the
 point backwards to the nearest form (@code{w3m-previous-form}).
 
-@item @}
+@item @kbd{@}}
 @kindex @}
 @findex w3m-next-image
 Move the point to the next image.  More strictly speaking, move the
 point forwards to the nearest image (@code{w3m-next-image}).
 
-@item @{
+@item @kbd{@{}
 @kindex @{
 @findex w3m-previous-image
 Move the point to the previous image.  More strictly speaking, move the
@@ -952,23 +971,32 @@ familiar ``Back'' and ``Forward'' from other browsers), and the
 obligatory ``Go to the home page'' feature.  You will probably
 understand this better after reading the @ref{Tracing History} section.
 
-@table @kbd
-@item B
-@kindex B
+@table @asis
+@item @kbd{B} (Lynx-like keymap)
+@itemx @kbd{@key{left}} (Lynx-like keymap)
+@itemx @kbd{l} (Info-like keymap)
+@itemx @kbd{p} (Info-like keymap)
+@kindex B (Lynx-like keymap)
+@kindex @key{left} (Lynx-like keymap)
+@kindex l (Info-like keymap)
+@kindex p (Info-like keymap)
 @findex w3m-view-previous-page
 Move back one page in history (@code{w3m-view-previous-page}).  With a
 numeric argument ARG, move back ARG pages.  This is the preferred way to
 go back in time.
 
-@item N
-@kindex N
+@item @kbd{N} (Lynx-like keymap)
+@itemx @kbd{n} (Info-like keymap)
+@kindex N (Lynx-like keymap)
+@kindex n (Info-like keymap)
 @findex w3m-view-next-page
 Move forward one page in history (@code{w3m-view-next-page}).  Of
-course, this will work only if you've used @kbd{B} to move back in
-history.  If called with a numeric argument ARG, move forward ARG pages.
-This command actually allows you to go back to the future!
+course, this will work only if you've used @kbd{B} (@kbd{l} for the
+@samp{Info-like} keymap) to move back in history.  If called with a
+numeric argument ARG, move forward ARG pages. This command actually
+allows you to go back to the future!
 
-@item H
+@item @kbd{H}
 @kindex H
 @findex w3m-gohome
 @vindex w3m-quick-start
@@ -981,9 +1009,11 @@ These commands are exclusive features of emacs-w3m, we were able to
 obtain patents on them, so you won't find them anywhere else.  That's
 why you must learn to use them today!  (Just kidding.)
 
-@table @kbd
-@item ^
+@table @asis
+@item @kbd{^}
+@itemx @kbd{u} (Info-like keymap only)
 @kindex ^
+@kindex u (Info-like keymap)
 @findex w3m-view-parent-page
 Attempt to move to the parent directory of the page currently displayed.
 For instance, it will attempt to move to ``http://foo/bar/'' when
@@ -994,23 +1024,24 @@ looking for isn't displayed on the current page (either because it has
 been deleted, or because a search engine took them to the wrong page).
 
 When you use another web browser, you usually need to remove the last
-component from the URL by using the @key{DEL} key, etc. several times
-manually.  In emacs-w3m, this operation can be performed in only one
-keystroke, by typing @kbd{^}!
+component from the URL by using the @kbd{@key{DEL}} key, etc. several
+times manually.  In emacs-w3m, this operation can be performed in only
+one keystroke, by typing @kbd{^}!
 
 Also, you type this command with prefix as ``2 ^'', you visit the upper
 directory according to input number. you type ``0 ^'', you visit the top
 of this site.
 @end table
 
-@table @key
-@item SPC
+@table @asis
+@item @kbd{@key{SPC}}
+@kindex @key{SPC}
 @findex w3m-scroll-up-or-next-url
 When the current point is located at the end of the buffer and you
-cannot scroll down further, hit the @key{SPC} key to go on to the ``next
-page'' (@code{w3m-scroll-up-or-next-url}).  Here, ``next page'' means
-the page referred to in the special ``next'' header of the current page
-(read on).  This feature has nothing to do with the history.
+cannot scroll down further, hit the @kbd{@key{SPC}} key to go on to the
+``next page'' (@code{w3m-scroll-up-or-next-url}).  Here, ``next page''
+means the page referred to in the special ``next'' header of the current
+page (read on).  This feature has nothing to do with the history.
 
 You probably noticed that some websites split their contents over
 several small pages, partly because it's not comfortable for users to
@@ -1034,36 +1065,41 @@ operations (following links and scrolling) are combined.  Open
 very common word (e.g. ``hamburger''), you will get tons of search
 results.  Google returns the first page of search results, after having
 sorted them using its own algorithm and divided them into several pages.
-Use @key{SPC} to scroll through this first page.  Keep scrolling until
-you see the end of the web page in the window.  Here, a surprise is
-waiting for you.  If you use a web browser other than emacs-w3m and want
-to see the rest of the search results, you would have to click on any of
-the numbers listed under
+Use @kbd{@key{SPC}} to scroll through this first page.  Keep scrolling
+until you see the end of the web page in the window.  Here, a surprise
+is waiting for you.  If you use a web browser other than emacs-w3m and
+want to see the rest of the search results, you would have to click on
+any of the numbers listed under
 
 @example
 Gooooooogle
 @end example
 
-
 @example
 1 2 3 4 5 6 7 8...
 @end example
 
-
 to follow the link.  But with emacs-w3m, you can follow the link by just
-typing @key{SPC}, just as if you were scrolling!
+typing @kbd{@key{SPC}}, just as if you were scrolling!
 
-
-@item DEL
+@item @kbd{@key{DEL}}
+@itemx @kbd{b}
+@itemx @kbd{@key{backspace}}
+@itemx @kbd{S-@key{SPC}}
+@itemx @kbd{C-?}
+@kindex @key{DEL}
+@kindex b
+@kindex @key{backspace}
+@kindex S-@key{SPC}
+@kindex C-?
 @findex w3m-scroll-down-or-previous-url
 When the point is located at the beginning of the buffer and you cannot
-scroll upward, hit the @key{DEL} to go to the ``previous'' page
+scroll upward, hit the @kbd{@key{DEL}} to go to the ``previous'' page
 (@code{w3m-scroll-down-or-previous-url}).  Here, the ``previous'' page
 means the page which is assigned to the ``prev'' or ``previous'' fields
 in the header of the current page.  This function has nothing to do with
-the history, and works like @key{SPC}(w3m-scroll-up-or-next-url).
+the history, and works like @kbd{@key{SPC}} (w3m-scroll-up-or-next-url).
 @end table
-
 
 @node Browsing with Mouse Operations
 @subsection Surfing using the mouse
@@ -1084,10 +1120,11 @@ Under Emacs 22.1 and newer, you can also follow links using
 @item mouse-2
 @kindex mouse-2
 @findex w3m-mouse-view-this-url
-Follow the link under the mouse pointer (@code{w3m-mouse-view-this-url}).
+Follow the link under the mouse pointer
+(@code{w3m-mouse-view-this-url}).
 
-@item S-mouse-2
-@kindex S-mouse-2
+@item S-@key{mouse-2}
+@kindex S-@key{mouse-2}
 @findex w3m-mouse-view-this-url-new-session
 Follow the link under the mouse pointer in a new session
 (@code{w3m-mouse-view-this-url-new-session}).
@@ -1146,10 +1183,11 @@ buffers, then emacs-w3m can display them in web pages, just like
 is correctly setup for images before trying to use any of the following
 commands (@pxref{Required Emacs Version}).
 
-To toggle displaying of images in the current buffer, use @kbd{T}.  It
-makes emacs-w3m fetch the images from the server, then display them in
-the buffer, at the position they would have in a ``graphical'' browser.
-If you hit the key again, images will disappear from the buffer.
+To toggle displaying of images in the current buffer, use @kbd{T}
+(@kbd{I} for the @samp{Info-like} keymap).  It makes emacs-w3m fetch the
+images from the server, then display them in the buffer, at the position
+they would have in a ``graphical'' browser. If you hit the key again,
+images will disappear from the buffer.
 
 By default, emacs-w3m won't display images, but you can change its
 behavior and choose to always display images, for this you need to
@@ -1162,35 +1200,40 @@ or out, save it to a file, or view it in a external viewer.  See also
 @ref{Moving in a page} for instructions on how to move from image to
 image in an emacs-w3m buffer.
 
-@table @kbd
-@item T
-@kindex T
+@table @asis
+@item @kbd{T} (Lynx-like keymap)
+@itemx @kbd{I} (Info-like keymap)
+@kindex T (Lynx-like keymap)
+@kindex I (Info-like keymap)
 @findex w3m-toggle-inline-images
 Toggle displaying of inline images in this buffer and buffers created
 from this buffer, later on (@code{w3m-toggle-inline-images}).
 
-@item I
-@kindex I
+@item @kbd{I} (Lynx-like keymap)
+@itemx @kbd{i} (Info-like keymap)
+@kindex I (Lynx-like keymap)
+@kindex i (Info-like keymap)
 @findex w3m-view-image
 @cindex Viewing images
 View the image under point in an external viewer
 (@code{w3m-view-image}).
 
-@item M-i
+@item @kbd{M-i}
 @kindex M-i
 @findex w3m-save-image
 @cindex Saving images
 Save the image under point to an external file.  The default name will
-be the original name of the image, so most of the time @kbd{M-i RET}
-will save the image with the right name (@code{w3m-save-image}).
+be the original name of the image, so most of the time
+@w{@kbd{M-i @key{RET}}} will save the image with the right name
+(@code{w3m-save-image}).
 
 @cindex Zooming images
-@item M-[
+@item @kbd{M-[}
 @kindex M-[
 @findex w3m-zoom-out-image
 Zoom out the image under point (@code{w3m-zoom-out-image}).
 
-@item M-]
+@item @kbd{M-]}
 @kindex M-]
 @findex w3m-zoom-in-image
 Zoom in the image under point (@code{w3m-zoom-in-image}).
@@ -1224,8 +1267,8 @@ GNU's Not Unix! - the GNU Project and the Free Software Foundation (FSF)
 (In fact, this example is slightly edited to fit in 72 columns; the
 URLs won't be cut in the actual emacs-w3m buffer.)
 
-You can get this kind of history using the @kbd{s} key in any emacs-w3m
-buffer.
+You can get this kind of history using the @kbd{s} key (the @kbd{o} key
+for the @samp{Info-like} keymap) in any emacs-w3m buffer.
 
 Please note that this history is buffer-local, i.e. specific to an
 emacs-w3m buffer.  But emacs-w3m has a unique feature: when you visit a
@@ -1236,26 +1279,30 @@ from scratch in new buffers.
 
 Emacs-w3m can do more than just record which pages you visited, it can
 also save specific locations in those pages, in case you want to go back
-to the exact same place in the page.  Press @kbd{C-c C-@@}, and the
+to the exact same place in the page.  Press @w{@kbd{C-c C-@@}}, and the
 location of the cursor will be stored in history.  In order to go back
-to that particular location within the page, press @kbd{C-c C-v} in the
-emacs-w3m buffer visiting the page.
+to that particular location within the page, press @w{@kbd{C-c C-v}} in
+the emacs-w3m buffer visiting the page.
 
-@table @kbd
-@item s
-@kindex s
+@table @asis
+@item @kbd{s} (Lynx-like keymap)
+@itemx @kbd{o} (Info-like keymap)
+@kindex s (Lynx-like keymap)
+@kindex o (Info-like keymap)
 @findex w3m-history
 Display the list of visited URLs in this session.
 
-@item C-c C-@@
+@item @kbd{C-c C-@@}
+@itemx @kbd{C-c C-@key{SPC}}
 @kindex C-c C-@@
+@kindex C-c C-@key{SPC}
 @findex w3m-history-store-position
 Record the position of the cursor in the page in history.
 
-@item C-c C-v
+@item @kbd{C-c C-v}
 @kindex C-c C-v
 @findex w3m-history-restore-position
-Move to the position which has been marked with @kbd{C-c C-@@}
+Move to the position which has been marked with @w{@kbd{C-c C-@@}}
 (@code{w3m-history-store-position}) in the currently displayed page.
 @end table
 
@@ -1282,19 +1329,24 @@ it's a miracle                                            2003-01-06
 @end example
 
 You can get this history by passing a prefix argument to the previous
-command, i.e. using @kbd{C-u s}.  The number of URLs showed in this page
-is customizable, see the @code{w3m-keep-arrived-urls} variable.  It
-cannot exceed 500 by default.  @xref{Customizable Variables}.
+command, i.e. using @w{@kbd{C-u s}} (@w{@kbd{C-u o}} for the
+@samp{Info-like} keymap).  The number of URLs showed in this page is
+customizable, see the @code{w3m-keep-arrived-urls} variable.  It cannot
+exceed 500 by default.  @xref{Customizable Variables}.
 
 Of course, in all cases all the lines showed in the examples are links,
 you can go to any of the pages you visited previously just like if you
 were visiting a regular page, by following the link.
 
-@table @kbd
-@item s
-@kindex s
-@item C-u s
-@kindex C-u s
+@table @asis
+@item @kbd{s} (Lynx-like keymap)
+@itemx @kbd{C-u s} (Lynx-like keymap)
+@itemx @kbd{o} (Info-like keymap)
+@itemx @kbd{C-u o} (Info-like keymap)
+@kindex s (Lynx-like keymap)
+@kindex C-u s (Lynx-like keymap)
+@kindex o (Info-like keymap)
+@kindex C-u o (Info-like keymap)
 @findex w3m-history
 Display the list of URLs visited in this session.  If called with a
 prefix argument, show the list of arrived URLs instead
@@ -1332,11 +1384,11 @@ There are several ways to add a URL to your bookmarks.  The first one is
 to use the @kbd{a} key (or call the @code{w3m-bookmark-add-current-url}
 command) to add the page you're currently browsing: it will prompt you
 for a section to where the bookmark should go (completion is available
-with the @key{TAB} key) and will let you edit the title of the bookmark
-(the default being the title of the current page).  Complete these two
-steps, validating each with @kbd{RET}, and you will see the message
-``Added'' in the minibuffer, which means (surprise!) that the page has
-been added to your bookmarks.
+with the @kbd{@key{TAB}} key) and will let you edit the title of the
+bookmark (the default being the title of the current page).  Complete
+these two steps, validating each with @kbd{@key{RET}}, and you will see
+the message ``Added'' in the minibuffer, which means (surprise!) that
+the page has been added to your bookmarks.
 
 Another way to add a bookmark is to use the @kbd{M-a} key (or call the
 @code{w3m-bookmark-add-this-url} command): it adds the URL under point
@@ -1345,9 +1397,9 @@ the bookmarks.  As before, you will have to input the section for this
 bookmark and its title, the default being this time the name of the
 link itself.
 
-The third and final way to do this is to use @kbd{C-u a}, this time you
-will be prompted for the URL to add, its section, and the title to use
-for it in the bookmarks.
+The third and final way to do this is to use @w{@kbd{C-u a}}, this time
+you will be prompted for the URL to add, its section, and the title to
+use for it in the bookmarks.
 
 @table @kbd
 @item a
@@ -1386,7 +1438,8 @@ Visit the bookmarks page (@code{w3m-bookmark-view}).
 
 The bookmark minor mode (@pxref{Consulting Bookmarks}) offers several
 key bindings related to bookmark edition, most noticeably @kbd{C-k} to
-kill (i.e. delete) a bookmark, and @kbd{E} to edit the bookmark file.
+kill (i.e. delete) a bookmark, and @kbd{E} (@kbd{e} for the
+@samp{Info-like} keymap) to edit the bookmark file.
 
 Bookmarks are kept in an HTML file, so you can edit the file by hand,
 but be very careful: if you erase the comments emacs-w3m needs to
@@ -1522,7 +1575,9 @@ this with the following commands:
 
 @table @kbd
 @item C-c C-t
+@itemx M-n
 @kindex C-c C-t
+@kindex M-n
 @findex w3m-copy-buffer
 Create an identical copy of the currently active buffer, under a new
 name.  This is used to start a new session without loading a web page in
@@ -1551,15 +1606,15 @@ right, and the previous buffer is the one on the left.  However, XEmacs
 displays tabs in random order unfortunately, so you need to pay
 attention to the number which is displayed in each tab in order to know
 what is the adjacent buffer if you are using XEmacs.  The key bindings
-for these commands are @kbd{C-c C-p} and @kbd{C-c C-n}.
+for these commands are @w{@kbd{C-c C-p}} and @w{@kbd{C-c C-n}}.
 
 These commands understand the numeric argument convention, i.e. if you
 call them with a number N as argument, you will be taken N buffers away
 from the current one.  For example, to go two buffers on the right from
-the current position, use @kbd{2 C-c C-n}@footnote{You can use @kbd{C-u
-2 C-c C-n} instead of @kbd{2 C-c C-n} as usual.  But keep in mind all
-numeric keys and minus-sign are assigned to the numeric prefix arguments
-in emacs-w3m buffers.}.
+the current position, use @w{@kbd{2 C-c C-n}}@footnote{You can use
+@w{@kbd{C-u 2 C-c C-n}} instead of @w{@kbd{2 C-c C-n}} as usual.  But
+keep in mind all numeric keys and minus-sign are assigned to the numeric
+prefix arguments in emacs-w3m buffers.}.
 
 @table @kbd
 @item C-c C-p
@@ -1582,14 +1637,14 @@ the adjacent place on the tabs line using the following commands:
 
 @table @kbd
 @item C-c C-.
-@item C-c C->
+@itemx C-c C->
 @findex w3m-tab-move-right
 Move the selected emacs-w3m buffer to the right hand adjacent place on
 the tabs line.  If called with a numeric argument N, move N tabs to the
 right (@code{w3m-tab-move-right}).
 
 @item C-c C-,
-@item C-c C-<
+@itemx C-c C-<
 @findex w3m-tab-move-left
 Move the selected emacs-w3m buffer to the left hand adjacent place on
 the tabs line.  If called with a numeric argument N, move N tabs to the
@@ -1605,32 +1660,33 @@ regular Emacs buffers, they will work fine too.
 @subsection Selecting buffers from a list
 
 There are two ways to select emacs-w3m buffers from a list.  The first
-one is a minibuffer-based interface, called with @kbd{C-c C-a}.  You can
-choose the buffer you want to display using the @kbd{M-p} and @kbd{M-n}
-keys (or the ``up'' and ``down'' arrow keys), they will make you cycle
-through the list.  You can also edit the prompt and type the title of an
-existing web page, using @kbd{TAB} for completion.  For example, if you
-have a ``Google Search'' page opened, you can type ``Goo'' then hit
-@kbd{TAB} and the page title will be completed.  After the page name,
-the buffer name is given (between brackets).  Then use @kbd{RET} to
-switch to the buffer you have chosen.
+one is a minibuffer-based interface, called with @w{@kbd{C-c C-a}}.  You
+can choose the buffer you want to display using the @kbd{M-p} and
+@kbd{M-n} keys (or the @key{up} and @key{down} arrow keys), they will
+make you cycle through the list.  You can also edit the prompt and type
+the title of an existing web page, using @kbd{@key{TAB}} for completion.
+For example, if you have a ``Google Search'' page opened, you can type
+``Goo'' then hit @kbd{@key{TAB}} and the page title will be completed.
+After the page name, the buffer name is given (between brackets).  Then
+use @kbd{@key{RET}} to switch to the buffer you have chosen.
 
 The second and more sophisticated interface is called the emacs-w3m
-buffer list, it is invoked with @kbd{C-c C-s}.  It shows you the list of
-all opened buffers in a separate window (either a vertical or a
-horizontal window---@kbd{C-c C-s} toggles between the two modes) and
+buffer list, it is invoked with @w{@kbd{C-c C-s}}.  It shows you the
+list of all opened buffers in a separate window (either a vertical or a
+horizontal window---@w{@kbd{C-c C-s}} toggles between the two modes) and
 allows you to view the buffers in real-time: when you move the point in
 the buffer list, the buffer under point is displayed in the main window,
 which allows you to have direct visual feedback of the buffer you're
 switching to.
 
 To move in the buffer list, you can use the @kbd{p} and @kbd{n} keys
-(or the arrow keys).  In the buffer list, @kbd{DEL} and @kbd{SPC} allow
-you to scroll the buffer displayed in the main window, which is handy
-if you want to check that you're seeing the right buffer.  To select
-the buffer under point, you can use the @kbd{RET} key, in which case
-the buffer list will be buried, or the @kbd{w} key, in which case the
-buffer list will remain visible and the focus given to the main window.
+(or the arrow keys).  In the buffer list, @kbd{@key{DEL}} and
+@kbd{@key{SPC}} allow you to scroll the buffer displayed in the main
+window, which is handy if you want to check that you're seeing the right
+buffer.  To select the buffer under point, you can use the
+@kbd{@key{RET}} key, in which case the buffer list will be buried, or
+the @kbd{w} key, in which case the buffer list will remain visible and
+the focus given to the main window.
 
 You can also close and create buffers from this menu, using the same
 bindings as the one used in regular buffers (@pxref{Creating and killing
@@ -1646,7 +1702,7 @@ buffer.
 @findex w3m-switch-buffer
 @cindex Switching buffers using the minibuffer
 Prompt for a buffer name in the minibuffer.  @kbd{M-p} and @kbd{M-n}
-cycle through the list of existing buffers and @kbd{TAB} completes
+cycle through the list of existing buffers and @kbd{@key{TAB}} completes
 (@code{w3m-switch-buffer}).
 
 @item C-c C-s
@@ -1654,10 +1710,11 @@ cycle through the list of existing buffers and @kbd{TAB} completes
 @findex w3m-select-buffer
 @cindex Switching buffers using the buffer list
 Show the buffer list in a separate window (@code{w3m-select-buffer}).
-In this window, @kbd{C-c C-s} toggles between horizontal and vertical
-modes, @kbd{RET} selects the buffer under point and buries the buffer
-list, @kbd{w} selects the buffer under point and gives it the focus,
-@kbd{n}, @kbd{p} and the arrow keys can be used to move down or up.
+In this window, @w{@kbd{C-c C-s}} toggles between horizontal and
+vertical modes, @kbd{@key{RET}} selects the buffer under point and
+buries the buffer list, @kbd{w} selects the buffer under point and gives
+it the focus, @kbd{n}, @kbd{p} and the arrow keys can be used to move
+down or up.
 @end table
 
 @node Downloading
@@ -1667,18 +1724,20 @@ It is possible to download (i.e. fetch, but not display) any web page or
 file with emacs-w3m: just put the point on the link you want to
 download and hit @kbd{d}.  You will be prompted for a filename under
 which to save the file locally, by default it will be the name of the
-file on the remote server.  Confirm with @kbd{RET}.  The download will
-be asynchronous and not block your Emacs session, you can continue your
-emacs-w3m browsing in another buffer if you want.
+file on the remote server.  Confirm with @kbd{@key{RET}}.  The download
+will be asynchronous and not block your Emacs session, you can continue
+your emacs-w3m browsing in another buffer if you want.
 
 Please note that this download mechanism uses w3m to download things,
 you might want to use the more powerful wget downloader instead.  Have a
 look at our friend project ``emacs-wget'', its homepage is at
 @uref{http://pop-club.hp.infoseek.co.jp/emacs/emacs-wget/}.
 
-@table @kbd
-@item d
-@kindex d
+@table @asis
+@item @kbd{d} (Lynx-like keymap)
+@itemx @kbd{D} (Info-like keymap)
+@kindex d (Lynx-like keymap)
+@kindex D (Info-like keymap)
 @findex w3m-download-this-url
 @cindex Downloading files
 Download the file or page pointed by the link under point
@@ -1692,33 +1751,35 @@ These emacs-w3m commands let you move between forms and fill in fields,
 using simple key bindings and optionally prompting you for values in
 Emacs windows or in the minibuffer.
 
-The main key binding to remember is @kbd{RET}.  It has different
+The main key binding to remember is @kbd{@key{RET}}.  It has different
 meanings, depending on the thing under point: for textareas, you will be
 prompted for a value in the minibuffer.  For select tags, you will be
 given a list of choices in an electric Emacs window (you can move using
-the arrow keys, and pick one with the @kbd{RET} key).  For radio and
-checkbox buttons, the @kbd{RET} key selects one of the elements.
+the arrow keys, and pick one with the @kbd{@key{RET}} key).  For radio
+and checkbox buttons, the @kbd{@key{RET}} key selects one of the
+elements.
 
 When in the minibuffer or in the electric window, you can cancel with
-the @kbd{C-c C-q} sequence.  To submit the form, use @kbd{C-c C-c}.
+the @w{@kbd{C-c C-q}} sequence.  To submit the form, use
+@w{@kbd{C-c C-c}}.
 
-@table @kbd
-@item ]
+@table @asis
+@item @kbd{]}
 Jump to the next form (@code{w3m-next-form}).
 
-@item [
+@item @kbd{[}
 Jump to the previous form (@code{w3m-previous-form}).
 
-@item C-c C-c
+@item @kbd{C-c C-c}
 Submit form at point (@code{w3m-submit-form}).
 
-@item RET
+@item @kbd{@key{RET}}
 Edit the value of the form item under point.
 
-@item RET @r{(w3m-form-*-keymap)}
+@item @kbd{@key{RET}} @r{(w3m-form-*-keymap)}
 Accept the value.
 
-@item C-c C-q @r{(w3m-form-*-keymap)}
+@item @kbd{C-c C-q} @r{(w3m-form-*-keymap)}
 Quit editing the form item, leaving changes.
 @end table
 
@@ -1751,30 +1812,36 @@ file by using the buffer name, but emacs-w3m adds a specific keybinding
 for this.  Emacs-w3m knows the URL of the web page it is visiting, so
 why not take advantage of this?
 
-@table @kbd
-@item \
+@table @asis
+@item @kbd{\}
 @kindex \
 @findex w3m-view-source
 Display the current web page in the raw HTML
 format(@code{w3m-view-source}).
 
-@item =
+@item @kbd{=}
 @kindex =
 @findex w3m-view-header
 Show the information about currently displayed web page. It includes
 title, URL, document type, last modified date(@code{w3m-view-header}).
 
-@item E
-@kindex E
+@item @kbd{E} (Lynx-like keymap)
+@itemx @kbd{e} (Info-like keymap)
+@kindex E (Lynx-like keymap)
+@kindex e (Info-like keymap)
 @findex w3m-edit-current-url
-Edit the local file pointed by URL of current page(@code{w3m-edit-current-url}).
+Edit the local file pointed by URL of current
+page(@code{w3m-edit-current-url}).
 
-@item e
-@kindex e
+@item @kbd{e} (Lynx-like keymap)
+@itemx @kbd{E} (Info-like keymap)
+@kindex e (Lynx-like keymap)
+@kindex E (Info-like keymap)
 @findex w3m-edit-this-url
-Edit the local file pointed by URL under point(@code{w3m-edit-this-url}).
+Edit the local file pointed by URL under
+point(@code{w3m-edit-this-url}).
 
-@item M
+@item @kbd{M}
 @kindex M
 @findex w3m-view-url-with-external-browser
 Launch an external browser (other than emacs-w3m) and display the same
@@ -1782,7 +1849,6 @@ web page as currently displayed in
 emacs-w3m(@code{w3m-view-url-with-external-browser}).  The external
 browser to be used is defined by the variable
 @code{w3m-content-type-alist}, depending on the kind of URL.
-
 @end table
 
 The (@pxref{Tips}) section gives more examples on how to integrate
@@ -1812,9 +1878,10 @@ are accessible through three interfaces:
 
 @itemize
 @item
-The regular search interface, invoked by the @kbd{S} key in any
-emacs-w3m buffer.  It is a simple interactive way to choose which search
-engine to use and input a search term; see @ref{The Search Interface}.
+The regular search interface, invoked by the @kbd{S} key (the @kbd{s}
+key for the @samp{Info-like} keymap) in any emacs-w3m buffer.  It is a
+simple interactive way to choose which search engine to use and input a
+search term; see @ref{The Search Interface}.
 
 @item
 The Quicksearch interface: it is a faster (yet more complicated) way to
@@ -1840,12 +1907,13 @@ list of search results.
 @subsection How to search with emacs-w3m
 @cindex Searching
 
-You can fire up the regular search interface by using the @kbd{S} key in
-an emacs-w3m buffer (provided you use the default keymap).  You will see
-a prompt in the minibuffer, asking for a search term.  Type one or
-several words at the prompt, then hit @kbd{RET}.  The result page of
-your search in the engine appears, you can then browse the results, just
-as if you had used the normal web based entry point to the engine.
+You can fire up the regular search interface by using the @kbd{S} key
+(the @kbd{s} key for the @samp{Info-like} keymap) in an emacs-w3m
+buffer.  You will see a prompt in the minibuffer, asking for a search
+term.  Type one or several words at the prompt, then hit
+@kbd{@key{RET}}.  The result page of your search in the engine appears,
+you can then browse the results, just as if you had used the normal web
+based entry point to the engine.
 
 You probably noticed that you have not been given a chance to choose
 which engine you want to search with.  By default, emacs-w3m will use
@@ -1856,15 +1924,18 @@ command.
 
 To specify which engine to use, you have to give the command a prefix
 argument (usually, this means hitting @kbd{C-u} before the command,
-e.g. @kbd{C-u S}).  Emacs-w3m will prompt you for an engine, you can
-choose one by typing its name (completion is also available with the
-@key{TAB} key).  Once you have made your choice, hit the @kbd{RET} key.
-You can then type your search term, hit @kbd{RET}, and you will see the
+e.g. @w{@kbd{C-u S}} (@w{@kbd{C-u s}} for the @samp{Info-like} keymap).
+Emacs-w3m will prompt you for an engine, you can choose one by typing
+its name (completion is also available with the @kbd{@key{TAB}} key).
+Once you have made your choice, hit the @kbd{@key{RET}} key.  You can
+then type your search term, hit @kbd{@key{RET}}, and you will see the
 search results.
 
-@table @kbd
-@item S
-@kindex S
+@table @asis
+@item @kbd{S} (Lynx-like keymap)
+@itemx @kbd{s} (Info-like keymap)
+@kindex S (Lynx-like keymap)
+@kindex s (Info-like keymap)
 @findex w3m-search
 @vindex w3m-search-default-engine
 Begin a new search.  If called with a prefix argument, prompt for the
@@ -1911,12 +1982,12 @@ on Google and get a list of results.  Hit @kbd{g} to go to a new URL,
 and type ``gg:gnu''.  The first part of this expression, ``gg''
 indicates that we want to use the Google search engine.  The second term
 is the word we will be searching for.  The prefix and the search term
-must be separated by a colon.  Hit @kbd{RET}, and you will see the
+must be separated by a colon.  Hit @kbd{@key{RET}}, and you will see the
 results of your search.  Note that you can input several words by
-separating them with spaces.  @kbd{SPC} is a self-inserting key in the
-minibuffer if the ``Feeling Lucky'' feature is enabled (it is by
+separating them with spaces.  @kbd{@key{SPC}} is a self-inserting key in
+the minibuffer if the ``Feeling Lucky'' feature is enabled (it is by
 default; see @code{w3m-enable-google-feeling-lucky}).  If it's disabled,
-then hit @kbd{C-q} first, i.e. @kbd{C-q @key{SPC}}.
+then hit @kbd{C-q} first, i.e. @w{@kbd{C-q @key{SPC}}}.
 
 The default configuration of emacs-w3m includes several prefixes you can
 use, they are defined in the @code{w3m-uri-replace-alist} variable.
@@ -1971,10 +2042,11 @@ However, for some Japanese search engines, you may need to specify
 something (e.g. @code{euc-japan}) there.
 
 @item
-You can now use this engine to search, using the normal @kbd{S} key in
-emacs-w3m.  If you use this engine often, you can also add it to the
-Quicksearch (see @ref{Quick Searching}) engines and give it a small
-prefix, by adding this to your @file{~/.emacs-w3m} file instead:
+You can now use this engine to search, using the normal @kbd{S} key (the
+@kbd{s} key for the @samp{Info-like} keymap) in emacs-w3m.  If you use
+this engine often, you can also add it to the Quicksearch (see
+@ref{Quick Searching}) engines and give it a small prefix, by adding
+this to your @file{~/.emacs-w3m} file instead:
 
 @lisp
 (eval-after-load "w3m-search"
@@ -2084,7 +2156,7 @@ you added it to the database.
 Please note that the Antenna database doesn't get automatically updated,
 you have to update it each time you want to check if the sites have
 changed, either by hitting @kbd{R} in the Antenna page, or by passing a
-prefix argument to the command (start Antenna with @kbd{C-u A}, for
+prefix argument to the command (start Antenna with @w{@kbd{C-u A}}, for
 example).
 
 @vindex w3m-antenna-refresh-interval
@@ -2150,13 +2222,16 @@ And with a prefix argument, you get something like this instead:
  |-(f)README.ja
 @end example
 
-@table @kbd
-@item D
-@kindex D
+@table @asis
+@item @kbd{D} (Lynx-like keymap)
+@itemx @kbd{T} (Info-like keymap)
+@kindex D (Lynx-like keymap)
+@kindex T (Info-like keymap)
 @findex w3m-dtree
 Prompt for a local directory in the minibuffer, then display its tree
-structure.  If called with a prefix argument (e.g. @kbd{C-u D}), show
-files in the directories as well (@code{w3m-dtree}).
+structure.  If called with a prefix argument (e.g. @w{@kbd{C-u D}}, or
+@w{@kbd{C-u T}} for the @samp{Info-like} keymap), show files in the
+directories as well (@code{w3m-dtree}).
 @end table
 
 @node Viewing Perl Documents
@@ -2202,8 +2277,8 @@ that you have to set the @code{w3m-use-tab} variable to non-@code{nil}
 (@code{t} by default) and set the @code{w3m-pop-up-frames} variable to
 @code{nil} (the default) in order to use it (@pxref{General Variables}).
 
-Typing @kbd{M-x w3m-fb-mode} toggles the mode, but you can turn the mode
-on by giving a positive integer as a prefix argument to the command
+Typing @w{@kbd{M-x w3m-fb-mode}} toggles the mode, but you can turn the
+mode on by giving a positive integer as a prefix argument to the command
 (zero or less turns it off).
 
 When the @code{w3m-fb-mode} is turned on, the sessions that you start in
@@ -2213,7 +2288,6 @@ those frames.  In other words, sessions associated with one frame don't
 appear in other frames.  @code{w3m-fb-mode} doesn't create any new
 frames, so you need to make them yourself in some way.
 
-
 @node Customizable Variables
 @chapter Customizable variables
 @cindex Customizing user options
@@ -2222,8 +2296,8 @@ frames, so you need to make them yourself in some way.
 A lot of emacs-w3m variables are customizable via the Custom mechanism,
 a graphical Emacs interface to define user options.  Custom offers
 several methods to define your customizations, you can use for example
-@kbd{M-x customize-option} for a single option (i.e. an Emacs Lisp
-variable) or @kbd{M-x customize-group} to see all available options
+@w{@kbd{M-x customize-option}} for a single option (i.e. an Emacs Lisp
+variable) or @w{@kbd{M-x customize-group}} to see all available options
 (including variables and faces) for a ``group'' and change them; in
 which case the group to use is @code{w3m}.
 
@@ -2544,8 +2618,9 @@ The term @samp{shifting} means a fine level scrolling.
 @item w3m-imitate-widget-button
 @vindex w3m-imitate-widget-button
 If non-@code{nil}, imitate the widget buttons on link (anchor) buttons.
-It is useful for moving about in a Gnus article buffer using @kbd{TAB}
-key.  It can also be any Lisp form that should return a boolean value.
+It is useful for moving about in a Gnus article buffer using
+@kbd{@key{TAB}} key.  It can also be any Lisp form that should return a
+boolean value.
 
 @item w3m-init-file
 @c @vindex w3m-init-file
@@ -2811,10 +2886,10 @@ also @code{show-help-function} if you are using GNU Emacs.
 @noindent
 A tip for XEmacs users:
 
-You can also use the @code{balloon-help} feature by the @kbd{M-x
-balloon-help-mode} command with arg 1.  If the window manager decorates
-the balloon-help frame, and that is not to your taste, you may strip it
-off with the following directives:
+You can also use the @code{balloon-help} feature by the
+@w{@kbd{M-x balloon-help-mode}} command with arg 1.  If the window
+manager decorates the balloon-help frame, and that is not to your taste,
+you may strip it off with the following directives:
 
 @example
 For ol[v]wm use this in .Xdefaults:
@@ -2892,8 +2967,8 @@ If non-@code{nil}, use the @samp{/cygdrive/} rule when performing
 Non-@code{nil} means use filter programs to convert web contents.  See
 also @code{w3m-filter-rules} (the @file{w3m-filter.elc} module provides
 it but might have never been loaded.  In that case, to see the default
-value and the documentation of @code{w3m-filter-rules}, type @kbd{M-x
-load-library RET w3m-filter RET}).
+value and the documentation of @code{w3m-filter-rules}, type
+@w{@kbd{M-x load-library @key{RET} w3m-filter @key{RET}}}).
 
 @item w3m-use-form
 @vindex w3m-use-form
@@ -3384,8 +3459,8 @@ to perform any additional operation.  It will simply be displayed.
 
 On HTML parts of an article buffer, the @code{w3m-minor-mode} is turned
 on and you can use the same main keys as the keys of emacs-w3m, for
-instance, @key{RET} is for visiting a page which a link in the current
-position points to.  Those keys are defined in the
+instance, @kbd{@key{RET}} is for visiting a page which a link in the
+current position points to.  Those keys are defined in the
 @code{w3m-minor-mode-command-alist} variable.  Keep in mind that some
 commands are replaced by others similar to them, for security reasons
 (see below).
@@ -3478,7 +3553,7 @@ file:
 
 @noindent
 With just this, an HTML mail will be displayed in the message window as
-if it were a plain text.  You can still use the @kbd{C-c C-e} command
+if it were a plain text.  You can still use the @w{@kbd{C-c C-e}} command
 (@code{mew-summary-execute-external}) there.
 
 It is also quite common these days to see mails containing the same
@@ -3501,7 +3576,7 @@ There are some customizable variables related to Mew:
 @item mew-use-w3m-minor-mode
 If non-@code{nil}, the @code{w3m-minor-mode} is turned on in the message
 buffer where a text/html part is displayed, and you can use the same
-main keys as the keys of emacs-w3m, for instance, @key{RET} is for
+main keys as the keys of emacs-w3m, for instance, @kbd{@key{RET}} is for
 visiting a page which a link in the current position points to.  Those
 keys are defined in the @code{w3m-minor-mode-command-alist} variable.
 Keep in mind that some commands are replaced by others similar to them,
@@ -3554,8 +3629,8 @@ is included in the @acronym{SEMI} package.
 
 On HTML parts of an article buffer, the @code{w3m-minor-mode} is turned
 on and you can use the same main keys as the keys of emacs-w3m, for
-instance, @key{RET} is for visiting a page which a link in the current
-position points to.  Those keys are defined in the
+instance, @kbd{@key{RET}} is for visiting a page which a link in the
+current position points to.  Those keys are defined in the
 @code{w3m-minor-mode-command-alist} variable.  Keep in mind that some
 commands are replaced by others similar to them, for security reasons.
 
@@ -3724,8 +3799,9 @@ Bad HTML file
 
 If the character set specified by the @samp{<meta>} tag differs from
 the actual contents in an HTML file, it will not be displayed correctly.
-Use the command @kbd{M-x w3m-redisplay-with-charset} or @kbd{C c} to set
-the correct character set and to force redisplay of the page.
+Use the command @w{@kbd{M-x w3m-redisplay-with-charset @key{RET}}} or
+@w{@kbd{C c}} to set the correct character set and to force redisplay of
+the page.
 
 @item
 Limitation of the character sets
@@ -3879,11 +3955,11 @@ recommend you reinstall the w3m command from the original source.
 @item
 Q. Why doesn't the emacs-w3m frame pop up to the front?
 
-It is quite convenient that the @kbd{M-x w3m RET} command makes the
-emacs-w3m frame pop to the front even if it is hidden under the other
-frames.  However, it was reported that it does not work when running
-Emacs which has been built so as to use the LUCID toolkit on some
-platforms (e.g., Fedora Linux) in which the @samp{metacity} window
+It is quite convenient that the @w{@kbd{M-x w3m @key{RET}}} command
+makes the emacs-w3m frame pop to the front even if it is hidden under
+the other frames.  However, it was reported that it does not work when
+running Emacs which has been built so as to use the LUCID toolkit on
+some platforms (e.g., Fedora Linux) in which the @samp{metacity} window
 manager is used.  In those systems, other features which raise the Emacs
 frames will not work, either.  If you are in such a miserable
 circumstance, it might be worth trying the following advice:
@@ -4064,14 +4140,14 @@ use Gnus.
 The easiest way to get started with @samp{nnshimbun} is to use
 something like the following in the Group buffer:
 
-@kbd{M-x gnus-group-make-shimbun-group RET asahi RET national RET}
-@c @kbd{G n asahi RET national RET}
+@w{@kbd{M-x gnus-group-make-shimbun-group @key{RET} asahi @key{RET} national @key{RET}}}
+@c @w{@kbd{G n asahi @key{RET} national @key{RET}}}
 
 @noindent
 Replace @samp{asahi} and @samp{national} with the keyword corresponding
 to the server you'd like to connect to and the group you're interested
 in respectively.  You can complete both of those names by using
-@key{TAB} or @key{SPC}.
+@kbd{@key{TAB}} or @kbd{@key{SPC}}.
 
 You can also bind that to a key if there's enough room in the
 @code{gnus-group-mode-map} map, you can add something like the following
@@ -4084,13 +4160,13 @@ in your @file{~/.gnus.el} file:
 @end lisp
 
 @noindent
-Then, you can use @kbd{G n} instead of @kbd{M-x
-gnus-group-make-shimbun-group}.
+Then, you can use @w{@kbd{G n}} instead of
+@w{@kbd{M-x gnus-group-make-shimbun-group}}.
 
 @emph{Could someone book this keystroke at the Gnus Tower?}
 
 @c Otherwise, you can also see articles by browsing the back end using
-@c @kbd{B nnshimbun RET asahi RET}.
+@c @w{@kbd{B nnshimbun @key{RET} asahi @key{RET}}}.
 
 @findex gnus-group-make-shimbun-groups
 @noindent
@@ -4138,7 +4214,7 @@ default value is @code{nil}.
 @cindex group parameters
 You can use the specially made group parameter for @samp{nnshimbun} in
 addition to the standard group parameters provided by Gnus@footnote{The
-easiest way to specify group parameters is to type @kbd{G c} in the
+easiest way to specify group parameters is to type @w{@kbd{G c}} in the
 group buffer after moving the point to the group you'd like to customize
 (@pxref{Group Parameters, ,Group Parameters, gnus, The Gnus Manual}).}.
 Several parameters for @samp{nnshimbun} are collected into the single
@@ -4185,7 +4261,7 @@ the following values:
 
 @table @code
 @item nil
-@item all
+@itemx all
 all pages
 
 @item last
@@ -4341,8 +4417,8 @@ same name and the same meaning as the standard group parameter.  You may
 use whichever you like.  If nnshimbun's one is set to non-@code{nil}
 value, it takes precedence over the standard one.  It is provided in
 order to concentrate things related to @samp{nnshimbun} at one place of
-the ``Gnus Customize'' buffer (which will appear by typing @kbd{G c} in
-the group buffer) and to realize managing collectively by the
+the ``Gnus Customize'' buffer (which will appear by typing @w{@kbd{G c}}
+in the group buffer) and to realize managing collectively by the
 @code{nnshimbun-group-parameters-alist} variable@footnote{We've already
 prepared the answer to the question that why @code{auto-expire}
 etc. aren't included in the nnshimbun's special group parameter?  The
@@ -4428,8 +4504,8 @@ before the @code{(require 'mew-shimbun)} line.}
 @end format
 
 You did the fundamental setups.  For the other user definable variables,
-use @kbd{M-x customize-group} for the @code{mew-shimbun} group or see
-the source code.
+use @w{@kbd{M-x customize-group}} for the @code{mew-shimbun} group or
+see the source code.
 
 @item
 Reading @samp{shimbun} messages
@@ -4438,46 +4514,47 @@ Reading @samp{shimbun} messages
 @item
 Getting started
 
-Type @kbd{G I} (@code{mew-shimbun-retrieve-all}) first, after setting
-things up as mentioned above.  The @samp{shimbun} folders specified by
-the @code{mew-shimbun-folder-groups} variable will be created under the
-@samp{+shimbun} parent folder.  Typing @kbd{G I} is also useful when you
-have added new groups.  You can change the name of the parent folder
-(@samp{+shimbun} by default) by customizing the
+Type @w{@kbd{G I}} (@code{mew-shimbun-retrieve-all}) first, after
+setting things up as mentioned above.  The @samp{shimbun} folders
+specified by the @code{mew-shimbun-folder-groups} variable will be
+created under the @samp{+shimbun} parent folder.  Typing @w{@kbd{G I}}
+is also useful when you have added new groups.  You can change the name
+of the parent folder (@samp{+shimbun} by default) by customizing the
 @code{mew-shimbun-folder} variable.
 
 @item
 Moving into a @samp{shimbun} folder
 
 You can move to any folder (including @samp{shimbun}) by typing @kbd{g}
-(@code{mew-summary-goto-folder}), but @kbd{G g}
+(@code{mew-summary-goto-folder}), but @w{@kbd{G g}}
 (@code{mew-shimbun-goto-folder}) is restricted to moving to only the
 @samp{shimbun} folder.  In addition, folders which have new messages
 (in other words, folders which have not been scanned) will be displayed
-when using a prefix argument with @kbd{G g} (i.e. @kbd{C-u G g}).  A
-prefix argument similarly affects @kbd{G G} as well.
+when using a prefix argument with @w{@kbd{G g}} (i.e.
+@w{@kbd{C-u G g}}).  A prefix argument similarly affects @w{@kbd{G G}}
+as well.
 
 @item
 Fetching messages in each folder
 
 You can fetch new messages for the current folder exclusively by typing
-@kbd{G i} (@code{mew-shimbun-retrieve}) in a @samp{shimbun} folder.
+@w{@kbd{G i}} (@code{mew-shimbun-retrieve}) in a @samp{shimbun} folder.
 
 @item
 Fetching updated messages
 
-If you perform the @kbd{G r} command (@code{mew-shimbun-re-retrieve})
-when a particular message is being displayed, the message will be
-updated if it is possible, and new messages will be fetched.  With a
-prefix argument (i.e. @kbd{C-u G r}), it will attempt to update messages
-which are marked with the mark specified by the
-@code{mew-shimbun-mark-re-retrieve} variable (@samp{@@} by default).  It
-would be useful for CNET, etc.
+If you perform the @w{@kbd{G r}} command
+(@code{mew-shimbun-re-retrieve}) when a particular message is being
+displayed, the message will be updated if it is possible, and new
+messages will be fetched.  With a prefix argument (i.e.
+@w{@kbd{C-u G r}}), it will attempt to update messages which are marked
+with the mark specified by the @code{mew-shimbun-mark-re-retrieve}
+variable (@samp{@@} by default).  It would be useful for CNET, etc.
 
-The @kbd{G R} command (@code{mew-shimbun-re-retrieve-all}) checks the
-freshness of all messages and re-fetches the updated messages.  If a
-prefix argument is given (i.e. @kbd{C-u G R}), the messages within the
-region will be processed.  It is probably worthwhile if the site is
+The @w{@kbd{G R}} command (@code{mew-shimbun-re-retrieve-all}) checks
+the freshness of all messages and re-fetches the updated messages.  If a
+prefix argument is given (i.e. @w{@kbd{C-u G R}}), the messages within
+the region will be processed.  It is probably worthwhile if the site is
 running the hyper nikki system (@samp{nikki} means ``diary'' in
 Japanese).
 @end enumerate
@@ -4506,7 +4583,7 @@ Mew summary mode, but if you add the following line to the
 
 the unseen marks will be saved in the @file{.mew-cache} file
 automatically for the @samp{shimbun} groups when exiting Mew or killing
-a folder (using @kbd{C-c C-q}).  However, it is not securely saved
+a folder (using @w{@kbd{C-c C-q}}).  However, it is not securely saved
 @footnote{People who have set the @code{mew-touch-folder-p} variable to
 @code{t} will succeed 100% in saving marks, but people who use
 @code{nil} value seem not to be 0% successful.}.  To do this securely,
@@ -4515,7 +4592,7 @@ command after reading the folder.
 
 If you don't like the @samp{*} mark for unseen messages, customize
 the @code{mew-shimbun-mark-unseen} variable (see above).  By specifying
-the mark by @kbd{C-u N}, you will be able to lead a better life with
+the mark by @w{@kbd{C-u N}}, you will be able to lead a better life with
 taking care of unseen messages.
 
 @item
@@ -4536,8 +4613,8 @@ If you set this variable as shown above, you can specify the expiry
 period; 7 days for @samp{+shimbun/yomiuri}, 1 day for
 @samp{+shimbun/asahi}.  Messages in the @samp{shimbun} folder where the
 expiry period is not specified will never be expired.  You can use the
-@kbd{G e} command (@code{mew-shimbun-expire}) to expire the expirable
-messages in the current folder.  The @kbd{G E} command
+@w{@kbd{G e}} command (@code{mew-shimbun-expire}) to expire the
+expirable messages in the current folder.  The @w{@kbd{G E}} command
 (@code{mew-shimbun-expire-all}) is for expiring the expirable messages
 in all the @samp{shimbun} folders.  Note that once the messages have
 been expired, you cannot recover them.
@@ -5122,9 +5199,9 @@ kde.Kuser kde.Kdeveloper
 
 @item @uref{http://www.geocrawler.com/, Geocrawler}
 All archives of Geocrawler are supported by @samp{shimbun} library.  You
-can use the command @kbd{M-x shimbun-geocrawler-add-group RET}, to add
-your favorite archive to the variable
-@code{shimbun-geocrawler-group-alist}.
+can use the command
+@w{@kbd{M-x shimbun-geocrawler-add-group @key{RET}}}, to add your
+favorite archive to the variable @code{shimbun-geocrawler-group-alist}.
 
 @item @uref{http://marc.theaimsgroup.com/, Mailing list ARChives}
 Mailing list ARChives (@acronym{MARC}) are supported by @samp{shimbun}
@@ -6048,14 +6125,14 @@ put the following lines in your @file{~/.emacs} file:
 (global-set-key "\C-xm" 'browse-url-at-point)
 @end lisp
 
-Emacs-w3m will now be invoked when you type the @kbd{C-x m} key on a
+Emacs-w3m will now be invoked when you type the @w{@kbd{C-x m}} key on a
 string which looks like a URL in any Emacs buffer.  In addition, you can
 use emacs-w3m to preview an HTML file that you are just editing by
-typing the @kbd{C-c C-v} key (note that you need to use Emacs and the
+typing the @w{@kbd{C-c C-v}} key (note that you need to use Emacs and the
 @code{html-mode} major mode to edit the HTML file).
 
 If you'd like to use another web browser than emacs-w3m when using the
-@kbd{C-x m} key when you are in an emacs-w3m buffer (who wants to do
+@w{@kbd{C-x m}} key when you are in an emacs-w3m buffer (who wants to do
 so?), add the following advice to @file{~/.emacs} file:
 
 @lisp
@@ -6072,7 +6149,7 @@ so?), add the following advice to @file{~/.emacs} file:
 @item dired
 
 You can use emacs-w3m to browse an HTML file in a @code{dired} buffer by
-typing the @kbd{C-x m} key.  Use the following settings in your
+typing the @w{@kbd{C-x m}} key.  Use the following settings in your
 @file{~/.emacs} file:
 
 @lisp
@@ -6092,7 +6169,7 @@ typing the @kbd{C-x m} key.  Use the following settings in your
 
 You can see the newest diary using emacs-w3m and the hyper nikki system.
 Put the following lines in your @file{~/.emacs} file and type the
-@kbd{C-c C-b} key in an @code{hnf-mode} buffer:
+@w{@kbd{C-c C-b}} key in an @code{hnf-mode} buffer:
 
 @lisp
 (defun w3m-hnf-browse-url-w3m (url &optional new-window)
@@ -6189,7 +6266,7 @@ Emacs-w3m Mailing List @t{<emacs-w3m@@namazu.org>}
 @end display
 
 You can also send a bug report using the @code{report-emacs-w3m-bug}
-command (or the @kbd{C-c C-b} key) if you have set the
+command (or the @w{@kbd{C-c C-b}} key) if you have set the
 @code{mail-user-agent} variable that will work properly.
 
 English and Japanese can be used when posting to this list, since many
