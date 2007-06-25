@@ -4712,12 +4712,13 @@ asahi.food asahi.health asahi.housing asahi.igo asahi.international
 asahi.international.asia asahi.international.column
 asahi.international.special asahi.international.world asahi.job
 asahi.kansai asahi.kansai.entertainment asahi.kansai.kokoro
-asahi.kansai.sumai asahi.kansai.taberu asahi.life asahi.life.column
-asahi.national asahi.politics asahi.rss asahi.science asahi.shopping
-asahi.shopping.column asahi.shopping.yakimono asahi.shougi asahi.sports
-asahi.sports.baseball asahi.sports.battle asahi.sports.etc
-asahi.sports.football asahi.sports.golf asahi.sports.rugby
-asahi.sports.usa asahi.sports.winter asahi.tenjin asahi.travel
+asahi.kansai.sumai asahi.kansai.taberu asahi.komimi asahi.life
+asahi.life.column asahi.national asahi.politics asahi.rss asahi.science
+asahi.shopping asahi.shopping.column asahi.shopping.yakimono
+asahi.shougi asahi.sports asahi.sports.baseball asahi.sports.battle
+asahi.sports.etc asahi.sports.football asahi.sports.golf
+asahi.sports.rugby asahi.sports.usa asahi.sports.winter asahi.tenjin
+asahi.travel
 
 Those groups generate articles containing only text by default.  If you
 would like to make them generate HTML articles that contain not only
