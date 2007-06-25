@@ -256,6 +256,7 @@ Every `.' in NAME will be replaced with `/'."
       ("kansai.kokoro" "こころ")
       ("kansai.sumai" "住まい")
       ("kansai.taberu" "食べる")
+      ("komimi" "コミミ口コミ" "%s/list.html" ,@default2)
       ("life" "暮らし" "%s/list.html" ,@default)
       ("life.column" "コラム")
       ("national" "社会" "%s/list.html" ,@default)

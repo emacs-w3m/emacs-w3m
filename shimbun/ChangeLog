@@ -1,3 +1,7 @@
+2007-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-group-table): Add komimi group.
+
 2007-06-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-prepare-article): Simplify the ways to
