@@ -1,6 +1,7 @@
 ;;; w3m-lnum.el --- Operations using link numbers
 
-;; Copyright (C) 2004, 2005, 2006 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2004, 2005, 2006, 2007
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -42,11 +43,13 @@
 
 (require 'w3m)
 
-(defface w3m-link-numbering-face
+(defface w3m-link-numbering
   '((((class color) (background light)) (:foreground "gray60"))
     (((class color) (background dark)) (:foreground "gray50")))
   "Face used to highlight link numbers."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-link-numbering-face 'face-alias 'w3m-link-numbering)
 
 (defcustom w3m-link-numbering-mode-hook nil
   "*Hook run after `w3m-link-numbering-mode' initialization."
@@ -102,9 +105,8 @@
 		  (progn
 		    (overlay-put overlay 'before-string num)
 		    (set-glyph-face (extent-begin-glyph overlay)
-				    'w3m-link-numbering-face))
-		(w3m-add-face-property 0 (length num)
-				       'w3m-link-numbering-face num)
+				    'w3m-link-numbering))
+		(w3m-add-face-property 0 (length num) 'w3m-link-numbering num)
 		(overlay-put overlay 'before-string num)
 		(overlay-put overlay 'evaporate t))
 	      (overlay-put overlay 'w3m-link-numbering-overlay i))))))))

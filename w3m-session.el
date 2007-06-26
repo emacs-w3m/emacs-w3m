@@ -78,7 +78,7 @@
   :group 'w3m
   :type '(integer :size 0))
 
-(defface w3m-session-select-face
+(defface w3m-session-select
   `((((class color) (type tty))
      (:foreground "black"))
     (((class color) (background light))
@@ -88,8 +88,10 @@
     (t nil))
   "Face of w3m-session."
   :group 'w3m)
+;; backward-compatibility alias
+(put 'w3m-session-select-face 'face-alias 'w3m-session-select)
 
-(defface w3m-session-selected-face
+(defface w3m-session-selected
   `((((class color) (type tty))
      (:foreground "blue"))
     (((class color) (background light))
@@ -99,6 +101,8 @@
     (t (:bold t :underline t)))
   "Face of selected w3m-session."
   :group 'w3m)
+;; backward-compatibility alias
+(put 'w3m-session-selected-face 'face-alias 'w3m-session-selected)
 
 ;; format of sessin file.
 ;; '((title1 time1 (url url url ...) current1)
@@ -283,7 +287,7 @@
 	      (setq pos (point))
 	      (insert title)
 	      (add-text-properties pos (point)
-				   `(face w3m-session-select-face
+				   `(face w3m-session-select
 					  w3m-session-number ,num))
 	      (setq num (1+ num))
 	      (insert (make-string (- max (string-width title)) ?\ ))
@@ -294,7 +298,7 @@
 	    (put-text-property (point)
 			       (next-single-property-change
 				(point) 'w3m-session-number)
-			       'face 'w3m-session-selected-face)
+			       'face 'w3m-session-selected)
 	    (while (null c)
 	      (set-buffer-modified-p nil)
 	      (setq c (w3m-static-cond
@@ -328,7 +332,7 @@
 		(put-text-property (point)
 				   (next-single-property-change
 				    (point) 'w3m-session-number)
-				   'face 'w3m-session-select-face)
+				   'face 'w3m-session-select)
 		(forward-line)
 		(unless (get-text-property (point) 'w3m-session-number)
 		  (goto-char (next-single-property-change
@@ -336,13 +340,13 @@
 		(put-text-property (point)
 				   (next-single-property-change
 				    (point) 'w3m-session-number)
-				   'face 'w3m-session-selected-face))
+				   'face 'w3m-session-selected))
 	       ((memq c '(?\C-p ?p ?k up))
 		(setq c nil)
 		(put-text-property (point)
 				   (next-single-property-change
 				    (point) 'w3m-session-number)
-				   'face 'w3m-session-select-face)
+				   'face 'w3m-session-select)
 		(forward-line -1)
 		(beginning-of-line)
 		(unless (get-text-property (point) 'w3m-session-number)
@@ -353,7 +357,7 @@
 		(put-text-property (point)
 				   (next-single-property-change
 				    (point) 'w3m-session-number)
-				   'face 'w3m-session-selected-face))
+				   'face 'w3m-session-selected))
 	       (t
 		(setq c nil)
 		(unless (string-match "retry$" minimsg)

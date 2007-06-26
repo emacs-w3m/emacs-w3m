@@ -838,35 +838,43 @@ of the original request method."
   :group 'w3m
   :type '(integer :size 0))
 
-(defface w3m-anchor-face
+(defface w3m-anchor
   '((((class color) (background light)) (:foreground "blue"))
     (((class color) (background dark)) (:foreground "cyan"))
     (t (:underline t)))
   "Face used for displaying anchors."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-anchor-face 'face-alias 'w3m-anchor)
 
-(defface w3m-arrived-anchor-face
+(defface w3m-arrived-anchor
   '((((class color) (background light)) (:foreground "navy"))
     (((class color) (background dark)) (:foreground "LightSkyBlue"))
     (t (:underline t)))
   "Face used for displaying anchors which have already arrived."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-arrived-anchor-face 'face-alias 'w3m-arrived-anchor)
 
-(defface w3m-current-anchor-face
+(defface w3m-current-anchor
   '((t (:underline t :bold t)))
   "Face used to highlight the current anchor."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-current-anchor-face 'face-alias 'w3m-current-anchor)
 
-(defface w3m-image-face
+(defface w3m-image
   '((((class color) (background light)) (:foreground "ForestGreen"))
     (((class color) (background dark)) (:foreground "PaleGreen"))
     (t (:underline t)))
   "Face used for displaying alternate strings of images."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-image-face 'face-alias 'w3m-image)
 
-(defface w3m-history-current-url-face
+(defface w3m-history-current-url
   ;; The following strange code compounds the attributes of the
-  ;; `secondary-selection' face and the `w3m-arrived-anchor-face' face,
+  ;; `secondary-selection' face and the `w3m-arrived-anchor' face,
   ;; and generates the new attributes for this face.
   (let ((base 'secondary-selection)
 	(fn (if (featurep 'xemacs)
@@ -878,7 +886,7 @@ of the original request method."
 	(features (cons 'font features))
 	base-attributes attributes attribute)
     (setq base-attributes (funcall fn base nil)
-	  attributes (funcall fn 'w3m-arrived-anchor-face nil))
+	  attributes (funcall fn 'w3m-arrived-anchor nil))
     (while base-attributes
       (setq attribute (car base-attributes))
       (unless (memq attribute '(:foreground :underline))
@@ -888,20 +896,28 @@ of the original request method."
     (list (list t attributes)))
   "Face used to highlight the current url in the \"about://history/\" page."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-history-current-url-face 'face-alias 'w3m-history-current-url)
 
-(defface w3m-bold-face '((t (:bold t)))
+(defface w3m-bold '((t (:bold t)))
   "Face used for displaying bold text."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-bold-face 'face-alias 'w3m-bold)
 
-(defface w3m-italic-face '((t (:italic t)))
+(defface w3m-italic '((t (:italic t)))
   "Face used for displaying italic text."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-italic-face 'face-alias 'w3m-italic)
 
-(defface w3m-underline-face '((t (:underline t)))
+(defface w3m-underline '((t (:underline t)))
   "Face used for displaying underlined text."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-underline-face 'face-alias 'w3m-underline)
 
-(defface w3m-strike-through-face
+(defface w3m-strike-through
   `((((class color))
      ,(if (featurep 'xemacs)
 	  '(:strikethru t)
@@ -909,8 +925,10 @@ of the original request method."
     (t (:underline t)))
   "Face used for displaying strike-through text."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-strike-through-face 'face-alias 'w3m-strike-through)
 
-(defface w3m-insert-face
+(defface w3m-insert
   '((((class color) (background light))
      (:foreground "purple"))
     (((class color) (background dark))
@@ -918,6 +936,8 @@ of the original request method."
     (t (:underline t)))
   "Face used for displaying insert text."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-insert-face 'face-alias 'w3m-insert)
 
 (defcustom w3m-mode-hook nil
   "*Hook run after `w3m-mode' initialization.
@@ -3220,8 +3240,7 @@ For example:
       (delete-region start (match-end 0))
       (when (re-search-forward "</b[ \t\r\f\n]*>" nil t)
 	(delete-region (match-beginning 0) (match-end 0))
-	(w3m-add-face-property start (match-beginning 0)
-				    'w3m-bold-face)))))
+	(w3m-add-face-property start (match-beginning 0) 'w3m-bold)))))
 
 (defun w3m-fontify-italic ()
   "Fontify italic text in the buffer containing halfdump."
@@ -3231,8 +3250,7 @@ For example:
       (delete-region start (match-end 0))
       (when (re-search-forward "</i[ \t\r\f\n]*>" nil t)
 	(delete-region (match-beginning 0) (match-end 0))
-	(w3m-add-face-property start (match-beginning 0)
-			       'w3m-italic-face)))))
+	(w3m-add-face-property start (match-beginning 0) 'w3m-italic)))))
 
 (defun w3m-fontify-underline ()
   "Fontify underline text in the buffer containing halfdump."
@@ -3242,8 +3260,7 @@ For example:
       (delete-region start (match-end 0))
       (when (re-search-forward "</u[ \t\r\f\n]*>" nil t)
 	(delete-region (match-beginning 0) (match-end 0))
-	(w3m-add-face-property start (match-beginning 0)
-				      'w3m-underline-face)))))
+	(w3m-add-face-property start (match-beginning 0) 'w3m-underline)))))
 
 (defun w3m-fontify-strike-through ()
   "Fontify strike-through text in the buffer containing halfdump."
@@ -3257,14 +3274,14 @@ For example:
 	(when (re-search-forward "</s[ \t\r\f\n]*>" nil t)
 	  (delete-region (match-beginning 0) (match-end 0))
 	  (w3m-add-face-property start (match-beginning 0)
-				 'w3m-strike-through-face)))))
+				 'w3m-strike-through)))))
    ((w3m-device-on-window-system-p)
     (while (re-search-forward
 	    (concat "<U>\\(?:\\(?::\\(?:\\(?:DEL\\|S\\)]\\)\\|"
 		    "\\[\\(?:\\(?:DEL\\|S\\):\\)\\)</U>\\)")
 	    nil t)
       (w3m-add-face-property (match-beginning 0) (match-end 0)
-			     'w3m-strike-through-face)))))
+			     'w3m-strike-through)))))
 
 (defun w3m-fontify-insert ()
   "Fontify insert text in the buffer containing halfdump."
@@ -3277,13 +3294,11 @@ For example:
 	(delete-region start (match-end 0))
 	(when (re-search-forward "</ins[ \t\r\f\n]*>" nil t)
 	  (delete-region (match-beginning 0) (match-end 0))
-	  (w3m-add-face-property start (match-beginning 0)
-				 'w3m-insert-face)))))
+	  (w3m-add-face-property start (match-beginning 0) 'w3m-insert)))))
    ((w3m-device-on-window-system-p)
     (while (re-search-forward "<U>\\(?:\\(?::INS]\\|\\[INS:\\)</U>\\)"
 			      nil t)
-      (w3m-add-face-property (match-beginning 0) (match-end 0)
-			     'w3m-insert-face)))))
+      (w3m-add-face-property (match-beginning 0) (match-end 0) 'w3m-insert)))))
 
 (defsubst w3m-decode-anchor-string (str)
   ;; FIXME: This is a quite ad-hoc function to process encoded url string.
@@ -3369,8 +3384,8 @@ For example:
 	    (setq hseq (or (and (null hseq) 0) (abs hseq)))
 	    (setq w3m-max-anchor-sequence (max hseq w3m-max-anchor-sequence))
 	    (w3m-add-face-property start end (if (w3m-arrived-p href)
-						     'w3m-arrived-anchor-face
-						   'w3m-anchor-face))
+						     'w3m-arrived-anchor
+						   'w3m-anchor))
 	    (w3m-add-text-properties start end
 				     (list 'w3m-href-anchor href
 					   'mouse-face 'highlight
@@ -3380,8 +3395,8 @@ For example:
 	    (when (w3m-imitate-widget-button)
 	      (require 'wid-edit)
 	      (let ((widget-button-face (if (w3m-arrived-p href)
-					    'w3m-arrived-anchor-face
-					  'w3m-anchor-face))
+					    'w3m-arrived-anchor
+					  'w3m-anchor))
 		    (widget-mouse-face 'highlight)
 		    w)
 		(setq w (widget-convert-button 'default start end
@@ -3463,7 +3478,7 @@ For example:
 	  (unless (or (w3m-anchor start)
 		      (w3m-action start))
 	    ;; No need to use `w3m-add-text-properties' here.
-	    (w3m-add-face-property start end 'w3m-image-face)
+	    (w3m-add-face-property start end 'w3m-image)
 	    (add-text-properties start end (list 'mouse-face 'highlight
 						 'help-echo help
 						 'balloon-help balloon))))))))
@@ -3792,8 +3807,8 @@ If optional RESERVE-PROP is non-nil, text property is reserved."
 
 (defun w3m-refontify-anchor (&optional buff)
   "Refontify anchors as they have already arrived.
-It replaces the faces on the arrived anchors from `w3m-anchor-face' to
-`w3m-arrived-anchor-face'."
+It replaces the faces on the arrived anchors from `w3m-anchor' to
+`w3m-arrived-anchor'."
   (save-excursion
     (and buff (set-buffer buff))
     (let (prop)
@@ -3801,7 +3816,7 @@ It replaces the faces on the arrived anchors from `w3m-anchor-face' to
 		 (get-text-property (point) 'w3m-anchor-sequence)
 		 (setq prop (get-text-property (point) 'face))
 		 (listp prop)
-		 (member 'w3m-anchor-face prop))
+		 (member 'w3m-anchor prop))
 	(let* ((start)
 	       (end (next-single-property-change (point) 'w3m-anchor-sequence))
 	       (buffer-read-only))
@@ -3810,9 +3825,9 @@ It replaces the faces on the arrived anchors from `w3m-anchor-face' to
 				  end 'w3m-anchor-sequence))
 		     (w3m-arrived-p (get-text-property (point)
 						       'w3m-href-anchor)))
-	    (w3m-remove-face-property start end 'w3m-anchor-face)
-	    (w3m-remove-face-property start end 'w3m-arrived-anchor-face)
-	    (w3m-add-face-property start end 'w3m-arrived-anchor-face))
+	    (w3m-remove-face-property start end 'w3m-anchor)
+	    (w3m-remove-face-property start end 'w3m-arrived-anchor)
+	    (w3m-add-face-property start end 'w3m-arrived-anchor))
 	  (set-buffer-modified-p nil))))))
 
 (defun w3m-url-completion (url predicate flag)
@@ -3895,8 +3910,8 @@ invalid url if Gmane doesn't handle the group cannot be helped."
   (let ((faces (get-text-property (point) 'face)))
     (when (and (eq major-mode 'w3m-mode)
 	       (listp faces)
-	       (or (memq 'w3m-header-line-location-title-face faces)
-		   (memq 'w3m-header-line-location-content-face faces))
+	       (or (memq 'w3m-header-line-location-title faces)
+		   (memq 'w3m-header-line-location-content faces))
 	       w3m-current-url)
       w3m-current-url)))
 
@@ -5633,7 +5648,7 @@ specified in the `w3m-content-type-alist' variable."
 	(widen)
 	(delete-region (point-min) (point-max))
 	(insert w3m-current-title)
-	(w3m-add-face-property (point-min) (point-max) 'w3m-image-face)
+	(w3m-add-face-property (point-min) (point-max) 'w3m-image)
 	(w3m-add-text-properties (point-min) (point-max)
 				 (list 'w3m-image url
 				       'mouse-face 'highlight))
@@ -6372,7 +6387,7 @@ Return t if highlighting is successful."
 	(setq beg pos)
 	(setq pos (next-single-property-change pos 'w3m-anchor-sequence))
 	(setq ov (make-overlay beg pos))
-	(overlay-put ov 'face 'w3m-current-anchor-face)
+	(overlay-put ov 'face 'w3m-current-anchor)
 	(overlay-put ov 'w3m-momentary-overlay t)
 	(overlay-put ov 'evaporate t)
 	t))))
@@ -9023,7 +9038,7 @@ It does manage history position data as well."
 	(w3m-next-anchor)
 	(setq start (point))
 	(end-of-line)
-	(w3m-add-face-property start (point) 'w3m-history-current-url-face)
+	(w3m-add-face-property start (point) 'w3m-history-current-url)
 	(goto-char start)))
     (set-buffer-modified-p nil)))
 
@@ -9396,21 +9411,27 @@ passed to the `w3m-quit' function (which see)."
   :group 'w3m
   :type 'boolean)
 
-(defface w3m-header-line-location-title-face
+(defface w3m-header-line-location-title
   '((((class color) (background light))
      (:foreground "Blue" :background "Gray90"))
     (((class color) (background dark))
      (:foreground "Cyan" :background "Gray20")))
   "Face used to highlight title when displaying location in the header line."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-header-line-location-title-face
+     'face-alias 'w3m-header-line-location-title)
 
-(defface w3m-header-line-location-content-face
+(defface w3m-header-line-location-content
   '((((class color) (background light))
      (:foreground "DarkGoldenrod" :background "Gray90"))
     (((class color) (background dark))
      (:foreground "LightGoldenrod" :background "Gray20")))
   "Face used to highlight url when displaying location in the header line."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-header-line-location-content-face
+     'face-alias 'w3m-header-line-location-content)
 
 (defvar w3m-header-line-map nil)
 (unless w3m-header-line-map
@@ -9435,12 +9456,10 @@ passed to the `w3m-quit' function (which see)."
 					   (ct " [T]")
 					   (charset " [C]")
 					   (t "")))))
-    (w3m-add-face-property (point-min) (point)
-			   'w3m-header-line-location-title-face)
+    (w3m-add-face-property (point-min) (point) 'w3m-header-line-location-title)
     (let ((start (point)))
       (insert w3m-current-url)
-      (w3m-add-face-property start (point)
-			     'w3m-header-line-location-content-face)
+      (w3m-add-face-property start (point) 'w3m-header-line-location-content)
       (w3m-add-text-properties start (point)
 			       `(mouse-face highlight
 				 keymap ,w3m-header-line-map
@@ -9459,8 +9478,7 @@ passed to the `w3m-quit' function (which see)."
 			       (frame-width)
 			     (window-width))
 			   (current-column) 1)))
-      (w3m-add-face-property start (point)
-			     'w3m-header-line-location-content-face)
+      (w3m-add-face-property start (point) 'w3m-header-line-location-content)
       (unless (eolp)
 	(insert "\n")))))
 

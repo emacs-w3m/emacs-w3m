@@ -310,7 +310,7 @@ Buffer string between BEG and END are replaced with IMAGE."
        (image-type-available-p image-type)))
 
 ;;; Form buttons
-(defface w3m-form-button-face
+(defface w3m-form-button
   '((((type x w32 mac) (class color))
      :background "lightgrey" :foreground "black"
      :box (:line-width 2 :style released-button))
@@ -319,8 +319,10 @@ Buffer string between BEG and END are replaced with IMAGE."
     (t (:underline t)))
   "*Face to fontify buttons in forms."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-form-button-face 'face-alias 'w3m-form-button)
 
-(defface w3m-form-button-mouse-face
+(defface w3m-form-button-mouse
   '((((type x w32 mac) (class color))
      :background "DarkSeaGreen1" :foreground "black"
      :box (:line-width 2 :style released-button))
@@ -329,8 +331,10 @@ Buffer string between BEG and END are replaced with IMAGE."
     (t (:underline t)))
   "*Face to fontify focused buttons in forms."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-form-button-mouse-face 'face-alias 'w3m-form-button-mouse)
 
-(defface w3m-form-button-pressed-face
+(defface w3m-form-button-pressed
   '((((type x w32 mac) (class color))
      :background "lightgrey" :foreground "black"
      :box (:line-width 2 :style pressed-button))
@@ -339,6 +343,8 @@ Buffer string between BEG and END are replaced with IMAGE."
     (t (:underline t)))
   "*Face to fontify pressed buttons in forms."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-form-button-pressed-face 'face-alias 'w3m-form-button-pressed)
 
 (defvar w3m-form-button-keymap
   (let ((map (copy-keymap widget-keymap)))
@@ -356,7 +362,7 @@ Buffer string between BEG and END are replaced with IMAGE."
   "Make button on the region from START to END."
   (if w3m-form-use-fancy-faces
       (progn
-	(unless (memq (face-attribute 'w3m-form-button-face :box)
+	(unless (memq (face-attribute 'w3m-form-button :box)
 		      '(nil unspecified))
 	  (and (eq ?\[ (char-after start))
 	       (eq ?\] (char-before end))
@@ -374,15 +380,15 @@ Buffer string between BEG and END are replaced with IMAGE."
 		  :w3m-form-action (plist-get properties 'w3m-action))))
 	  (overlay-put (widget-get w :button-overlay) 'evaporate t))
 	(add-text-properties start end properties))
-    (w3m-add-face-property start end 'w3m-form-face)))
+    (w3m-add-face-property start end 'w3m-form)))
 
 (defun w3m-setup-widget-faces ()
   (make-local-variable 'widget-button-face)
   (make-local-variable 'widget-mouse-face)
   (make-local-variable 'widget-button-pressed-face)
-  (setq widget-button-face 'w3m-form-button-face)
-  (setq widget-mouse-face 'w3m-form-button-mouse-face)
-  (setq widget-button-pressed-face 'w3m-form-button-pressed-face))
+  (setq widget-button-face 'w3m-form-button)
+  (setq widget-mouse-face 'w3m-form-button-mouse)
+  (setq widget-button-pressed-face 'w3m-form-button-pressed))
 
 ;;; Menu bar
 (defun w3m-menu-on-forefront (arg &optional curbuf)
@@ -596,7 +602,7 @@ otherwise works in all the emacs-w3m buffers."
 			       16)))
   :type '(integer :size 0))
 
-(defface w3m-tab-unselected-face
+(defface w3m-tab-unselected
   '((((type x w32 mac) (class color))
      :background "Gray70" :foreground "Gray20"
      :box (:line-width -1 :style released-button))
@@ -604,8 +610,10 @@ otherwise works in all the emacs-w3m buffers."
      (:background "blue" :foreground "black")))
   "*Face to fontify unselected tabs."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-tab-unselected-face 'face-alias 'w3m-tab-unselected)
 
-(defface w3m-tab-unselected-retrieving-face
+(defface w3m-tab-unselected-retrieving
   '((((type x w32 mac) (class color))
      :background "Gray70" :foreground "OrangeRed"
      :box (:line-width -1 :style released-button))
@@ -613,8 +621,11 @@ otherwise works in all the emacs-w3m buffers."
      (:background "blue" :foreground "OrangeRed")))
   "*Face to fontify unselected tabs which are retrieving their pages."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-tab-unselected-retrieving-face
+     'face-alias 'w3m-tab-unselected-retrieving)
 
-(defface w3m-tab-selected-face
+(defface w3m-tab-selected
   '((((type x w32 mac) (class color))
      :background "Gray90" :foreground "black"
      :box (:line-width -1 :style released-button))
@@ -623,8 +634,10 @@ otherwise works in all the emacs-w3m buffers."
     (t (:underline t)))
   "*Face to fontify selected tab."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-tab-selected-face 'face-alias 'w3m-tab-selected)
 
-(defface w3m-tab-selected-retrieving-face
+(defface w3m-tab-selected-retrieving
   '((((type x w32 mac) (class color))
      :background "Gray90" :foreground "red"
      :box (:line-width -1 :style released-button))
@@ -633,29 +646,39 @@ otherwise works in all the emacs-w3m buffers."
     (t (:underline t)))
   "*Face to fontify selected tab which is retrieving its page."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-tab-selected-retrieving-face
+     'face-alias 'w3m-tab-selected-retrieving)
 
-(defface w3m-tab-background-face
+(defface w3m-tab-background
   '((((type x w32 mac) (class color))
      :background "LightSteelBlue" :foreground "black")
     (((class color))
      (:background "white" :foreground "black")))
   "*Face to fontify background of tab line."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-tab-background-face 'face-alias 'w3m-tab-background)
 
-(defface w3m-tab-selected-background-face
+(defface w3m-tab-selected-background
   '((((type x w32 mac) (class color))
      :background "LightSteelBlue" :foreground "black")
     (((class color))
      (:background "white" :foreground "black")))
   "*Face to fontify selected background tab."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-tab-selected-background-face
+     'face-alias 'w3m-tab-selected-background)
 
-(defface w3m-tab-mouse-face
+(defface w3m-tab-mouse
   '((((type x w32 mac) (class color))
      :background "Gray75" :foreground "white"
      :box (:line-width -1 :style released-button)))
   "*Face used to highlight tabs under the mouse."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-tab-mouse-face 'face-alias 'w3m-tab-mouse)
 
 (defvar w3m-modeline-spinner-map nil
   "Keymap used on the spinner in the mode-line.")
@@ -671,13 +694,13 @@ otherwise works in all the emacs-w3m buffers."
 	       (list
 		(propertize
 		 "Location: "
-		 'face (list 'w3m-header-line-location-title-face))
+		 'face (list 'w3m-header-line-location-title))
 		`(:eval
 		  (propertize
 		   (if (stringp w3m-current-url)
 		       (replace-regexp-in-string "%" "%%" w3m-current-url)
 		     "")
-		   'face (list 'w3m-header-line-location-content-face)
+		   'face (list 'w3m-header-line-location-content)
 		   'mouse-face '(highlight :foreground
 					   ,(face-foreground 'default))
 		   'local-map (let ((map (make-sparse-keymap)))
@@ -985,8 +1008,8 @@ is non-nil means not to respond to too fast operation of mouse wheel."
 
 (defvar w3m-tab-separator
   (propertize " "
-	      'face (list 'w3m-tab-background-face)
-	      'mouse-face 'w3m-tab-selected-background-face
+	      'face (list 'w3m-tab-background)
+	      'mouse-face 'w3m-tab-selected-background
 	      'display '(space :width 0.5)
 	      'tab-separator t
 	      'local-map w3m-tab-separator-map)
@@ -1061,11 +1084,11 @@ is non-nil means not to respond to too fast operation of mouse wheel."
 		face (list
 		      (if process
 			  (if current
-			      'w3m-tab-selected-retrieving-face
-			    'w3m-tab-unselected-retrieving-face)
+			      'w3m-tab-selected-retrieving
+			    'w3m-tab-unselected-retrieving)
 			(if current
-			    'w3m-tab-selected-face
-			  'w3m-tab-unselected-face)))
+			    'w3m-tab-selected
+			  'w3m-tab-unselected)))
 		icon (when graphic
 		       (cond
 			(process
@@ -1102,7 +1125,7 @@ is non-nil means not to respond to too fast operation of mouse wheel."
 		    breadth nil ?.)
 		 (truncate-string-to-width title breadth nil ?\ ))))
 	     'face face
-	     'mouse-face 'w3m-tab-mouse-face
+	     'mouse-face 'w3m-tab-mouse
 	     'local-map keymap
 	     'help-echo title)
 	    w3m-tab-separator)
@@ -1110,8 +1133,8 @@ is non-nil means not to respond to too fast operation of mouse wheel."
 	(setq w3m-tab-line-format
 	      (concat (apply 'concat (apply 'nconc line))
 		      (propertize (make-string (window-width) ?\ )
-				  'face (list 'w3m-tab-background-face)
-				  'mouse-face 'w3m-tab-selected-background-face
+				  'face (list 'w3m-tab-background)
+				  'mouse-face 'w3m-tab-selected-background
 				  'local-map w3m-tab-separator-map))))))
 
 (add-hook 'w3m-mode-setup-functions 'w3m-tab-make-keymap)

@@ -88,12 +88,14 @@ Files to save text are stored in the directory specified by the
 			 (sexp :tag "Expression checks the current page"))
 		 (function :tag "Major mode")))))
 
-(defface w3m-form-face
+(defface w3m-form
   '((((class color) (background light)) (:foreground "cyan" :underline t))
     (((class color) (background dark)) (:foreground "red" :underline t))
     (t (:underline t)))
   "*Face to fontify forms."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-form-face 'face-alias 'w3m-form)
 
 ;;; Local variables
 (defvar w3m-form-input-textarea-buffer nil)
@@ -432,7 +434,7 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
   (unless (fboundp 'w3m-form-make-button)
     (defun w3m-form-make-button (start end properties)
       "Make button on the region from START to END."
-      (w3m-add-face-property start end 'w3m-form-face))))
+      (w3m-add-face-property start end 'w3m-form))))
 
 ;;; w3mmee
 ;;
@@ -554,7 +556,7 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
 		    (delete-char 1)
 		    (setq end (point))
 		    (insert "]"))
-		  (w3m-add-face-property start end 'w3m-form-face)
+		  (w3m-add-face-property start end 'w3m-form)
 		  (add-text-properties
 		   start end
 		   `(w3m-form-field-id
@@ -655,7 +657,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	    (unless maps (setq maps (w3m-form-new "map" ".")))
 	    (unless usemap (setq usemap mapval))
 	    (when mapval (setq mapval nil))
-	    (w3m-add-face-property start end 'w3m-form-face)
+	    (w3m-add-face-property start end 'w3m-form)
 	    (add-text-properties
 	     start (match-beginning 0)
 	     `(w3m-action (w3m-form-input-map ,maps ,usemap))))))
@@ -734,7 +736,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 				w3m-form-textarea-directory))
 		(setq w3m-form-textarea-files
 		      (cons filename w3m-form-textarea-files)))
-	      (w3m-add-face-property start end 'w3m-form-face)
+	      (w3m-add-face-property start end 'w3m-form)
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
@@ -757,7 +759,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			  t)
 		      (setq selects (cons (list selectnumber form id name)
 					  selects)))
-		(w3m-add-face-property start end 'w3m-form-face)
+		(w3m-add-face-property start end 'w3m-form)
 		(add-text-properties
 		 start end
 		 `(w3m-form-field-id
@@ -768,7 +770,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					       w3m-form-new-session)
 		   w3m-anchor-sequence ,abs-hseq))))
 	     ((string= type "password")
-	      (w3m-add-face-property start end 'w3m-form-face)
+	      (w3m-add-face-property start end 'w3m-form)
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
@@ -784,7 +786,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			      (if checked
 				  (cons value cvalue)
 				cvalue)))
-	      (w3m-add-face-property start end 'w3m-form-face)
+	      (w3m-add-face-property start end 'w3m-form)
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
@@ -798,7 +800,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	      ;; Radio button input, one name has one value
 	      (if checked
 		  (w3m-form-put-by-name form id name value))
-	      (w3m-add-face-property start end 'w3m-form-face)
+	      (w3m-add-face-property start end 'w3m-form)
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
@@ -809,7 +811,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					     w3m-form-new-session)
 		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "file")
-	      (w3m-add-face-property start end 'w3m-form-face)
+	      (w3m-add-face-property start end 'w3m-form)
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
@@ -824,7 +826,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			    id
 			    name
 			    (or value (w3m-form-get form id)))
-	      (w3m-add-face-property start end 'w3m-form-face)
+	      (w3m-add-face-property start end 'w3m-form)
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
