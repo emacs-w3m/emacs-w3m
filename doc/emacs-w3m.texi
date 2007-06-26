@@ -733,7 +733,7 @@ keys in an emacs-w3m buffer.
 To follow a link, use the @kbd{@key{RET}} key.  You have to move the
 point to a link to do this; links are easily recognizable in a buffer
 because they are not displayed like ordinary text: they can be
-underlined, or have a different color.  The face @code{w3m-anchor-face}
+underlined, or have a different color.  The face @code{w3m-anchor}
 controls how they are to be displayed (@pxref{Customizable Variables}).
 
 @table @asis

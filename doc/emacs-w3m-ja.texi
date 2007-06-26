@@ -759,9 +759,8 @@ URL $B$r%_%K%P%C%U%!$GF~NO$7$F!"$=$l$r(B emacs-w3m $B$GI=<($7$^$9!#$3$N%3%^%s
 $B%j%s%/$r$?$I$k$K$O(B @kbd{@key{RET}} $B%-!<$r;H$C$F2<$5$$!#$=$l$K$O%]%$%s%H(B
 $B$r%j%s%/$N>l=j$K0\F0$7$J$1$l$P$J$j$^$;$s!#%j%s%/$OIaDL$N%F%-%9%H$H$O0c$C(B
 $B$FI=<($5$l$F$$$k$N$G!"4JC1$K8+J,$1$k$3$H$,$G$-$^$9!#$=$l$i$O2<@~IU$-!"$^(B
-$B$?$O0c$&?'$K$J$C$F$$$k$O$:$G$9!#$=$l$i$N8+1I$((B
-$B$O(B @code{w3m-anchor-face} $B$H$$$&%U%'!<%9$K$h$C$F7h$^$j$^(B
-$B$9(B (@pxref{Customizable Variables})$B!#(B
+$B$?$O0c$&?'$K$J$C$F$$$k$O$:$G$9!#$=$l$i$N8+1I$($O(B @code{w3m-anchor} $B$H$$(B
+$B$&%U%'!<%9$K$h$C$F7h$^$j$^$9(B (@pxref{Customizable Variables})$B!#(B
 
 @table @asis
 @item @kbd{@key{RET}}
