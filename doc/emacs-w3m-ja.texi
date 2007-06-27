@@ -4776,6 +4776,7 @@ asahi-mytown.(hokkaido@dots{}okinawa)
 日本の全都道府県を網羅する朝日新聞の地方版です。
 
 @item @uref{http://www.mainichi-msn.co.jp/, 毎日新聞}
+@itemx (2007年10月から mainichi.jp に移行の予定)
 mainichi.entertainment mainichi.eye mainichi.eye.shasetsu
 mainichi.kansai mainichi.kansai.tigers mainichi.keizai mainichi.kokusai
 mainichi.kurashi mainichi.science mainichi.seiji mainichi.shakai
@@ -4859,6 +4860,7 @@ yomiuri.world
 して下さい。
 
 @item @uref{http://www.sankei.co.jp/, 産経新聞}
+@itemx (2007年10月から MSN に移行の予定)
 sankei.news.shakai sankei.news.kokusai sankei.news.seiji
 sankei.news.keizai sankei.news.seikatsu sankei.news.kyouiku
 sankei.news.sports sankei.news.cutlure sankei.news.chiho

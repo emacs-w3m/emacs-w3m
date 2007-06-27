@@ -4741,6 +4741,7 @@ The Asahi Shimbun local-news sections including all the prefectures of
 Japan.
 
 @item @uref{http://www.mainichi-msn.co.jp/, MSN-Mainichi INTERACTIVE}
+@itemx (This site is due to shift to mainichi.jp from October, 2007)
 mainichi.entertainment mainichi.eye mainichi.eye.shasetsu
 mainichi.kansai mainichi.kansai.tigers mainichi.keizai mainichi.kokusai
 mainichi.kurashi mainichi.science mainichi.seiji mainichi.shakai
@@ -4825,6 +4826,7 @@ generate HTML articles.  In order to use it, specify
 group name for example.
 
 @item @uref{http://www.sankei.co.jp/, Sankei Shimbun}
+@itemx (This site is due to shift to MSN from October, 2007)
 sankei.news.shakai sankei.news.kokusai sankei.news.seiji
 sankei.news.keizai sankei.news.seikatsu sankei.news.kyouiku
 sankei.news.sports sankei.news.cutlure sankei.news.chiho
