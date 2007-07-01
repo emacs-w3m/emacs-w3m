@@ -1,3 +1,7 @@
+2007-06-29  YOSIDA Kozi  <kozi.yosida@nifty.ne.jp>
+
+	* sb-nifty-forum.el: Remove.
+
 2007-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-group-table): Add komimi group.
