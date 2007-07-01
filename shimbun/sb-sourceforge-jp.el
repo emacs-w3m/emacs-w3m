@@ -41,8 +41,8 @@
     ("iiimf-skk-users-en" . "iiimf-skk-users.en")
     ("iiimf-skk-cvs-commit" . "iiimf-skk-cvs-commit")
     ("macemacsjp-users")
-    ("macemacsjp-dev")
-    ("macemacsjp-english"))
+    ("macemacsjp-english")
+    ("ntemacsjp-users"))
   "*List of mailing lists serverd by SourceForge-JP."
   :group 'shimbun
   :type '(repeat

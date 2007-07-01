@@ -1,3 +1,8 @@
+2007-07-01  Takashi Hiromatsu  <matsuan@ca2.so-net.ne.jp>
+
+	* sb-sourceforge-jp.el (shimbun-sourceforge-jp-mailing-lists): Replace
+	macemacsjp-dev with ntemacsjp-users.
+
 2007-06-29  YOSIDA Kozi  <kozi.yosida@nifty.ne.jp>
 
 	* sb-nifty-forum.el: Remove.
