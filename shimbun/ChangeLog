@@ -55,6 +55,8 @@
 	* sb-slashdot-jp.el (shimbun-slashdot-jp-group-alist): Follow the
 	change of news group name and URL.
 
+2007-04-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* sb-rss.el (shimbun-rss-get-headers): Support japanese-hankaku.
 
 	* shimbun.el (shimbun-headers, shimbun-clear-contents): Simplify a bit.

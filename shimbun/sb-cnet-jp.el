@@ -1,6 +1,7 @@
 ;;; sb-cnet-jp.el --- shimbun backend for CNET Japan -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2003, 2004, 2005, 2006 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003, 2004, 2005, 2006, 2007
+;; NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio     <minakaji@namazu.org>,
 ;;         TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
