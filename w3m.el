@@ -2904,7 +2904,7 @@ need to know what function will be made, use `macroexpand'."
 	       (w3m-url-readable-string ,str))))
     `(lambda (window object pos)
        (if w3m-track-mouse
-	   (progn
+	   (let ((deactivate-mark nil))
 	     (message nil)	; Clear the echo area.
 	     (w3m-url-readable-string
 	      (get-text-property pos ',property
