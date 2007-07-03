@@ -1,6 +1,6 @@
 ;;; w3m-perldoc.el --- The add-on program to view Perl documents.
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -58,7 +58,7 @@
 	 (delq nil (delete "" (mapcar (lambda (x) (if (stringp x) x))
 				      (default-value symbol)))))
   :set (lambda (symbol value)
-	 (set-default
+	 (custom-set-default
 	  symbol
 	  (delq nil (delete "" (mapcar (lambda (x) (if (stringp x) x))
 				       value))))))

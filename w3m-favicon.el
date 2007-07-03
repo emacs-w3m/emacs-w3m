@@ -1,6 +1,6 @@
 ;;; w3m-favicon.el --- utilities for handling favicon in emacs-w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -65,9 +65,9 @@
 	       (cons (string-to-number (match-string 1 value))
 		     (string-to-number (match-string 2 value))))))
   :set (lambda (symbol value)
-	 (set-default symbol
-		      (if (consp value)
-			  (format "%dx%d" (car value) (cdr value)))))
+	 (custom-set-default symbol
+			     (if (consp value)
+				 (format "%dx%d" (car value) (cdr value)))))
   :type '(radio (const :tag "Not specified" nil)
 		(cons :format "%v"
 		      (integer :format "Width: %v " :size 0 :value 16)

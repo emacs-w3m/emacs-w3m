@@ -1,6 +1,6 @@
 ;;; w3m-namazu.el --- The add-on program to search files with Namazu.
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -110,7 +110,7 @@
 		  :format "%v%i\n" :indent 8
 		  (directory :format "Index directory: %v\n" :size 0)))))
   :set (lambda (symbol value)
-	 (set-default symbol value)
+	 (custom-set-default symbol value)
 	 (put 'w3m-namazu-default-index 'custom-type
 	      (eval w3m-namazu-default-index-customize-spec))))
 

@@ -282,9 +282,9 @@ The value of `w3m-user-agent' is used for the field body."
 	       (case-fold-search t))
 	   (prog1
 	       (setq value (if (string-match "\\`japan" value) "Japanese"))
-	     (set-default symbol value))))
+	     (custom-set-default symbol value))))
   :set (lambda (symbol value)
-	 (set-default symbol (if (equal value "Japanese") "Japanese"))))
+	 (custom-set-default symbol (if (equal value "Japanese") "Japanese"))))
 
 (defcustom w3m-command-arguments
   (if (eq w3m-type 'w3mmee) '("-o" "concurrent=0" "-F") nil)
@@ -573,8 +573,7 @@ nil which provides Lynx-like keys."
   ;; should never use CL macros like `caaaar', `when', `unless' ...
   :set (lambda (symbol value)
 	 (prog1
-	     ;; XEmacs 21.4.8 doesn't have `custom-set-default'.
-	     (set-default symbol value)
+	     (custom-set-default symbol value)
 	   (if (or noninteractive
 		   ;; Loading w3m.elc is just in progress...
 		   (not (featurep 'w3m)))
@@ -1500,10 +1499,10 @@ does not support the ico format."
 	      (featurep 'w3m-image)
 	      (w3m-favicon-usable-p)))
   :set (lambda (symbol value)
-	 (set-default symbol (and (not noninteractive)
-				  value
-				  (featurep 'w3m-image)
-				  (w3m-favicon-usable-p))))
+	 (custom-set-default symbol (and (not noninteractive)
+					 value
+					 (featurep 'w3m-image)
+					 (w3m-favicon-usable-p))))
   :group 'w3m
   :type 'boolean)
 
@@ -1513,7 +1512,7 @@ If it is nil, also the favicon won't be shown in the mode-line even if
 `w3m-use-favicon' is non-nil."
   :set (lambda (symbol value)
 	 (prog1
-	     (set-default symbol value)
+	     (custom-set-default symbol value)
 	   (if (and (not noninteractive)
 		    ;; Make sure it is not the first time.
 		    (featurep 'w3m)
@@ -1609,9 +1608,9 @@ be a larger integer than 1."
   :group 'w3m
   :type '(integer :size 0)
   :set (lambda (symbol value)
-	 (set-default symbol (if (and (integerp value) (> value 1))
-				 value
-			       4))))
+	 (custom-set-default symbol (if (and (integerp value) (> value 1))
+					value
+				      4))))
 
 (defcustom w3m-show-error-information t
   "*Non-nil means show an error information as a web page.
@@ -9484,10 +9483,16 @@ passed to the `w3m-quit' function (which see)."
 
 
 ;;; w3m-minor-mode
-(defvar w3m-goto-article-function nil
+(defcustom w3m-goto-article-function nil
   "Function to visit an article pointed by a given URL.
-A function set to this variable must accept an URL, and must return
-non-nil when an article pointed by the URL is found.")
+Normally, this is used only when you follow a link in an html article.
+A function set to this variable must accept an URL, and must return a
+non-nil value when an article pointed by the URL is found.  Therefore,
+it is better to use `(lambda (url) (browse-url url) t)' rather than to
+use just `browse-url', for example."
+  :group 'w3m
+  :type '(radio (const :tag "Use emacs-w3m" nil)
+		(function :value (lambda (url) (browse-url url) t))))
 
 (defun w3m-safe-view-this-url ()
   "View the URL of the link under point.

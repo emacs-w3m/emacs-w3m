@@ -703,7 +703,7 @@ It has no effect if your XEmacs does not support the gutter items."
 	 (prog2
 	     (or (boundp 'gutter-buffers-tab-enabled)
 		 (setq value nil))
-	     (set-default symbol value)
+	     (custom-set-default symbol value)
 	   (if value
 	       (add-hook 'w3m-display-functions 'w3m-update-tab-in-gutter)
 	     (remove-hook 'w3m-display-functions 'w3m-update-tab-in-gutter))
