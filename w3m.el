@@ -9484,10 +9484,10 @@ passed to the `w3m-quit' function (which see)."
 
 ;;; w3m-minor-mode
 (defcustom w3m-goto-article-function nil
-  "Function to visit an article pointed by a given URL.
+  "Function used to visit an article pointed to by a given URL.
 Normally, this is used only when you follow a link in an html article.
-A function set to this variable must accept an URL, and must return a
-non-nil value when an article pointed by the URL is found.  Therefore,
+A function set to this variable must accept a URL and must return a
+non-nil value when an article pointed to by the URL is found.  So,
 it is better to use `(lambda (url) (browse-url url) t)' rather than to
 use just `browse-url', for example."
   :group 'w3m
