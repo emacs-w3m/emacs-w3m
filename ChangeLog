@@ -1,6 +1,8 @@
 2007-07-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-article-function): Use defcustom; doc fix.
+	(w3m-safe-view-this-url): Use functionp instead of fboundp to check the
+	value of w3m-goto-article-function.
 
 	* w3m-favicon.el, w3m-namazu.el, w3m-perldoc.el, w3m-xmas.el, w3m.el:
 	Use custom-set-default instead of set-default in defcustom forms.

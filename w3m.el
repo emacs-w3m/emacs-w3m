@@ -9514,7 +9514,7 @@ the `w3m-mode', otherwise use an existing emacs-w3m buffer."
   (let ((w3m-pop-up-windows nil)
 	(url (w3m-url-valid (w3m-anchor))))
     (cond
-     (url (or (when (fboundp w3m-goto-article-function)
+     (url (or (when (functionp w3m-goto-article-function)
 		(funcall w3m-goto-article-function url))
 	      (if (and w3m-make-new-session
 		       (not (eq major-mode 'w3m-mode)))
