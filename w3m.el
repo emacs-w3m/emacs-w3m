@@ -9486,13 +9486,14 @@ passed to the `w3m-quit' function (which see)."
 (defcustom w3m-goto-article-function nil
   "Function used to visit an article pointed to by a given URL.
 Normally, this is used only when you follow a link in an html article.
-A function set to this variable must accept a URL and must return a
-non-nil value when an article pointed to by the URL is found.  So,
-it is better to use `(lambda (url) (browse-url url) t)' rather than to
-use just `browse-url', for example."
+A function set to this variable takes one argument URL.
+
+If the function throws nil, that means the function failed in fetching
+URL, to the catch tag `success', the default function tries to fetch
+URL again.  See `gnus-summary-refer-shimbun-article' in nnshimbun.el."
   :group 'w3m
   :type '(radio (const :tag "Use emacs-w3m" nil)
-		(function :value (lambda (url) (browse-url url) t))))
+		(function :value browse-url)))
 
 (defun w3m-safe-view-this-url ()
   "View the URL of the link under point.
@@ -9514,8 +9515,10 @@ the `w3m-mode', otherwise use an existing emacs-w3m buffer."
   (let ((w3m-pop-up-windows nil)
 	(url (w3m-url-valid (w3m-anchor))))
     (cond
-     (url (or (when (functionp w3m-goto-article-function)
-		(funcall w3m-goto-article-function url))
+     (url (or (and (functionp w3m-goto-article-function)
+		   (catch 'success
+		     (funcall w3m-goto-article-function url)
+		     t))
 	      (if (and w3m-make-new-session
 		       (not (eq major-mode 'w3m-mode)))
 		  (w3m-goto-url-new-session url)

@@ -1,3 +1,11 @@
+2007-07-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-article-function): Change the default function into
+	browse-url; doc fix.
+	(w3m-safe-view-this-url): Catch a signal from function which is set to
+	w3m-goto-article-function, and don't run the default function if it is
+	nil.
+
 2007-07-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-article-function): Use defcustom; doc fix.
