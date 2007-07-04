@@ -1,3 +1,9 @@
+2007-07-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnshimbun.el (gnus-summary-refer-shimbun-article): Throw nil to the
+	tag `success', that `w3m-safe-view-this-url' catches, if it failed in
+	fetching url.
+
 2007-07-01  Takashi Hiromatsu  <matsuan@ca2.so-net.ne.jp>
 
 	* sb-sourceforge-jp.el (shimbun-sourceforge-jp-mailing-lists): Replace

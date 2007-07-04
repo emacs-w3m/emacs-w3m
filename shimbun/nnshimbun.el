@@ -875,12 +875,14 @@ Other files in the directory are also deleted."
   (interactive "sURL: ")
   (let ((method (gnus-find-method-for-group gnus-newsgroup-name))
 	(header))
-    (and (eq 'nnshimbun (car method))
-	 (nnshimbun-possibly-change-group nil (nth 1 method))
-	 (setq header (nnshimbun-search-xref
-		       (gnus-group-short-name gnus-newsgroup-name) url))
-	 (with-current-buffer gnus-summary-buffer
-	   (gnus-summary-refer-article (shimbun-header-id header))))))
+    (throw
+     'success
+     (and (eq 'nnshimbun (car method))
+	  (nnshimbun-possibly-change-group nil (nth 1 method))
+	  (setq header (nnshimbun-search-xref
+			(gnus-group-short-name gnus-newsgroup-name) url))
+	  (with-current-buffer gnus-summary-buffer
+	    (gnus-summary-refer-article (shimbun-header-id header)))))))
 
 (defun nnshimbun-setup-article-mode ()
   (set (make-local-variable 'w3m-goto-article-function)
