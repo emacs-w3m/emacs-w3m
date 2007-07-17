@@ -380,7 +380,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 		  :w3m-form-action (plist-get properties 'w3m-action))))
 	  (overlay-put (widget-get w :button-overlay) 'evaporate t))
 	(add-text-properties start end properties))
-    (w3m-add-face-property start end 'w3m-form)))
+    (w3m-add-text-properties start end (append '(face w3m-form) properties))))
 
 (defun w3m-setup-widget-faces ()
   (make-local-variable 'widget-button-face)

@@ -1,3 +1,10 @@
+2007-07-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-form.el (w3m-form-make-button): Make it work.
+
+	* w3m-ems.el (w3m-form-make-button): Work when w3m-form-use-fancy-faces
+	is nil.
+
 2007-07-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-article-function): Change the default function into

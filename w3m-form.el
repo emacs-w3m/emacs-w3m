@@ -433,8 +433,9 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
 (eval-and-compile
   (unless (fboundp 'w3m-form-make-button)
     (defun w3m-form-make-button (start end properties)
-      "Make button on the region from START to END."
-      (w3m-add-face-property start end 'w3m-form))))
+      "Make button on the region from START to END with PROPERTIES."
+      (w3m-add-text-properties start end
+			       (append '(face w3m-form) properties)))))
 
 ;;; w3mmee
 ;;
