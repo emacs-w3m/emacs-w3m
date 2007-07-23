@@ -1,3 +1,9 @@
+2007-07-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-session.el (w3m-session-select): Use read-key-sequence rather
+	than read-event or next-command-event in order to enable it to read
+	arrow keys in tty.
+
 2007-07-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-form.el (w3m-form-make-button): Make it work.
