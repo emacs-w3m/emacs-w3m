@@ -79,8 +79,10 @@
   :type '(integer :size 0))
 
 (defface w3m-session-select
-  `((((class color) (type tty))
+  `((((class color) (background light) (type tty))
      (:foreground "black"))
+    (((class color) (background dark) (type tty))
+     (:foreground "cyan"))
     (((class color) (background light))
      (:foreground "dark blue"))
     (((class color) (background dark))
@@ -92,8 +94,10 @@
 (put 'w3m-session-select-face 'face-alias 'w3m-session-select)
 
 (defface w3m-session-selected
-  `((((class color) (type tty))
-     (:foreground "blue"))
+  `((((class color) (background light) (type tty))
+     (:foreground "blue" :bold t :underline t))
+    (((class color) (background dark) (type tty))
+     (:foreground "cyan" :bold t :underline t))
     (((class color) (background light))
      (:foreground "dark blue" :bold t :underline t))
     (((class color) (background dark))
