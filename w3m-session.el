@@ -302,14 +302,10 @@
 	    (while (null c)
 	      (set-buffer-modified-p nil)
 	      (setq c (w3m-static-cond
-		       ((and (fboundp 'next-command-event)
-			     (fboundp 'event-key))
-			(event-key (next-command-event nil minimsg)))
-		       ((fboundp 'read-event)
-			(read-event minimsg))
+		       ((fboundp 'event-key)
+			(event-key (aref (read-key-sequence minimsg) 0)))
 		       (t
-			(message minimsg)
-			(read-char-exclusive))))
+			(aref (read-key-sequence minimsg) 0))))
 	      (cond
 	       ((memq c '(?q ?Q ?  space))
 		(setq num-or-sym 'exit))
