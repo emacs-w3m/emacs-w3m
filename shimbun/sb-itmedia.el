@@ -53,7 +53,17 @@
        (lambda (group)
 	 (list (concat "+D." group) group))
        '("plusd" "mobile" "pcupdate" "lifestyle" "games" "docomo" "au_kddi"
-	 "vodafone" "shopping"))))
+	 "vodafone" "shopping"))
+    ,@(mapcar
+       (lambda (def)
+	 (list (concat "+D.lifestyle.column." (car def))
+	       nil (car def) (cdr def)))
+       '(("asakura" . "麻倉怜士")
+	 ("takemura" . "竹村譲")
+	 ("kodera" . "小寺信良")
+	 ("honda" . "本田雅一")
+	 ("nishi" . "西正")
+	 ("kobayashi" . "こばやしゆたか")))))
 
 (defvar shimbun-itmedia-x-face-alist
   '(("\\+D" . "X-Face: #Ur~tK`JhZFFHPEVGKEi`MS{55^~&^0KUuZ;]-@WQ[8\
@@ -67,37 +77,55 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
   (mapcar 'car shimbun-itmedia-group-alist))
 
 (luna-define-method shimbun-from-address ((shimbun shimbun-itmedia))
-  (format "ITmedia (%s)" (shimbun-current-group shimbun)))
+  (let ((group (shimbun-current-group-internal shimbun)))
+    (format "ITmedia (%s)"
+	    (or (nth 3 (assoc group shimbun-itmedia-group-alist)) group))))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-itmedia))
-  (format "http://rss.itmedia.co.jp/rss/2.0/%s.xml"
-	  (nth 1 (assoc (shimbun-current-group shimbun)
-			shimbun-itmedia-group-alist))))
+  (let* ((group (shimbun-current-group-internal shimbun))
+	 (name (nth 1 (assoc group shimbun-itmedia-group-alist))))
+    (if name
+	(format "http://rss.itmedia.co.jp/rss/2.0/%s.xml" name)
+      (format "http://plusd.itmedia.co.jp/lifestyle/column/%s.html"
+	      (nth 2 (assoc group shimbun-itmedia-group-alist))))))
 
-(defun shimbun-itmedia-anchordesk-get-headers (shimbun)
-  (let ((case-fold-search t)
-	(base (shimbun-index-url shimbun))
-	headers)
-    (goto-char (point-min))
-    (while (re-search-forward "<a href=\"\\(/anchordesk/articles/\
-\\([0-9][0-9]\\)\\([01][0-9]\\)/\\([0-3][0-9]\\)/news[0-9][0-9][0-9].html\\)\">"
-			      nil t)
-      (let ((url (shimbun-expand-url (match-string 1) base))
-	    (date (shimbun-make-date-string
-		   (+ 2000 (string-to-number (match-string 2)))
-		   (string-to-number (match-string 3))
-		   (string-to-number (match-string 4)))))
+(luna-define-method shimbun-headers :around ((shimbun shimbun-itmedia)
+					     &optional range)
+  (if (string-match "\\.xml\\'" (shimbun-index-url shimbun))
+      ;; Use the function defined in sb-rss.el.
+      (luna-call-next-method)
+    ;; Use the default function defined in shimbun.el.
+    (funcall (intern "shimbun-headers"
+		     (luna-class-obarray (luna-find-class 'shimbun)))
+	     shimbun range)))
+
+(luna-define-method shimbun-get-headers :around ((shimbun shimbun-itmedia)
+						 &optional range)
+  (if (string-match "\\.xml\\'" (shimbun-index-url shimbun))
+      (luna-call-next-method)
+    (let ((group (nth 2 (assoc (shimbun-current-group-internal shimbun)
+			       shimbun-itmedia-group-alist)))
+	  (from (shimbun-from-address shimbun))
+	  headers)
+      (goto-char (point-min))
+      (while (re-search-forward "\
+<a[\t\n ]+href=\"\\(/lifestyle/articles/\\([0-9][0-9]\\)\\([01][0-9]\\)/\
+\\([0-3][0-9]\\)/news\\([0-9]+\\)\\.html\\)\"[\t\n ]*>[\t\n ]*\\([^<]+\\)"
+				nil t)
 	(push (shimbun-create-header
-	       0
-	       (buffer-substring (point)
-				 (if (search-forward "</a>" (point-at-eol) t)
-				     (match-beginning 0)
-				   (point-at-eol)))
-	       (shimbun-from-address shimbun) date
-	       (shimbun-rss-build-message-id shimbun url) "" 0 0
-	       url)
-	      headers)))
-    (shimbun-sort-headers headers)))
+	       0 (match-string 6) from
+	       (shimbun-make-date-string
+		(+ (string-to-number (match-string 2)) 2000)
+		(string-to-number (match-string 3))
+		(string-to-number (match-string 4)))
+	       (concat
+		"<20" (match-string 2) (match-string 3) (match-string 4)
+		"." (match-string 5) "." group
+		".column.lifestyle@itmedia.shimbun.namazu.org>")
+	       "" 0 0
+	       (concat "http://plusd.itmedia.co.jp" (match-string 1)))
+	      headers))
+      headers)))
 
 (luna-define-method shimbun-multi-next-url ((shimbun shimbun-itmedia)
 					    header url)
@@ -130,9 +158,14 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
   (prog1
       (let ((case-fold-search t) (start))
 	(goto-char (point-min))
-	(when (and (search-forward "<!--BODY-->" nil t)
-		   (setq start (match-end 0))
-		   (re-search-forward "<!--BODY ?END-->" nil t))
+	(when (and (re-search-forward "\
+\\(<h[0-9]>[^<]+</h[0-9]>[^<]*\\(\\(?:<[^>h][^>]*>[^<]*\\)*\\)\\)?<!--BODY-->"
+				      nil t)
+		   (progn
+		     (if (setq start (match-beginning 1))
+			 (delete-region (match-beginning 2) (match-end 2))
+		       (setq start (match-end 0)))
+		     (re-search-forward "<!--BODY ?END-->" nil t)))
 	  (delete-region (match-beginning 0) (point-max))
 	  (delete-region (point-min) start)
 	  ;; Remove anchors to both the next page and the previous page.

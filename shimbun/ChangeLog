@@ -1,3 +1,13 @@
+2007-07-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-itmedia.el (shimbun-itmedia-group-alist): Add asakura, takemura,
+	kodera, nishi, kobayashi groups in the +D.lifestyle.column hierarchy.
+	(shimbun-from-address): Use real names for those groups.
+	(shimbun-headers): Use the default function defined in shimbun.el, not
+	in sb-rss.el, for non-rss indices.
+	(shimbun-get-headers): Use a conventional way to parse non-rss indices.
+	(shimbun-clear-contents): Don't strip introductions.
+
 2007-07-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnshimbun.el (gnus-summary-refer-shimbun-article): Throw nil to the
