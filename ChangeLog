@@ -1,3 +1,8 @@
+2007-07-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-relationship-estimate-rules): Make Google rule support
+	images.
+
 2007-07-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-session.el (w3m-session-selec, w3m-session-selected): Add spec

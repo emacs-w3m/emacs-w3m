@@ -1837,7 +1837,8 @@ Here are some predefined functions which can be used for those ways:
 
 (defcustom w3m-relationship-estimate-rules
   `((w3m-relationship-simple-estimate
-     "\\`http://\\(?:www\\|blogsearch\\|groups\\|news\\)\\.google\\.[^/]+/\\(?:\\(?:blog\\|code\\)?search\\|groups\\|news\\)"
+     "\\`http://\\(?:www\\|blogsearch\\|groups\\|news\\|images\\)\
+\\.google\\.[^/]+/\\(?:\\(?:blog\\|code\\)?search\\|groups\\|news\\|images\\)"
      ,(concat "<a[^>]+?href=" w3m-html-string-regexp
 	      "><img src=[^>]*nav_next\\.gif")
      ,(concat "<a[^>]+?href=" w3m-html-string-regexp
