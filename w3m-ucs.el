@@ -1,6 +1,6 @@
 ;;; w3m-ucs.el --- CCL programs to process Unicode.
 
-;; Copyright (C) 2001, 2005 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2005, 2007 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
@@ -40,6 +40,7 @@
 (eval-when-compile
   (if (featurep 'xemacs)
       (let ((mucs-ignore-version-incompatibilities t))
+	(defvar font-ccl-encoder-alist nil)
 	(require 'un-define))))
 
 (require 'un-define)

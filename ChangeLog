@@ -1,3 +1,7 @@
+2007-07-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-ucs.el (font-ccl-encoder-alist): Bind it for XEmacs 21.5.
+
 2007-07-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-relationship-estimate-rules): Make Google rule support
