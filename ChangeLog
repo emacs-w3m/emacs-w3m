@@ -1,3 +1,17 @@
+2007-07-30  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-form.el: Changes to download contents after submitting form.
+	(w3m-form-download): New variable.
+	(w3m-fontify-textareas, w3m-form-parse-and-fontify): Combine the above
+	variable into expressions which represent form actions.
+	(w3m-form-submit): Accept and optional argument `download'.
+
+	* w3m.el: Changes to download contents after submitting form.
+	(w3m-download): Accept and optional argument `post-data'.
+	(w3m-download-this-url): `w3m-form-download' is binded locally.
+	(w3m-view-this-url): Ditto.
+	(w3m-submit-form): Ditto.
+
 2007-07-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-ucs.el (font-ccl-encoder-alist): Bind it for XEmacs 21.5.
@@ -9,7 +23,7 @@
 
 2007-07-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m-session.el (w3m-session-selec, w3m-session-selected): Add spec
+	* w3m-session.el (w3m-session-select, w3m-session-selected): Add spec
 	for dark tty.
 	(w3m-session-select): Use read-key-sequence rather than read-event or
 	next-command-event in order to enable it to read arrow keys in tty.

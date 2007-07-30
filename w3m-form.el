@@ -155,6 +155,10 @@ Files to save text are stored in the directory specified by the
   "Specify non-nil value to create a new session after sending form.
 It is useful to bind this variable with `let', but do not set it globally.")
 
+(defvar w3m-form-download nil
+  "Specify non-nil value to download contents after sending form.
+It is useful to bind this variable with `let', but do not set it globally.")
+
 ;;; w3m-form structure:
 
 (defsubst w3m-form-normalize-action (action url)
@@ -565,7 +569,8 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
 		     w3m-action (w3m-form-input-textarea ,form ,hseq)
 		     w3m-submit (w3m-form-submit ,form ,id ,name
 						 (w3m-form-get ,form ,id)
-						 w3m-form-new-session)
+						 w3m-form-new-session
+						 w3m-form-download)
 		     w3m-form-hseq ,hseq
 		     w3m-anchor-sequence ,abs-hseq
 		     w3m-form-id ,id
@@ -706,10 +711,12 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		 `(w3m-form-field-id
 		   ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
 		   w3m-action (w3m-form-submit ,form ,id ,name ,value
-					       w3m-form-new-session)
+					       w3m-form-new-session
+					       w3m-form-download)
 		   w3m-submit (w3m-form-submit ,form ,id ,name
 					       (w3m-form-get ,form ,id)
-					       w3m-form-new-session)
+					       w3m-form-new-session
+					       w3m-form-download)
 		   w3m-anchor-sequence ,abs-hseq))))
 	     ((string= type "reset")
 	      (w3m-form-make-button
@@ -745,7 +752,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		 w3m-action (w3m-form-input-textarea ,form ,hseq)
 		 w3m-submit (w3m-form-submit ,form ,id ,name
 					     (w3m-form-get ,form ,id)
-					     w3m-form-new-session)
+					     w3m-form-new-session
+					     w3m-form-download)
 		 w3m-textarea-rows ,rows
 		 w3m-form-hseq ,hseq
 		 w3m-anchor-sequence ,abs-hseq
@@ -768,7 +776,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		   w3m-action (w3m-form-input-select ,form ,id ,name)
 		   w3m-submit (w3m-form-submit ,form ,id ,name
 					       (w3m-form-get ,form ,id)
-					       w3m-form-new-session)
+					       w3m-form-new-session
+					       w3m-form-download)
 		   w3m-anchor-sequence ,abs-hseq))))
 	     ((string= type "password")
 	      (w3m-add-face-property start end 'w3m-form)
@@ -779,7 +788,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		 w3m-action (w3m-form-input-password ,form ,id ,name)
 		 w3m-submit (w3m-form-submit ,form ,id ,name
 					     (w3m-form-get ,form ,id)
-					     w3m-form-new-session)
+					     w3m-form-new-session
+					     w3m-form-download)
 		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "checkbox")
 	      (let ((cvalue (w3m-form-get form id)))
@@ -795,7 +805,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		 w3m-action (w3m-form-input-checkbox ,form ,id ,name ,value)
 		 w3m-submit (w3m-form-submit ,form ,id ,name
 					     (w3m-form-get ,form ,id)
-					     w3m-form-new-session)
+					     w3m-form-new-session
+					     w3m-form-download)
 		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "radio")
 	      ;; Radio button input, one name has one value
@@ -809,7 +820,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		 w3m-action (w3m-form-input-radio ,form ,id ,name ,value)
 		 w3m-submit (w3m-form-submit ,form ,id ,name
 					     (w3m-form-get-by-name ,form ,name)
-					     w3m-form-new-session)
+					     w3m-form-new-session
+					     w3m-form-download)
 		 w3m-anchor-sequence ,abs-hseq)))
 	     ((string= type "file")
 	      (w3m-add-face-property start end 'w3m-form)
@@ -820,7 +832,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		 w3m-action (w3m-form-input-file ,form ,id ,name ,value)
 		 w3m-submit (w3m-form-submit ,form ,id ,name
 					     (w3m-form-get ,form ,id)
-					     w3m-form-new-session)
+					     w3m-form-new-session
+					     w3m-form-download)
 		 w3m-anchor-sequence ,abs-hseq)))
 	     (t
 	      (w3m-form-put form
@@ -836,7 +849,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					    ,width ,maxlength ,value)
 		 w3m-submit (w3m-form-submit ,form ,id ,name
 					     (w3m-form-get ,form ,id)
-					     w3m-form-new-session)
+					     w3m-form-new-session
+					     w3m-form-download)
 		 w3m-anchor-sequence ,abs-hseq)))))))))
     ;; Process <internal> tag.
     (when (search-forward "<internal>" nil t)
@@ -1733,7 +1747,7 @@ textarea")))
 	  (setq files (cons file files))))
       files)))
 
-(defun w3m-form-submit (form &optional id name value new-session)
+(defun w3m-form-submit (form &optional id name value new-session download)
   (if (w3m-anchor (point))
       ;; cf SA17565
       (w3m-goto-url (w3m-anchor (point)))
@@ -1758,16 +1772,22 @@ textarea")))
 		 ;; we use the `post' method according to the proposal
 		 ;; of RFC2070.
 		 (eq 'multipart/form-data (w3m-form-enctype form)))
-	     (funcall (if new-session
-			  'w3m-goto-url-new-session
-			'w3m-goto-url)
-		      url 'reload nil
-		      (w3m-form-make-form-data form)
-		      w3m-current-url))
+	     (if download 
+		 (funcall 'w3m-download
+			  url nil nil nil
+			  (w3m-form-make-form-data form))
+	       (funcall (if new-session
+			    'w3m-goto-url-new-session
+			  'w3m-goto-url)
+			url 'reload nil
+			(w3m-form-make-form-data form)
+			w3m-current-url)))
 	    ((eq 'get (w3m-form-method form))
-	     (funcall (if new-session
-			  'w3m-goto-url-new-session
-			'w3m-goto-url)
+	     (funcall (if download 
+			  'w3m-download
+			(if new-session
+			    'w3m-goto-url-new-session
+			  'w3m-goto-url))
 		      (concat url "?" (w3m-form-make-form-data form))))
 	    (t
 	     (w3m-message "This form's method has not been supported: %s"

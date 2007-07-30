@@ -5251,7 +5251,7 @@ POST-DATA and REFERER will be sent to the web server with a request."
 				  file)))))))
 
 ;;;###autoload
-(defun w3m-download (url &optional filename no-cache handler)
+(defun w3m-download (url &optional filename no-cache handler post-data)
   (interactive
    (let* ((url (w3m-input-url "Download URL (default HOME): "
 			      (when (stringp w3m-current-url)
@@ -5279,7 +5279,7 @@ POST-DATA and REFERER will be sent to the web server with a request."
 	  (type (progn
 		  (w3m-clear-local-variables)
 		  (setq w3m-current-url url)
-		  (w3m-retrieve url t no-cache nil nil handler)))
+		  (w3m-retrieve url t no-cache post-data nil handler)))
 	(if type
 	    (let ((buffer-file-coding-system 'binary)
 		  (coding-system-for-write 'binary)
@@ -6109,7 +6109,8 @@ point."
 	act url)
     (cond
      ((setq act (w3m-action))
-      (let ((w3m-form-new-session new-session))
+      (let ((w3m-form-new-session new-session)
+	    (w3m-form-download nil))
 	(eval act)))
      ((setq url (w3m-url-valid (w3m-anchor)))
       (w3m-view-this-url-1 url arg new-session))
@@ -6192,7 +6193,8 @@ command instead."
     (if (and submit
 	     w3m-current-url
 	     (w3m-url-valid w3m-current-url))
-	(let ((w3m-form-new-session new-session))
+	(let ((w3m-form-new-session new-session)
+	      (w3m-form-download nil))
 	  (eval submit))
       (w3m-message "Can't submit form at this point"))))
 
@@ -6326,21 +6328,26 @@ of the url currently displayed.  The browser is defined in
 (defun w3m-download-this-url ()
   "Download the file or the page pointed to by the link under point."
   (interactive)
-  (let ((url (or (w3m-anchor) (w3m-image))))
-    (if (w3m-url-valid url)
-	(lexical-let ((pos (point-marker))
-		      (curl w3m-current-url))
-	  (w3m-process-with-null-handler
-	    (w3m-process-do
-		(success (w3m-download url nil nil handler))
-	      (and success
-		   (buffer-name (marker-buffer pos))
-		   (save-excursion
-		     (set-buffer (marker-buffer pos))
-		     (when (equal curl w3m-current-url)
-		       (goto-char pos)
-		       (w3m-refontify-anchor)))))))
-      (w3m-message "No URL at point"))))
+  (let ((url (or (w3m-anchor) (w3m-image))) act)
+    (cond
+     ((w3m-url-valid url)
+      (lexical-let ((pos (point-marker))
+		    (curl w3m-current-url))
+	(w3m-process-with-null-handler
+	  (w3m-process-do
+	      (success (w3m-download url nil nil handler))
+	    (and success
+		 (buffer-name (marker-buffer pos))
+		 (save-excursion
+		   (set-buffer (marker-buffer pos))
+		   (when (equal curl w3m-current-url)
+		     (goto-char pos)
+		     (w3m-refontify-anchor))))))))
+     ((setq act (w3m-action))
+      (let ((w3m-form-download t))
+	(eval act)))
+     (t
+      (w3m-message "No URL at point")))))
 
 (defun w3m-print-current-url ()
   "Display the current url in the echo area and put it into `kill-ring'."
