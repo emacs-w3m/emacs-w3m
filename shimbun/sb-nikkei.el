@@ -47,7 +47,7 @@
 (defvar shimbun-nikkei-group-table
   `(("top" "トップ" ,shimbun-nikkei-url
      shimbun-nikkei-get-headers-top
-     shimbun-nikkei-prepare-article-top)
+     shimbun-nikkei-prepare-article-default)
     ("main" "主要" ,(concat shimbun-nikkei-url "news/main/")
      shimbun-nikkei-get-headers-default
      shimbun-nikkei-prepare-article-default)
@@ -450,6 +450,15 @@ function used to get headers and a function used to prepare an article.")
   "<!--emacs-w3m-shimbun-nikkei-content-end-->")
 (defvar shimbun-nikkei-x-face-alist
   '(("default" . "\
+Face: iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAABGdBTUEAALGPC/xhBQAAAA9
+ QTFRF////AY8ACZYCg8p7////e1VqQQAAAAlwSFlzAAAOnAAADsQBdfaEgQAAACh0RVh0U29mdHd
+ hcmUAWFYgVmVyc2lvbiAzLjEwYSAgUmV2OiAxMi8yOS85NFhtieMAAADcSURBVCjPXZHhkcUgCIS
+ 9vAouaUDRAqKPCnT7r+lYTGLm+LffsLADIXh9RM7wKvH6p/MiG3XSdhNqExi7xMcw5ADuMfSjFqC
+ KxstR0BXoB87LUTAIFH2CZIoABNsCXwNxhrCJDcg3SL+2s6rNRIvBIuVv08GkjBIYgoZU6oHmwLR
+ tHWptOwEbfAOjEhQHTMoGCVUn2IHkV/qZYKTS2RAfIKWLg+2yJL1AmENb0jkzhLlW5AHuMWFjZB4
+ 1q+24bhrXl7IHXW8RP3Jcj+HRurxfycnn67m+/PX+j976D3rKSsvKwOwqAAAAB3RJTUUH1wgDChM
+ rIe5fHAAAAABJRU5ErkJggg==")
+    ("\\`release" . "\
 Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAWAgMAAAD7mfc/AAAABGdBTUEAALGPC/xhBQAAAAx
  QTFRFBjKeZ4rcxdHp+/z7lhoK9wAAAC90RVh0U29mdHdhcmUAWFYgVmVyc2lvbiAzLjEwYStGTG1
  hc2sgIFJldjogMTIvMjkvOTQbx6p8AAABBUlEQVR4nD3MIU/DQBwF8D8d62W9wGqalYRSREUV9xX
@@ -457,19 +466,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAWAgMAAAD7mfc/AAAABGdBTUEAALGPC/xhBQAAAAx
  uZOiZYHJoUMb5y3twhhSFnZHR2NjZz7hHIGkyiJFMP8FCILhpIiqKp+EthkqMLMQ3TUD2Y8jEyQi
  LuLFJ6wMVrjsWRgvOPYFEBqEvjSuAcwJK55uVuv7Qs7n6xzYlSWrYoNHn6YV1cJ06Gh2LvCOs5Eo
  jZ9Gph5VYg57fTN0Q/I1Gx+bDw9BZcP22ZQ8WPBKVadTs6xiKlaIaOdv70SssB7/oy7JbxPXlcqJ
- +AFOYhEr5ENrbAAAAB3RJTUUH1AQGFzot7I86fAAAAABJRU5ErkJggg==")
-    ("\\`release" . "\
-Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAATBAMAAAAkFJMsAAAABGdBTUEAALGPC/xhBQAAABJ
- QTFRFAAAAZI9jnMGYtNiv1+3U////kl1YDAAAAC90RVh0U29mdHdhcmUAWFYgVmVyc2lvbiAzLjE
- wYStGTG1hc2sgIFJldjogMTIvMjkvOTQbx6p8AAABM0lEQVR4nDVRQZKEIAwMg97DoHddnTsI3NG
- BOwj5/1c2WzvTKZJ0NZWiA/hVCsewf5mPAUAAEOAOoVFrZ7V6OrdZ+IcANVFRtNEP2UChP3LNRHW
- ugDPVB000cJzhngnoVJgLqEBtanMbe26Qb4oP4klkQJHvcwllblQEdVpGSkmzKEhSiDnmMveJkLi
- 4Y+wAsgtijmRGmknkxuNhrAJelQXJAZKoPQLRfWAoAvYI/hwu+QZIKWqfGIvH578d9bW1HZ/uyf7
- F+pcQEBfl3MrXmD7h1fXBnVqEzNemmxWoEEHDPOxpX/3xxsFUb6sz0mqrN3jl4eq1uYZDKr3WkPS
- VbK8QYMBqXNxxWMpti1fTpettwLPgTcIEEs/dxClO5xQ970ogfMGv+TL+D/UVhFBKreuH/QJ8OEG
- oiorzBAAAAAd0SU1FB9QECQYoFI75G7YAAABodEVYdENvbW1lbnQAQ1JFQVRPUjogWFYgVmVyc2l
- vbiAzLjEwYStGTG1hc2sgIFJldjogMTIvMjkvOTQKQ1JFQVRPUjogWFYgVmVyc2lvbiAzLjEwYSt
- GTG1hc2sgIFJldjogMTIvMjkvOTQKYD1XBQAAAABJRU5ErkJggg==")))
+ +AFOYhEr5ENrbAAAAB3RJTUUH1AQGFzot7I86fAAAAABJRU5ErkJggg==")))
 
 (defvar shimbun-nikkei-expiration-days 7)
 
@@ -514,7 +511,7 @@ If URL begins with `http://', FOLDER is ignored."
 	  ((string-match "\\`http://" url)
 	   url)
 	  ((string-match "\\`/" url)
-	   (concat folder (substring url 1)))
+	   (shimbun-expand-url url shimbun-nikkei-url))
 	  (t
 	   (concat folder url)))))
 
@@ -554,338 +551,93 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
   (unless headers
     (setq shimbun-nikkei-tmp-ids nil
 	  shimbun-nikkei-tmp-subjects nil))
-  (let (id subject time)
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((s0 "[\t\n ]*")
-		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"/?"
-			;; 1. url
-			"\\(\\(?:[^\">]+/\\)?"
-			"\\(?:\\(?:20[0-9][0-9][01][0-9][0-3][0-9]"
-			;; 2. serial number
-			"\\([0-9a-z]+"
-			;; 3. day
-			"\\([0-3][0-9]\\)"
-			;; 4. month
-			"\\([01][0-9]\\)"
-			;; 5. year
-			"\\(20[0-9][0-9]\\)"
-			"\\)\\)\\|\\(?:"
-			;; 6. serial number
-			"\\("
-			;; 7. year
-			"\\(20[0-9][0-9]\\)"
-			;; 8. month
-			"\\([01][0-9]\\)"
-			;; 9. day
-			"\\([0-3][0-9]\\)"
-			"[0-9a-z]+\\)\\)\\)"
-			"\\.html\\)"
-			s0 "\"[^>]*>\\(?:" s0 "<[^>]+>" s0 "\\)*" s0
-			;; 10. subject
-			"\\([^<]*\\(?:\\(?:<[^>]+>\\)?[^<]+\\)+"
-			"\\(?:<[^>]+>\\)?\\)"
-			s0 "</a>")))
-	    nil t)
-      (unless (or (member (setq id (concat
-				    "<" (downcase (if (match-beginning 2)
-						      (concat (match-string 5)
-							      (match-string 4)
-							      (match-string 3)
-							      (match-string 2))
-						    (match-string 6)))
-				    "%" group "."
-				    shimbun-nikkei-top-level-domain
-				    ">"))
-			  shimbun-nikkei-tmp-ids)
-		  (progn
-		    (save-match-data
-		      (if (string-match
-			   " ?(\\([012][0-9]:[0-5][0-9]\\)) ?\\'"
-			   (setq subject (shimbun-replace-in-string
-					  (match-string 10)
-					  "[\t\n 　]+" " ")))
-			  (setq time (match-string 1 subject)
-				subject (substring subject 0
-						   (match-beginning 0)))
-			(setq time nil)))
-		    (and (>= (length subject) 16)
-			 (member subject shimbun-nikkei-tmp-subjects))))
+  (let (next time url subject serial day month year category id)
+    (goto-char (point-min))
+    (while (re-search-forward "<span\\(?:[\t\n ]+[^>]+\\)?>\
+\[\t\n ]*(\\([012][0-9]:[0-5][0-9]\\))[\t\n ]*</span>"
+			      nil t)
+      (setq next (match-end 0)
+	    time (match-string 1))
+      (when (and (re-search-backward "<a[\t\n ]+href=\"\\([^\"]+\\)\"[^>]*>\
+\[\t\n ]*\\(?:<![^>]+>[\t\n ]*\\)*\\([^\n<]+\\)\\(?:[\t\n ]*<![^>]+>\\)*\
+\[\t\n ]*</a>"
+				     nil t)
+		 (progn
+		   (setq url (match-string 1)
+			 subject (match-string 2))
+		   (when (string-match "[\t\n ]+\\'" url)
+		     (setq url (substring url 0 (match-beginning 0))))
+		   (or (and (string-match "\
+\\(?:/20[0-9][0-9][01][0-9][0-3][0-9]\\|/index\\.aspx\\?n=\\)\
+\\(.+\\)\\([0-3][0-9]\\)\\([01][0-9]\\)\\(20[0-9][0-9]\\)" url)
+			    (prog1 t
+			      (setq serial (downcase (match-string 1 url))
+				    day (match-string 2 url)
+				    month (match-string 3 url)
+				    year (match-string 4 url))))
+		       (and (string-match "\
+\\(20[0-9][0-9]\\)\\([01][0-9]\\)\\([0-3][0-9]\\)\\([^\n\t ./=]+\\)" url)
+			    (prog1 t
+			      (setq year (match-string 1 url)
+				    month (match-string 2 url)
+				    day (match-string 3 url)
+				    serial (downcase (match-string 4 url)))))))
+		 (and (string-match "\
+\\`http://\\([^\t\n ./]+\\)\\.nikkei\\.co\\.jp/\\(?:\\([^\t\n /]+\\)/news/\\)?\
+\\|\\`/news/\\([^\t\n /]+\\)/" url)
+		      (prog1 t
+			(setq category (if (match-beginning 2)
+					   (concat (match-string 2 url) "."
+						   (match-string 1 url))
+					 (or (match-string 1 url)
+					     (match-string 3 url))))))
+		 (progn
+		   (setq id (concat "<" year month day "."
+				    (shimbun-subst-char-in-string ?  ?_ serial)
+				    "%" category "." group "."
+				    shimbun-nikkei-top-level-domain ">"))
+		   (not (or (member id shimbun-nikkei-tmp-ids)
+			    (and (>= (length subject) 16)
+				 (member subject
+					 shimbun-nikkei-tmp-subjects))))))
 	(push id shimbun-nikkei-tmp-ids)
 	(push subject shimbun-nikkei-tmp-subjects)
 	(push (shimbun-create-header
 	       0 subject shimbun-nikkei-from-address
 	       (shimbun-nikkei-make-date-string
-		(string-to-number (or (match-string 5) (match-string 7)))
-		(string-to-number (or (match-string 4) (match-string 8)))
-		(string-to-number (or (match-string 3) (match-string 9)))
+		(string-to-number year)
+		(string-to-number month)
+		(string-to-number day)
 		time)
 	       id "" 0 0
-	       (shimbun-nikkei-expand-url (match-string 1) folder))
-	      headers)))
+	       (shimbun-nikkei-expand-url url folder))
+	      headers))
+      (goto-char next))
     headers))
 
 (defun shimbun-nikkei-get-headers-top (group folder shimbun range)
   "Function used to fetch headers for the `top' group."
-  (let (id subject headers time)
-    (setq shimbun-nikkei-tmp-ids nil)
-    (setq shimbun-nikkei-tmp-subjects nil)
-    (when (re-search-forward
-	   (eval-when-compile
-	     (let ((s0 "[\t\n ]*")
-		   (s1 "[\t\n ]+"))
-	       (concat
-		"<a" s1 "href=\"/?"
-		;; 1. url
-		"\\([^\"]+/"
-		"\\(?:\\(?:20[0-9][0-9][01][0-9][0-3][0-9]"
-		;; 2. serial number
-		"\\([0-9a-z]+"
-		;; 3. day
-		"\\([0-3][0-9]\\)"
-		;; 4. month
-		"\\([01][0-9]\\)"
-		;; 5. year
-		"\\(20[0-9][0-9]\\)"
-		"\\)\\)\\|\\(?:"
-		;; 6. serial number
-		"\\("
-		;; 7. year
-		"\\(20[0-9][0-9]\\)"
-		;; 8. month
-		"\\([01][0-9]\\)"
-		;; 9. day
-		"\\([0-3][0-9]\\)"
-		"[0-9a-z]+\\)\\)\\)"
-		"\\.html\\)"
-		".+>" s0
-		"<!-+" s0 "FJZONE" s1 "START" s1 "NAME=\"MIDASHI\""
-		s0 "-+>" s0
-		;; 10. subject
-		"\\([^<]+[^\t\n ]\\)"
-		s0
-		"<!-+" s0 "FJZONE" s1 "END" s1 "NAME=\"MIDASHI\""
-		s0 "-+>\\(?:" s0 "<[^!]+>\\)*" s0
-		"<!-+" s0 "FJZONE" s1 "START" s1 "NAME=\"HONBUN\""
-		s0 "-+>[^<]+("
-		;; 11. hour:minute
-		"\\([0-2][0-9]:[0-5][0-9]\\)")))
-	   nil t)
-      (unless (or (member (setq id (concat
-				    "<" (downcase (if (match-beginning 2)
-						      (concat (match-string 5)
-							      (match-string 4)
-							      (match-string 3)
-							      (match-string 2))
-						    (match-string 6)))
-				    "%" group "."
-				    shimbun-nikkei-top-level-domain
-				    ">"))
-			  shimbun-nikkei-tmp-ids)
-		  (and (>= (length (setq subject (match-string 10))) 16)
-		       (member subject shimbun-nikkei-tmp-subjects)))
-	(push id shimbun-nikkei-tmp-ids)
-	(push subject shimbun-nikkei-tmp-subjects)
-	(push (shimbun-create-header
-	       0 subject shimbun-nikkei-from-address
-	       (shimbun-nikkei-make-date-string
-		(string-to-number (or (match-string 5) (match-string 7)))
-		(string-to-number (or (match-string 4) (match-string 8)))
-		(string-to-number (or (match-string 3) (match-string 9)))
-		(match-string 11))
-	       id "" 0 0
-	       (shimbun-nikkei-expand-url (match-string 1) folder))
-	      headers)))
-
-    (setq headers (shimbun-nikkei-get-headers-default
-		   group folder shimbun range headers))
-
-    (goto-char (point-min))
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((s0 "[\t\n 　]*")
-		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"/?"
-			;; 1. url
-			"\\(\\(?:[^\"/]+/\\)+"
-			"\\(?:\\(?:20[0-9][0-9][01][0-9][0-3][0-9]"
-			;; 2. serial number
-			"\\([0-9a-z]+"
-			;; 3. day
-			"\\([0-3][0-9]\\)"
-			;; 4. month
-			"\\([01][0-9]\\)"
-			;; 5. year
-			"\\(20[0-9][0-9]\\)"
-			"\\)\\)\\|\\(?:"
-			;; 6. serial number
-			"\\("
-			;; 7. year
-			"\\(20[0-9][0-9]\\)"
-			;; 8. month
-			"\\([01][0-9]\\)"
-			;; 9. day
-			"\\([0-3][0-9]\\)"
-			"[0-9a-z]+\\)\\)\\)"
-			"\\.html\\)"
-			s0 "\"[^>]*>" s0
-			;; 10. subject
-			"\\([^<]+\\)"
-			s0 "</a>")))
-	    nil t)
-      (setq subject (match-string 10))
-      (unless (or (member (setq id (concat
-				    "<" (shimbun-subst-char-in-string
-					 ?  ?_
-					 (downcase
-					  (if (match-beginning 2)
-					      (concat (match-string 5)
-						      (match-string 4)
-						      (match-string 3)
-						      (match-string 2))
-					    (match-string 6))))
-				    "%" group "."
-				    shimbun-nikkei-top-level-domain
-				    ">"))
-			  shimbun-nikkei-tmp-ids)
-		  (save-match-data
-		    (string-match "&gt;&gt;&nbsp;続き" subject))
-		  (progn
-		    (save-match-data
-		      (if (string-match
-			   " ?(\\([012][0-9]:[0-5][0-9]\\)) ?\\'"
-			   (setq subject (shimbun-replace-in-string
-					  subject "[\t\n 　]+" " ")))
-			  (setq time (match-string 1 subject)
-				subject (substring subject 0
-						   (match-beginning 0)))
-			(setq time nil)))
-		    (and (>= (length subject) 16)
-			 (member subject shimbun-nikkei-tmp-subjects))))
-	(push id shimbun-nikkei-tmp-ids)
-	(push subject shimbun-nikkei-tmp-subjects)
-	(push (shimbun-create-header
-	       0 subject shimbun-nikkei-from-address
-	       (shimbun-nikkei-make-date-string
-		(string-to-number (or (match-string 5) (match-string 7)))
-		(string-to-number (or (match-string 4) (match-string 8)))
-		(string-to-number (or (match-string 3) (match-string 9)))
-		time)
-	       id "" 0 0
-	       (shimbun-nikkei-expand-url (match-string 1) folder))
-	      headers)))
-
-    (goto-char (point-min))
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((s0 "[\t\n 　]*")
-		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"/?"
-			;; 1. url
-			"\\([^\"]+/[^\"/]+="
-			;; 2. serial number
-			"\\([^\"/]+"
-			;; 3. day
-			"\\([0-3][0-9]\\)"
-			;; 4. month
-			"\\([01][0-9]\\)"
-			;; 5. year
-			"\\(20[0-9][0-9]\\)"
-			"\\)\\)"
-			s0 "\"[^>]*>" s0
-			;; 6. subject
-			"\\([^<]+\\)"
-			s0 "</a>")))
-	    nil t)
-      (unless (or (member (setq id (concat "<" (shimbun-subst-char-in-string
-						?  ?_
-						(downcase (match-string 2)))
-					   "%" group "."
-					   shimbun-nikkei-top-level-domain
-					   ">"))
-			  shimbun-nikkei-tmp-ids)
-		  (progn
-		    (save-match-data
-		      (if (string-match "\
-\[\t\n 　]*(\\([012][0-9]:[0-5][0-9]\\))[\t\n 　]*\\'"
-					(setq subject (match-string 6)))
-			  (setq time (match-string 1 subject)
-				subject (substring subject 0
-						   (match-beginning 0)))
-			(setq time nil)))
-		    (and (>= (length subject) 16)
-			 (member subject shimbun-nikkei-tmp-subjects))))
-	(push id shimbun-nikkei-tmp-ids)
-	(push subject shimbun-nikkei-tmp-subjects)
-	(push (shimbun-create-header
-	       0 subject shimbun-nikkei-from-address
-	       (shimbun-nikkei-make-date-string
-		(string-to-number (match-string 5))
-		(string-to-number (match-string 4))
-		(string-to-number (match-string 3))
-		time)
-	       id "" 0 0
-	       (shimbun-nikkei-expand-url (match-string 1) folder))
-	      headers)))
-
-    (goto-char (point-min))
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((s0 "[\t\n 　]*")
-		    (s1 "[\t\n ]+"))
-		(concat
-		 "<a" s1 "href=\"/?"
-		 ;; 1. url
-		 "\\([^\"]+/[^\"/]+="
-		 ;; 2. serial number
-		 "\\("
-		 ;; 3. year
-		 "\\(20[0-9][0-9]\\)"
-		 ;; 4. month
-		 "\\([01][0-9]\\)"
-		 ;; 5. day
-		 "\\([0-3][0-9]\\)"
-		 "[^\t\n \"&]+\\)"
-		 "\\(?:&[^\t\n \">]+\\)?\\)"
-		 s0 "\"[^>]*>" s0
-		 ;; 6. subject
-		 "\\([^<]*\\(?:\\(?:<br>\\)?[^<]+\\)+\\(?:<br>\\)?\\)"
-		 s0 "</a>")))
-	    nil t)
-      (unless (or (member (setq id (concat "<" (downcase (match-string 2))
-					   "%" group "."
-					   shimbun-nikkei-top-level-domain
-					   ">"))
-			  shimbun-nikkei-tmp-ids)
-		  (progn
-		    (save-match-data
-		      (setq subject (shimbun-replace-in-string
-				     (match-string 6)
-				     "[\t\n ]*<br>[\t\n ]*" " "))
-		      (if (string-match "\
-\[\t\n 　]*(\\([012][0-9]:[0-5][0-9]\\))[\t\n 　]*\\'"
-					subject)
-			  (setq time (match-string 1 subject)
-				subject (substring subject 0
-						   (match-beginning 0)))
-			(setq time nil)))
-		    (and (>= (length subject) 16)
-			 (member subject shimbun-nikkei-tmp-subjects))))
-	(push id shimbun-nikkei-tmp-ids)
-	(push subject shimbun-nikkei-tmp-subjects)
-	(push (shimbun-create-header
-	       0 subject shimbun-nikkei-from-address
-	       (shimbun-nikkei-make-date-string
-		(string-to-number (match-string 3))
-		(string-to-number (match-string 4))
-		(string-to-number (match-string 5))
-		time)
-	       id "" 0 0
-	       (shimbun-nikkei-expand-url (match-string 1) folder))
-	      headers)))
-
-    headers))
+  (setq shimbun-nikkei-tmp-ids nil)
+  (setq shimbun-nikkei-tmp-subjects nil)
+  (let (headers)
+    ;; Get headers for the retto group.
+    (while (re-search-forward "<a[\t\n ]+href=\"/\\(news/retto/\
+\\(\\(20[0-9][0-9]\\)\\([01][0-9]\\)\\([0-3][0-9]\\)\\)\\([^.]+\\)\
+\\.html\\)\">[\t\n ]*\\([^<]+\\):[\n\t 　]*\\([^<]+\\)" nil t)
+      (push (shimbun-create-header
+	     0
+	     (concat "[" (match-string 7) "] " (match-string 8)) ;; subject
+	     shimbun-nikkei-from-address
+	     (shimbun-nikkei-make-date-string
+	      (string-to-number (match-string 3))
+	      (string-to-number (match-string 4))
+	      (string-to-number (match-string 5)))
+	     (concat "<" (match-string 2) "." (downcase (match-string 6))
+		     "%retto.top." shimbun-nikkei-top-level-domain ">")
+	     "" 0 0
+	     (shimbun-nikkei-expand-url (match-string 1) folder))
+	    headers))
+    (shimbun-nikkei-get-headers-default group folder shimbun range headers)))
 
 (defun shimbun-nikkei-get-headers-default2 (group folder shimbun range)
   "Function used to fetch headers for the tento and the zinzi groups."
@@ -1883,27 +1635,29 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 		    (s1 "[\t\n ]+"))
 		(concat "<a" s1 "href=\\\\\""
 			;; 1. url
-			"\\(\\(?:[^\"/\\]+/+\\)+"
+			"\\(/\\(?:[^\"/\\]+/+\\)+"
 			;; 2. serial number
 			"\\([^\"/\\]+"
 			;; 3. year
 			"\\(20[0-9][0-9]\\)"
 			"\\)"
 			"\\.html\\)"
-			"\\\\\">" s0
+			"\\\\\"[^>]*>" s0
 			;; 4. subject
-			"\\(\\(?:社説\\|春秋\\)[^<]*(" s0
+			"\\(\\(?:社説\\|春秋\\)[^<]*[(（]" s0
 			;; 5. month
 			"\\([01]?[0-9]\\)"
 			s0 "/" s0
 			;; 6. day
 			"\\([0-3]?[0-9]\\)"
-			s0 ")\\)"
+			s0 "[)）]\\)"
 			s0 "</a>")))
 	    nil t)
       (push (shimbun-create-header
 	     0
-	     (match-string 4)
+	     (shimbun-subst-char-in-string
+	      ?\） ?\)
+	      (shimbun-subst-char-in-string ?\（ ?\( (match-string 4)))
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
 	      (string-to-number (match-string 3))
@@ -1945,7 +1699,7 @@ Please visit <a href=\""
 </body></html>\n"))
     (goto-char (point-min))))
 
-(defun shimbun-nikkei-prepare-article-default (&rest args)
+(defun shimbun-nikkei-prepare-article-default-0 (&rest args)
   "Default function used to prepare contents of an article."
   (let (photo-end body)
     (when (re-search-forward "<table[\t\n ]+id=\"photonews" nil t)
@@ -1983,6 +1737,109 @@ Please visit <a href=\""
 	(goto-char body))
       (insert shimbun-nikkei-content-start)
       t)))
+
+(defun shimbun-nikkei-prepare-article-default (header)
+  "Default function used to prepare contents of an article."
+  (let (start end)
+    (if (or
+	 (when (re-search-forward
+		"<!-+[\t\n ]*コンテンツ枠[\t\n ]*-+>[\t\n ]*"
+		nil t)
+	   (setq start (match-end 0))
+	   (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
+<!-+[\t\n ]*//コンテンツ枠[\t\n ]*-+>[\t\n ]*"
+				  nil t)
+	       (prog1 nil (goto-char (point-min)))))
+	 (when (re-search-forward
+		"<!-+[\t\n ]*編成コンテンツ枠[\t\n ]*-+>[\t\n ]*"
+		nil t)
+	   (setq start (match-end 0))
+	   (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
+<!-+[\t\n ]*//編成コンテンツ枠[\t\n ]*-+>[\t\n ]*"
+				  nil t)
+	       (prog1 nil (goto-char (point-min)))))
+	 (when (re-search-forward "<!--photo-->[\t\n ]*" nil t)
+	   (setq start (match-end 0))
+	   (or (re-search-forward "\
+\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\\[[01]?[0-9]月[0-3]?[0-9]日[/／][^]]+\\]"
+				  nil t)
+	       (prog1 nil (goto-char (point-min)))))
+	 (when (re-search-forward "\
+<[^>]*[\t\n ]+summary=\"写真ニュース\"[^>]*>\\(?:[\t\n ]*<[^\t\n >]+>\\)*\
+\[\t\n ]*\
+\\|<!-+[\t\n ]*FJZONE[\t\n ]+START[\t\n ]+NAME[\t\n ]*\
+=[\t\n ]*\"[\t\n ]*HONBUN[\t\n ]*\"[\t\n ]*-+>"
+				  nil t)
+	   (setq start (match-end 0))
+	   (or (re-search-forward "\\(?:[\t\n ]*<[^/][^>]*>\\)*[\t\n ]*\
+<!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME[\t\n ]*\
+=[\t\n ]*\"[\t\n ]*HONBUN[\t\n ]*\"[\t\n ]*-+>"
+				  nil t)
+	       (prog1 nil (goto-char (point-min)))))
+	 (when (or (re-search-forward
+		    "<!-+[\t\n ]*特集記事大[\t\n ]*-+>[\t\n ]*"
+		    nil t)
+		   (re-search-forward "<!-+[\t\n ]*記事[\t\n ]*-+>[\t\n ]*"
+				      nil t))
+	   (setq start (match-end 0))
+	   (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
+<!-+[\t\n ]*\\(?://記事\\|特集記事フッタ\\)[\t\n ]*-+>"
+				  nil t)
+	       (prog1 nil (goto-char (point-min)))))
+	 (setq end (shimbun-nikkei-prepare-article-default-0 header))
+	 (prog1 nil (goto-char (point-min)))
+
+	 ;; Filters having a potential to mistakenly extract the body follow.
+	 (when (or (re-search-forward "\
+<a[\t\n ]+href=\"\\./\">[\t\n ]*トップ[\t\n ]*</a>[\t\n ]*"
+				      nil t)
+		   (re-search-forward "\
+<div[\t\n ]+class=\"title[^\"]*\">\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*"
+				      nil t)
+		   (re-search-forward "\
+<a[\t\n ]+href=\"\\./\">\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*</a>\
+\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*"
+				      nil t))
+	   (setq start (match-end 0))
+	   (or (re-search-forward "\
+\[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*<p\\(?:[\t\n ]+[^>]+\\)*[\t\n ]align="
+				  nil t)
+	       (prog1 nil (goto-char (point-min)))))
+	 (when (or (re-search-forward "\
+<!-+[\t\n ]*写真[\t\n ]*-+>\\(?:[\t\n ]*<[^i][^>]*>\\)*[\t\n ]*"
+				      nil t)
+		   (re-search-forward "<!-+[\t\n ]*本文[\t\n ]*-+>" nil t)
+		   (re-search-forward "<div[\t\n ]+class=[^>]+>[\t\n ]*"
+				      nil t))
+	   (setq start (match-end 0))
+	   (set-match-data nil)
+	   (while (re-search-forward "[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*\
+<!-+[\t\n ]*本文[\t\n ]*-+>"
+				     nil t))
+	   (or (match-beginning 0)
+	       (prog1 nil (goto-char (point-min))))))
+	(progn
+	  (unless end
+	    (goto-char (match-beginning 0))
+	    (insert shimbun-nikkei-content-end)
+	    (goto-char start)
+	    (insert shimbun-nikkei-content-start))
+	  t)
+      (when (and (re-search-forward "\
+<a[\t\n ]+[^>]+>[\t\n ]*＞＞記事を読む[\t\n ]*</a>"
+				    nil t)
+		 (re-search-backward "href=\"\\([^\"]+\\)"
+				     (match-beginning 0) t))
+	(let ((new (match-string 1))
+	      (old (shimbun-header-xref header)))
+	  (when (string-match "[^/]/[^/]" old)
+	    (setq new (shimbun-nikkei-expand-url
+		       new (substring old 0 (1- (match-end 0)))))
+	    (shimbun-header-set-xref header new)
+	    (erase-buffer)
+	    (shimbun-retrieve-url new t)
+	    (goto-char (point-min))
+	    (shimbun-nikkei-prepare-article-default header)))))))
 
 (defun shimbun-nikkei-prepare-article-default2 (&rest args)
   "Function used to prepare contents of an article for some groups."
@@ -2163,109 +2020,6 @@ tokushu[\t\n ]*\""
       (goto-char (match-beginning 0))
       (insert shimbun-nikkei-content-end)
       t)))
-
-(defun shimbun-nikkei-prepare-article-top (header)
-  "Function used to prepare contents of an article for the top group."
-  (let (start end)
-    (if (or
-	 (when (re-search-forward
-		"<!-+[\t\n ]*コンテンツ枠[\t\n ]*-+>[\t\n ]*"
-		nil t)
-	   (setq start (match-end 0))
-	   (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
-<!-+[\t\n ]*//コンテンツ枠[\t\n ]*-+>[\t\n ]*"
-				  nil t)
-	       (prog1 nil (goto-char (point-min)))))
-	 (when (re-search-forward
-		"<!-+[\t\n ]*編成コンテンツ枠[\t\n ]*-+>[\t\n ]*"
-		nil t)
-	   (setq start (match-end 0))
-	   (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
-<!-+[\t\n ]*//編成コンテンツ枠[\t\n ]*-+>[\t\n ]*"
-				  nil t)
-	       (prog1 nil (goto-char (point-min)))))
-	 (when (re-search-forward "<!--photo-->[\t\n ]*" nil t)
-	   (setq start (match-end 0))
-	   (or (re-search-forward "\
-\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\\[[01]?[0-9]月[0-3]?[0-9]日[/／][^]]+\\]"
-				  nil t)
-	       (prog1 nil (goto-char (point-min)))))
-	 (when (re-search-forward "\
-<[^>]*[\t\n ]+summary=\"写真ニュース\"[^>]*>\\(?:[\t\n ]*<[^\t\n >]+>\\)*\
-\[\t\n ]*\
-\\|<!-+[\t\n ]*FJZONE[\t\n ]+START[\t\n ]+NAME[\t\n ]*\
-=[\t\n ]*\"[\t\n ]*HONBUN[\t\n ]*\"[\t\n ]*-+>"
-				  nil t)
-	   (setq start (match-end 0))
-	   (or (re-search-forward "\\(?:[\t\n ]*<[^/][^>]*>\\)*[\t\n ]*\
-<!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME[\t\n ]*\
-=[\t\n ]*\"[\t\n ]*HONBUN[\t\n ]*\"[\t\n ]*-+>"
-				  nil t)
-	       (prog1 nil (goto-char (point-min)))))
-	 (when (or (re-search-forward
-		    "<!-+[\t\n ]*特集記事大[\t\n ]*-+>[\t\n ]*"
-		    nil t)
-		   (re-search-forward "<!-+[\t\n ]*記事[\t\n ]*-+>[\t\n ]*"
-				      nil t))
-	   (setq start (match-end 0))
-	   (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
-<!-+[\t\n ]*\\(?://記事\\|特集記事フッタ\\)[\t\n ]*-+>"
-				  nil t)
-	       (prog1 nil (goto-char (point-min)))))
-	 (setq end (shimbun-nikkei-prepare-article-default header))
-	 (prog1 nil (goto-char (point-min)))
-
-	 ;; Filters having a potential to mistakenly extract the body follow.
-	 (when (or (re-search-forward "\
-<a[\t\n ]+href=\"\\./\">[\t\n ]*トップ[\t\n ]*</a>[\t\n ]*"
-				      nil t)
-		   (re-search-forward "\
-<div[\t\n ]+class=\"title[^\"]*\">\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*"
-				      nil t)
-		   (re-search-forward "\
-<a[\t\n ]+href=\"\\./\">\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*</a>\
-\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*"
-				      nil t))
-	   (setq start (match-end 0))
-	   (or (re-search-forward "\
-\[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*<p\\(?:[\t\n ]+[^>]+\\)*[\t\n ]align="
-				  nil t)
-	       (prog1 nil (goto-char (point-min)))))
-	 (when (or (re-search-forward "\
-<!-+[\t\n ]*写真[\t\n ]*-+>\\(?:[\t\n ]*<[^i][^>]*>\\)*[\t\n ]*"
-				      nil t)
-		   (re-search-forward "<!-+[\t\n ]*本文[\t\n ]*-+>" nil t)
-		   (re-search-forward "<div[\t\n ]+class=[^>]+>[\t\n ]*"
-				      nil t))
-	   (setq start (match-end 0))
-	   (set-match-data nil)
-	   (while (re-search-forward "[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*\
-<!-+[\t\n ]*本文[\t\n ]*-+>"
-				     nil t))
-	   (or (match-beginning 0)
-	       (prog1 nil (goto-char (point-min))))))
-	(progn
-	  (unless end
-	    (goto-char (match-beginning 0))
-	    (insert shimbun-nikkei-content-end)
-	    (goto-char start)
-	    (insert shimbun-nikkei-content-start))
-	  t)
-      (when (and (re-search-forward "\
-<a[\t\n ]+[^>]+>[\t\n ]*＞＞記事を読む[\t\n ]*</a>"
-				    nil t)
-		 (re-search-backward "href=\"\\([^\"]+\\)"
-				     (match-beginning 0) t))
-	(let ((new (match-string 1))
-	      (old (shimbun-header-xref header)))
-	  (when (string-match "[^/]/[^/]" old)
-	    (setq new (shimbun-nikkei-expand-url
-		       new (substring old 0 (1- (match-end 0)))))
-	    (shimbun-header-set-xref header new)
-	    (erase-buffer)
-	    (shimbun-retrieve-url new t)
-	    (goto-char (point-min))
-	    (shimbun-nikkei-prepare-article-top header)))))))
 
 (provide 'sb-nikkei)
 

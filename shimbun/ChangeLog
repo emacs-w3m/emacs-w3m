@@ -1,3 +1,19 @@
+2007-08-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nikkei.el (shimbun-nikkei-group-table): Use
+	shimbun-nikkei-prepare-article-default instead of
+	shimbun-nikkei-prepare-article-top for the top group.
+	(shimbun-nikkei-x-face-alist): Update.
+	(shimbun-nikkei-expand-url): Regard url that begins with slash as
+	absolute path.
+	(shimbun-nikkei-get-headers-default, shimbun-nikkei-get-headers-top):
+	Rewrite.
+	(shimbun-nikkei-get-headers-shasetsu): Fix regexp.
+	(shimbun-nikkei-prepare-article-default-0): Rename from
+	shimbun-nikkei-prepare-article-default.
+	(shimbun-nikkei-prepare-article-default): Rename from
+	shimbun-nikkei-prepare-article-top.
+
 2007-07-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-itmedia.el (shimbun-itmedia-group-alist): Add asakura, takemura,
