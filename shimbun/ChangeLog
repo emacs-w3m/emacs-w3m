@@ -1,3 +1,15 @@
+2007-08-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nikkei.el (shimbun-nikkei-group-table): Update name and url for
+	gyosuuchi group.
+	(shimbun-nikkei-get-headers-it-default)
+	(shimbun-nikkei-get-headers-it-pc)
+	(shimbun-nikkei-get-headers-release2): Don't quit searching for headers
+	in the first index page.
+	(shimbun-nikkei-get-headers-bunkatsu2): Update regexp and base url.
+	(shimbun-nikkei-get-headers-retto, shimbun-nikkei-get-headers-newpro):
+	Update regexps.
+
 2007-08-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nikkei.el (shimbun-nikkei-group-table): Use

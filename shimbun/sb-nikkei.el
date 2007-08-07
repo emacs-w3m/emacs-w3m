@@ -195,8 +195,8 @@
      "http://markets.nikkei.co.jp/kokunai/gyoseki.cfm"
      shimbun-nikkei-get-headers-gyoseki
      shimbun-nikkei-prepare-article-default3)
-    ("gyosuuchi" "業績数値"
-     "http://markets.nikkei.co.jp/kokunai/bunkatsu3.cfm?genre=m4"
+    ("gyosuuchi" "分割・配当・業績数値"
+     "http://markets.nikkei.co.jp/kokunai/bunkatsu2.cfm?genre=m4"
      shimbun-nikkei-get-headers-bunkatsu2
      shimbun-nikkei-prepare-article-bunkatsu2)
     ("gyoseki" "海外企業業績" "http://markets.nikkei.co.jp/kaigai/gyoseki.cfm"
@@ -779,7 +779,8 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			   "%" group "."
 			   shimbun-nikkei-top-level-domain ">"))
 	  (if (shimbun-search-id shimbun id)
-	      (throw 'stop nil)
+	      (unless (zerop count)
+		(throw 'stop nil))
 	    (push (shimbun-create-header
 		   0
 		   (match-string 7)
@@ -790,8 +791,8 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 		    (string-to-number (match-string 3)))
 		   id "" 0 0
 		   (shimbun-nikkei-expand-url (match-string 1) folder))
-		  headers)
-	    (goto-char sub-end)))
+		  headers))
+	  (goto-char sub-end))
 	(if (and (or (not pages)
 		     (< (setq count (1+ count)) pages))
 		 (re-search-forward "\
@@ -843,7 +844,8 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 				?  ?_ (downcase (match-string 2)))
 			   "%" group "." shimbun-nikkei-top-level-domain ">"))
 	  (if (shimbun-search-id shimbun id)
-	      (throw 'stop nil)
+	      (unless (zerop count)
+		(throw 'stop nil))
 	    (push (shimbun-create-header
 		   0
 		   (match-string 6)
@@ -986,9 +988,9 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"bunkatsu3\\.cfm\\?genre=m4"
+		(concat "<a" s1 "href=\""
 			;; 1. url
-			"\\(&id="
+			"\\(bunkatsu[0-9]\\.cfm\\?genre=m4&id="
 			;; 2. serial number
 			"\\([^\"]+date="
 			;; 3. year
@@ -1027,7 +1029,8 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 	     (concat "<" (downcase (match-string 2)) "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
-	     (shimbun-nikkei-expand-url (match-string 1) folder))
+	     (shimbun-nikkei-expand-url
+	      (match-string 1) "http://markets.nikkei.co.jp/kokunai/"))
 	    headers))
     headers))
 
@@ -1353,12 +1356,16 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 
 (defun shimbun-nikkei-get-headers-retto (group folder shimbun range)
   "Function used to fetch headers for the retto group."
-  (when (re-search-forward "【\\([^\t\n ]+\\)】" nil t)
+  (when (re-search-forward "\
+<h[0-9][\t\n ]+class=\"retto-ctgy[^>]+>\\([^\t\n ]+\\)</h[0-9]>"
+			   nil t)
     (let ((start (match-end 0))
 	  (region (match-string 1))
 	  end next subject url serial year month day time headers)
       (while start
-	(if (re-search-forward "【\\([^\t\n ]+\\)】" nil t)
+	(if (re-search-forward "\
+<h[0-9][\t\n ]+class=\"retto-ctgy[^>]+>\\([^\t\n ]+\\)</h[0-9]>"
+			       nil t)
 	    (setq end (match-end 0)
 		  next (match-string 1))
 	  (setq end nil))
@@ -1475,7 +1482,7 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 
 (defun shimbun-nikkei-get-headers-newpro (group folder shimbun range)
   "Function used to fetch headers for the newpro group."
-  (when (re-search-forward ">[\t\n ]*● 新製品記事一覧[\t\n ]*<" nil t)
+  (when (re-search-forward ">[\t\n ]*最新新製品ニュース[\t\n ]*<" nil t)
     (narrow-to-region (point) (or (search-forward "</ul>" nil t)
 				  (point-max)))
     (goto-char (point-min))
@@ -1592,15 +1599,16 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 			     year month day id group
 			     shimbun-nikkei-top-level-domain))
 	    (if (shimbun-search-id shimbun id)
-		(throw 'stop nil)
+		(unless (zerop count)
+		  (throw 'stop nil))
 	      (push (shimbun-create-header
 		     0 subject shimbun-nikkei-from-address
 		     (shimbun-nikkei-make-date-string year month day)
 		     id "" 0 0
 		     (shimbun-nikkei-expand-url
 		      (concat "http://release.nikkei.co.jp/" url) folder))
-		    headers)
-	      (goto-char sub-end))))
+		    headers))
+	    (goto-char sub-end)))
 	(if (and (or (not pages)
 		     (< (setq count (1+ count)) pages))
 		 (progn
