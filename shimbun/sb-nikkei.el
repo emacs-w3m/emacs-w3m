@@ -195,7 +195,7 @@
      "http://markets.nikkei.co.jp/kokunai/gyoseki.cfm"
      shimbun-nikkei-get-headers-gyoseki
      shimbun-nikkei-prepare-article-default3)
-    ("gyosuuchi" "分割・配当・業績数値"
+    ("gyosuuchi" "業績数値"
      "http://markets.nikkei.co.jp/kokunai/bunkatsu2.cfm?genre=m4"
      shimbun-nikkei-get-headers-bunkatsu2
      shimbun-nikkei-prepare-article-bunkatsu2)
