@@ -927,20 +927,21 @@ shimbun group."
        (setq server nil))
      (list server group current-prefix-arg)))
   (if (and server group)
-      (progn
-	(setq group (if (mm-coding-system-p 'utf-8)
-			(mm-encode-coding-string group 'utf-8)
-		      group)
-	      server (list 'nnshimbun server))
+      (let (nname)
+	(setq server (list 'nnshimbun server)
+	      nname (gnus-group-prefixed-name
+		     (if (mm-coding-system-p 'utf-8)
+			 (mm-encode-coding-string group 'utf-8)
+		       group)
+		     server))
 	(if ephemeral
-	    (gnus-group-read-ephemeral-group (gnus-group-prefixed-name group
-								       server)
-					     server t
+	    (gnus-group-read-ephemeral-group nname server t
 					     (cons (current-buffer)
 						   (if (eq major-mode
 							   'gnus-summary-mode)
 						       'summary 'group)))
-	  (gnus-kill-ephemeral-group (gnus-group-prefixed-name group server))
+	  (when (gnus-ephemeral-group-p nname)
+	    (gnus-kill-ephemeral-group nname))
 	  (let ((gnus-level-default-subscribed
 		 (or nnshimbun-default-group-level
 		     gnus-level-default-subscribed)))
@@ -962,7 +963,6 @@ shimbun group."
     (let ((gnus-level-default-subscribed (or nnshimbun-default-group-level
 					     gnus-level-default-subscribed))
 	  (gnus-verbose 0)
-	  (utf8 (mm-coding-system-p 'utf-8))
 	  (grps (reverse (shimbun-groups (shimbun-open server))))
 	  (inhibit-read-only t)
 	  grp group)
@@ -991,11 +991,7 @@ Are you sure you want to make %d groups for nnshimbun+%s:? "
 				     (progn (forward-line 1) (point))))
 		    (gnus-group-insert-group-line-info group)
 		    (forward-line -1))
-		(gnus-group-make-group
-		 (if utf8
-		     (mm-encode-coding-string grp 'utf-8)
-		   grp)
-		 (list 'nnshimbun server)))))
+		(gnus-group-make-group grp (list 'nnshimbun server)))))
 	(message "No group is found in nnshimbun+%s:" server)))))
 
 (provide 'nnshimbun)
