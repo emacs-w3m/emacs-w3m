@@ -1,3 +1,8 @@
+2007-08-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-article-1): Replace xref with a real url that
+	ITmedia site requires for a referer.
+
 2007-08-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnshimbun.el (gnus-group-make-shimbun-group): Use encoded group name
