@@ -966,14 +966,15 @@ If OUTBUF is not specified, article is retrieved to the current buffer.")
     (when (shimbun-fetch-url shimbun url nil nil
 			     (shimbun-article-base-url shimbun header))
       (w3m-check-refresh-attribute)
-      (when (and w3m-current-refresh
-		 ;; The page may specify to refresh itself.
-		 (not (string-equal url (cdr w3m-current-refresh))))
-	(shimbun-header-set-xref header (cdr w3m-current-refresh))
-	(erase-buffer)
-	(shimbun-article-1 shimbun header))
-      (unless (string-equal url (setq real (w3m-real-url url)))
-	(shimbun-header-set-xref header real)))))
+      (if (and w3m-current-refresh
+	       ;; The page may specify to refresh itself.
+	       (not (string-equal url (cdr w3m-current-refresh))))
+	  (progn
+	    (shimbun-header-set-xref header (cdr w3m-current-refresh))
+	    (erase-buffer)
+	    (shimbun-article-1 shimbun header))
+	(unless (string-equal url (setq real (w3m-real-url url)))
+	  (shimbun-header-set-xref header real))))))
 
 (luna-define-method shimbun-article ((shimbun shimbun) header &optional outbuf)
   (when (shimbun-current-group-internal shimbun)
