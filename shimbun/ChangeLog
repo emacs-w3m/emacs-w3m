@@ -1,3 +1,7 @@
+2007-08-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-x-face-alist): Update default face.
+
 2007-08-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-article-1): Replace xref with a real url that

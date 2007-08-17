@@ -938,9 +938,16 @@ Each table is the same as the `cdr' of the element of
 \\|<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
 
 (defvar shimbun-asahi-x-face-alist
-  '(("default" . "X-Face: +Oh!C!EFfmR$+Zw{dwWW]1e_>S0rnNCA*CX|\
-bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
-7GRf9uL:ue5_=;h{V%@()={uTd@l?eXBppF%`6W%;h`#]2q+f*81n$B\n h|t")))
+  '(("default" . "\
+Face: iVBORw0KGgoAAAANSUhEUgAAAEIAAAAQBAMAAABQPLQnAAAAElBMVEX8rKjd3Nj+7utdXFr
+ ////oOTn0UMNfAAAA90lEQVQoz21SQWoDMQwUprlXWA8IZvsAd/yA2KsHLKX+/1c6cklI2EgGeTW
+ jwYxW/F2Uq0zGIcWHPAO5ut+SF7nMeyQ/Mb6OqwhnGSOE0gtjb9Q4JG33xqCYeM/mvVqUXOtY+Lp
+ 37XqbIp4BB9p/wef8IAF1BxQRRoaiIzcWQ4Vdfp2f0aiItKXRSWUxjhk1OjqR3NDYMomBkEVIdYy
+ 56Q6SbOEKlz0kQy5jZ95mYVvrQpWN0ADB9axMje/5QzAeXvsSbbQvqavxKA3QIpt655XHmOphcHo
+ YJJJOO5Kw7QiXSrh9JnAv47GmJ7tfGD7Wqrnp7e2f8AfqrGxn9j9f+QAAAABJRU5ErkJggg==")))
+;;  '(("default" . "X-Face: +Oh!C!EFfmR$+Zw{dwWW]1e_>S0rnNCA*CX|\
+;;bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
+;;7GRf9uL:ue5_=;h{V%@()={uTd@l?eXBppF%`6W%;h`#]2q+f*81n$B\n h|t")))
 
 (defvar shimbun-asahi-expiration-days 6)
 
