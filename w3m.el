@@ -1088,7 +1088,7 @@ when we implement the mailcap parser to set `w3m-content-type-alist'.")
       ("video/quicktime" "\\.mov\\'" ,video-viewer nil)
       ("application/postscript" "\\.e?ps\\'" ,ps-viewer nil)
       ("application/pdf" "\\.pdf\\'" ,pdf-viewer nil)
-      ("application/xml" "\\.xml\\'" nil "text/plain")
+      ("application/xml" "\\.xml\\'" nil w3m-detect-xml-type)
       ("application/rdf+xml" "\\.rdf\\'" nil "text/plain")
       ("application/rss+xml" "\\.rss\\'" nil "text/plain")
       ("application/xhtml+xml" nil nil "text/html")))
@@ -4630,14 +4630,23 @@ Return a list which includes:
 				   "location"
 				   "w3m-current-url"
 				   "w3m-ssl-certificate"
-				   "x-w3m-content-encoding"))
+				   "x-w3m-content-encoding"
+				   "alternates"))
 				"\\):[ \t]*"))
 		      line)
 	(push (cons (downcase (match-string 1 line))
 		    (substring line (match-end 0)))
 	      headers))))
-    (let (type charset)
-      (when (setq type (cdr (assoc "content-type" headers)))
+    (let (alt real-url type charset)
+      (when (and (setq alt (cdr (assoc "alternates" headers)))
+		 (string-match "\\`{[\t ]*\"\\(.+\\)\"" alt))
+	(setq real-url (w3m-expand-url (match-string 1 alt) url))
+	(when (string-match "{[\t ]*type[\t ]+\\([^\t }]+\\)" alt)
+	  (setq type (downcase (match-string 1 alt))))
+	(when (string-match "{[\t ]*charset[\t ]+\\([^\t }]+\\)" alt)
+	  (setq charset (downcase (match-string 1 alt)))))
+      (when (and (not type)
+		 (setq type (cdr (assoc "content-type" headers))))
 	(if (string-match ";[ \t]*charset=\"?\\([^\"]+\\)\"?" type)
 	    (setq charset (w3m-remove-redundant-spaces
 			   (match-string 1 type))
@@ -4670,7 +4679,8 @@ Return a list which includes:
 		       (assoc "x-w3m-content-encoding" headers))))
 	    (let ((v (cdr (assoc "last-modified" headers))))
 	      (and v (w3m-time-parse-string v)))
-	    (or (let ((v (cdr (assoc "location" headers))))
+	    (or real-url
+		(let ((v (cdr (assoc "location" headers))))
 		  ;; RFC2616 says that the field value of the Location
 		  ;; response-header consists of a single absolute
 		  ;; URI.  However, some broken servers return
@@ -5044,7 +5054,14 @@ It will put the retrieved contents into the current buffer.  See
 		(w3m-w3m-retrieve-1 (nth 6 attr)
 				    post-data referer no-cache
 				    (1- counter) handler)))
-	  attr)))))
+	  (if (and (eq (car attr) 406)
+		   (not (equal url (nth 6 attr))))
+	      ;; Attempt to retrieve an alternative url.
+	      (progn
+		(erase-buffer)
+		(w3m-w3m-retrieve-1 (nth 6 attr) post-data referer no-cache
+				    counter handler))
+	    attr))))))
 
 (defun w3m-about-retrieve (url &optional no-uncompress no-cache
 			       post-data referer handler)
@@ -5613,6 +5630,20 @@ specified in the `w3m-content-type-alist' variable."
      ((not filter) type)
      ; Failed.
      (t ""))))
+
+(defun w3m-detect-xml-type (url type charset)
+  "Check if the type of xml contents of URL is xhtml+xml.
+If so return \"text/html\", otherwise \"text/plain\"."
+  (with-temp-buffer
+    (w3m-retrieve url)
+    (w3m-decode-buffer url charset type)
+    (goto-char (point-min))
+    (setq case-fold-search t)
+    (if (re-search-forward
+	 "<[\t\n ]*html\\(?:\\(?:[\t\n ]+[^>]+\\)?>\\|[\t\n ]*>\\)"
+	 nil t)
+	"text/html"
+      "text/plain")))
 
 (defun w3m-create-text-page (url type charset page-buffer)
   (w3m-safe-decode-buffer url charset type)
@@ -6205,7 +6236,10 @@ command instead."
       (w3m-process-do
 	  (type (w3m-content-type url no-cache handler))
 	(when type
-	  (lexical-let ((method (nth 2 (assoc type w3m-content-type-alist))))
+	  (lexical-let ((method
+			 (or (nth 2 (assoc type w3m-content-type-alist))
+			     (nth 2 (assoc (w3m-prepare-content url type nil)
+					   w3m-content-type-alist)))))
 	    (cond
 	     ((not method)
 	      (if (w3m-url-local-p url)

@@ -1,3 +1,12 @@
+2007-08-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-detect-xml-type): New function that treats
+	application/xml looking like xhtml+xml as text/html.
+	(w3m-content-type-alist): Use it for application/xml.
+	(w3m-w3m-parse-header): Parse Alternates header for a real url.
+	(w3m-w3m-retrieve-1): Retrieve real url according to Alternates header.
+	(w3m-external-view): Treat xhtml+xml as html.
+
 2007-07-30  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m-form.el: Changes to download contents after submitting form.
