@@ -1,6 +1,6 @@
 ;;; w3m-filter.el --- filtering utility of advertisements on WEB sites.
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -51,7 +51,8 @@
      "<!-- DAC CHANNEL AD START -->" "<!-- DAC CHANNEL AD END -->")
     ("\\`http://\\(www\\|images\\|news\\|maps\\|groups\\)\\.google\\."
      w3m-filter-google)
-    ("\\`https?://\\(?:www\\.\\)?amazon\\.\\(?:com\\|co\\.\\(?:jp\\|uk\\)\\|fr\\|de\\)/"
+    ("\\`https?://\\(?:www\\.\\)?amazon\\.\
+\\(?:com\\|co\\.\\(?:jp\\|uk\\)\\|fr\\|de\\)/"
      w3m-filter-amazon)
     ("\\`http://mixi\\.jp" w3m-filter-mixi)
     ("\\`http://www\\.asahi\\.com/" w3m-filter-asahi-shimbun))
@@ -83,19 +84,25 @@
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-filter-amazon-regxp (concat
-				    "\\`\\(https?://\\(?:www\\.\\)?amazon\\."
-				    "\\(?:com\\|co\\.\\(?:jp\\|uk\\)\\|fr\\|de\\)"
-				    ;; "Joyo.com" 
-				    "\\)/"
-				    "\\(?:"
-				    "\\(?:exec/obidos\\|o\\)/ASIN"
-				    "\\|"
-				    "gp/product"
-				    "\\|"
-				    "\\(?:[^/]+/\\)?dp"
-				    "\\)"
-				    "/\\([0-9]+\\)")
+(defcustom w3m-filter-google-separator "<hr>"
+  "Field separator for Google's search results ."
+  :group 'w3m
+  :type 'string)
+
+(defcustom w3m-filter-amazon-regxp
+  (concat
+   "\\`\\(https?://\\(?:www\\.\\)?amazon\\."
+   "\\(?:com\\|co\\.\\(?:jp\\|uk\\)\\|fr\\|de\\)"
+   ;; "Joyo.com"
+   "\\)/"
+   "\\(?:"
+   "\\(?:exec/obidos\\|o\\)/ASIN"
+   "\\|"
+   "gp/product"
+   "\\|"
+   "\\(?:[^/]+/\\)?dp"
+   "\\)"
+   "/\\([0-9]+\\)")
   "*Regexp to extract ASIN number for Amazon."
   :group 'w3m
   :type '(string :size 0))
@@ -109,11 +116,9 @@
 (defun w3m-filter (url)
   "Apply filtering rule of URL against a content in this buffer."
   (save-match-data
-    (catch 'apply-filtering-rule
-      (dolist (elem w3m-filter-rules)
-	(when (string-match (car elem) url)
-	  (throw 'apply-filtering-rule
-		 (apply (cadr elem) url (cddr elem))))))))
+    (dolist (elem w3m-filter-rules)
+      (when (string-match (car elem) url)
+	(apply (cadr elem) url (cddr elem))))))
 
 (defun w3m-filter-delete-regions (url start end)
   "Delete regions surrounded with a START pattern and an END pattern."
@@ -125,6 +130,12 @@
       (delete-region p (match-end 0))
       (incf i))
     (> i 0)))
+
+(defun w3m-filter-replace-regexp (url regexp to-string)
+  "Replace all occurrences of REGEXP with TO-STRING."
+  (goto-char (point-min))
+  (while (re-search-forward regexp nil t)
+    (replace-match to-string nil nil)))
 
 ;; Filter functions:
 (defun w3m-filter-asahi-shimbun (url)
@@ -148,28 +159,28 @@
 	(case-fold-search t)
 	pos beg end)
     (when (and w3m-filter-google-use-utf8
-	       (re-search-forward
-     		"<a class=. href=\"http://\\(www\\|images\\|news\\|maps\\|groups\\)\\.google\\."
-     		nil t)
-     	       (setq pos (match-beginning 0))
-     	       (search-backward "<table" nil t)
-     	       (setq beg (match-beginning 0))
-     	       (search-forward "</table" nil t)
-     	       (set-marker endm (match-end 0))
-     	       (< pos (marker-position endm)))
+	       (re-search-forward "\
+<a class=. href=\"http://\\(www\\|images\\|news\\|maps\\|groups\\)\\.google\\."
+				  nil t)
+	       (setq pos (match-beginning 0))
+	       (search-backward "<table" nil t)
+	       (setq beg (match-beginning 0))
+	       (search-forward "</table" nil t)
+	       (set-marker endm (match-end 0))
+	       (< pos (marker-position endm)))
       (goto-char beg)
       (while (re-search-forward "[?&][io]e=\\([^&]+\\)&" endm t)
-     	(replace-match "UTF-8" nil nil nil 1))
+	(replace-match "UTF-8" nil nil nil 1))
       (setq end (marker-position endm)))
     (when (string-match "\\`http://www\\.google\\.[^/]+/search\\?" url)
       (goto-char (point-max))
       (when (and w3m-filter-google-use-ruled-line
 		 (search-backward "<div class=" end t)
 		 (search-forward "</div>" nil t))
-	(insert "<hr>"))
+	(insert w3m-filter-google-separator))
       (if w3m-filter-google-use-ruled-line
 	  (while (search-backward "<div class=" end t)
-	    (insert "<hr>"))
+	    (insert w3m-filter-google-separator))
 	(while (search-backward "<div class=" end t)
 	  (insert "<p>"))))))
 
@@ -202,12 +213,14 @@
   "Direct jump to the external diary."
   (goto-char (point-min))
   (let (newurl)
-    (while (re-search-forward "<a href=\"?view_diary\\.pl\\?url=\\([^>]+\\)>" nil t)
+    (while (re-search-forward "<a href=\"?view_diary\\.pl\\?url=\\([^>]+\\)>"
+			      nil t)
       (setq newurl (match-string 1))
       (when newurl
 	(delete-region (match-beginning 0) (match-end 0))
 	(when (string-match "&owner_id=[0-9]+\"?\\'" newurl)
 	  (setq newurl (substring newurl 0 (match-beginning 0))))
-	(insert (format "<a href=\"%s\">" (w3m-url-readable-string newurl)))))))
+	(insert (format "<a href=\"%s\">"
+			(w3m-url-readable-string newurl)))))))
 
 ;;; w3m-filter.el ends here

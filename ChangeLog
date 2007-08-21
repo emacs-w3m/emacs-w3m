@@ -1,3 +1,10 @@
+2007-08-21  Eugene Oleinik  <eo@aoizora.org>
+
+	* w3m-filter.el (w3m-filter-google-separator): New user option.
+	(w3m-filter-google): Replace hard-coded ones with it.
+	(w3m-filter): Iterate through all cases in w3m-filter-rules.
+	(w3m-filter-replace-regexp): New function.
+
 2007-08-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-detect-xml-type): New function that treats
