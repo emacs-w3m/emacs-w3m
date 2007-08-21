@@ -1,3 +1,8 @@
+2007-08-21  Eugene Oleinik  <eo@aoizora.org>
+
+	* shimbun.el (shimbun-header-insert-and-buffer-string): Make charset
+	default to UTF-8.
+
 2007-08-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-x-face-alist): Update default face.

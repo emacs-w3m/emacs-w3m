@@ -1102,10 +1102,13 @@ integer n:    Retrieve n pages of header indices.")
 ;;; Misc Functions
 (defun shimbun-header-insert-and-buffer-string (shimbun header
 							&optional charset html)
-  "Insert headers which are generated from SHIMBUN and HEADER, and
-return the contents of this buffer as an encoded string."
+  "Insert headers and footer in the current buffer and return the contents.
+SHIMBUN and HEADER specify what headers and footer are.  CHARSET, which
+defaults to \"UTF-8\", specifies the content charset and is used to encode
+the return value of this function.  A non-nil value of HTML specifies
+that the content type is text/html, otherwise text/plain."
   (unless charset
-    (setq charset "ISO-2022-JP"))
+    (setq charset "UTF-8"))
   (goto-char (point-min))
   (shimbun-header-insert shimbun header)
   (insert "Content-Type: text/" (if html "html" "plain") "; charset=" charset
