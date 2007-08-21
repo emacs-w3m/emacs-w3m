@@ -1396,6 +1396,30 @@ and tenjin, it tries to fetch the article for that day if it failed."
 広告終わり\\(?:[\t\n ]*</p>[\t\n ]*\\|\\'\\)"
 				  nil t)
 	   (delete-region start (match-end 0)))))
+     ;; Remove table tags that surround image tags.
+     (goto-char (point-min))
+     (let (end start images)
+       (while (re-search-forward "[\t\n ]*<table[\t\n ]+[^>]+>[\t\n ]*\
+\\(?:\\(?:<[^>]+>[\t\n ]*\\)*<img[\t\n ]+[^>]+>[^<]+\\)+\
+\\(?:<[^>]+>[\t\n ]*\\)*</table>[\t\n ]*"
+				 nil t)
+	 (setq images nil
+	       end (match-end 0))
+	 (goto-char (setq start (match-beginning 0)))
+	 (while (re-search-forward
+		 "\\(<img[\t\n ]+[^>]+>\\)[\t\n ]*\\([^<]+\\)"
+		 end t)
+	   (skip-chars-backward "\t\n ")
+	   (when (> (point) (match-beginning 2))
+	     (push (concat (match-string 1) "<br>"
+			   (buffer-substring (match-beginning 2) (point)))
+		   images)))
+	 (when (setq images (nreverse images))
+	   (delete-region start end)
+	   (insert "\n")
+	   (while images
+	     (insert (pop images))
+	     (insert (if images "<br>\n" "\n"))))))
      ;; Remove any other useless things.
      (shimbun-remove-tags "[\t\n ]*<form[\t\n ]+" "</form>[\t\n ]*")
      (shimbun-remove-tags "[\t\n ]*<noscript>" "</noscript>[\t\n ]*")

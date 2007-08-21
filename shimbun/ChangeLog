@@ -1,3 +1,8 @@
+2007-08-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-prepare-article): Remove table tags that
+	surround image tags.
+
 2007-08-21  Eugene Oleinik  <eo@aoizora.org>
 
 	* shimbun.el (shimbun-header-insert-and-buffer-string): Make charset
