@@ -1,3 +1,7 @@
+2007-08-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-prepare-article): Fix regexps.
+
 2007-08-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-prepare-article): Remove table tags that

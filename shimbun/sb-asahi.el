@@ -1400,15 +1400,16 @@ and tenjin, it tries to fetch the article for that day if it failed."
      (goto-char (point-min))
      (let (end start found images)
        (while (re-search-forward "[\t\n ]*<table[\t\n ]+[^>]+>[\t\n ]*\
-\\(?:\\(?:<[^>]+>[\t\n ]*\\)*<img[\t\n ]+[^>]+>[^<]+\\)+\
+\\(?:\\(?:<[^>]+>[\t\n ]*\\)*\
+<img[\t\n ]+[^>]+>[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*[^<]+\\)+\
 \\(?:<[^>]+>[\t\n ]*\\)*</table>[\t\n ]*"
 				 nil t)
 	 (setq found nil
 	       images nil
 	       end (match-end 0))
 	 (goto-char (setq start (match-beginning 0)))
-	 (while (re-search-forward
-		 "\\(<img[\t\n ]+[^>]+>\\)[\t\n ]*\\([^<]+\\)"
+	 (while (re-search-forward "\
+\\(<img[\t\n ]+[^>]+>\\)[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*\\([^<]+\\)"
 		 end t)
 	   (skip-chars-backward "\t\n ")
 	   (when (> (point) (match-beginning 2))
