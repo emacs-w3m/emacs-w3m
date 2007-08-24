@@ -7874,6 +7874,7 @@ It makes the ends of upper and lower three lines visible.  If
 					      (concat (car post-data) "\n"))
 					     (concat post-data "\n")))))))))
 	  ;; without rfc2368.el.
+	  (string-match ":\\([^?]+\\)" url)
 	  (funcall comp (match-string 1 url)))))
     (setq buffers (nreverse (buffer-list)))
     (save-current-buffer
