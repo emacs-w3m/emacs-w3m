@@ -8,7 +8,7 @@
 	http://eow.alc.co.jp/.
 
 	* w3m-filter.el (w3m-filter-rules): Add w3m-filter-alc.
-	(w3m-filter-alc): New function.
+	(w3m-filter-alc): New function. Supper `goFairWord'.
 
 2007-08-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 

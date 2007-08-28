@@ -230,7 +230,8 @@
     (when (string-match "\\`http://eow\\.alc\\.co\\.jp/\\([^/]+\\)/UTF-8/" url)
       (setq curl (match-string 0 url))
       (setq cword (match-string 1 url))
-      (setq cword (car (split-string (w3m-url-decode-string cword 'utf-8) " ")))
+      (setq cword (car (split-string (w3m-url-decode-string cword 'utf-8)
+				     " ")))
       (goto-char (point-min))
       (while (search-forward "データの転載は禁じられています" nil t)
 	(delete-region (line-beginning-position) (line-end-position))
@@ -251,20 +252,26 @@
 	(insert "<br>＊データの転載は禁じられています。")
 	;; next/previous page
 	(goto-char (point-min))
-	(while (re-search-forward "<a href='javascript:goPage(\"\\([0-9+]\\)\")'>" nil t)
+	(while (re-search-forward
+		"<a href='javascript:goPage(\"\\([0-9+]\\)\")'>"
+		nil t)
 	  (setq tmp1 (match-string 1))
 	  (delete-region (match-beginning 0) (match-end 0))
 	  (insert (format "<a href=\"%s?pg=%s\">" curl tmp1)))
 	;; wordlink
 	(goto-char (point-min))
-	(while (re-search-forward "<span class=\"wordlink\">\\([^<]+\\)</span>" nil t)
+	(while (re-search-forward
+		"<span class=\"wordlink\">\\([^<]+\\)</span>"
+		nil t)
 	  (setq tmp1 (match-string 1))
 	  (delete-region (match-beginning 0) (match-end 0))
 	  (insert (format "<a href=\"%s\">%s</a>" (format baseurl tmp1) tmp1)))
-	;; gradable
+	;; goGradable/goFairWord
 	(goto-char (point-min))
-	(while (re-search-forward "<a href='javascript:goGradable(\"\\([^\"]+\\)\")'>" nil t)
-	  (setq tmp1 (match-string 1))
+	(while (re-search-forward
+		"<a href='javascript:\\(goGradable\\|goFairWord\\)(\"\\([^\"]+\\)\")'>"
+		nil t)
+	  (setq tmp1 (match-string 2))
 	  (delete-region (match-beginning 0) (match-end 0))
 	  (insert (format "<a href=\"%s\">" (format baseurl tmp1))))
 	;; remove spacer
