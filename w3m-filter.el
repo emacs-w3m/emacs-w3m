@@ -253,7 +253,7 @@
 	;; next/previous page
 	(goto-char (point-min))
 	(while (re-search-forward
-		"<a href='javascript:goPage(\"\\([0-9+]\\)\")'>"
+		"<a href='javascript:goPage(\"\\([0-9]+\\)\")'>"
 		nil t)
 	  (setq tmp1 (match-string 1))
 	  (delete-region (match-beginning 0) (match-end 0))
