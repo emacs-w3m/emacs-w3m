@@ -1761,6 +1761,7 @@ timestamp with the `-t' option."
     ("\\`bts:" w3m-search-uri-replace "debian-bts")
     ("\\`dpkg:" w3m-search-uri-replace "debian-pkg")
     ("\\`archie:" w3m-search-uri-replace "iij-archie")
+    ("\\`alc:"  w3m-search-uri-replace "alc")    
     ("\\`urn:ietf:rfc:\\([0-9]+\\)" w3m-pattern-uri-replace
      "http://www.ietf.org/rfc/rfc\\1.txt"))
   "*Alist of regexps matching URIs, and some types of replacements.
@@ -1863,7 +1864,8 @@ Here are some predefined functions which can be used for those ways:
      nil nil)
     (w3m-relationship-oddmuse-estimate)
     (w3m-relationship-magicpoint-estimate)
-    (w3m-relationship-slashdot-estimate))
+    (w3m-relationship-slashdot-estimate)
+    (w3m-relationship-alc-estimate))
   "*Rules to estimate relationships between a retrieved page and others."
   :group 'w3m
   :type '(repeat
@@ -5786,6 +5788,35 @@ when the URL of the retrieved page matches the REGEXP."
 				   (or (match-string 2)
 				       (match-string 3)
 				       (match-string 1)))))))))))
+
+(defun w3m-relationship-alc-estimate (url)
+  ;; use filter
+  (when (string-match "\\`http://eow\\.alc\\.co\\.jp/[^/]+/UTF-8/" url)
+    (when (re-search-forward 
+	   (concat "<a href=\\\"http://eow\\.alc\\.co\\.jp/[^/]+/UTF-8/"
+		   "\\(\\?pg=[0-9]+\\)\\\">前へ</a>")
+	   nil t)
+      (setq w3m-previous-url
+	    (w3m-expand-url (match-string 1) url)))
+    (when (re-search-forward 
+	   (concat "<a href=\\\"http://eow\\.alc\\.co\\.jp/[^/]+/UTF-8/"
+		   "\\(\\?pg=[0-9]+\\)\\\">次へ</a>")
+	   nil t)
+      (setq w3m-next-url
+	    (w3m-expand-url (match-string 1) url)))
+    (unless (or w3m-previous-url w3m-next-url)
+      ;; no use filter
+      (goto-char (point-min))
+      (when (re-search-forward
+	     "<a href='javascript:goPage(\"\\([0-9+]\\)\")'>前へ</a>"
+	     nil t)
+	(setq w3m-previous-url
+	      (w3m-expand-url (format "?pg=%s" (match-string 1)) url)))
+      (when (re-search-forward
+	     "<a href='javascript:goPage(\"\\([0-9+]\\)\")'>次へ</a>"
+	     nil t)
+	(setq w3m-next-url
+	      (w3m-expand-url (format "?pg=%s" (match-string 1)) url))))))
 
 (defun w3m-relationship-search-patterns (url next previous
 					     &optional start contents)

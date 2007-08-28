@@ -59,6 +59,7 @@
       ("yahoo beta"
        "http://beta.search.yahoo.co.jp/search?p=%s&ei=UTF-8&eo=UTF-8"
        utf-8)
+      ("alc" "http://eow.alc.co.jp/%s/UTF-8/" utf-8)
       ,@(if ja
 	    '(("blog"
 	       "http://blogsearch.google.com/blogsearch?q=%s&lr=lang_ja&oe=utf-8&ie=utf-8"

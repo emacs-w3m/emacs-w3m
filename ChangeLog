@@ -1,3 +1,15 @@
+2007-08-28  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-uri-replace-alist): Add key of "alc:".
+	(w3m-relationship-estimate-rules): Add alc's rule.
+	(w3m-relationship-alc-estimate): New function.
+
+	* w3m-search.el (w3m-search-engine-alist): Add rule of
+	http://eow.alc.co.jp/.
+
+	* w3m-filter.el (w3m-filter-rules): Add w3m-filter-alc.
+	(w3m-filter-alc): New function.
+
 2007-08-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-mailto-url): Make it work even with no rfc2368.el.

@@ -2018,9 +2018,9 @@ Variables} $B;2>H(B) $B$r%+%9%?%^%$%:$9$k$3$H$K$h$C$F!"$3$N?6$kIq$$$rJQ99$9$k
 Emacs-w3m $B$N%G%U%)%k%H$G$O!"MxMQ2DG=$J$$$/$D$+$N8!:w%(%s%8%s$NC;=L7A$,$"(B
 $B$j!"$=$l$i$OJQ?t(B @code{w3m-uri-replace-alist} $B$GDj5A$5$l$F$$$^$9!#Nc$((B
 $B$P(B Google $B$K$O(B ``gg''$B!"(BGoogle Groups $BMQ$K$O(B ``ggg''$B!"(BYahoo! $B$N$?$a(B
-$B$N(B ``ya''$B!"$*$h$S(B Altavista $B$KBP$9$k(B ``al'' $B$J$I$NC;$$L>A0$G$9!#$5$i$K8!(B
-$B:w%(%s%8%s$NC;=L7A$rDI2C$9$k$K$O(B @ref{Adding New Search Engines} $B$r;2>H(B
-$B$7$F2<$5$$!#(B
+$B$N(B ``ya''$B!"(BAltavista $B$KBP$9$k(B ``al'' $B$*$h$S(B $B1Q<-O/(B on the WEB $B$N(B ``alc''
+$B$J$I$NC;$$L>A0$G$9!#$5$i$K8!:w%(%s%8%s$NC;=L7A$rDI2C$9$k$K$O(B
+ @ref{Adding New Search Engines} $B$r;2>H$7$F2<$5$$!#(B
 
 $BC;=L7A$NBe$o$j$K!"(B``google'' $B$d(B ``yahoo'' $B$N$h$&$J40A4$J%(%s%8%s$NL>A0$r!"(B
 $B%/%$%C%/%5!<%A(B URL $B$K;H$&$3$H$b$G$-$^$9!#$=$l$i$NL>A0$O!"JQ(B

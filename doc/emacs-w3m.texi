@@ -1992,9 +1992,9 @@ then hit @kbd{C-q} first, i.e. @w{@kbd{C-q @key{SPC}}}.
 The default configuration of emacs-w3m includes several prefixes you can
 use, they are defined in the @code{w3m-uri-replace-alist} variable.
 There's for example ``gg'' for Google, ``ggg'' for Google Groups, ``ya''
-for Yahoo!, ``al'' for Altavista, to name a few.  You can also add
-prefixes for the search engines you define, @xref{Adding New Search
-Engines}.
+for Yahoo!, ``al'' for Altavista, ``alc'' for Eijirou on the web to name
+a few.  You can also add prefixes for the search engines you define,
+@xref{Adding New Search Engines}.
 
 Instead of prefixes, you can also use full engine names in Quicksearch
 URLs, such as ``google'' or ``yahoo''.  These names are defined in

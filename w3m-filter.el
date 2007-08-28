@@ -55,6 +55,7 @@
 \\(?:com\\|co\\.\\(?:jp\\|uk\\)\\|fr\\|de\\)/"
      w3m-filter-amazon)
     ("\\`http://mixi\\.jp" w3m-filter-mixi)
+    ("\\`http://eow\\.alc\\.co\\.jp/[^/]+/UTF-8" w3m-filter-alc)
     ("\\`http://www\\.asahi\\.com/" w3m-filter-asahi-shimbun))
   "Rules to filter advertisements on WEB sites."
   :group 'w3m
@@ -222,5 +223,77 @@
 	  (setq newurl (substring newurl 0 (match-beginning 0))))
 	(insert (format "<a href=\"%s\">"
 			(w3m-url-readable-string newurl)))))))
+
+(defun w3m-filter-alc (url)
+  (let ((baseurl "http://eow.alc.co.jp/%s/UTF-8/")
+	curl cword beg tmp1)
+    (when (string-match "\\`http://eow\\.alc\\.co\\.jp/\\([^/]+\\)/UTF-8/" url)
+      (setq curl (match-string 0 url))
+      (setq cword (match-string 1 url))
+      (setq cword (car (split-string (w3m-url-decode-string cword 'utf-8) " ")))
+      (goto-char (point-min))
+      (while (search-forward "データの転載は禁じられています" nil t)
+	(delete-region (line-beginning-position) (line-end-position))
+	(insert "<br>"))
+      (goto-char (point-min))
+      (when (search-forward "<body" nil t)
+	(forward-line 1)
+	(insert "<h1>英辞朗 on the WEB<h1>\n")
+	(setq beg (point))
+	(when (search-forward "<!-- ▼検索文字列 -->" nil t)
+	  (forward-line 1)
+	  (delete-region beg (point)))
+	(when (search-forward "<!-- ▼ワードリンク 履歴 -->" nil t)
+	  (forward-line 1)
+	  (setq beg (point))
+	  (when (search-forward "</body>" nil t)
+	    (delete-region beg (match-beginning 0))))
+	(insert "<br>＊データの転載は禁じられています。")
+	;; next/previous page
+	(goto-char (point-min))
+	(while (re-search-forward "<a href='javascript:goPage(\"\\([0-9+]\\)\")'>" nil t)
+	  (setq tmp1 (match-string 1))
+	  (delete-region (match-beginning 0) (match-end 0))
+	  (insert (format "<a href=\"%s?pg=%s\">" curl tmp1)))
+	;; wordlink
+	(goto-char (point-min))
+	(while (re-search-forward "<span class=\"wordlink\">\\([^<]+\\)</span>" nil t)
+	  (setq tmp1 (match-string 1))
+	  (delete-region (match-beginning 0) (match-end 0))
+	  (insert (format "<a href=\"%s\">%s</a>" (format baseurl tmp1) tmp1)))
+	;; gradable
+	(goto-char (point-min))
+	(while (re-search-forward "<a href='javascript:goGradable(\"\\([^\"]+\\)\")'>" nil t)
+	  (setq tmp1 (match-string 1))
+	  (delete-region (match-beginning 0) (match-end 0))
+	  (insert (format "<a href=\"%s\">" (format baseurl tmp1))))
+	;; remove spacer
+	(goto-char (point-min))
+	(while (search-forward "img/spacer.gif" nil t)
+	  (delete-region (line-beginning-position) (line-end-position)))
+	(goto-char (point-min))
+	;; remove ワードリンク
+	(when (search-forward "alt=\"ワードリンク\"" nil t)
+	  (delete-region (line-beginning-position) (line-end-position)))
+	;; 全文を表示するは無理
+	(goto-char (point-min))
+	(while (re-search-forward
+		(concat "<br */> *⇒<strong>"
+			"<a href='javascript:goFullText(\"[^\"]+\", \"[^\"]+\")'>"
+			"全文を表示する</a>")
+		nil t)
+	  (delete-region (match-beginning 0) (match-end 0)))
+	;; Java Document write... ;_;
+	;; (while (re-search-forward
+	;; 	"<a href='javascript:goFullText(\"\\([^\"]+\\)\", \"\\([^\"]+\\)\")'>"
+	;; 	nil t)
+	;;   (setq tmp1 (match-string 1))
+	;;   (setq tmp2 (match-string 2))
+	;;   (delete-region (match-beginning 0) (match-end 0))
+	;;   ;; &dk=JE, &dk=EJ
+	;;   (insert (format "<a href=\"%s?ref=ex&exp=%s&dn=%s&dk=%s\">"
+	;; 		  curl tmp1 tmp2
+	;; 		  (if (string-match "\\Cj" cword) "JE" "EJ"))))
+	))))
 
 ;;; w3m-filter.el ends here
