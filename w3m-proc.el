@@ -645,7 +645,7 @@ Username for [^\n]*\n?: Password: ")
 	   ((and (looking-at "\\(\n?Wrong username or password\n\\)?\
 Username for \\(.*\\)\n?: ")
 		 (= (match-end 0) (point-max)))
-	    (setq w3m-process-realm (match-string 2))
+	    (setq w3m-process-realm (w3m-decode-coding-string-with-priority (match-string 2) nil))
 	    (when (or (match-beginning 1)
 		      (not (stringp w3m-process-user)))
 	      (setq w3m-process-user

@@ -1,3 +1,15 @@
+2007-08-29  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-proc.el (w3m-process-filter): Decode realm string.
+
+	* w3m.el (w3m-url-decode-string): Define latter half as a function :
+	w3m-decode-coding-string-with-priority ,and use it.
+
+	* w3m-ems.el (w3m-decode-coding-string-with-priority): New function.
+
+	* w3m-xmas.el (w3m-decode-coding-string-with-priority): Return string
+	itself unless find-coding-system is defined as built-in function.
+
 2007-08-28  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-uri-replace-alist): Add key of "alc:".

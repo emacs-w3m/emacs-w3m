@@ -165,44 +165,47 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
   "Decode the string STR which is encoded in CODING.
 If CODING is a list, look for the coding system using it as a priority
 list."
-  (if (listp coding)
-      (with-temp-buffer
-	(insert str)
-	(let* ((orig-category-list (coding-priority-list))
-	       (orig-category-systems (mapcar #'coding-category-system
-					      orig-category-list))
-	       codesys category priority-list)
-	  (unwind-protect
-	      (progn
-		(while coding
-		  (setq codesys (car coding)
-			coding (cdr coding)
-			category (or (coding-system-category codesys)
-				     (coding-system-name codesys)))
-		  (unless (or (eq (coding-system-type codesys) 'undecided)
-			      (assq category priority-list))
-		    (set-coding-category-system category codesys)
-		    (push category priority-list)))
-		(set-coding-priority-list (nreverse priority-list))
-		;; `detect-coding-region' always returns `undecided'
-		;; ignoring `priority-list' in XEmacs 21.5-b19, but
-		;; that's okay.
-		(when (consp (setq codesys (detect-coding-region
-					    (point-min) (point-max))))
-		  (setq codesys (car codesys)))
-		(decode-coding-region (point-min) (point-max)
-				      (or codesys
-					  w3m-default-coding-system
-					  w3m-coding-system
-					  'iso-2022-7bit))
-		(buffer-string))
-	    (set-coding-priority-list orig-category-list)
-	    (while orig-category-list
-	      (set-coding-category-system (car orig-category-list)
-					  (car orig-category-systems))
-	      (setq orig-category-list (cdr orig-category-list)
-		    orig-category-systems (cdr orig-category-systems))))))
-    (decode-coding-string str coding)))
+  (w3m-static-if (and (fboundp 'find-coding-system)
+		      (subrp (symbol-function 'find-coding-system)))
+      (if (listp coding)
+	  (with-temp-buffer
+	    (insert str)
+	    (let* ((orig-category-list (coding-priority-list))
+		   (orig-category-systems (mapcar #'coding-category-system
+						  orig-category-list))
+		   codesys category priority-list)
+	      (unwind-protect
+		  (progn
+		    (while coding
+		      (setq codesys (car coding)
+			    coding (cdr coding)
+			    category (or (coding-system-category codesys)
+					 (coding-system-name codesys)))
+		      (unless (or (eq (coding-system-type codesys) 'undecided)
+				  (assq category priority-list))
+			(set-coding-category-system category codesys)
+			(push category priority-list)))
+		    (set-coding-priority-list (nreverse priority-list))
+		    ;; `detect-coding-region' always returns `undecided'
+		    ;; ignoring `priority-list' in XEmacs 21.5-b19, but
+		    ;; that's okay.
+		    (when (consp (setq codesys (detect-coding-region
+						(point-min) (point-max))))
+		      (setq codesys (car codesys)))
+		    (decode-coding-region (point-min) (point-max)
+					  (or codesys
+					      w3m-default-coding-system
+					      w3m-coding-system
+					      'iso-2022-7bit))
+		    (buffer-string))
+		(set-coding-priority-list orig-category-list)
+		(while orig-category-list
+		  (set-coding-category-system (car orig-category-list)
+					      (car orig-category-systems))
+		  (setq orig-category-list (cdr orig-category-list)
+			orig-category-systems (cdr orig-category-systems))))))
+	(decode-coding-string str coding))
+    str))
 
 (when (and (not (fboundp 'w3m-ucs-to-char))
 	   (fboundp 'unicode-to-char)

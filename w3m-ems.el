@@ -1261,6 +1261,23 @@ It should be called periodically in order to spin the spinner."
 			'help-echo w3m-spinner-map-help-echo))
       image)))
 
+(defun w3m-decode-coding-string-with-priority (str coding)
+  "Decode the string STR which is encoded in CODING.
+If CODING is a list, look for the coding system using it as a priority
+list."
+  (setq str (string-make-unibyte str))
+  (when (listp coding)
+    (setq coding
+	  (with-temp-buffer
+	    (set-buffer-multibyte nil)
+	    (insert str)
+	    (w3m-detect-coding-region (point-min) (point-max) coding))))
+  (decode-coding-string str
+			(or coding
+			    w3m-default-coding-system
+			    w3m-coding-system
+			    'iso-2022-7bit)))
+
 (provide 'w3m-ems)
 
 ;;; w3m-ems.el ends here
