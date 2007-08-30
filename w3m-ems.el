@@ -73,6 +73,8 @@
   (defvar w3m-work-buffer-name)
   (defvar w3m-work-buffer-list)
   (defvar w3m-new-session-in-background)
+  (defvar w3m-default-coding-system)
+  (defvar w3m-coding-system)
   (autoload 'w3m-copy-buffer "w3m")
   (autoload 'w3m-delete-buffer "w3m")
   (autoload 'w3m-image-type "w3m")

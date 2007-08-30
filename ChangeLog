@@ -1,3 +1,16 @@
+2007-08-30  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-proc.el (top): Add the function definition of
+	`w3m-decode-coding-string-with-priority' to avoid byte-compile
+	warnings.
+
+	* w3m-ems.el (top): Add the variable definition of
+	`w3m-default-coding-system' and `w3m-coding-system' to avoid
+	byte-compile warnings.
+
+	* w3m-xmas.el (top): Add the variable definition of `w3m-coding-system'
+	to avoid byte-compile warnings.
+
 2007-08-29  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m-proc.el (w3m-process-filter): Decode realm string.

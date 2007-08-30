@@ -1,3 +1,8 @@
+2007-08-30  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* sb-tigris.el (shimbun-make-contents): Use forward-line instead of
+	next|previouse-line.
+
 2007-08-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-prepare-article): Fix regexps.

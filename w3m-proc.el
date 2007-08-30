@@ -66,6 +66,11 @@
   (defvar w3m-process-modeline-format)
   (defvar w3m-work-buffer-list))
 
+;; Silence the Emacs' byte-compiler that says ``might not be defined''.
+(eval-when-compile
+  (defun w3m-decode-coding-string-with-priority (str coding)
+    ()))
+
 (defvar w3m-process-inhibit-quit t
   "`w3m-process-sentinel' binds `inhibit-quit' according to this variable.")
 (defvar w3m-process-timeout 300
@@ -645,7 +650,8 @@ Username for [^\n]*\n?: Password: ")
 	   ((and (looking-at "\\(\n?Wrong username or password\n\\)?\
 Username for \\(.*\\)\n?: ")
 		 (= (match-end 0) (point-max)))
-	    (setq w3m-process-realm (w3m-decode-coding-string-with-priority (match-string 2) nil))
+	    (setq w3m-process-realm (w3m-decode-coding-string-with-priority
+				     (match-string 2) nil))
 	    (when (or (match-beginning 1)
 		      (not (stringp w3m-process-user)))
 	      (setq w3m-process-user
