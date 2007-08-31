@@ -695,20 +695,32 @@ otherwise works in all the emacs-w3m buffers."
 	       '(:eval (w3m-tab-line)))
 	      (w3m-use-header-line
 	       (list
-		(propertize
-		 (if w3m-use-header-line-title
-		     "Title: "
-		   "Location: ")
-		 'face (list 'w3m-header-line-location-title))
-		`(:eval
+		(if w3m-use-header-line-title
+		    (list
+		     (propertize
+		      "Title: "
+		      'face (list 'w3m-header-line-location-title))
+		     `(:eval
+		       (propertize
+			(replace-regexp-in-string "%" "%%" (w3m-current-title))
+			'face (list 'w3m-header-line-location-content)
+			'mouse-face '(highlight :foreground
+						,(face-foreground 'default))
+			'local-map (let ((map (make-sparse-keymap)))
+				     (define-key map [header-line mouse-2]
+				       'w3m-goto-url)
+				     map)
+			'help-echo "mouse-2 prompts to input URL"))
+		     ", ")
+		  "")
+		 (propertize
+		  "Location: "
+		  'face (list 'w3m-header-line-location-title))
+		 `(:eval
 		  (propertize
-		   (cond
-		    (w3m-use-header-line-title
-		     (replace-regexp-in-string "%" "%%" (w3m-current-title)))
-		    ((stringp w3m-current-url)
-		     (replace-regexp-in-string "%" "%%" w3m-current-url))
-		    (t
-		     ""))
+		   (if (stringp w3m-current-url)
+		       (replace-regexp-in-string "%" "%%" w3m-current-url)
+		     "")
 		   'face (list 'w3m-header-line-location-content)
 		   'mouse-face '(highlight :foreground
 					   ,(face-foreground 'default))

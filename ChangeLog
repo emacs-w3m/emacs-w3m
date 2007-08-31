@@ -15,8 +15,6 @@
 	(w3m-goto-url): Call `w3m-buffer-name-add-title' when display.
 	(w3m): Use `w3m-generate-new-buffer' instead of `generate-new-buffer'.
 	(w3m-use-header-line-title): New option.
-	(w3m-header-line-insert): If w3m-use-header-line-title is non-nil,
-	insert location too.
 
 	* w3m-form.el (w3m-form-set-number): Change 2'nd argument to `newname'
 	from `count'.
@@ -32,7 +30,7 @@
 	* w3m-ems.el (top): Add the variable definition of
 	`w3m-use-header-line-title' to avoid byte-compile warnings.
 	(w3m-setup-header-line): If `w3m-use-header-line-title' is not nil,
-	display title instead of URI.
+	display title and URI.
 
 2007-08-30  Hideyuki SHIRAI  <shirai@meadowy.org>
 
