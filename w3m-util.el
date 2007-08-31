@@ -61,6 +61,7 @@
   (defvar w3m-work-buffer-list)
   (defvar w3m-use-japanese-menu)
   (defvar w3m-mode-map)
+  (defvar w3m-use-title-buffer-name)
   (unless (fboundp 'select-frame-set-input-focus)
     (defalias 'select-frame-set-input-focus 'ignore)))
 
@@ -344,20 +345,49 @@ An argument of nil means kill the current buffer."
 
 (defsubst w3m-buffer-number (buffer)
   (when (and (bufferp buffer)
-	     (string-match "\\`\\*w3m\\*\\(<\\([0-9]+\\)>\\)?\\'"
+	     (string-match "\\*w3m\\*\\(<\\([0-9]+\\)>\\)?\\'"
 			   (buffer-name buffer)))
     (if (match-beginning 1)
 	(string-to-number (match-string 2 (buffer-name buffer)))
       1))) ;; `1' should not be represented in the buffer name.
 
 (defsubst w3m-buffer-set-number (buffer number)
-  (unless (eq (w3m-buffer-number buffer) number)
-    (with-current-buffer buffer
-      (let ((newname (if (= number 1)
+  (with-current-buffer buffer
+    (let ((newname (if w3m-use-title-buffer-name
+		       (if (= number 1)
+			   (format "%s *w3m*" (w3m-current-title))
+			 (format "%s *w3m*<%d>" (w3m-current-title) number))
+		     (if (= number 1)
 			 "*w3m*"
-		       (format "*w3m*<%d>" number))))
+		       (format "*w3m*<%d>" number)))))
+      (if (eq (w3m-buffer-number buffer) number)
+	  (when w3m-use-title-buffer-name
+	    (unless (get-buffer newname)
+	      (rename-buffer newname)))
 	(unless (get-buffer newname)
 	  (rename-buffer newname))))))
+
+(defsubst w3m-buffer-name-add-title ()
+  "Add current tile to buffer name."
+  (when w3m-use-title-buffer-name
+    (let ((number (w3m-buffer-number (current-buffer)))
+	  newname)
+      (if (= number 1)
+	  (setq newname (format "%s *w3m*" (w3m-current-title)))
+	(setq newname (format "%s *w3m*<%d>" (w3m-current-title) number)))
+      (rename-buffer newname))))
+
+(defsubst w3m-generate-new-buffer (name)
+  (if w3m-use-title-buffer-name
+      (let* ((maxbuf (let ((w3m-fb-mode nil))
+		       (car (nreverse (w3m-list-buffers)))))
+	     (number (w3m-buffer-number maxbuf)))
+	(when (string-match "\\*w3m\\*\\(<\\([0-9]+\\)>\\)?\\'" name)
+	  (setq name "*w3m*"))
+	(if (and maxbuf number)
+	    (generate-new-buffer (format "%s<%d>" name (1+ number)))
+	  (generate-new-buffer name)))
+    (generate-new-buffer name)))
 
 (defun w3m-buffer-name-lessp (x y)
   "Return t if first arg buffer's name is less than second."
@@ -365,12 +395,12 @@ An argument of nil means kill the current buffer."
     (setq x (buffer-name x)))
   (when (bufferp y)
     (setq y (buffer-name y)))
-  (if (and (string-match "\\`\\*w3m\\*\\(<\\([0-9]+\\)>\\)?\\'" x)
+  (if (and (string-match "\\*w3m\\*\\(<\\([0-9]+\\)>\\)?\\'" x)
 	   (setq x (cons x
 			 (if (match-beginning 1)
 			     (string-to-number (match-string 2 x))
 			   1))))
-      (if (string-match "\\`\\*w3m\\*\\(<\\([0-9]+\\)>\\)?\\'" y)
+      (if (string-match "\\*w3m\\*\\(<\\([0-9]+\\)>\\)?\\'" y)
 	  (< (cdr x)
 	     (if (match-beginning 1)
 		 (string-to-number (match-string 2 y))

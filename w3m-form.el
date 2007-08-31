@@ -1362,13 +1362,10 @@ textarea")))
 		   (file-writable-p file))
 	  (delete-file file))))))
 
-(defun w3m-form-set-number (w3mbuf count)
+(defun w3m-form-set-number (w3mbuf newname)
   "Change parent w3m buffer in form buffers"
   (save-current-buffer
-    (let* ((newname (if (= count 1)
-			"*w3m*"
-		      (format "*w3m*<%d>" count)))
-	   (newbuff (get-buffer newname)))
+    (let ((newbuff (get-buffer newname)))
       (when newbuff
 	(dolist (buffer (buffer-list))
 	  (set-buffer buffer)

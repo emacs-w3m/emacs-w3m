@@ -1422,6 +1422,11 @@ This variable can take one of the following five kinds of forms:
 	   :format "%t: %{nil%}\n" :sample-face widget-field-face
 	   nil)))
 
+(defcustom w3m-use-title-buffer-name nil
+  "Non-nil means use name of buffer included current title."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-use-japanese-menu
   (and (equal "Japanese" w3m-language)
        ;; Emacs 21 doesn't seem to support non-ASCII text
@@ -1761,7 +1766,7 @@ timestamp with the `-t' option."
     ("\\`bts:" w3m-search-uri-replace "debian-bts")
     ("\\`dpkg:" w3m-search-uri-replace "debian-pkg")
     ("\\`archie:" w3m-search-uri-replace "iij-archie")
-    ("\\`alc:"  w3m-search-uri-replace "alc")    
+    ("\\`alc:"  w3m-search-uri-replace "alc")
     ("\\`urn:ietf:rfc:\\([0-9]+\\)" w3m-pattern-uri-replace
      "http://www.ietf.org/rfc/rfc\\1.txt"))
   "*Alist of regexps matching URIs, and some types of replacements.
@@ -5773,13 +5778,13 @@ when the URL of the retrieved page matches the REGEXP."
 (defun w3m-relationship-alc-estimate (url)
   ;; use filter
   (when (string-match "\\`http://eow\\.alc\\.co\\.jp/[^/]+/UTF-8/" url)
-    (when (re-search-forward 
+    (when (re-search-forward
 	   (concat "<a href=\\\"http://eow\\.alc\\.co\\.jp/[^/]+/UTF-8/"
 		   "\\(\\?pg=[0-9]+\\)\\\">前へ</a>")
 	   nil t)
       (setq w3m-previous-url
 	    (w3m-expand-url (match-string 1) url)))
-    (when (re-search-forward 
+    (when (re-search-forward
 	   (concat "<a href=\\\"http://eow\\.alc\\.co\\.jp/[^/]+/UTF-8/"
 		   "\\(\\?pg=[0-9]+\\)\\\">次へ</a>")
 	   nil t)
@@ -6779,7 +6784,7 @@ a page in a new buffer with the correct width."
       (unless url
 	(setq empty t))
       ;;
-      (set-buffer (setq new (generate-new-buffer newname)))
+      (set-buffer (setq new (w3m-generate-new-buffer newname)))
       (w3m-mode)
       ;; Make copies of `w3m-history' and `w3m-history-flat'.
       (w3m-history-copy buffer)
@@ -6928,14 +6933,14 @@ related to BUFFER."
 It aligns emacs-w3m buffers in order of *w3m*, *w3m<2>, *w3m*<3>,...
 as if the folder command of MH performs with the -pack option."
   (interactive)
-  (let ((count 1) number)
+  (let ((count 1) number newname)
     (dolist (buffer (w3m-list-buffers))
       (setq number (w3m-buffer-number buffer))
       (when number
 	(unless (eq number count)
-	  (when (and (w3m-buffer-set-number buffer count)
+	  (when (and (setq newname (w3m-buffer-set-number buffer count))
 		     w3m-use-form)
-	    (w3m-form-set-number buffer count)))
+	    (w3m-form-set-number buffer newname)))
 	(incf count)))))
 
 (defun w3m-delete-other-buffers (&optional buffer)
@@ -8005,7 +8010,7 @@ generate a new buffer."
     (let ((buffer (w3m-alive-p t)))
       (if buffer
 	  (set-buffer buffer)
-	(set-buffer (generate-new-buffer "*w3m*"))
+	(set-buffer (w3m-generate-new-buffer "*w3m*"))
 	(w3m-mode))))
   ;; It may have been set to nil for viewing a page source or a header.
   (setq truncate-lines t)
@@ -8033,7 +8038,9 @@ generate a new buffer."
 	  (w3m-current-process
 	   "Loading..." ,(if (fboundp 'format-mode-line)
 			     '(:eval (w3m-modeline-title))
-			   'w3m-current-title))))
+			   (if w3m-use-title-buffer-name
+			       ""
+			     'w3m-current-title)))))
   (unless (assq 'w3m-current-process mode-line-process)
     (setq mode-line-process
 	  (cons (list 'w3m-current-process 'w3m-process-modeline-string)
@@ -8057,32 +8064,34 @@ frequently, set by the function itself and cleared by a timer.")
 (defun w3m-modeline-title ()
   "Return a truncated title not to cut the right end of the mode line.
 It currently works only with Emacs 22 and newer."
-  (when w3m-current-title
-    (or (and w3m-modeline-title-timer w3m-modeline-title-string)
-	(prog2
-	    (setq w3m-modeline-title-string w3m-current-title
-		  w3m-modeline-title-timer t)
-	    (let ((excess (- (string-width
-			      (condition-case nil
-				  (format-mode-line mode-line-format 1)
-				(error "")))
-			     (window-width)))
-		  (tlen (string-width w3m-current-title)))
-	      (when (and (> excess 0)
-			 (> tlen 3))
-		(setq w3m-modeline-title-string
-		      (concat (w3m-replace-in-string
-			       (w3m-truncate-string
-				w3m-current-title (max (- tlen excess 3) 2))
-			       "[\t ]+\\'" "")
-			      "...")))
-	      w3m-modeline-title-string)
-	  (run-at-time 0.5 nil
-		       (lambda (buffer)
-			 (when (buffer-live-p buffer)
-			   (with-current-buffer buffer
-			     (setq w3m-modeline-title-timer nil))))
-		       (current-buffer))))))
+  (if w3m-use-title-buffer-name
+      ""
+    (when w3m-current-title
+      (or (and w3m-modeline-title-timer w3m-modeline-title-string)
+	  (prog2
+	      (setq w3m-modeline-title-string w3m-current-title
+		    w3m-modeline-title-timer t)
+	      (let ((excess (- (string-width
+				(condition-case nil
+				    (format-mode-line mode-line-format 1)
+				  (error "")))
+			       (window-width)))
+		    (tlen (string-width w3m-current-title)))
+		(when (and (> excess 0)
+			   (> tlen 3))
+		  (setq w3m-modeline-title-string
+			(concat (w3m-replace-in-string
+				 (w3m-truncate-string
+				  w3m-current-title (max (- tlen excess 3) 2))
+				 "[\t ]+\\'" "")
+				"...")))
+		w3m-modeline-title-string)
+	    (run-at-time 0.5 nil
+			 (lambda (buffer)
+			   (when (buffer-live-p buffer)
+			     (with-current-buffer buffer
+			       (setq w3m-modeline-title-timer nil))))
+			 (current-buffer)))))))
 
 ;;;###autoload
 (defun w3m-goto-url (url &optional reload charset post-data referer handler
@@ -8302,6 +8311,7 @@ Cannot run two w3m processes simultaneously \
 	      (setq list-buffers-directory w3m-current-title)
 	      ;; must be `w3m-current-url'
 	      (setq default-directory (w3m-current-directory w3m-current-url))
+	      (w3m-buffer-name-add-title)
 	      (w3m-update-toolbar)
 	      (w3m-select-buffer-update)
 	      (let ((real-url (or (w3m-real-url url) url)))
@@ -8676,7 +8686,7 @@ interactive command in the batch mode."
     (unless buffer
       ;; It means `new-session' is non-nil or there's no emacs-w3m buffer.
       ;; At any rate, we create a new emacs-w3m buffer in this case.
-      (with-current-buffer (setq buffer (generate-new-buffer "*w3m*"))
+      (with-current-buffer (setq buffer (w3m-generate-new-buffer "*w3m*"))
 	(w3m-mode)))
     (w3m-popup-buffer buffer)
     (unless nofetch
@@ -9465,6 +9475,11 @@ passed to the `w3m-quit' function (which see)."
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-use-header-line-title nil
+  "Non-nil means display the current title at the header line."
+  :group 'w3m
+  :type 'boolean)
+
 (defface w3m-header-line-location-title
   '((((class color) (background light))
      (:foreground "Blue" :background "Gray90"))
@@ -9499,7 +9514,8 @@ passed to the `w3m-quit' function (which see)."
 (defun w3m-header-line-insert ()
   "Put the header line into the current buffer."
   (when (and (or (featurep 'xemacs)
-		 (w3m-use-tab-p))
+		 (w3m-use-tab-p)
+		 w3m-use-header-line-title)
 	     w3m-use-header-line
 	     w3m-current-url
 	     (eq 'w3m-mode major-mode))
@@ -9535,7 +9551,6 @@ passed to the `w3m-quit' function (which see)."
       (w3m-add-face-property start (point) 'w3m-header-line-location-content)
       (unless (eolp)
 	(insert "\n")))))
-
 
 ;;; w3m-minor-mode
 (defcustom w3m-goto-article-function nil

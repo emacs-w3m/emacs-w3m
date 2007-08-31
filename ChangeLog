@@ -1,3 +1,39 @@
+2007-08-31  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (top): Remove unnecessary space at the line end.
+	(w3m-use-title-buffer-name): New option.
+	(w3m-copy-buffer): Use `w3m-generate-new-buffer' instead of
+	`generate-new-buffer'.
+	(w3m-pack-buffer-numbers): Call `w3m-form-set-number' with new name of
+	buffer.
+	(w3m-buffer-setup): Use `w3m-generate-new-buffer' instead of
+	`generate-new-buffer'.
+	(w3m-buffer-setup): Do not display title if w3m-use-title-buffer-name
+	is non-nil.
+	(w3m-modeline-title): Retrun "" if w3m-use-title-buffer-name is
+	non-nil.
+	(w3m-goto-url): Call `w3m-buffer-name-add-title' when display.
+	(w3m): Use `w3m-generate-new-buffer' instead of `generate-new-buffer'.
+	(w3m-use-header-line-title): New option.
+	(w3m-header-line-insert): If w3m-use-header-line-title is non-nil,
+	insert location too.
+
+	* w3m-form.el (w3m-form-set-number): Change 2'nd argument to `newname'
+	from `count'.
+
+	* w3m-util.el (top): Add the variable definition of
+	`w3m-use-title-buffer-name' to avoid byte-compile warnings.
+	(w3m-buffer-number): Support the feature of buffer-name with title.
+	(w3m-buffer-set-number): Ditto.
+	(w3m-generate-new-buffer): Ditto.
+	(w3m-buffer-name-lessp): Ditto.
+	(w3m-buffer-name-add-title): New inline macro.
+
+	* w3m-ems.el (top): Add the variable definition of
+	`w3m-use-header-line-title' to avoid byte-compile warnings.
+	(w3m-setup-header-line): If `w3m-use-header-line-title' is not nil,
+	display title instead of URI.
+
 2007-08-30  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-proc.el (top): Add the function definition of

@@ -75,6 +75,7 @@
   (defvar w3m-new-session-in-background)
   (defvar w3m-default-coding-system)
   (defvar w3m-coding-system)
+  (defvar w3m-use-header-line-title)
   (autoload 'w3m-copy-buffer "w3m")
   (autoload 'w3m-delete-buffer "w3m")
   (autoload 'w3m-image-type "w3m")
@@ -695,13 +696,19 @@ otherwise works in all the emacs-w3m buffers."
 	      (w3m-use-header-line
 	       (list
 		(propertize
-		 "Location: "
+		 (if w3m-use-header-line-title
+		     "Title: "
+		   "Location: ")
 		 'face (list 'w3m-header-line-location-title))
 		`(:eval
 		  (propertize
-		   (if (stringp w3m-current-url)
-		       (replace-regexp-in-string "%" "%%" w3m-current-url)
-		     "")
+		   (cond
+		    (w3m-use-header-line-title
+		     (replace-regexp-in-string "%" "%%" (w3m-current-title)))
+		    ((stringp w3m-current-url)
+		     (replace-regexp-in-string "%" "%%" w3m-current-url))
+		    (t
+		     ""))
 		   'face (list 'w3m-header-line-location-content)
 		   'mouse-face '(highlight :foreground
 					   ,(face-foreground 'default))
