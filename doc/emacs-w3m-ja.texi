@@ -2916,6 +2916,10 @@ nil
 Don't decode URIs.
 @end enumerate
 
+@item w3m-use-title-buffer-name
+@vindex w3m-use-title-buffer-name
+Non-@code{nil} means use name of buffer included current title.
+
 @item w3m-show-error-information
 @vindex w3m-show-error-information
 Non-@code{nil} means show an error information as a web page.  Page is
@@ -3048,6 +3052,10 @@ extensions. @emph{(EXPERIMENTAL)}
 @item w3m-use-header-line
 @vindex w3m-use-header-line
 Non-@code{nil} means display the header line.
+
+@item w3m-use-header-line-title
+@vindex w3m-use-header-line-title
+Non-@code{nil} means display the current title at the header line.
 
 @item w3m-use-mule-ucs
 @vindex w3m-use-mule-ucs
