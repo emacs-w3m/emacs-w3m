@@ -20,7 +20,7 @@
 	* sb-tdiary-ml.el (shimbun-tdiary-ml-concat-url): Don't use old-style
 	backquotes.
 
-	* sb-tdiary.el (shimbun-tdiary-get-headers, shimbun-tdiary-make-date:
+	* sb-tdiary.el (shimbun-tdiary-get-headers, shimbun-tdiary-make-date):
 	Don't use old-style backquotes.
 
 	* sb-wikimedia.el (shimbun-wikimedia-concat-url): Don't use old-style
