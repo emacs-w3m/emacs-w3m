@@ -1,5 +1,9 @@
 2007-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-local-file-type): Regard news:* urls as text/html.
+
+2007-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* aclocal.m4 (AC_PATH_EMACS): Improve expression of Emacs version.
 
 	* doc/ptexinfmt.el (ptexinfmt-broken-facility)
