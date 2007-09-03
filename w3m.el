@@ -4950,8 +4950,9 @@ It will put the retrieved contents into the current buffer.  See
 		(set-buffer-multibyte nil)
 		(w3m-w3m-retrieve-1 url post-data referer no-cache
 				    (or w3m-follow-redirection 0) handler)))
-      (when (or (not (string-match "\\`https?:" url))
-		(memq (car attr) '(200 300)))
+      (when (and attr
+		 (or (not (string-match "\\`https?:" url))
+		     (memq (car attr) '(200 300))))
 	(if (or no-uncompress
 		(w3m-decode-encoded-contents (nth 4 attr)))
 	    (let ((temp-buffer (current-buffer)))
@@ -5588,9 +5589,13 @@ called with t as an argument.  Otherwise, it will be called with nil."
 	      (erase-buffer)
 	      (insert
 	       errmsg
-	       (format "<br><br><b>%s</b> could not be found."
+	       (format "<br><br><b>%s</b> could not be found; "
 		       (w3m-get-server-hostname url))
-	       " Please check the name, and try again."))
+	       (if (string-match "\\`news:" url)
+		   "check the name of the <b>URL</b>\
+ and the value of the <b>NNTPSERVER</b> environment variable\
+ (that should be the address of the <b>NNTP</b> server)."
+		 "check the name of the <b>URL</b>.")))
 	  (goto-char (point-min))
 	  (when (or (re-search-forward "<body>" nil t)
 		    (re-search-forward "<html>" nil t))

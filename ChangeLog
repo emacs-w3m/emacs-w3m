@@ -1,6 +1,8 @@
 2007-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-local-file-type): Regard news:* urls as text/html.
+	(w3m-w3m-retrieve): Return nil if retrieving failed.
+	(w3m-show-error-information): Improve error message for news:* urls.
 
 2007-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
