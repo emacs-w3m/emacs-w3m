@@ -105,7 +105,13 @@ AC_DEFUN(AC_PATH_EMACS,
 	    (if (string-match (char-to-string 41) v)\
 		(substring v 0 (match-end 0))\
 	      \"Old XEmacs\")))\
-      (format \"Emacs %d.%d\" emacs-major-version emacs-minor-version)),
+      (concat \"Emacs \"\
+	      (mapconcat (function identity)\
+			 (nreverse\
+			  (cdr (nreverse\
+				(split-string emacs-version\
+					      (concat (vector 92 46))))))\
+			 \".\"))),
     noecho)
   case "${flavor}" in
   XEmacs)
