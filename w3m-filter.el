@@ -1,4 +1,4 @@
-;;; w3m-filter.el --- filtering utility of advertisements on WEB sites.
+;;; w3m-filter.el --- filtering utility of advertisements on WEB sites -*- coding: euc-japan -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -233,23 +233,23 @@
       (setq cword (car (split-string (w3m-url-decode-string cword 'utf-8)
 				     " ")))
       (goto-char (point-min))
-      (while (search-forward "$B%G!<%?$NE>:\$O6X$8$i$l$F$$$^$9(B" nil t)
+      (while (search-forward "¥Ç¡¼¥¿¤ÎÅ¾ºÜ¤Ï¶Ø¤¸¤é¤ì¤Æ¤¤¤Þ¤¹" nil t)
 	(delete-region (line-beginning-position) (line-end-position))
 	(insert "<br>"))
       (goto-char (point-min))
       (when (search-forward "<body" nil t)
 	(forward-line 1)
-	(insert "<h1>$B1Q<-O/(B on the WEB<h1>\n")
+	(insert "<h1>±Ñ¼­Ï¯ on the WEB<h1>\n")
 	(setq beg (point))
-	(when (search-forward "<!-- $B"'8!:wJ8;zNs(B -->" nil t)
+	(when (search-forward "<!-- ¢§¸¡º÷Ê¸»úÎó -->" nil t)
 	  (forward-line 1)
 	  (delete-region beg (point)))
-	(when (search-forward "<!-- $B"'%o!<%I%j%s%/(B $BMzNr(B -->" nil t)
+	(when (search-forward "<!-- ¢§¥ï¡¼¥É¥ê¥ó¥¯ ÍúÎò -->" nil t)
 	  (forward-line 1)
 	  (setq beg (point))
 	  (when (search-forward "</body>" nil t)
 	    (delete-region beg (match-beginning 0))))
-	(insert "<br>$B!v%G!<%?$NE>:\$O6X$8$i$l$F$$$^$9!#(B")
+	(insert "<br>¡ö¥Ç¡¼¥¿¤ÎÅ¾ºÜ¤Ï¶Ø¤¸¤é¤ì¤Æ¤¤¤Þ¤¹¡£")
 	;; next/previous page
 	(goto-char (point-min))
 	(while (re-search-forward
@@ -279,15 +279,15 @@
 	(while (search-forward "img/spacer.gif" nil t)
 	  (delete-region (line-beginning-position) (line-end-position)))
 	(goto-char (point-min))
-	;; remove $B%o!<%I%j%s%/(B
-	(when (search-forward "alt=\"$B%o!<%I%j%s%/(B\"" nil t)
+	;; remove ¥ï¡¼¥É¥ê¥ó¥¯
+	(when (search-forward "alt=\"¥ï¡¼¥É¥ê¥ó¥¯\"" nil t)
 	  (delete-region (line-beginning-position) (line-end-position)))
-	;; $BA4J8$rI=<($9$k$OL5M}(B
+	;; Á´Ê¸¤òÉ½¼¨¤¹¤ë¤ÏÌµÍý
 	(goto-char (point-min))
 	(while (re-search-forward
-		(concat "<br */> *$B"M(B<strong>"
+		(concat "<br */> *¢Í<strong>"
 			"<a href='javascript:goFullText(\"[^\"]+\", \"[^\"]+\")'>"
-			"$BA4J8$rI=<($9$k(B</a>")
+			"Á´Ê¸¤òÉ½¼¨¤¹¤ë</a>")
 		nil t)
 	  (delete-region (match-beginning 0) (match-end 0)))
 	;; Java Document write... ;_;
