@@ -1,8 +1,8 @@
 ;;; sb-mhonarc.el --- shimbun backend class for mhonarc
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007
 ;; Yuuichi Teranishi <teranisi@gohome.org>
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007
 ;; Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -67,20 +67,20 @@
     string))
 
 (defmacro shimbun-mhonarc-extract-header-values (shimbun url headers aux)
-  (` (let ((id (format "<%s%s%%%s>"
-		       (or (, aux) "")
-		       (match-string 1)
-		       (shimbun-current-group-internal (, shimbun))))
-	   (url (shimbun-expand-url (match-string 2) (, url)))
-	   (subject (shimbun-mhonarc-replace-newline-to-space (match-string 3)))
-	   (from (shimbun-mhonarc-replace-newline-to-space (match-string 4))))
-       (if (shimbun-search-id (, shimbun) id)
-	   (throw 'stop (, headers))
-	 (push (shimbun-make-header 0
-				    (shimbun-mime-encode-string subject)
-				    (shimbun-mime-encode-string from)
-				    "" id "" 0 0 url)
-	       (, headers))))))
+  `(let ((id (format "<%s%s%%%s>"
+		     (or ,aux "")
+		     (match-string 1)
+		     (shimbun-current-group-internal ,shimbun)))
+	 (url (shimbun-expand-url (match-string 2) ,url))
+	 (subject (shimbun-mhonarc-replace-newline-to-space (match-string 3)))
+	 (from (shimbun-mhonarc-replace-newline-to-space (match-string 4))))
+     (if (shimbun-search-id ,shimbun id)
+	 (throw 'stop ,headers)
+       (push (shimbun-make-header 0
+				  (shimbun-mime-encode-string subject)
+				  (shimbun-mime-encode-string from)
+				  "" id "" 0 0 url)
+	     ,headers))))
 
 (defmacro shimbun-mhonarc-get-headers (shimbun url headers &optional aux)
   `(save-excursion

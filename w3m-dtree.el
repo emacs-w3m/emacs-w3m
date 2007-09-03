@@ -1,6 +1,6 @@
 ;;; w3m-dtree.el --- The add-on program to display local directory tree.
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2006
+;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Hideyuki SHIRAI    <shirai@meadowy.org>,
@@ -131,9 +131,9 @@ over the 'w3m-dtree-directory-depth'."
   path)
 
 (defmacro w3m-dtree-has-child (path)
-  (` (let ((w32-get-true-file-link-count t)) ;; true link count for Meadow
-       (and (nth 1 (file-attributes (, path)))
-	    (/= (nth 1 (file-attributes (, path))) 2)))))
+  `(let ((w32-get-true-file-link-count t)) ;; true link count for Meadow
+     (and (nth 1 (file-attributes ,path))
+	  (/= (nth 1 (file-attributes ,path)) 2))))
 
 (defun w3m-dtree-create-sub (path allfiles dirprefix fileprefix indent depth)
   (let* ((files (directory-files path t))

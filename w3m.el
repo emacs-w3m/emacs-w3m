@@ -1693,17 +1693,17 @@ using the w3m-dtree Lisp module."
   "*Name of the CGI program to list a local directory.
 If it is nil, the dirlist.cgi module of the w3m command will be used."
   :group 'w3m
-  :type (` (radio
-	    (const :tag "w3m internal CGI" nil)
-	    (file :format "path of 'dirlist.cgi': %v\n"
-		  :size 0
-		  :value (, (if (not noninteractive)
-				(expand-file-name
-				 (concat "../lib/"
-					 (file-name-nondirectory w3m-command)
-					 "/dirlist.cgi")
-				 (file-name-directory
-				  (w3m-which-command w3m-command)))))))))
+  :type `(radio
+	  (const :tag "w3m internal CGI" nil)
+	  (file :format "path of 'dirlist.cgi': %v\n"
+		:size 0
+		:value ,(if (not noninteractive)
+			    (expand-file-name
+			     (concat "../lib/"
+				     (file-name-nondirectory w3m-command)
+				     "/dirlist.cgi")
+			     (file-name-directory
+			      (w3m-which-command w3m-command)))))))
 
 (defcustom w3m-add-referer
   (if (boundp 'w3m-add-referer-regexps)

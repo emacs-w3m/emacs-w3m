@@ -425,13 +425,13 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 	(lambda (form)
 	  (if (cdr form)
 	      (let ((pos (car (cdr form))))
-		(` (let ((cur (point)))
-		     (prog2
-			 (goto-char (, pos))
-			 (if (bobp)
-			     nil
-			   (preceding-char))
-		       (goto-char cur)))))
+		`(let ((cur (point)))
+		   (prog2
+		       (goto-char ,pos)
+		       (if (bobp)
+			   nil
+			 (preceding-char))
+		     (goto-char cur))))
 	    '(if (bobp)
 		 nil
 	       (preceding-char)))))))
@@ -441,28 +441,28 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
        (let ((num (nth 1 form))
 	     (string (nth 2 form)))
 	 (cond ((and string (featurep 'xemacs))
-		(` (let ((num (, num)))
-		     (if (match-beginning num)
-			 (let ((string (substring (, string)
-						  (match-beginning num)
-						  (match-end num))))
-			   (map-extents (lambda (extent maparg)
-					  (delete-extent extent))
-					string 0 (length string))
-			   string)))))
+		`(let ((num ,num))
+		   (if (match-beginning num)
+		       (let ((string (substring ,string
+						(match-beginning num)
+						(match-end num))))
+			 (map-extents (lambda (extent maparg)
+					(delete-extent extent))
+				      string 0 (length string))
+			 string))))
 	       (string
-		(` (let ((num (, num)))
-		     (if (match-beginning num)
-			 (let ((string (substring (, string)
-						  (match-beginning num)
-						  (match-end num))))
-			   (set-text-properties 0 (length string) nil string)
-			   string)))))
+		`(let ((num ,num))
+		   (if (match-beginning num)
+		       (let ((string (substring ,string
+						(match-beginning num)
+						(match-end num))))
+			 (set-text-properties 0 (length string) nil string)
+			 string))))
 	       (t
-		(` (let ((num (, num)))
-		     (if (match-beginning num)
-			 (buffer-substring-no-properties
-			  (match-beginning num) (match-end num))))))))))
+		`(let ((num ,num))
+		   (if (match-beginning num)
+		       (buffer-substring-no-properties
+			(match-beginning num) (match-end num)))))))))
 
 (cond
  ((featurep 'xemacs)
@@ -540,14 +540,14 @@ to remove some obsolete variables in the first argument VARLIST."
 		    (eq 'length (car-safe end))
 		    (eq string (car-safe (cdr-safe end))))
 	       (if props
-		   (` (let ((end (, end)))
-			(map-extents (lambda (extent maparg)
-				       (delete-extent extent))
-				     (, string) 0 end)
-			(add-text-properties 0 end (, props) (, string))))
-		 (` (map-extents (lambda (extent maparg)
-				   (delete-extent extent))
-				 (, string) 0 (, end))))
+		   `(let ((end ,end))
+		      (map-extents (lambda (extent maparg)
+				     (delete-extent extent))
+				   ,string 0 end)
+		      (add-text-properties 0 end ,props ,string))
+		 `(map-extents (lambda (extent maparg)
+				 (delete-extent extent))
+			       ,string 0 ,end))
 	     form))))
 
   (defun w3mhack-make-package ()

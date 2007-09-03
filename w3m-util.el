@@ -79,21 +79,21 @@
 
 (defmacro w3m-static-if (cond then &rest else)
   "Like `if', except that it evaluates COND at compile-time."
-  (if (eval cond) then (` (progn  (,@ else)))))
+  (if (eval cond) then `(progn  ,@else)))
 (put 'w3m-static-if 'lisp-indent-function 2)
 
 (put 'w3m-static-when 'lisp-indent-function 1)
 (defmacro w3m-static-when (cond &rest body)
   "Like `when', but evaluate COND at compile time."
   (if (eval cond)
-      (` (progn (,@ body)))))
+      `(progn ,@body)))
 
 (put 'w3m-static-unless 'lisp-indent-function 1)
 (defmacro w3m-static-unless (cond &rest body)
   "Like `unless', but evaluate COND at compile time."
   (if (eval cond)
       nil
-    (` (progn (,@ body)))))
+    `(progn ,@body)))
 
 (defmacro w3m-static-cond (&rest clauses)
   "Like `cond', except that it evaluates CONDITION part of each clause at
@@ -108,11 +108,11 @@ compile-time."
 (defmacro w3m-condition-case (var bodyform &rest handlers)
   "Like `condition-case', except that signal an error if `debug-on-error'
 or `debug-on-quit' is non-nil."
-  (` (if (or debug-on-error debug-on-quit)
-	 (, bodyform)
-       (condition-case (, var)
-	   (, bodyform)
-	 (,@ handlers)))))
+  `(if (or debug-on-error debug-on-quit)
+       ,bodyform
+     (condition-case ,var
+	 ,bodyform
+       ,@handlers)))
 
 
 ;;; Text props:
@@ -125,9 +125,9 @@ or `debug-on-quit' is non-nil."
 	     '(list 'start-open t)
 	   ;; Default to front-nonsticky and rear-sticky in Emacsen.
 	   '(list 'rear-nonsticky t))))
-    (` (add-text-properties (, start) (, end)
-			    (append (, non-stickies) (, props))
-			    (, object)))))
+    `(add-text-properties ,start ,end
+			  (append ,non-stickies ,props)
+			  ,object)))
 
 (defun w3m-add-face-property (start end name &optional object)
   "Add face NAME to the face text property of the text from START to END.
@@ -171,17 +171,17 @@ into it."
 the current position.  Return the value corresponding to PROP or nil.
 If PROP is not found at the current position, point will move to the
 position where PROP exists."
-  (` (let ((position (point))
-	   value)
-       (or (get-text-property position (, prop))
-	   (and (not (bolp))
-		(setq value (get-text-property (1- position) (, prop)))
-		(goto-char (1- position))
-		value)
-	   (and (not (eolp))
-		(setq value (get-text-property (1+ position) (, prop)))
-		(goto-char (1+ position))
-		value)))))
+  `(let ((position (point))
+	 value)
+     (or (get-text-property position ,prop)
+	 (and (not (bolp))
+	      (setq value (get-text-property (1- position) ,prop))
+	      (goto-char (1- position))
+	      value)
+	 (and (not (eolp))
+	      (setq value (get-text-property (1+ position) ,prop))
+	      (goto-char (1+ position))
+	      value))))
 
 (defmacro w3m-action (&optional position)
   "Return the value of the `w3m-action' property at the given POSITION.
@@ -189,8 +189,8 @@ NOTE: If POSITION is omitted, it searches for the property in one
 character before and behind the current position, and point will move
 to the position where the property exists."
   (if position
-      (` (get-text-property (, position) 'w3m-action))
-    (` (w3m-get-text-property-around 'w3m-action))))
+      `(get-text-property ,position 'w3m-action)
+    `(w3m-get-text-property-around 'w3m-action)))
 
 (defmacro w3m-anchor (&optional position)
   "Return the value of the `w3m-href-anchor' property at the given POSITION.
@@ -198,8 +198,8 @@ NOTE: If POSITION is omitted, it searches for the property in one
 character before and behind the current position, and point will move
 to the position where the property exists."
   (if position
-      (` (get-text-property (, position) 'w3m-href-anchor))
-    (` (w3m-get-text-property-around 'w3m-href-anchor))))
+      `(get-text-property ,position 'w3m-href-anchor)
+    `(w3m-get-text-property-around 'w3m-href-anchor)))
 
 (defmacro w3m-image (&optional position)
   "Return the value of the `w3m-image' property at the given POSITION.
@@ -207,8 +207,8 @@ NOTE: If POSITION is omitted, it searches for the property in one
 character before and behind the current position, and point will move
 to the position where the property exists."
   (if position
-      (` (get-text-property (, position) 'w3m-image))
-    (` (w3m-get-text-property-around 'w3m-image))))
+      `(get-text-property ,position 'w3m-image)
+    `(w3m-get-text-property-around 'w3m-image)))
 
 (defmacro w3m-submit (&optional position)
   "Return the value of the `w3m-submit' property at the given POSITION.
@@ -216,14 +216,14 @@ NOTE: If POSITION is omitted, it searches for the property in one
 character before and behind the current position, and point will move
 to the position where the property exists."
   (if position
-      (` (get-text-property (, position) 'w3m-submit))
-    (` (w3m-get-text-property-around 'w3m-submit))))
+      `(get-text-property ,position 'w3m-submit)
+    `(w3m-get-text-property-around 'w3m-submit)))
 
 (defmacro w3m-anchor-sequence (&optional position)
   "Return the value of the `w3m-anchor-sequence' property at POSITION.
 If POSITION is omitted, the current position is assumed."
   (if position
-      (` (get-text-property (, position) 'w3m-anchor-sequence))
+      `(get-text-property ,position 'w3m-anchor-sequence)
     '(get-text-property (point) 'w3m-anchor-sequence)))
 
 

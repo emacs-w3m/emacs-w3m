@@ -1,6 +1,6 @@
 ;;; sb-tdiary.el --- shimbun backend for tDiary
 
-;; Copyright (C) 2003, 2004, 2005 OHASHI Akira <bg66@koka-in.org>
+;; Copyright (C) 2003, 2004, 2005, 2007 OHASHI Akira <bg66@koka-in.org>
 
 ;; Author: OHASHI Akira <bg66@koka-in.org>
 ;; Keywords: news
@@ -54,48 +54,48 @@ URL is the URL for TDIARY access point of the group."
 	       shimbun-tdiary-group-alist)))
 
 (defmacro shimbun-tdiary-get-headers (shimbun url headers &optional aux)
-  (` (let ((case-fold-search t))
-       (goto-char (point-max))
-       (while (re-search-backward "<h3[^>]*><a href=\"\./\\(.*\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\).*#\\(p[0-9]+\\)\\)\"> *\\(<span class=\"[ps]anchor\">.+</span>\\)?[^<]*</a>\\(.+]\\|\\) *\\(.+\\)</h3>" nil t)
-	 (let ((url (match-string 1))
-	       (year (match-string 2))
-	       (month (match-string 3))
-	       (day (match-string 4))
-	       (topic (match-string 5))
-	       (subject (match-string 8))
-	       date id)
-	   (setq date (shimbun-make-date-string (string-to-number year)
-						(string-to-number month)
-						(string-to-number day)))
-	   (setq id (format "<%s.%s%s%s.%s@tdiary.org>"
-			    topic year month day
-			    (eword-encode-string
-			     (shimbun-current-group-internal (, shimbun)))))
-	   (push (shimbun-create-header
-		  0 subject (or (, aux) (shimbun-from-address (, shimbun)))
-		  date id "" 0 0 (concat (shimbun-index-url (, shimbun)) url))
-		 (, headers))))
-       (, headers))))
+  `(let ((case-fold-search t))
+     (goto-char (point-max))
+     (while (re-search-backward "<h3[^>]*><a href=\"\./\\(.*\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\\([0-9][0-9]\\).*#\\(p[0-9]+\\)\\)\"> *\\(<span class=\"[ps]anchor\">.+</span>\\)?[^<]*</a>\\(.+]\\|\\) *\\(.+\\)</h3>" nil t)
+       (let ((url (match-string 1))
+	     (year (match-string 2))
+	     (month (match-string 3))
+	     (day (match-string 4))
+	     (topic (match-string 5))
+	     (subject (match-string 8))
+	     date id)
+	 (setq date (shimbun-make-date-string (string-to-number year)
+					      (string-to-number month)
+					      (string-to-number day)))
+	 (setq id (format "<%s.%s%s%s.%s@tdiary.org>"
+			  topic year month day
+			  (eword-encode-string
+			   (shimbun-current-group-internal ,shimbun))))
+	 (push (shimbun-create-header
+		0 subject (or ,aux (shimbun-from-address ,shimbun))
+		date id "" 0 0 (concat (shimbun-index-url ,shimbun) url))
+	       ,headers)))
+     ,headers))
 
 (defmacro shimbun-tdiary-make-date (count first)
-  (` (let* ((today (current-time))
-	    (month (nth 4 (decode-time today)))
-	    (year (nth 5 (decode-time today)))
-	    (dow (nth 6 (decode-time today)))
-	    (dst (nth 7 (decode-time today)))
-	    (zone (nth 8 (decode-time today))))
-       (dotimes (i (1- (, count)))
-	 (decf month)
-	 (when (<= month 0)
-	   (setq month 12)
-	   (decf year)))
-       (let ((date
-	      (format-time-string
-	       "%Y%m"
-	       (encode-time 0 0 0 1 month year dow dst zone))))
-	 (if (string< date (, first))
-	     nil
-	   date)))))
+  `(let* ((today (current-time))
+	  (month (nth 4 (decode-time today)))
+	  (year (nth 5 (decode-time today)))
+	  (dow (nth 6 (decode-time today)))
+	  (dst (nth 7 (decode-time today)))
+	  (zone (nth 8 (decode-time today))))
+     (dotimes (i (1- ,count))
+       (decf month)
+       (when (<= month 0)
+	 (setq month 12)
+	 (decf year)))
+     (let ((date
+	    (format-time-string
+	     "%Y%m"
+	     (encode-time 0 0 0 1 month year dow dst zone))))
+       (if (string< date ,first)
+	   nil
+	 date))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-tdiary)
 					 &optional range)

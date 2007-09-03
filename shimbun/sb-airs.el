@@ -1,6 +1,7 @@
 ;;; sb-airs.el --- shimbun backend for lists.airs.net
 
-;; Copyright (C) 2001, 2002, 2003, 2005 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2003, 2005, 2007
+;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi  <teranisi@gohome.org>
 ;; Keywords: news
@@ -48,11 +49,11 @@
   "<STRONG><a name=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</a></STRONG> <EM>\\([^<]+\\)</EM>")
 
 (defmacro shimbun-airs-concat-url (shimbun url)
-  (` (concat (shimbun-url-internal (, shimbun))
-	     (nth 1 (assoc (shimbun-current-group-internal (, shimbun))
-			   shimbun-airs-group-path-alist))
-	     "/"
-	     (, url))))
+  `(concat (shimbun-url-internal ,shimbun)
+	   (nth 1 (assoc (shimbun-current-group-internal ,shimbun)
+			 shimbun-airs-group-path-alist))
+	   "/"
+	   ,url))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-airs))
   (shimbun-airs-concat-url shimbun "index.html"))

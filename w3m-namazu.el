@@ -87,11 +87,11 @@
   :type '(integer :size 0))
 
 (defconst w3m-namazu-default-index-customize-spec
-  '(` (choice
-       (const :tag "No default index" nil)
-       (,@ (mapcar (lambda (x) (list 'const (car x)))
-		   w3m-namazu-index-alist))
-       (directory :format "Index directory: %v\n" :size 0))))
+  '`(choice
+     (const :tag "No default index" nil)
+     ,@(mapcar (lambda (x) (list 'const (car x)))
+	       w3m-namazu-index-alist)
+     (directory :format "Index directory: %v\n" :size 0)))
 
 (defcustom w3m-namazu-index-alist
   (when (boundp 'namazu-dir-alist)

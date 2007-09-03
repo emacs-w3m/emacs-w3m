@@ -1,3 +1,31 @@
+2007-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-airs.el (shimbun-airs-concat-url): Don't use old-style backquotes.
+
+	* sb-chalow.el (shimbun-chalow-get-headers): Don't use old-style
+	backquotes.
+
+	* sb-debian.el (shimbun-debian-get-headers): Don't use old-style
+	backquotes.
+
+	* sb-digiko.el (shimbun-digiko-get-headers): Don't use old-style
+	backquotes.
+
+	* sb-javaconf.el (shimbun-javaconf-concat-url): Don't use old-style
+	backquotes.
+
+	* sb-mhonarc.el (shimbun-mhonarc-extract-header-values): Don't use
+	old-style backquotes.
+
+	* sb-tdiary-ml.el (shimbun-tdiary-ml-concat-url): Don't use old-style
+	backquotes.
+
+	* sb-tdiary.el (shimbun-tdiary-get-headers, shimbun-tdiary-make-date:
+	Don't use old-style backquotes.
+
+	* sb-wikimedia.el (shimbun-wikimedia-concat-url): Don't use old-style
+	backquotes.
+
 2007-08-30  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* sb-tigris.el (shimbun-make-contents): Use forward-line instead of

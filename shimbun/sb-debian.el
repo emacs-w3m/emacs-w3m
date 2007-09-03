@@ -1,6 +1,6 @@
 ;;; sb-debian.el --- shimbun backend for debian.org
 
-;; Copyright (C) 2001, 2002, 2003, 2005 OHASHI Akira <bg66@koka-in.org>
+;; Copyright (C) 2001, 2002, 2003, 2005, 2007 OHASHI Akira <bg66@koka-in.org>
 
 ;; Author: OHASHI Akira <bg66@koka-in.org>
 ;; Keywords: news
@@ -104,32 +104,32 @@
   (concat (shimbun-current-group-internal shimbun) "@debian.org"))
 
 (defmacro shimbun-debian-get-headers (shimbun url headers &optional aux)
-  (` (let ((case-fold-search t)
-	   (regexp (or (shimbun-mhonarc-litemplate-regexp-internal (, shimbun))
-		       shimbun-mhonarc-litemplate-regexp))
-	   (year (and (string-match (concat (regexp-quote (shimbun-index-url shimbun))
-					    "\\([0-9]+\\)")
-				    url)
-		      (match-string 1 url)))
-	   month day date-start date-end)
-       (goto-char (point-max))
-       (while (and (setq date-end (re-search-backward "^</ul>" nil t))
-		   (setq date-start (re-search-backward "^<ul>" nil t)))
-	 (forward-line -1)
-	 (looking-at "^\\(\\w+\\) \\([0-9]+\\)")
-	 (setq month (match-string 1)
-	       day (match-string 2))
-	 (goto-char date-end)
-	 (while (re-search-backward regexp date-start t)
-	   (shimbun-mhonarc-extract-header-values (, shimbun) (, url)
-						  (, headers) (, aux))
-	   (shimbun-header-set-date (car (, headers))
-				    (format "%s %s %s 00:00 +0000"
-					    day month year))
-	   (if (> (length (, headers)) shimbun-debian-fetch-headers-max)
-	       (throw 'stop (, headers)))
-	   (forward-line 0)))
-       (, headers))))
+  `(let ((case-fold-search t)
+	 (regexp (or (shimbun-mhonarc-litemplate-regexp-internal ,shimbun)
+		     shimbun-mhonarc-litemplate-regexp))
+	 (year (and (string-match (concat (regexp-quote (shimbun-index-url
+							 shimbun))
+					  "\\([0-9]+\\)")
+				  url)
+		    (match-string 1 url)))
+	 month day date-start date-end)
+     (goto-char (point-max))
+     (while (and (setq date-end (re-search-backward "^</ul>" nil t))
+		 (setq date-start (re-search-backward "^<ul>" nil t)))
+       (forward-line -1)
+       (looking-at "^\\(\\w+\\) \\([0-9]+\\)")
+       (setq month (match-string 1)
+	     day (match-string 2))
+       (goto-char date-end)
+       (while (re-search-backward regexp date-start t)
+	 (shimbun-mhonarc-extract-header-values ,shimbun ,url ,headers ,aux)
+	 (shimbun-header-set-date (car ,headers)
+				  (format "%s %s %s 00:00 +0000"
+					  day month year))
+	 (if (> (length ,headers) shimbun-debian-fetch-headers-max)
+	     (throw 'stop ,headers))
+	 (forward-line 0)))
+     ,headers))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-debian)
 					 &optional range)

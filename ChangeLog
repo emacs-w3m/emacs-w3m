@@ -1,3 +1,43 @@
+2007-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_PATH_EMACS): Improve expression of Emacs version.
+
+	* doc/ptexinfmt.el (ptexinfmt-broken-facility)
+	(ptexinfmt-defun-if-broken, ptexinfmt-defun-if-void)
+	(ptexinfmt-defvar-if-void): Don't use old-style backquotes.
+	(texinfo-format-cedilla-accent): Quote `,'.
+
+	* w3m-antenna.el (w3m-antenna-site-key, w3m-antenna-site-title)
+	(w3m-antenna-site-class, w3m-antenna-site-url)
+	(w3m-antenna-site-last-modified, w3m-antenna-site-size)
+	(w3m-antenna-site-size-detected): Don't use old-style backquotes.
+
+	* w3m-ccl.el (w3m-ccl-write-repeat, w3m-euc-japan-decoder)
+	(w3m-euc-japan-encoder, w3m-iso-latin-1-decoder)
+	(w3m-iso-latin-1-encoder): Don't use old-style backquotes.
+
+	* w3m-dtree.el (w3m-dtree-has-child): Don't use old-style backquotes.
+
+	* w3m-form.el (w3m-form-method, w3m-form-action, w3m-form-charlst)
+	(w3m-form-enctype, w3m-form-plist, w3m-form-get-property, w3m-form-put)
+	(w3m-form-get): Don't use old-style backquotes.
+
+	* w3m-namazu.el (w3m-namazu-default-index-customize-spec): Don't use
+	old-style backquotes.
+
+	* w3m-util.el (w3m-static-if, w3m-static-when, w3m-static-unless)
+	(w3m-condition-case, w3m-add-text-properties)
+	(w3m-get-text-property-around, w3m-action, w3m-anchor, w3m-image)
+	(w3m-submit, w3m-anchor-sequence): Don't use old-style backquotes.
+
+	* w3m.el (w3m-dirlist-cgi-program): Don't use old-style backquotes.
+
+	* w3mhack.el (char-before, match-string-no-properties)
+	(set-text-properties): Don't use old-style backquotes.
+
+	* w3m-filter.el: Set file's coding-system to euc-japan in order to
+	enable non-Mule XEmacsen to byte-compile this module.
+
 2007-08-31  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (top): Remove unnecessary space at the line end.

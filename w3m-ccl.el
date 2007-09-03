@@ -1,6 +1,6 @@
 ;;; w3m-ccl.el --- CCL programs to process Unicode and internal characters.
 
-;; Copyright (C) 2001, 2003, 2004, 2005, 2006
+;; Copyright (C) 2001, 2003, 2004, 2005, 2006, 2007
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -68,16 +68,16 @@
       (setq r1 (if (eq r0 'r1) 'r0 'r1)))
     (let ((unibyte (memq charset '(latin-iso8859-1 katakana-jisx0201))))
       (if (fboundp 'ccl-compile-write-multibyte-character)
-	  (` (((, r1) &= ?\x7f)
-	      (,@ (unless unibyte
-		    (` (((, r1) |= (((, r0) & ?\x7f) << 7))))))
-	      ((, r0) = (, (charset-id charset)))
-	      (write-multibyte-character (, r0) (, r1))
-	      (repeat)))
-	(` ((write (, (charset-id charset)))
-	    (,@ (unless unibyte
-		  (` ((write (, r0))))))
-	    (write-repeat (, r1)))))))
+	  `((,r1 &= ?\x7f)
+	    ,@(unless unibyte
+		`((,r1 |= ((,r0 & ?\x7f) << 7))))
+	    (,r0 = ,(charset-id charset))
+	    (write-multibyte-character ,r0 ,r1)
+	    (repeat))
+	`((write ,(charset-id charset))
+	  ,@(unless unibyte
+	      `((write ,r0)))
+	  (write-repeat ,r1)))))
 
   (defconst w3m-ccl-write-euc-japan-character
     (when (fboundp 'ccl-compile-read-multibyte-character)
@@ -148,53 +148,53 @@
 in NCR (Numeric Character References)."))
 
 (define-ccl-program w3m-euc-japan-decoder
-  (` (2
-      (loop
-       (read r0)
-       ;; Process normal EUC characters.
-       (if (r0 < ?\x80)
-	   (write-repeat r0))
-       (if (r0 > ?\xa0)
-	   ((read r1)
-	    (,@ (w3m-ccl-write-repeat 'japanese-jisx0208))))
-       (if (r0 == ?\x8e)
-	   ((read r1)
-	    (,@ (w3m-ccl-write-repeat 'katakana-jisx0201))))
-       (if (r0 == ?\x8f)
-	   ((read r0)
-	    (read r1)
-	    (,@ (w3m-ccl-write-repeat 'japanese-jisx0212))))
-       ;; Process internal characters used in w3m.
-       (,@ (mapcar (lambda (pair)
-		     (` (if (r0 == (, (car pair)))
-			    (write-repeat (, (cdr pair))))))
-		   w3m-internal-characters-alist))
-       (write-repeat r0)))))
+  `(2
+    (loop
+     (read r0)
+     ;; Process normal EUC characters.
+     (if (r0 < ?\x80)
+	 (write-repeat r0))
+     (if (r0 > ?\xa0)
+	 ((read r1)
+	  ,@(w3m-ccl-write-repeat 'japanese-jisx0208)))
+     (if (r0 == ?\x8e)
+	 ((read r1)
+	  ,@(w3m-ccl-write-repeat 'katakana-jisx0201)))
+     (if (r0 == ?\x8f)
+	 ((read r0)
+	  (read r1)
+	  ,@(w3m-ccl-write-repeat 'japanese-jisx0212)))
+     ;; Process internal characters used in w3m.
+     ,@(mapcar (lambda (pair)
+		 `(if (r0 == ,(car pair))
+		      (write-repeat ,(cdr pair))))
+	       w3m-internal-characters-alist)
+     (write-repeat r0))))
 
 (unless (get 'w3m-euc-japan-encoder 'ccl-program-idx)
   (define-ccl-program w3m-euc-japan-encoder
-    (` (1 (loop (read r0) (write-repeat r0))))))
+    `(1 (loop (read r0) (write-repeat r0)))))
 
 (define-ccl-program w3m-iso-latin-1-decoder
-  (` (2
-      (loop
-       (read r0)
-       ;; Process ASCII characters.
-       (if (r0 < ?\x80)
-	   (write-repeat r0))
-       ;; Process Latin-1 characters.
-       (if (r0 > ?\xa0)
-	   ((,@ (w3m-ccl-write-repeat 'latin-iso8859-1 'r1))))
-       ;; Process internal characters used in w3m.
-       (,@ (mapcar (lambda (pair)
-		     (` (if (r0 == (, (car pair)))
-			    (write-repeat (, (cdr pair))))))
-		   w3m-internal-characters-alist))
-       (write-repeat r0)))))
+  `(2
+    (loop
+     (read r0)
+     ;; Process ASCII characters.
+     (if (r0 < ?\x80)
+	 (write-repeat r0))
+     ;; Process Latin-1 characters.
+     (if (r0 > ?\xa0)
+	 (,@(w3m-ccl-write-repeat 'latin-iso8859-1 'r1)))
+     ;; Process internal characters used in w3m.
+     ,@(mapcar (lambda (pair)
+		 `(if (r0 == ,(car pair))
+		      (write-repeat ,(cdr pair))))
+	       w3m-internal-characters-alist)
+     (write-repeat r0))))
 
 (unless (get 'w3m-iso-latin-1-encoder 'ccl-program-idx)
   (define-ccl-program w3m-iso-latin-1-encoder
-    (` (1 (loop (read r0) (write-repeat r0))))))
+    `(1 (loop (read r0) (write-repeat r0)))))
 
 
 (provide 'w3m-ccl)

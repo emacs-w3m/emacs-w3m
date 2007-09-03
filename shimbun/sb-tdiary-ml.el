@@ -1,6 +1,6 @@
 ;;; sb-tdiary-ml.el --- shimbun backend for www.tDiary.org
 
-;; Copyright (C) 2003 Koichiro Ohba  <koichiro@meadowy.org>
+;; Copyright (C) 2003, 2007 Koichiro Ohba  <koichiro@meadowy.org>
 
 ;; Author: Koichiro Ohba  <koichiro@meadowy.org>
 ;; Keywords: news
@@ -45,11 +45,11 @@
   "<strong><a name=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</a></strong>,\n      <em>\\([^<]+\\)</em>")
 
 (defmacro shimbun-tdiary-ml-concat-url (shimbun url)
-  (` (concat (shimbun-url-internal (, shimbun))
-	     (nth 1 (assoc (shimbun-current-group-internal (, shimbun))
-			   shimbun-tdiary-ml-group-path-alist))
-	     "/"
-	     (, url))))
+  `(concat (shimbun-url-internal ,shimbun)
+	   (nth 1 (assoc (shimbun-current-group-internal ,shimbun)
+			 shimbun-tdiary-ml-group-path-alist))
+	   "/"
+	   ,url))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-tdiary-ml))
   (shimbun-tdiary-ml-concat-url shimbun "index.html"))

@@ -1,6 +1,6 @@
 ;;; sb-javaconf.el --- shimbun backend class for java-conference archive.
 
-;; Copyright (C) 2001, 2002, 2003, 2004 ABE Yasushi <yasushi@stbbs.net>
+;; Copyright (C) 2001, 2002, 2003, 2004, 2007 ABE Yasushi <yasushi@stbbs.net>
 
 ;; Author: ABE Yasushi <yasushi@stbbs.net>
 ;; Keywords: news
@@ -43,10 +43,10 @@
   "<strong><a NAME=\"\\([0-9]+\\)\" HREF=\"\\(msg[0-9]+\.html\\)\">\\([^<]+\\)\n</a></strong> <em>\\([^<]+\\)\n</em>")
 
 (defmacro shimbun-javaconf-concat-url (shimbun url)
-  (` (concat (shimbun-url-internal (, shimbun))
-	     (shimbun-current-group-internal shimbun)
-	     "/"
-	     (, url))))
+  `(concat (shimbun-url-internal ,shimbun)
+	   (shimbun-current-group-internal ,shimbun)
+	   "/"
+	   ,url))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-javaconf)
 					 &optional range)

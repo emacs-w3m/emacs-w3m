@@ -1,6 +1,7 @@
 ;;; sb-digiko.el --- shimbun backend for digiko-ML.
 
-;; Copyright (C) 2001, 2002, 2003, 2004 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001, 2002, 2003, 2004, 2007
+;; Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 
 ;; Author: Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 ;; Keywords: news
@@ -39,26 +40,26 @@
   "<STRONG><a name=\"\\([0-9]+\\)\" href=\"\\(msg[0-9]+.html\\)\">\\([^<]+\\)</a></STRONG>\n<UL><LI><EM>From</EM>: \\(.+\\) \\(\\(Sun\\|Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\), [ 0-9]+ [A-Z][a-z][a-z] [0-9]+ [0-2][0-9]:[0-5][0-9]:[0-5][0-9] .*\\)</LI>")
 
 (defmacro shimbun-digiko-get-headers (shimbun url headers)
-  (` (let ((case-fold-search t))
-       (goto-char (point-min))
-       (while (re-search-forward
-	       (shimbun-mhonarc-litemplate-regexp-internal (, shimbun))
-	       nil t)
-	 (let ((id (format "<%s%%%s>" (match-string 1)
-			   (shimbun-current-group-internal (, shimbun))))
-	       (xref (shimbun-expand-url (match-string 2) (, url)))
-	       (subject (shimbun-mhonarc-replace-newline-to-space
-			 (match-string 3)))
-	       (from (shimbun-mhonarc-replace-newline-to-space
-		      (match-string 4)))
-	       (date (match-string 5)))
-	   (if (shimbun-search-id (, shimbun) id)
-	       (throw 'stop (, headers))
-	     (push (shimbun-make-header 0
-					(shimbun-mime-encode-string subject)
-					(shimbun-mime-encode-string from)
-					date id "" 0 0 xref)
-		   (, headers))))))))
+  `(let ((case-fold-search t))
+     (goto-char (point-min))
+     (while (re-search-forward
+	     (shimbun-mhonarc-litemplate-regexp-internal ,shimbun)
+	     nil t)
+       (let ((id (format "<%s%%%s>" (match-string 1)
+			 (shimbun-current-group-internal ,shimbun)))
+	     (xref (shimbun-expand-url (match-string 2) ,url))
+	     (subject (shimbun-mhonarc-replace-newline-to-space
+		       (match-string 3)))
+	     (from (shimbun-mhonarc-replace-newline-to-space
+		    (match-string 4)))
+	     (date (match-string 5)))
+	 (if (shimbun-search-id ,shimbun id)
+	     (throw 'stop ,headers)
+	   (push (shimbun-make-header 0
+				      (shimbun-mime-encode-string subject)
+				      (shimbun-mime-encode-string from)
+				      date id "" 0 0 xref)
+		 ,headers))))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-digiko)
 					 &optional range)

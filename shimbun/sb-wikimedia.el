@@ -1,6 +1,6 @@
 ;;; sb-wikimedia.el --- shimbun backend for Wikimedia Mailing list -*- coding: utf-8; -*-
 
-;; Copyright (C) 2004, 2005 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2004, 2005, 2007 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: news
@@ -81,11 +81,11 @@
 (defvar shimbun-wikimedia-groups (mapcar 'car shimbun-wikimedia-group-path-alist))
 
 (defmacro shimbun-wikimedia-concat-url (shimbun url)
-  (` (concat (shimbun-url-internal (, shimbun))
-	     (nth 1 (assoc (shimbun-current-group-internal (, shimbun))
-			   shimbun-wikimedia-group-path-alist))
-	     "/"
-	     (, url))))
+  `(concat (shimbun-url-internal ,shimbun)
+	   (nth 1 (assoc (shimbun-current-group-internal ,shimbun)
+			 shimbun-wikimedia-group-path-alist))
+	   "/"
+	   ,url))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-wikimedia))
   (shimbun-expand-url

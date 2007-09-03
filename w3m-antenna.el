@@ -1,6 +1,6 @@
 ;;; w3m-antenna.el --- Utility to detect changes of WEB
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -108,19 +108,19 @@ that consists of:
 ")
 
 (defmacro w3m-antenna-site-key (site)
-  (` (car (, site))))
+  `(car ,site))
 (defmacro w3m-antenna-site-title (site)
-  (` (nth 1 (, site))))
+  `(nth 1 ,site))
 (defmacro w3m-antenna-site-class (site)
-  (` (nth 2 (, site))))
+  `(nth 2 ,site))
 (defmacro w3m-antenna-site-url (site)
-  (` (nth 3 (, site))))
+  `(nth 3 ,site))
 (defmacro w3m-antenna-site-last-modified (site)
-  (` (nth 4 (, site))))
+  `(nth 4 ,site))
 (defmacro w3m-antenna-site-size (site)
-  (` (nth 5 (, site))))
+  `(nth 5 ,site))
 (defmacro w3m-antenna-site-size-detected (site)
-  (` (nth 6 (, site))))
+  `(nth 6 ,site))
 
 (defcustom w3m-antenna-file
   (expand-file-name ".antenna" w3m-profile-directory)

@@ -1,6 +1,6 @@
 ;;; sb-chalow.el --- shimbun backend for chalow
 
-;; Copyright (C) 2003, 2004, 2005 OHASHI Akira <bg66@koka-in.org>
+;; Copyright (C) 2003, 2004, 2005, 2007 OHASHI Akira <bg66@koka-in.org>
 
 ;; Author: OHASHI Akira <bg66@koka-in.org>
 ;; Keywords: news
@@ -56,31 +56,31 @@ ADDRESS is the e-mail address for the diary owner."
 	       shimbun-chalow-group-alist)))
 
 (defmacro shimbun-chalow-get-headers (shimbun url headers &optional aux)
-  (` (let ((case-fold-search t))
-       (goto-char (point-max))
-       (while (re-search-backward "<a name=\"\\(\\([0-9][0-9][0-9][0-9]\\)-\\([0-9][0-9]\\)-\\([0-9][0-9]\\)-[0-9]+\\)\" href=\"\\([-0-9]+\.html#[-0-9]+\\)\"><span class=\"[ps]anchor\">.+</span></a> <span class=\"clitemheader\">\\(.+\\)</span>" nil t)
-	 (let ((id (match-string 1))
-	       (year (match-string 2))
-	       (month (match-string 3))
-	       (day (match-string 4))
-	       (url (match-string 5))
-	       (subject (match-string 6))
-	       date)
-	   (setq date (shimbun-make-date-string (string-to-number year)
-						(string-to-number month)
-						(string-to-number day)))
-	   (setq id (format "<%s.%s@chalow>"
-			    id
-			    (shimbun-current-group-internal (, shimbun))))
-	   (push (shimbun-make-header
-		  0
-		  (shimbun-mime-encode-string subject)
-		  (nth 2 (assoc (shimbun-current-group-internal shimbun)
-				shimbun-chalow-group-alist))
-		  date id "" 0 0 (concat
-				  (shimbun-index-url (, shimbun))
-				  url))
-		 (, headers)))))))
+  `(let ((case-fold-search t))
+     (goto-char (point-max))
+     (while (re-search-backward "<a name=\"\\(\\([0-9][0-9][0-9][0-9]\\)-\\([0-9][0-9]\\)-\\([0-9][0-9]\\)-[0-9]+\\)\" href=\"\\([-0-9]+\.html#[-0-9]+\\)\"><span class=\"[ps]anchor\">.+</span></a> <span class=\"clitemheader\">\\(.+\\)</span>" nil t)
+       (let ((id (match-string 1))
+	     (year (match-string 2))
+	     (month (match-string 3))
+	     (day (match-string 4))
+	     (url (match-string 5))
+	     (subject (match-string 6))
+	     date)
+	 (setq date (shimbun-make-date-string (string-to-number year)
+					      (string-to-number month)
+					      (string-to-number day)))
+	 (setq id (format "<%s.%s@chalow>"
+			  id
+			  (shimbun-current-group-internal ,shimbun)))
+	 (push (shimbun-make-header
+		0
+		(shimbun-mime-encode-string subject)
+		(nth 2 (assoc (shimbun-current-group-internal shimbun)
+			      shimbun-chalow-group-alist))
+		date id "" 0 0 (concat
+				(shimbun-index-url ,shimbun)
+				url))
+	       ,headers)))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-chalow)
 					 &optional range)
