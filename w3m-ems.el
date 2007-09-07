@@ -119,9 +119,9 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
   (make-coding-system coding-system 4 mnemonic docstring
 		      (cons decoder encoder)))
 
-;; For Emacsen prior to 23, redefine the ccl programs having been
-;; defined in w3m-ccl.el.
-(w3m-static-when (<= emacs-major-version 22)
+;; For Emacsen of which the `mule-version' is 5.x, redefine the ccl
+;; programs that been defined in w3m-ccl.el.
+(w3m-static-when (string-match "\\`5\\." mule-version)
   (let ((source
 	 ;; CCL program to convert multibyte char to ucs with emacs-unicode.
 	 `((if (r1 == ,(charset-id 'latin-iso8859-1))

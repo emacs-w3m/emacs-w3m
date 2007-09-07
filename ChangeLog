@@ -1,3 +1,11 @@
+2007-09-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-ems.el (w3m-euc-japan-encoder, w3m-iso-latin-1-encoder): Use
+	mule-version to decide whether to redefine them.
+
+	* w3m.el: Use emacs-version instead of emacs-major-version to show the
+	version of Emacs that emacs-w3m doesn't support.
+
 2007-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-local-file-type): Regard news:* urls as text/html.

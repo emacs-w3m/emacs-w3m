@@ -91,8 +91,10 @@
    ((>= emacs-major-version 21)
     (require 'w3m-ems))
    (t
-    (error "Emacs-w3m of this version no longer supports Emacs %d"
-	   emacs-major-version))))
+    (error "Emacs-w3m of this version no longer supports Emacs %s"
+	   (mapconcat 'identity
+		      (nbutlast (split-string emacs-version "\\."))
+		      ".")))))
 
 (require 'w3m-fb)
 (require 'w3m-hist)
