@@ -6013,10 +6013,6 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	       (= (match-beginning 9) (length url)))
       (setq url (substring url 0 (match-beginning 8)))
       (w3m-string-match-url-components url))
-    (when (and (not (zerop (length url)))
-	       (eq ?? (aref url 0)))
-      (setq url (concat "./" url))
-      (w3m-string-match-url-components url))
     ;; Remove an empty query part.
     (when (and (match-beginning 6)
 	       (= (match-beginning 7) (or (match-beginning 8)
@@ -6024,7 +6020,9 @@ compatibility which is described in Section 5.2 of RFC 2396.")
       (setq url (concat (substring url 0 (match-beginning 6))
 			(if (match-beginning 8)
 			    (substring url (match-beginning 8))
-			  "")))
+			  ""))
+	    base (progn (w3m-string-match-url-components base)
+			(substring base 0 (match-beginning 6))))
       (w3m-string-match-url-components url))
     (cond
      ((match-beginning 1)
@@ -6048,34 +6046,32 @@ compatibility which is described in Section 5.2 of RFC 2396.")
       (w3m-string-match-url-components base)
       (concat (substring base 0 (match-end 1)) url))
      ((> (match-end 5) (match-beginning 5))
-      ;; URL has a hierarchical part.
-      (if (eq ?/ (aref url (match-beginning 5)))
-	  ;; Its first character is the slash "/". => The hierarchical
-	  ;; part of URL has an absolute spec.
-	  (progn
-	    (w3m-string-match-url-components base)
-	    (concat (substring base 0 (or (match-end 3) (match-end 1)))
-		    url))
-	;; The hierarchical part of URL has a relative spec.
-	(let ((path-end (match-end 5))
-	      ;; See the following thread about a problem related to
-	      ;; the use of file-name-* functions for url string:
-	      ;; http://news.gmane.org/group/gmane.emacs.w3m/thread=4210
-	      file-name-handler-alist)
-	  (w3m-string-match-url-components base)
-	  (concat
-	   (substring base 0 (match-beginning 5))
-	   (if (member (match-string 2 base) w3m-url-hierarchical-schemes)
-	       (w3m-expand-path-name
-		(substring url 0 path-end)
-		(file-name-directory (match-string 5 base)))
-	     (substring url 0 path-end))
-	   (substring url path-end)))))
+      (let ((path-end (match-end 5))
+	    expanded-path
+	    ;; See the following thread about a problem related to
+	    ;; the use of file-name-* functions for url string:
+	    ;; http://news.gmane.org/group/gmane.emacs.w3m/thread=4210
+	    file-name-handler-alist)
+	(w3m-string-match-url-components base)
+	(setq expanded-path
+	      (w3m-expand-path-name
+	       (substring url 0 path-end)
+	       (or (file-name-directory (match-string 5 base))
+		   "/")))
+	(save-match-data
+	  (when (string-match "^/\\.\\./?" expanded-path)
+	    (setq expanded-path
+		  (concat "/" (substring expanded-path (match-end 0))))))
+	(concat
+	 (substring base 0 (match-beginning 5))
+	 (if (member (match-string 2 base) w3m-url-hierarchical-schemes)
+	     expanded-path
+	   (substring url 0 path-end))
+	 (substring url path-end))))
      ((match-beginning 6)
       ;; URL has a query part.
       (w3m-string-match-url-components base)
-      (concat (file-name-directory (substring base 0 (match-end 5)))
-	      url))
+      (concat (substring base 0 (match-end 5)) url))
      (t
       ;; URL has only a fragment part.
       (w3m-string-match-url-components base)
