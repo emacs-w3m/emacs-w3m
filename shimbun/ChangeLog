@@ -1,3 +1,8 @@
+2007-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-group-table): Use generic urls for book
+	and rss groups.
+
 2007-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-airs.el (shimbun-airs-concat-url): Don't use old-style backquotes.

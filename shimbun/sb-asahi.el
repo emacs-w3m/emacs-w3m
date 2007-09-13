@@ -168,7 +168,7 @@ Every `.' in NAME will be replaced with `/'."
 		;; 10. hour:min:sec
 		"\\([012][0-9]:[0-5][0-9]:[0-5][0-9]\\)")
 	       1 3 4 5 7 8 9 10 2 nil 6)))
-    `(("book" "RSS" "http://feeds.asahi.com/asahi/Book" ,@rss)
+    `(("book" "RSS" "http://www3.asahi.com/rss/book.rdf" ,@rss)
       ("book.column" "コラム")
       ("book.news" "出版ニュース" nil ,@book)
       ("book.paperback" "文庫・新書")
@@ -261,7 +261,7 @@ Every `.' in NAME will be replaced with `/'."
       ("life.column" "コラム")
       ("national" "社会" "%s/list.html" ,@default)
       ("politics" "政治" "%s/list.html" ,@default)
-      ("rss" "RSS" "http://feeds.asahi.com/asahi/TopHeadlines" ,@rss)
+      ("rss" "RSS" "http://www3.asahi.com/rss/index.rdf" ,@rss)
       ("science" "サイエンス" "%s/list.html" ,@default)
       ("shopping" "ショッピング" "%s/news/"
        ,@(shimbun-asahi-make-regexp "shopping.news"))
