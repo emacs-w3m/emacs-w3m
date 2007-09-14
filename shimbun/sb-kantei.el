@@ -83,7 +83,7 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 	  ((string-equal group "m-magazine") ;; Backward compatibility.
 	   (shimbun-mime-encode-string "小泉純一郎"))
 	  (t
-	   (shimbun-mime-encode-string "阿部晋三")))))
+	   (shimbun-mime-encode-string "安倍晋三")))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-kantei)
 					 &optional range)
