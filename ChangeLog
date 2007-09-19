@@ -1,5 +1,11 @@
 2007-09-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-examine-command-line-args): Rewrite.
+	(w3m): Always call it; set the 2nd arg new-session when Emacs 21 or
+	XEmacs runs in the batch mode.
+
+2007-09-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-examine-command-line-args): Inhibit Emacs head from
 	displaying startup screen when emacs-w3m runs in the batch mode;
 	improve parsing of arguments.

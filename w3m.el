@@ -8577,53 +8577,45 @@ The `w3m' Lisp command can be invoked even in the batch mode, e.g.,
 the very case, it extracts a url string from the command line
 arguments and passes it to the `w3m' command.  If a url is omitted, it
 defaults to the value of `w3m-home-page' or \"about:\"."
-  (let ((url (car command-line-args-left))
-	(directives '("-f" "-funcall" "--funcall" "-e"))
-	args directive num)
-    (if (and url
-	     (not (string-match "\\`-" url)))
-	(when (and
-	       (setq args (w3m-static-if (featurep 'xemacs)
-			      ;; Elements of `command-line-args' and
-			      ;; `command-line-args-left' aren't the
-			      ;; identical objects under XEmacs.
-			      (member url command-line-args)
-			    (memq url command-line-args)))
-	       (>= (setq num (- (length command-line-args) (length args) 1))
-		   2)
-	       (equal (nth num command-line-args) "w3m")
-	       (member (setq directive (nth (1- num) command-line-args))
-		       directives))
-	  (setq command-line-args-left (cdr command-line-args-left))
-	  (setcdr (nthcdr (- num 2) command-line-args)
-		  (cons (concat directive " w3m " url)
-			(nthcdr (+ num 2) command-line-args))))
-      (while directives
-	(setq directive (car directives))
-	(if (and (setq args (member directive command-line-args))
-		 (progn
-		   (while (and (not (equal (cadr args) "w3m"))
-			       (setq args (member directive args))))
-		   args))
-	    (setq directives nil)
-	  (setq directives (cdr directives))))
-      (when args
-	(setq num (- (length command-line-args) (length args)))
-	(setcdr (nthcdr (1- num) command-line-args)
-		(cons (concat directive " w3m")
-		      (nthcdr (+ num 2) command-line-args)))
-	(setq url (or w3m-home-page "about:"))))
-    (when url
-      (when (and (boundp 'inhibit-startup-screen)
-		 (not (symbol-value 'inhibit-startup-screen)))
-	(let ((fn (make-symbol "w3m-inhibit-startup-screen")))
-	  (dont-compile (setq inhibit-startup-screen t))
-	  (fset fn `(lambda nil
-		      (setq inhibit-startup-screen nil)
-		      (remove-hook 'window-setup-hook ',fn)
-		      (fmakunbound ',fn)))
-	  (add-hook 'window-setup-hook fn)))
-      url)))
+  ;; Inhibit the startup screen.  Since XEmacs provides
+  ;; `inhibit-startup-message' as a constant, we don't modify the value.
+  (unless (featurep 'xemacs)
+    (let ((var (cond ((boundp 'inhibit-startup-screen)
+		      'inhibit-startup-screen)
+		     ((boundp 'inhibit-startup-message)
+		      'inhibit-startup-message)))
+	  fn)
+      (when (and var
+		 (not (symbol-value var)))
+	(set var t)
+	(setq fn (make-symbol "w3m-inhibit-startup-screen"))
+	(fset fn `(lambda nil
+		    (set ',var nil)
+		    (remove-hook 'window-setup-hook ',fn)
+		    (fmakunbound ',fn)))
+	(add-hook 'window-setup-hook fn))))
+  (let ((directives '("-f" "-funcall" "--funcall" "-e"))
+	args)
+    (prog1
+	(if (and command-line-args-left
+		 (not (string-match "\\`-" (car command-line-args-left))))
+	    (pop command-line-args-left)
+	  (setq args (nthcdr (- (length command-line-args)
+				(length command-line-args-left)
+				2)
+			     command-line-args))
+	  (when (and (equal (cadr args) "w3m")
+		     (member (car args) directives))
+	    (or w3m-home-page "about:")))
+      (unless
+	  (and command-line-args-left
+	       (progn
+		 (setq args (reverse command-line-args-left))
+		 (while (and args
+			     (not (and (setq args (cdr (member "w3m" args)))
+				       (member (car args) directives)))))
+		 args))
+	(defalias 'w3m-examine-command-line-args 'ignore)))))
 
 ;;;###autoload
 (defun w3m (&optional url new-session interactive-p)
@@ -8688,20 +8680,17 @@ interactive command in the batch mode."
       ;; interactive-p
       (not url))))
   (let ((nofetch (eq url 'popup))
-	(buffer (unless new-session (w3m-alive-p t)))
 	(w3m-pop-up-frames (and interactive-p w3m-pop-up-frames))
-	(w3m-pop-up-windows (and interactive-p w3m-pop-up-windows)))
-    (unless (and (stringp url)
-		 (> (length url) 0))
-      (if buffer
-	  (setq nofetch t)
-	;; This command was possibly be called non-interactively or as
-	;; the batch mode.
-	(setq url (or (w3m-examine-command-line-args)
-		      ;; Unlikely but this function was called with no url.
-		      "about:")
-	      nofetch nil)))
-    (unless buffer
+	(w3m-pop-up-windows (and interactive-p w3m-pop-up-windows))
+	buffer)
+    (unless (or nofetch (and (stringp url) (> (length url) 0)))
+      ;; This command was possibly be called non-interactively or as
+      ;; the batch job.
+      (if (setq url (w3m-examine-command-line-args))
+	  (setq new-session (and w3m-make-new-session (w3m-alive-p)))
+	;; Unlikely but this function was called with no url.
+	(setq url (or w3m-home-page "about:"))))
+    (unless (setq buffer (unless new-session (w3m-alive-p t)))
       ;; It means `new-session' is non-nil or there's no emacs-w3m buffer.
       ;; At any rate, we create a new emacs-w3m buffer in this case.
       (with-current-buffer (setq buffer (w3m-generate-new-buffer "*w3m*"))
