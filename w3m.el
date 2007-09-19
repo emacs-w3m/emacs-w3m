@@ -8597,8 +8597,7 @@ defaults to the value of `w3m-home-page' or \"about:\"."
 	  (setq command-line-args-left (cdr command-line-args-left))
 	  (setcdr (nthcdr (- num 2) command-line-args)
 		  (cons (concat directive " w3m " url)
-			(nthcdr (+ num 2) command-line-args)))
-	  url)
+			(nthcdr (+ num 2) command-line-args))))
       (while directives
 	(setq directive (car directives))
 	(if (and (setq args (member directive command-line-args))
@@ -8609,20 +8608,22 @@ defaults to the value of `w3m-home-page' or \"about:\"."
 	    (setq directives nil)
 	  (setq directives (cdr directives))))
       (when args
-	(when (and (boundp 'inhibit-startup-screen)
-		   (not (symbol-value 'inhibit-startup-screen)))
-	  (let ((fn (make-symbol "w3m-inhibit-startup-screen")))
-	    (dont-compile (setq inhibit-startup-screen t))
-	    (fset fn `(lambda nil
-			(setq inhibit-startup-screen nil)
-			(remove-hook 'window-setup-hook ',fn)
-			(fmakunbound ',fn)))
-	    (add-hook 'window-setup-hook fn)))
 	(setq num (- (length command-line-args) (length args)))
 	(setcdr (nthcdr (1- num) command-line-args)
 		(cons (concat directive " w3m")
 		      (nthcdr (+ num 2) command-line-args)))
-	(or w3m-home-page "about:")))))
+	(setq url (or w3m-home-page "about:"))))
+    (when url
+      (when (and (boundp 'inhibit-startup-screen)
+		 (not (symbol-value 'inhibit-startup-screen)))
+	(let ((fn (make-symbol "w3m-inhibit-startup-screen")))
+	  (dont-compile (setq inhibit-startup-screen t))
+	  (fset fn `(lambda nil
+		      (setq inhibit-startup-screen nil)
+		      (remove-hook 'window-setup-hook ',fn)
+		      (fmakunbound ',fn)))
+	  (add-hook 'window-setup-hook fn)))
+      url)))
 
 ;;;###autoload
 (defun w3m (&optional url new-session interactive-p)
