@@ -851,6 +851,13 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 						   header)
   (shimbun-yomiuri-prepare-article shimbun header))
 
+(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-yomiuri)
+						    header)
+  (when (luna-call-next-method)
+    (unless (shimbun-prefer-text-plain-internal shimbun)
+      (shimbun-break-long-japanese-lines))
+    t))
+
 (provide 'sb-yomiuri)
 
 ;;; sb-yomiuri.el ends here

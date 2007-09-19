@@ -1,3 +1,7 @@
+2007-09-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-yomiuri.el (shimbun-clear-contents): Break long lines.
+
 2007-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-group-table): Use generic urls for book
