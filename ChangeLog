@@ -1,3 +1,9 @@
+2007-09-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-examine-command-line-args): Inhibit Emacs head from
+	displaying startup screen when emacs-w3m runs in the batch mode;
+	improve parsing of arguments.
+
 2007-09-13  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-expand-path-name): Save the matched data surely.
