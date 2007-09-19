@@ -8577,45 +8577,47 @@ The `w3m' Lisp command can be invoked even in the batch mode, e.g.,
 the very case, it extracts a url string from the command line
 arguments and passes it to the `w3m' command.  If a url is omitted, it
 defaults to the value of `w3m-home-page' or \"about:\"."
-  ;; Inhibit the startup screen.  Since XEmacs provides
-  ;; `inhibit-startup-message' as a constant, we don't modify the value.
-  (unless (featurep 'xemacs)
-    (let ((var (cond ((boundp 'inhibit-startup-screen)
-		      'inhibit-startup-screen)
-		     ((boundp 'inhibit-startup-message)
-		      'inhibit-startup-message)))
-	  fn)
-      (when (and var
-		 (not (symbol-value var)))
-	(set var t)
-	(setq fn (make-symbol "w3m-inhibit-startup-screen"))
-	(fset fn `(lambda nil
-		    (set ',var nil)
-		    (remove-hook 'window-setup-hook ',fn)
-		    (fmakunbound ',fn)))
-	(add-hook 'window-setup-hook fn))))
-  (let ((directives '("-f" "-funcall" "--funcall" "-e"))
+  (let ((url (car command-line-args-left))
+	(directives '("-f" "-funcall" "--funcall" "-e"))
 	args)
-    (prog1
-	(if (and command-line-args-left
-		 (not (string-match "\\`-" (car command-line-args-left))))
-	    (pop command-line-args-left)
-	  (setq args (nthcdr (- (length command-line-args)
-				(length command-line-args-left)
-				2)
-			     command-line-args))
-	  (when (and (equal (cadr args) "w3m")
-		     (member (car args) directives))
-	    (or w3m-home-page "about:")))
-      (unless
-	  (and command-line-args-left
-	       (progn
-		 (setq args (reverse command-line-args-left))
-		 (while (and args
-			     (not (and (setq args (cdr (member "w3m" args)))
-				       (member (car args) directives)))))
-		 args))
-	(defalias 'w3m-examine-command-line-args 'ignore)))))
+    (if (and url (not (string-match "\\`-" url)))
+	(setq command-line-args-left (cdr command-line-args-left))
+      (setq args (nthcdr (- (length command-line-args)
+			    (length command-line-args-left)
+			    2)
+			 command-line-args))
+      (when (and (equal (cadr args) "w3m")
+		 (member (car args) directives))
+	(setq url (or w3m-home-page "about:"))))
+    (unless
+	(and command-line-args-left
+	     (progn
+	       (setq args (reverse command-line-args-left))
+	       (while (and args
+			   (not (and (setq args (cdr (member "w3m" args)))
+				     (member (car args) directives)))))
+	       args))
+      (defalias 'w3m-examine-command-line-args 'ignore))
+    ;; Inhibit the startup screen.
+    (when (and url
+	       ;; Since XEmacs provides `inhibit-startup-message' as
+	       ;; a constant, we don't modify the value.
+	       (not (featurep 'xemacs)))
+      (let ((var (cond ((boundp 'inhibit-startup-screen)
+			'inhibit-startup-screen)
+		       ((boundp 'inhibit-startup-message)
+			'inhibit-startup-message)))
+	    fn)
+	(when (and var
+		   (not (symbol-value var)))
+	  (set var t)
+	  (setq fn (make-symbol "w3m-inhibit-startup-screen"))
+	  (fset fn `(lambda nil
+		      (set ',var nil)
+		      (remove-hook 'window-setup-hook ',fn)
+		      (fmakunbound ',fn)))
+	  (add-hook 'window-setup-hook fn))))
+    url))
 
 ;;;###autoload
 (defun w3m (&optional url new-session interactive-p)
