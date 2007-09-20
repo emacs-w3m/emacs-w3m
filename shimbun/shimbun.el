@@ -1082,6 +1082,24 @@ integer n:    Retrieve n pages of header indices.")
 (luna-define-method shimbun-close ((shimbun shimbun))
   (shimbun-close-group shimbun))
 
+;;; Virtual class for Newspapers:
+(luna-define-class shimbun-newspaper () ())
+(luna-define-method shimbun-footer ((shimbun shimbun-newspaper) header
+				    &optional html)
+  (if html
+      (concat "<div align=\"left\">\n--&nbsp;<br>\n<i>"
+	      (shimbun-server-name shimbun)
+	      " holds the copyright of this article.<br>\n"
+	      "The original article is <a href=\""
+	      (shimbun-article-base-url shimbun header) "\">"
+	      "here</a>.\n</i></div>\n")
+    (concat "-- \n"
+	    (shimbun-server-name shimbun)
+	    " holds the the copyright of this article.\n"
+	    "The original article is in:\n"
+	    (shimbun-article-base-url shimbun header)
+	    "\n")))
+
 ;;; Virtual class for Japanese Newspapers:
 (luna-define-class shimbun-japanese-newspaper () ())
 (luna-define-method shimbun-footer ((shimbun shimbun-japanese-newspaper) header
