@@ -4799,6 +4799,43 @@ mainichi.sports mainichi.sports.column mainichi.today mainichi.yougo
 (setq shimbun-mainichi-prefer-text-plain t)
 @end lisp
 
+@item @uref{http://www.nytimes.com/, ニューヨークタイムズ}
+nytimes.homepage nytimes.news.business
+nytimes.news.business.media&advertising
+nytimes.news.business.worldbusiness nytimes.news.business.smallbusiness
+nytimes.news.business.yourmoney nytimes.news.business.dealbook
+nytimes.news.education nytimes.news.health nytimes.news.health.policy
+nytimes.news.health.psychology nytimes.news.world
+nytimes.news.world.africa nytimes.news.world.americas
+nytimes.news.world.asia nytimes.news.world.europe
+nytimes.news.world.middleeast nytimes.news.us nytimes.news.newyork
+nytimes.news.newyork.thecity nytimes.news.newyork.metro
+nytimes.news.obituaries nytimes.news.science nytimes.news.science.earth
+nytimes.news.science.nutrition nytimes.news.science.space
+nytimes.news.sports nytimes.news.sports.basketball.college
+nytimes.news.sports.football.college nytimes.news.sports.golf
+nytimes.news.sports.hockey nytimes.news.sports.other
+nytimes.news.sports.baseball.pro nytimes.news.sports.basketball.pro
+nytimes.news.sports.football.pro nytimes.news.sports.soccer
+nytimes.news.technology nytimes.news.technology.bits
+nytimes.news.technology.circuits nytimes.news.technology.pogue
+nytimes.news.washington nytimes.features.arts
+nytimes.features.arts.design nytimes.features.arts.music
+nytimes.features.arts.television nytimes.features.automobiles
+nytimes.features.books nytimes.features.books.review
+nytimes.features.dining&wine nytimes.features.fashion
+nytimes.features.fashion.thursdaystyles
+nytimes.features.fashion.weddings nytimes.features.home&garden
+nytimes.features.jobs nytimes.features.magazine
+nytimes.features.movie.news nytimes.features.movie.reviews
+nytimes.features.realestate nytimes.features.theater
+nytimes.features.travel nytimes.features.travel.escapes
+nytimes.features.week_in_review nytimes.additional.pop_top
+nytimes.additional.multimedia nytimes.opinion.editorial
+
+2007年9月19日、ニューヨークタイムズは無料でニュース記事を提供し始めまし
+た。
+
 @item @uref{http://www.nikkansports.com/, 日刊スポーツ}
 nikkansports.baseball nikkansports.soccer nikkansports.sports
 nikkansports.battle nikkansports.horseracing nikkansports.entertainment

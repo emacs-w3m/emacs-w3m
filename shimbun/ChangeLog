@@ -1,3 +1,9 @@
+2007-09-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nytimes.el: New file.
+
+	* shimbun.el (shimbun-newspaper): New class.
+
 2007-09-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-yomiuri.el (shimbun-clear-contents): Break long lines.
