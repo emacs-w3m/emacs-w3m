@@ -1242,6 +1242,52 @@ the following form returns the present time of Japan, wherever you are.
       (while (re-search-forward begin-tag nil t)
 	(delete-region (match-beginning 0) (match-end 0))))))
 
+(defun shimbun-end-of-tag (tag-name &optional include-whitespace)
+  "Move point to end of TAG.  Inner nested tags are skipped.
+I.e., with the following contents for example, it moves point from
+the leftmost tag to the end-point of the rightmost tag:
+
+<tag ...>...<tag ...>...<tag ...>...</tag>...</tag>...</tag>
+
+Return the end-point and set the match-data #0.
+If INCLUDE-WHITESPACE is non-nil, include leading and trailing
+whitespace."
+  (let ((init (point))
+	(st (concat "<" tag-name "\\(?:[\t\n\r ]*\\|[\t\n\r ]+[^>]+\\)>"))
+	(nd (concat "</" tag-name "\\(?:[\t\n\r ]*\\|[\t\n\r ]+[^>]+\\)>"))
+	(case-fold-search t)
+	start beg end)
+    (condition-case nil
+	(progn
+	  (setq start (if (looking-at (concat "[\n\t ]*\\(" st "\\)"))
+			  (match-beginning 1)
+			(search-backward "<")
+			(if (looking-at st)
+			    (match-beginning 0)
+			  (error ""))))
+	  (re-search-forward nd)
+	  (setq end (match-end 0))
+	  (re-search-backward st)
+	  (while (/= (setq beg (match-beginning 0)) start)
+	    (goto-char end)
+	    (re-search-forward nd)
+	    (setq end (match-end 0))
+	    (goto-char beg)
+	    (re-search-backward st))
+	  (when include-whitespace
+	    (skip-chars-backward "\n\t "))
+	  (setq start (point-marker))
+	  (goto-char end)
+	  (when include-whitespace
+	    (skip-chars-forward "\n\t "))
+	  (prog1
+	      (point)
+	    (set-match-data (list start (point-marker)))))
+      (error
+       (set-match-data nil)
+       (goto-char init)
+       nil))))
+
 (defun shimbun-remove-markup ()
   "Remove all HTML markup, leaving just plain text."
   (save-excursion
