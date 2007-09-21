@@ -38,20 +38,6 @@
 
 (defvar shimbun-nytimes-server-name "The New York Times")
 
-(defvar shimbun-nytimes-content-start
-  "\\(?:\
-<p[\t\n ]+class=\"post-author\">\
-\\|\
-<NYT_\\(?:BYLINE\\|TEXT\\)\\(?:[\t\n ]*\\|[\t\n ]+[^>]+\\)>\
-\\)[\t\n ]*")
-
-(defvar shimbun-nytimes-content-end
-  "[\t\n ]*\\(?:\
-\\(?:<[^>]+>[\t\n ]*\\)*<!-+[\t\n ]*end[\t\n ]+post-content[\t\n ]*-+>\
-\\|\
-<\\(?:/?NYT_UPDATE_BOTTOM\\|/NYT_TEXT\\)\\(?:[\t\n ]+[^>]+\\)?>\
-\\)")
-
 (defvar shimbun-nytimes-group-table
   '(("homepage" "NYTIMES.COM HOMEPAGE"
      "http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml")
@@ -206,8 +192,8 @@
     ("additional.pop_top" "MOST E-MAILED ARTICLES"
      "http://www.nytimes.com/services/xml/rss/nyt/pop_top.xml")
 
-    ("additional.multimedia" "MULTIMEDIA"
-     "http://www.nytimes.com/services/xml/rss/nyt/Multimedia.xml")
+    ;;("additional.multimedia" "MULTIMEDIA"
+    ;; "http://www.nytimes.com/services/xml/rss/nyt/Multimedia.xml")
 
     ("opinion.editorial" "EDITORIALS / OP-ED"
      "http://www.nytimes.com/services/xml/rss/nyt/Opinion.xml")))
@@ -252,20 +238,54 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
 
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-nytimes)
 						    header)
-  (if (luna-call-next-method)
-      (progn
-	;; Insert a new line after every image.
-	(while (re-search-forward "\\(<img[\t\n ]+[^>]+>\\)[\t\n ]*" nil t)
-	  (replace-match "\\1<br>"))
-	;; Remove the `Skip to next paragraph' buttons.
-	(goto-char (point-min))
-	(while (re-search-forward "[\t\n ]*\\(?:<div[\t\n ]+[^>]+>[\t\n ]*\\)*\
+  (shimbun-strip-cr)
+  (let ((start "\
+\\(?:\
+<p[\t\n ]+class=\"post-author\">\
+\\|\
+<NYT_\\(?:BYLINE\\|TEXT\\)\\(?:[\t\n ]*\\|[\t\n ]+[^>]+\\)>\
+\\)[\t\n ]*")
+	(end "[\t\n ]*\
+\\(?:\
+\\(?:<[^>]+>[\t\n ]*\\)*<!-+[\t\n ]*end[\t\n ]+post-content[\t\n ]*-+>\
+\\|\
+<\\(?:/?NYT_UPDATE_BOTTOM\\|/NYT_TEXT\\)\\(?:[\t\n ]+[^>]+\\)?>\
+\\)")
+	(case-fold-search t)
+	name)
+    (goto-char (point-min))
+    (if (and (re-search-forward start nil t)
+	     (progn
+	       (save-restriction
+		 (narrow-to-region (point-min) (match-end 0))
+		 (if (and (search-backward "</NYT_HEADLINE>" nil t)
+			  (re-search-forward "<div[\t\n ]+class=\"image\""
+					     nil t)
+			  (progn
+			    (setq start (match-beginning 0))
+			    (shimbun-end-of-tag "div")))
+		     (progn
+		       (delete-region (match-end 0) (point-max))
+		       (delete-region (point-min) start)
+		       (goto-char (point-max)))
+		   (delete-region (point-min) (point-max))))
+	       (re-search-forward end nil t)))
+	(progn
+	  (delete-region (match-beginning 0) (point-max))
+	  ;; Insert a new line after every image.
+	  (goto-char (point-min))
+	  (while (re-search-forward "\\(<img[\t\n ]+[^>]+>\\)[\t\n ]*" nil t)
+	    (replace-match "\\1<br>"))
+	  ;; Remove the `Skip to next paragraph' buttons.
+	  (goto-char (point-min))
+	  (while (re-search-forward "\[\t\n ]*\
+\\(?:<div[\t\n ]+[^>]+>[\t\n ]*\\)*\
 <a[\t\n ]+href=\"#\\([^\"]+\\)\"[^>]*>[\t\n ]*\
 Skip[\t\n ]+to[\t\n ]+next[\t\n ]+paragraph[\t\n ]*</a>[\t\n ]*"
-				  nil t)
-	  (let ((start (match-beginning 0))
-		(end (match-end 0))
-		(name (match-string 1)))
+				    nil t)
+	    (setq start (match-beginning 0)
+		  end (match-end 0)
+		  name (match-string 1))
 	    (when (re-search-forward (concat "[\t\n ]*<a[\t\n ]+name=\""
 					     (regexp-quote name)
 					     "\"[^>]*>[\t\n ]*</a>[\t\n ]*")
@@ -273,10 +293,10 @@ Skip[\t\n ]+to[\t\n ]+next[\t\n ]+paragraph[\t\n ]*</a>[\t\n ]*"
 	      ;;(delete-region (match-beginning 0) (match-end 0))
 	      ;; NYTimes is apt to forget to put this.
 	      (replace-match "</ul>")
-	      (delete-region start end))))
-	;; Remove Next/Previous buttons.
-	(goto-char (point-min))
-	(let (start end)
+	      (delete-region (goto-char start) end)
+	      (insert "\n")))
+	  ;; Remove Next/Previous buttons.
+	  (goto-char (point-min))
 	  (when (and (re-search-forward "[\t\n ]*<div[\t\n ]+id=\"pageLinks\">"
 					nil t)
 		     (progn
@@ -290,11 +310,53 @@ Skip[\t\n ]+to[\t\n ]+next[\t\n ]+paragraph[\t\n ]*</a>[\t\n ]*"
 		     (re-search-forward "class=\"\\(?:next\\|previous\\)\"\
 \\|title=\"\\(?:next\\|previous\\)[\t\n ]+page\""
 					end t))
-	    (delete-region start end)))
-	t)
-    (erase-buffer)
-    (insert "<html><body>This article may have been expired.</body></html>\n")
-    nil))
+	    (delete-region (goto-char start) end)
+	    (insert "\n"))
+	  ;; Remove `Enlarge This Image', `Multimedia', and `Video'.
+	  (goto-char (point-min))
+	  (while (and (re-search-forward "<div[\t\n ]+\
+\\(?:class=\"enlargeThis\\|id=\"inlineMultimedia\
+\\|class=\"inlineVideo\\(?:[\t\n ]+[^\"]+\\)?\\)\""
+					 nil t)
+		      (shimbun-end-of-tag "div" t))
+	    (replace-match "\n"))
+	  ;; Remove javascripts.
+	  (goto-char (point-min))
+	  (while (and (re-search-forward "[\t\n ]*\
+<a[\t\n ]+href=\"javascript:[^>]+>[\t\n ]*"
+					 nil t)
+		      (progn
+			(setq start (match-beginning 0)
+			      end (match-end 0))
+			(re-search-forward "[\t\n ]*</a>[\t\n ]*" nil t)))
+	    (replace-match "\n")
+	    (delete-region (goto-char start) end)
+	    (insert "\n"))
+	  ;; Add page delimiters.
+	  (goto-char (point-min))
+	  (while (re-search-forward "[\t\n ]*\\(?:<p>[\t\n ]*\\)+\
+\\(<font[\t\n ]+[^>]+>[\t\n ]*(Page[\t\n ]+[0-9]+[\t\n ]+of[\t\n ]+[0-9]+)\
+\[\t\n ]*</font>\\)\\(?:[\t\n ]*<p>\\)+[\t\n ]*"
+				    nil t)
+	    (replace-match "\n&#012\\1\n<p>"))
+	  t)
+      (erase-buffer)
+      (insert
+       "<html><body><i>This article may have been expired,\
+ use the format different from the ordinary style that NYTimes uses,\
+ or have not been successful to fetch.</i></body></html>\n")
+      nil)))
+
+(luna-define-method shimbun-get-headers :around ((shimbun shimbun-nytimes)
+						 &optional range)
+  ;; Show the group name in the From header.
+  (let ((name (cadr (assoc (shimbun-current-group-internal shimbun)
+			   shimbun-nytimes-group-table)))
+	(headers (luna-call-next-method)))
+    (dolist (header headers headers)
+      (shimbun-header-set-from header
+			       (concat (shimbun-header-from header)
+				       " <" name ">")))))
 
 ;; FIXME: but what should be fixed is the NYTimes site.  In some links,
 ;; NYTimes uses things likely to be misidentified as entities.  For
@@ -305,9 +367,9 @@ Skip[\t\n ]+to[\t\n ]+next[\t\n ]+paragraph[\t\n ]*</a>[\t\n ]*"
 ;; =rssnyt&emc=rss&adxnnlx=1190281743-dIyIGglNew7j8w0caVNw7g">
 ;;
 ;; "&part" in it is decoded into a certain character irreversibly and
-;; we cannot access the page the decoded url points to.
+;; we cannot access the page that the decoded url points to.
 ;; This workaround disables decoding of entities when parsing a url
-;; that points to the next page of an article.
+;; to which the current page is redirected by refreshing.
 (luna-define-method shimbun-article :around ((shimbun shimbun-nytimes)
 					     header &optional outbuf)
   (let ((fn (symbol-function 'w3m-decode-entities-string)))
