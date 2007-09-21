@@ -1,3 +1,7 @@
+2007-09-21  TAKAHASHI Kaoru  <kaoru@kaisei.org>
+
+	* doc/ptexinfmt.el: Support @fonttextsize, @textdegree.
+
 2007-09-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-examine-command-line-args): Rewrite.
