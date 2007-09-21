@@ -1,3 +1,15 @@
+2007-09-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nytimes.el (shimbun-nytimes-content-start)
+	(shimbun-nytimes-content-end): Abolish.
+	(shimbun-nytimes-group-table): Remove additional.multimedia group.
+	(shimbun-clear-contents): Don't use parent function to extract article
+	contents; don't miss headline image and caption; remove useless things
+	further; add page delimiters.
+	(shimbun-get-headers): Show the group name in the From header.
+
+	* shimbun.el (shimbun-end-of-tag): New function.
+
 2007-09-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nytimes.el: New file.

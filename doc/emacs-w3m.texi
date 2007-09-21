@@ -4796,7 +4796,7 @@ nytimes.features.movie.news nytimes.features.movie.reviews
 nytimes.features.realestate nytimes.features.theater
 nytimes.features.travel nytimes.features.travel.escapes
 nytimes.features.week_in_review nytimes.additional.pop_top
-nytimes.additional.multimedia nytimes.opinion.editorial
+nytimes.opinion.editorial
 
 The New York Times began to offer news articles for free on September
 19, 2007.
