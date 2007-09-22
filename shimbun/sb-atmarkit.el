@@ -83,6 +83,15 @@
 					 header)
   "http://www.atmarkit.co.jp/club/print/print.php")
 
+(luna-define-method shimbun-get-headers :around ((shimbun shimbun-atmarkit)
+						 &optional range)
+  (mapcar
+   (lambda (header)
+     (shimbun-header-set-xref header
+			      (shimbun-real-url (shimbun-header-xref header)))
+     header)
+   (luna-call-next-method)))
+
 (luna-define-method shimbun-multi-next-url ((shimbun shimbun-atmarkit)
 					    header url)
   (goto-char (point-max))

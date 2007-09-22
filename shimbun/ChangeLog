@@ -1,3 +1,8 @@
+2007-09-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* sb-atmarkit.el (shimbun-get-headers): New method to process
+	redirections of URLs given by RSS feeds.
+
 2007-09-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nytimes.el (shimbun-nytimes-content-start)
