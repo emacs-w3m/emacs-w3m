@@ -358,26 +358,6 @@ Skip[\t\n ]+to[\t\n ]+next[\t\n ]+paragraph[\t\n ]*</a>[\t\n ]*"
 			       (concat (shimbun-header-from header)
 				       " <" name ">")))))
 
-;; FIXME: but what should be fixed is the NYTimes site.  In some links,
-;; NYTimes uses things likely to be misidentified as entities.  For
-;; example:
-;;
-;; <meta http-equiv=refresh content="8;url=/2007/09/20/science/20foss\
-;; il.html?ei=5088&en=5571610a49ff5906&ex=1347940800&adxnnl=1&partner\
-;; =rssnyt&emc=rss&adxnnlx=1190281743-dIyIGglNew7j8w0caVNw7g">
-;;
-;; "&part" in it is decoded into a certain character irreversibly and
-;; we cannot access the page that the decoded url points to.
-;; This workaround disables decoding of entities when parsing a url
-;; to which the current page is redirected by refreshing.
-(luna-define-method shimbun-article :around ((shimbun shimbun-nytimes)
-					     header &optional outbuf)
-  (let ((fn (symbol-function 'w3m-decode-entities-string)))
-    (fset 'w3m-decode-entities-string 'identity)
-    (unwind-protect
-	(luna-call-next-method)
-      (fset 'w3m-decode-entities-string fn))))
-
 (provide 'sb-nytimes)
 
 ;;; sb-nytimes.el ends here

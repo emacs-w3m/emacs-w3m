@@ -1,3 +1,7 @@
+2007-09-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nytimes.el (shimbun-article): Remove workaround.
+
 2007-09-22  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* sb-atmarkit.el (shimbun-get-headers): New method to process
