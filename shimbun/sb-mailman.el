@@ -112,8 +112,8 @@
 		  from (match-string 4))
 	    (setq subject (with-temp-buffer
 			    (insert subject)
-			    (shimbun-decode-entities)
 			    (shimbun-remove-markup)
+			    (shimbun-decode-entities)
 			    (buffer-string)))
 	    (push (shimbun-make-header
 		   0 (shimbun-mime-encode-string subject)

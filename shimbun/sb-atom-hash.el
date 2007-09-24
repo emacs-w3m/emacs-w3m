@@ -126,12 +126,9 @@
 			  (setq content (shimbun-rss-node-text
 					 atom-ns 'content entry))
 			;; non-escaped, but  "<>& to &xxx;
-			(setq content (with-temp-buffer
-					(erase-buffer)
-					(insert (shimbun-rss-node-text
-						 atom-ns 'content entry))
-					(shimbun-decode-entities)
-					(buffer-string))))))))
+			(setq content (shimbun-decode-entities-string
+				       (shimbun-rss-node-text
+					atom-ns 'content entry))))))))
 		(when (and id content)
 		  (shimbun-hash-set-item shimbun id content))))))))))
 

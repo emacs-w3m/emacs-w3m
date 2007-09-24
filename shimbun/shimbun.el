@@ -236,6 +236,7 @@ system of retrieved contents."
   (w3m-real-url url no-cache))
 
 (defalias 'shimbun-decode-entities 'w3m-decode-entities)
+(defalias 'shimbun-decode-entities-string 'w3m-decode-entities-string)
 (defalias 'shimbun-expand-url 'w3m-expand-url)
 (defalias 'shimbun-find-coding-system 'w3m-find-coding-system)
 (defalias 'shimbun-replace-in-string 'w3m-replace-in-string)
@@ -1221,13 +1222,6 @@ the following form returns the present time of Japan, wherever you are.
 	  (or (< (car a) (car b))
 	      (and (= (car a) (car b))
 		   (< (cadr a) (cadr b)))))))
-
-(defun shimbun-decode-entities-string (string)
-  "Decode entities in the STRING."
-  (with-temp-buffer
-    (insert string)
-    (shimbun-decode-entities)
-    (buffer-string)))
 
 (defun shimbun-remove-tags (begin-tag &optional end-tag)
   "Remove all occurrences of regions surrounded by BEGIN-TAG and END-TAG."

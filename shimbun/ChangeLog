@@ -1,3 +1,15 @@
+2007-09-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun.el (shimbun-decode-entities-string): Define as an alise
+	instead of a function using `shimbun-decode-entities'.
+
+	* sb-atom-hash.el (shimbun-hash-update-items-impl): Use
+	`shimbun-decode-entities-string' instead of `shimbun-decode-entities'.
+
+	* sb-mailman.el (shimbun-mailman-headers): Call `shimbun-remove-markup'
+	before calling `shimbun-decode-entities', in order to keep encoded
+	markups.
+
 2007-09-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nytimes.el (shimbun-article): Remove workaround.
