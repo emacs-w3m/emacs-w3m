@@ -1,6 +1,6 @@
 2007-09-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* shimbun.el (shimbun-decode-entities-string): Define as an alise
+	* shimbun.el (shimbun-decode-entities-string): Define as an alias
 	instead of a function using `shimbun-decode-entities'.
 
 	* sb-atom-hash.el (shimbun-hash-update-items-impl): Use
