@@ -1,3 +1,13 @@
+2007-09-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el: Changes to stricten entities decoded by
+	`w3m-decode-entities'.
+	(w3m-entity-table, w3m-entity-reverse-table): New constants.
+	(w3m-entity-regexp): Stricten.
+	(w3m-entity-alist, w3m-entity-db, w3m-entity-db-size): Abolished.
+	(w3m-entity-value, w3m-decode-entities, w3m-decode-entities-string,
+	w3m-encode-specials-string): Rewritten to use the above constants.
+
 2007-09-21  TAKAHASHI Kaoru  <kaoru@kaisei.org>
 
 	* doc/ptexinfmt.el: Support @fonttextsize, @textdegree.
