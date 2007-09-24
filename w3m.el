@@ -3660,7 +3660,9 @@ resizing an image."
 If optional KEEP-PROPERTIES is non-nil, text property is reserved."
   (save-excursion
     (goto-char (point-min))
-    (let (start fid prop value)
+    ;; Character entity references are case-sensitive.
+    ;; Cf. http://www.w3.org/TR/1999/REC-html401-19991224/charset.html#h-5.3.2
+    (let (case-fold-search start fid prop value)
       (while (re-search-forward w3m-entity-regexp nil t)
 	(setq start (match-beginning 0)
 	      fid (get-text-property start 'w3m-form-field-id))
@@ -3684,7 +3686,9 @@ If optional KEEP-PROPERTIES is non-nil, text property is reserved."
 (defun w3m-decode-entities-string (str)
   "Decode entities in the string STR."
   (save-match-data
-    (let ((pos 0) (buf))
+    ;; Character entity references are case-sensitive.
+    ;; Cf. http://www.w3.org/TR/1999/REC-html401-19991224/charset.html#h-5.3.2
+    (let ((case-fold-search) (pos 0) (buf))
       (while (string-match w3m-entity-regexp str pos)
 	(setq buf (cons (or (w3m-entity-value (match-string 1 str))
 			    (match-string 1 str))
