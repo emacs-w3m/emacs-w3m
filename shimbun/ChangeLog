@@ -1,5 +1,7 @@
 2007-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun.el (shimbun-end-of-tag): Rewrite.
+
 	* sb-tdiary.el (shimbun-make-contents): Use mapc instead of mapcar.
 
 2007-09-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
