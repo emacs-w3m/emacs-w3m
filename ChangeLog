@@ -1,5 +1,8 @@
 2007-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-examine-command-line-args): Don't pass negative number to
+	nthcdr.
+
 	* w3m-session.el (w3m-session-save, w3m-session-select): Use mapc
 	instead of mapcar.
 
