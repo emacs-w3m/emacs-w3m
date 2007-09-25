@@ -834,7 +834,8 @@
 
 2006-10-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* sb-rss.el (shimbun-rss-compatible-encoding-alist): Ditto.
+	* sb-rss.el (shimbun-rss-compatible-encoding-alist): Add
+	iso-8859-8/windows-1255 and iso-8859-9/windows-1254.
 
 2006-10-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
