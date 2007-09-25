@@ -159,7 +159,7 @@ URL is the URL for TDIARY access point of the group."
     (when footnotes
       (goto-char (point-max))
       (insert "<br><br>\n")
-      (mapcar 'insert (nreverse footnotes)))
+      (mapc 'insert (nreverse footnotes)))
     (shimbun-header-insert-and-buffer-string shimbun header nil t)))
 
 (provide 'sb-tdiary)

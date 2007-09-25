@@ -1,3 +1,8 @@
+2007-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-session.el (w3m-session-save, w3m-session-select): Use mapc
+	instead of mapcar.
+
 2007-09-24  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Changes to stricten entities decoded by
