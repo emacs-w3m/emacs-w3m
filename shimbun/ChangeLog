@@ -2893,7 +2893,9 @@
 
 2005-01-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* sb-rss.el (shimbun-rss-process-date): Ditto.
+	* sb-rss.el (shimbun-rss-process-date): Support the date format in the
+	RFC822 style which RSS 2.0 allows.  Suggested by David Hansen
+	<david.hansen@physik.fu-berlin.de>.
 
 2005-01-25  David Hansen  <david.hansen@physik.fu-berlin.de>
 
@@ -6047,7 +6049,8 @@
 
 2002-04-20  Hiroya Murata  <lapis-lazuli@pop06.odn.ne.jp>
 
-	* sb-hns.el (shimbun-article): Ditto.
+	* sb-hns.el (shimbun-article): Use `w3m-insert-string' instead of
+	`insert' to prevent multibyte/unibyte problems.
 
 	* shimbun.el (shimbun-make-mime-article): Keep the uniqueness on cid's.
 	(shimbun-insert-string): Moved to w3m-util.el and renamed to
