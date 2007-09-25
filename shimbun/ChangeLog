@@ -1515,7 +1515,8 @@
 
 2005-08-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* nnshimbun.el (nnshimbun-retrieve-headers-with-nov): Ditto.
+	* nnshimbun.el (nnshimbun-retrieve-headers-with-nov): Use
+	insert-buffer-substring instead of insert-buffer.
 
 2005-07-23  Tsuyoshi CHO  <tsuyoshi_cho@yahoo.co.jp>
 
@@ -1525,7 +1526,7 @@
 	* sb-engadget-ja.el (shimbun-engadget-ja-content-end): Follow the
 	change of the site.
 
-	* (sb-cnetnetworks.el,sb-cnet-jp.el,sb-zdnet-jp, sb-engadget-ja):
+	* sb-cnetnetworks.el, sb-cnet-jp.el, sb-zdnet-jp.el, sb-engadget-ja.el:
 	Cosmetic refine.
 
 2005-07-20  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
@@ -1729,8 +1730,8 @@
 	* sb-cnet-jp.el (shimbun-cnet-jp-group-alist): Add "blog.sakamoto"
 	entry.
 
-	* (sb-x51.el, sb-wikimedia.el, sb-w3m-dev.el, sb-tigris.el,
-	sb-mailman.el, sb-excite.el, sb-cnn-jp.el, sb-arch-bluegate.el): Mail
+	* sb-x51.el, sb-wikimedia.el, sb-w3m-dev.el, sb-tigris.el,
+	sb-mailman.el, sb-excite.el, sb-cnn-jp.el, sb-arch-bluegate.el: Mail
 	address renew.
 
 2005-06-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
@@ -1865,11 +1866,11 @@
 	instead of shimbun-content-start-internal; use shimbun-content-end
 	instead of shimbun-content-end-internal.
 
-	* (sb-cnet-jp.el, sb-emacswiki.el, sb-excite.el, sb-exconn.el,
+	* sb-cnet-jp.el, sb-emacswiki.el, sb-excite.el, sb-exconn.el,
 	sb-geocrawler.el, sb-impress.el, sb-jpo.el, sb-marc-aims.el,
 	sb-mhonarc.el, sb-nikkei.el, sb-pocketgames.el, sb-slashdot-jp.el,
 	sb-squeak-dev.el, sb-squeak-ja.el, sb-wired-jp.el, sb-wired.el,
-	sb-zdnet-jp.el): Don't require cl.
+	sb-zdnet-jp.el: Don't require cl.
 
 2005-05-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -2179,7 +2180,7 @@
 
 2005-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* sb-yomiuri.el (shimbun-yomiuri-content-start),
+	* sb-yomiuri.el (shimbun-yomiuri-content-start)
 	(shimbun-yomiuri-content-end): Improve.
 	(initialize-instance): Make the from address unreachable.
 	(shimbun-yomiuri-get-headers): Ditto.
@@ -2189,7 +2190,7 @@
 	remove height="nn" in image tags; replace alt="whitespace" with
 	alt="image".
 
-	* sb-yomiuri-html.el (shimbun-yomiuri-html-content-start),
+	* sb-yomiuri-html.el (shimbun-yomiuri-html-content-start)
 	(shimbun-yomiuri-html-content-end): Improve.
 
 2005-04-16  Tsuyoshi CHO  <tsuyoshi_cho@ybb.ne.jp>
