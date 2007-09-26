@@ -378,10 +378,10 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 		     (when (re-search-forward (or mew-shimbun-unseen-regex
 						  (mew-shimbun-unseen-regex)) nil t)
 		       (setq sbflds (cons fld sbflds))))))))))))
-    (mapcar (lambda (x)
-	      (unless (member x removes)
-		(setq alst (cons (list x) alst))))
-	    sbflds)
+    (mapc (lambda (x)
+	    (unless (member x removes)
+	      (setq alst (cons (list x) alst))))
+	  sbflds)
     (let ((completion-ignore-case mew-complete-folder-ignore-case))
       (setq fld (completing-read
 		 (if args
