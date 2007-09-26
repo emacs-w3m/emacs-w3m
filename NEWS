@@ -147,6 +147,9 @@ at a time, in order to prevent it from freezing.
 We will continue to do this thoroughly.  It makes it easy to find real
 errors when compiling emacs-w3m.
 
+** We've done many other improvements and bug fixes in this release.
+(Some of them might cause new bugs, though.)
+
 
 * Shimbun changes
 
