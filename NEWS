@@ -19,6 +19,8 @@ Now emacs-w3m will hopefully work with Emacs 21.1 or greater, XEmacs
 The modules w3m-e21.el, w3m-e23.el, and w3m-fsf.el have been
 integrated into w3m-ems.el.
 
+*** We can now use shy group in regular expressions.
+
 
 * Appearance changes
 
@@ -123,6 +125,30 @@ See (info "(emacs-w3m)Using Search Engines").
 ** Support direct access to mixi's diaries being displayed externally.
 
 ** Support accessing to the online dictionary Eijiro.
+
+
+* Miscellaneous
+
+** vm-w3m.el has been transferred to the new VM team.
+It is now in the VM 8.x package.  See http://www.nongnu.org/viewmail/.
+
+** Emacs-w3m now allows arbitrary string as a uri.
+This feature succeeds to Google's `I'm Feeling Lucky', i.e., the string
+is searched for using Google.  The `w3m-enable-google-feeling-lucky'
+variable controls this feature (enabled by default).
+
+** `w3m-goto-article-function' is now a user option.
+
+** Run XEmacs 21.5 safely.
+We gave up asynchronous operation when XEmacs 21.5 accesses many pages
+at a time, in order to prevent it from freezing.
+
+** Prevent the byte compiler from issuing useless warnings.
+We will continue to do this thoroughly.  It makes it easy to find real
+errors when compiling emacs-w3m.
+
+
+* Shimbun changes
 
 
 ----------------------------------------------------------------------
