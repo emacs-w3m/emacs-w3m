@@ -49,7 +49,8 @@ Which type of icons to use is controlled by the variable
 
 ** Tabs now have useful menu succeeding to Firefox+TabMixPlus' way.
 You can pop the menu up by a Mouse-3 click on a tab, and may also see
-the key bindings of those menu items.
+the key bindings of those menu items.  The menu is also available in
+the `Tab' menu in the menu bar.
 
 ** You can now use the mouse wheel to manipulate tabs.
 Rolling the mouse wheel on the tabs line circulates the tabs.  In
@@ -87,6 +88,41 @@ to the `\' key.  See the doc string of the command for details.
 
 ** Emacs-w3m now decodes application/xml pages as text/html.
 In the case where the page source looks like xhtml+xml.
+
+
+* New Lisp modules
+
+** w3m-fb.el -- frame-local buffers support.
+You can now have several emacs-w3m frames for various purposes.  For
+example, one is for news sites, the other is for search engines.  See
+(info "(emacs-w3m)Frame Local Buffers").
+
+** w3m-mail.el -- interface to mail-user-agent for sending web pages.
+You can now mail a web page that you are viewing.  The command is
+`M-x w3m-mail'.  Note that you have to have the `mail-user-agent' set
+properly.
+
+** w3m-session.el -- functions to load/save sessions.
+You can now save in the file the current session in which you visit
+several pages.  It can be loaded afterward.  The useful commands are
+all in the `Session' submenu in the `w3m' menu.
+
+
+* Search engines changes
+
+** Many search engines have been added
+See (info "(emacs-w3m)Using Search Engines").
+
+
+* Changes in filters
+
+** Google searches are prevented from getting corrupted and tidied up.
+
+** Displaying shortened uris for Amazon.
+
+** Support direct access to mixi's diaries being displayed externally.
+
+** Support accessing to the online dictionary Eijiro.
 
 
 ----------------------------------------------------------------------
