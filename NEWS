@@ -67,6 +67,28 @@ If you'd like to place it in the leftmost of the menu bar as before,
 set the `w3m-menu-on-forefront' variable to a non-nil value.
 
 
+* Changes in contents decoding
+
+** Emacs-w3m now uses a superset of the charset the page specifies.
+For instance, some European web sites sometimes use the `windows-1252'
+charset for encoding contents even if the page is labeled with
+`iso-8859-1'.  In such a case, emacs-w3m uses `windows-1252', which is
+a superset of `iso-8859-1', for decoding contents if it is available.
+The variable `w3m-compatible-encoding-alist' holds the table of
+charsets and their supersets.
+
+** Emacs-w3m can now follow links containing non-ASCII characters.
+Technically, emacs-w3m embeds links that are encoded in advance in
+pages.
+
+** You can now instruct emacs-w3m how much it decodes html sources.
+Give a numeric prefix to the `w3m-view-source' command, which is bound
+to the `\' key.  See the doc string of the command for details.
+
+** Emacs-w3m now decodes application/xml pages as text/html.
+In the case where the page source looks like xhtml+xml.
+
+
 ----------------------------------------------------------------------
 Emacs-w3m is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
