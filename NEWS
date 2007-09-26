@@ -1,0 +1,80 @@
+Emacs-w3m NEWS -- history of user-visible changes.
+
+Copyright (C) 2007 TSUCHIYA Masatoshi
+See the end of the file for license conditions.
+
+Please send Emacs bug reports to emacs-w3m@namazu.org.
+If possible, use M-x report-emacs-w3m-bug.
+
+This file is about changes in emacs-w3m version 1.5.
+
+
+* Required Emacs version changes
+
+** Emacs-w3m no longer works with old Emacs versions.
+Now emacs-w3m will hopefully work with Emacs 21.1 or greater, XEmacs
+21.4.17 or greater, or XEmacs 21.5-b19 or greater.
+
+*** Version-specific modules are now w3m-ems.el and w3m-xmas.el.
+The modules w3m-e21.el, w3m-e23.el, and w3m-fsf.el have been
+integrated into w3m-ems.el.
+
+
+* Appearance changes
+
+** Emacs-w3m can now display italic text.
+While web pages often use italic text to emphasize words or sentences,
+emacs-w3m (and w3m) displayed them as normal text formerly.  To enable
+this feature, you need to have w3m 0.5.2 or greater installed.  The
+face used to display italic text is `w3m-italic'.
+
+** Emphasizing of text to display has been much improved.
+The face attributes including bold, italic, underline, and strike-thru
+can be overlapped in the same text now.
+
+** Emacs-w3m can now display the uri and the title in the hreader-line.
+This is controlled by the `w3m-use-header-line-title' variable.
+
+** Emacs-w3m can now use the title of the page as a buffer name.
+This is controlled by the `w3m-use-title-buffer-name' variable.
+
+** The PNG icon files in addition to the XPM icons are now available.
+Those are the ones used in the tool bar, are the best suited to Emacs
+built with GTK.  So, emacs-w3m uses them for GTK Emacs by default.
+Which type of icons to use is controlled by the variable
+`w3m-toolbar-icon-preferred-image-types'.
+
+
+* Changes in tabs, sessions, and menu
+
+** You can now use the mouse wheel to manipulate tabs.
+Rolling the mouse wheel on the tabs line circulates the tabs.  In
+addition to this, pressing the control key while rolling the mouse
+wheel changes the order of the tabs.
+
+** The w3m menu appears about the middle of the menu bar by default.
+If you'd like to place it in the leftmost of the menu bar as before,
+set the `w3m-menu-on-forefront' variable to a non-nil value.
+
+
+----------------------------------------------------------------------
+Emacs-w3m is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+Emacs-w3m is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with emacs-w3m; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+Boston, MA 02110-1301, USA.
+
+
+Local variables:
+mode: outline
+paragraph-separate: "[ 	]*$"
+end:
