@@ -3,7 +3,7 @@ Emacs-w3m NEWS -- history of user-visible changes.
 Copyright (C) 2007 TSUCHIYA Masatoshi
 See the end of the file for license conditions.
 
-Please send Emacs bug reports to emacs-w3m@namazu.org.
+Please send bug reports to emacs-w3m@namazu.org.
 If possible, use M-x report-emacs-w3m-bug.
 
 This file is about changes in emacs-w3m version 1.5.
@@ -47,10 +47,20 @@ Which type of icons to use is controlled by the variable
 
 * Changes in tabs, sessions, and menu
 
+** Tabs now have useful menu succeeding to Firefox+TabMixPlus' way.
+You can pop the menu up by a Mouse-3 click on a tab, and may also see
+the key bindings of those menu items.
+
 ** You can now use the mouse wheel to manipulate tabs.
 Rolling the mouse wheel on the tabs line circulates the tabs.  In
 addition to this, pressing the control key while rolling the mouse
 wheel changes the order of the tabs.
+
+** Emacs-w3m can now create a new session in the background.
+If this is enabled, the page you instruct emacs-w3m to visit as a new
+session will not appear unless you select the buffer.  This is disabled
+by default.  You can set the `w3m-new-session-in-background' variable
+to a non-nil value to enable it.
 
 ** The w3m menu appears about the middle of the menu bar by default.
 If you'd like to place it in the leftmost of the menu bar as before,
