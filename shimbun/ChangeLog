@@ -1,3 +1,8 @@
+2007-09-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nytimes.el (shimbun-clear-contents): Remove useless timesselect
+	stuff.
+
 2007-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-end-of-tag): Rewrite.

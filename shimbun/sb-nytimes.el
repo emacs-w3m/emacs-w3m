@@ -332,6 +332,13 @@ Skip[\t\n ]+to[\t\n ]+next[\t\n ]+paragraph[\t\n ]*</a>[\t\n ]*"
 	    (replace-match "\n")
 	    (delete-region (goto-char start) end)
 	    (insert "\n"))
+	  ;; Remove useless timesselect stuff.
+	  (goto-char (point-min))
+	  (while (re-search-forward "[\t\n ]*<img\\(?:[\t\n ]+[^\t\n >]+\\)*\
+\[\t\n ]+src=\"[^\"]*/ts_icon\\.gif\"\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>\
+\[\t\n ]*"
+				    nil t)
+	    (delete-region (match-beginning 0) (match-end 0)))
 	  ;; Add page delimiters.
 	  (goto-char (point-min))
 	  (while (re-search-forward "[\t\n ]*\\(?:<p>[\t\n ]*\\)+\
