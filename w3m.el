@@ -3183,13 +3183,11 @@ otherwise returns the tilde character."
   "Get a char corresponding to NAME from the html char entities database.
 The database is kept in `w3m-entity-table'."
   ;; Return a value of the specified entity, or nil if it is unknown.
-  (if (char-equal (string-to-char name) ?#)
-      (progn
-	(setq name (substring name 1))
-	(char-to-string (w3m-ucs-to-char
-			 (if (char-equal (string-to-char name) ?x)
-			     (string-to-number (substring name 1) 16)
-			   (string-to-number name)))))
+  (if (eq (aref name 0) ?#)
+      (char-to-string (w3m-ucs-to-char
+		       (if (eq (aref name 1) ?x)
+			   (string-to-number (substring name 2) 16)
+			 (string-to-number (substring name 1)))))
     (gethash name w3m-entity-table)))
 
 (defun w3m-fontify-bold ()
@@ -3695,7 +3693,7 @@ If optional KEEP-PROPERTIES is non-nil, text property is reserved."
 			    (match-string 1 str))
 			(cons (substring str pos (match-beginning 0))
 			      buf))
-	      pos (if (eq (string-to-char (match-string 2 str)) ?\;)
+	      pos (if (eq (aref str (match-beginning 2)) ?\;)
 		      (match-end 0)
 		    (match-end 1))))
       (if buf
