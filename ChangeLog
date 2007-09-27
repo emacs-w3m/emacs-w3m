@@ -1,7 +1,13 @@
 2007-09-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* w3m.el (w3m-entity-value, w3m-decode-entities-string): Changes to
-	save working memory.
+	* w3m.el (w3m-safe-view-this-url): When a function which is
+	specified by `w3m-goto-article-function' returns the
+	`w3m-goto-url' symbol, it falls back to emacs-w3m displaying
+	functions.
+	(w3m-goto-article-function): Its comment is updated to follow the
+	above change.
+	(w3m-entity-value, w3m-decode-entities-string): Change to save
+	working memory.
 
 2007-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 

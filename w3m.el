@@ -9549,13 +9549,13 @@ passed to the `w3m-quit' function (which see)."
 
 ;;; w3m-minor-mode
 (defcustom w3m-goto-article-function nil
-  "Function used to visit an article pointed to by a given URL.
-Normally, this is used only when you follow a link in an html article.
-A function set to this variable takes one argument URL.
-
-If the function throws nil, that means the function failed in fetching
-URL, to the catch tag `success', the default function tries to fetch
-URL again.  See `gnus-summary-refer-shimbun-article' in nnshimbun.el."
+  "Function used to visit an article pointed to by a given URL
+in `w3m-minor-mode' buffer.  Normally, this option is used only
+when you follow a link in an html article.  A function set to
+this variable must take one argument URL, and should display the
+specified page.  It may return the symbol `w3m-goto-url' when it
+fails displaying the page.  In this case, either `w3m-goto-url'
+or `w3m-goto-url-new-session' is employed to display the page."
   :group 'w3m
   :type '(radio (const :tag "Use emacs-w3m" nil)
 		(function :value browse-url)))
@@ -9580,14 +9580,13 @@ the `w3m-mode', otherwise use an existing emacs-w3m buffer."
   (let ((w3m-pop-up-windows nil)
 	(url (w3m-url-valid (w3m-anchor))))
     (cond
-     (url (or (and (functionp w3m-goto-article-function)
-		   (catch 'success
-		     (funcall w3m-goto-article-function url)
-		     t))
-	      (if (and w3m-make-new-session
-		       (not (eq major-mode 'w3m-mode)))
-		  (w3m-goto-url-new-session url)
-		(w3m-goto-url url))))
+     (url (unless (and (functionp w3m-goto-article-function)
+		       (not (eq 'w3m-goto-url
+				(funcall w3m-goto-article-function url))))
+	    (if (and w3m-make-new-session
+		     (not (eq major-mode 'w3m-mode)))
+		(w3m-goto-url-new-session url)
+	      (w3m-goto-url url))))
      ((w3m-url-valid (w3m-image))
       (if (w3m-display-graphic-p)
 	  (w3m-toggle-inline-image)
