@@ -106,8 +106,12 @@ properly.
 
 ** w3m-session.el -- functions to load/save sessions.
 You can now save in the file the current session in which you visit
-several pages.  It can be loaded afterward.  The useful commands are
-all in the `Session' submenu in the `w3m' menu.
+several pages.  Moreover the last session you use before quitting
+emacs-w3m will be saved automatically if `w3m-session-autosave' is
+non-nil (the default).  Saved sessions can be loaded afterward.
+The useful commands are `M-S' for saving and `M-s' for selecting saved
+ones.  Those are available also in the `Session' submenu in the `w3m'
+menu.
 
 
 * Search engines changes
