@@ -168,6 +168,14 @@ while it generates html articles by default.  With this feature,
 sb-asahi-html.el and sb-yomiuri-html.el have been made semi-obsolete.
 Note that all the shimbun modules don't allow for it.
 
+** Shimbun now supports redirection of urls when fetching articles.
+Urls that some web sites offer in the index pages are not the ones that
+point to the article pages directly.  The real url for the article is
+in the page to which such a url points, and it is also likely to
+require the client to wait for a while (often for displaying ads).
+Shimbun now examines it and fetches the real article contents with no
+wait.
+
 
 ----------------------------------------------------------------------
 Emacs-w3m is free software; you can redistribute it and/or modify
