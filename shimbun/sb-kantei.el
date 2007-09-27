@@ -47,7 +47,10 @@ is for the backward compatibility.")
 (defvar shimbun-kantei-x-face-alist
   ;; Don't change the order of the faces.  See the method function that
   ;; is applied to `shimbun-make-contents'.
-  '(("default" . nil)
+  '(("default" . "X-Face: R![ems6?kedF&(},`\";7nbUIT6Uyt2A9jSQ'\\$=;,\
+n.9<lIS+DFBTdMEJ$nh0[t)XU!.D*p\n kd~cuh0/nvCm;1~B;Ib!g^TC*OHm5(<Z%=A2\
+H_,kDt0E*HaI&^C%Wzb/EC_PF1f!jk7VHf=s*mqe91\n `H.J(Bq9(S'71?$O\\+=Kp\"\
+yNww;MOGO&N+tm<MbYT}Mlh4<hahJgCV`P/<&9Fm|FRmb>vM+PFYQB}O\n <Se")
     ("\\.abe\\'" . "X-Face: 2lqMN=orK#d]Xl-K5P`=ApJHMB3[faCtca;G(i=qL\
 ^3qh<kEoLHF\"L\"x/a:|xD>x=IKEqN%\n 3EL93@D{*BW-{GE88b7{d^m-%v9}=-7=^M\
 #$?zJm$]Yy07J^}:#V?9t_<{fhavZVZQ1^1=SLQf3X=<\n z|Af_njD},U!m}4V}$]L_7\

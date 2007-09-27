@@ -1,3 +1,7 @@
+2007-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kantei.el (shimbun-kantei-x-face-alist): Add new default face.
+
 2007-09-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* nnshimbun.el (gnus-summary-refer-shimbun-article): Returns the
@@ -13,7 +17,7 @@
 	(shimbun-index-url, shimbun-from-address, shimbun-get-headers):
 	Likewise.
 	(shimbun-kantei-content-start, shimbun-kantei-content-end): Abolish.
-	(shimbun-kantei-x-face-alist): Change the default face into Abe's; make
+	(shimbun-kantei-x-face-alist): Move the default face into Abe's; make
 	the default face empty temporarily.
 	(shimbun-clear-contents): Rewrite.
 	(shimbun-make-contents): New method function that choose face according
