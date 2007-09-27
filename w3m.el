@@ -2055,7 +2055,8 @@ In that case, emacs-w3m uses Google to search for the words."
     (maphash (lambda (key val) (push key buf))
 	     w3m-entity-table)
     (concat "&\\("
-	    (regexp-opt buf)
+	    (let ((max-specpdl-size (* 1024 1024))) ;; For old Emacsen.
+	      (regexp-opt buf))
 	    "\\|#\\(?:x[0-9a-f]+\\|[0-9]+\\)\\)\\(\\'\\|[^0-9a-zA-Z]\\)"))
   "Regexp matching html character entities.")
 
@@ -8667,17 +8668,20 @@ interactive command in the batch mode."
       ;; interactive-p
       (not url))))
   (let ((nofetch (eq url 'popup))
+	(buffer (unless new-session (w3m-alive-p t)))
 	(w3m-pop-up-frames (and interactive-p w3m-pop-up-frames))
-	(w3m-pop-up-windows (and interactive-p w3m-pop-up-windows))
-	buffer)
-    (unless (or nofetch (and (stringp url) (> (length url) 0)))
-      ;; This command was possibly be called non-interactively or as
-      ;; the batch job.
-      (if (setq url (w3m-examine-command-line-args))
-	  (setq new-session (and w3m-make-new-session (w3m-alive-p)))
-	;; Unlikely but this function was called with no url.
-	(setq url (or w3m-home-page "about:"))))
-    (unless (setq buffer (unless new-session (w3m-alive-p t)))
+	(w3m-pop-up-windows (and interactive-p w3m-pop-up-windows)))
+    (unless (and (stringp url)
+		 (> (length url) 0))
+      (if buffer
+	  (setq nofetch t)
+	;; This command was possibly be called non-interactively or as
+	;; the batch mode.
+	(setq url (or (w3m-examine-command-line-args)
+		      ;; Unlikely but this function was called with no url.
+		      "about:")
+	      nofetch nil)))
+    (unless buffer
       ;; It means `new-session' is non-nil or there's no emacs-w3m buffer.
       ;; At any rate, we create a new emacs-w3m buffer in this case.
       (with-current-buffer (setq buffer (w3m-generate-new-buffer "*w3m*"))
