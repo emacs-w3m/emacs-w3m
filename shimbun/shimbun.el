@@ -1236,33 +1236,49 @@ the following form returns the present time of Japan, wherever you are.
       (while (re-search-forward begin-tag nil t)
 	(delete-region (match-beginning 0) (match-end 0))))))
 
-(defun shimbun-end-of-tag (tag &optional include-whitespace)
-  "Move point to end of </TAG>.  Inner nested tags are skipped.
-I.e., with the following contents for example, it moves point from
-the leftmost tag to the end-point of the rightmost tag:
+(defun shimbun-end-of-tag (&optional tag include-whitespace)
+  "Move point to the end of tag.  Inner nested tags are skipped.
+If TAG, which is a name of the tag, is given, this function moves point
+from the open-tag <TAG ...> (point should exist in front of or within
+it initially) to the end-point of the closing-tag </TAG>.  For example,
+in the following two situations, point moves from the leftmost tag to
+the end-point of the rightmost tag:
 
-<tag ...>...<tag ...>...<tag ...>...</tag>...</tag>...</tag>
-<tag ...>...<tag ...>...</tag>...<tag ...>...</tag>...</tag>
+<TAG ...>...<TAG ...>...<TAG ...>...</TAG>...</TAG>...</TAG>
+<TAG ...>...<TAG ...>...</TAG>...<TAG ...>...</TAG>...</TAG>
 
+If TAG is omitted or nil, this function moves point to the end-point of
+the tag in which point exists.  In this case, point should initially
+exist within the start position of the tag and the next tag as follows:
+
+<!-- foo <bar ...<baz ...>...> -->
+ ^^^^^^^^
 Return the end-point and set the match-data #0.
 If INCLUDE-WHITESPACE is non-nil, include leading and trailing
 whitespace."
   (let ((init (point))
-	(regexp (concat "<\\(/\\)?" tag
-			"\\(?:[\t\n\r ]*\\|[\t\n\r ]+[^>]+\\)>"))
 	(num 1)
+	(md (match-data))
 	(case-fold-search t)
-	start end)
+	start regexp end)
     (condition-case nil
 	(progn
-	  (setq start (if (looking-at (concat "[\n\t ]*\\(<\\)" tag
-					      "[\t\n\r >]"))
-			  (match-beginning 1)
-			(search-backward "<")
-			(if (looking-at (concat "<" tag "[\t\n\r >]"))
-			    (match-beginning 0)
-			  (error ""))))
-	  (goto-char (1+ start))
+	  (if tag
+	      (progn
+		(setq start (if (looking-at (concat "[\n\t ]*\\(<\\)" tag
+						    "[\t\n\r >]"))
+				(match-beginning 1)
+			      (search-backward "<")
+			      (if (looking-at (concat "<" tag "[\t\n\r >]"))
+				  (match-beginning 0)
+				(error ""))))
+		(goto-char (1+ start))
+		(setq regexp (concat "<\\(/\\)?" tag
+				     "\\(?:[\t\n\r ]*\\|[\t\n\r ]+[^>]+\\)>")))
+	    (search-backward "<")
+	    (setq start (match-beginning 0))
+	    (goto-char init)
+	    (setq regexp "\\(>\\)\\|<"))
 	  (while (and (> num 0)
 		      (re-search-forward regexp))
 	    (setq num (if (match-beginning 1)
@@ -1280,7 +1296,7 @@ whitespace."
 	  (set-match-data (list start (point-marker)))
 	  (point))
       (error
-       (set-match-data nil)
+       (set-match-data md)
        (goto-char init)
        nil))))
 

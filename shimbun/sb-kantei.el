@@ -33,8 +33,11 @@
 
 (defvar shimbun-kantei-url "http://www.kantei.go.jp/")
 
-(defvar shimbun-kantei-groups '("m-magazine-en" "m-magazine-ja"
-				;;"m-magazine-en.koizumi"
+(defvar shimbun-kantei-groups '("m-magazine-en"
+				"m-magazine-ja"
+				"m-magazine-en.abe"
+				"m-magazine-ja.abe"
+				"m-magazine-en.koizumi"
 				"m-magazine-ja.koizumi"
 				"m-magazine")
   "List of the groups subscribing to the email magazin of Japan's Cabinet.
@@ -48,11 +51,12 @@ is for the backward compatibility.")
   "\\(<!-- /CONTENT -->\\)\\|\\(</PRE>\\)\n</FONT>\n</TD></TR></TABLE>")
 
 (defvar shimbun-kantei-x-face-alist
-  '(("default" . "X-Face: 2lqMN=orK#d]Xl-K5P`=ApJHMB3[faCtca;G(i=qL^3\
-qh<kEoLHF\"L\"x/a:|xD>x=IKEqN%\n 3EL93@D{*BW-{GE88b7{d^m-%v9}=-7=^M#$\
-?zJm$]Yy07J^}:#V?9t_<{fhavZVZQ1^1=SLQf3X=<\n z|Af_njD},U!m}4V}$]L_7a!\
-b>X!RW$['xZs$r=G?o|=M^O)IJoOurt|UKUu[UuQFT/r&vygySYUmf\n <G6B:zwx0@$x\
-HbD#Hr3`J,C!5rN5t7oI)ng/'e40?>Jm;kjj")
+  '(("default" . nil)
+    ("\\.abe\\'" . "X-Face: 2lqMN=orK#d]Xl-K5P`=ApJHMB3[faCtca;G(i=qL\
+^3qh<kEoLHF\"L\"x/a:|xD>x=IKEqN%\n 3EL93@D{*BW-{GE88b7{d^m-%v9}=-7=^M\
+#$?zJm$]Yy07J^}:#V?9t_<{fhavZVZQ1^1=SLQf3X=<\n z|Af_njD},U!m}4V}$]L_7\
+a!b>X!RW$['xZs$r=G?o|=M^O)IJoOurt|UKUu[UuQFT/r&vygySYUmf\n <G6B:zwx0@\
+$xHbD#Hr3`J,C!5rN5t7oI)ng/'e40?>Jm;kjj")
     ("\\.koizumi\\'\\|\\`m-magazine\\'" . "X-Face: .bsmj'!8A`wI\\o+KF\
 !)#0.a0,f1MA~PH/5T0fu$Mg+)_5G~NSk4.0t]&|f@^c3l8-Fuz8'|\n kr;td_Jn7|Gw\
 REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
@@ -63,8 +67,12 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
     (concat (shimbun-url-internal shimbun)
 	    (cond ((string-equal group "m-magazine-en")
 		   "foreign/m-magazine/backnumber/")
-		  ;;((string-equal group "m-magazine-en.koizumi")
-		  ;; "???")
+		  ((string-equal group "m-magazine-en.abe")
+		   "foreign/m-magazine/backnumber/abe.html")
+		  ((string-equal group "m-magazine-ja.abe")
+		   "jp/m-magazine/backnumber/abe.html")
+		  ((string-equal group "m-magazine-en.koizumi")
+		   "foreign/m-magazine/backnumber/koizumi.html")
 		  ((string-equal group "m-magazine-ja.koizumi")
 		   "jp/m-magazine/backnumber/koizumi.html")
 		  ((string-equal group "m-magazine") ;; Backward compatibility.
@@ -75,15 +83,19 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 (luna-define-method shimbun-from-address ((shimbun shimbun-kantei))
   (let ((group (shimbun-current-group-internal shimbun)))
     (cond ((string-equal group "m-magazine-en")
+	   "Yasuo Fukuda")
+	  ((string-equal group "m-magazine-en.abe")
 	   "Shinzo Abe")
-	  ;;((string-equal group "m-magazine-en.koizumi")
-	  ;; "Junichiro Koizumi")
+	  ((string-equal group "m-magazine-ja.abe")
+	   "安倍晋三")
+	  ((string-equal group "m-magazine-en.koizumi")
+	   "Junichiro Koizumi")
 	  ((string-equal group "m-magazine-ja.koizumi")
-	   (shimbun-mime-encode-string "小泉純一郎"))
+	   "小泉純一郎")
 	  ((string-equal group "m-magazine") ;; Backward compatibility.
-	   (shimbun-mime-encode-string "小泉純一郎"))
+	   "小泉純一郎")
 	  (t
-	   (shimbun-mime-encode-string "安倍晋三")))))
+	   "福田康夫"))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-kantei)
 					 &optional range)
@@ -93,12 +105,12 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 ;;(defun shimbun-kantei-get-headers (shimbun range)
 ;;;</DEBUG>
   (let* ((group (shimbun-current-group-internal shimbun))
-	 (enp (member group '("m-magazine-en")))
+	 (enp (string-match "\\`m-magazine-en" group))
 	 (regexp (if enp
 		     (eval-when-compile
 		       (concat "<A[\t\n ]+HREF=\""
 			       ;; 1. url
-			       "\\("
+			       "\\(\\(?:[a-z]+/\\)?"
 			       ;; 2. year
 			       "\\(20[0-9][0-9]\\)"
 			       "/"
@@ -106,7 +118,7 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 			       "\\([01][0-9]\\)"
 			       ;; 4. day of month
 			       "\\([0-3][0-9]\\)"
-			       "\\.html\\)\">[\t\n ]*"
+			       "\\.html\\)\"[^>]*>[\t\n ]*"
 			       ;; 5. subject
 			       "\\(\\(?:[^\t\n <]+[\t\n ]+\\)*[^\t\n <]+\\)"
 			       "[\t\n ]*</A>[\t\n ]*</TD>[\t\n ]*</TR>"))
@@ -130,6 +142,11 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 	 (parent (shimbun-index-url shimbun))
 	 (from (shimbun-from-address shimbun))
 	 year month mday url subject id headers)
+    ;; Remove commented areas.
+    (while (re-search-forward "<!-+" nil t)
+      (when (shimbun-end-of-tag nil t)
+	(replace-match "\n")))
+    (goto-char (point-min))
     (while (re-search-forward regexp nil t)
       (if enp
 	  (setq year (string-to-number (match-string 2))

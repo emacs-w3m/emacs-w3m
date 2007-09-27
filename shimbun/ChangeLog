@@ -1,3 +1,15 @@
+2007-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kantei.el (shimbun-kantei-groups): Add m-magazine-en.abe,
+	m-magazine-ja.abe, m-magazine-en.koizumi groups.
+	(shimbun-index-url, shimbun-from-address, shimbun-get-headers):
+	Likewise.
+	(shimbun-kantei-x-face-alist): Change the default face into Abe's; make
+	the default face empty temporarily.
+
+	* shimbun.el (shimbun-end-of-tag): Enable it to search for the end of
+	current tag as well.
+
 2007-09-26  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-shimbun.el (mew-shimbun-goto-folder): Use mapc instead of mapcar.
