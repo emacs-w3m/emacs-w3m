@@ -44,13 +44,9 @@
 Note that the `m-magazine-ja.koizumi' is the same as `m-magazine' which
 is for the backward compatibility.")
 
-(defvar shimbun-kantei-content-start
-  "<!-- CONTENT -->\\|<PRE>")
-
-(defvar shimbun-kantei-content-end
-  "\\(<!-- /CONTENT -->\\)\\|\\(</PRE>\\)\n</FONT>\n</TD></TR></TABLE>")
-
 (defvar shimbun-kantei-x-face-alist
+  ;; Don't change the order of the faces.  See the method function that
+  ;; is applied to `shimbun-make-contents'.
   '(("default" . nil)
     ("\\.abe\\'" . "X-Face: 2lqMN=orK#d]Xl-K5P`=ApJHMB3[faCtca;G(i=qL\
 ^3qh<kEoLHF\"L\"x/a:|xD>x=IKEqN%\n 3EL93@D{*BW-{GE88b7{d^m-%v9}=-7=^M\
@@ -99,11 +95,6 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-kantei)
 					 &optional range)
-;;;<DEBUG>
-;;  (shimbun-kantei-get-headers shimbun range))
-;;
-;;(defun shimbun-kantei-get-headers (shimbun range)
-;;;</DEBUG>
   (let* ((group (shimbun-current-group-internal shimbun))
 	 (enp (string-match "\\`m-magazine-en" group))
 	 (regexp (if enp
@@ -176,23 +167,57 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 	    headers))
     headers))
 
-(luna-define-method shimbun-clear-contents ((shimbun shimbun-kantei) header)
+(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-kantei)
+						    header)
   (let ((case-fold-search t)
-	start hankaku)
-    (when (and (re-search-forward (shimbun-content-start shimbun) nil t)
+	start)
+    (if (and (search-forward "<pre>" nil t)
+	     (progn
 	       (setq start (match-beginning 0))
-	       (re-search-forward (shimbun-content-end shimbun) nil t))
-      (delete-region (or (match-end 1) (match-end 2)) (point-max))
-      (delete-region (point-min) start)
-      (when (member (shimbun-current-group-internal shimbun)
-		    '("m-magazine-en"))
-	(goto-char (point-min))
-	(while (re-search-forward "</?center>" nil t)
-	  (delete-region (match-beginning 0) (match-end 0))))
-      (setq hankaku (shimbun-japanese-hankaku shimbun))
-      (when (and hankaku (not (memq hankaku '(header subject))))
-	(shimbun-japanese-hankaku-buffer t))
-      t)))
+	       (re-search-forward "\\(</pre>\\)\
+\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*</html>"
+				  nil t)))
+	(progn
+	  (delete-region (match-end 1) (point-max))
+	  (insert "\n")
+	  (delete-region (point-min) start)
+	  t)
+      (if (re-search-forward "<!-+[\t\n ]*content[\t\n ]*-+>[\t\n ]*\
+\\(?:<[^>]+>[\t\n ]*\\)*"
+			     nil t)
+	  (progn
+	    (setq start (match-end 0))
+	    (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
+\\(?:<a[\t\n ]+href=\"#[^>]+>[\t\n ]*\
+go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
+\\|<a[\t\n ]*href=\"[^>]+>[\t\n ]*subscription[\t\n ]*</a>\
+\\|<!-+[\t\n ]*/content[\t\n ]*-+>\\)"
+			       nil t)
+	    (delete-region (match-beginning 0) (point-max))
+	    (insert "\n")
+	    (delete-region (point-min) start))))))
+
+(luna-define-method shimbun-make-contents :around ((shimbun shimbun-kantei)
+						   header)
+  (if (string-match "\\`m-magazine-\\(?:en\\|ja\\)\\'"
+		    (shimbun-current-group-internal shimbun))
+      ;; Choose a face according to the author.
+      (let ((shimbun-x-face-database-function
+	     (or shimbun-x-face-database-function
+		 (let ((from (shimbun-header-from header t)))
+		   `(lambda (ignore)
+		      ,(cdr (nth
+			     (cond ((member from '("Shinzo Abe"
+						   "安倍晋三"))
+				    1)
+				   ((member from '("Junichiro Koizumi"
+						   "小泉純一郎"))
+				    2)
+				   (t
+				    0))
+			     shimbun-kantei-x-face-alist)))))))
+	(luna-call-next-method))
+    (luna-call-next-method)))
 
 (provide 'sb-kantei)
 
