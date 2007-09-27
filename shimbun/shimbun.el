@@ -219,7 +219,7 @@ Return content-type of URL as string when retrieval succeeded."
 
 (defun shimbun-fetch-url (shimbun url &optional no-cache no-decode referer)
   "Retrieve contents specified by URL for SHIMBUN.
-This function is exacly similar to `shimbun-retrieve-url', but
+This function is exactly similar to `shimbun-retrieve-url', but
 considers the `coding-system' slot of SHIMBUN when estimating a coding
 system of retrieved contents."
   (if (shimbun-coding-system-internal shimbun)
