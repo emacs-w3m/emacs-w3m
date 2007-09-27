@@ -5594,8 +5594,10 @@ vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
 vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
 vinelinux.errata.1x
 
-@item @uref{http://www.kantei.go.jp/, 阿部内閣メールマガジン}
-kantei.m-magazine-en kantei.m-magazine-ja kantei.m-magazine-ja.koizumi
+@item @uref{http://www.kantei.go.jp/, 福田内閣メールマガジン}
+kantei.m-magazine-en kantei.m-magazine-ja kantei.m-magazine-en.abe
+kantei.m-magazine-ja.abe kantei.m-magazine-en.koizumi
+kantei.m-magazine-ja.koizumi
 
 後方互換性のため、@samp{kantei.m-magazine} も利用可能になっています。
 
