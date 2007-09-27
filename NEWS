@@ -157,6 +157,17 @@ errors when compiling emacs-w3m.
 
 * Shimbun changes
 
+** New class variable `shimbun-prefer-text-plain'.
+It controls whether a shimbun module generates text/plain articles or
+html articles.  While the sb-asahi.el module (for example) generates
+text/plain articles by default, you can tell it to generate html
+articles by setting the `shimbun-asahi-prefer-text-plain' variable to
+nil.  Oppositely, setting `shimbun-mainichi-prefer-text-plain' to non-
+nil leads the sb-mainichi.el module to generate text/plain articles
+while it generates html articles by default.  With this feature,
+sb-asahi-html.el and sb-yomiuri-html.el have been made semi-obsolete.
+Note that all the shimbun modules don't allow for it.
+
 
 ----------------------------------------------------------------------
 Emacs-w3m is free software; you can redistribute it and/or modify
