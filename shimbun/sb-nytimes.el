@@ -345,7 +345,7 @@ Skip[\t\n ]+to[\t\n ]+next[\t\n ]+paragraph[\t\n ]*</a>[\t\n ]*"
 \\(<font[\t\n ]+[^>]+>[\t\n ]*(Page[\t\n ]+[0-9]+[\t\n ]+of[\t\n ]+[0-9]+)\
 \[\t\n ]*</font>\\)\\(?:[\t\n ]*<p>\\)+[\t\n ]*"
 				    nil t)
-	    (replace-match "\n&#012\\1\n<p>"))
+	    (replace-match "\n&#012;\\1\n<p>"))
 	  t)
       (erase-buffer)
       (insert
