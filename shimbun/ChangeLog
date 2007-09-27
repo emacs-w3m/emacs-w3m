@@ -1,3 +1,9 @@
+2007-09-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* nnshimbun.el (gnus-summary-refer-shimbun-article): Returns the
+	`w3m-goto-url' symbol when it fails fetching articles.
+	Cf. [emacs-w3m:09660]
+
 2007-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nytimes.el (shimbun-clear-contents): "&#012" -> "&#012;".
