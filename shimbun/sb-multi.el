@@ -33,10 +33,10 @@
 
 (luna-define-class shimbun-multi () ())
 
-(luna-define-generic shimbun-multi-next-url (shimbun-multi header url)
+(luna-define-generic shimbun-multi-next-url (shimbun header url)
   "Return a URL of the next page if it exists in this current buffer.")
 
-(luna-define-generic shimbun-multi-clear-contents (shimbun-multi
+(luna-define-generic shimbun-multi-clear-contents (shimbun
 						   header
 						   has-previous-page
 						   has-next-page)
