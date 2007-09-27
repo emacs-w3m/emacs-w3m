@@ -1,5 +1,7 @@
 2007-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-nytimes.el (shimbun-clear-contents): "&#012" -> "&#012;".
+
 	* sb-kantei.el (shimbun-kantei-groups): Add m-magazine-en.abe,
 	m-magazine-ja.abe, m-magazine-en.koizumi groups.
 	(shimbun-index-url, shimbun-from-address, shimbun-get-headers):
