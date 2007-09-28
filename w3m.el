@@ -3484,7 +3484,7 @@ If URL is specified, only the image with URL is toggled."
 		  (w3m-process-with-null-handler
 		    (lexical-let ((start (set-marker (make-marker) start))
 				  (end (set-marker (make-marker) end))
-				  (iurl iurl)
+				  (iurl (w3m-url-transfer-encode-string iurl))
 				  (url w3m-current-url))
 		      (w3m-process-do
 			  (image (let ((w3m-current-buffer (current-buffer)))
@@ -4355,49 +4355,7 @@ Users should never modify the value.  See also `w3m-view-source'.")
        (prog1
 	   (decode-coding-string (buffer-string) w3m-current-coding-system)
 	 (erase-buffer)
-	 (set-buffer-multibyte t)))
-
-      ;; Encode urls containing non-ASCII characters.
-      (when (and (<= level 0)
-		 (or (featurep 'xemacs)
-		     ;; For the unknown reason Emacs 21.* causes
-		     ;; segfault by this.
-		     (>= emacs-major-version 22)))
-	(goto-char (point-min))
-	(let ((case-fold-search t))
-	  (while (re-search-forward "\
-<[\t\n\r ]*\\(?:\\(a\\)\\|\\(img\\)\\)[\t\n\r ]+\
-\\(?:[\000-\075\077-\177]*[^\000-\177]+\\)+[\000-\075\077-\177]*>"
-				    nil t)
-	    (save-match-data
-	      (save-excursion
-		(when (if (match-end 1)
-			  (re-search-backward "\
-\[\t\n\r ]href[\t\n\r ]*=[\t\n\r ]*\
-\"\\(\\(?:[\000-\041\043-\177]*[^\000-\177]+\\)+[\000-\041\043-\177]*\\)"
-					      (match-end 1) t)
-			(re-search-backward "[\t\n\r ]src[\t\n\r ]*=[\t\n\r ]*\
-\"\\(\\(?:[\000-\041\043-\177]*[^\000-\177]+\\)+[\000-\041\043-\177]*\\)"
-					    (match-end 2) t))
-		  (insert (w3m-url-transfer-encode-string
-			   (prog1
-			       (match-string 1)
-			     (delete-region (goto-char (match-beginning 1))
-					    (match-end 1)))
-			   w3m-current-coding-system)))))
-	    (when (if (match-end 1)
-		      (re-search-backward "[\t\n\r ]href[\t\n\r ]*=[\t\n\r ]*\
-'\\(\\(?:[\000-\046\048-\177]*[^\000-\177]+\\)+[\000-\046\048-\177]*\\)"
-					  (match-end 1) t)
-		    (re-search-backward "[\t\n\r ]src[\t\n\r ]*=[\t\n\r ]*\
-'\\(\\(?:[\000-\046\048-\177]*[^\000-\177]+\\)+[\000-\046\048-\177]*\\)"
-					(match-end 2) t))
-	      (insert (w3m-url-transfer-encode-string
-		       (prog1
-			   (match-string 1)
-			 (delete-region (goto-char (match-beginning 1))
-					(match-end 1)))
-		       w3m-current-coding-system)))))))))
+	 (set-buffer-multibyte t))))))
 
 (defun w3m-x-moe-decode-buffer ()
   (let ((args '("-i" "-cs" "x-moe-internal"))

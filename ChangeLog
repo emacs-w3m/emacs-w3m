@@ -1,3 +1,9 @@
+2007-09-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-decode-buffer): Don't decode escaped URLs.
+	(w3m-toggle-inline-images-internal): Escape non-ASCII characters in the
+	URL of the image before retrieving it.
+
 2007-09-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-safe-view-this-url): When a function which is
