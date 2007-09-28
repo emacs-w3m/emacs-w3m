@@ -94,7 +94,10 @@
 			  text-content-start text-content-end
 			  ;; Say whether to convert Japanese zenkaku
 			  ;; ASCII chars into hankaku.
-			  japanese-hankaku))
+			  japanese-hankaku
+			  ;; Coding system for encoding URIs when
+			  ;; accessing the server.
+			  url-coding-system))
   (luna-define-internal-accessors 'shimbun))
 
 (defgroup shimbun nil
@@ -203,11 +206,16 @@ and set `shimbun-SERVER-japanese-hankaku' to `never'."
 
 ;;; emacs-w3m implementation of url retrieval and entity decoding.
 (require 'w3m)
-(defun shimbun-retrieve-url (url &optional no-cache no-decode referer)
+(defun shimbun-retrieve-url (url &optional no-cache no-decode
+				 referer url-coding-system)
   "Rertrieve URL contents and insert to current buffer.
-Return content-type of URL as string when retrieval succeeded."
+Return content-type of URL as string when retrieval succeeded.
+Non-ASCII characters `url' are escaped based on `url-coding-system'."
   (let (type)
-    (if (and url (setq type (w3m-retrieve url nil no-cache nil referer)))
+    (if (and url
+	     (setq type (w3m-retrieve
+			 (w3m-url-transfer-encode-string url url-coding-system)
+			 nil no-cache nil referer)))
 	(progn
 	  (unless no-decode
 	    (w3m-decode-buffer url)
@@ -219,17 +227,22 @@ Return content-type of URL as string when retrieval succeeded."
 
 (defun shimbun-fetch-url (shimbun url &optional no-cache no-decode referer)
   "Retrieve contents specified by URL for SHIMBUN.
-This function is exactly similar to `shimbun-retrieve-url', but
-considers the `coding-system' slot of SHIMBUN when estimating a coding
-system of retrieved contents."
+This function is exacly similar to `shimbun-retrieve-url', but
+considers the `coding-system' slot of SHIMBUN when estimating a
+coding system of retrieved contents and the `url-coding-system'
+slot of SHIMBUN to encode URL."
   (if (shimbun-coding-system-internal shimbun)
       (let ((w3m-coding-system-priority-list
 	     (cons (shimbun-coding-system-internal shimbun)
 		   w3m-coding-system-priority-list)))
 	(inline
-	  (shimbun-retrieve-url url no-cache no-decode referer)))
+	  (shimbun-retrieve-url url no-cache no-decode referer
+				(or
+				 (shimbun-url-coding-system-internal shimbun)
+				 (shimbun-coding-system-internal shimbun)))))
     (inline
-      (shimbun-retrieve-url url no-cache no-decode referer))))
+      (shimbun-retrieve-url url no-cache no-decode referer
+			    (shimbun-url-coding-system-internal shimbun)))))
 
 (defun shimbun-real-url (url &optional no-cache)
   "Return a real URL."
@@ -558,7 +571,8 @@ Generated article have a multipart/related content-type."
   (luna-call-next-method)
   (insert (base64-encode-string (shimbun-entity-data-internal entity))))
 
-(defun shimbun-mime-replace-image-tags (base-cid &optional base-url images)
+(defun shimbun-mime-replace-image-tags (shimbun base-cid
+						&optional base-url images)
   "Replace all IMG tags with references to inlined image parts.
 This function takes a BASE-CID as a base string for CIDs of inlined
 image parts, and returns an alist of URLs and image entities."
@@ -600,7 +614,7 @@ image parts, and returns an alist of URLs and image entities."
       (unless (setq img (assoc url images))
 	(with-temp-buffer
 	  (set-buffer-multibyte nil)
-	  (setq type (shimbun-retrieve-url url nil t base-url))
+	  (setq type (shimbun-fetch-url shimbun url nil t base-url))
 	  (when (or (and type (string-match "\\`image/" type))
 		    ;; headlines.yahoo.co.jp often specifies it mistakenly.
 		    (and (string-match "\\.\\(gif\\|jpe?g\\|png\\)\\'" url)
@@ -633,7 +647,8 @@ content-type if `shimbun-encapsulate-images' is non-nil."
       (setq base-cid (match-string 1 base-cid)))
     (when shimbun-encapsulate-images
       (setq images
-	    (shimbun-mime-replace-image-tags base-cid
+	    (shimbun-mime-replace-image-tags shimbun
+					     base-cid
 					     (or base-url
 						 (shimbun-article-url
 						  shimbun header)))))
@@ -767,7 +782,7 @@ you want to use no database."
   '(url groups coding-system server-name from-address
 	content-start content-end x-face-alist expiration-days
 	prefer-text-plain text-content-start text-content-end
-	japanese-hankaku))
+	japanese-hankaku url-coding-system))
 
 (defun shimbun-open (server &optional mua)
   "Open a shimbun for SERVER.

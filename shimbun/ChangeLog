@@ -1,3 +1,19 @@
+2007-09-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* shimbun.el (toplevel): Add a new slot `url-coding-system' to
+	`shimbun' class.
+	(shimbun-retrieve-url): Accept an argument `url-coding-system', which
+	specifiies the coding system for escaping non-ASCII characters included
+	in the given URL.
+	(shimbun-fetch-url): Refer the above slot when calling
+	`shimbun-retrieve-url'.
+	(shimbun-mime-replace-image-tags): Add an argument `shimbun' to use
+	`shimbun-fetch-url' instead of `shimbun-retrieve-url'.
+	(shimbun-make-mime-article): Follow the above change.
+
+	* sb-multi.el (shimbun-multi-retrieve-next-pages): Follow the above
+	change.
+
 2007-09-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el: Rewrite.

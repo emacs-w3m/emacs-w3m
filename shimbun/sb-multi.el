@@ -64,7 +64,10 @@ Return nil, unless a content is cleared successfully.")
 	  (insert "\n</body>\n</html>\n")
 	(shimbun-insert-footer shimbun header t "</body>\n</html>\n")))
     (when shimbun-encapsulate-images
-      (setq images (shimbun-mime-replace-image-tags base-cid base-url images)))
+      (setq images (shimbun-mime-replace-image-tags shimbun
+						    base-cid
+						    base-url
+						    images)))
     (let ((body (shimbun-make-text-entity "text/html" (buffer-string)))
 	  (result
 	   (when next-url
