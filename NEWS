@@ -176,6 +176,33 @@ require the client to wait for a while (often for displaying ads).
 Shimbun now examines it and fetches the real article contents with no
 wait.
 
+** Shimbun can now convert wide non-ASCII characters into Hankaku.
+English words and numbers displayed with wide (a.k.a. Zenkaku) non-
+ASCII characters are illegible.  Although it is not available in all
+the shimbun modules, it will be worth trying setting
+the `shimbun-japanese-hankaku' variable to non-nil.  It not only
+converts wide non-ASCII characters into the normal ones but also
+performs Wakachi-Gaki (which means separating alphanumeric words and
+Japanese sentences with space characters).  If you want to do it per
+shimbun server, use `shimbun-SERVER-japanese-hankaku' instead.
+
+** New shimbun class `shimbun-newspaper'.
+This is used for adding a caution on the copyright to non-Japanese
+shimbun articles.  For Japanese, use `shimbun-japanese-newspaper'.
+
+** New shimbun modules have been added.
+sb-nytimes.el sb-tech-on.el sb-gendai-net.el sb-ohmynews-jp.el
+
+** Some shimbun modules are being well-maintained but others aren't.
+Volunteers welcome!
+
+*** New variable `nnshimbun-default-group-level' for Gnus.
+The value of this variable determines the initial group level of
+the group that is created.
+
+*** New command `gnus-group-make-shimbun-groups' for Gnus.
+This makes all the shimbun groups a server provides.
+
 
 ----------------------------------------------------------------------
 Emacs-w3m is free software; you can redistribute it and/or modify
