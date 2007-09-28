@@ -1,3 +1,7 @@
+2007-09-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el: Rewrite.
+
 2007-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-kantei-x-face-alist): Add new default face.

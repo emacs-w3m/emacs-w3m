@@ -4904,15 +4904,12 @@ yomiuri.world
 て @samp{yomiuri.atmoney} の代わりに @samp{yomiuri-html.atmoney} を指定
 して下さい。
 
-@item @uref{http://www.sankei.co.jp/, 産経新聞}
-@itemx (2007年10月から MSN に移行の予定)
-sankei.news.shakai sankei.news.kokusai sankei.news.seiji
-sankei.news.keizai sankei.news.seikatsu sankei.news.kyouiku
-sankei.news.sports sankei.news.cutlure sankei.news.chiho
-sankei.special.komori sankei.special.kuroda sankei.special.ito
-sankei.special.tamura sankei.special.jieitai sankei.special.kenpo
-sankei.special.kyouiku sankei.special.kiko sankei.ronsetsu.shucho
-sankei.ronsetsu.sankeisho sankei.ronsetsu.seiron
+@item @uref{http://sankei.jp.msn.com/, MSN 産経ニュース}
+@itemx (2007年10月から MSN に移行)
+sankei.points sankei.affairs sankei.politics sankei.economy sankei.world
+sankei.sports sankei.entertainments sankei.life sankei.culture
+sankei.release sankei.region sankei.usatoday sankei.usatoday.ja
+sankei.column.sankeisho sankei.column.shucho sankei.column.seiron
 
 @item @uref{http://www.bbc.co.uk/, BBC}
 bbc.news

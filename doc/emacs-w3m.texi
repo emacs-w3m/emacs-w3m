@@ -4870,8 +4870,8 @@ generate HTML articles.  In order to use it, specify
 @samp{yomiuri-html.atmoney} instead of @samp{yomiuri.atmoney} as the
 group name for example.
 
-@item @uref{http://www.sankei.co.jp/, Sankei Shimbun}
-@itemx (This site is due to shift to MSN from October, 2007)
+@item @uref{http://sankei.jp.msn.com/, MSN Sankei News}
+@itemx (This site has been shifted to MSN in October, 2007)
 sankei.news.shakai sankei.news.kokusai sankei.news.seiji
 sankei.news.keizai sankei.news.seikatsu sankei.news.kyouiku
 sankei.news.sports sankei.news.cutlure sankei.news.chiho
