@@ -1,4 +1,4 @@
-;;; sb-sankei.el --- shimbun backend for the Sankei Shimbun -*- coding: iso-2022-7bit; -*-
+;;; sb-sankei.el --- shimbun backend for the MSN Sankei News -*- coding: iso-2022-7bit; -*-
 
 ;; Copyright (C) 2003, 2004, 2005, 2006, 2007 Katsumi Yamaoka
 
@@ -26,175 +26,59 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
+(require 'sb-rss)
+(require 'sb-multi)
 
-(require 'shimbun)
+(luna-define-class shimbun-sankei (shimbun-japanese-newspaper
+				   shimbun-multi shimbun-rss) ())
 
-(luna-define-class shimbun-sankei (shimbun-japanese-newspaper shimbun) ())
+(defvar shimbun-sankei-url "http://sankei.jp.msn.com/")
 
-(defvar shimbun-sankei-top-level-domain "sankei.co.jp"
-  "Name of the top level domain for the Sankei shimbun.")
-
-(defvar shimbun-sankei-url
-  (concat "http://www." shimbun-sankei-top-level-domain "/")
-  "Name of the parent url.")
+(defvar shimbun-sankei-top-level-domain "sankei.jp.msn.com")
 
 (defvar shimbun-sankei-server-name "産経新聞")
 
-(defvar shimbun-sankei-from-address "nobody@example.com")
-
-(defvar shimbun-sankei-content-start
-  "<!--[\t\n ]*\\(?:photo\\.sta\\|hombun\\)[\t\n ]*-->[\t\n ]*")
-
-(defvar shimbun-sankei-content-end "[\t\n ]*<!--[\t\n ]*hbnend[\t\n ]*-->")
-
 (defvar shimbun-sankei-group-table
-  (let* ((s0 "[\t\n ]*")
-	 (s1 "[\t\n ]+")
-	 (news
-	  (list
-	   (concat
-	    "<a" s1 "href=\""
-	    ;; 1. url
-	    "\\("
-	    "\\(?:\\./\\)?" ;; news.chiho
-	    ;; 2. category
-	    "\\([^/]+\\)"
-	    "/"
-	    ;; 3. year
-	    "\\([0-9][0-9]\\)"
-	    "[01][0-9][0-3][0-9]/"
-	    ;; 4. serial number
-	    "\\([^\"]+\\)"
-	    "\\.htm\\)"
-	    "\">" s0
-	    ;; 5. subject
-	    "\\([^<]+\\)"
-	    s0 "</a>" s0 "("
-	    ;; 6. month
-	    "\\([01][0-9]\\)"
-	    "/"
-	    ;; 7. day
-	    "\\([0-3][0-9]\\)"
-	    s1
-	    ;; 8. time
-	    "\\([012][0-9]:[0-5][0-9]\\)"
-	    s0 ")")
-	   1 2 3 4 5 6 7 8))
-	 (special
-	  (list
-	   (concat
-	    "<a" s1 "href=\""
-	    ;; 1. url
-	    "\\(\\(?:[^0-9/]+/\\)+"
-	    ;; 2. year
-	    "\\([0-9][0-9]\\)"
-	    "[01][0-9][0-3][0-9]/"
-	    ;; 3. serial number
-	    "\\([^\"]+\\)"
-	    "\\.htm\\)"
-	    "\">" s0
-	    ;; 4. subject
-	    "\\([^<]+\\)"
-	    s0 "</a>" s0 "("
-	    ;; 5. month
-	    "\\([01][0-9]\\)"
-	    "/"
-	    ;; 6. day
-	    "\\([0-3][0-9]\\)"
-	    s1
-	    ;; 7. time
-	    "\\([012][0-9]:[0-5][0-9]\\)"
-	    s0 ")")
-	   1 nil 2 3 4 5 6 7))
-	 (kiko
-	  (list
-	   (concat
-	    "<a" s1 "href=\""
-	    ;; 1. url
-	    "\\(\\./tanbo/"
-	    ;; 2. serial number
-	    "\\(tanbou_[0-9]+\\)"
-	    "\\.htm\\)"
-	    "\">" s0 "20"
-	    ;; 3. year
-	    "\\([0-9][0-9]\\)"
-	    "\\."
-	    ;; 4. month
-	    "\\([01][0-9]\\)"
-	    "\\."
-	    ;; 5. day
-	    "\\([0-3][0-9]\\)"
-	    "[\t\n 　]*"
-	    ;; 6. subject
-	    "\\([^<]+\\)")
-	   1 nil 3 2 6 4 5 nil))
-	 (ronsetsu
-	  (list
-	   (concat
-	    "<a" s1 "href=\""
-	    ;; 1. url
-	    "\\("
-	    ;; 2. year
-	    "\\([0-9][0-9]\\)"
-	    "[01][0-9][0-3][0-9]/"
-	    ;; 3. serial number
-	    "\\([a-z]+[0-9]+\\)"
-	    "\\.htm\\)"
-	    "\">" s0 "【[^】]+】" s0
-	    ;; 4. subject
-	    "\\([^<]+\\)?"
-	    s0 "</a>" s0 "("
-	    ;; 5. month
-	    "\\([01][0-9]\\)"
-	    "/"
-	    ;; 6. day
-	    "\\([0-3][0-9]\\)"
-	    s1
-	    ;; 7. time
-	    "\\([012][0-9]:[0-5][0-9]\\)"
-	    ")")
-	   1 nil 2 3 4 5 6 7)))
-    `(("news.shakai" "社会" "shakai/shakai.htm" ,@news)
-      ("news.kokusai" "国際" "kokusai/kokusai.htm" ,@news)
-      ("news.seiji" "政治" "seiji/seiji.htm" ,@news)
-      ("news.keizai" "経済" "keizai/keizai.htm" ,@news)
-      ("news.seikatsu" "生活・健康" "seikatsu/seikatsu.htm" ,@news)
-      ("news.kyouiku" "教育・福祉" "kyouiku/kyouiku.htm" ,@news)
-      ("news.sports" "スポーツ" "sports/sports.htm" ,@news)
-      ("news.cutlure" "カルチャー" "culture/culture.htm" ,@news)
-      ("news.chiho" "地方" "chiho/chiho.htm" ,@news)
-      ("special.komori" "古森義久のワシントン報告" "special/komori/komori.htm"
-       ,@special)
-      ("special.kuroda" "黒田勝弘のソウル報告" "special/kuroda/kuroda.htm"
-       ,@special)
-      ("special.ito" "伊藤正の北京報告" "special/ito/ito.htm" ,@special)
-      ("special.tamura" "田村秀男の「経済がわかれば世界がわかる」"
-       "special/tamura/tamura.htm" ,@special)
-      ("special.jieitai" "自衛隊特集" "special/jieitai/jieitai.htm" ,@special)
-      ("special.kenpo" "憲法" "special/kenpo/kenpo.htm" ,@special)
-      ("special.kyouiku" "教育を考える" "special/kyouiku/kyouiku.htm"
-       ,@special)
-      ("special.kiko" "紀行" "special/kiko/kiko.htm" ,@kiko)
-      ("ronsetsu.shucho" "主張" "ronsetsu/shucho/shucho.htm" ,@ronsetsu)
-      ("ronsetsu.sankeisho" "産経抄" "ronsetsu/sankeisho/sankeisho.htm"
-       ,@ronsetsu)
-      ("ronsetsu.seiron" "正論" "ronsetsu/seiron/seiron.htm" ,@ronsetsu)))
-  "Alist of group names, their Japanese translations, index pages,
-regexps and numbers.  Where numbers point to the search result in order
-of [0]a url, [1]a category, [2]a year, [3]a serial number, [4]a subject,
-\[5]a month, [6]a day and [7]an hour:minute.")
+  '(("points" "注目ニュース"
+     "http://sankei.jp.msn.com/rss/news/points.xml")
+    ("affairs" "事件"
+     "http://sankei.jp.msn.com/rss/news/affairs.xml")
+    ("politics" "政治"
+     "http://sankei.jp.msn.com/rss/news/politics.xml")
+    ("economy" "経済・IT"
+     "http://sankei.jp.msn.com/rss/news/economy.xml")
+    ("world" "国際"
+     "http://sankei.jp.msn.com/rss/news/world.xml")
+    ("sports" "スポーツ"
+     "http://sankei.jp.msn.com/rss/news/sports.xml")
+    ("entertainments" "エンタメ"
+     "http://sankei.jp.msn.com/rss/news/entertainments.xml")
+    ("life" "生活"
+     "http://sankei.jp.msn.com/rss/news/life.xml")
+    ("culture" "文化"
+     "http://sankei.jp.msn.com/rss/news/culture.xml")
+    ("release" "新商品"
+     "http://sankei.jp.msn.com/rss/news/release.xml")
+    ("region" "地方"
+     "http://sankei.jp.msn.com/rss/news/region.xml")
+    ("usatoday" "USA TODAY"
+     "http://sankei.jp.msn.com/rss/news/usatoday.xml")
+    ("usatoday.ja" "USA TODAY 和訳"
+     "http://sankei.jp.msn.com/rss/news/usatoday.xml")
+    ;; Non-RSS groups.
+    ("column.sankeisho" "産経抄"
+     "http://sankei.jp.msn.com/column/1221/clm1221-t.htm")
+    ("column.shucho" "主張"
+     "http://sankei.jp.msn.com/column/1521/clm1521-t.htm")
+    ("column.seiron" "正論"
+     "http://sankei.jp.msn.com/column/1522/clm1522-t.htm")))
 
 (defvar shimbun-sankei-x-face-alist
   '(("default" . "\
-Face: iVBORw0KGgoAAAANSUhEUgAAACUAAAAlAgMAAAC48MiQAAAADFBMVEUDU4CnwdA3dpr///9
- livkjAAABOUlEQVQY00XRPUvDUBQG4Nc4qAhO1SAOUQcpDrq4iTR0dwwRKlZcBKV0aqvVkGyCk5O
- LSn6BulTBQSMOzg62DiKp4MeggkPbDDU53nOj9C734fByzv2A8b906PhbgpO8T0h6Kw6gOUztowH
- FXhZME4VQKdRF9axgdVFId4J7F1HfgrfmCFp0D9WvCaaz/hVSRFx9cFtIWQY3s4NvDL4lZd9VwbA
- ipzU3MEQNpvtaQcKuy8DtDBJZybnPKQz7Bjc7fxnALNG14GiyF+OOwoGisoT++BaUj9CzU+Vs++k
- QWl5mbX8Rl5s1DgT0g+3SvsyGJ7ADW3ZwI0yvEzPTjKA9hkyzeoTyVoHpm8colmJSDl6bA+mvzDy
- 05xbzXVS1epkH3xzkoJpysNO9i5FTg98MCjAWH7Lz6p2/+AUCpou5oeyt8wAAAABJRU5ErkJggg=
- =")))
+Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAGFBMVEX///8An/8Vb38CnwB
+ Vv1X/vwD/fwD/PwA35I7FAAAAAXRSTlMAQObYZgAAAFpJREFUCNdjYEAF5TC6vICBUYCBgR3MEBQ
+ ACoAZguwwhlJaWnoBA4OgkFFZWhqQwShspJaWFgDUK2yslpYKYjAbK4WGghgsLk6hoWBzXVzAAiA
+ hVgiDwQHZfgCXhRLQU+g42QAAAABJRU5ErkJggg==")))
 
 (defvar shimbun-sankei-expiration-days 7)
 
@@ -206,121 +90,222 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACUAAAAlAgMAAAC48MiQAAAADFBMVEUDU4CnwdA3dpr///9
 		shimbun-sankei-group-table)))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-sankei))
-  (shimbun-expand-url (nth 2 (assoc (shimbun-current-group-internal shimbun)
-				    shimbun-sankei-group-table))
-		      (shimbun-url-internal shimbun)))
+  (nth 2 (assoc (shimbun-current-group-internal shimbun)
+		shimbun-sankei-group-table)))
 
-(luna-define-method shimbun-get-headers ((shimbun shimbun-sankei)
-					 &optional range)
+(luna-define-method shimbun-headers :around ((shimbun shimbun-sankei)
+					     &optional range)
+  (if (string-match "\\.xml\\'" (shimbun-index-url shimbun))
+      ;; Use the function defined in sb-rss.el.
+      (luna-call-next-method)
+    ;; Use the default function defined in shimbun.el.
+    (funcall (intern "shimbun-headers"
+		     (luna-class-obarray (luna-find-class 'shimbun)))
+	     shimbun range)))
+
+(luna-define-method shimbun-get-headers :around ((shimbun shimbun-sankei)
+						 &optional range)
+  (if (string-match "\\.xml\\'" (shimbun-index-url shimbun))
+      (luna-call-next-method)
+    (shimbun-sankei-get-headers shimbun range)))
+
+(defun shimbun-sankei-get-headers (shimbun range)
+  "Get headers for non-RSS groups."
   (let* ((group (shimbun-current-group-internal shimbun))
-	 (numbers (cdr (assoc group shimbun-sankei-group-table)))
-	 (name (pop numbers))
-	 (base (shimbun-expand-url (file-name-directory (pop numbers))
-				   (shimbun-url-internal shimbun)))
-	 (regexp (pop numbers))
-	 (rgroup (mapconcat 'identity
-			    (nreverse (split-string group "\\."))
-			    "."))
-	 start categories
-	 url category year subject month day time from id headers)
-    ;; Make an alist of categories and those Japanese names.
-    (when (and (nth 1 numbers)
-	       (search-forward "<!--▼カテゴリタイトル▼-->" nil t)
-	       (progn
-		 (setq start (point))
-		 (search-forward "<!--▲カテゴリタイトル▲-->" nil t)))
-      (narrow-to-region start (match-beginning 0))
-      (goto-char (point-min))
-      (while (re-search-forward
-	      (eval-when-compile
-		(let ((s0 "[\t\n ]*")
-		      (s1 "[\t\n ]+"))
-		  (concat "<a" s1 "href=\"[^\"]+/"
-			  ;; 1. category
-			  "\\([^/]+\\)"
-			  "\\.htm\">" s0 "\\(?:<[^>]+>" s0 "\\)*"
-			  ;; 2. name
-			  "\\([^<]+\\)"
-			  s0 "</a>")))
-	      nil t)
-	(push (cons (match-string 1) (match-string 2)) categories))
-      (widen))
-    ;; Look for article headers.
+	 (name (shimbun-current-group-name shimbun))
+	 (regexp
+	  (concat
+	   (eval-when-compile
+	     (concat
+	      "<a[\t\n ]+href=\""
+	      ;; 1. url
+	      "\\(\\(?:[^\"/]+/\\)+"
+	      ;; 2. year
+	      "\\([0-9][0-9]\\)"
+	      ;; 3. month
+	      "\\([01][0-9]\\)"
+	      ;; 4. day
+	      "\\([0-3][0-9]\\)"
+	      "/"
+	      ;; 5. serial number
+	      "\\([^\"]+\\)"
+	      "\\.htm\\)"
+	      "\">[\t\n ]*【"))
+	   ;; 6. subject
+	   ;; 7. time
+	   name "】[\t\n ]*\\([^<]+\\)</a>\
+\\(?:\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
+\\(?:20[0-9][0-9]\\.\\)?[01]?[0-9]\\.[0-3]?[0-9][\t\n ]+\
+\\([012][0-9]:[0-5][0-9]\\)[\t\n ]*<\\)?"))
+	 (from (concat shimbun-sankei-server-name " (" name ")"))
+	 (rgrp (mapconcat 'identity (nreverse (split-string group "\\.")) "."))
+	 (index (shimbun-index-url shimbun))
+	 headers)
     (while (re-search-forward regexp nil t)
-      (setq url (shimbun-expand-url (match-string (nth 0 numbers)) base)
-	    category (when (nth 1 numbers)
-		       (match-string (nth 1 numbers)))
-	    year (+ 2000 (string-to-number (match-string (nth 2 numbers))))
-	    subject (match-string (nth 4 numbers))
-	    month (string-to-number (match-string (nth 5 numbers)))
-	    day (string-to-number (match-string (nth 6 numbers)))
-	    time (when (nth 7 numbers)
-		   (match-string (nth 7 numbers)))
-	    from (concat name "/" shimbun-sankei-server-name
-			 (when (and category categories)
-			   (concat " (" (or (cdr (assoc category categories))
-					    category)
-				   ")")))
-	    id (concat "<" (match-string (nth 3 numbers)) ;; serial number
-		       "%" (when category
-			     (concat category "."))
-		       rgroup "." shimbun-sankei-top-level-domain ">"))
-      (setq subject
-	    (if subject
-		(shimbun-replace-in-string subject "[\t\n 　]+\\'" "")
-	      (format "%4d.%02d.%02d" year month day)))
-      (unless (shimbun-search-id shimbun id)
-	(push (shimbun-create-header
-	       0 subject from
-	       (shimbun-make-date-string year month day time)
-	       id "" 0 0 url)
-	      headers)))
-    (shimbun-sort-headers headers)))
+      (push (shimbun-create-header
+	     0 (match-string 6) from
+	     (shimbun-make-date-string
+	      (+ 2000 (string-to-number (match-string 2)))
+	      (string-to-number (match-string 3))
+	      (string-to-number (match-string 4))
+	      (match-string 7))
+	     (concat "<" (match-string 5) "." rgrp "%"
+		     shimbun-sankei-top-level-domain ">")
+	     "" 0 0
+	     (shimbun-expand-url (match-string 1) index))
+	    headers))
+    headers))
+
+(luna-define-method shimbun-multi-next-url ((shimbun shimbun-sankei)
+					    header url)
+  (shimbun-sankei-multi-next-url shimbun header url))
+
+(defun shimbun-sankei-multi-next-url (shimbun header url)
+  (unless (string-equal (shimbun-current-group-internal shimbun)
+			"usatoday.ja")
+    (goto-char (point-min))
+    (let (start end)
+      (when (and (re-search-forward "\
+<div[\t\n ]\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"newslistNumber\""
+				    nil t)
+		 (shimbun-end-of-tag "div")
+		 (re-search-backward "\
+<a[\t\n ]+href=\"\\([^\"]+\\)\"[^>]*>[\t\n ]*次のページ[\t\n ]*</a>"
+				     (match-beginning 0) t))
+	(shimbun-expand-url (match-string 1) url)))))
 
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-sankei)
 						    header)
+  (shimbun-sankei-clear-contents shimbun header))
+
+(defun shimbun-sankei-clear-contents (shimbun header)
+  (goto-char (point-min))
   (let ((group (shimbun-current-group-internal shimbun))
-	start)
-    (cond ((string-equal group "news.sports")
-	   (when (re-search-forward "\
-\\(?:[\t\n ]*\\(?:&nbsp\;[\t\n ]*\\)?<[^>]+>\\)*\
-\[\t\n ]*\\(?:プロ野球\\|大リーグ\\)関連サイト＆ＰＲ[\t\n ]*<"
+	(hankaku (shimbun-japanese-hankaku shimbun))
+	(case-fold-search t)
+	no-footer start end)
+
+    (cond ((string-equal group "usatoday")
+	   (setq no-footer t))
+	  ((string-equal group "usatoday.ja")
+	   (when (and (re-search-forward "<div[\t\n ]+[^>]+>[\t\n ]*\
+\\(?:<h[0-9]+>[\t\n ]*\\)?このニュースの和訳\\(?:[\t\n ]*</h[0-9]+>\\)?\
+\[\t\n ]*<div[\t\n ]"
+					 nil t)
+		      (progn
+			(goto-char (match-beginning 0))
+			(shimbun-end-of-tag "div"))
+		      (re-search-backward "\
+<a[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*href=\"\\([^\"]+\\)\"[^>]*>[\t\n ]*\
+\\([^<]+\\)</a>"
+					  nil t))
+	     (let ((url (shimbun-header-xref header)))
+	       (shimbun-header-set-subject header (match-string 2))
+	       (setq url (shimbun-expand-url (match-string 1) url))
+	       (shimbun-header-set-xref header url)
+	       (erase-buffer)
+	       (shimbun-fetch-url shimbun url)))
+	   (goto-char (point-min))))
+
+    (if (and (re-search-forward "<span[\t\n ]+class=\"timestamp\"" nil t)
+	     (progn
+	       (setq start (match-end 0))
+	       (re-search-forward "<div[\t\n ]+class=\"_LSUCS\">[\t\n ]*"
+				  nil t))
+	     (progn
+	       (setq start (if (re-search-backward "<img[\t\n ]+src=\""
+						   start t)
+			       (match-beginning 0)
+			     (match-end 0))) ;; Previous search result
+	       (re-search-forward "\
+\\(<div[\t\n ]\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"newslistNumber\"\\)\
+\\|<h[0-9]+>[\t\n ]*このニュースの写真[\t\n ]*</h[0-9]+>\
+\\|<script[\t\n ]"
+				  nil t)))
+	(progn
+	  (setq end (match-beginning 0))
+	  (when (prog1
+		    (and (match-beginning 1)
+			 (shimbun-end-of-tag "div")
+			 (re-search-backward "\
+<a[\t\n ]*\\(?:[^\t\n >]+[\t\n ]+\\)*title=\"前のページ\""
+					     end t))
+		  (delete-region end (point-max)))
+	    (goto-char start)
+	    (insert "&#012;\n")) ;; Page delimiter.
+	  (delete-region (point-min) start)
+
+	  ;; Remove related images.
+	  (goto-char (point-min))
+	  (while (and (re-search-forward "<div[\t\n ]+id=\"RelatedImg\""
+					 nil t)
+		      (shimbun-end-of-tag "div" t))
+	    (replace-match "\n"))
+
+	  ;; Remove links to related news or topics.
+	  (goto-char (point-min))
+	  (while (and (re-search-forward "\\(<\\)div[\t\n ]+[^>]+>\
+\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\\(?:<h[0-9]+>[\t\n ]*\\)*\
+関連\\(?:ニュース\\|トピックス\\)[\t\n ]*<"
+					 nil t)
+		      (progn
+			(goto-char (match-end 1))
+			(shimbun-end-of-tag "div" t)))
+	    (replace-match "\n"))
+
+	  ;; Insert a new line after every image.
+	  (goto-char (point-min))
+	  (while (re-search-forward "\\(<img[\t\n ]+[^>]+>\\)[\t\n ]*" nil t)
+	    (replace-match "\\1<br>"))
+
+	  ;; Remove useless tags.
+	  (goto-char (point-min))
+	  (while (re-search-forward "\
+\\(?:[\t\n ]*<p\\(?:[\t\n ]*\\|[\t\n ]+[^>]+\\)>[\t\n ]*</p>\\)[\t\n ]*"
 				    nil t)
-	     (goto-char (match-beginning 0))
-	     (insert "<!--hbnend-->")))
-	  ((string-equal group "special.kiko")
-	   ;; Remove commented sections.
-	   (when (re-search-forward "\
-\[\t\n ]*<[\t\n ]*!-+\\(?:[^<>]*<[^>]+>\\)+[^<>]*-+[\t\n ]*>[\t\n ]*"
-				    nil t)
-	     (delete-region (match-beginning 0) (match-end 0))
-	     (goto-char (point-min)))
-	   (if (re-search-forward
-		"<p[\t\n ]+class=\\(?:\"paragraph\"\\|'paragraph'\\)>"
-		nil t)
-	       (progn
-		 (goto-char (match-beginning 0))
-		 (insert "<!--hombun-->")
-		 (setq start (point))
-		 (forward-line 1))
-	     (re-search-forward shimbun-sankei-content-start nil t)
-	     (setq start (point)))
-	   (when (re-search-forward "\
-\[\t\n ]*\\(?:</div>\\)?[\t\n ]*<!--▲記事本文▲-->"
-				    nil 'move)
-	     (goto-char (match-beginning 0)))
-	   ;; Break lines after images.
-	   (narrow-to-region start (point))
-	   (goto-char (point-min))
-	   (while (re-search-forward "<img[\t\n ]+src=[^>]+>" nil 'move)
-	     (insert "<br>"))
-	   (widen)
-	   (insert "<!--hbnend-->"))))
-  (when (luna-call-next-method)
-    ;; Break long lines.
-    (unless (shimbun-prefer-text-plain-internal shimbun)
-      (shimbun-break-long-japanese-lines))
-    t))
+	    (delete-region (match-beginning 0) (match-end 0))
+	    (when (string-equal (buffer-substring (max (point-min)
+						       (- (point) 6))
+						  (point))
+				"&#012;")
+	      (if (looking-at "<p\\(?:[\t\n ]*\\|[\t\n ]+[^>]+\\)>[\t\n ]*")
+		  (replace-match "\n")
+		(insert "\n"))))
+	  (goto-char (point-min))
+	  (when (re-search-forward "\
+\\(?:[\t\n ]*</?div\\(?:[\t\n ]*\\|[\t\n ]+[^>]+\\)>\\)+[\t\n ]*\\'"
+				   nil t)
+	    (delete-region (match-beginning 0) (point-max))
+	    (insert "\n"))
+
+	  (cond ((string-equal group "usatoday.ja")
+		 ;; Insert a newline after the headline.
+		 (goto-char (point-min))
+		 (when (re-search-forward "\
+\\(<p\\(?:[\t\n ]*\\|[\t\n ]+[^>]+\\)>\\)[\t\n ]*\
+　\\(【[^<】]+】\\)[\t\n 　]*"
+					  nil t)
+		   (replace-match "\\1\\2</p>\n<p>　"))
+		 ;; Don't insert a footer if it originally exists.
+		 (when (re-search-forward "\
+\(c)[\t\n ]+2007,[\t\n ]+USA[\t\n ]+TODAY[\t\n ]+International\\."
+					  nil t)
+		   (setq no-footer t))))
+
+	  ;; Convert Japanese zenkaku ASCII chars into hankaku.
+	  (when (and hankaku (not (memq hankaku '(header subject))))
+	    (shimbun-japanese-hankaku-buffer t))
+
+	  ;; Break long lines.
+	  (shimbun-break-long-japanese-lines)
+	  (not no-footer))
+
+      (erase-buffer)
+      (insert "<html><body>\
+この記事 (またはこの次のページ) はもうありません。<br>\n\
+\(さもなければ通常とは異なる形式を使っているか、<br>\n\
+&nbsp;または取得に失敗したのかもしれません。)</body></html>\n")
+      nil)))
 
 (provide 'sb-sankei)
 
