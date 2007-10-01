@@ -1138,11 +1138,13 @@ integer n:    Retrieve n pages of header indices.")
 							&optional charset html)
   "Insert headers and footer in the current buffer and return the contents.
 SHIMBUN and HEADER specify what headers and footer are.  CHARSET, which
-defaults to \"UTF-8\", specifies the content charset and is used to encode
+defaults to the one that the `detect-mime-charset-region' function
+determines, specifies the content charset and is used to encode
 the return value of this function.  A non-nil value of HTML specifies
 that the content type is text/html, otherwise text/plain."
   (unless charset
-    (setq charset "UTF-8"))
+    (setq charset (upcase (symbol-name (detect-mime-charset-region
+					(point-min) (point-max))))))
   (goto-char (point-min))
   (shimbun-header-insert shimbun header)
   (insert "Content-Type: text/" (if html "html" "plain") "; charset=" charset
@@ -1154,8 +1156,7 @@ that the content type is text/html, otherwise text/plain."
 		"\">\n</head>\n<body>\n")
 	(shimbun-insert-footer shimbun header t "</body>\n</html>\n"))
     (shimbun-insert-footer shimbun header))
-  (encode-coding-string (buffer-string)
-			(mime-charset-to-coding-system charset)))
+  (encode-mime-charset-string (buffer-string) charset))
 
 (defun shimbun-mime-encode-string (string)
   (condition-case nil

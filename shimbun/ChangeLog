@@ -1,3 +1,9 @@
+2007-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-header-insert-and-buffer-string): Make MIME
+	charset default to the one that detect-mime-charset-region determines;
+	use encode-mime-charset-string.
+
 2007-09-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* shimbun.el (toplevel): Add a new slot `url-coding-system' to
