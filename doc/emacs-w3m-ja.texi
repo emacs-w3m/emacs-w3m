@@ -4783,13 +4783,14 @@ asahi-mytown.(hokkaido@dots{}okinawa)
 
 日本の全都道府県を網羅する朝日新聞の地方版です。
 
-@item @uref{http://www.mainichi-msn.co.jp/, 毎日新聞}
-@itemx (2007年10月から mainichi.jp に移行の予定)
-mainichi.entertainment mainichi.eye mainichi.eye.shasetsu
-mainichi.kansai mainichi.kansai.tigers mainichi.keizai mainichi.kokusai
-mainichi.kurashi mainichi.science mainichi.seiji mainichi.shakai
-mainichi.shakai.edu mainichi.shakai.edu.campal mainichi.sokuhou
-mainichi.sports mainichi.sports.column mainichi.today mainichi.yougo
+@item @uref{http://mainichi.jp/, 毎日jp}
+@itemx (2007年10月に MSN から自社サイトに移行)
+mainichi.flash mainichi.sports mainichi.entertainment mainichi.mantan
+mainichi.electronics mainichi.weekly mainichi.opinion.editorial
+mainichi.opinion.yoroku mainichi.opinion.hasshinbako
+mainichi.opinion.eye mainichi.opinion.hito mainichi.opinion.kinji
+mainichi.opinion.yuraku mainichi.opinion.closeup
+mainichi.opinion.kaisetsu mainichi.opinion.newsup
 
 これらのグループは、デフォルトで写真をも含む HTML の記事を作ります。それ
 らに、テキストだけの記事を生成させたいならば、以下の行

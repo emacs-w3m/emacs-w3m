@@ -4748,13 +4748,14 @@ asahi-mytown.(hokkaido@dots{}okinawa)
 The Asahi Shimbun local-news sections including all the prefectures of
 Japan.
 
-@item @uref{http://www.mainichi-msn.co.jp/, MSN-Mainichi INTERACTIVE}
-@itemx (This site is due to shift to mainichi.jp from October, 2007)
-mainichi.entertainment mainichi.eye mainichi.eye.shasetsu
-mainichi.kansai mainichi.kansai.tigers mainichi.keizai mainichi.kokusai
-mainichi.kurashi mainichi.science mainichi.seiji mainichi.shakai
-mainichi.shakai.edu mainichi.shakai.edu.campal mainichi.sokuhou
-mainichi.sports mainichi.sports.column mainichi.today mainichi.yougo
+@item @uref{http://mainichi.jp/, Mainichi jp}
+@itemx (This site has been shifted from MSN in October, 2007)
+mainichi.flash mainichi.sports mainichi.entertainment mainichi.mantan
+mainichi.electronics mainichi.weekly mainichi.opinion.editorial
+mainichi.opinion.yoroku mainichi.opinion.hasshinbako
+mainichi.opinion.eye mainichi.opinion.hito mainichi.opinion.kinji
+mainichi.opinion.yuraku mainichi.opinion.closeup
+mainichi.opinion.kaisetsu mainichi.opinion.newsup
 
 Those groups generate HTML articles containing photographs by default.
 If you would like to make them generate articles that contain only text,

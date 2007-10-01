@@ -1,5 +1,7 @@
 2007-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-mainichi.el: Rewrite.
+
 	* shimbun.el (shimbun-header-insert-and-buffer-string): Make MIME
 	charset default to the one that detect-mime-charset-region determines;
 	use encode-mime-charset-string.
