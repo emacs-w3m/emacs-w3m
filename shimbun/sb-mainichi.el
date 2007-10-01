@@ -225,6 +225,10 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 	     (shimbun-end-of-tag "div"))
 	(progn
 	  (setq start (match-beginning 0))
+	  (when (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"Credit\""
+				   nil t)
+	    (shimbun-end-of-tag "div"))
 	  (search-backward "<")
 	  (skip-chars-backward "\t\n ")
 	  (delete-region (match-beginning 0) (point-max))

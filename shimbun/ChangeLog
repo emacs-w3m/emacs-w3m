@@ -1,5 +1,10 @@
 2007-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-mainichi.el (shimbun-mainichi-clear-contents): Don't remove credit
+	at the bottom of article.
+
+2007-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* sb-mainichi.el: Rewrite.
 
 	* shimbun.el (shimbun-header-insert-and-buffer-string): Make MIME
