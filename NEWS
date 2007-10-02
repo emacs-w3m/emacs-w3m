@@ -81,8 +81,10 @@ The variable `w3m-compatible-encoding-alist' holds the table of
 charsets and their supersets.
 
 ** Emacs-w3m can now follow links containing non-ASCII characters.
-Technically, emacs-w3m embeds links that are encoded in advance in
-pages.
+Emacs-w3m encodes the urls of links whenever retrieving the contents
+using the charset by which the page containing the links has been
+encoded.  (In shimbun, the charset can be overridden by
+the `shimbun-url-coding-system' class variable; see below.)
 
 ** You can now instruct emacs-w3m how much it decodes html sources.
 Give a numeric prefix to the `w3m-view-source' command, which is bound
@@ -189,6 +191,13 @@ shimbun server, use `shimbun-SERVER-japanese-hankaku' instead.
 ** New shimbun class `shimbun-newspaper'.
 This is used for adding a caution on the copyright to non-Japanese
 shimbun articles.  For Japanese, use `shimbun-japanese-newspaper'.
+
+** New shimbun class variable `shimbun-url-coding-system'.
+This overrides the charset used for encoding the urls of links which
+contain non-ASCII letters (by default, the urls of links will be
+encoded by the charset by which the page containing the links has been
+encoded).  Use the `shimbun-SERVER-url-coding-system' variable per
+server.
 
 ** New shimbun modules have been added.
 sb-nytimes.el sb-tech-on.el sb-gendai-net.el sb-ohmynews-jp.el
