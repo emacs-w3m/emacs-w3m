@@ -5531,6 +5531,7 @@ called with t as an argument.  Otherwise, it will be called with nil."
 		(string-match "\\`w3m: Can't load " header))
 	    (progn
 	      (erase-buffer)
+	      (setq charset "us-ascii")
 	      (insert
 	       errmsg
 	       (format "<br><br><b>%s</b> could not be found; "
