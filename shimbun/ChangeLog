@@ -1,3 +1,12 @@
+2007-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-end-of-tag): Add inner points to match-data.
+	(shimbun-japanese-hankaku-region): Replace Chinese hyphen with Japanese
+	one.
+
+	* sb-mainichi.el (shimbun-mainichi-clear-contents): Improve the way to
+	extract contents; don't replace Chinese hyphen here.
+
 2007-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-mainichi.el (shimbun-mainichi-clear-contents): Don't remove credit

@@ -1269,47 +1269,76 @@ exist within the start position of the tag and the next tag as follows:
 
 <!-- foo <bar ...<baz ...>...> -->
  ^^^^^^^^
-Return the end-point and set the match-data #0.
 If INCLUDE-WHITESPACE is non-nil, include leading and trailing
-whitespace."
+whitespace.  Return the end-point and set the match-data #0, #1, #2,
+and #3 as follows (\"___\" shows whitespace):
+
+The case where TAG is spefified:
+___<TAG ...>___...___</TAG>___
+   0        1  2  2  1     0     INCLUDE-WHITESPACE=nil
+0  1        2  3  3  2     1  0  INCLUDE-WHITESPACE=non-nil
+
+The case where TAG is nil:
+___<TAG ...>___
+   0        0     INCLUDE-WHITESPACE=nil
+0  1        1  0  INCLUDE-WHITESPACE=non-nil"
   (let ((init (point))
 	(num 1)
 	(md (match-data))
 	(case-fold-search t)
-	start regexp end)
+	regexp st1 st2 st3 nd1 nd2 nd3 nd0 st0)
     (condition-case nil
 	(progn
 	  (if tag
 	      (progn
-		(setq start (if (looking-at (concat "[\n\t ]*\\(<\\)" tag
-						    "[\t\n\r >]"))
-				(match-beginning 1)
-			      (search-backward "<")
-			      (if (looking-at (concat "<" tag "[\t\n\r >]"))
-				  (match-beginning 0)
-				(error ""))))
-		(goto-char (1+ start))
-		(setq regexp (concat "<\\(/\\)?" tag
-				     "\\(?:[\t\n\r ]*\\|[\t\n\r ]+[^>]+\\)>")))
+		(setq tag (regexp-quote tag))
+		(if (looking-at (concat "\
+\[\t\n\r ]*\\(<[\t\n\r ]*" tag "\\(?:[\t\n\r ]*\\|[\t\n\r ]+[^>]+\\)>\\)\
+\[\t\n\r ]*"))
+		    (setq st1 (nth 2 (match-data)) ;; (match-beginning 1)
+			  st2 (nth 3 (match-data)) ;; (match-end 1)
+			  st3 (nth 1 (match-data))) ;; (match-end 0)
+		  (search-backward "<")
+		  (if (looking-at (concat "\
+\\(<[\t\n\r ]*" tag "\\(?:[\t\n\r ]*\\|[\t\n\r ]+[^>]+\\)>\\)[\t\n\r ]*"))
+		      (setq st1 (car (match-data)) ;; (match-beginning 0)
+			    st2 (nth 3 (match-data)) ;; (match-end 1))
+			    st3 (nth 1 (match-data))) ;; (match-end 0)
+		    (error "")))
+		(goto-char (1+ st1))
+		(setq regexp (concat "\
+\[\t\n\r ]*\\(<\\(/\\)?" tag "\\(?:[\t\n\r ]*\\|[\t\n\r ]+[^>]+\\)>\\)"))
+		(while (and (> num 0)
+			    (re-search-forward regexp))
+		  (setq num (if (match-beginning 2)
+				(1- num)
+			      (1+ num))))
+		(setq nd1 (nth 3 (match-data)) ;; (match-end 1)
+		      nd2 (nth 2 (match-data)) ;; (match-beginning 1)
+		      nd3 (car (match-data)))) ;; (match-beginning 0)
 	    (search-backward "<")
-	    (setq start (match-beginning 0))
+	    (setq st1 (car (match-data))) ;; (match-beginning 0)
 	    (goto-char init)
-	    (setq regexp "\\(>\\)\\|<"))
-	  (while (and (> num 0)
-		      (re-search-forward regexp))
-	    (setq num (if (match-beginning 1)
-			  (1- num)
-			(1+ num))))
+	    (while (and (> num 0)
+			(re-search-forward "\\(>\\)\\|<"))
+	      (setq num (if (match-beginning 1)
+			    (1- num)
+			  (1+ num))))
+	    (setq nd1 (nth 3 (match-data)))) ;; (match-end 1)
 	  (if include-whitespace
 	      (progn
 		(skip-chars-forward "\t\n\r ")
-		(setq end (point))
-		(goto-char start)
+		(setq nd0 (point-marker))
+		(goto-char st1)
 		(skip-chars-backward "\t\n\r ")
-		(setq start (point-marker))
-		(goto-char end))
-	    (setq start (set-marker (make-marker) start)))
-	  (set-match-data (list start (point-marker)))
+		(setq st0 (point-marker))
+		(goto-char nd0)
+		(set-match-data (if tag
+				    (list st0 nd0 st1 nd1 st2 nd2 st3 nd3)
+				  (list st0 nd0 st1 nd1))))
+	    (set-match-data (if tag
+				(list st1 nd1 st2 nd2 st3 nd3)
+			      (list st1 nd1))))
 	  (point))
       (error
        (set-match-data md)
@@ -1494,6 +1523,16 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
 					    (?‐ . ?-) (?／ . ?/) (?＼ . ?\\)
 					    (?｜ . ?|) (?’ . ?') (?＠ . ?@))))
 		(delete-char 1))))
+    (goto-char start)
+    ;; Replace Chinese hyphen with "−".
+    (condition-case nil
+	(while (re-search-forward
+		(concat "[" (list (make-char 'chinese-gb2312 35 45)
+				  (make-char 'chinese-big5-1 34 49))
+			"]")
+		nil t)
+	  (replace-match "−"))
+      (error))
     (goto-char start)
     (while (re-search-forward
 	    "[^　、。，．＿ー―‐〜‘’“”（）［］｛｝〈〉＝′″￥]+"

@@ -218,30 +218,23 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
   (let ((group (shimbun-current-group-internal shimbun))
 	(hankaku (shimbun-japanese-hankaku shimbun))
 	(case-fold-search t)
-	start)
-    (if (and (re-search-forward "\
-<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"NewsBody\""
-				nil t)
-	     (shimbun-end-of-tag "div"))
-	(progn
-	  (setq start (match-beginning 0))
-	  (when (re-search-forward "\
-<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"Credit\""
+	arts)
+    (while (and (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"\\(?:NewsBody\\|Credit\\)\""
 				   nil t)
-	    (shimbun-end-of-tag "div"))
-	  (search-backward "<")
-	  (skip-chars-backward "\t\n ")
-	  (delete-region (match-beginning 0) (point-max))
-	  (insert "\n")
-	  (goto-char start)
-	  (re-search-forward ">[\t\n ]*")
-	  (delete-region (point-min) (match-end 0))
+		(shimbun-end-of-tag "div"))
+      (push (match-string 2) arts))
+    (erase-buffer)
+    (if arts
+	(progn
+	  (dolist (art (nreverse arts))
+	    (insert art "\n"))
 
 	  ;; Break continuous lines in yoroku articles.
 	  (when (or (string-equal group "opinion.yoroku")
 		    (string-match "\\`$BM>O?(B[:$B!'(B]"
 				  (shimbun-header-subject header t)))
-	    ;;(goto-char (point-min))
+	    (goto-char (point-min))
 	    (while (static-if (= (length "$,2!r(B") 1)
 		       (re-search-forward "[$B"%$,2!r(B]" nil t)
 		     (search-forward "$B"%(B" nil t))
@@ -249,10 +242,6 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 
 	  ;; Convert Japanese zenkaku ASCII chars into hankaku.
 	  (when (and hankaku (not (memq hankaku '(header subject))))
-	    ;; Replace "$(0"1(B" with "$B!](B".
-	    (goto-char (point-min))
-	    (while (search-forward "$(0"1(B" nil t)
-	      (replace-match "$B!](B"))
 	    (shimbun-japanese-hankaku-buffer t))
 
 	  (if (shimbun-prefer-text-plain-internal shimbun)
@@ -268,7 +257,6 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 	    (shimbun-break-long-japanese-lines))
 	  t)
 
-      (erase-buffer)
       (insert "<html><body>\
 $B$3$N5-;v$O$b$&$"$j$^$;$s!#(B<br>\n\
 \($B$5$b$J$1$l$PDL>o$H$O0[$J$k7A<0$r;H$C$F$$$k$+!"(B<br>\n\
