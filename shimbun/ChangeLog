@@ -1,8 +1,10 @@
 2007-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-nikkei.el (shimbun-nikkei-url-coding-system): New variable.
+
 	* shimbun.el (shimbun-end-of-tag): Add inner points to match-data.
-	(shimbun-japanese-hankaku-region): Replace Chinese hyphen with Japanese
-	one.
+	(shimbun-japanese-hankaku-region): Don't convert letters within links;
+	replace Chinese hyphen with Japanese one.
 
 	* sb-mainichi.el (shimbun-mainichi-clear-contents): Improve the way to
 	extract contents; don't replace Chinese hyphen here.

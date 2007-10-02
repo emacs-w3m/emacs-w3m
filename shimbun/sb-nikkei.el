@@ -44,6 +44,9 @@
   (concat "http://www." shimbun-nikkei-top-level-domain "/")
   "Name of the parent url.")
 
+(defvar shimbun-nikkei-url-coding-system 'shift_jis
+  "Coding system used to encode URLs containing non-ASCII letters.")
+
 (defvar shimbun-nikkei-group-table
   `(("top" "トップ" ,shimbun-nikkei-url
      shimbun-nikkei-get-headers-top
