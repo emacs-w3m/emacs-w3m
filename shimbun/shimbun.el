@@ -1526,12 +1526,11 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
     (goto-char start)
     ;; Replace Chinese hyphen with "−".
     (condition-case nil
-	(while (re-search-forward
-		(concat "[" (list (make-char 'chinese-gb2312 35 45)
-				  (make-char 'chinese-big5-1 34 49))
-			"]")
-		nil t)
-	  (replace-match "−"))
+	(let ((regexp (concat "[" (list (make-char 'chinese-gb2312 35 45)
+					(make-char 'chinese-big5-1 34 49))
+			      "]")))
+	  (while (re-search-forward regexp nil t)
+	    (replace-match "−")))
       (error))
     (goto-char start)
     (while (re-search-forward
