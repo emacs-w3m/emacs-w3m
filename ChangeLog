@@ -1,3 +1,7 @@
+2007-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-show-decoded-url): Add entry for nikkei.co.jp.
+
 2007-09-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-decode-buffer): Don't decode escaped URLs.
