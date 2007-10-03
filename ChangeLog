@@ -1,3 +1,7 @@
+2007-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (install-lisp): Don't install ChangeLog~.
+
 2007-10-02  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m.el (w3m-show-error-information): When emacs-w3m cannot find
