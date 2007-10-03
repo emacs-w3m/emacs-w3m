@@ -145,6 +145,13 @@ variable controls this feature (enabled by default).
 
 ** `w3m-goto-article-function' is now a user option.
 
+** Emacs-w3m now visits the thread page in Gmane semi-automatically.
+Gmane (http://www.gmane.org/) archives articles distributed in a lot
+of the mailing lists and offers them through nntp and http.  If you
+execute the `w3m' command on the References header or the Message-ID
+header of an article, emacs-w3m tries to visit the thread page to
+which the article belongs.
+
 ** Run XEmacs 21.5 safely.
 We gave up asynchronous operation when XEmacs 21.5 accesses many pages
 at a time, in order to prevent it from freezing.
