@@ -100,7 +100,7 @@ Copyright (C) 2007 土屋雅稔
 ** w3m-fb.el -- frame-local バッファーのサポート。
 いろいろな目的のために複数の emacs-w3m の frame を持つころができます。
 例えば、あるものはニュースサイト用、他は検索エンジン用というふうに。
-(info "(emacs-w3m)Frame Local Buffers") を見て下さい。
+(info "(emacs-w3m-ja)Frame Local Buffers") を見て下さい。
 
 ** w3m-mail.el -- ページ送信のための mail-user-agent インターフェース。
 今見ているウェブページをメールで送信することができます。コマンドは
@@ -119,7 +119,7 @@ Copyright (C) 2007 土屋雅稔
 * 検索エンジンに関する変更
 
 ** たくさんの検索エンジンが追加されました。
-(info "(emacs-w3m)Using Search Engines") を見て下さい。
+(info "(emacs-w3m-ja)Using Search Engines") を見て下さい。
 
 
 * フィルターに関する変更
@@ -165,60 +165,58 @@ XEmacs 21.5 が固まってしまうのを防ぐために、一度にたくさんのページをア
 (それらのいくつかは新しいバグを引き起こすかもしれませんけれど。)
 
 
-* Shimbun changes
+* Shimbun に関する変更
 
-** New class variable `shimbun-prefer-text-plain'.
-It controls whether a shimbun module generates text/plain articles or
-html articles.  While the sb-asahi.el module (for example) generates
-text/plain articles by default, you can tell it to generate html
-articles by setting the `shimbun-asahi-prefer-text-plain' variable to
-nil.  Oppositely, setting `shimbun-mainichi-prefer-text-plain' to non-
-nil leads the sb-mainichi.el module to generate text/plain articles
-while it generates html articles by default.  With this feature,
-sb-asahi-html.el and sb-yomiuri-html.el have been made semi-obsolete.
-Note that all the shimbun modules don't allow for it.
+** 新しい shimbun クラス変数 `shimbun-prefer-text-plain'。
+Shimbun モジュールに text/plain の記事と html 記事のどちらを生成させる
+かを制御します。例えば sb-asahi.el モジュールはデフォルトで text/plain
+の記事を生成しますが、`shimbun-asahi-prefer-text-plain' を nil に設定
+することによって html 記事を生成するように指示することができます。反対
+に、sb-mainichi.el モジュールはデフォルトで html 記事を生成しますが、
+`shimbun-mainichi-prefer-text-plain' を nil ではない値に設定すれば、
+text/plain の記事を生成させます。この機能に伴って sb-asahi-html.el と
+sb-yomiuri-html.el はやや旧式になっています。すべての shimbun モジュー
+ルがこれを認識するわけではないことに注意して下さい。
 
-** Shimbun now supports redirection of urls when fetching articles.
-Urls that some web sites offer in the index pages are not the ones that
-point to the article pages directly.  The real url for the article is
-in the page to which such a url points, and it is also likely to
-require the client to wait for a while (often for displaying ads).
-Shimbun now examines it and fetches the real article contents with no
-wait.
+** Shimbun は現在では記事を取得するときにリダイレクトをサポートします。
+いくつかのウェブサイトの索引ページが提供する url は記事のページを直接
+指すものではありません。その url が指し示すページに記事の本当の url が
+あって、しかもクライアントにしばらく待つことを要求します (多くは広告を
+表示するため)。現在の shimbun はそれを調べて、待ち時間無しで本当の記事
+の内容を取得します。
 
-** Shimbun can now convert wide non-ASCII characters into Hankaku.
-English words and numbers displayed with wide (a.k.a. Zenkaku) non-
-ASCII characters are illegible.  Although it is not available in all
-the shimbun modules, it will be worth trying setting
-the `shimbun-japanese-hankaku' variable to non-nil.  It not only
-converts wide non-ASCII characters into the normal ones but also
-performs Wakachi-Gaki (which means separating alphanumeric words and
-Japanese sentences with space characters).  If you want to do it per
-shimbun server, use `shimbun-SERVER-japanese-hankaku' instead.
+** Shimbun は今、全角 ASCII 文字を半角に変換します。
+全角 (幅の広い ASCII ではない文字) で表示される英単語と数字は読みにく
+いものです。すべての shimbun モジュールで使えるわけではないのですが、
+`shimbun-japanese-hankaku' 変数を nil ではない値に設定してみる価値はあ
+るでしょう。それは全角の非-ASCII 文字を普通のものに変換するだけでなく、
+分かち書き (英数字と日本語の文を空白で分離すること) も行ないます。これ
+を shimbun サーバー単位で行ないたいときは、代わりに
+`shimbun-SERVER-japanese-hankaku' を使って下さい。
 
-** New shimbun class `shimbun-newspaper'.
-This is used for adding a caution on the copyright to non-Japanese
-shimbun articles.  For Japanese, use `shimbun-japanese-newspaper'.
+** 新しい shimbun クラス `shimbun-newspaper'。
+日本語以外の shimbun 記事に著作権に関する注意書きを加えるために使うも
+のです。日本語用には `shimbun-japanese-newspaper' を使って下さい。
 
-** New shimbun class variable `shimbun-url-coding-system'.
-This overrides the charset used for encoding the urls of links which
-contain non-ASCII letters (by default, the urls of links will be
-encoded by the charset by which the page containing the links has been
-encoded).  Use the `shimbun-SERVER-url-coding-system' variable per
-server.
+** 新しい shimbun クラス変数 `shimbun-url-coding-system'。
+これはリンクの非-ASCII 文字を含む url をエンコードするための文字セット
+(charset) を上書きします (デフォルトではリンクの url は、そのリンクを
+含むページをエンコードしたときに使った文字セットでエンコードされます)。
+`shimbun-SERVER-url-coding-system' 変数をサーバーごとに使って下さい。
 
-** New shimbun modules have been added.
+** 新しい shimbun モジュールが追加されました。
 sb-nytimes.el sb-tech-on.el sb-gendai-net.el sb-ohmynews-jp.el
 
-** Some shimbun modules are being well-maintained but others aren't.
-Volunteers welcome!
+** いくつかの shimbun モジュールは良くメンテされていますが他は否。
+ボランティア歓迎!
 
-*** New variable `nnshimbun-default-group-level' for Gnus.
-The value of this variable determines the initial group level of
-the group that is created.
+*** Gnus のための新しい変数 `nnshimbun-default-group-level'。
+この変数の値は新規に作られる shimbun グループの、グループレベルの初期
+値を決めます。デフォルト値は nil で、その場合
+`gnus-level-default-subscribed' のものが使われます。
 
-*** New command `gnus-group-make-shimbun-groups' for Gnus.
-This makes all the shimbun groups a server provides.
+*** Gnus のための新しいコマンド `gnus-group-make-shimbun-groups'。
+これは一つのサーバーにあるすべての shimbun グループを作ります。
 
 
 ----------------------------------------------------------------------

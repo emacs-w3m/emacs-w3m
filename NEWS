@@ -166,7 +166,7 @@ errors when compiling emacs-w3m.
 
 * Shimbun changes
 
-** New class variable `shimbun-prefer-text-plain'.
+** New shimbun class variable `shimbun-prefer-text-plain'.
 It controls whether a shimbun module generates text/plain articles or
 html articles.  While the sb-asahi.el module (for example) generates
 text/plain articles by default, you can tell it to generate html
@@ -214,7 +214,8 @@ Volunteers welcome!
 
 *** New variable `nnshimbun-default-group-level' for Gnus.
 The value of this variable determines the initial group level of
-the group that is created.
+a shimbun group that is newly created.  The default value is nil,
+which means that of `gnus-level-default-subscribed' is used.
 
 *** New command `gnus-group-make-shimbun-groups' for Gnus.
 This makes all the shimbun groups a server provides.
