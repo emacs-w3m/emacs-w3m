@@ -63,11 +63,13 @@ install-ja: install-lisp install-info-ja
 install-lisp: lisp
 	@$(SHELL) $(srcdir)/mkinstalldirs $(lispdir);\
 	for p in ChangeLog ChangeLog.[1-9] ChangeLog.[1-9][0-9] *.el; do\
-	  case "$$p" in\
-	    $(IGNORES)) ;;\
-	    *) echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
-	       $(INSTALL_DATA) $$p $(lispdir)/$$p;;\
-	  esac;\
+	  if test -f "$$p"; then\
+	    case "$$p" in\
+	      $(IGNORES)) ;;\
+	      *) echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
+	         $(INSTALL_DATA) $$p $(lispdir)/$$p;;\
+	    esac;\
+	  fi;\
 	done;\
 	for p in *.elc; do\
 	  if test -f "$$p"; then\
@@ -77,8 +79,10 @@ install-lisp: lisp
 	done;\
 	if test -f shimbun/shimbun.elc; then\
 	  for p in `cd shimbun && echo ChangeLog ChangeLog.[1-9] ChangeLog.[1-9][0-9]`; do\
-	    echo " $(INSTALL_DATA) shimbun/$$p $(lispdir)/s$$p";\
-	    $(INSTALL_DATA) shimbun/$$p $(lispdir)/s$$p;\
+	    if test -f "shimbun/$$p"; then\
+	      echo " $(INSTALL_DATA) shimbun/$$p $(lispdir)/s$$p";\
+	      $(INSTALL_DATA) shimbun/$$p $(lispdir)/s$$p;\
+	    fi;\
 	  done;\
 	  for p in `cd shimbun && echo *.el`; do\
 	    echo " $(INSTALL_DATA) shimbun/$$p $(lispdir)/$$p";\
