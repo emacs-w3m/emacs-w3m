@@ -1,3 +1,7 @@
+2007-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (very-slow): Add missing semicolon.
+
 2007-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (install-lisp): Don't install ChangeLog~.
