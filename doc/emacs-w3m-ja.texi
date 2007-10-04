@@ -5016,10 +5016,11 @@ slashdot-jp.hardware slashdot-jp.diary.oliver
 他のユーザーの日記も閲覧できます。
 
 @item @uref{http://techon.nikkeibp.co.jp/, Tech-On! 日経BP社}
-tech-on.mobile tech-on.bbint tech-on.d-ce tech-on.AT tech-on.edaonline
-tech-on.device tech-on.lsi tech-on.silicon tech-on.observer tech-on.fpd
-tech-on.mono tech-on.embedded tech-on.mecha tech-on.MEMS tech-on.nano
-tech-on.carele tech-on.board
+tech-on.latestnews tech-on.mobile tech-on.bbint tech-on.d-ce tech-on.AT
+tech-on.edaonline tech-on.device tech-on.lsi tech-on.silicon
+tech-on.observer tech-on.fpd tech-on.mono tech-on.embedded tech-on.mecha
+tech-on.MEMS tech-on.nano tech-on.carele tech-on.board tech-on.mcu
+tech-on.PLM tech-on.memory tech-on.measurement tech-on.column.mot
 
 Tech-On! は日経BP社が提供する技術ニュースサイトです。絶対に必要というわ
 けではありませんが、それらの記事に関心があるならば、ログイン・アカウント

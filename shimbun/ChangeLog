@@ -1,3 +1,13 @@
+2007-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-tech-on.el: Use sb-multi.
+	(shimbun-tech-on-group-table): Add some groups.
+	(shimbun-tech-on-content-start, shimbun-tech-on-content-end): Abolish.
+	(shimbun-index-url): Follow shimbun-tech-on-group-table change.
+	(shimbun-rss-build-message-id): Move group name forward.
+	(shimbun-multi-next-url, shimbun-multi-clear-contents): New methods.
+	(shimbun-clear-contents): Rewrite.
+
 2007-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nikkei.el (shimbun-nikkei-url-coding-system): New variable.

@@ -4986,10 +4986,11 @@ Add appropriate configurations to the variable
 provided at @uref{http://slashdot.jp/}.
 
 @item @uref{http://techon.nikkeibp.co.jp/, Tech-On! by NikkeiBP}
-tech-on.mobile tech-on.bbint tech-on.d-ce tech-on.AT tech-on.edaonline
-tech-on.device tech-on.lsi tech-on.silicon tech-on.observer tech-on.fpd
-tech-on.mono tech-on.embedded tech-on.mecha tech-on.MEMS tech-on.nano
-tech-on.carele tech-on.board
+tech-on.latestnews tech-on.mobile tech-on.bbint tech-on.d-ce tech-on.AT
+tech-on.edaonline tech-on.device tech-on.lsi tech-on.silicon
+tech-on.observer tech-on.fpd tech-on.mono tech-on.embedded tech-on.mecha
+tech-on.MEMS tech-on.nano tech-on.carele tech-on.board tech-on.mcu
+tech-on.PLM tech-on.memory tech-on.measurement tech-on.column.mot
 
 Tech-On! is a technology news site brought by NikkeiBP.  Although it is
 not necessarily required, you had better have an account to log in on
