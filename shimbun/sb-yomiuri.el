@@ -32,6 +32,8 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl)) ;; caddr, cadddr, cddddr.
+
 (require 'shimbun)
 
 (luna-define-class shimbun-yomiuri (shimbun-japanese-newspaper shimbun) ())

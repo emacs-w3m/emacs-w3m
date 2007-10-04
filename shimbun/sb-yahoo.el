@@ -206,7 +206,7 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
 	 (group (shimbun-current-group-internal shimbun))
 	 (numbers (cdr (assoc group shimbun-yahoo-groups-table)))
 	 (jname (pop numbers))
-	 (regexp (progn (pop numbers) (pop numbers)))
+	 (regexp (progn (setq numbers (cdr numbers)) (pop numbers)))
 	 (pages (shimbun-header-index-pages range))
 	 (count 0)
 	 (index (shimbun-index-url shimbun))
