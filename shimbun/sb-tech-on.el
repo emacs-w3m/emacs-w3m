@@ -1,4 +1,4 @@
-;;; sb-tech-on.el --- shimbun backend for <http://techon.nikkeibp.co.jp/>
+;;; sb-tech-on.el --- shimbun backend for Tech-On!
 
 ;; Copyright (C) 2007 Katsumi Yamaoka
 
@@ -23,10 +23,10 @@
 
 ;;; Code:
 
-(require 'shimbun)
 (require 'sb-rss)
+(require 'sb-multi)
 
-(luna-define-class shimbun-tech-on (shimbun-rss) ())
+(luna-define-class shimbun-tech-on (shimbun-multi shimbun-rss) ())
 
 (defvar shimbun-tech-on-user-name 'none
   "*User name to log in on Tech-On! with.
@@ -45,41 +45,31 @@ will never log in.  See also `shimbun-tech-on-user-name'.")
 (defvar shimbun-tech-on-url "http://techon.nikkeibp.co.jp/")
 
 (defvar shimbun-tech-on-group-table
-  '(("mobile" "$B%b%P%$%k(B")
-    ("bbint" "$B%V%m!<%I%P%s%I!&%$%s%?%U%'!<%9(B")
-    ("d-ce" "$B%G%8%?%k2HEE(B")
-    ("AT" "Automotive Technology")
-    ("edaonline" "EDA Online")
-    ("device" "$BEE;RItIJ%F%/%N%m%8(B")
-    ("lsi" "LSI$B>pJs6I(B")
-    ("silicon" "Silicon Online")
-    ("observer" "$B;:6HF08~%*%V%6!<%P(B")
-    ("fpd" "FPD International")
-    ("mono" "$B$b$N$E$/$j$H(BIT")
-    ("embedded" "$BAH$_9~$_3+H/(B")
-    ("mecha" "$B5!3#!&%a%+%H%m%K%/%9(B")
-    ("MEMS" "MEMS International")
-    ("nano" "$B%J%N%F%/!&?7AG:`(B")
-    ("carele" "$B%+!<%(%l%/%H%m%K%/%9(B")
-    ("board" "$BF|7P%\!<%I>pJs(B")))
+  '(("latestnews" "Tech-On¡ª" "/rss/index.rdf")
+    ("mobile" "¥â¥Ð¥¤¥ë" "/mobile/index.rdf")
+    ("bbint" "ÄÌ¿®" "/bbint/index.rdf")
+    ("d-ce" "¥Ç¥¸¥¿¥ë²ÈÅÅ" "/d-ce/index.rdf")
+    ("AT" "Automotive Technology" "/AT/index.rdf")
+    ("edaonline" "EDA Online" "/edaonline/index.rdf")
+    ("device" "ÅÅ»ÒÉôÉÊ¥Æ¥¯¥Î¥í¥¸" "/device/index.rdf")
+    ("lsi" "LSI¾ðÊó¶É" "/lsi/index.rdf")
+    ("silicon" "Silicon Online" "/silicon/index.rdf")
+    ("observer" "»º¶ÈÆ°¸þ¥ª¥Ö¥¶¡¼¥Ð" "/observer/index.rdf")
+    ("fpd" "FPD International" "/fpd/index.rdf")
+    ("mono" "¤â¤Î¤Å¤¯¤ê¤ÈIT" "/mono/index.rdf")
+    ("embedded" "ÁÈ¤ß¹þ¤ß³«È¯" "/embedded/index.rdf")
+    ("mecha" "µ¡³£¡¦¥á¥«¥È¥í¥Ë¥¯¥¹" "/mecha/index.rdf")
+    ("MEMS" "MEMS International" "/MEMS/index.rdf")
+    ("nano" "¥Ê¥Î¥Æ¥¯Ž¥¿·ÁÇºà" "/nano/index.rdf")
+    ("carele" "¥«¡¼¥¨¥ì¥¯¥È¥í¥Ë¥¯¥¹" "/carele/index.rdf")
+    ("board" "Æü·Ð¥Ü¡¼¥É¾ðÊó" "/board/index.rdf")
+    ("mcu" "¥Þ¥¤¥³¥ó" "/mcu/index.rdf")
+    ("PLM" "PLM" "/PLM/index.rdf")
+    ("memory" "¥á¥â¥ê" "/memory/index.rdf")
+    ("measurement" "·×Â¬" "/measurement/index.rdf")
+    ("column.mot" "µ»½Ñ·Ð±ÄÀïÎ¬¹Í" "/column/mot/index.rdf")))
 
 (defvar shimbun-tech-on-server-name "Tech-On!")
-
-(defvar shimbun-tech-on-content-start "\
-<!-+[\t\n ]*$B"'<L??!u%-%c%W%7%g%s(B[^>]*-+>[\t\n ]*\
-\\|\
-<!-+[\t\n ]*$B"'5-;vK\J8(B[\t\n ]*-+>[\t\n ]*")
-
-(defvar shimbun-tech-on-content-end "\
-\[\t\n ]*<img\\(?:[\t\n ]+\\(?:[^\t\n >s]\\|s[^\t\n >r]\\|sr[^\t\n >c]\\)\
-\[^\t\n >]*\\)*\
-\[\t\n ]+\\(?:src=\"/img/nocookie\\.gif\"\\|usemap=\"#nocookie\"\\)\
-\\|\
-\[\t\n ]*<map[\t\n ]+name=\"nocookie\">\
-\\|\
-\[\t\n ]*<!-+[\t\n ]*$B"'(B.*$B9T%F%-%9%H%"%I3+;O(B[\t\n ]*-+>\
-\\|\
-\[\t\n ]*<!-+[\t\n ]*$B"'(B\\(?:$B5-;v2<%J%S(B\\|Red Sheriffs\\|$B%U%C%?(B\\)[\t\n ]*-+>")
 
 (defvar shimbun-tech-on-x-face-alist
   '(("default" . "\
@@ -103,9 +93,9 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAADFBMVEUAAAB/gP+ttr7///8
 	  " (" (shimbun-current-group-name shimbun) ")"))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-tech-on))
-  (concat shimbun-tech-on-url
-	  (shimbun-current-group-internal shimbun)
-	  "/index.rdf"))
+  (shimbun-expand-url (nth 2 (assoc (shimbun-current-group-internal shimbun)
+				    shimbun-tech-on-group-table))
+		      shimbun-tech-on-url))
 
 (luna-define-method shimbun-rss-build-message-id ((shimbun shimbun-tech-on)
 						  url date)
@@ -116,8 +106,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAADFBMVEUAAAB/gP+ttr7///8
       (setq start (match-end 0)))
     (if rest
 	(concat "<" (mapconcat 'identity (nreverse rest) ".")
-		"%" (shimbun-current-group-internal shimbun)
-		".techon.nikkeibp.co.jp>")
+		"." (shimbun-current-group-internal shimbun)
+		"%techon.nikkeibp.co.jp>")
       (error "Cannot find message-id base"))))
 
 (defvar shimbun-tech-on-logged-in nil)
@@ -160,8 +150,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAADFBMVEUAAAB/gP+ttr7///8
 	    (goto-char (point-min))
 	    (setq shimbun-tech-on-logged-in
 		  (not (re-search-forward "\
-\\(?:$B%f!<%6!<L>(B\\|$B%Q%9%o!<%I(B\\).*$B$K8m$j$,$"$j$^$9!#(B\
-\\|$B2q0wEPO?$,9T$o$l$F$$$^$;$s!#(B\
+\\(?:¥æ¡¼¥¶¡¼Ì¾\\|¥Ñ¥¹¥ï¡¼¥É\\).*¤Ë¸í¤ê¤¬¤¢¤ê¤Þ¤¹¡£\
+\\|²ñ°÷ÅÐÏ¿¤¬¹Ô¤ï¤ì¤Æ¤¤¤Þ¤»¤ó¡£\
 \\|ACTION=\"/login/login\\.jsp\\?MODE=LOGIN_EXEC\""
 					  nil t)))))
 	(if shimbun-tech-on-logged-in
@@ -175,25 +165,102 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAADFBMVEUAAAB/gP+ttr7///8
 		  shimbun-tech-on-password nil)
 	    (shimbun-tech-on-login)))))))
 
-(luna-define-method shimbun-clear-contents :before ((shimbun shimbun-tech-on)
+(luna-define-method shimbun-multi-next-url ((shimbun shimbun-tech-on)
+					    header url)
+  (goto-char (point-min))
+  (when (re-search-forward "[\t\n ]*\\(?:¡Ê[\t\n ]*\\)*<a[\t\n ]+\
+\\(?:[^\t\n >]+[\t\n ]+\\)*href=\"\\([^\"]+\\)\"\
+\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>[\t\n ]*¼¡¥Ú¡¼¥¸¤Ø[\t\n ]*</a>"
+		   nil t)
+    (shimbun-expand-url (match-string 1) url)))
+
+(luna-define-method shimbun-multi-clear-contents :around ((shimbun
+							   shimbun-tech-on)
+							  header
+							  has-previous-page
+							  has-next-page)
+  (when (luna-call-next-method)
+    ;; Insert page delimiter.
+    (when has-previous-page
+      (goto-char (point-min))
+      (insert "&#012;\n"))
+    t))
+
+(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-tech-on)
 						    header)
-  ;; Remove useless images and lines.
-  (shimbun-with-narrowed-article
-   shimbun
-   (when (re-search-forward "\
-<!-+[\t\n ]*$B"'<L??!u%-%c%W%7%g%s(B[\t\n ]*[($B!J(B]$B2<2hA|(B[)$B!K(B][\t\n ]*-+>"
-			    nil t)
-     (let ((start (point)))
-       (while (re-search-forward "[\t\n ]*<img[\t\n ]+\\([^>]+\\)>[\t\n ]*"
-				 nil t)
-	 (when (save-match-data
-		 (re-search-backward "src=\"[^\"]+/spacer\\.gif\""
-				     (match-beginning 1) t))
-	   (delete-region (match-beginning 0) (match-end 0))))
-       (goto-char start)
-       (while (re-search-forward "[\t\n ]*<hr\\(?:[\t\n ]+[^>]+\\)*>[\t\n ]*"
-				 nil t)
-	 (delete-region (match-beginning 0) (match-end 0)))))))
+  (shimbun-strip-cr)
+  (goto-char (point-min))
+  (let (start)
+    (when (and (re-search-forward "\\(?:\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"byline\"\
+\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>\
+\\|\
+<!-+[\t\n ]*ËÜÊ¸\\(?:¤È¥Ú¡¼¥¸¥Ê¥Ó\\)?[\t\n ]*-+>\
+\\|\
+<!-+[\t\n ]*¢§µ­»öËÜÊ¸[\t\n ]*-+>\\(?:[\t\n ]*<div[\t\n ]+[^>]+>\\)?\
+\\|\
+\\(?:<!-+[\t\n ]*¢§µ­»öËÜÊ¸[\t\n ]*-+>[\t\n ]*\\)?\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"articletxt\"\
+\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>\
+\\)[\t\n ]*"
+				  nil t)
+	       (progn
+		 (setq start (match-end 0))
+		 (re-search-forward "\\(?:</p>\\)?\\([\t\n ]*\
+\\(?:¡Ê[\t\n ]*\\)*<a[\t\n ]+[^>]+>[\t\n ]*¼¡¥Ú¡¼¥¸¤Ø[\t\n ]*</a>\
+\\|\
+\\(?:<[^!>][^>]*>\\)*[\t\n ]*\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"pagination\"\
+\\|\
+\\(?:</div>\\)*[\t\n ]*<!-+[\t\n ]*¢§¤ªÌä¤¤¹ç¤ï¤»[\t\n ]*-+>\\)"
+				    nil t)))
+      (delete-region (match-beginning 1) (point-max))
+      (insert "\n")
+      (delete-region (goto-char (point-min)) start)
+
+      ;; Remove ads.
+      (when (and (re-search-forward "<!-+[\t\n ]*¥­¡¼¥ï¡¼¥É¹­¹ð[\t\n ]*-+>"
+				    nil t)
+		 (re-search-forward "<!-+[\t\n ]*\
+¢§?\\(?:µ­»ö\\)?ËÜÊ¸\\(?:¤È¥Ú¡¼¥¸¥Ê¥Ó\\)?[\t\n ]*-+>[\t\n ]*"
+				    nil t))
+	(delete-region (point-min) (match-end 0)))
+
+      ;; Remove useless buttons.
+      (goto-char (point-min))
+      (while (re-search-forward "\\(<a[\t\n ]+[^>]+>\\)\
+\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\\(</a>\\)\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
+\\(<span>[\t\n ]*<small>[\t\n ]*[(¡Ê]?²èÁü¤Î¥¯¥ê¥Ã¥¯¤Ç³ÈÂç[)¡Ë]?[\t\n ]*\
+</small>[\t\n ]*</span>\\)"
+				nil t)
+	(delete-region (match-beginning 3) (match-end 3))
+	(delete-region (match-beginning 2) (match-end 2))
+	(delete-region (match-beginning 1) (match-end 1)))
+
+      ;; Remove useless tags.
+      (goto-char (point-min))
+      (while (and (re-search-forward "\
+<div[\t\n ]*\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"freeimage\""
+				     nil t)
+		  (shimbun-end-of-tag "div" t))
+	(save-restriction
+	  (narrow-to-region (match-beginning 0) (match-end 0))
+	  (delete-region (match-end 3) (match-end 0))
+	  (delete-region (match-beginning 0) (goto-char (match-beginning 3)))
+	  (when (and (looking-at "\
+<div[\t\n ]*\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"[LS]\"")
+		     (shimbun-end-of-tag "div" t))
+	  (delete-region (match-end 3) (match-end 0))
+	  (delete-region (match-beginning 0) (match-beginning 3)))))
+      t)))
+
+(luna-define-method shimbun-footer :around ((shimbun shimbun-tech-on)
+					    header &optional html)
+  (concat "<div align=\"left\">\n--&nbsp;<br>\n\
+¤³¤Îµ­»ö¤ÎÃøºî¸¢¤ÏÆü·ÐBP¼Ò¡¢¤Þ¤¿¤Ï¤½¤Î¾ðÊóÄó¶¡¼Ô¤Ëµ¢Â°¤·¤Þ¤¹¡£\
+¸¶Êª¤Ï<a href=\""
+	  (shimbun-article-base-url shimbun header)
+	  "\"><u>¤³¤³</u></a>¤Ç¸ø³«¤µ¤ì¤Æ¤¤¤Þ¤¹¡£\n</div>\n"))
 
 (luna-define-method shimbun-article :before ((shimbun shimbun-tech-on)
 					     &rest args)
