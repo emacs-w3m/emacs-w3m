@@ -76,6 +76,9 @@
   (defvar w3m-default-coding-system)
   (defvar w3m-coding-system)
   (defvar w3m-use-header-line-title)
+  ;; `w3m-tab-move-right' calls the inline function `w3m-buffer-set-number'
+  ;; which uses it.
+  (defvar w3m-use-title-buffer-name)
   (autoload 'w3m-copy-buffer "w3m")
   (autoload 'w3m-delete-buffer "w3m")
   (autoload 'w3m-image-type "w3m")
