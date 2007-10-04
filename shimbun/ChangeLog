@@ -1,5 +1,9 @@
 2007-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-yahoo.el (shimbun-get-headers): Don't use pop unprincipledly.
+
+	* sb-yomiuri.el: Require cl when compiling.
+
 	* sb-tech-on.el: Use sb-multi.
 	(shimbun-tech-on-group-table): Add some groups.
 	(shimbun-tech-on-content-start, shimbun-tech-on-content-end): Abolish.
