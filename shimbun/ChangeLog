@@ -1,5 +1,9 @@
 2007-10-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-itmedia.el (shimbun-multi-next-url): Remove navigation button.
+	(shimbun-multi-clear-contents): Add ^L; remove navigation buttons.
+	(shimbun-footer): New method.
+
 	* sb-ohmynews-jp.el: Don't use shimbun-japanese-newspaper.
 	(shimbun-ohmynews-jp-content-start, shimbun-ohmynews-jp-content-end):
 	Abolish.

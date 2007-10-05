@@ -133,7 +133,21 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
   (when (re-search-forward
 	 "<b><a href=\"\\([^\"]+\\)\">次のページ</a></b>\
 \\|<span id=\"next\"><a href=\"\\([^\"]+\\)\">次のページへ</a></span>" nil t)
-    (shimbun-expand-url (or (match-string 1) (match-string 2)) url)))
+    (let ((next (or (match-string 1) (match-string 2))))
+      (prog1
+	  (shimbun-expand-url next url)
+	;; Remove navigation button.
+	(goto-char (point-min))
+	(when (and (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"notice\""
+				      nil t)
+		   (shimbun-end-of-tag "div" t)
+		   (save-match-data
+		     (re-search-backward (concat "[\t\n ]href=\""
+						 (regexp-quote next)
+						 "\"")
+					 (match-beginning 0) t)))
+	  (replace-match "\n"))))))
 
 (luna-define-method shimbun-multi-clear-contents ((shimbun shimbun-itmedia)
 						  header
@@ -149,9 +163,21 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
       (when (string-match "<b>\\[ITmedia\\]</b>" credit)
 	(setq credit nil)))
     (when (shimbun-clear-contents shimbun header)
+      (goto-char (point-min))
+      (when has-previous-page
+	(insert "&#012;\n")) ;; ^L
       (when credit
-	(goto-char (point-min))
 	(insert "<div" credit "div>\n"))
+      ;; Remove navigation buttons.
+      (goto-char (point-min))
+      (while (and (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"ctrl\""
+				     nil t)
+		  (shimbun-end-of-tag "div" t)
+		  (save-match-data
+		    (re-search-backward "[次前]のページへ"
+					(match-beginning 0) t)))
+	(replace-match "\n"))
       t)))
 
 (luna-define-method shimbun-clear-contents ((shimbun shimbun-itmedia) header)
@@ -202,6 +228,19 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>")
       (string-to-number (match-string 2))
       (string-to-number (match-string 3))
       (concat (match-string 4) ":" (match-string 5))))))
+
+(luna-define-method shimbun-footer :around ((shimbun shimbun-itmedia)
+					    header &optional html)
+  (if html
+      (concat "<div align=\"left\">\n--&nbsp;<br>\n\
+この記事の諸権利は&nbsp;ITmedia&nbsp;または情報の提供元に帰属します。<br>
+原物は<a href=\""
+	      (shimbun-article-base-url shimbun header)
+	      "\"><u>ここ</u></a>で公開されています。\n</div>\n")
+    (concat "-- \n\
+この記事の諸権利は ITmedia または情報の提供元に帰属します。\n\
+原物は以下の場所で公開されています:\n"
+	    (shimbun-article-base-url shimbun header) "\n")))
 
 (provide 'sb-itmedia)
 
