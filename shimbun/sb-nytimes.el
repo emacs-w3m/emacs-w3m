@@ -241,7 +241,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
   (shimbun-strip-cr)
   (let ((start "\
 \\(?:\
-<p[\t\n ]+class=\"post-author\">\
+<p[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"post-author\"\
+\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>\
 \\|\
 <NYT_\\(?:BYLINE\\|TEXT\\)\\(?:[\t\n ]*\\|[\t\n ]+[^>]+\\)>\
 \\)[\t\n ]*")
@@ -254,24 +255,56 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
 	(case-fold-search t)
 	name)
     (goto-char (point-min))
-    (if (and (re-search-forward start nil t)
-	     (progn
-	       (save-restriction
-		 (narrow-to-region (point-min) (match-end 0))
-		 (if (and (search-backward "</NYT_HEADLINE>" nil t)
-			  (re-search-forward "<div[\t\n ]+class=\"image\""
-					     nil t)
-			  (progn
-			    (setq start (match-beginning 0))
-			    (shimbun-end-of-tag "div")))
-		     (progn
-		       (delete-region (match-end 0) (point-max))
-		       (delete-region (point-min) start)
-		       (goto-char (point-max)))
-		   (delete-region (point-min) (point-max))))
-	       (re-search-forward end nil t)))
+    (if (or (and (re-search-forward start nil t)
+		 (progn
+		   (save-restriction
+		     (narrow-to-region (point-min) (match-end 0))
+		     (if (and (search-backward "</NYT_HEADLINE>" nil t)
+			      (re-search-forward "<div[\t\n ]+class=\"image\""
+						 nil t)
+			      (progn
+				(setq start (match-beginning 0))
+				(shimbun-end-of-tag "div")))
+			 (progn
+			   (delete-region (match-end 0) (point-max))
+			   (delete-region (point-min) start)
+			   (goto-char (point-max)))
+		       (delete-region (point-min) (point-max))))
+		   (when (re-search-forward end nil t)
+		     (delete-region (match-beginning 0) (point-max))
+		     t)))
+	    (progn
+	      ;; Extract blog listing.
+	      (goto-char (point-min))
+	      (when (and (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"blog_comments\""
+					    nil t)
+			 (shimbun-end-of-tag "div" t))
+		(delete-region (match-end 3) (point-max))
+		(delete-region (point-min) (match-beginning 3))
+		;; Remove <ul>.
+		(goto-char (point-min))
+		(when (re-search-forward "\
+<ul[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"commentlist\""
+					 nil t)
+		  (cond ((shimbun-end-of-tag "ul" t)
+			 (delete-region (goto-char (match-end 3))
+					(match-end 0))
+			 (insert "\n")
+			 (delete-region (goto-char (match-beginning 0))
+					(match-beginning 3))
+			 (insert "\n"))
+			((shimbun-end-of-tag nil t)
+			 (replace-match "\n"))))
+		;; Remove useless links.
+		(goto-char (point-min))
+		(while (and (re-search-forward "\
+<a[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*href=\"#"
+					       nil t)
+			    (shimbun-end-of-tag "a"))
+		  (replace-match "\\2<br>"))
+		t)))
 	(progn
-	  (delete-region (match-beginning 0) (point-max))
 	  ;; Insert a new line after every image.
 	  (goto-char (point-min))
 	  (while (re-search-forward "\\(<img[\t\n ]+[^>]+>\\)[\t\n ]*" nil t)
@@ -346,6 +379,10 @@ Skip[\t\n ]+to[\t\n ]+next[\t\n ]+paragraph[\t\n ]*</a>[\t\n ]*"
 \[\t\n ]*</font>\\)\\(?:[\t\n ]*<p>\\)+[\t\n ]*"
 				    nil t)
 	    (replace-match "\n&#012;\\1\n<p>"))
+	  ;; Add last newline.
+	  (goto-char (point-max))
+	  (unless (bolp)
+	    (insert "\n"))
 	  t)
       (erase-buffer)
       (insert
