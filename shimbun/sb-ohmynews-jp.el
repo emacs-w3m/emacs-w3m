@@ -29,19 +29,12 @@
 (require 'shimbun)
 (require 'sb-rss)
 
-(luna-define-class shimbun-ohmynews-jp
-		   (shimbun-japanese-newspaper shimbun-rss) ())
+(luna-define-class shimbun-ohmynews-jp (shimbun-rss) ())
 
 (defvar shimbun-ohmynews-jp-url "http://www.ohmynews.co.jp/"
   "Name of the parent url.")
 
 (defvar shimbun-ohmynews-jp-server-name "$B%*!<%^%$%K%e!<%9(B")
-
-(defvar shimbun-ohmynews-jp-content-start
-  "<!--emacs-w3m-shimbun-ohmynews-jp-content-start-->")
-
-(defvar shimbun-ohmynews-jp-content-end
-  "<!--emacs-w3m-shimbun-ohmynews-jp-content-end-->")
 
 (defvar shimbun-ohmynews-jp-group-table
   '(("news" "$B:G?75-;v(B")
@@ -83,62 +76,87 @@ v*[xW.y6Tt/r=U{a?+nH20N{)a/w145kJxfhqf}Jd<p\n `bP:u\\Awi^xGQ3pUOrsPL.';\
 (luna-define-method shimbun-clear-contents :around ((shimbun
 						     shimbun-ohmynews-jp)
 						    header)
-  (while (search-forward "\r" nil t) ;; There are CRs not followed LFs.
-    (delete-region (match-beginning 0) (match-end 0)))
+  (shimbun-strip-cr)
   (goto-char (point-min))
-  (when (or (re-search-forward "<\\(?:!-+#+[\t\n ]*top_entry_sub/[\t\n ]*#+-+\
-\\|div\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+class=\"top_entry_sub\"\
-\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*\\|div[\t\n ]+class=\"title\"\\)>\
-\\(?:[\t\n ]*<[^>h][^>]*>\\)*[\t\n ]*<h[^>]*>[^<]+<[^>]+>[\t\n ]*"
-			       nil t)
-	    (re-search-forward "<!-+#+[\t\n ]*news_tmp_box[^/>]+/[\t\n ]*#+-+>\
-\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<h[^>]*>[^<]+<[^>]+>[\t\n ]*"
-			       nil t))
-    (insert shimbun-ohmynews-jp-content-start)
-    (let ((start (point))
-	  end)
-      (when (cond ((re-search-forward "\
-\\(?:[\t\n $B!!!v(B]\\|&nbsp\;\\|<br>\\|<p\\(?:[\t\n ]+[^>]+\\)?>\\|</p>\\)*\
-\\(?:\\(?:<a[\t\n ]+[^>]+>[^<]+</a>\\|<[^>]+>\\)\
-\\(?:[\t\n $B!!!v(B]\\|&nbsp\;\\|<br>\\|<p\\(?:[\t\n ]+[^>]+\\)?>\\|</p>\\)*\\)*\
-\$B!Z(B[^$B![(B]*$B4XO"(B\\(?:$B%j%s%/(B\\|$B5-;v(B\\)[^$B![(B]*$B![(B"
-				      nil t)
-		   (goto-char (match-beginning 0))
-		   t)
-		  ((re-search-forward "\
-\\(?:[\t\n $B!!!v(B]\\|&nbsp\;\\|<br>\\|<p\\(?:[\t\n ]+[^>]+\\)?>\\|</p>\\)*\
-\\(?:\\(?:\\(?:<a[\t\n ]+[^>]+>[^<]+</a>\\|<[^>]+>\\)\
-\\(?:[\t\n $B!!!v(B]\\|&nbsp\;\\|<br>\\|<p\\(?:[\t\n ]+[^>]+\\)?>\\|</p>\\)*\\)*\
-\$B!Z(B[^$B![(B]+$B![(B\
-\\(?:[\t\n $B!!!v(B]\\|&nbsp\;\\|<br>\\|<p\\(?:[\t\n ]+[^>]+\\)?>\\|</p>\\)*\\)?\
-\\(?:\\(?:<a[\t\n ]+[^>]+>[^<]+</a>\\|<[^>]+>\\)\
-\\(?:[\t\n $B!!!v(B]\\|&nbsp\;\\|<br>\\|<p\\(?:[\t\n ]+[^>]+\\)?>\\|</p>\\)*\\)*\
-<!-+#+[\t\n ]*/\\(?:news_entry_body\\|news_tmp_box[^>]+\\)[\t\n ]*#+-+>"
-				      nil t)
-		   (goto-char (match-beginning 0))
-		   (when (looking-at "\
-\\(?:[\t\n $B!!!v(B]\\|&nbsp\;\\|<br>\\|<p\\(?:[\t\n ]+[^>]+\\)?>\\|</p>\\)*\
-<a[\t\n ]+[^>]+>[^<]+</a>")
-		     (goto-char (match-end 0)))
-		   t))
-	(setq end (point-marker))
-	(insert shimbun-ohmynews-jp-content-end)
-	(goto-char start)
-	(when (and (re-search-forward "[\t\n ]*<div[\t\n ]+class=\"news_btn\">"
-				      end t)
-		   (progn
-		     (setq start (match-beginning 0))
-		     (re-search-forward "<\
-\\(?:!-+#*[\t\n ]*news_entry_body/[\t\n ]*#+-+\
-\\|div[\t\n ]+class=\"news_entry_body\"\\)>[\t\n ]*"
-					end t)))
-	  (delete-region start (point))
-	  (insert "\n<p>")))))
-  (when (luna-call-next-method)
-    ;; Break long lines.
-    (unless (shimbun-prefer-text-plain-internal shimbun)
+  (when (and (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"news_home_box_border\""
+				nil t)
+	     (shimbun-end-of-tag "div" t))
+    (delete-region (match-end 3) (point-max))
+    (insert "\n")
+    (delete-region (goto-char (point-min)) (match-beginning 3))
+    ;; Remove title that's needless in the body.
+    (goto-char (point-min))
+    (let ((need (static-if (= (length "$,2"f(B") 1)
+		    "$B!y!z!{!|!}!~"!"""#"$"%"&"'$,2"f"e"+"/"."'"&!a!`!s!r!}!|(B"
+		  "$B!y!z!{!|!}!~"!"""#"$"%"&"'(B"))
+	  st nd)
+      (when (and (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"title\""
+				    nil t)
+		 (shimbun-end-of-tag "div" t)
+		 (progn
+		   (setq st (match-end 3)
+			 nd (match-end 0))
+		   (goto-char (match-beginning 3))
+		   (looking-at (concat "<\\(h[0-9]+\\)>\\(?:[\t\n ]*"
+				       "\\([" need "]\\)\\)?")))
+		 (progn
+		   (setq need (match-beginning 2))
+		   (shimbun-end-of-tag (match-string 1) t)))
+	(delete-region (goto-char st) nd)
+	(insert "\n")
+	(delete-region (point-min) (if need
+				       (match-beginning 0)
+				     (match-end 0)))))
+    ;; Remove javascripts.
+    (while (and (re-search-forward "\
+<script[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*type=\"text/javascript\""
+				   nil t)
+		(or (shimbun-end-of-tag "script" t)
+		    (shimbun-end-of-tag nil t)))
+      (replace-match "\n"))
+    ;; Remove useless buttons.
+    (goto-char (point-min))
+    (when (and (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"news_btn\""
+				  nil t)
+	       (shimbun-end-of-tag "div" t))
+      (replace-match "\n"))
+    ;; Remove trailing garbage.
+    (goto-char (point-min))
+    (when (re-search-forward
+	   "\\(?:</p>\\)?\\(\\(?:[\t\n $B!!(B]*<[^>]+>\\)+[\t\n $B!!(B]*\\'\\)"
+	   nil t)
+      (delete-region (match-beginning 1) (point-max))
+      (insert "\n"))
+    ;; Convert Japanese zenkaku ASCII chars into hankaku.
+    (let ((hankaku (shimbun-japanese-hankaku shimbun)))
+      (when (and hankaku (not (memq hankaku '(header subject))))
+	(shimbun-japanese-hankaku-buffer t)))
+    (if (shimbun-prefer-text-plain-internal shimbun)
+	;; Replace image tags with text.
+	(progn
+	  (goto-char (point-min))
+	  (while (and (re-search-forward "<img[\t\n ]+" nil t)
+		      (shimbun-end-of-tag))
+	    (replace-match "&lt;$B<L??(B&gt;")))
+      ;; Break long lines.
       (shimbun-break-long-japanese-lines))
     t))
+
+(luna-define-method shimbun-footer :around ((shimbun shimbun-ohmynews-jp)
+					    header &optional html)
+  (if html
+      (concat "<div align=\"left\">\n--&nbsp;<br>\n\
+$B$3$N5-;v$NCx:n8"$O%*!<%^%$%K%e!<%9!";TL15-<T!"$^$?$OEj9F<T$K5"B0$7$^$9!#(B<br>
+$B86J*$O(B<a href=\""
+	      (shimbun-article-base-url shimbun header)
+	      "\"><u>$B$3$3(B</u></a>$B$G8x3+$5$l$F$$$^$9!#(B\n</div>\n")
+    (concat "-- \n\
+$B$3$N5-;v$NCx:n8"$O%*!<%^%$%K%e!<%9!";TL15-<T!"$^$?$OEj9F<T$K5"B0$7$^$9!#(B\n\
+$B86J*$O0J2<$N>l=j$G8x3+$5$l$F$$$^$9(B:\n"
+	    (shimbun-article-base-url shimbun header) "\n")))
 
 (provide 'sb-ohmynews-jp)
 

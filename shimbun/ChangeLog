@@ -1,5 +1,11 @@
 2007-10-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-ohmynews-jp.el: Don't use shimbun-japanese-newspaper.
+	(shimbun-ohmynews-jp-content-start, shimbun-ohmynews-jp-content-end):
+	Abolish.
+	(shimbun-clear-contents): Rewrite.
+	(shimbun-footer): New method.
+
 	* sb-asahi.el (shimbun-asahi-prepare-article): Remove trailing garbage.
 
 	* sb-nytimes.el (shimbun-clear-contents): Work with blog listing.
