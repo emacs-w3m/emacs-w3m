@@ -1,5 +1,7 @@
 2007-10-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-asahi.el (shimbun-asahi-prepare-article): Remove trailing garbage.
+
 	* sb-nytimes.el (shimbun-clear-contents): Work with blog listing.
 
 2007-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>

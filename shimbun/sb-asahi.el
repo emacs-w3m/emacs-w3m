@@ -1433,7 +1433,14 @@ and tenjin, it tries to fetch the article for that day if it failed."
 \\(?:<div[\t\n ]+[^>]+>\\|</div>\\|<ul>[\t\n ]*</ul>\\)\
 \[\t\n ]*"
 			       nil t)
-       (delete-region (match-beginning 0) (match-end 0))))))
+       (delete-region (match-beginning 0) (match-end 0)))
+     ;; Remove trailing garbage.
+     (goto-char (point-min))
+     (when (re-search-forward
+	    "\\(?:</p>\\)?\\(\\(?:[\t\n 　]*<[^>]+>\\)+[\t\n 　]*\\'\\)"
+	    nil t)
+       (delete-region (match-beginning 1) (point-max))
+       (insert "\n")))))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-asahi)
 						   header)
