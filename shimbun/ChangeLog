@@ -1,3 +1,10 @@
+2007-10-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-mainichi.el (shimbun-mainichi-clear-contents): Don't use unicode
+	character directly in order to make this module loadable by XEmacs.
+
+	* sb-ohmynews-jp.el (shimbun-clear-contents): Likewise.
+
 2007-10-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-itmedia.el (shimbun-multi-next-url): Remove navigation button.

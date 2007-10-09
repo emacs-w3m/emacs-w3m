@@ -87,9 +87,18 @@ v*[xW.y6Tt/r=U{a?+nH20N{)a/w145kJxfhqf}Jd<p\n `bP:u\\Awi^xGQ3pUOrsPL.';\
     (delete-region (goto-char (point-min)) (match-beginning 3))
     ;; Remove title that's needless in the body.
     (goto-char (point-min))
-    (let ((need (static-if (= (length "$,2"f(B") 1)
-		    "$B!y!z!{!|!}!~"!"""#"$"%"&"'$,2"f"e"+"/"."'"&!a!`!s!r!}!|(B"
-		  "$B!y!z!{!|!}!~"!"""#"$"%"&"'(B"))
+    (let ((need (eval-when-compile
+		  (concat
+		   "<\\(h[0-9]+\\)>\\(?:[\t\n ]*\\([$B!y!z!{!|!}!~"!"""#"$"%"&"'(B"
+		   (condition-case nil
+		       (mapcar (lambda (data)
+				 (apply 'make-char 'mule-unicode-2500-33ff
+					data))
+			       '((34 102) (34 101) (34 43) (34 47) (34 46)
+				 (34 39) (34 38) (33 97) (33 96) (33 115)
+				 (33 114) (33 125) (33 124)))
+		     (error nil))
+		   "]\\)\\)?")))
 	  st nd)
       (when (and (re-search-forward "\
 <div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"title\""
@@ -99,8 +108,7 @@ v*[xW.y6Tt/r=U{a?+nH20N{)a/w145kJxfhqf}Jd<p\n `bP:u\\Awi^xGQ3pUOrsPL.';\
 		   (setq st (match-end 3)
 			 nd (match-end 0))
 		   (goto-char (match-beginning 3))
-		   (looking-at (concat "<\\(h[0-9]+\\)>\\(?:[\t\n ]*"
-				       "\\([" need "]\\)\\)?")))
+		   (looking-at need))
 		 (progn
 		   (setq need (match-beginning 2))
 		   (shimbun-end-of-tag (match-string 1) t)))

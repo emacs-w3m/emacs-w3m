@@ -235,9 +235,15 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 		    (string-match "\\`$BM>O?(B[:$B!'(B]"
 				  (shimbun-header-subject header t)))
 	    (goto-char (point-min))
-	    (while (static-if (= (length "$,2!r(B") 1)
-		       (re-search-forward "[$B"%$,2!r(B]" nil t)
-		     (search-forward "$B"%(B" nil t))
+	    (while (re-search-forward
+		    (eval-when-compile
+		      (concat "[$B"%(B"
+			      (condition-case nil
+				  (list (make-char 'mule-unicode-2500-33ff
+						   33 114))
+				(error nil))
+			      "]"))
+		    nil t)
 	      (replace-match "$B!#(B</p>\n<p>$B!!(B")))
 
 	  ;; Convert Japanese zenkaku ASCII chars into hankaku.
