@@ -1,3 +1,8 @@
+2007-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nikkansports.el (shimbun-nikkansports-content-start): Improve.
+	(shimbun-clear-contents): Remove consecutive CRs.
+
 2007-10-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-mainichi.el (shimbun-mainichi-clear-contents): Don't use unicode

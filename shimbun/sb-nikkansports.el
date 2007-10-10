@@ -52,8 +52,8 @@
 
 (defvar shimbun-nikkansports-content-start
   "<!-+[\t\n ]*\\++[\t\n ]*\
-\\(?:ニュース本文エリア\\|トップニュース\\|コンテンツここから\\)[\t\n ]*\
-\\++[\t\n ]*-+>\\(?:[\t\n ]*<[^>h][^>]*>\\)*[\t\n ]*<h[0-9]\
+\\(?:ニュース本文エリア\\|トップニュース\\|ニュース写真\\|コンテンツここから\
+\\)[\t\n ]*\\++[\t\n ]*-+>\\(?:[\t\n ]*<[^>h][^>]*>\\)*[\t\n ]*<h[0-9]\
 \\(?:[\t\n ]+[^>]+\\)*>\[^<]+</h[0-9]>\\(?:[\t\n ]*<![^>]*>\\)*[\t\n ]*")
 
 (defvar shimbun-nikkansports-content-end
@@ -142,6 +142,9 @@
 (luna-define-method shimbun-clear-contents :around ((shimbun
 						     shimbun-nikkansports)
 						    header)
+  (goto-char (point-min))
+  (while (re-search-forward "\r+" nil t)
+    (delete-region (match-beginning 0) (match-end 0)))
   (when (luna-call-next-method)
     ;; Remove garbage.
     (goto-char (point-min))
