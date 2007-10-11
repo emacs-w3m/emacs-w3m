@@ -1,3 +1,7 @@
+2007-10-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kantei.el (shimbun-get-headers): Update regexp for m-magazine-ja.
+
 2007-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nikkansports.el (shimbun-nikkansports-content-start): Improve.

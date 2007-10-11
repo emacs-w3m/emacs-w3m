@@ -119,7 +119,7 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 		   (eval-when-compile
 		     (concat "<A[\t\n ]+HREF=\""
 			     ;; 1. url
-			     "\\("
+			     "\\(\\(?:/jp/m-magazine/backnumber/\\)?"
 			     ;; 2. year
 			     "\\(20[0-9][0-9]\\)"
 			     "/"
