@@ -84,12 +84,15 @@
 ;;; Handle coding system:
 (eval-when-compile
   (unless (fboundp 'find-coding-system)
-    (defalias 'find-coding-system 'ignore)))
+    (defalias 'find-coding-system 'ignore)
+    (defalias 'coding-system-name 'ignore)))
 
 (defalias 'w3m-find-coding-system
   (if (fboundp 'find-coding-system)
       (lambda (obj)
-	(and obj (find-coding-system obj)))
+	(and obj
+	     (setq obj (find-coding-system obj))
+	     (coding-system-name obj)))
     'ignore))
 
 ;; Under XEmacs 21.5-b6 and later, `make-ccl-coding-system' will
