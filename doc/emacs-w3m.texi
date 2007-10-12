@@ -5461,16 +5461,6 @@ This is an example to use @samp{sb-tdiary}.
          "http://yoichi.geiin.org/d/")))
 @end lisp
 
-@item chalow
-This is an example to use @samp{sb-chalow}.
-@lisp
-(setq shimbun-chalow-group-alist
-      '(("yto"                               ;; Group Name
-         "http://nais.to/~yto/clog/"         ;; URL
-         "yto@@nais.to")                      ;; E-mail Address
-        ))
-@end lisp
-
 @item Diaries at @uref{http://plaza.rakuten.co.jp/, Rakuten Plaza}
 This is an example to use @samp{sb-rakuten}.
 @lisp

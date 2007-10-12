@@ -5492,17 +5492,6 @@ CGI_Board を使っている掲示板の URL を調べて、
          "http://yoichi.geiin.org/d/")))
 @end lisp
 
-@item chalow による日記
-閲覧したい日記の URL を調べて、以下のように設定して使います。
-
-@lisp
-(setq shimbun-chalow-group-alist
-      '(("yto"                               ;; グループ名
-         "http://nais.to/~yto/clog/"         ;; URL
-         "yto@@nais.to")                      ;; メールアドレス
-        ))
-@end lisp
-
 @item @uref{http://plaza.rakuten.co.jp/, 楽天広場} の日記
 閲覧したい日記を開設している人の楽天 ID とメールアドレスを調べて、以下の
 ように設定して使います。

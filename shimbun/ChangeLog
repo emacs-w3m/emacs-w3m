@@ -1,3 +1,7 @@
+2007-10-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* sb-chalow.el: Removed by the bug report [emacs-w3m:09688].
+
 2007-10-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-get-headers): Update regexp for m-magazine-ja.
