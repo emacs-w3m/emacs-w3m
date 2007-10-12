@@ -246,12 +246,12 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
 \\|\
 <NYT_\\(?:BYLINE\\|TEXT\\)\\(?:[\t\n ]*\\|[\t\n ]+[^>]+\\)>\
 \\)[\t\n ]*")
-	(end "[\t\n ]*\
+	(end "[\t\n ]*\\(\\(<[^>]+>[\t\n ]*\\)*\
 \\(?:\
-\\(?:<[^>]+>[\t\n ]*\\)*<!-+[\t\n ]*end[\t\n ]+post-content[\t\n ]*-+>\
+<!-+[\t\n ]*end[\t\n ]+post-content[\t\n ]*-+>\
 \\|\
 <\\(?:/?NYT_UPDATE_BOTTOM\\|/NYT_TEXT\\)\\(?:[\t\n ]+[^>]+\\)?>\
-\\)")
+\\)\\)")
 	(case-fold-search t)
 	name)
     (goto-char (point-min))
@@ -271,7 +271,16 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
 			   (goto-char (point-max)))
 		       (delete-region (point-min) (point-max))))
 		   (when (re-search-forward end nil t)
-		     (delete-region (match-beginning 0) (point-max))
+		     (delete-region
+		      (if (and (match-beginning 2)
+			       (progn
+				 (goto-char (match-beginning 1))
+				 (re-search-forward "\
+\\(?:<[^>]+>\\)*\\(</blockquote>\\|</div>\\|</ul>\\)[\t\n ]*"
+						    (match-end 2) t)))
+			  (match-end 1)
+			(match-beginning 0))
+		      (point-max))
 		     t)))
 	    (progn
 	      ;; Extract blog listing.
@@ -330,21 +339,11 @@ Skip[\t\n ]+to[\t\n ]+next[\t\n ]+paragraph[\t\n ]*</a>[\t\n ]*"
 	      (insert "\n")))
 	  ;; Remove Next/Previous buttons.
 	  (goto-char (point-min))
-	  (when (and (re-search-forward "[\t\n ]*<div[\t\n ]+id=\"pageLinks\">"
+	  (when (and (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"pageLinks\""
 					nil t)
-		     (progn
-		       (setq start (match-beginning 0))
-		       (re-search-forward "</div>[\t\n ]*" nil t))
-		     (progn
-		       (setq end (match-end 0))
-		       (goto-char start)
-		       (re-search-forward "<div")
-		       (not (re-search-forward "<div[\t\n ]+" end t)))
-		     (re-search-forward "class=\"\\(?:next\\|previous\\)\"\
-\\|title=\"\\(?:next\\|previous\\)[\t\n ]+page\""
-					end t))
-	    (delete-region (goto-char start) end)
-	    (insert "\n"))
+		     (shimbun-end-of-tag "div" t))
+	    (replace-match "\n"))
 	  ;; Remove `Enlarge This Image', `Multimedia', and `Video'.
 	  (goto-char (point-min))
 	  (while (and (re-search-forward "<div[\t\n ]+\
