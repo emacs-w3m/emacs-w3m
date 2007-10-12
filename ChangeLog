@@ -1,3 +1,8 @@
+2007-10-12  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-entity-regexp, w3m-entity-value): Accept case-insensitive
+	numeric character references.
+
 2007-10-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-message): Work with XEmacs.

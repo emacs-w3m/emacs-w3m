@@ -2058,7 +2058,7 @@ In that case, emacs-w3m uses Google to search for the words."
     (concat "&\\("
 	    (let ((max-specpdl-size (* 1024 1024))) ;; For old Emacsen.
 	      (regexp-opt buf))
-	    "\\|#\\(?:x[0-9a-f]+\\|[0-9]+\\)\\)\\(\\'\\|[^0-9a-zA-Z]\\)"))
+	    "\\|#\\(?:[xX][0-9a-fA-F]+\\|[0-9]+\\)\\)\\(\\'\\|[^0-9a-zA-Z]\\)"))
   "Regexp matching html character entities.")
 
 (defconst w3m-encoding-alist
@@ -3187,7 +3187,8 @@ The database is kept in `w3m-entity-table'."
   ;; Return a value of the specified entity, or nil if it is unknown.
   (if (eq (aref name 0) ?#)
       (char-to-string (w3m-ucs-to-char
-		       (if (eq (aref name 1) ?x)
+		       (if (or (eq (aref name 1) ?x)
+			       (eq (aref name 1) ?X))
 			   (string-to-number (substring name 2) 16)
 			 (string-to-number (substring name 1)))))
     (gethash name w3m-entity-table)))
