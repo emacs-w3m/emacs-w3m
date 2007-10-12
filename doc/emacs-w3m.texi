@@ -4802,8 +4802,9 @@ nytimes.opinion.editorial
 The New York Times began to offer news articles for free on September
 19, 2007.  In spite of having said @samp{charset=iso-8859-1}, this site
 often uses the @code{windows-1252} charset that is a superset of
-@code{iso-8859-1}.  Emacs-w3m works in even such a case if the
-@code{windows-1252} coding system is available in your (X)Emacs.
+@code{iso-8859-1}.  @samp{Shimbun} (and also emacs-w3m) works in even
+such a case if the @code{windows-1252} coding system is available in
+your (X)Emacs.
 
 @item @uref{http://www.nikkansports.com/, Nikkan Sports}
 nikkansports.baseball nikkansports.soccer nikkansports.sports
