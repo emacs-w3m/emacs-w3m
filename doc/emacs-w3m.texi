@@ -4992,12 +4992,12 @@ tech-on.observer tech-on.fpd tech-on.mono tech-on.embedded tech-on.mecha
 tech-on.MEMS tech-on.nano tech-on.carele tech-on.board tech-on.mcu
 tech-on.PLM tech-on.memory tech-on.measurement tech-on.column.mot
 
-Tech-On! is a technology news site brought by NikkeiBP.  Although it is
-not necessarily required, you had better have an account to log in on
-the site with if you are interested in those articles.  It is necessary
-in order to read the whole contents of articles.  To have it, visit
+Tech-On! is a technology news site brought by NikkeiBP.  At least in
+autumn 2007, it doesn't seem to be, but a login account (that's for
+free) was needed to read the whole contents of articles formerly.  If it
+becomes required again in the future, visit
 @uref{http://techon.nikkeibp.co.jp/guide/inf_regi.html, the registration
-page}.  The following two variables control how you log in:
+page} to have it.  The following two variables control how you log in:
 
 @table @code
 @item shimbun-tech-on-user-name

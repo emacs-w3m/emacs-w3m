@@ -5022,12 +5022,12 @@ tech-on.observer tech-on.fpd tech-on.mono tech-on.embedded tech-on.mecha
 tech-on.MEMS tech-on.nano tech-on.carele tech-on.board tech-on.mcu
 tech-on.PLM tech-on.memory tech-on.measurement tech-on.column.mot
 
-Tech-On! は日経BP社が提供する技術ニュースサイトです。絶対に必要というわ
-けではありませんが、それらの記事に関心があるならば、ログイン・アカウント
-を持っている方が良いでしょう。それは記事の内容を全部読むために必要です。
-入手するには @uref{http://techon.nikkeibp.co.jp/guide/inf_regi.html,
-登録ページ} に行って下さい。次の二つの変数で、どうやってログインするかを
-制御します:
+Tech-On! は日経BP社が提供する技術ニュースサイトです。以前は記事の内容を
+全部読むためにログイン・アカウント (無料) が必要でしたが、少なくと
+も 2007年の秋においては要らないように見えます。将来もし再び必要になった
+ら @uref{http://techon.nikkeibp.co.jp/guide/inf_regi.html,
+登録ページ} に行って取得して下さい。次の二つの変数で、どうやってログイン
+するかを制御します:
 
 @table @code
 @item shimbun-tech-on-user-name
