@@ -4835,7 +4835,10 @@ nytimes.features.week_in_review nytimes.additional.pop_top
 nytimes.opinion.editorial
 
 2007年9月19日、ニューヨークタイムズは無料でニュース記事を提供し始めまし
-た。
+た。@samp{charset=iso-8859-1} と言ったのにもかかわらず、このサイトはしば
+しば @code{iso-8859-1} の上位互換文字セットである @code{windows-1252} を
+使います。使用している (X)Emacs に @code{windows-1252} coding system が
+あれば、そのような場合でも emacs-w3m は動作します。
 
 @item @uref{http://www.nikkansports.com/, 日刊スポーツ}
 nikkansports.baseball nikkansports.soccer nikkansports.sports
