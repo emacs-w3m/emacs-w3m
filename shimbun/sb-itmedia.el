@@ -164,12 +164,9 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 	(setq credit nil)))
     (when (shimbun-clear-contents shimbun header)
       (goto-char (point-min))
-      (when has-previous-page
-	(insert "&#012;\n")) ;; ^L
       (when credit
 	(insert "<div" credit "div>\n"))
       ;; Remove navigation buttons.
-      (goto-char (point-min))
       (while (and (re-search-forward "\
 <div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"ctrl\""
 				     nil t)
@@ -178,6 +175,13 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 		    (re-search-backward "[次前]のページへ"
 					(match-beginning 0) t)))
 	(replace-match "\n"))
+      (goto-char (point-min))
+      (when has-previous-page
+	(insert "&#012;") ;; ^L
+	;; Remove tags that likely cause a newline preceding a page.
+	(when (and (looking-at "[\t\n ]*<\\(h[0-9]+\\|p\\)[\t\n >]")
+		   (shimbun-end-of-tag (match-string 1) t))
+	  (replace-match "\n\\3\n")))
       t)))
 
 (luna-define-method shimbun-clear-contents ((shimbun shimbun-itmedia) header)

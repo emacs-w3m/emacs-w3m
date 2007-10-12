@@ -1,5 +1,14 @@
 2007-10-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-tech-on.el: Add coding cookie.
+	(shimbun-multi-clear-contents): Remove tags that likely cause a newline
+	preceding a page.
+	(shimbun-clear-contents): Remove useless tags; insert line-break
+	between text and image.
+
+	* sb-itmedia.el (shimbun-multi-clear-contents): Remove tags that likely
+	cause a newline preceding a page.
+
 	* sb-nytimes.el (shimbun-clear-contents): Don't remove </blockquote> at
 	the end of article; improve the way to remove next/prev buttons.
 
