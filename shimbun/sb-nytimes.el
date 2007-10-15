@@ -241,7 +241,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
   (shimbun-strip-cr)
   (let ((start "\
 \\(?:\
-<p[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"post-author\"\
+\\(?:<p[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"post-author\"\
+\\|<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"post-content\"\\)\
 \\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>\
 \\|\
 <NYT_\\(?:BYLINE\\|TEXT\\)\\(?:[\t\n ]*\\|[\t\n ]+[^>]+\\)>\
@@ -270,6 +271,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
 			   (delete-region (point-min) start)
 			   (goto-char (point-max)))
 		       (delete-region (point-min) (point-max))))
+		   (when (looking-at "</NYT_BYLINE>[\t\n ]*")
+		     (delete-region (point-min) (match-end 0)))
 		   (when (re-search-forward end nil t)
 		     (delete-region
 		      (if (and (match-beginning 2)

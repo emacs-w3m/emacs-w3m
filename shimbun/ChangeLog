@@ -1,3 +1,8 @@
+2007-10-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nytimes.el (shimbun-clear-contents): Update regexp; remove useless
+	tag.
+
 2007-10-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-tech-on.el: Add coding cookie.
