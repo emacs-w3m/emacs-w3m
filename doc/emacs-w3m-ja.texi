@@ -4030,15 +4030,14 @@ Q. $B$J$<(B emacs-w3m $B$N%U%l!<%`$,%]%C%W%"%C%W$7$J$$$N$G$9$+(B?
 Emacs-w3m $B$N%U%l!<%`$,B>$N%U%l!<%`$N2<$K1#$l$F$$$F$b!"$=$l(B
 $B$,(B @w{@kbd{M-x w3m @key{RET}}} $B%3%^%s%I$G%]%C%W%"%C%W$9$k$N$O!"$+$J$jJX(B
 $BMx$G$9!#$7$+$7!"(B@samp{metacity} $B%&%#%s%I%&!&%^%M!<%8%c!<$,;H$o$l$k$$$/$D(B
-$B$+$N%W%i%C%H%U%)!<%`(B ($BNc$($P(B Fedora Linux) $B>e$G(B LUCID $B%D!<%k%-%C%H$r;H$&(B
-$B$h$&$K:n$i$l$?(B Emacs $B$rAv$i$;$k>l9g$K!"$=$l$,F/$+$J$$$H$$$&Js9p$,$"$j$^(B
-$B$7$?!#$=$l$i$N%7%9%F%`$G$O!"(BEmacs $B$N%U%l!<%`$r%]%C%W%"%C%W$5$;$kB>$N5!G=(B
-$B$bF0$+$J$$$G$7$g$&!#$b$7$"$J$?$,$=$s$J;4$a$J6-6x$K$"$k$J$i$P!"0J2<(B
-$B$N(B advice $B$r;n$92ACM$,$"$k$+$b$7$l$^$;$s!#(B
+$B$+$N%W%i%C%H%U%)!<%`(B ($BNc$($P(B Fedora Linux) $B>e$G:n$i$l$?(B Emacs $B$rAv$i$;$k(B
+$B>l9g$K!"$=$l$,F/$+$J$$$H$$$&Js9p$,$"$j$^$7$?!#$=$l$i$N%7%9%F%`$G$O!"(B
+Emacs $B$N%U%l!<%`$r%]%C%W%"%C%W$5$;$kB>$N5!G=$bF0$+$J$$$G$7$g$&!#$b$7$"$J(B
+$B$?$,$=$s$J;4$a$J6-6x$K$"$k$J$i$P!"0J2<$N(B advice $B$r;n$92ACM$,$"$k$+$b$7$l(B
+$B$^$;$s!#(B
 
 @lisp
-(if (or (featurep 'gtk) (not window-system)
-        (featurep 'xemacs))
+(if (or (not window-system) (featurep 'xemacs))
     nil
   (defadvice raise-frame
     (after make-it-work (&optional frame) activate)
@@ -4061,8 +4060,7 @@ Advice $B$r(B @file{~/.emacs} $B%U%!%$%k$K=q$-9~$`A0$K!"(B@samp{wmctrl} $B%
 $B$b$N$O$"$j$^$;$s!#(B)
 
 @lisp
-(if (or (featurep 'gtk) (not window-system)
-        (featurep 'xemacs))
+(if (or (not window-system) (featurep 'xemacs))
     nil
   (defadvice pop-to-buffer (after enable-it-to-forcus-frame
                                   activate)
@@ -4083,8 +4081,7 @@ Advice $B$r(B @file{~/.emacs} $B%U%!%$%k$K=q$-9~$`A0$K!"(B@samp{wmctrl} $B%
 $B$O;n$7$F$_$k2ACM$,$"$k$+$b$7$l$^$;$s!#(B
 
 @lisp
-(if (or (featurep 'gtk) (not window-system)
-        (featurep 'xemacs))
+(if (or (not window-system) (featurep 'xemacs))
     nil
   (defadvice select-frame (around set-input-focus
                                   (frame) activate)

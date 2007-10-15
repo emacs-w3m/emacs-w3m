@@ -3966,15 +3966,14 @@ Q. Why doesn't the emacs-w3m frame pop up to the front?
 It is quite convenient that the @w{@kbd{M-x w3m @key{RET}}} command
 makes the emacs-w3m frame pop to the front even if it is hidden under
 the other frames.  However, it was reported that it does not work when
-running Emacs which has been built so as to use the LUCID toolkit on
-some platforms (e.g., Fedora Linux) in which the @samp{metacity} window
-manager is used.  In those systems, other features which raise the Emacs
-frames will not work, either.  If you are in such a miserable
-circumstance, it might be worth trying the following advice:
+running Emacs which has been built on some platforms (e.g., Fedora
+Linux) in which the @samp{metacity} window manager is used.  In those
+systems, other features which raise the Emacs frames will not work,
+either.  If you are in such a miserable circumstance, it might be worth
+trying the following advice:
 
 @lisp
-(if (or (featurep 'gtk) (not window-system)
-        (featurep 'xemacs))
+(if (or (not window-system) (featurep 'xemacs))
     nil
   (defadvice raise-frame
     (after make-it-work (&optional frame) activate)
@@ -3997,8 +3996,7 @@ application needs it to work.  (You will lose nothing by adding it if
 you are in the platform in which the previous one is needed.)
 
 @lisp
-(if (or (featurep 'gtk) (not window-system)
-        (featurep 'xemacs))
+(if (or (not window-system) (featurep 'xemacs))
     nil
   (defadvice pop-to-buffer (after enable-it-to-forcus-frame
                                   activate)
@@ -4019,8 +4017,7 @@ The last one is perhaps unnecessary but it might be worth trying in some
 platforms.
 
 @lisp
-(if (or (featurep 'gtk) (not window-system)
-        (featurep 'xemacs))
+(if (or (not window-system)(featurep 'xemacs))
     nil
   (defadvice select-frame (around set-input-focus
                                   (frame) activate)
