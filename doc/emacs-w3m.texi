@@ -3254,23 +3254,148 @@ If non-@code{nil}, ``Bookmark'' menu item open new session.
 
 @node Search Variables
 @section Variables related to searching the web
+@cindex Variables related to searching the web
 
+@table @code
+@item w3m-search-default-engine
+Name of the default search engine.  The default is @samp{google}.
+
+@item w3m-search-engine-alist
+An alist of search engines.  Each element looks like @code{(@var{engine}
+@var{action} @var{coding} @var{post-data})}.  @var{engine} is a string,
+the name of the search engine.  @var{action} is a string, the URL that
+performs a search.  @var{action} must contain a @code{"%s"}, which is
+substituted by a query string.  @var{coding} is optional value which is
+coding system for query string.  @var{post-data} is optional value which
+is a string for POST method search engine.  If @var{coding} is omitted,
+it defaults to @code{w3m-default-coding-system}.
+
+@item w3m-search-word-at-point
+@vindex w3m-search-word-at-point
+Non-@code{nil} means that the word at point is used as an initial
+string.  If @code{transient-mark-mode}, this option is ignored and the
+region is used as an initial string.  The default is @code{t}.
+@end table
 
 @node Weather Variables
 @section Variables related to weather information
+@cindex Variables related to weather information
 
+@table @code
+@item w3m-weather-default-area
+@vindex w3m-weather-default-area
+Default region to check weather.  The default is the southern part of
+Kyoto city.
+
+@item w3m-weather-filter-functions
+@vindex w3m-weather-filter-functions
+Filter functions to remove useless tags.  The default value is a list
+that contains the following function symbols in this order:
+
+@code{w3m-weather-extract-contents} @code{w3m-weather-adjust-contents}
+@code{w3m-weather-expand-anchors} @code{w3m-weather-insert-title}
+@end table
 
 @node Dtree Variables
 @section Variables related to the dtree feature
+@cindex Variables related to the dtree feature
 
+@table @code
+@item w3m-dtree-default-allfiles
+@vindex w3m-dtree-default-allfiles
+If non-@code{nil}, invert the meaning of the prefix argument given to
+the @code{w3m-dtree} command, i.e., the command shows not only
+directories but also files even if you don't give a prefix argument.
+The default is @code{nil}.
+
+@item w3m-dtree-directory-depth
+@vindex w3m-dtree-directory-depth
+Integer that controls how deep @code{w3m-dtree} shows subdirectories.
+If it is @code{nil}, files in all subdirectories are shown.  The default
+is @code{8}.
+
+@item w3m-dtree-indent-strings
+@vindex w3m-dtree-indent-strings
+Vector containing strings used for the indentation.  The default is
+@code{["|-" "+-" "|  " "   "]}.
+
+@item w3m-dtree-stop-strings
+@vindex w3m-dtree-stop-strings
+Vector containing strings used to indent directories under which there
+are subdirectories hidden because of @code{w3m-dtree-directory-depth}.
+The default is @code{["|=" "+="]}.
+@end table
 
 @node Antenna Variables
 @section Variables related to antenna
+@cindex Variables related to antenna
 
+@table @code
+@item w3m-antenna-file
+@vindex w3m-antenna-file
+Name of the file containing antenna URLs.  The default value is
+@file{~/.w3m/.antenna}, where @samp{~/.w3m} is the default value of
+@code{w3m-profile-directory} (@pxref{General Variables}).
+
+@item w3m-antenna-html-skelton
+@vindex w3m-antenna-html-skelton
+Skeleton used for making the html contents of antenna pages.
+
+@item w3m-antenna-make-summary-function
+@vindex w3m-antenna-refresh-interval
+Function used to make the summary of the site information.  The default
+is @code{w3m-antenna-make-summary-like-natsumican}.  The other
+ready-made function is @code{w3m-antenna-make-summary}.
+
+@item w3m-antenna-sites
+List of web sites that @code{w3m-antenna} watches.  The default is
+@code{nil}.
+
+@item w3m-antenna-sort-changed-sites-function
+@vindex w3m-antenna-sort-changed-sites-function
+Function used to sort a list of sites having been changed.  The default
+is @code{w3m-antenna-sort-sites-by-time}.  The other ready-made function
+is @code{w3m-antenna-sort-sites-by-title}.
+
+@item w3m-antenna-sort-unchanged-sites-function
+@vindex w3m-antenna-sort-unchanged-sites-function
+Function used to sort a list of sites having not been changed.  The
+default is @code{w3m-antenna-sort-sites-by-time}.  The other ready-made
+function is @code{w3m-antenna-sort-sites-by-title}.
+@end table
 
 @node Perldoc Variables
 @section Variables related to perldoc
+@cindex Variables related to perldoc
 
+@table @code
+@item w3m-perldoc-command
+@vindex w3m-perldoc-command
+Name of the executable file of @samp{perldoc}.  The default is
+@code{"perldoc"}.
+
+@item w3m-perldoc-input-coding-system
+@vindex w3m-perldoc-input-coding-system
+Coding system used when writing to the @samp{perldoc} command.  The
+default value is @code{euc-japan} if you are in the Japanese language
+environment.  Otherwise it is @code{utf-8} if it is available, or
+@code{iso-latin-1}.
+
+@item w3m-perldoc-output-coding-system
+@vindex w3m-perldoc-output-coding-system
+Coding system used when reading from the @samp{perldoc} command.  The
+.
+
+@item w3m-perldoc-pod2html-command
+@vindex w3m-perldoc-pod2html-command
+Name of the executable file of @samp{pod2html}.  The default is
+@code{"pod2html"}.
+
+@item w3m-perldoc-pod2html-arguments
+@vindex w3m-perldoc-pod2html-arguments
+Lisp of arguments passed to the @samp{pod2html} command.  The default is
+@code{("--noindex")}.
+@end table
 
 @node Namazu Variables
 @section Variables related to namazu
