@@ -6,27 +6,12 @@
 @documentlanguage ja
 @include version.texi
 @synindex pg cp
-@finalout
 
-@dircategory GNU Emacs Lisp
-@direntry
-* Emacs-w3m-ja: (emacs-w3m-ja).  An Emacs interface to w3m (Japanese)
-@end direntry
-
-@c permissions text appears in an Info file before the first node.
-@ifinfo
-This file documents emacs-w3m, an Emacs interface to w3m.
-
-このファイルは Emacs で動く w3m のインタフェースである emacs-w3m に関す
-る説明書です。
-
+@copying
 Copyright @copyright{} 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
 @w{TSUCHIYA Masatoshi}
 
-This edition is for emacs-w3m version @value{VERSION}.
-
-この版は emacs-w3m バージョン @value{VERSION} に対応します。
-
+@quotation
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU General Public License, Version 2 or any
 later version published by the Free Software Foundation.
@@ -40,21 +25,41 @@ WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
 
-この文書は有用とは思いますが, 頒布にあたっては, 市場性及び特定目的適合性
-についての暗黙の保証を含めて, いかなる保証も行ないません. 詳細について
-は GNU 一般公有使用許諾書をお読みください.
+この文書は有用とは思いますが、頒布にあたっては、市場性及び特定目的適合性
+についての暗黙の保証を含めて、いかなる保証も行ないません。詳細について
+は GNU 一般公有使用許諾書をお読みください。
 
 You should have received a copy of the GNU General Public License along
-with this document; if not, you can either send email to this document's
-maintainer or write to: The Free Software Foundation, Inc.; 51 Franklin
-Street, Fifth Floor, Boston, MA 02110-1301, USA.
+with this document; see the file COPYING.  If not, write to the Free
+Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.
 
-あなたは, この文書と一緒に GNU 一般公有使用許諾の写しを受け取っているは
-ずです. そうでない場合は, 文書の管理者にメールを送るか、または、フリーソ
+あなたは、この文書と一緒に GNU 一般公有使用許諾の写しを受け取っているは
+ずです。そうでない場合は, 文書の管理者にメールを送るか、または、フリーソ
 フトウェア財団 (51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
 USA.) に手紙を書いてください。
-@end ifinfo
+@end quotation
+@end copying
 
+@ifnottex
+@insertcopying
+@end ifnottex
+
+@dircategory GNU Emacs Lisp
+@direntry
+* Emacs-w3m-ja: (emacs-w3m-ja).  An Emacs interface to w3m (Japanese)
+@end direntry
+
+This file documents emacs-w3m, an Emacs interface to w3m.
+
+このファイルは Emacs で動く w3m のインタフェースである emacs-w3m に関す
+る説明書です。
+
+This edition is for emacs-w3m version @value{VERSION}.
+
+この版は emacs-w3m バージョン @value{VERSION} に対応します。
+
+@finalout
 @titlepage
 @sp 10
 @title Emacs-w3m ユーザマニュアル
@@ -63,39 +68,7 @@ USA.) に手紙を書いてください。
 @page
 
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
-@w{TSUCHIYA Masatoshi}
-
-This manual corresponds to emacs-w3m version @value{VERSION}.
-
-このマニュアルは emacs-w3m バージョン @value{VERSION} に対応します。
-
-Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU General Public License, Version 2 or any
-later version published by the Free Software Foundation.
-
-この文書を、フリーソフトウェア財団発行の GNU 一般公用使用許諾書第 2 版ま
-たはそれ以降の版が定める条件の下で複製、配布、あるいは変更することを許可
-します。
-
-This document is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-General Public License for more details.
-
-この文書は有用とは思いますが, 頒布にあたっては, 市場性及び特定目的適合性
-についての暗黙の保証を含めて, いかなる保証も行ないません. 詳細について
-は GNU 一般公有使用許諾書をお読みください.
-
-You should have received a copy of the GNU General Public License along
-with this document; if not, you can either send email to this document's
-maintainer or write to: The Free Software Foundation, Inc.; 51 Franklin
-Street, Fifth Floor, Boston, MA 02110-1301, USA.
-
-あなたは, この文書と一緒に GNU 一般公有使用許諾の写しを受け取っているは
-ずです. そうでない場合は, 文書の管理者にメールを送るか、または、フリーソ
-フトウェア財団 (51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
-USA.) に手紙を書いてください。
+@insertcopying
 @end titlepage
 
 @ifnottex
@@ -6311,7 +6284,7 @@ SpeedBar で利用されているファイル名は避けなければならない。
 
 @multitable @columnfractions .2 .2 .2 .2
 @item sb-ant.el @tab sb-html.el @tab sb-info.el @tab sb-texinfo.el
-@itemx sb-gud.el @tab sb-image.el @tab sb-rmail.el @tab sb-w3.el
+@item sb-gud.el @tab sb-image.el @tab sb-rmail.el @tab sb-w3.el
 @end multitable
 
 @item

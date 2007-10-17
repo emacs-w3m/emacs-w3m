@@ -1,3 +1,22 @@
+2007-10-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* *, doc/*: Fix expressions of the copyright notices.
+
+	* w3mhack.el (w3mhack-makeinfo): Don't split Info file to pieces.
+
+	* doc/emacs-w3m.texi, doc/emacs-w3m-ja.texi: Use @copying and
+	@insertcopying to put up the copyright notice.
+	(Coding convention of Shimbun): Don't use @itemx with @@multitable.
+
+	* doc/ptexinfmt.el (texinfo-copying-text, texinfo-copying)
+	(texinfo-insertcopying, texinfo-format-scan): Move from infohack.el.
+	* infohack.el: Do; don't require backquote.
+
+	* doc/Makefile.in (install): Remove installed *.info-[0-9] files;
+	install only *.info files.
+	(.texi.dvi): Don't specify "-l ja" to texi2dvi.
+	(clean): No need to remove *.info-[0-9] and *.info-[0-9][0-9] files.
+
 2007-10-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (w3m-find-coding-system): Return symbol, not coding

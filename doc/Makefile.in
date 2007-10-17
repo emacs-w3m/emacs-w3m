@@ -69,19 +69,21 @@ emacs-w3m-ja.info: version.texi emacs-w3m-ja.texi
 
 install: $(INFO_DEPS)
 	$(SHELL) $(top_srcdir)/mkinstalldirs $(infodir)
-	@list='$(INFO_DEPS)';\
-	for file in $$list; do\
-	  for ifile in `echo $$file $$file-[0-9] $$file-[0-9][0-9]`; do\
-	    if test -f $$ifile; then\
-	      echo " $(INSTALL_DATA) $$ifile $(infodir)/$$ifile";\
-	      $(INSTALL_DATA) $$ifile $(infodir)/$$ifile;\
-	    else : ; fi;\
-	  done;\
+	@for file in $(INFO_DEPS); do\
+	  if test -f $$file; then\
+	    for old in `cd $(infodir) && echo $$file-[0-9]`; do\
+	      if test -f "$(infodir)/$$old"; then\
+	        echo " rm -f $(infodir)/$$old";\
+	        rm -f "$(infodir)/$$old";\
+	      fi;\
+	    done;\
+	    echo " $(INSTALL_DATA) $$file $(infodir)/$$file";\
+	    $(INSTALL_DATA) $$file $(infodir)/$$file;\
+	  else : ; fi;\
 	done
 	@if $(SHELL) -c $(INSTALL_INFO)' --version| sed 1q\
 		| fgrep -s -v -i debian'>/dev/null 2>&1; then\
-	  list='$(INFO_DEPS)';\
-	  for file in $$list; do\
+	  for file in $(INFO_DEPS); do\
 	    if test -f $(infodir)/$$file; then\
 	      echo " $(INSTALL_INFO) --info-dir=$(infodir) $(infodir)/$$file";\
 	      $(INSTALL_INFO) --info-dir=$(infodir) $(infodir)/$$file || :;\
@@ -111,7 +113,7 @@ emacs-w3m-ja.dvi: version.texi emacs-w3m-ja.texi
 	@texi=$<;\
 	case "$$texi" in \
 	  *-ja.texi) \
-	    env TEX=$(PTEX) BIBTEX=$(JBIBTEX) $(TEXI2DVI) -l ja -o $@ $$texi ;;\
+	    env TEX=$(PTEX) BIBTEX=$(JBIBTEX) $(TEXI2DVI) -o $@ $$texi ;;\
 	  *) \
 	    $(TEXI2DVI) -o $@ $$texi ;;\
 	esac
@@ -137,9 +139,8 @@ emacs-w3m-ja.pdf: version.texi emacs-w3m-ja.texi
 	esac
 
 clean:
-	-rm -rf *~ *.info *.info-[0-9] *.info-[0-9][0-9] version.texi *.dvi\
- missfont.log *.pdf *.aux *.cp *.cps *.fn *.fns *.ky *.kys *.log *.pg *.toc\
- *.tp *.vr *.vrs
+	-rm -rf *~ *.info version.texi *.dvi missfont.log *.pdf *.aux *.cp\
+ *.cps *.fn *.fns *.ky *.kys *.log *.pg *.toc *.tp *.vr *.vrs
 
 distclean: clean
 	-rm -f Makefile

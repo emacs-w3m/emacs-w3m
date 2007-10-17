@@ -850,7 +850,7 @@ NOTE: This function must be called from the top directory."
 		     `(lambda (&rest args)
 			(apply ,si:push-mark (car args) t (cddr args)))))
 	      (unwind-protect
-		  (texinfo-format-buffer nil)
+		  (texinfo-format-buffer t)
 		(fset 'message si:message)
 		(fset 'push-mark si:push-mark)))
 	    (if (buffer-modified-p)
