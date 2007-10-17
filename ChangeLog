@@ -9,8 +9,7 @@
 	(Coding convention of Shimbun): Don't use @itemx with @@multitable.
 
 	* doc/ptexinfmt.el (texinfo-copying-text, texinfo-copying)
-	(texinfo-insertcopying, texinfo-format-scan): Move from infohack.el.
-	* infohack.el: Do; don't require backquote.
+	(texinfo-insertcopying, texinfo-format-scan): Add them for old Emacsen.
 
 	* doc/Makefile.in (install): Remove installed *.info-[0-9] files;
 	install only *.info files.
