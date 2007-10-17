@@ -3384,7 +3384,7 @@ environment.  Otherwise it is @code{utf-8} if it is available, or
 @item w3m-perldoc-output-coding-system
 @vindex w3m-perldoc-output-coding-system
 Coding system used when reading from the @samp{perldoc} command.  The
-.
+default is @code{undecided}.
 
 @item w3m-perldoc-pod2html-command
 @vindex w3m-perldoc-pod2html-command
@@ -3399,11 +3399,57 @@ Lisp of arguments passed to the @samp{pod2html} command.  The default is
 
 @node Namazu Variables
 @section Variables related to namazu
+@cindex Variables related to namazu
 
+@table @code
+@item w3m-namazu-command
+@vindex w3m-namazu-command
+Name of the executable file of Namazu.  The default is @file{namazu}.
+
+@item w3m-namazu-arguments
+@vindex w3m-namazu-arguments
+List of arguments passed to Namazu.  The default value is @code{("-h"
+"-H" "-n" w3m-namazu-page-max "-w" whence)}.  The symbols
+@code{w3m-namazu-page-max} and @code{whence} will be replaced
+respectively with the value of that variable and a proper value that the
+program determines properly.
+
+@item w3m-namazu-default-index
+@vindex w3m-namazu-default-index
+An alias for the default index, or the directory name of it.  If this is
+@code{nil}, you will be prompted for the directory name whenever you
+invoke the @code{w3m-namazu} command with no prefix argument.  The
+default is the value of @code{namazu-default-dir} if it exists and
+@code{namazu-always-query-index-directory} is @code{nil}.  Otherwise
+@code{nil}.
+
+@item w3m-namazu-index-alist
+@vindex w3m-namazu-index-alist
+Alist of aliases and index directories.  The default value is determined
+due to @code{namazu-dir-alist} if any or @code{nil}.
+
+@item w3m-namazu-input-coding-system
+@vindex w3m-namazu-input-coding-system
+Coding system used when reading from the namazu process.  The default is
+the value of @code{namazu-cs-read} if it exists, or @code{undecided}.
+
+@item w3m-namazu-output-coding-system
+@vindex w3m-namazu-output-coding-system
+Coding system used when writing to the namazu process.  The default is
+the value of @code{namazu-cs-write} if it exists, or is determined to
+@code{shift_jis-dos} or @code{euc-japan-unix} due to the system type.
+
+@item w3m-namazu-page-max
+@vindex w3m-namazu-page-max
+The maximum number of documents retrieved in one search.  The default is
+the value of @code{namazu-search-num} if any, or @code{30}.
+@end table
 
 @node Octet Variables
 @section Variables related to the octet feature
+@cindex Variables related to the octet feature
 
+There is no user option for the moment.
 
 @node Hooks
 @section Hooks
