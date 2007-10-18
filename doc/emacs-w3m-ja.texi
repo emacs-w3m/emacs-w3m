@@ -16,28 +16,31 @@ Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU General Public License, Version 2 or any
 later version published by the Free Software Foundation.
 
-この文書を、フリーソフトウェア財団発行の GNU 一般公用使用許諾書第 2 版ま
-たはそれ以降の版が定める条件の下で複製、配布、あるいは変更することを許可
-します。
+この文書を、フリーソフトウェア財団によって発行された GNU 一般公衆利用許
+諾契約書第 2 版またはそれ以降の版のうちどれかの定める条件の下で複製、配
+布、あるいは変更することを許可します。
 
 This document is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
 
-この文書は有用とは思いますが、頒布にあたっては、市場性及び特定目的適合性
-についての暗黙の保証を含めて、いかなる保証も行ないません。詳細について
-は GNU 一般公有使用許諾書をお読みください。
+この文書は有用であることを願って頒布されますが、@emph{全くの無保証}です。
+@emph{商業可能性}の保証や@emph{特定の目的への適合性}は、言外に示されたも
+のも含め全く存在しません。詳しくはGNU 一般公衆利用許諾契約書をご覧くださ
+い。
 
 You should have received a copy of the GNU General Public License along
 with this document; see the file COPYING.  If not, write to the Free
 Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301, USA.
 
-あなたは、この文書と一緒に GNU 一般公有使用許諾の写しを受け取っているは
-ずです。そうでない場合は, 文書の管理者にメールを送るか、または、フリーソ
-フトウェア財団 (51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
-USA.) に手紙を書いてください。
+あなたはこの文書と共に、GNU 一般公衆利用許諾契約書の複製物を一部受け取っ
+たはずです。COPYING ファイルを参照してください。もし受け取っていなければ、
+フリーソフトウェア財団まで請求してください (宛先は the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA)。
+@c 日本語訳は八田さんの文章 <http://www.opensource.jp/gpl/gpl.ja.html>
+@c を参考にしました。
 @end quotation
 @end copying
 
