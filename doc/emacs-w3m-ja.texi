@@ -349,7 +349,10 @@ XEmacs 21.4 $B$r;H$&$+!"$^$?$O(B Emacs 21 $B$r;H$C$FCf9q8l!"F|K\8l!"4Z9q8l$J$
 $B$a$K(B) $B%5%]!<%H$7!"(BEmacs 22 $B0J>e$,$=$l$r40A4$K%5%]!<%H$9$k$3$H$KCm0U$7$F(B
 $B$/$@$5$$!#(BMule-UCS Emacs Lisp $B%Q%C%1!<%8$O0J2<$N>l=j$+$i<hF@$7$F2<$5$$(B:
 
-@uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/Mule-UCS-0.84.tar.gz}
+@uref{http://unit.aist.go.jp/itri/itri-gist/ftp.m17n.org/pub/mule/Mule-UCS/test/Mule-UCS-current.tar.gz}
+
+(Mule-UCS $B$N8x<0%Z!<%8$O6a$$>-Mh(B @uref{http://www.meadowy.org/} $B$G%*!<%W(B
+$B%s$7$^$9!#(B)
 
 Emacs-21.2 $B$GMxMQ$9$k>l9g$O!"(B
 Mule-UCS $B$K(B @uref{http://www.m17n.org/mlarchive/mule/200203/msg00000.html,

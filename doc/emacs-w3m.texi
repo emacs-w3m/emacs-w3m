@@ -328,7 +328,10 @@ that Emacs 21 supports the Unicode system partially (e.g., for Latin
 text) and Emacs 22 or greater fully supports it.  The Mule-UCS Emacs
 Lisp package is available at:
 
-@uref{ftp://ftp.m17n.org/pub/mule/Mule-UCS/Mule-UCS-0.84.tar.gz}
+@uref{http://unit.aist.go.jp/itri/itri-gist/ftp.m17n.org/pub/mule/Mule-UCS/test/Mule-UCS-current.tar.gz}
+
+(The official page for Mule-UCS will open in the near future in
+@uref{http://www.meadowy.org/}.)
 
 If you use it with Emacs 21.2, it is necessary to apply
 @uref{http://www.m17n.org/mlarchive/mule/200203/msg00000.html, this
