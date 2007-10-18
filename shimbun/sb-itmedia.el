@@ -217,6 +217,27 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>")
     (shimbun-remove-tags "\
 <A [^>]*HREF=\"http:/[^\"]*/\\(ad\\.itmedia\\.co\\.jp\\|\
 a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>")
+
+    ;; Insert line-break after images.
+    (goto-char (point-min))
+    (while (re-search-forward
+	    "\\(<img[\t\n ]+[^>]+>\\(?:[\t\n ]*<[^>]+>\\)*\\)[\t\n ]*"
+	    nil t)
+      (when (or
+	     ;; Look forward for </a>.
+	     (looking-at "\\([^<>]+\\(?:<\
+\\(?:[^\t\n <>]+\\|[^\t\n <>a][\t\n ]+[^<>]*\\|[^\t\n <>][^\t\n <>][^<>]*\\)\
+>[^<>]*\\)*</a>\\)[\t\n ]*")
+	     ;; Look backward for </foo>.
+	     (re-search-backward "\\(</[^>]+>\\)[\t\n ]*"
+				 (match-beginning 1) t))
+	(goto-char (match-end 0)))
+      (unless
+	  ;; Check if there's a tag that is likely to cause the line-break.
+	  (looking-at "\\(?:<![^>]+>[\t\n ]*\\)*\
+<\\(?:br\\|div\\|h[0-9]+\\|p\\)\\(?:[\t\n ]*>\\|[\t\n ]\\)")
+	(replace-match "\\1<br>\n")))
+
     (let ((hankaku (shimbun-japanese-hankaku shimbun)))
       (when (and hankaku (not (memq hankaku '(header subject))))
 	(shimbun-japanese-hankaku-buffer t)))))

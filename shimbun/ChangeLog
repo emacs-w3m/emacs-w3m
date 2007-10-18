@@ -1,3 +1,7 @@
+2007-10-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-itmedia.el (shimbun-clear-contents): Break line after images.
+
 2007-10-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* *.el: Fix expressions of copyright notices.
