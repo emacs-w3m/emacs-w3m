@@ -286,7 +286,7 @@ Emacs-w3m $B$O30It%3%^%s%I(B w3m $B$r!"%&%'%V%3%s%F%s%D$r<hF@$9$k$?$a$N%P%C%/
 XEmacs $B$KIT2D7g$G$9!#(BEmacs-w3m $B$r9=C[$9$kA0$K(B @acronym{APEL} $B$r%$%s%9%H!<(B
 $B%k$7$J$1$l$P$J$j$^$;$s!#(B@acronym{APEL} $B$O0J2<$N>l=j$K$"$j$^$9(B:
 
-@uref{http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/apel/apel-10.7.tar.gz}
+@uref{http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/apel/}
 
 @acronym{APEL} XEmacs $B%Q%C%1!<%8(B (SUMO $B$K4^$^$l$F$$$^$9(B) $B$N%P!<%8%g(B
 $B%s(B 1.32 $B$h$j8E$$$b$N$O;H$($J$$$3$H$KCm0U$7$F2<$5$$!#$b$7$9$G$K$=$N$h$&$J(B
@@ -338,11 +338,11 @@ emacs-w3m $B$O2hA|%5%$%:$NJQ99$d(B @samp{favicon} $B2hA|$r(B Emacs $B$,07$(
 @acronym{APEL} $B$H(B @acronym{FLIM} $B$NN>J}$r%$%s%9%H!<%k$7$J$1$l$P$J$j$^$;(B
 $B$s!#(B@acronym{FLIM} $B%Q%C%1!<%8$O0J2<$N>l=j$K$"$j$^$9(B:
 
-@uref{ftp://ftp.m17n.org/pub/mule/flim/flim-1.14/}
+@uref{http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/flim/flim-1.14/}
 
 @item Mule-UCS
-XEmacs $B$r;H$&$+!"$^$?$O(B Emacs 21 $B$r;H$C$FCf9q8l!"F|K\8l!"4Z9q8l$J$I$N%F(B
-$B%-%9%H$rFI$`I,MW$,$"$k$J$i$P!"(Bemacs-w3m $B$,(B (Unicode $B%7%9%F%`$NBeI=E*(B
+XEmacs 21.4 $B$r;H$&$+!"$^$?$O(B Emacs 21 $B$r;H$C$FCf9q8l!"F|K\8l!"4Z9q8l$J$I(B
+$B$N%F%-%9%H$rFI$`I,MW$,$"$k$J$i$P!"(Bemacs-w3m $B$,(B (Unicode $B%7%9%F%`$NBeI=E*(B
 $B$J(B coding system $B$G$"$k(B) UTF-8 $B$G%(%s%3!<%I$5$l$?%Z!<%8$rI=<($G$-$k$h$&(B
 $B$K$9$k$?$a$K!"(BMule-UCS Emacs Lisp $B%Q%C%1!<%8$r%$%s%9%H!<%k$9$k$3$H$r4+$a(B
 $B$^$9!#(BEmacs 21 $B$,(B Unicode $B%7%9%F%`$rItJ,E*$K(B ($BNc$($P%i%F%s!&%F%-%9%H$N$?(B
@@ -355,9 +355,12 @@ Emacs-21.2 $B$GMxMQ$9$k>l9g$O!"(B
 Mule-UCS $B$K(B @uref{http://www.m17n.org/mlarchive/mule/200203/msg00000.html,
 $B$3$N%Q%C%A(B} $B$rE,MQ$7$?$[$&$,$$$$$G$7$g$&!#(B
 
-XEmacs $B%f!<%68~$1$K$O!"$3$3$K%3%s%Q%$%k:Q$_$N%Q%C%1!<%8$,$"$j$^$9(B:
+XEmacs 21.4 $B%f!<%68~$1$K$O!"$3$3$K%3%s%Q%$%k:Q$_$N%Q%C%1!<%8$,$"$j$^$9(B:
 
-@uref{ftp://ftp.xemacs.org/packages/mule-ucs-1.11-pkg.tar.gz}
+@uref{ftp://ftp.xemacs.org/xemacs/packages/mule-ucs-1.14-pkg.tar.gz}
+
+(Mule SUMO $B$K4^$^$l$F$$$k$N$G!"2C$($F$5$i$K$3$l$r%$%s%9%H!<%k$9$kI,MW$O(B
+$B$"$j$^$;$s!#(B)
 
 @item codepage-ex
 $B%h!<%m%C%Q$N$$$/$D$+$N(B web $B%5%$%H$O!"(B@samp{charset=ISO-8859-1} $B$r%F%-%9(B
@@ -369,7 +372,7 @@ XEmacs $B%f!<%68~$1$K$O!"$3$3$K%3%s%Q%$%k:Q$_$N%Q%C%1!<%8$,$"$j$^$9(B:
 $B$9$,!"(B@code{codepage-ex} $B$H$$$&%b%8%e!<%k$r;H$&$3$H$K$h$C$F!"(BEmacs 21 $B$G(B
 $B$b$=$l$r;H$($k$h$&$K$9$k$3$H$,$G$-$^$9!#0J2<$N%Z!<%8$r;2>H$7$F2<$5$$!#(B
 
-@uref{http://www.nijino.com/ari/emacs/codepage-ex.html}
+@uref{http://nijino.homelinux.net/emacs/codepage-ex.html}
 
 @item rfc2368.el
 XEmacs $B>e$GF0:n$5$;$k(B emacs-w3m $B$,!"E,@Z$K(B @samp{mailto} url $B$r2r@O$G$-(B

@@ -269,7 +269,7 @@ them.
 Indispensable to XEmacs.  You should install @acronym{APEL} before
 building emacs-w3m.  @acronym{APEL} is available at:
 
-@uref{http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/apel/apel-10.7.tar.gz}
+@uref{http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/apel/}
 
 Note that you must not use the @acronym{APEL} XEmacs package (which is
 contained in SUMO) of the versions older than 1.32.  If you have already
@@ -317,12 +317,12 @@ regardless of the version of Emacs you are using.  Therefore, you must
 install both @acronym{APEL} and @acronym{FLIM} if you would like to use
 the @samp{shimbun} library.  The @acronym{FLIM} package is available at:
 
-@uref{ftp://ftp.m17n.org/pub/mule/flim/flim-1.14/}
+@uref{http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/flim/flim-1.14/}
 
 @item Mule-UCS
-If you use XEmacs, or need to read Chinese text, Japanese text, Korean
-text, etc. using Emacs 21, we recommend you install the Mule-UCS Emacs
-Lisp package so as to enable emacs-w3m to display pages encoded by
+If you use XEmacs 21.4, or need to read Chinese text, Japanese text,
+Korean text, etc. using Emacs 21, we recommend you install the Mule-UCS
+Emacs Lisp package so as to enable emacs-w3m to display pages encoded by
 UTF-8, which is the typical coding system of the Unicode system.  Note
 that Emacs 21 supports the Unicode system partially (e.g., for Latin
 text) and Emacs 22 or greater fully supports it.  The Mule-UCS Emacs
@@ -334,9 +334,12 @@ If you use it with Emacs 21.2, it is necessary to apply
 @uref{http://www.m17n.org/mlarchive/mule/200203/msg00000.html, this
 patch} before installation.
 
-If you are an XEmacs user, the compiled package is here:
+If you are an XEmacs 21.4 user, the compiled package is here:
 
-@uref{ftp://ftp.xemacs.org/packages/mule-ucs-1.11-pkg.tar.gz}
+@uref{ftp://ftp.xemacs.org/xemacs/packages/mule-ucs-1.14-pkg.tar.gz}
+
+(You don't need to install it in addition to Mule SUMO, that contains
+it.)
 
 @item codepage-ex
 Some web sites in Europe specify a @samp{charset=ISO-8859-1} encoding,
@@ -347,7 +350,7 @@ superset of @code{iso-8859-1} if it is available.  The
 Emacs 21, you can enable to use it using the module called
 @code{codepage-ex}.  See the following page:
 
-@uref{http://www.nijino.com/ari/emacs/codepage-ex.html}
+@uref{http://nijino.homelinux.net/emacs/codepage-ex.html}
 
 @item rfc2368.el
 Install it if you'd like to enable emacs-w3m running with XEmacs to
