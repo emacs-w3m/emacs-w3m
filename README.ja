@@ -218,8 +218,8 @@
        入手できます．
 
    [2] FLIM
-       ftp://ftp.m17n.org/pub/mule/flim/ から入手できます．APEL に依存
-       しています．
+       http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/flim/flim-1.14/
+       から入手できます．APEL に依存しています．
 
    [3] gifsicle
        http://www.lcdf.org/gifsicle/ から入手できます．

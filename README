@@ -218,7 +218,8 @@
        http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/apel/
 
    [2] FLIM
-       It can be downloaded from: ftp://ftp.m17n.org/pub/mule/flim/
+       It can be downloaded from:
+       http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/flim/flim-1.14/
        Before installing it, it is necessary to install APEL.
 
    [3] gifsicle
