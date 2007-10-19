@@ -49,9 +49,10 @@
       を含む最新の xemacs-base パッケージをインストールしておく必要があ
       ります．
 
-      APEL を前もってインストールしておく必要があります．
+      APEL を前もってインストールしておく必要があります．次の場所にある
+      最新のものを使って下さい．
 
-      http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/apel/apel-10.7.tar.gz
+      http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/apel/
 
       注意: APEL XEmacs パッケージ (SUMO に含まれています) のバージョン
        1.32 より古いものは使えません．もしすでにそのような版のパッケージ
@@ -98,8 +99,8 @@
 
      APEL や FLIM などの必要なモジュールが，標準的ではないディレクトリに
      インストールされている場合には，`--with-addpath' オプションを使って，
-     そのディレクトリを指定する必要があります (さらに，それに `:' で分け
-     られた Gnus のディレクトリを含めても構いません)．
+     そのディレクトリを指定する必要があります (さらに，それに Gnus のディ
+     レクトリを `:' で分けて含めても構いません)．
 
          % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
 

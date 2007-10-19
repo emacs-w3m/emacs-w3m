@@ -46,9 +46,9 @@
       need to have installed the latest xemacs-base package including
       the timer-funcs.el module.
 
-      APEL package is required.  It is available at:
+      APEL package is required.  Use the latest one available in:
 
-        http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/apel/apel-10.7.tar.gz
+        http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/apel/
 
       Note: You must not use the APEL XEmacs package (which is contained
        in SUMO) of the versions older than 1.32.  If you have already
@@ -96,7 +96,7 @@
      If you've installed APEL, FLIM or something in non-standard
      directories other than the default `load-path', you must specify
      them using the --with-addpath option as follows (you may also
-     include the Gnus directory in it separated with `:'):
+     include the Gnus directory being separated with `:' in it):
 
          % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
 
