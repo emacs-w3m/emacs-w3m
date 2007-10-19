@@ -219,6 +219,13 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
   (nth 2 (assoc (shimbun-current-group-internal shimbun)
 		shimbun-nytimes-group-table)))
 
+(defvar shimbun-nytimes-next-url nil
+  "Url of the next page that is about to fetch.")
+
+(luna-define-method shimbun-make-contents :before ((shimbun shimbun-nytimes)
+						   header)
+  (setq shimbun-nytimes-next-url nil))
+
 (luna-define-method shimbun-multi-next-url ((shimbun shimbun-nytimes)
 					    header url)
   (goto-char (point-min))
@@ -234,10 +241,34 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
 		 (progn
 		   (goto-char start)
 		   (re-search-forward "href=\"\\([^\"]+\\)\"" end t)))
-	(shimbun-expand-url (match-string 1) url)))))
+	(setq shimbun-nytimes-next-url
+	      (shimbun-expand-url (match-string 1) url))))))
 
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-nytimes)
 						    header)
+  (or (shimbun-nytimes-clear-contents shimbun header)
+      ;; Retry fetching article.
+      (progn
+	(shimbun-message shimbun "shimbun: Retrying to fetch contents...")
+	(erase-buffer)
+	(shimbun-fetch-url shimbun (or shimbun-nytimes-next-url
+				       (shimbun-header-xref header)))
+	(if (shimbun-nytimes-clear-contents shimbun header)
+	    (progn
+	      (shimbun-message shimbun
+			       "shimbun: Retrying to fetch contents...done")
+	      t)
+	  (shimbun-message shimbun
+			   "shimbun: Retrying to fetch contents...failed")
+	  nil))
+      (progn
+	(erase-buffer)
+	(insert "<html><body><i>This article may have been expired,\
+ use the format different from the ordinary style that NYTimes uses,\
+ or have not been successful to fetch.  Sorry.</i></body></html>\n")
+	nil)))
+
+(defun shimbun-nytimes-clear-contents (shimbun header)
   (shimbun-strip-cr)
   (let ((start "\
 \\(?:\
@@ -256,142 +287,136 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
 	(case-fold-search t)
 	name)
     (goto-char (point-min))
-    (if (or (and (re-search-forward start nil t)
-		 (progn
-		   (save-restriction
-		     (narrow-to-region (point-min) (match-end 0))
-		     (if (and (search-backward "</NYT_HEADLINE>" nil t)
-			      (re-search-forward "<div[\t\n ]+class=\"image\""
-						 nil t)
-			      (progn
-				(setq start (match-beginning 0))
-				(shimbun-end-of-tag "div")))
-			 (progn
-			   (delete-region (match-end 0) (point-max))
-			   (delete-region (point-min) start)
-			   (goto-char (point-max)))
-		       (delete-region (point-min) (point-max))))
-		   (when (looking-at "</NYT_BYLINE>[\t\n ]*")
-		     (delete-region (point-min) (match-end 0)))
-		   (when (re-search-forward end nil t)
-		     (delete-region
-		      (if (and (match-beginning 2)
-			       (progn
-				 (goto-char (match-beginning 1))
-				 (re-search-forward "\
+    (when (or (and (re-search-forward start nil t)
+		   (progn
+		     (save-restriction
+		       (narrow-to-region (point-min) (match-end 0))
+		       (if (and (search-backward "</NYT_HEADLINE>" nil t)
+				(re-search-forward "\
+<div[\t\n ]+class=\"image\""
+						   nil t)
+				(progn
+				  (setq start (match-beginning 0))
+				  (shimbun-end-of-tag "div")))
+			   (progn
+			     (delete-region (match-end 0) (point-max))
+			     (delete-region (point-min) start)
+			     (goto-char (point-max)))
+			 (delete-region (point-min) (point-max))))
+		     (when (looking-at "</NYT_BYLINE>[\t\n ]*")
+		       (delete-region (point-min) (match-end 0)))
+		     (when (re-search-forward end nil t)
+		       (delete-region
+			(if (and (match-beginning 2)
+				 (progn
+				   (goto-char (match-beginning 1))
+				   (re-search-forward "\
 \\(?:<[^>]+>\\)*\\(</blockquote>\\|</div>\\|</ul>\\)[\t\n ]*"
-						    (match-end 2) t)))
-			  (match-end 1)
-			(match-beginning 0))
-		      (point-max))
-		     t)))
-	    (progn
-	      ;; Extract blog listing.
-	      (goto-char (point-min))
-	      (when (and (re-search-forward "\
+						      (match-end 2) t)))
+			    (match-end 1)
+			  (match-beginning 0))
+			(point-max))
+		       t)))
+	      (progn
+		;; Extract blog listing.
+		(goto-char (point-min))
+		(when (and (re-search-forward "\
 <div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"blog_comments\""
-					    nil t)
-			 (shimbun-end-of-tag "div" t))
-		(delete-region (match-end 3) (point-max))
-		(delete-region (point-min) (match-beginning 3))
-		;; Remove <ul>.
-		(goto-char (point-min))
-		(when (re-search-forward "\
+					      nil t)
+			   (shimbun-end-of-tag "div" t))
+		  (delete-region (match-end 3) (point-max))
+		  (delete-region (point-min) (match-beginning 3))
+		  ;; Remove <ul>.
+		  (goto-char (point-min))
+		  (when (re-search-forward "\
 <ul[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"commentlist\""
-					 nil t)
-		  (cond ((shimbun-end-of-tag "ul" t)
-			 (delete-region (goto-char (match-end 3))
-					(match-end 0))
-			 (insert "\n")
-			 (delete-region (goto-char (match-beginning 0))
-					(match-beginning 3))
-			 (insert "\n"))
-			((shimbun-end-of-tag nil t)
-			 (replace-match "\n"))))
-		;; Remove useless links.
-		(goto-char (point-min))
-		(while (and (re-search-forward "\
+					   nil t)
+		    (cond ((shimbun-end-of-tag "ul" t)
+			   (delete-region (goto-char (match-end 3))
+					  (match-end 0))
+			   (insert "\n")
+			   (delete-region (goto-char (match-beginning 0))
+					  (match-beginning 3))
+			   (insert "\n"))
+			  ((shimbun-end-of-tag nil t)
+			   (replace-match "\n"))))
+		  ;; Remove useless links.
+		  (goto-char (point-min))
+		  (while (and (re-search-forward "\
 <a[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*href=\"#"
-					       nil t)
-			    (shimbun-end-of-tag "a"))
-		  (replace-match "\\2<br>"))
-		t)))
-	(progn
-	  ;; Insert a new line after every image.
-	  (goto-char (point-min))
-	  (while (re-search-forward "\\(<img[\t\n ]+[^>]+>\\)[\t\n ]*" nil t)
-	    (replace-match "\\1<br>"))
-	  ;; Remove the `Skip to next paragraph' buttons.
-	  (goto-char (point-min))
-	  (while (re-search-forward "\[\t\n ]*\
+						 nil t)
+			      (shimbun-end-of-tag "a"))
+		    (replace-match "\\2<br>"))
+		  t)))
+      ;; Insert a new line after every image.
+      (goto-char (point-min))
+      (while (re-search-forward "\\(<img[\t\n ]+[^>]+>\\)[\t\n ]*" nil t)
+	(replace-match "\\1<br>"))
+      ;; Remove the `Skip to next paragraph' buttons.
+      (goto-char (point-min))
+      (while (re-search-forward "\[\t\n ]*\
 \\(?:<div[\t\n ]+[^>]+>[\t\n ]*\\)*\
 <a[\t\n ]+href=\"#\\([^\"]+\\)\"[^>]*>[\t\n ]*\
 Skip[\t\n ]+to[\t\n ]+next[\t\n ]+paragraph[\t\n ]*</a>[\t\n ]*"
-				    nil t)
-	    (setq start (match-beginning 0)
-		  end (match-end 0)
-		  name (match-string 1))
-	    (when (re-search-forward (concat "[\t\n ]*<a[\t\n ]+name=\""
-					     (regexp-quote name)
-					     "\"[^>]*>[\t\n ]*</a>[\t\n ]*")
-				     nil t)
-	      ;;(delete-region (match-beginning 0) (match-end 0))
-	      ;; NYTimes is apt to forget to put this.
-	      (replace-match "</ul>")
-	      (delete-region (goto-char start) end)
-	      (insert "\n")))
-	  ;; Remove Next/Previous buttons.
-	  (goto-char (point-min))
-	  (when (and (re-search-forward "\
+				nil t)
+	(setq start (match-beginning 0)
+	      end (match-end 0)
+	      name (match-string 1))
+	(when (re-search-forward (concat "[\t\n ]*<a[\t\n ]+name=\""
+					 (regexp-quote name)
+					 "\"[^>]*>[\t\n ]*</a>[\t\n ]*")
+				 nil t)
+	  ;;(delete-region (match-beginning 0) (match-end 0))
+	  ;; NYTimes is apt to forget to put this.
+	  (replace-match "</ul>")
+	  (delete-region (goto-char start) end)
+	  (insert "\n")))
+      ;; Remove Next/Previous buttons.
+      (goto-char (point-min))
+      (when (and (re-search-forward "\
 <div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"pageLinks\""
-					nil t)
-		     (shimbun-end-of-tag "div" t))
-	    (replace-match "\n"))
-	  ;; Remove `Enlarge This Image', `Multimedia', and `Video'.
-	  (goto-char (point-min))
-	  (while (and (re-search-forward "<div[\t\n ]+\
+				    nil t)
+		 (shimbun-end-of-tag "div" t))
+	(replace-match "\n"))
+      ;; Remove `Enlarge This Image', `Multimedia', and `Video'.
+      (goto-char (point-min))
+      (while (and (re-search-forward "<div[\t\n ]+\
 \\(?:class=\"enlargeThis\\|id=\"inlineMultimedia\
 \\|class=\"inlineVideo\\(?:[\t\n ]+[^\"]+\\)?\\)\""
-					 nil t)
-		      (shimbun-end-of-tag "div" t))
-	    (replace-match "\n"))
-	  ;; Remove javascripts.
-	  (goto-char (point-min))
-	  (while (and (re-search-forward "[\t\n ]*\
+				     nil t)
+		  (shimbun-end-of-tag "div" t))
+	(replace-match "\n"))
+      ;; Remove javascripts.
+      (goto-char (point-min))
+      (while (and (re-search-forward "[\t\n ]*\
 <a[\t\n ]+href=\"javascript:[^>]+>[\t\n ]*"
-					 nil t)
-		      (progn
-			(setq start (match-beginning 0)
-			      end (match-end 0))
-			(re-search-forward "[\t\n ]*</a>[\t\n ]*" nil t)))
-	    (replace-match "\n")
-	    (delete-region (goto-char start) end)
-	    (insert "\n"))
-	  ;; Remove useless timesselect stuff.
-	  (goto-char (point-min))
-	  (while (re-search-forward "[\t\n ]*<img\\(?:[\t\n ]+[^\t\n >]+\\)*\
+				     nil t)
+		  (progn
+		    (setq start (match-beginning 0)
+			  end (match-end 0))
+		    (re-search-forward "[\t\n ]*</a>[\t\n ]*" nil t)))
+	(replace-match "\n")
+	(delete-region (goto-char start) end)
+	(insert "\n"))
+      ;; Remove useless timesselect stuff.
+      (goto-char (point-min))
+      (while (re-search-forward "[\t\n ]*<img\\(?:[\t\n ]+[^\t\n >]+\\)*\
 \[\t\n ]+src=\"[^\"]*/ts_icon\\.gif\"\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>\
 \[\t\n ]*"
-				    nil t)
-	    (delete-region (match-beginning 0) (match-end 0)))
-	  ;; Add page delimiters.
-	  (goto-char (point-min))
-	  (while (re-search-forward "[\t\n ]*\\(?:<p>[\t\n ]*\\)+\
+				nil t)
+	(delete-region (match-beginning 0) (match-end 0)))
+      ;; Add page delimiters.
+      (goto-char (point-min))
+      (while (re-search-forward "[\t\n ]*\\(?:<p>[\t\n ]*\\)+\
 \\(<font[\t\n ]+[^>]+>[\t\n ]*(Page[\t\n ]+[0-9]+[\t\n ]+of[\t\n ]+[0-9]+)\
 \[\t\n ]*</font>\\)\\(?:[\t\n ]*<p>\\)+[\t\n ]*"
-				    nil t)
-	    (replace-match "\n&#012;\\1\n<p>"))
-	  ;; Add last newline.
-	  (goto-char (point-max))
-	  (unless (bolp)
-	    (insert "\n"))
-	  t)
-      (erase-buffer)
-      (insert
-       "<html><body><i>This article may have been expired,\
- use the format different from the ordinary style that NYTimes uses,\
- or have not been successful to fetch.</i></body></html>\n")
-      nil)))
+				nil t)
+	(replace-match "\n&#012;\\1\n<p>"))
+      ;; Add last newline.
+      (goto-char (point-max))
+      (unless (bolp)
+	(insert "\n"))
+      t)))
 
 (luna-define-method shimbun-get-headers :around ((shimbun shimbun-nytimes)
 						 &optional range)

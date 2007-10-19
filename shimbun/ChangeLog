@@ -1,3 +1,11 @@
+2007-10-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nytimes.el (shimbun-nytimes-next-url): New variable.
+	(shimbun-make-contents): Reset it before fetching contents.
+	(shimbun-multi-next-url): Set it to the next url.
+	(shimbun-nytimes-clear-contents): New function.
+	(shimbun-clear-contents): Use it; retry fetching contents if it fails.
+
 2007-10-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-itmedia.el (shimbun-clear-contents): Break line after images.
