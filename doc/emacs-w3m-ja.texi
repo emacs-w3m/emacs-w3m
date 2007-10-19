@@ -5627,9 +5627,9 @@ CGI_Board を使っている掲示板の URL を調べて、
 
 @lisp
 (setq shimbun-hns-group-alist
-      '(("arisawa"                           ;; グループ名
-         "http://www.nijino.com/ari/diary/"  ;; URL
-         "ari@@mbf.sphere.ne.jp")             ;; メールアドレス
+      '(("arisawa"                            ;; グループ名
+         "http://nijino.homelinux.net/diary/" ;; URL
+         "ari@@mbf.sphere.ne.jp")              ;; メールアドレス
         ("miyoshi"
          "http://www.be.wakwak.com/cgi-bin/sbox/~miyoshi/hns/"
          "miyoshi@@meadowy.org")))

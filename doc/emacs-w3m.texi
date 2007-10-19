@@ -5609,9 +5609,9 @@ Set your favorite browse bulletin board systems using CGI_Board to
 This is an example to use @samp{sb-hns}.
 @lisp
 (setq shimbun-hns-group-alist
-      '(("arisawa"                           ;; Group Name
-         "http://www.nijino.com/ari/diary/"  ;; URL
-         "ari@@mbf.sphere.ne.jp")             ;; E-Mail Address
+      '(("arisawa"                            ;; Group Name
+         "http://nijino.homelinux.net/diary/" ;; URL
+         "ari@@mbf.sphere.ne.jp")              ;; E-Mail Address
         ("miyoshi"
          "http://www.be.wakwak.com/cgi-bin/sbox/~miyoshi/hns/"
          "miyoshi@@meadowy.org")))
