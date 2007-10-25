@@ -1,3 +1,8 @@
+2007-10-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (install-lisp): Don't install w3m-ems.el for XEmacs and
+	w3m-xmas.el for GNU Emacs.
+
 2007-10-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* *, doc/*: Fix expressions of the copyright notices.
