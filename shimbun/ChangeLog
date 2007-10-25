@@ -1,3 +1,8 @@
+2007-10-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-itmedia.el (shimbun-get-headers): Update regexp.
+	(shimbun-clear-contents): Don't use too complicated regexp wasting cpu.
+
 2007-10-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nytimes.el (shimbun-nytimes-next-url): New variable.

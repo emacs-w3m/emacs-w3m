@@ -108,8 +108,8 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 	  (from (shimbun-from-address shimbun))
 	  headers)
       (goto-char (point-min))
-      (while (re-search-forward "\
-<a[\t\n ]+href=\"\\(/lifestyle/articles/\\([0-9][0-9]\\)\\([01][0-9]\\)/\
+      (while (re-search-forward "<a[\t\n ]+href=\"\
+\\(?:[^\"]+\\)?\\(/lifestyle/articles/\\([0-9][0-9]\\)\\([01][0-9]\\)/\
 \\([0-3][0-9]\\)/news\\([0-9]+\\)\\.html\\)\"[\t\n ]*>[\t\n ]*\\([^<]+\\)"
 				nil t)
 	(push (shimbun-create-header
@@ -220,23 +220,31 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>")
 
     ;; Insert line-break after images.
     (goto-char (point-min))
-    (while (re-search-forward
-	    "\\(<img[\t\n ]+[^>]+>\\(?:[\t\n ]*<[^>]+>\\)*\\)[\t\n ]*"
-	    nil t)
-      (when (or
-	     ;; Look forward for </a>.
-	     (looking-at "\\([^<>]+\\(?:<\
-\\(?:[^\t\n <>]+\\|[^\t\n <>a][\t\n ]+[^<>]*\\|[^\t\n <>][^\t\n <>][^<>]*\\)\
->[^<>]*\\)*</a>\\)[\t\n ]*")
-	     ;; Look backward for </foo>.
-	     (re-search-backward "\\(</[^>]+>\\)[\t\n ]*"
-				 (match-beginning 1) t))
-	(goto-char (match-end 0)))
-      (unless
-	  ;; Check if there's a tag that is likely to cause the line-break.
-	  (looking-at "\\(?:<![^>]+>[\t\n ]*\\)*\
+    (let (start md)
+      (while (re-search-forward
+	      "\\(<img[\t\n ]+[^>]+>\\(?:[\t\n ]*<[^>]+>\\)*\\)[\t\n ]*"
+	      nil t)
+	(when (or
+	       ;; Look forward for </a>.
+	       (progn
+		 (setq start (point)
+		       md (match-data))
+		 (and (re-search-forward "<a[\t\n ]+\\|\\(</a>\\)[\t\n ]*"
+					 nil t)
+		      (or (match-beginning 1)
+			  (progn
+			    (goto-char start)
+			    (set-match-data md)
+			    nil))))
+	       ;; Look backward for </foo>.
+	       (re-search-backward "\\(</[^>]+>\\)[\t\n ]*"
+				   (match-beginning 1) t))
+	  (goto-char (match-end 0)))
+	(unless
+	    ;; Check if there's a tag that is likely to cause the line-break.
+	    (looking-at "\\(?:<![^>]+>[\t\n ]*\\)*\
 <\\(?:br\\|div\\|h[0-9]+\\|p\\)\\(?:[\t\n ]*>\\|[\t\n ]\\)")
-	(replace-match "\\1<br>\n")))
+	  (replace-match "\\1<br>\n"))))
 
     (let ((hankaku (shimbun-japanese-hankaku shimbun)))
       (when (and hankaku (not (memq hankaku '(header subject))))
