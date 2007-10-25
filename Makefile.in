@@ -17,9 +17,10 @@ EMACS   = @EMACS@
 VANILLA_FLAG = @VANILLA_FLAG@
 FLAGS   = $(VANILLA_FLAG) -batch -l $(srcdir)/w3mhack.el $(ADDITIONAL_LOAD_PATH)
 
-## This is used to set the environment variable XEMACSDEBUG for
-## XEmacs 21.5 in order to suppress warnings for Lisp shadows
-## when XEmacs 21.5 starts.
+## This is used to set the environment variable XEMACSDEBUG for XEmacs
+## 21.5 in order to suppress warnings for Lisp shadows when XEmacs 21.5
+## starts.  This is used also for not installing w3m-ems.el for XEmacs
+## and w3m-xmas.el for GNU Emacs.
 XEMACSDEBUG = @XEMACSDEBUG@
 
 IGNORES = w3mhack.el
@@ -66,6 +67,12 @@ install-lisp: lisp
 	  if test -f "$$p"; then\
 	    case "$$p" in\
 	      $(IGNORES)) ;;\
+	      w3m-ems\.el) if test -z "$(XEMACSDEBUG)"; then\
+	         echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
+	         $(INSTALL_DATA) $$p $(lispdir)/$$p; fi;;\
+	      w3m-xmas\.el) if test -n "$(XEMACSDEBUG)"; then\
+	         echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
+	         $(INSTALL_DATA) $$p $(lispdir)/$$p; fi;;\
 	      *) echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
 	         $(INSTALL_DATA) $$p $(lispdir)/$$p;;\
 	    esac;\
