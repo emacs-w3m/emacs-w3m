@@ -1,5 +1,10 @@
 2007-10-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-nytimes.el (shimbun-nytimes-clear-contents): Extract contents from
+	a page composed in unusual format.  cf. http://dealbook.blogs.nytimes.\
+	com/2007/10/24/3000-layoffs-today-more-tomorrow/index.html?ex=13510512\
+	00&en=07a270b9f7c0bb04&ei=5088&partner=rssnyt&emc=rss
+
 	* sb-itmedia.el (shimbun-get-headers): Update regexp.
 	(shimbun-clear-contents): Don't use too complicated regexp wasting cpu.
 

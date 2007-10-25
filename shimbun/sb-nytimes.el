@@ -273,7 +273,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
   (let ((start "\
 \\(?:\
 \\(?:<p[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"post-author\"\
-\\|<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"post-content\"\\)\
+\\|\\(<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"post-content\"\\)\\)\
 \\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>\
 \\|\
 <NYT_\\(?:BYLINE\\|TEXT\\)\\(?:[\t\n ]*\\|[\t\n ]+[^>]+\\)>\
@@ -285,11 +285,14 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
 <\\(?:/?NYT_UPDATE_BOTTOM\\|/NYT_TEXT\\)\\(?:[\t\n ]+[^>]+\\)?>\
 \\)\\)")
 	(case-fold-search t)
-	name)
+	pcont name)
     (goto-char (point-min))
     (when (or (and (re-search-forward start nil t)
 		   (progn
 		     (save-restriction
+		       (setq pcont
+			     ;; The marker version of (match-beginning 1).
+			     (nth 2 (match-data)))
 		       (narrow-to-region (point-min) (match-end 0))
 		       (if (and (search-backward "</NYT_HEADLINE>" nil t)
 				(re-search-forward "\
@@ -305,18 +308,27 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
 			 (delete-region (point-min) (point-max))))
 		     (when (looking-at "</NYT_BYLINE>[\t\n ]*")
 		       (delete-region (point-min) (match-end 0)))
-		     (when (re-search-forward end nil t)
-		       (delete-region
-			(if (and (match-beginning 2)
-				 (progn
-				   (goto-char (match-beginning 1))
-				   (re-search-forward "\
+		     (or (when (re-search-forward end nil t)
+			   (delete-region
+			    (if (and (match-beginning 2)
+				     (progn
+				       (goto-char (match-beginning 1))
+				       (re-search-forward "\
 \\(?:<[^>]+>\\)*\\(</blockquote>\\|</div>\\|</ul>\\)[\t\n ]*"
-						      (match-end 2) t)))
-			    (match-end 1)
-			  (match-beginning 0))
-			(point-max))
-		       t)))
+							  (match-end 2) t)))
+				(match-end 1)
+			      (match-beginning 0))
+			    (point-max))
+			   t)
+			 (when (and pcont
+				    (progn
+				      (goto-char pcont)
+				      (insert "<div>")
+				      (goto-char pcont)
+				      (shimbun-end-of-tag "div" t)))
+			   (delete-region (match-end 3) (point-max))
+			   (delete-region (point-min) (match-beginning 3))
+			   t))))
 	      (progn
 		;; Extract blog listing.
 		(goto-char (point-min))
