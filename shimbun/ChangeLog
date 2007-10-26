@@ -1,3 +1,9 @@
+2007-10-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-clear-contents): Don't remove links to
+	related news or topics (that should never be removed.  cf.
+	http://sankei.jp.msn.com/affairs/crime/071026/crm0710260934002-n1.htm).
+
 2007-10-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nytimes.el (shimbun-nytimes-clear-contents): Extract contents from

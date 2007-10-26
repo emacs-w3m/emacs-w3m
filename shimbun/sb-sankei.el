@@ -183,7 +183,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAGFBMVEX///8An/8Vb38CnwB
   (let ((group (shimbun-current-group-internal shimbun))
 	(hankaku (shimbun-japanese-hankaku shimbun))
 	(case-fold-search t)
-	no-footer start end)
+	no-footer start end related)
 
     (cond ((string-equal group "usatoday")
 	   (setq no-footer t))
@@ -242,7 +242,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAGFBMVEX///8An/8Vb38CnwB
 		      (shimbun-end-of-tag "div" t))
 	    (replace-match "\n"))
 
-	  ;; Remove links to related news or topics.
+	  ;; Preserve links to related news or topics.
 	  (goto-char (point-min))
 	  (while (and (re-search-forward "\\(<\\)div[\t\n ]+[^>]+>\
 \\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\\(?:<h[0-9]+>[\t\n ]*\\)*\
@@ -251,6 +251,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAGFBMVEX///8An/8Vb38CnwB
 		      (progn
 			(goto-char (match-end 1))
 			(shimbun-end-of-tag "div" t)))
+	    (push (match-string 1) related)
 	    (replace-match "\n"))
 
 	  ;; Insert a new line after every image.
@@ -291,6 +292,14 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAGFBMVEX///8An/8Vb38CnwB
 \(c)[\t\n ]+2007,[\t\n ]+USA[\t\n ]+TODAY[\t\n ]+International\\."
 					  nil t)
 		   (setq no-footer t))))
+
+	  ;; Restore preserved related links.
+	  (when related
+	    (goto-char (point-max))
+	    (unless (bolp)
+	      (insert "\n"))
+	    (dolist (link (nreverse related))
+	      (insert link "\n")))
 
 	  ;; Convert Japanese zenkaku ASCII chars into hankaku.
 	  (when (and hankaku (not (memq hankaku '(header subject))))
