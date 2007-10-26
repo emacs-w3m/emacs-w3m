@@ -422,7 +422,8 @@ buffer names."
     (setq buffers (if nosort
 		      (nreverse rest)
 		    (sort rest #'w3m-buffer-name-lessp)))
-    (when (and w3m-fb-mode
+    (when (and (boundp 'w3m-fb-mode)
+	       w3m-fb-mode
 	       (if (or w3m-pop-up-frames
 		       (not (memq 'w3m-fb-add w3m-mode-hook)))
 		   ;; `w3m-fb-mode' might have been set by something

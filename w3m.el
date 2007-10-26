@@ -6723,7 +6723,7 @@ a page in a new buffer with the correct width."
     (setq newname (buffer-name buffer)))
   (when (string-match "<[0-9]+>\\'" newname)
     (setq newname (substring newname 0 (match-beginning 0))))
-  (let (url coding images init-frames new)
+  (let (url images init-frames new)
     (save-current-buffer
       (set-buffer buffer)
       (setq url (or w3m-current-url
@@ -7310,7 +7310,7 @@ closed.  See also `w3m-quit'."
   (interactive "e")
   (mouse-set-point event)
   (w3m-static-if (featurep 'xemacs)
-      (let (menubar tmp)
+      (let (menubar)
 	(when current-menubar
 	  (run-hooks 'activate-menubar-hook))
 	(setq menubar

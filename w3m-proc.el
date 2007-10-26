@@ -41,13 +41,6 @@
 (eval-when-compile
   (require 'cl))
 
-;; Silence the byte compiler complaining against `gensym'.
-(eval-when-compile
-  (defvar byte-compile-cl-functions nil)
-  (when (consp byte-compile-cl-functions)
-    (setq byte-compile-cl-functions
-	  (delq 'gensym byte-compile-cl-functions))))
-
 (require 'w3m-util)
 
 (eval-when-compile
@@ -784,6 +777,15 @@ prompt."
       (when (setq answer (y-or-n-p prompt))
 	(push (cons root (list prompt)) w3m-process-accept-alist)))
     answer))
+
+;; Silence the byte compiler complaining against `gensym' like:
+;; "Warning: the function `gensym' might not be defined at runtime."
+(eval-when-compile
+  (let ((g (condition-case nil
+	       (assq 'gensym byte-compile-unresolved-functions)
+	     (error nil))))
+    (setq byte-compile-unresolved-functions
+	  (delq g byte-compile-unresolved-functions))))
 
 (provide 'w3m-proc)
 

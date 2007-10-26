@@ -1,3 +1,16 @@
+2007-10-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-module-list): Don't compile mew-w3m.el and
+	mew-shimbun.el if there is only the official Mew XEmacs package that is
+	extremely old.
+
+	* w3m-proc.el: Update the way to suppress compile warning for gensym.
+
+	* w3m-util.el (w3m-list-buffers): Check if w3m-fb-mode is bound.
+
+	* w3m.el (w3m-copy-buffer, w3m-mouse-major-mode-menu): Remove unused
+	let-bound variables.
+
 2007-10-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (install-lisp): Don't install w3m-ems.el for XEmacs and
