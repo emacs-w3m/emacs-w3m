@@ -296,11 +296,12 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 	 (shimbun-dir (file-name-as-directory shimbun-module-directory))
 	 print-level print-length)
     ;; Exclude very old Mew XEmacs package.
-    (unless (if (featurep 'xemacs)
-		(let ((el (locate-library "mew"))
-		      pkg)
-		  (and el
-		       (file-exists-p (setq pkg (expand-file-name
+    (unless
+	(if (featurep 'xemacs)
+	    (let ((el (locate-library "mew"))
+		  pkg)
+	      (and el
+		   (if (file-exists-p (setq pkg (expand-file-name
 						 "_pkg.el"
 						 (file-name-directory el))))
 		       (condition-case nil
@@ -309,9 +310,10 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 			     (>= (string-to-number (package-get-key
 						    'mew :author-version))
 				 2))
-			 (error nil))))
-	      (locate-library "mew"))
-      (push "mew-w3m.el" ignores))
+			 (error nil))
+		     t))))
+      (locate-library "mew"))
+    (push "mew-w3m.el" ignores))
     (unless (if (featurep 'xemacs)
 		(and (featurep 'mule) (locate-library "pccl"))
 	      (locate-library "ccl"))
