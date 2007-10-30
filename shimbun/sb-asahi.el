@@ -1214,9 +1214,8 @@ It works for only the groups `editorial' and `tenjin'."
 
 (defun shimbun-asahi-prepare-article (shimbun header)
   "Prepare an article.
-Extract the article core on some groups or adjust a date header if
-there is a correct information available.  For the groups editorial
-and tenjin, it tries to fetch the article for that day if it failed."
+For the groups editorial and tenjin, it tries to fetch the article for
+that day if it failed."
   (let ((case-fold-search t)
 	(group (shimbun-current-group-internal shimbun))
 	(from (shimbun-header-from-internal header)))
@@ -1249,22 +1248,37 @@ and tenjin, it tries to fetch the article for that day if it failed."
 		 (goto-char (match-beginning 0))
 		 (insert "\n<!-- End of Kiji -->\n"))))))
      ((string-equal group "editorial")
-      (let ((regexp "<h[0-9][\t\n ]+class=\"topi\">")
-	    (url (shimbun-header-xref header))
-	    from)
-	(when (re-search-forward regexp nil t)
-	  (goto-char (match-beginning 0))
-	  (insert "<!-- Start of Kiji -->")
-	  (when (string-match "/editorial\\.html\\'" url)
-	    (insert "\
+      (let ((url (shimbun-header-xref header))
+	    (retry 0)
+	    start)
+	(while retry
+	  (if (and
+	       (re-search-forward
+		"<h[0-9][\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"topi\""
+		nil t)
+	       (progn
+		 (setq start (match-beginning 0))
+		 (re-search-forward
+		  "<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"kiji\""
+		  nil t))
+	       (shimbun-end-of-tag "div"))
+	      (progn
+		(setq retry nil)
+		(insert "\n<!-- End of Kiji -->")
+		(goto-char start)
+		(insert "<!-- Start of Kiji -->")
+		(when (string-match "/editorial\\.html\\'" url)
+		  (insert "\
 \n<p>(指定された&nbsp;url&nbsp;が&nbsp;まだ/すでに&nbsp;無いので、\
-<a href=\"" url "\">トップページ</a> から記事を取得しました)</p>\n"))
-	  (while (and (search-forward "</p>" nil t)
-		      (progn
-			(setq from (match-end 0))
-			(re-search-forward regexp nil t)))
-	    (delete-region from (match-beginning 0)))
-	  (insert "\n<!-- End of Kiji -->"))))
+<a href=\"" url "\">トップページ</a> から記事を取得しました)</p>\n")))
+	    (erase-buffer)
+	    (if (= retry 1)
+		(setq retry nil)
+	      (setq retry 1
+		    url (shimbun-index-url shimbun))
+	      (shimbun-header-set-xref header url)
+	      (shimbun-fetch-url shimbun url)
+	      (goto-char (point-min)))))))
      ((string-equal group "food")
       (when (and (re-search-forward (shimbun-content-start shimbun) nil t)
 		 (re-search-forward "[\t\n ]*<!-+[\t\n ]+Creative[\t\n ]+for"
@@ -1287,28 +1301,43 @@ and tenjin, it tries to fetch the article for that day if it failed."
 	  (insert "<!-- End of Kiji -->"))))
      ((string-equal group "rss"))
      ((string-equal group "tenjin")
-      (let ((url (shimbun-header-xref header)))
-	(when (re-search-forward "<SPAN STYLE=[^>]+>[\t\n ]*" nil t)
-	  (insert "<!-- Start of Kiji -->")
-	  (when (string-match "/column\\.html\\'" url)
-	    (insert "\
+      (let ((url (shimbun-header-xref header))
+	    (retry 0))
+	(while retry
+	  (if (and
+	       (re-search-forward
+		"<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"kiji\""
+		nil t)
+	       (shimbun-end-of-tag "div"))
+	      (save-restriction
+		(narrow-to-region (match-beginning 0) (match-end 0))
+		(setq retry nil)
+		(insert "\n<!-- End of Kiji -->")
+		(goto-char (match-beginning 0))
+		(insert "<!-- Start of Kiji -->")
+		(when (string-match "/column\\.html\\'" url)
+		  (insert "\
 \n<p>(指定された&nbsp;url&nbsp;が&nbsp;まだ/すでに&nbsp;無いので、\
 <a href=\"" url "\">トップページ</a> から記事を取得しました)</p>\n"))
-	  (while (re-search-forward "[\t\n ]*<SPAN STYLE=[^>]+>[\t\n ]*"
-				    nil t)
-	    (delete-region (match-beginning 0) (match-end 0)))
-	  (when (re-search-forward "[\t\n ]*</SPAN>" nil t)
-	    (goto-char (match-beginning 0))
-	    (insert "\n<!-- End of Kiji -->")))))
-     ((string-match "\\`book\\." group)
-      (when (and (re-search-forward "[\t\n ]*<div[\t\n ]+class=[^>]+>[\t\n ]*\
-<img[\t\n ]+[^>]+>[\t\n ]*</div>[\t\n ]*"
-				    nil t)
-		 (save-match-data
-		   (search-backward "src=\"/images/honjp-logo.gif"
-				    (match-beginning 0) t)))
-	(delete-region (match-beginning 0) (match-end 0)))
-      (goto-char (point-min))
+		(while (re-search-forward
+			(eval-when-compile
+			  (concat "[▼"
+				  (condition-case nil
+				      (list (make-char 'mule-unicode-2500-33ff
+						       33 124))
+				    (error nil))
+				  "]"))
+			nil t)
+		  (replace-match "。</p>\n<p>　")))
+	    (erase-buffer)
+	    (if (= retry 1)
+		(setq retry nil)
+	      (setq retry 1
+		    url (shimbun-index-url shimbun))
+	      (shimbun-header-set-xref header url)
+	      (shimbun-fetch-url shimbun url)
+	      (goto-char (point-min)))))))
+     ((string-match "\\`book\\(?:\\.\\|\\'\\)" group)
       (while (re-search-forward "\\(<a[\t\n ]+[^>]+>\\)\
 \[\t\n ]*<img[\t\n ]+[^>]+>[\t\n ]*</a>"
 				nil t)
@@ -1323,6 +1352,10 @@ and tenjin, it tries to fetch the article for that day if it failed."
 </p>[\t\n ]*"
 			       nil t)
 	(replace-match "<!-- Start of Kiji -->\\1<br>\n")))
+     ((string-match "ののちゃんのＤＯ科学" from)
+      ;; Remove furigana.
+      (while (re-search-forward "\\(\\cj\\)（\\cH+）" nil t)
+	(replace-match "\\1")))
      ((string-match "ゆるゆるフェミニン" from)
       (let (comics)
 	(while (re-search-forward
@@ -1386,7 +1419,7 @@ and tenjin, it tries to fetch the article for that day if it failed."
 			      nil t)
        (goto-char (match-beginning 0))
        (insert "\n<!-- End of Kiji -->"))
-     ;; Remove adv.
+     ;; Remove ads.
      (goto-char (point-min))
      (when (re-search-forward "[\t\n ]*<p[\t\n ]+class=\"hide\">[\t\n ]\
 *ここから広告です[\t\n ]*</p>"
@@ -1424,6 +1457,12 @@ and tenjin, it tries to fetch the article for that day if it failed."
 	   (while images
 	     (insert (pop images))
 	     (insert (if images "<br><br>\n" "\n")))))
+     ;; Remove garbage after images.
+     (goto-char (point-min))
+     (while (re-search-forward "\\(<img[\t\n ]+[^>]+>\\)[\t\n 　]*\
+\\(\\(?:<![^>]+>\\|<br>\\)[\t\n 　]*\\)*<p>"
+			       nil t)
+       (replace-match "\\1\n<p>"))
      ;; Remove any other useless things.
      (shimbun-remove-tags "[\t\n ]*<form[\t\n ]+" "</form>[\t\n ]*")
      (shimbun-remove-tags "[\t\n ]*<noscript>" "</noscript>[\t\n ]*")
@@ -1436,11 +1475,18 @@ and tenjin, it tries to fetch the article for that day if it failed."
        (delete-region (match-beginning 0) (match-end 0)))
      ;; Remove trailing garbage.
      (goto-char (point-min))
-     (when (re-search-forward
-	    "\\(?:</p>\\)?\\(\\(?:[\t\n 　]*<[^>]+>\\)+[\t\n 　]*\\'\\)"
-	    nil t)
-       (delete-region (match-beginning 1) (point-max))
-       (insert "\n")))))
+     (when (and (not (string-match "ゆるゆるフェミニン" from))
+		(re-search-forward
+		 "\\(?:</p>\\)?\\(\\(?:[\t\n 　]*<[^>]+>\\)+[\t\n 　]*\\'\\)"
+		 nil t))
+       (goto-char (match-beginning 0))
+       (while (or (and (looking-at "[\t\n 　]*\\(</[^>]+>\\)[\t\n 　]*")
+		       ;; Don't remove close tags.
+		       (progn (replace-match "\\1") t))
+		  (and (looking-at "[\t\n 　]*<[^>]+>[\t\n 　]*\\|[\t\n 　]+")
+		       (progn (replace-match "") t))))
+       (goto-char (point-max))
+       (unless (bolp) (insert "\n"))))))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-asahi)
 						   header)

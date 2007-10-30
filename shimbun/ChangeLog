@@ -1,3 +1,10 @@
+2007-10-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-prepare-article): Follow site changes in
+	editorial and tenjin groups; give up removing shop logos in book*
+	groups; remove furigana in tamate subgroup; remove garbage after
+	images; don't remove </*> tags at the bottom of article.
+
 2007-10-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-clear-contents): Don't remove links to
