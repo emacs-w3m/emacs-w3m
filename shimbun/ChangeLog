@@ -1,3 +1,8 @@
+2007-10-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-prepare-article): Don't miss the 2nd
+	section of articles in editorial group.
+
 2007-10-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-prepare-article): Follow site changes in

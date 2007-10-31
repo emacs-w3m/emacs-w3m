@@ -1250,18 +1250,28 @@ that day if it failed."
      ((string-equal group "editorial")
       (let ((url (shimbun-header-xref header))
 	    (retry 0)
-	    start)
+	    start end)
 	(while retry
-	  (if (and
-	       (re-search-forward
-		"<h[0-9][\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"topi\""
-		nil t)
-	       (progn
-		 (setq start (match-beginning 0))
-		 (re-search-forward
-		  "<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"kiji\""
-		  nil t))
-	       (shimbun-end-of-tag "div"))
+	  (if (progn
+		(while (and (re-search-forward "\
+<\\(h[0-9]+\\)[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"topi\""
+					       nil t)
+			    (shimbun-end-of-tag (match-string 1))
+			    (progn
+			      (delete-region (match-end 2) (match-end 0))
+			      (if end
+				  (progn
+				    (goto-char end)
+				    (delete-region end (match-beginning 2))
+				    (insert "</p>\n&#012;\n"))
+				(unless start
+				  (setq start (match-beginning 0)))
+				(delete-region start (match-beginning 2)))
+			      (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"kiji\""
+						 nil t))
+			    (setq end (shimbun-end-of-tag "div"))))
+		end)
 	      (progn
 		(setq retry nil)
 		(insert "\n<!-- End of Kiji -->")
