@@ -214,9 +214,12 @@ list."
 (eval-when-compile (autoload 'ucs-to-char "unicode"))
 
 ;; This might be redefined by w3m-ucs.el.
-(cond ((and (fboundp 'unicode-to-char) ;; XEmacs 21.5 w/ Mule.
+(cond ((and (fboundp 'unicode-to-char) ;; XEmacs 21.5.
 	    (subrp (symbol-function 'unicode-to-char)))
-       (defalias 'w3m-ucs-to-char 'unicode-to-char))
+       (if (featurep 'mule)
+	   (defalias 'w3m-ucs-to-char 'unicode-to-char)
+	 (defun w3m-ucs-to-char (codepoint)
+	   (or (unicode-to-char codepoint) ?~))))
       ((featurep 'mule)
        (defun w3m-ucs-to-char (codepoint)
 	 (if (fboundp 'ucs-to-char) ;; Mule-UCS is loaded.
