@@ -1,3 +1,7 @@
+2007-11-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-yomiuri.el (shimbun-yomiuri-get-top-header): Fix regexp.
+
 2007-10-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-prepare-article): Don't miss the 2nd
