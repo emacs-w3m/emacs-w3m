@@ -3171,16 +3171,6 @@ use `w3m-url-encode-string' instead."
 
 
 ;;; HTML character entity handling:
-(eval-and-compile
-  (unless (fboundp 'w3m-ucs-to-char)
-    (defun w3m-ucs-to-char (codepoint)
-      "A dummy function defined since nothing provided the regular function.
-This function simply returns the arg if it is between 0x20 and 0x7e,
-otherwise returns the tilde character."
-      (if (or (< codepoint 32) (< 127 codepoint))
-	  ?~ ;; unsupported character
-	codepoint))))
-
 (defsubst w3m-entity-value (name)
   "Get a char corresponding to NAME from the html char entities database.
 The database is kept in `w3m-entity-table'."

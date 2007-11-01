@@ -211,11 +211,25 @@ list."
 	(decode-coding-string str coding))
     str))
 
-(when (and (not (fboundp 'w3m-ucs-to-char))
-	   (fboundp 'unicode-to-char)
-	   (subrp (symbol-function 'unicode-to-char)))
+(eval-when-compile (autoload 'ucs-to-char "unicode"))
+
+;; This might be redefined by w3m-ucs.el.
+(if (and (fboundp 'unicode-to-char)
+	 (subrp (symbol-function 'unicode-to-char)))
+    ;; XEmacs 21.5
+    (defalias 'w3m-ucs-to-char 'unicode-to-char)
   (defun w3m-ucs-to-char (codepoint)
-    (unicode-to-char codepoint)))
+    (if (fboundp 'ucs-to-char) ;; Mule-UCS is loaded.
+	(progn
+	  (defalias 'w3m-ucs-to-char
+	    (lambda (codepoint)
+	      (condition-case nil
+		  (or (ucs-to-char codepoint) ?~)
+		(error ?~))))
+	  (w3m-ucs-to-char codepoint))
+      (condition-case nil
+	  (or (int-to-char codepoint) ?~)
+	(error ?~)))))
 
 ;;; Handle images:
 

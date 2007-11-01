@@ -184,9 +184,9 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
 	     ,@source
 	     ,@w3m-ccl-generate-ncr)))))))
 
-(unless (fboundp 'w3m-ucs-to-char)
-  (defun w3m-ucs-to-char (codepoint)
-    (or (decode-char 'ucs codepoint) ?~)))
+;; This might be redefined by w3m-ucs.el.
+(defun w3m-ucs-to-char (codepoint)
+  (or (decode-char 'ucs codepoint) ?~))
 
 (defun w3m-add-local-hook (hook function &optional append)
   "Add to the buffer-local value of HOOK the function FUNCTION."

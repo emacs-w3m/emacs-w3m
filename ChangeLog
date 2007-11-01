@@ -1,3 +1,12 @@
+2007-11-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-ucs-to-char): Alias to unicode-to-char, ucs-to-char,
+	or int-to-char.
+
+	* w3m-ems.el (w3m-ucs-to-char): Always define it.
+
+	* w3m.el (w3m-ucs-to-char): Abolish.
+
 2007-10-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-module-list): Don't compile mew-w3m.el and
