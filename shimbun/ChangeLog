@@ -1,5 +1,7 @@
 2007-11-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-bbc.el (shimbun-bbc-x-face-alist): New.
+
 	* sb-tech-on.el (shimbun-multi-next-url): Fix regexp matching next
 	buttons.
 	(shimbun-clear-contents): Fix regexp matching next buttons to be

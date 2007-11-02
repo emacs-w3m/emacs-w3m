@@ -1,6 +1,7 @@
 ;;; sb-bbc.el --- shimbun backend for BBC UK
 
-;; Copyright (C) 2003, 2004, 2005, 2006 Koichiro Ohba <koichiro@meadowy.org>
+;; Copyright (C) 2003, 2004, 2005, 2006, 2007
+;; Koichiro Ohba <koichiro@meadowy.org>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
 ;; Keywords: news
@@ -63,6 +64,13 @@
     ("week_at-a-glance" . "/week_at-a-glance/rss.xml")
     ("programmes" . "programmes/rss.xml")
     ("latest_stories" . "/latest_published_stories/rss.xml")))
+
+(defvar shimbun-bbc-x-face-alist
+  '(("default" . "\
+Face: iVBORw0KGgoAAAANSUhEUgAAACoAAAAOAgMAAAAkkGboAAAADFBMVEW7uLJ/e2z////09PP
+ b5J9PAAAAjElEQVQI12OYGhqaGRoaBqQSGLJWrZq2atVKIDWBIev/qmnrf63M2v8KyBatmrYwfGW
+ WaByQLeM1beGRlRn+h4BsqahpC5euzNUCqRcEqhFfmfgKxBaIm7aQ9SWELXVp2sK1molgNfJC0xZ
+ +1IToFfWbtjDkZbZoEJB9/tW0Nf9WZm34NQHFDaEItwEAmSVN3A2XO9kAAAAASUVORK5CYII=")))
 
 (defvar shimbun-bbc-groups (mapcar 'car shimbun-bbc-path-alist))
 
