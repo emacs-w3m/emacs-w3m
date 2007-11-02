@@ -1,3 +1,10 @@
+2007-11-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-tech-on.el (shimbun-multi-next-url): Fix regexp matching next
+	buttons.
+	(shimbun-clear-contents): Fix regexp matching next buttons to be
+	removed; remove alignment spec from images.
+
 2007-11-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-yomiuri.el (shimbun-yomiuri-get-top-header): Fix regexp.

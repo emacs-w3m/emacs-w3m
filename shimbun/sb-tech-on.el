@@ -171,7 +171,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAADFBMVEUAAAB/gP+ttr7///8
   (goto-char (point-min))
   (when (re-search-forward "[\t\n ]*\\(?:（[\t\n ]*\\)*<a[\t\n ]+\
 \\(?:[^\t\n >]+[\t\n ]+\\)*href=\"\\([^\"]+\\)\"\
-\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>[\t\n ]*次ページへ[\t\n ]*</a>"
+\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>[\t\n ]*次の?ページへ[\t\n ]*</a>"
 		   nil t)
     (shimbun-expand-url (match-string 1) url)))
 
@@ -212,7 +212,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAADFBMVEUAAAB/gP+ttr7///8
 	       (progn
 		 (setq start (match-end 0))
 		 (re-search-forward "\\(?:</p>\\)?\\([\t\n ]*\
-\\(?:（[\t\n ]*\\)*<a[\t\n ]+[^>]+>[\t\n ]*次ページへ[\t\n ]*</a>\
+\\(?:（[\t\n ]*\\)*<a[\t\n ]+[^>]+>[\t\n ]*次の?ページへ[\t\n ]*</a>\
 \\|\
 \\(?:<[^!>][^>]*>\\)*[\t\n ]*\
 <div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"pagination\"\
@@ -262,6 +262,14 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAADFBMVEUAAAB/gP+ttr7///8
 \\(?:\\(?:<div[\t\n ]+[^>]+>[\t\n ]*</div>\\|<![^>]+>\\)[\t\n ]*\\)+[\t\n ]*"
 				nil t)
 	(replace-match "\n"))
+
+      ;; Remove alignment spec from images.
+      (goto-char (point-min))
+      (while (re-search-forward "\
+\\(<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*align=\"\\)[^\"]+\\(\"[^>]*>[\t\n ]*\
+<img[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*src=\"\\)"
+				nil t)
+	(replace-match "\\1left\\2"))
 
       ;; Insert line-break between text and image.
       (goto-char (point-min))
