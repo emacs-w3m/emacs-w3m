@@ -43,6 +43,12 @@
 (luna-define-method shimbun-index-url ((shimbun shimbun-infoshop))
   shimbun-infoshop-url)
 
+(luna-define-method shimbun-rss-build-message-id :around
+    ((shimbun shimbun-infoshop) url &optional date)
+  (if (string-match "\\?story=\\(.*+\\)$" url)
+      (match-string 1 url)
+    (luna-call-next-method)))
+
 (luna-define-method shimbun-get-headers :around ((shimbun shimbun-infoshop)
 						 &optional range)
   (mapcar
