@@ -5205,9 +5205,6 @@ Tech-On! にログインするためのパスワードです。@code{nil} だと Tech-On
 @item @uref{http://www.welt.de/, Die Welt}
 welt-de.news
 
-@item @uref{http://www.weeklyworldnews.com/news/, Weekly World News}
-weeklyworldnews.news
-
 @item @uref{http://hotwired.goo.ne.jp/, HotWired Japan}
 wired-jp.news wired-jp.business wired-jp.culture wired-jp.technology
 wired-jp.blog.ogura wired-jp.blog.sasaki wired-jp.blog.takahashi

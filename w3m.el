@@ -5682,17 +5682,12 @@ when the URL of the retrieved page matches the REGEXP."
        (concat "<A HREF=" w3m-html-string-regexp ">\\[index\\]</A>")))))
 
 (defun w3m-relationship-oddmuse-estimate (url)
-  (when (string-match "/wiki\\?search=[^\";]*\\(;page=\\([0-9]+\\)\\)?" url)
-    (let ((re "<a href=\"\\(http://[^\"]+?/wiki\\?search=[^\";]*")
-	  (n (match-string 2 url)))
-      (setq n (or (and n (string-to-number n)) 1))
-      (let ((next (concat re ";page=" (number-to-string (1+ n)) "\\)\""))
-	    (prev (cond
-		   ((< 2 n)
-		    (concat re ";page=" (number-to-string (1- n)) "\\)\""))
-		   ((= 2 n)
-		    "<a href=\"\\(http://[^\"]+?/wiki\\?search=[^\"]*\\)\""))))
-	(w3m-relationship-search-patterns url next prev)))))
+  (when (string-match "/wiki\\?search=.*" url)
+    (goto-char (point-min))
+    (and (re-search-forward "href=\"\\([^\"]+\\)\">Previous</a>" nil t)
+         (setq w3m-previous-url (match-string 1)))
+    (and (re-search-forward "href=\"\\([^\"]+\\)\">Next</a>" nil t)
+         (setq w3m-next-url (match-string 1)))))
 
 (defun w3m-relationship-slashdot-estimate (url)
   (goto-char (point-min))
