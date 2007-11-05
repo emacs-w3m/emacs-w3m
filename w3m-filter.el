@@ -56,7 +56,8 @@
      w3m-filter-amazon)
     ("\\`http://mixi\\.jp" w3m-filter-mixi)
     ("\\`http://eow\\.alc\\.co\\.jp/[^/]+/UTF-8" w3m-filter-alc)
-    ("\\`http://www\\.asahi\\.com/" w3m-filter-asahi-shimbun))
+    ("\\`http://www\\.asahi\\.com/" w3m-filter-asahi-shimbun)
+    ("\\`http://imepita\\.jp/[0-9]+/[0-9]+" w3m-filter-imepita))
   "Rules to filter advertisements on WEB sites."
   :group 'w3m
   :type '(repeat
@@ -302,5 +303,17 @@
 	;; 		  curl tmp1 tmp2
 	;; 		  (if (string-match "\\Cj" cword) "JE" "EJ"))))
 	))))
+
+(defun w3m-filter-imepita (url)
+  "JavaScript emulation."
+  (goto-char (point-min))
+  (let (tmp)
+    (when (re-search-forward
+	   (concat "<script><!--\ndocument.write('\\([^\n]*\\)');\r\n//--></script>\n"
+		   "<noscript>.*</noscript>") 
+	   nil t)
+      (setq tmp (match-string 1))
+      (delete-region (match-beginning 0) (match-end 0))
+      (insert tmp))))
 
 ;;; w3m-filter.el ends here
