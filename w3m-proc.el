@@ -349,7 +349,7 @@ otherwise returns nil."
     (let ((start (current-time)))
       (while (or (and (prog2
 			  (discard-input)
-			  (not (sit-for 1))
+			  (not (save-current-buffer (sit-for 1)))
 			(discard-input))
 		      ;; Some input is detected but it may be a key
 		      ;; press event which should be ignored when the
