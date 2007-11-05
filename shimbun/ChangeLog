@@ -1,3 +1,8 @@
+2007-11-05  David Hansen  <david.hansen@gmx.net>
+
+	* sb-infoshop.el (shimbun-rss-build-message-id): Fix format of
+	the Message-Id.
+
 2007-11-03  David Hansen  <david.hansen@gmx.net>
 
 	* sb-infoshop.el (shimbun-rss-build-message-id): New function.
