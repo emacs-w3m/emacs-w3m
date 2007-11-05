@@ -1,3 +1,13 @@
+2007-11-05  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-filter.el (w3m-filter-rules): Add rule for the site of imepita.
+	(w3m-filter-imepita): New function.
+
+2007-11-03  David Hansen  <david.hansen@gmx.net>
+
+	* w3m-proc.el (w3m-process-wait-process): Preserve the current buffer
+	\(work around an Emacs bug\).
+
 2007-11-03  David Hansen  <david.hansen@gmx.net>
 
 	* w3m.el (w3m-relationship-oddmuse-estimate): Follow new page layout.
