@@ -1,3 +1,9 @@
+2007-11-06  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-redisplay-with-charset): Strip first 'about://source/'
+	before setf w3m-arrived-content-charset.
+	(w3m-redisplay-and-reset): Ditto.
+
 2007-11-05  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m-filter.el (w3m-filter-rules): Add rule for the site of imepita.

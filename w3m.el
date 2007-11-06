@@ -8466,7 +8466,11 @@ function (which see)."
   (if (null w3m-current-url)
       (w3m-message "Can't execute this page")
     (setf (w3m-arrived-content-type w3m-current-url) nil)
-    (setf (w3m-arrived-content-charset w3m-current-url) nil)
+    (setf (w3m-arrived-content-charset 
+	   (if (string-match "\\`about://source/" w3m-current-url)
+	       (substring w3m-current-url (match-end 0))
+	     w3m-current-url))
+	  nil)
     (w3m-redisplay-this-page arg)))
 
 (defun w3m-redisplay-with-charset (&optional arg)
@@ -8477,7 +8481,10 @@ decoding the page is used.  The prefix argument ARG is passed to the
   (interactive "P")
   (if (null w3m-current-url)
       (w3m-message "Can't execute the command")
-    (setf (w3m-arrived-content-charset w3m-current-url)
+    (setf (w3m-arrived-content-charset
+	   (if (string-match "\\`about://source/" w3m-current-url)
+	       (substring w3m-current-url (match-end 0))
+	     w3m-current-url))
 	  (w3m-read-content-charset
 	   (format "Content-charset (current %s, default reset): "
 		   w3m-current-coding-system)))
