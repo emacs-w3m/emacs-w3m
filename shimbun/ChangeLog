@@ -1,3 +1,11 @@
+2007-11-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-aljazeera.el (shimbun-aljazeera-x-face-alist): New variable.
+
+2007-11-09  David Hansen  <david.hansen@gmx.net>
+
+	* sb-aljazeera.el: New file.
+
 2007-11-05  David Hansen  <david.hansen@gmx.net>
 
 	* sb-infoshop.el (shimbun-rss-build-message-id): Fix format of

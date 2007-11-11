@@ -5083,6 +5083,11 @@ gendai-net.wadai gendai-net.kenko gendai-net.syoku gendai-net.book
 @samp{Shimbun} ライブラリが対応しているニュースサイトです。
 
 @table @asis
+@item @uref{http://english.aljazeera.net/, Al Jazeera}
+aljazeera.news aljazeera.africa aljazeera.america aljazeera.asia-pacific
+aljazeera.central-asia aljazeera.europe aljazeera.middle-east
+aljazeera.focus aljazeera.business aljazeera.sport aljazeera.programmes
+
 @item @uref{http://news.com.com/, CNET}
 cnet.news cnet.enterprise.software cnet.enterprise.hardware
 cnet.security cnet.networking cnet.personal.technology cnet.newsmakers
