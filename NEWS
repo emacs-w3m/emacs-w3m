@@ -207,7 +207,8 @@ encoded).  Use the `shimbun-SERVER-url-coding-system' variable per
 server.
 
 ** New shimbun modules have been added.
-sb-nytimes.el sb-tech-on.el sb-gendai-net.el sb-ohmynews-jp.el
+sb-aljazeera.el sb-nytimes.el sb-tech-on.el sb-gendai-net.el
+sb-ohmynews-jp.el
 
 ** Some shimbun modules are being well-maintained but others aren't.
 Volunteers welcome!

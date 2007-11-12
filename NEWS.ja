@@ -205,7 +205,8 @@ sb-yomiuri-html.el $B$O$d$d5l<0$K$J$C$F$$$^$9!#$9$Y$F$N(B shimbun $B%b%8%e!<
 `shimbun-SERVER-url-coding-system' $BJQ?t$r%5!<%P!<$4$H$K;H$C$F2<$5$$!#(B
 
 ** $B?7$7$$(B shimbun $B%b%8%e!<%k$,DI2C$5$l$^$7$?!#(B
-sb-nytimes.el sb-tech-on.el sb-gendai-net.el sb-ohmynews-jp.el
+sb-aljazeera.el sb-nytimes.el sb-tech-on.el sb-gendai-net.el
+sb-ohmynews-jp.el
 
 ** $B$$$/$D$+$N(B shimbun $B%b%8%e!<%k$ONI$/%a%s%F$5$l$F$$$^$9$,B>$OH]!#(B
 $B%\%i%s%F%#%"4?7^(B!
