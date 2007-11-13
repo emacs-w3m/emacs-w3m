@@ -219,11 +219,15 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAGFBMVEX///8An/8Vb38CnwB
 			     (match-end 0))) ;; Previous search result
 	       (re-search-forward "\
 \\(<div[\t\n ]\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"newslistNumber\"\\)\
-\\|<h[0-9]+>[\t\n ]*このニュースの写真[\t\n ]*</h[0-9]+>\
-\\|<script[\t\n ]"
+\\|\\(<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"RelatedImg\"\\)\
+\\|\\(?:[\t\n 　]*<\\(?:/div\\|/?p\\)>\\)*[\t\n 　]*<script[\t\n ]"
 				  nil t)))
 	(progn
-	  (setq end (match-beginning 0))
+	  (setq end (or (and (match-beginning 2)
+			     (save-match-data
+			       (and (shimbun-end-of-tag "div")
+				    (match-end 0))))
+			(match-beginning 0)))
 	  (when (prog1
 		    (and (match-beginning 1)
 			 (shimbun-end-of-tag "div")
@@ -234,13 +238,6 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAGFBMVEX///8An/8Vb38CnwB
 	    (goto-char start)
 	    (insert "&#012;\n")) ;; Page delimiter.
 	  (delete-region (point-min) start)
-
-	  ;; Remove related images.
-	  (goto-char (point-min))
-	  (while (and (re-search-forward "<div[\t\n ]+id=\"RelatedImg\""
-					 nil t)
-		      (shimbun-end-of-tag "div" t))
-	    (replace-match "\n"))
 
 	  ;; Preserve links to related news or topics.
 	  (goto-char (point-min))
