@@ -1,3 +1,11 @@
+2007-11-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nikkei.el (shimbun-nikkei-get-headers-kansai): Update regexps.
+	(shimbun-nikkei-prepare-article-kansai): Rewrite.
+	(shimbun-nikkei-prepare-article-default-0)
+	(shimbun-nikkei-prepare-article-default)
+	(shimbun-nikkei-prepare-article-sports): Don't miss images.
+
 2007-11-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-clear-contents): Don't remove related

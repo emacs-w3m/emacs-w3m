@@ -683,22 +683,11 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 
 (defun shimbun-nikkei-get-headers-kansai (group folder shimbun range)
   "Function used to fetch headers for the kansai group."
-  (let ((date (if (re-search-forward
-		   (eval-when-compile
-		     (let ((s0 "[\t\n ]*")
-			   (s1 "[\t\n ]+"))
-		       (concat "class=\"date\"><strong>" s0
-			       ;; 1. year
-			       "\\(20[0-9][0-9]\\)"
-			       "年"
-			       ;; 2. month
-			       "\\([01]?[0-9]\\)"
-			       "月"
-			       ;; 3. day
-			       "\\([0-3]?[0-9]\\)"
-			       "日" s0 "([^<]+)"
-			       s0 "</strong></td>")))
-		   nil t)
+  (let ((date (if (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"topicpath[\t\n ]+updatetime\"\
+\[^>]*>[\t\n ]*\\(20[0-9][0-9]\\)/\\([01]?[0-9]\\)/\\([0-3]?[0-9]\\)\
+\[\t\n 　]+更新[\t\n ]*</div>"
+				     nil t)
 		  (prog1
 		      (shimbun-make-date-string
 		       (string-to-number (match-string 1))
@@ -712,35 +701,20 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			  (substring cts 4 7)
 			  (substring cts 20)))))
 	headers)
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((s0 "[\t\n ]*")
-		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"\\./"
-			;; 1. url
-			"\\([^\"<>]+/"
-			;; 2. serial number
-			"\\([^\t\n ]+\\)"
-			"\\)"
-			s0 "-frame" s0 "\\.html"
-			s0 "\">" s0
-			;; 3. subject
-			"\\([^<]*\\(?:\\(?:<[^>]+>\\)?[^<]+\\)+"
-			"\\(?:<[^>]+>\\)?\\)"
-			s0 "</a>")))
-	    nil t)
+    (while (re-search-forward "<a[\t\n ]+href=\"\
+\\(news/\\(news[0-9]+\\)\\.html\\)\">[\t\n ]*\\([^<]+\\)[\t\n ]*</a>"
+			      nil t)
       (push (shimbun-create-header
 	     0
 	     (match-string 3)
 	     shimbun-nikkei-from-address
 	     date
 	     (concat "<" (shimbun-subst-char-in-string
-			  ?/ ?. (downcase (match-string 1)))
+			  ?/ ?. (downcase (match-string 2)))
 		     "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
-	     (shimbun-nikkei-expand-url (concat (match-string 1) ".html")
-					folder))
+	     (shimbun-nikkei-expand-url (match-string 1) folder))
 	    headers))
     headers))
 
@@ -1746,6 +1720,16 @@ Please visit <a href=\""
 	      (replace-match "<img src=\"\\1\""))
 	    (goto-char (point-min)))
 	(goto-char body))
+      (goto-char (point-min))
+      (if (and (re-search-forward "<table[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
+\\(?:class=\"photo\\|summary=\"写真\\)"
+				  nil t)
+	       (shimbun-end-of-tag "table" t))
+	  (progn
+	    (delete-region (match-end 3) body)
+	    (insert "\n")
+	    (goto-char (match-beginning 3)))
+	(goto-char body))
       (insert shimbun-nikkei-content-start)
       t)))
 
@@ -1776,12 +1760,33 @@ Please visit <a href=\""
 				  nil t)
 	       (prog1 nil (goto-char (point-min)))))
 	 (when (re-search-forward "\
-<[^>]*[\t\n ]+summary=\"写真ニュース\"[^>]*>\\(?:[\t\n ]*<[^\t\n >]+>\\)*\
-\[\t\n ]*\
+\\(<!-+[\t\n ]*Photo[\t\n _]+news[\t\n ]*-+>[\t\n ]*\\)\
+\\|<\\([^\t\n >]+\\)[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
+\\(?:class=\"photo\"\\|summary=\"写真ニュース\"\\)[^>]*>[\t\n ]*\
 \\|<!-+[\t\n ]*FJZONE[\t\n ]+START[\t\n ]+NAME[\t\n ]*\
-=[\t\n ]*\"[\t\n ]*HONBUN[\t\n ]*\"[\t\n ]*-+>"
+=[\t\n ]*\"[\t\n ]*HONBUN[\t\n ]*\"[\t\n ]*-+>[\t\n ]*"
 				  nil t)
-	   (setq start (match-end 0))
+	   (let (st nd)
+	     (if (and (or (and (match-beginning 1)
+			       (progn
+				 (setq st (match-end 1))
+				 (re-search-forward "\
+\[\t\n ]*<!-+[\t\n ]*/Photo[\t\n _]news[\t\n ]*-+>"
+						    nil t)
+				 (setq nd (match-beginning 0))))
+			  (and (match-beginning 2)
+			       (shimbun-end-of-tag (match-string 2) t)
+			       (setq st (match-beginning 3)
+				     nd (match-end 3))))
+		      (re-search-forward "\
+<!-+[\t\n ]*FJZONE[\t\n ]+START[\t\n ]+NAME[\t\n ]*=[\t\n ]*\"HONBUN\"[\t\n ]*\
+-+>[\t\n ]*"
+					 nil t))
+		 (progn
+		   (setq start st)
+		   (delete-region nd (match-end 0))
+		   (insert "\n"))
+	       (setq start (match-end 0))))
 	   (or (re-search-forward "\\(?:[\t\n ]*<[^/][^>]*>\\)*[\t\n ]*\
 <!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME[\t\n ]*\
 =[\t\n ]*\"[\t\n ]*HONBUN[\t\n ]*\"[\t\n ]*-+>"
@@ -1881,20 +1886,27 @@ Please visit <a href=\""
       (insert shimbun-nikkei-content-end)
       t)))
 
-(defun shimbun-nikkei-prepare-article-kansai (&rest args)
+(defun shimbun-nikkei-prepare-article-kansai (header)
   "Function used to prepare contents of an article for the kansai group."
-  (when (re-search-forward "\
-<td[\t\n ]+colspan=\"2\"[\t\n ]+class=\"textm\">"
-			   nil t)
-    (insert shimbun-nikkei-content-start)
-    (when (re-search-forward "[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*\\(\
-<!-+[\t\n ]*\\*+[\t\n ]*\\(?:main[\t\n ]+end\\|footer[\t\n ]+begin\\)[\t\n ]*\
-\\*+[\t\n ]*-+>\
-\\|<table[\t\n ]+border=\"0\"[\t\n ]+cellspacing=\
-\"0\"[\t\n ]+cellpadding=\"0\"[\t\n ]+width=\"720\">\\)"
-			     nil t)
-      (goto-char (match-beginning 0))
-      (insert shimbun-nikkei-content-end)
+  (let ((date (when (re-search-forward "[\t\n ]*\
+\\(20[0-9][0-9]\\)/\\([01]?[0-9]\\)/\\([0-3][0-9]\\)[\t\n ]*配信[\t\n ]*<"
+				       nil t)
+		(prog1
+		    (shimbun-nikkei-make-date-string
+		     (string-to-number (match-string 1))
+		     (string-to-number (match-string 2))
+		     (string-to-number (match-string 3)))
+		  (goto-char (point-min))))))
+    (when (and (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"detailframe\\(?: clearfix\"\\)?"
+				  nil t)
+	       (shimbun-end-of-tag "div" t))
+      (goto-char (match-end 3))
+      (insert "\n" shimbun-nikkei-content-end)
+      (goto-char (match-beginning 3))
+      (insert shimbun-nikkei-content-start)
+      (when date
+	(shimbun-header-set-date header date))
       t)))
 
 (defun shimbun-nikkei-prepare-article-default3 (&rest args)
@@ -1937,8 +1949,28 @@ class=\"column\"\\(?:[\t\n ]+[^>]+\\)*>"
 (defun shimbun-nikkei-prepare-article-sports (&rest args)
   "Function used to prepare contents of an article for the sports group."
   (when (re-search-forward "\
-<!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"MIDASHI\"[\t\n ]*-+>"
+<\\([^\t\n >]+\\)[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
+\\(?:class=\"photo\"\\|summary=\"写真ニュース\"\\)[^>]*>[\t\n ]*\
+\\|<!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"MIDASHI\"[\t\n ]*-+>[\t\n ]*"
 			   nil t)
+    (let ((start (match-end 0))
+	  st nd)
+      (if (and (match-beginning 1)
+	       (progn
+		 (goto-char (match-beginning 1))
+		 (shimbun-end-of-tag (match-string 1) t))
+	       (progn
+		 (setq st (match-beginning 3)
+		       nd (match-end 3))
+		 (re-search-forward "\
+<!-+[\t\n ]*FJZONE[\t\n ]+START[\t\n ]+NAME[\t\n ]*=[\t\n ]*\"HONBUN\"[\t\n ]*\
+-+>[\t\n ]*"
+				    nil t)))
+	  (progn
+	    (delete-region nd (match-end 0))
+	    (insert "\n")
+	    (goto-char st))
+	(goto-char start)))
     (insert shimbun-nikkei-content-start)
     (when (re-search-forward "\
 <!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-+>"
