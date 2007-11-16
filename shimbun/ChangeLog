@@ -1,3 +1,8 @@
+2007-11-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nikkei.el (shimbun-make-contents): Remove garbage; break long
+	lines.
+
 2007-11-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nikkei.el (shimbun-nikkei-get-headers-kansai): Update regexps.

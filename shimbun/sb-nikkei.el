@@ -1673,8 +1673,38 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 			      nil t)
       (delete-region (match-beginning 0) (match-end 0)))
     (goto-char (point-min))
-    (unless (and (fboundp fn)
-		 (funcall fn header))
+    (if (and (fboundp fn)
+	     (funcall fn header))
+	(shimbun-with-narrowed-article
+	 shimbun
+	 ;; Remove <center> tags surrounding images.
+	 (while (and (search-forward "<center>" nil t)
+		     (progn
+		       (backward-char 1)
+		       (shimbun-end-of-tag "center" t))
+		     (save-match-data
+		       (re-search-backward "<img[\t\n ]+"
+					   (match-beginning 2) t)))
+	   (replace-match "\\3"))
+	 ;; Remove useless tags around images.
+	 (goto-char (point-min))
+	 (while (re-search-forward "[\t\n ]*\
+\\(?:<\\(?:\\(?:/?div\\|/?p\\|/?td\\|/?tr\\)\\(?:[\t\n ]*\\|[\t\n ]+[^>]+\\)\
+\\|![^>]+\\)>[\t\n ]*\\)+\
+\\(<img[\t\n ]+[^>]+>\\)[\t\n ]*\
+\\(?:<\\(?:\\(?:/?div\\|/?p\\|/?td\\|/?tr\\)\\(?:[\t\n ]*\\|[\t\n ]+[^>]+\\)\
+\\|![^>]+\\)>[\t\n ]*\\)+"
+				   nil t)
+	   (replace-match "\n\\1<br>\n"))
+	 ;; Remove trailing garbage.
+	 (goto-char (point-min))
+	 (when (re-search-forward "[\t\n ]*\
+\\(?:<\\(?:\\(?:/?div\\|/?p\\)\\(?:[\t\n ]*\\|[\t\n ]+[^>]+\\)\\|![^>]+\\)>\
+\[\t\n ]*\\)+\\'"
+				  nil t)
+	   (replace-match "\n"))
+	 ;; Break long lines.
+	 (shimbun-break-long-japanese-lines))
       (erase-buffer)
       (insert "<html><body>\
 Couldn't extract the body for this article.<br>\
