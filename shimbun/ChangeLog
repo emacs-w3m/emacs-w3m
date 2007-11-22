@@ -1,7 +1,7 @@
 2007-11-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nytimes.el (shimbun-nytimes-retry-fetching): New variable.
-	(shimbun-clear-contents): Don't retry etching contents here.
+	(shimbun-clear-contents): Don't retry fetching contents here.
 
 	* shimbun.el (retry-fetching): New shimbun class.
 	(shimbun-fetch-url): Retry fetching contents according to
