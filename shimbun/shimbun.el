@@ -97,7 +97,9 @@
 			  japanese-hankaku
 			  ;; Coding system for encoding URIs when
 			  ;; accessing the server.
-			  url-coding-system))
+			  url-coding-system
+			  ;; Number of times to retry fetching contents.
+			  retry-fetching))
   (luna-define-internal-accessors 'shimbun))
 
 (defgroup shimbun nil
@@ -231,18 +233,30 @@ This function is exacly similar to `shimbun-retrieve-url', but
 considers the `coding-system' slot of SHIMBUN when estimating a
 coding system of retrieved contents and the `url-coding-system'
 slot of SHIMBUN to encode URL."
-  (if (shimbun-coding-system-internal shimbun)
-      (let ((w3m-coding-system-priority-list
-	     (cons (shimbun-coding-system-internal shimbun)
-		   w3m-coding-system-priority-list)))
-	(inline
-	  (shimbun-retrieve-url url no-cache no-decode referer
-				(or
-				 (shimbun-url-coding-system-internal shimbun)
-				 (shimbun-coding-system-internal shimbun)))))
-    (inline
-      (shimbun-retrieve-url url no-cache no-decode referer
-			    (shimbun-url-coding-system-internal shimbun)))))
+  (let* ((coding (shimbun-coding-system-internal shimbun))
+	 (w3m-coding-system-priority-list
+	  (if coding
+	      (cons coding w3m-coding-system-priority-list)
+	    w3m-coding-system-priority-list))
+	 (retry (shimbun-retry-fetching-internal shimbun)))
+    (setq coding (or (shimbun-url-coding-system-internal shimbun) coding))
+    (save-restriction
+      (narrow-to-region (point) (point))
+      (or (inline (shimbun-retrieve-url url no-cache no-decode referer coding))
+	  (and retry
+	       (let (retval)
+		 (shimbun-message
+		  shimbun "shimbun: Retrying to fetch contents...")
+		 (while (and (> retry 0) (not retval))
+		   (delete-region (point-min) (point-max))
+		   (setq retval (inline
+				  (shimbun-retrieve-url
+				   url no-cache no-decode referer coding))
+			 retry (1- retry)))
+		 (shimbun-message shimbun
+				  "shimbun: Retrying to fetch contents...%s"
+				  (if retval "done" "failed"))
+		 retval))))))
 
 (defun shimbun-real-url (url &optional no-cache)
   "Return a real URL."
@@ -615,14 +629,16 @@ image parts, and returns an alist of URLs and image entities."
 	(with-temp-buffer
 	  (set-buffer-multibyte nil)
 	  (setq type (shimbun-fetch-url shimbun url nil t base-url))
-	  (when (or (and type (string-match "\\`image/" type))
-		    ;; headlines.yahoo.co.jp often specifies it mistakenly.
-		    (and (string-match "\\.\\(gif\\|jpe?g\\|png\\)\\'" url)
-			 (setq type (cdr (assoc (match-string 1 url)
-						'(("gif" . "image/gif")
-						  ("jpeg" . "image/jpeg")
-						  ("jpg" . "image/jpeg")
-						  ("png" . "image/png")))))))
+	  (when (and
+		 type
+		 (or (string-match "\\`image/" type)
+		     ;; headlines.yahoo.co.jp often specifies it mistakenly.
+		     (and (string-match "\\.\\(gif\\|jpe?g\\|png\\)\\'" url)
+			  (setq type (cdr (assoc (match-string 1 url)
+						 '(("gif" . "image/gif")
+						   ("jpeg" . "image/jpeg")
+						   ("jpg" . "image/jpeg")
+						   ("png" . "image/png"))))))))
 	    (push (setq img (cons url
 				  (shimbun-make-image-entity
 				   type
@@ -782,7 +798,7 @@ you want to use no database."
   '(url groups coding-system server-name from-address
 	content-start content-end x-face-alist expiration-days
 	prefer-text-plain text-content-start text-content-end
-	japanese-hankaku url-coding-system))
+	japanese-hankaku url-coding-system retry-fetching))
 
 (defun shimbun-open (server &optional mua)
   "Open a shimbun for SERVER.

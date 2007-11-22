@@ -219,6 +219,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
   (nth 2 (assoc (shimbun-current-group-internal shimbun)
 		shimbun-nytimes-group-table)))
 
+(defvar shimbun-nytimes-retry-fetching 1)
+
 (defvar shimbun-nytimes-next-url nil
   "Url of the next page that is about to fetch.")
 
@@ -247,20 +249,6 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-nytimes)
 						    header)
   (or (shimbun-nytimes-clear-contents shimbun header)
-      ;; Retry fetching article.
-      (progn
-	(shimbun-message shimbun "shimbun: Retrying to fetch contents...")
-	(erase-buffer)
-	(shimbun-fetch-url shimbun (or shimbun-nytimes-next-url
-				       (shimbun-header-xref header)))
-	(if (shimbun-nytimes-clear-contents shimbun header)
-	    (progn
-	      (shimbun-message shimbun
-			       "shimbun: Retrying to fetch contents...done")
-	      t)
-	  (shimbun-message shimbun
-			   "shimbun: Retrying to fetch contents...failed")
-	  nil))
       (progn
 	(erase-buffer)
 	(insert "<html><body><i>This article may have been expired,\
