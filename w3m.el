@@ -1432,11 +1432,15 @@ This variable can take one of the following five kinds of forms:
 
 (defcustom w3m-use-japanese-menu
   (and (equal "Japanese" w3m-language)
-       ;; Emacs 21 doesn't seem to support non-ASCII text
-       ;; in the popup menu.
-       (or (>= emacs-major-version 22)
-	   (featurep 'xemacs)
-	   (featurep 'meadow)))
+       ;; Emacs 21, XEmacs 21.4 and SXEmacs don't seem to support
+       ;; non-ASCII text in the popup menu.
+       (not (featurep 'sxemacs))
+       (if (featurep 'xemacs)
+	   (or (> emacs-major-version 21)
+	       (and (= emacs-major-version 21)
+		    (>= emacs-minor-version 5)))
+	 (or (>= emacs-major-version 22)
+	     (featurep 'meadow))))
   "Non-nil means use Japanese characters for Menu if possible."
   :group 'w3m
   :type 'boolean)
@@ -2545,6 +2549,7 @@ db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?\\'\
   "Regexp matching urls which aren't stored in the history.")
 
 (defvar w3m-mode-map nil "Keymap for emacs-w3m buffers.")
+(defvar w3m-link-map nil "Keymap used on links.")
 
 (defvar w3m-mode-setup-functions nil
   "Hook functions run after setting up the `w3m-mode'.")
@@ -3342,7 +3347,8 @@ The database is kept in `w3m-entity-table'."
 					   'mouse-face 'highlight
 					   'w3m-anchor-sequence hseq
 					   'help-echo help
-					   'balloon-help balloon))
+					   'balloon-help balloon
+					   'keymap w3m-link-map))
 	    (when (w3m-imitate-widget-button)
 	      (require 'wid-edit)
 	      (let ((widget-button-face (if (w3m-arrived-p href)
@@ -4180,7 +4186,7 @@ BUFFER is nil, all contents will be inserted in the current buffer."
   (when default
     (setq default (file-name-nondirectory (w3m-url-strip-query default))))
   (unless prompt
-    (setq prompt (if default
+    (setq prompt (if (and default (not (string-equal default "")))
 		     (format "Save to (%s): " default)
 		   "Save to: ")))
   (setq dir (file-name-as-directory (or dir w3m-default-save-directory)))
@@ -7389,6 +7395,45 @@ or a list which consists of the following elements:
     (select-window (posn-window (event-start event)))
     (setq w3m-tab-button-menu-current-buffer nil)
     (popup-menu w3m-tab-button-menu)))
+
+(unless w3m-link-map
+  (setq w3m-link-map (make-sparse-keymap))
+  (cond ((featurep 'xemacs)
+	 (define-key w3m-link-map [(button3)] 'w3m-link-menu))
+	;; Don't use [mouse-3], which gets submenus not working in GTK Emacs.
+	((featurep 'gtk)
+	 (define-key w3m-link-map [down-mouse-3] 'w3m-link-menu)
+	 (define-key w3m-link-map [drag-mouse-3] 'undefined)
+	 (define-key w3m-link-map [mouse-3] 'undefined))
+	(t
+	 (define-key w3m-link-map [mouse-3] 'w3m-link-menu))))
+
+(easy-menu-define w3m-link-menu w3m-link-map "w3m link menu."
+  `(,(if (or (featurep 'xemacs)
+	     (< emacs-major-version 22))
+	 "Link")
+    [,(w3m-make-menu-item "リンクをこのセッションで開く"
+			  "Open Link in This Session")
+     w3m-view-this-url]
+    [,(w3m-make-menu-item "リンクを新しいセッションで開く"
+			  "Open Link In New Session")
+     w3m-view-this-url-new-session]
+    "-"
+    [,(w3m-make-menu-item "このリンクをブックマーク..."
+			  "Bookmark This Link...")
+     w3m-bookmark-add-this-url]
+    [,(w3m-make-menu-item "名前を付けてリンク先を保存..."
+			  "Save Link As...")
+     w3m-download-this-url]
+    [,(w3m-make-menu-item "リンクの URL をコピー"
+			  "Copy Link Location")
+     w3m-print-this-url]))
+
+(defun w3m-link-menu (event)
+  "Pop up a link menu."
+  (interactive "e")
+  (mouse-set-point event)
+  (popup-menu w3m-link-menu))
 
 (defun w3m-mode ()
   "Major mode for browsing web.
