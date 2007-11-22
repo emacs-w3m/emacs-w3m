@@ -1,3 +1,12 @@
+2007-11-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-use-japanese-menu): Default to nil for XEmacs 21.4 and
+	SXEmacs.
+	(w3m-link-map): New variable.
+	(w3m-fontify-anchors): Add menu to links.
+	(w3m-read-file-name): Don't use default file name if it is "".
+	(w3m-link-menu): Define.
+
 2007-11-06  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m.el (w3m-redisplay-with-charset): Strip first 'about://source/'

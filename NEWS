@@ -49,6 +49,9 @@ Which type of icons to use is controlled by the variable
 
 * Changes in tabs, sessions, and menu
 
+** A handy menu now pops up by clicking mouse-3 on links.
+It doesn't work on tty of course, though.
+
 ** Tabs now have useful menu succeeding to Firefox+TabMixPlus' way.
 You can pop the menu up by a Mouse-3 click on a tab, and may also see
 the key bindings of those menu items.  The menu is also available in
