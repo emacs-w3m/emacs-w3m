@@ -206,6 +206,11 @@ encoded by the charset by which the page containing the links has been
 encoded).  Use the `shimbun-SERVER-url-coding-system' variable per
 server.
 
+** New shimbun class variable `shimbun-retry-fetching'.
+When fetching contents of a url fails, shimbun retries it up to that
+number of times if it is a positive number.  Use the variable
+`shimbun-SERVER-retry-fetching' per server.
+
 ** New shimbun modules have been added.
 sb-aljazeera.el sb-nytimes.el sb-tech-on.el sb-gendai-net.el
 sb-ohmynews-jp.el

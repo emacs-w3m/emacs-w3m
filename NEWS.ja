@@ -204,6 +204,11 @@ sb-yomiuri-html.el はやや旧式になっています。すべての shimbun モジュー
 $B含むページをエンコードしたときに使った文字セットでエンコードされます)。
 `shimbun-SERVER-url-coding-system' 変数をサーバーごとに使って下さい。
 
+** 新しい shimbun クラス変数 `shimbun-retry-fetching'。
+コンテンツの取得に失敗したとき、それが正の数だったら shimbun はその回
+数までリトライします。`shimbun-SERVER-retry-fetching' 変数をサーバーご
+とに使って下さい。
+
 ** 新しい shimbun モジュールが追加されました。
 sb-aljazeera.el sb-nytimes.el sb-tech-on.el sb-gendai-net.el
 sb-ohmynews-jp.el
