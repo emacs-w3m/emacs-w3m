@@ -2477,6 +2477,11 @@ variable instead.
 @vindex w3m-command-environment
 Alist of environment variables for subprocesses to inherit.
 
+@item w3m-confirm-leaving-secure-page
+@vindex w3m-confirm-leaving-secure-page
+If non-@code{nil}, you'll be asked for confirmation when leaving secure
+pages.  The default value is @code{t}.
+
 @item w3m-content-type-alist
 @vindex w3m-content-type-alist
 Alist of file suffixes and content types.
