@@ -1,3 +1,7 @@
+2007-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-proc.el: Update the way to suppress compile warning for gensym.
+
 2007-11-26  Trent W. Buck  <trentbuck@gmail.com>
 
 	* w3m.el (w3m-confirm-leaving-secure-page): New user option.

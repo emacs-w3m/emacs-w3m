@@ -781,11 +781,15 @@ prompt."
 ;; Silence the byte compiler complaining against `gensym' like:
 ;; "Warning: the function `gensym' might not be defined at runtime."
 (eval-when-compile
-  (let ((g (condition-case nil
-	       (assq 'gensym byte-compile-unresolved-functions)
-	     (error nil))))
-    (setq byte-compile-unresolved-functions
-	  (delq g byte-compile-unresolved-functions))))
+  (and (boundp 'byte-compile-unresolved-functions)
+       (fboundp 'gensym)
+       (symbol-file 'gensym)
+       (string-match "/cl-macs\\.el[^/]*\\'" (symbol-file 'gensym))
+       (condition-case nil
+	   (setq byte-compile-unresolved-functions
+		 (delq (assq 'gensym byte-compile-unresolved-functions)
+		       byte-compile-unresolved-functions))
+	 (error))))
 
 (provide 'w3m-proc)
 
