@@ -1,3 +1,8 @@
+2007-11-26  Trent W. Buck  <trentbuck@gmail.com>
+
+	* w3m.el (w3m-confirm-leaving-secure-page): New user option.
+	(w3m-retrieve-and-render): Use it.
+
 2007-11-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-use-japanese-menu): Default to nil for XEmacs 21.4 and
