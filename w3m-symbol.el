@@ -1,6 +1,6 @@
 ;;; w3m-symbol.el --- Stuffs to replace symbols for emacs-w3m -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2002, 2003, 2004, 2005, 2006
+;; Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007
 ;; ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
 
 ;; Author: ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
@@ -33,7 +33,8 @@
 (eval-when-compile
   (defvar w3m-output-coding-system)
   (defvar w3m-language)
-  (defvar w3m-use-symbol))
+  (defvar w3m-use-symbol)
+  (autoload 'w3m-mule-unicode-p "w3m"))
 
 (defgroup w3m-symbol nil
   "Symbols for w3m"
