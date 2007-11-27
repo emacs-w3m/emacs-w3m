@@ -65,7 +65,8 @@
     "blog.editors"))
 
 (defvar shimbun-cnet-jp-server-name "CNET Networks,Inc.")
-(defvar shimbun-cnet-jp-content-start "<div class=\"leaf_body\">")
+(defvar shimbun-cnet-jp-content-start
+  "<div class=\"\\(?:leaf\\|article\\)_body\\(?: \\(?:article\\|leaf\\)_body\\)?\">")
 (defvar shimbun-cnet-jp-content-end
   "\\(<div \\(class=\"article_footer\"\\|id=\"bubble_tooltip\"\\)>\\|\
 <!--h3>トラックバック一覧</h3-->\\)")

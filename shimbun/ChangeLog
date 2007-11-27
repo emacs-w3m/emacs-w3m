@@ -1,3 +1,7 @@
+2007-11-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* sb-cnet-jp.el (shimbun-cnet-jp-content-start): Relaxed.
+
 2007-11-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nytimes.el (shimbun-nytimes-retry-fetching): New variable.
