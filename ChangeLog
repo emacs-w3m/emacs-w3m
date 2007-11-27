@@ -1,3 +1,9 @@
+2007-11-27  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-toggle-inline-images-internal): Confirm retrieving
+	non-secure image.
+	(w3m-resize-inline-image-internal): Ditto.
+
 2007-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>,
 	    TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
