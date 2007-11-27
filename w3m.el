@@ -3600,7 +3600,7 @@ resizing an image."
 				   (progn (insert image) (point))
 				   '(w3m-image-dummy t
 						     w3m-image "dummy")))
-      (when (and iurl
+      (when (and (w3m-url-valid iurl)
 		 (or (not w3m-current-ssl)
 		     (string-match "\\`\\(?:ht\\|f\\)tps://" iurl)
 		     (y-or-n-p "You are retrieving non-secure image. Continue?")))
