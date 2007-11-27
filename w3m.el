@@ -5456,7 +5456,10 @@ be displayed especially in shimbun articles."
   (w3m-rendering-extract-title))
 
 (defcustom w3m-confirm-leaving-secure-page t
-  "If non-nil, you'll be asked for confirmation when leaving secure pages."
+  "If non-nil, you'll be asked for confirmation when leaving secure pages.
+It is STRONGLY recommended to set non-nil value to this option.
+You MUST understand what you want to do completely before
+switching off this option."
   :group 'w3m
   :type 'boolean)
 
@@ -5469,10 +5472,21 @@ a new content is retrieved in the buffer, the HANDLER function will be
 called with t as an argument.  Otherwise, it will be called with nil."
   (unless (and w3m-current-ssl
 	       w3m-confirm-leaving-secure-page
-	       (not (string-match "\\`\\(?:ht\\|f\\)tps://" url))
-	       (not (prog1
+	       ;; Permit leaving safe pages without confirmation for
+	       ;; several safe commands.  For more detail of
+	       ;; definition of safe commands, see the thread
+	       ;; beginning at [emacs-w3m:09767].
+	       (not
+		(or (memq this-command
+			  '(w3m
+			    w3m-goto-url w3m-redisplay-this-page
+			    w3m-reload-this-page w3m-history
+			    w3m-view-next-page w3m-view-previous-page
+			    w3m-view-header w3m-view-source))
+		    (string-match "\\`\\(?:ht\\|f\\)tps://" url)
+		    (prog1
 			(y-or-n-p "You are leaving secure page.  Continue? ")
-		      (message nil))))
+		      (message nil)))))
     (lexical-let ((url (w3m-url-strip-fragment url))
 		  (charset charset)
 		  (page-buffer (current-buffer))

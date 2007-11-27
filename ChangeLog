@@ -1,3 +1,9 @@
+2007-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>,
+	    TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-retrieve-and-render): Permit leaving safe pages without
+	confirmation for several safe commands.
+
 2007-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-symbol.el: Autoload w3m-mule-unicode-p when compiling.
