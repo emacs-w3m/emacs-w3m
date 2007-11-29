@@ -119,11 +119,12 @@
 	     utf-8)
 	    ("google news-en"
 	     "http://news.google.com/news?hl=en&q=%s")))
-	 '(("google news"
-	    "http://news.google.com/news?q=%s")
-	   ("google news-ja"
-	    "http://news.google.co.jp/news?hl=ja&ie=Shift_JIS&q=%s&oe=Shift_JIS"
-	    shift_jis)))
+	 (t
+	  '(("google news"
+	     "http://news.google.com/news?q=%s")
+	    ("google news-ja"
+	     "http://news.google.co.jp/news?hl=ja&ie=Shift_JIS&q=%s&oe=Shift_JIS"
+	     shift_jis))))
       ("google groups"
        "http://groups.google.com/groups?q=%s")
       ,@(if ja

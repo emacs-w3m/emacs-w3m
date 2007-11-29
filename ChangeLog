@@ -1,5 +1,7 @@
 2007-11-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-search.el (w3m-search-engine-alist): Fix google news entry.
+
 	* w3m-ems.el (w3m-create-image): Parse image data if it failed in
 	identifying type.
 
