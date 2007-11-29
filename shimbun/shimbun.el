@@ -629,9 +629,11 @@ image parts, and returns an alist of URLs and image entities."
 	(with-temp-buffer
 	  (set-buffer-multibyte nil)
 	  (setq type (shimbun-fetch-url shimbun url nil t base-url))
+	  (goto-char (point-min))
 	  (when  (or (and (prog2
 			      (setq case-fold-search nil)
-			      (looking-at "\\(GIF8\\)\\|\\(\377\330\\)\\|\211PNG\r\n")
+			      (looking-at
+			       "\\(GIF8\\)\\|\\(\377\330\\)\\|\211PNG\r\n")
 			    (setq case-fold-search t))
 			  (setq type (concat "image/"
 					     (cond ((match-beginning 1) "gif")

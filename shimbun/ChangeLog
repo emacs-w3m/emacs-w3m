@@ -1,3 +1,8 @@
+2007-11-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-mime-replace-image-tags): Parse image data to
+	identify its type in the beginning position.
+
 2007-11-29  Naohiro Aota  <nao.aota@gmail.com>
 
 	* shimbun.el (shimbun-mime-replace-image-tags): Identify image type not
