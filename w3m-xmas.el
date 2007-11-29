@@ -418,18 +418,27 @@ Third optional argument SIZE is currently ignored."
 	  (type (condition-case err
 		    (w3m-retrieve url nil no-cache nil referer handler)
 		  (error (message "While retrieving %s: %s" url err) nil)))
-	(when type
+	(when (or (w3m-image-type-available-p
+		   (setq type (w3m-image-type type)))
+		  (progn
+		    (goto-char (point-min))
+		    (and (prog2
+			     (setq case-fold-search nil)
+			     (looking-at
+			      "\\(GIF8\\)\\|\\(\377\330\\)\\|\211PNG\r\n")
+			   (setq case-fold-search t))
+			 (w3m-image-type-available-p
+			  (setq type (cond ((match-beginning 1) 'gif)
+					   ((match-beginning 2) 'jpeg)
+					   (t 'png)))))))
 	  (let ((data (buffer-string))
 		glyph)
-	    (setq glyph
-		  (when (w3m-image-type-available-p
-			 (setq type (w3m-image-type type)))
-		    (or (and (eq type 'gif)
-			     (or w3m-should-unoptimize-animated-gifs
-				 w3m-should-convert-interlaced-gifs)
-			     w3m-gifsicle-program
-			     (w3m-fix-gif url data no-cache))
-			(w3m-make-glyph data type))))
+	    (setq glyph (or (and (eq type 'gif)
+				 (or w3m-should-unoptimize-animated-gifs
+				     w3m-should-convert-interlaced-gifs)
+				 w3m-gifsicle-program
+				 (w3m-fix-gif url data no-cache))
+			    (w3m-make-glyph data type)))
 	    (if (and w3m-resize-images set-size)
 		(progn
 		  (setq size (cons (glyph-width glyph)

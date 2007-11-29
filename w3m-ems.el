@@ -217,7 +217,19 @@ and its cdr element is used as height."
 	  (type (progn
 		  (set-buffer-multibyte nil)
 		  (w3m-retrieve url nil no-cache nil referer handler)))
-	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
+	(when (or (w3m-image-type-available-p
+		   (setq type (w3m-image-type type)))
+		  (progn
+		    (goto-char (point-min))
+		    (and (prog2
+			     (setq case-fold-search nil)
+			     (looking-at
+			      "\\(GIF8\\)\\|\\(\377\330\\)\\|\211PNG\r\n")
+			   (setq case-fold-search t))
+			 (w3m-image-type-available-p
+			  (setq type (cond ((match-beginning 1) 'gif)
+					   ((match-beginning 2) 'jpeg)
+					   (t 'png)))))))
 	  (setq image (create-image (buffer-string) type t :ascent 'center))
 	  (if (and w3m-resize-images set-size)
 	      (progn
