@@ -4734,21 +4734,6 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 		     (progn
 		       (delete-region (point-min) (match-beginning 0))
 		       (search-forward "\n\n" nil t)))
-	    ;; Asahi-shimbun sometimes says gif as jpeg mistakenly, for
-	    ;; example.  So, we cannot help trusting the data itself.
-	    (when (prog2
-		      (setq case-fold-search nil)
-		      (looking-at "\\(GIF8\\)\\|\\(\377\330\\)\\|\211PNG\r\n")
-		    (setq case-fold-search t))
-	      (let ((type (cond ((match-beginning 1) "gif")
-				((match-beginning 2) "jpeg")
-				(t "png"))))
-		(save-excursion
-		  (when (re-search-backward "^content-type: image/\\(.+\\)$"
-					    nil t)
-		    (delete-region (goto-char (match-beginning 1))
-				   (match-end 1))
-		    (insert type)))))
 	    (let ((header (buffer-substring (point-min) (point))))
 	      (when w3m-use-cookies
 		(w3m-cookie-set url (point-min) (point)))
@@ -4907,20 +4892,7 @@ It will put the retrieved contents into the current buffer.  See
 	      (with-current-buffer current-buffer
 		(insert-buffer-substring temp-buffer))
 	      (goto-char (point-min))
-	      ;; Hatena diary sometimes specifies Content-Type mistakenly,
-	      ;; so we cannot help trusting the data itself.
-	      (if (and (string-match "^image/" (cadr attr))
-		       (prog2
-			   (setq case-fold-search nil)
-			   (looking-at
-			    "\\(GIF8\\)\\|\\(\377\330\\)\\|\211PNG\r\n")
-			 (setq case-fold-search t)))
-		  (progn
-		    (concat "image/"
-			    (cond ((match-beginning 1) "gif")
-				  ((match-beginning 2) "jpeg")
-				  (t "png"))))
-		(cadr attr)))
+	      (cadr attr))
 	  (ding)
 	  (w3m-message "Can't decode encoded contents: %s" url)
 	  nil)))))

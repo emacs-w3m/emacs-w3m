@@ -418,19 +418,16 @@ Third optional argument SIZE is currently ignored."
 	  (type (condition-case err
 		    (w3m-retrieve url nil no-cache nil referer handler)
 		  (error (message "While retrieving %s: %s" url err) nil)))
-	(when (or (w3m-image-type-available-p
-		   (setq type (w3m-image-type type)))
-		  (progn
-		    (goto-char (point-min))
-		    (and (prog2
-			     (setq case-fold-search nil)
-			     (looking-at
-			      "\\(GIF8\\)\\|\\(\377\330\\)\\|\211PNG\r\n")
-			   (setq case-fold-search t))
-			 (w3m-image-type-available-p
-			  (setq type (cond ((match-beginning 1) 'gif)
-					   ((match-beginning 2) 'jpeg)
-					   (t 'png)))))))
+	(when (w3m-image-type-available-p 
+	       (setq type
+		     (or (and (prog2
+				  (setq case-fold-search nil)
+				  (looking-at "\\(GIF8\\)\\|\\(\377\330\\)\\|\211PNG\r\n")
+				(setq case-fold-search t))
+			      (cond ((match-beginning 1) 'gif)
+				    ((match-beginning 2) 'jpeg)
+				    (t 'png)))
+			 (w3m-image-type type))))
 	  (let ((data (buffer-string))
 		glyph)
 	    (setq glyph (or (and (eq type 'gif)
