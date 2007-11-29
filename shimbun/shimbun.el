@@ -629,16 +629,15 @@ image parts, and returns an alist of URLs and image entities."
 	(with-temp-buffer
 	  (set-buffer-multibyte nil)
 	  (setq type (shimbun-fetch-url shimbun url nil t base-url))
-	  (when (and
-		 type
-		 (or (string-match "\\`image/" type)
-		     ;; headlines.yahoo.co.jp often specifies it mistakenly.
-		     (and (string-match "\\.\\(gif\\|jpe?g\\|png\\)\\'" url)
-			  (setq type (cdr (assoc (match-string 1 url)
-						 '(("gif" . "image/gif")
-						   ("jpeg" . "image/jpeg")
-						   ("jpg" . "image/jpeg")
-						   ("png" . "image/png"))))))))
+	  (when  (or (and (prog2
+			      (setq case-fold-search nil)
+			      (looking-at "\\(GIF8\\)\\|\\(\377\330\\)\\|\211PNG\r\n")
+			    (setq case-fold-search t))
+			  (setq type (concat "image/"
+					     (cond ((match-beginning 1) "gif")
+						   ((match-beginning 2) "jpeg")
+						   (t "png")))))
+		     (string-match "\\`image/" type))
 	    (push (setq img (cons url
 				  (shimbun-make-image-entity
 				   type
