@@ -1,3 +1,8 @@
+2007-11-29  Naohiro Aota  <nao.aota@gmail.com>
+
+	* shimbun.el (shimbun-mime-replace-image-tags): Identify image type not
+	by its filename but its data.
+
 2007-11-27  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* sb-cnet-jp.el (shimbun-cnet-jp-content-start): Relaxed.

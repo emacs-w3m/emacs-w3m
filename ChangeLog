@@ -1,3 +1,13 @@
+2007-11-29  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-w3m-dump-extra, w3m-w3m-retrieve): Removed image data
+	type tests.
+
+	* w3m-xmas.el (w3m-create-image): Parse image data first, use server's
+	content-type when it failed to identify type.
+
+	* w3m-ems.el (w3m-create-image): Ditto.
+
 2007-11-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-search.el (w3m-search-engine-alist): Fix google news entry.
