@@ -1,10 +1,10 @@
 Emacs-w3m $B%K%e!<%9(B -- $B%f!<%6!<$KH=FI$G$-$kJQ99$NMzNr!#(B
 
 Copyright (C) 2007 $BEZ202mL-(B
-$B%i%$%;%s%9$N>r7o$K$D$$$F$O$3$N%U%!%$%k$NKvHx$r8+$F2<$5$$!#(B
+$B%i%$%;%s%9$N>r7o$K$D$$$F$O$3$N%U%!%$%k$NKvHx$r8+$F$/$@$5$$!#(B
 
-$B%P%0%j%]!<%H$O(B emacs-w3m@namazu.org $B$KAw$C$F2<$5$$!#(B
-$B$b$72DG=$J$i(B M-x report-emacs-w3m-bug $B$r;H$C$F2<$5$$!#(B
+$B%P%0%j%]!<%H$O(B emacs-w3m@namazu.org $B$KAw$C$F$/$@$5$$!#(B
+$B$b$72DG=$J$i(B M-x report-emacs-w3m-bug $B$r;H$C$F$/$@$5$$!#(B
 
 $B$3$N%U%!%$%k$O(B emacs-w3m $B%P!<%8%g%s(B 1.5 $B$NJQ99$K4X$9$k$b$N$G$9!#(B
 
@@ -71,7 +71,7 @@ Copyright (C) 2007 $BEZ202mL-(B
 
 ** $B%G%U%)%k%H$G$O(B w3m $B%a%K%e!<$,%a%K%e!<%P!<$NCf$[$I$K8=$l$k$h$&$K$J$j$^$7$?!#(B
 $B0JA0$N$h$&$K%a%K%e!<%P!<$N:8C<$KCV$-$?$$$J$i$P!"(B`w3m-menu-on-forefront'
-$BJQ?t$K(B nil $B$G$O$J$$CM$r@_Dj$7$F2<$5$$!#(B
+$BJQ?t$K(B nil $B$G$O$J$$CM$r@_Dj$7$F$/$@$5$$!#(B
 
 
 * $B%3%s%F%s%D$N%G%3!<%I$K4X$9$kJQ99(B
@@ -88,11 +88,11 @@ Copyright (C) 2007 $BEZ202mL-(B
 $B%j%s%/$N%3%s%F%s%D$r<h$j9~$`$H$-!"(Bemacs-w3m $B$O$=$N%j%s%/$,$"$k%Z!<%8$r(B
 $B%G%3!<%I$9$k$N$K;H$C$?J8;z%;%C%H$G(B url $B$r%(%s%3!<%I$7$^$9!#(B(Shimbun $B$G(B
 $B$O(B `shimbun-url-coding-system' $B%/%i%9JQ?t$G$=$NJ8;z%;%C%H$r>e=q$-$9$k(B
-$B$3$H$,$G$-$^$9!#0J2<$r;2>H$7$F2<$5$$!#(B)
+$B$3$H$,$G$-$^$9!#0J2<$r;2>H$7$F$/$@$5$$!#(B)
 
 ** html $B%=!<%9$r$I$NDxEY%G%3!<%I$9$k$+$r(B emacs-w3m $B$K;X<($G$-$^$9!#(B
 `w3m-view-source' $B%3%^%s%I(B (`\' $B%-!<$K%P%$%s%I$5$l$F$$$k(B) $B$K?tCM$N@\F,(B
-$B0z?t$rM?$($F2<$5$$!#>\:Y$O$=$N%3%^%s%I$N@bL@J8$r8+$F2<$5$$!#(B
+$B0z?t$rM?$($F$/$@$5$$!#>\:Y$O$=$N%3%^%s%I$N@bL@J8$r8+$F$/$@$5$$!#(B
 
 ** application/xml $B$N%Z!<%8$r(B text/html $B$H$7$F%G%3!<%I$7$^$9!#(B
 $B%Z!<%8$N%=!<%9$,(B xhtml+xml $B$N$h$&$K8+$($k>l9g$K$=$&$7$^$9!#(B
@@ -103,12 +103,12 @@ Copyright (C) 2007 $BEZ202mL-(B
 ** w3m-fb.el -- frame-local $B%P%C%U%!!<$N%5%]!<%H!#(B
 $B$$$m$$$m$JL\E*$N$?$a$KJ#?t$N(B emacs-w3m $B$N(B frame $B$r;}$D$3$m$,$G$-$^$9!#(B
 $BNc$($P!"$"$k$b$N$O%K%e!<%9%5%$%HMQ!"B>$O8!:w%(%s%8%sMQ$H$$$&$U$&$K!#(B
-(info "(emacs-w3m-ja)Frame Local Buffers") $B$r8+$F2<$5$$!#(B
+(info "(emacs-w3m-ja)Frame Local Buffers") $B$r8+$F$/$@$5$$!#(B
 
 ** w3m-mail.el -- $B%Z!<%8Aw?.$N$?$a$N(B mail-user-agent $B%$%s%?!<%U%'!<%9!#(B
 $B:#8+$F$$$k%&%'%V%Z!<%8$r%a!<%k$GAw?.$9$k$3$H$,$G$-$^$9!#%3%^%s%I$O(B
 `M-x w3m-mail' $B$G$9!#(B`mail-user-agent' $B$rE,@Z$K@_Dj$7$F$*$/I,MW$,$"$k(B
-$B$3$H$KCm0U$7$F2<$5$$!#(B
+$B$3$H$KCm0U$7$F$/$@$5$$!#(B
 
 ** w3m-session.el -- $B%;%C%7%g%s$rJ]B8(B/$BI|85$9$k$?$a$N5!G=!#(B
 $BJ#?t$N%Z!<%8$rK,Ld$7$F$$$k8=:_$N%;%C%7%g%s$r%U%!%$%k$KJ]B8$9$k$3$H$,$G(B
@@ -122,7 +122,7 @@ Copyright (C) 2007 $BEZ202mL-(B
 * $B8!:w%(%s%8%s$K4X$9$kJQ99(B
 
 ** $B$?$/$5$s$N8!:w%(%s%8%s$,DI2C$5$l$^$7$?!#(B
-(info "(emacs-w3m-ja)Using Search Engines") $B$r8+$F2<$5$$!#(B
+(info "(emacs-w3m-ja)Using Search Engines") $B$r8+$F$/$@$5$$!#(B
 
 
 * $B%U%#%k%?!<$K4X$9$kJQ99(B
@@ -140,7 +140,7 @@ Copyright (C) 2007 $BEZ202mL-(B
 
 ** vm-w3m.el $B$O?7$7$$(B VM $B%A!<%`$K0\4I$5$l$^$7$?!#(B
 $B8=:_$O(B VM 8.x $B%Q%C%1!<%8$K$"$j$^$9!#(Bhttp://www.nongnu.org/viewmail/ $B$r(B
-$BK,$M$F2<$5$$!#(B
+$BK,$M$F$/$@$5$$!#(B
 
 ** $B:#$d(B Emacs-w3m $B$O(B uri $B$H$7$FG$0U$NJ8;zNs$r<u$1F~$l$^$9!#(B
 $B$3$N5!G=$O(B Google $B$N!V(BI'm Feeling Lucky$B!W$KJo$C$?$b$N$G!"(BGoogle $B$r;H$C(B
@@ -178,7 +178,7 @@ Shimbun $B%b%8%e!<%k$K(B text/plain $B$N5-;v$H(B html $B5-;v$N$I$A$i$r@8@.$
 `shimbun-mainichi-prefer-text-plain' $B$r(B nil $B$G$O$J$$CM$K@_Dj$9$l$P!"(B
 text/plain $B$N5-;v$r@8@.$5$;$^$9!#$3$N5!G=$KH<$C$F(B sb-asahi-html.el $B$H(B
 sb-yomiuri-html.el $B$O$d$d5l<0$K$J$C$F$$$^$9!#$9$Y$F$N(B shimbun $B%b%8%e!<(B
-$B%k$,$3$l$rG'<1$9$k$o$1$G$O$J$$$3$H$KCm0U$7$F2<$5$$!#(B
+$B%k$,$3$l$rG'<1$9$k$o$1$G$O$J$$$3$H$KCm0U$7$F$/$@$5$$!#(B
 
 ** Shimbun $B$O8=:_$G$O5-;v$r<hF@$9$k$H$-$K%j%@%$%l%/%H$r%5%]!<%H$7$^$9!#(B
 $B$$$/$D$+$N%&%'%V%5%$%H$N:w0z%Z!<%8$,Ds6!$9$k(B url $B$O5-;v$N%Z!<%8$rD>@\(B
@@ -194,22 +194,22 @@ sb-yomiuri-html.el $B$O$d$d5l<0$K$J$C$F$$$^$9!#$9$Y$F$N(B shimbun $B%b%8%e!<
 $B$k$G$7$g$&!#$=$l$OA43Q$NHs(B-ASCII $BJ8;z$rIaDL$N$b$N$KJQ49$9$k$@$1$G$J$/!"(B
 $BJ,$+$A=q$-(B ($B1Q?t;z$HF|K\8l$NJ8$r6uGr$GJ,N%$9$k$3$H(B) $B$b9T$J$$$^$9!#$3$l(B
 $B$r(B shimbun $B%5!<%P!<C10L$G9T$J$$$?$$$H$-$O!"Be$o$j$K(B
-`shimbun-SERVER-japanese-hankaku' $B$r;H$C$F2<$5$$!#(B
+`shimbun-SERVER-japanese-hankaku' $B$r;H$C$F$/$@$5$$!#(B
 
 ** $B?7$7$$(B shimbun $B%/%i%9(B `shimbun-newspaper'$B!#(B
 $BF|K\8l0J30$N(B shimbun $B5-;v$KCx:n8"$K4X$9$kCm0U=q$-$r2C$($k$?$a$K;H$&$b(B
-$B$N$G$9!#F|K\8lMQ$K$O(B `shimbun-japanese-newspaper' $B$r;H$C$F2<$5$$!#(B
+$B$N$G$9!#F|K\8lMQ$K$O(B `shimbun-japanese-newspaper' $B$r;H$C$F$/$@$5$$!#(B
 
 ** $B?7$7$$(B shimbun $B%/%i%9JQ?t(B `shimbun-url-coding-system'$B!#(B
 $B$3$l$O%j%s%/$NHs(B-ASCII $BJ8;z$r4^$`(B url $B$r%(%s%3!<%I$9$k$?$a$NJ8;z%;%C%H(B
 (charset) $B$r>e=q$-$7$^$9(B ($B%G%U%)%k%H$G$O%j%s%/$N(B url $B$O!"$=$N%j%s%/$r(B
 $B4^$`%Z!<%8$r%(%s%3!<%I$7$?$H$-$K;H$C$?J8;z%;%C%H$G%(%s%3!<%I$5$l$^$9(B)$B!#(B
-`shimbun-SERVER-url-coding-system' $BJQ?t$r%5!<%P!<$4$H$K;H$C$F2<$5$$!#(B
+`shimbun-SERVER-url-coding-system' $BJQ?t$r%5!<%P!<$4$H$K;H$C$F$/$@$5$$!#(B
 
 ** $B?7$7$$(B shimbun $B%/%i%9JQ?t(B `shimbun-retry-fetching'$B!#(B
 $B%3%s%F%s%D$N<hF@$K<:GT$7$?$H$-!"$=$l$,@5$N?t$@$C$?$i(B shimbun $B$O$=$N2s(B
 $B?t$^$G%j%H%i%$$7$^$9!#(B`shimbun-SERVER-retry-fetching' $BJQ?t$r%5!<%P!<$4(B
-$B$H$K;H$C$F2<$5$$!#(B
+$B$H$K;H$C$F$/$@$5$$!#(B
 
 ** $B?7$7$$(B shimbun $B%b%8%e!<%k$,DI2C$5$l$^$7$?!#(B
 sb-aljazeera.el sb-nytimes.el sb-tech-on.el sb-gendai-net.el

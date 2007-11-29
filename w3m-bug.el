@@ -109,7 +109,7 @@ Prompts for bug subject.  Leaves you in a mail buffer."
     (insert
      (if (and (boundp 'w3m-language)
 	      (equal (symbol-value 'w3m-language) "Japanese"))
-	 "もし可能なら emacs-w3m を起動してからやり直して下さい。\n"
+	 "もし可能なら emacs-w3m を起動してからやり直してください。\n"
        "It is if possible, please redo after starting emacs-w3m.\n")
      "\
 ================================================================\n"))
@@ -125,12 +125,12 @@ Prompts for bug subject.  Leaves you in a mail buffer."
 あなたのローカルサイトの管理者宛てではありません!!")
 			       (point))
 			     'face 'underline)
-	  (insert "\n\nできるだけ簡潔に述べて下さい:
+	  (insert "\n\nできるだけ簡潔に述べてください:
 \t- 何が起きましたか?
 \t- 本当はどうなるべきだったと思いますか?
 \t- そのとき何をしましたか? (正確に)
 
-もし Lisp のバックトレースがあれば添付して下さい。\n"))
+もし Lisp のバックトレースがあれば添付してください。\n"))
       (insert "\
 This bug report will be sent to the emacs-w3m development team,\n")
       (put-text-property (point)
