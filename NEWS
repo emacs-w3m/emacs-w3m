@@ -97,7 +97,7 @@ to the `\' key.  See the doc string of the command for details.
 In the case where the page source looks like xhtml+xml.
 
 ** Now emacs-w3m trusts the image type gotten from parsing image data.
-Because the type that web sites specifies as the Content-Type is
+Because the type that web sites specify as the Content-Type header is
 sometimes bogus.  Currently, gif, jpeg, and png types can be identified.
 
 
