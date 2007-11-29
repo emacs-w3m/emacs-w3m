@@ -1,5 +1,8 @@
 2007-11-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-goto-url-new-session): Use
+	w3m-active-region-or-url-at-point.  Reported by Naohiro Aota.
+
 	* w3m-ems.el (w3m-create-image): Don't modify case-fold-search.
 
 	* w3m-xmas.el (w3m-create-image): Ditto; parse image data to identify
