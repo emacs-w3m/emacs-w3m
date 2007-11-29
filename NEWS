@@ -96,6 +96,10 @@ to the `\' key.  See the doc string of the command for details.
 ** Emacs-w3m now decodes application/xml pages as text/html.
 In the case where the page source looks like xhtml+xml.
 
+** Now emacs-w3m trusts the image type gotten from parsing image data.
+Because the type that web sites specifies as the Content-Type is
+sometimes bogus.  Currently, gif, jpeg, and png types can be identified.
+
 
 * New Lisp modules
 
