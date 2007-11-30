@@ -760,23 +760,28 @@ Username for \\(.*\\)\n?: ")
 NOTE: This function is designed to avoid annoying questions.  So when
 the same questions is reasked, its previous answer is reused without
 prompt."
-  (let (elem answer (root (w3m-get-server-hostname url)))
-    (if (setq elem (assoc root w3m-process-accept-alist))
-	(if (member prompt (cdr elem))
-	    ;; When the same question has been asked, the previous
-	    ;; answer is reused.
-	    (setq answer t)
-	  ;; When any question for the same server has been asked,
-	  ;; regist the pair of this question and its answer to
-	  ;; `w3m-process-accept-alist'.
-	  (when (setq answer (y-or-n-p prompt))
-	    (setcdr elem (cons prompt (cdr elem)))))
-      ;; When no question for the same server has been asked, regist
-      ;; the 3-tuple of the server, the question and its answer to
-      ;; `w3m-process-accept-alist'.
-      (when (setq answer (y-or-n-p prompt))
-	(push (cons root (list prompt)) w3m-process-accept-alist)))
-    answer))
+  (let ((root (w3m-get-server-hostname url))
+	(map (copy-keymap query-replace-map))
+	elem answer)
+    ;; ignore [space] to avoid answering y without intention.
+    (define-key map " " 'ignore)
+    (let ((query-replace-map map))
+      (if (setq elem (assoc root w3m-process-accept-alist))
+	  (if (member prompt (cdr elem))
+	      ;; When the same question has been asked, the previous
+	      ;; answer is reused.
+	      (setq answer t)
+	    ;; When any question for the same server has been asked,
+	    ;; regist the pair of this question and its answer to
+	    ;; `w3m-process-accept-alist'.
+	    (when (setq answer (y-or-n-p prompt))
+	      (setcdr elem (cons prompt (cdr elem)))))
+	;; When no question for the same server has been asked, regist
+	;; the 3-tuple of the server, the question and its answer to
+	;; `w3m-process-accept-alist'.
+	(when (setq answer (y-or-n-p prompt))
+	  (push (cons root (list prompt)) w3m-process-accept-alist)))
+      answer)))
 
 ;; Silence the byte compiler complaining against `gensym' like:
 ;; "Warning: the function `gensym' might not be defined at runtime."

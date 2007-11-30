@@ -1,3 +1,8 @@
+2007-11-30  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-proc.el (w3m-process-y-or-n-p): Ignore space to avoid answering y
+	without intention.
+
 2007-11-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-url-new-session): Use
