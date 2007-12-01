@@ -1,3 +1,13 @@
+2007-12-01  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-name-anchor-from-hist): New buffer-local variable.
+	(w3m-clear-local-variables): Also clear w3m-name-anchor-from-hist.
+	(w3m-goto-url): Save and restoe w3m-name-anchor-from-hist.
+	(w3m-search-name-anchor): Record (point)s of before and after following
+	a name-anchor.
+	(w3m-view-previous-page): If possible, move back the cursor to the
+	point where it was before following name-anchors.
+
 2007-11-30  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m-proc.el (w3m-process-y-or-n-p): Ignore space to avoid answering y

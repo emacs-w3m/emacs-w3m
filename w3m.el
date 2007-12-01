@@ -2176,6 +2176,8 @@ It is used for favicon data.  The type is often `ico'.")
   "Cons of number of seconds and a url specified by the REFRESH attribute.")
 (defvar w3m-current-ssl nil
   "SSL certification indicator for the current emacs-w3m buffer.")
+(defvar w3m-name-anchor-from-hist nil
+  "List of the points of where `w3m-search-name-anchor' come from.")
 
 (make-variable-buffer-local 'w3m-current-url)
 (make-variable-buffer-local 'w3m-current-base-url)
@@ -2191,6 +2193,7 @@ It is used for favicon data.  The type is often `ico'.")
 (make-variable-buffer-local 'w3m-max-anchor-sequence)
 (make-variable-buffer-local 'w3m-current-refresh)
 (make-variable-buffer-local 'w3m-current-ssl)
+(make-variable-buffer-local 'w3m-name-anchor-from-hist)
 
 (defsubst w3m-clear-local-variables ()
   (setq w3m-current-url nil
@@ -2205,7 +2208,8 @@ It is used for favicon data.  The type is often `ico'.")
 	w3m-contents-url nil
 	w3m-max-anchor-sequence nil
 	w3m-current-refresh nil
-	w3m-current-ssl nil))
+	w3m-current-ssl nil
+	w3m-name-anchor-from-hist nil))
 
 (defsubst w3m-copy-local-variables (from-buffer)
   (let (url base title cs char icon next prev start toc hseq refresh ssl)
@@ -5786,7 +5790,8 @@ when the URL of the retrieved page matches the REGEXP."
 
 (defun w3m-search-name-anchor (name &optional quiet)
   (interactive "sName: ")
-  (let ((pos (point-min)))
+  (let ((pos (point-min))
+	(cur-pos (point)))
     (catch 'found
       (while (setq pos (next-single-property-change pos 'w3m-name-anchor))
 	(when (member name (get-text-property pos 'w3m-name-anchor))
@@ -5802,8 +5807,16 @@ when the URL of the retrieved page matches the REGEXP."
 	  (w3m-horizontal-on-screen)
 	  (throw 'found t)))
       (unless quiet
-	(message "No such anchor: %s" name))
-      nil)))
+	(message "No such anchor: %s" name)))
+    (if (= (point) cur-pos)
+	nil
+      (setq w3m-name-anchor-from-hist 
+	    (append (list 1 nil (point) cur-pos)
+		    (and (integerp (car w3m-name-anchor-from-hist))
+			 (nthcdr (1+ (car w3m-name-anchor-from-hist))
+				 w3m-name-anchor-from-hist))))
+      t)))
+
 
 (defun w3m-parent-page-available-p ()
   (if (null w3m-current-url)
@@ -5867,25 +5880,37 @@ COUNT is treated as 1 by default if it is omitted."
 	(when (> count 0)
 	  (decf count))
       (setq count 0)))
-  (let ((hist ;; Cons of a new history element and position pointers.
-	 (if (integerp count)
-	     (w3m-history-backward count)
-	   (w3m-history-backward)))
-	;; Inhibit sprouting of a new history.
-	(w3m-history-reuse-history-elements t)
-	(w3m-use-refresh nil))
-    (if hist
-	(let ((w3m-prefer-cache t))
-	  (w3m-goto-url (caar hist) nil nil
-			(w3m-history-plist-get :post-data)
-			(w3m-history-plist-get :referer)
-			nil
-			(w3m-history-element (caddr hist) t))
-	  ;; Set the position pointers in the history.
-	  (setcar w3m-history (cdr hist))
-	  ;; Restore last position.
-	  (w3m-history-restore-position))
-      (message "There's no more history"))))
+  (let ((index (car w3m-name-anchor-from-hist))
+	pos)
+    (if (and (integerp count)
+	     (integerp index)
+	     (< 0 (setq index (+ index count)))
+	     (setq pos (nth index w3m-name-anchor-from-hist)))
+	(progn
+	  (when (and (= (point) pos)
+		     (nth (1+ index) w3m-name-anchor-from-hist))
+	    (setq index (1+ index)))
+	  (goto-char (nth index w3m-name-anchor-from-hist))
+	  (setcar w3m-name-anchor-from-hist index))
+      (let ((hist ;; Cons of a new history element and position pointers.
+	     (if (integerp count)
+		 (w3m-history-backward count)
+	       (w3m-history-backward)))
+	    ;; Inhibit sprouting of a new history.
+	    (w3m-history-reuse-history-elements t)
+	    (w3m-use-refresh nil))
+	(if hist
+	    (let ((w3m-prefer-cache t))
+	      (w3m-goto-url (caar hist) nil nil
+			    (w3m-history-plist-get :post-data)
+			    (w3m-history-plist-get :referer)
+			    nil
+			    (w3m-history-element (caddr hist) t))
+	      ;; Set the position pointers in the history.
+	      (setcar w3m-history (cdr hist))
+	      ;; Restore last position.
+	      (w3m-history-restore-position))
+	  (message "There's no more history"))))))
 
 (defun w3m-view-next-page (&optional count)
   "Move forward COUNT pages in history.
@@ -8234,6 +8259,14 @@ Cannot run two w3m processes simultaneously \
 		   (progn
 		     (w3m-refontify-anchor)
 		     'cursor-moved)
+		 (when w3m-name-anchor-from-hist
+		   (w3m-history-plist-put :name-anchor-hist
+					  (append (list 1 nil)
+						  (and (integerp (car w3m-name-anchor-from-hist))
+						       (nthcdr (1+ (car w3m-name-anchor-from-hist))
+							       w3m-name-anchor-from-hist)))))
+		 (setq w3m-name-anchor-from-hist 
+		       (plist-get (nthcdr 3 element) :name-anchor-hist))
 		 (setq w3m-current-process
 		       (w3m-retrieve-and-render orig reload charset
 						post-data referer handler))))
