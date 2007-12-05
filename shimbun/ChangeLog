@@ -1,3 +1,23 @@
+2007-12-05  NOMIYA Masaru  <nomiya@galaxy.dti.ne.jp>,
+	    Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nikkei.el (shimbun-nikkei-group-table): Update index urls and
+	functions to get headers and to prepare articles for the groups
+	kokunai, markets, kawase, kinri, ft, dj, ngyoseki, gyosuuchi, and
+	gyoseki.
+	(shimbun-nikkei-make-date-string): Enable it to adjust the day of month
+	according to the new optional argument adj.
+	(shimbun-nikkei-get-headers-stock)
+	(shimbun-nikkei-get-headers-gyosuuchi): New functions.
+	(shimbun-nikkei-get-headers-markets)
+	(shimbun-nikkei-get-headers-kawase)
+	(shimbun-nikkei-get-headers-bunkatsu2)
+	(shimbun-nikkei-get-headers-kinri, shimbun-nikkei-get-headers-gyoseki)
+	(shimbun-nikkei-prepare-article-default3)
+	(shimbun-nikkei-prepare-article-bunkatsu2): Abolish.
+	(shimbun-nikkei-get-headers-ft, shimbun-nikkei-get-headers-dj)
+	(shimbun-nikkei-prepare-article-default4): Update regexp.
+
 2007-11-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-mime-replace-image-tags): Parse image data to

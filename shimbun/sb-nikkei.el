@@ -132,7 +132,7 @@
      shimbun-nikkei-prepare-article-default)
     ("it.e-gov" "行政のＩＴ化"
      "http://it.nikkei.co.jp/business/special/e-gov.aspx"
-      shimbun-nikkei-get-headers-it-default
+     shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
     ("it.mobile" "モバイル"
      "http://it.nikkei.co.jp/mobile/news/index.aspx"
@@ -174,37 +174,37 @@
      "http://it.nikkei.co.jp/pc/news/index.aspx?ichiran=True"
      shimbun-nikkei-get-headers-it-pc
      shimbun-nikkei-prepare-article-default2)
-    ("kokunai" "市場概況" "http://markets.nikkei.co.jp/kokunai/summary.cfm"
-     shimbun-nikkei-get-headers-kawase
-     shimbun-nikkei-prepare-article-default3)
-    ("markets" "海外株概況" "http://markets.nikkei.co.jp/kaigai/summary.cfm"
-     shimbun-nikkei-get-headers-markets
-     shimbun-nikkei-prepare-article-default3)
-    ("kawase" "為替概況" "http://markets.nikkei.co.jp/kawase/summary.cfm"
-     shimbun-nikkei-get-headers-kawase
-     shimbun-nikkei-prepare-article-default3)
+    ("kokunai" "市場概況" "http://markets.nikkei.co.jp/kokunai/summary.aspx"
+     shimbun-nikkei-get-headers-stock
+     shimbun-nikkei-prepare-article-default4)
+    ("markets" "海外株概況" "http://markets.nikkei.co.jp/kaigai/summary.aspx"
+     shimbun-nikkei-get-headers-stock
+     shimbun-nikkei-prepare-article-default4)
+    ("kawase" "為替概況" "http://markets.nikkei.co.jp/kawase/summary.aspx"
+     shimbun-nikkei-get-headers-stock
+     shimbun-nikkei-prepare-article-default4)
     ("kinri" "短期金利・債権・ＣＢ概況"
-     "http://markets.nikkei.co.jp/kawase/kinri.cfm"
-     shimbun-nikkei-get-headers-kinri
-     shimbun-nikkei-prepare-article-default3)
+     "http://markets.nikkei.co.jp/kawase/kinri.aspx"
+     shimbun-nikkei-get-headers-stock
+     shimbun-nikkei-prepare-article-default4)
     ("ft" "英フィナンシャル・タイムズ"
-     "http://markets.nikkei.co.jp/kaigai/ft.cfm"
+     "http://markets.nikkei.co.jp/kaigai/ft.aspx"
      shimbun-nikkei-get-headers-ft
-     shimbun-nikkei-prepare-article-default3)
-    ("dj" "米ダウ・ジョーンズ" "http://markets.nikkei.co.jp/kaigai/dj.cfm"
+     shimbun-nikkei-prepare-article-default4)
+    ("dj" "米ダウ・ジョーンズ" "http://markets.nikkei.co.jp/kaigai/dj.aspx"
      shimbun-nikkei-get-headers-dj
-     shimbun-nikkei-prepare-article-default3)
+     shimbun-nikkei-prepare-article-default4)
     ("ngyoseki" "企業業績ニュース"
-     "http://markets.nikkei.co.jp/kokunai/gyoseki.cfm"
-     shimbun-nikkei-get-headers-gyoseki
-     shimbun-nikkei-prepare-article-default3)
+     "http://markets.nikkei.co.jp/kokunai/gyoseki.aspx"
+     shimbun-nikkei-get-headers-stock
+     shimbun-nikkei-prepare-article-default4)
     ("gyosuuchi" "業績数値"
-     "http://markets.nikkei.co.jp/kokunai/bunkatsu2.cfm?genre=m4"
-     shimbun-nikkei-get-headers-bunkatsu2
-     shimbun-nikkei-prepare-article-bunkatsu2)
-    ("gyoseki" "海外企業業績" "http://markets.nikkei.co.jp/kaigai/gyoseki.cfm"
-     shimbun-nikkei-get-headers-gyoseki
-     shimbun-nikkei-prepare-article-default3)
+     "http://markets.nikkei.co.jp/kokunai/bunkatsu2.aspx?genre=m4"
+     shimbun-nikkei-get-headers-gyosuuchi
+     shimbun-nikkei-prepare-article-default4)
+    ("gyoseki" "海外企業業績" "http://markets.nikkei.co.jp/kaigai/gyoseki.aspx"
+     shimbun-nikkei-get-headers-stock
+     shimbun-nikkei-prepare-article-default4)
     ("china" "中国ビジネス事情" ,(concat shimbun-nikkei-url "china/news/")
      shimbun-nikkei-get-headers-china
      shimbun-nikkei-prepare-article-default4)
@@ -518,30 +518,37 @@ If URL begins with `http://', FOLDER is ignored."
 	  (t
 	   (concat folder url)))))
 
-(defun shimbun-nikkei-make-date-string (&rest args)
-  "Run `shimbun-make-date-string' with ARGS and fix a day if needed.
-
-\(shimbun-nikkei-make-date-string YEAR MONTH DAY &optional TIME TIMEZONE)"
+(defun shimbun-nikkei-make-date-string (year month day
+					     &optional time timezone adj)
+  "Run `shimbun-make-date-string' and fix a day if needed.
+Optional ADJ is the number of days that adjust the day of month."
   (save-match-data
-    (let* ((ctime (current-time))
-	   (date (apply 'shimbun-make-date-string args))
-	   (time (shimbun-time-parse-string date))
-	   (ms (car time))
-	   (ls (cadr time))
-	   (system-time-locale "C"))
-      (if (or (> ms (car ctime))
-	      (and (= ms (car ctime))
-		   (> ls (cadr ctime))))
-	  ;; It should be yesterday's same time.
-	  (progn
-	    (setq ms (1- ms))
-	    (when (< (setq ls (- ls (eval-when-compile
-				      (- (* 60 60 24) 65536))))
-		     0)
-	      (setq ms (1- ms)
-		    ls (+ ls 65536)))
-	    (format-time-string "%a, %d %b %Y %R +0900" (list ms ls)))
-	date))))
+    (let ((ctime (current-time))
+	  (date (shimbun-make-date-string year month day time timezone))
+	  (system-time-locale "C")
+	  ms ls)
+      (setq time (shimbun-time-parse-string date)
+	    ms (car time)
+	    ls (cadr time))
+      (when adj
+	(setq ls (+ ls (* adj (eval-when-compile (* 60 60 24))))
+	      ms (+ (/ ls 65536) ms)
+	      ls (mod ls 65536)))
+      (cond ((or (> ms (car ctime))
+		 (and (= ms (car ctime))
+		      (> ls (cadr ctime))))
+	     ;; It should be the same time yesterday.
+	     (setq ms (1- ms))
+	     (when (< (setq ls (- ls (eval-when-compile
+				       (- (* 60 60 24) 65536))))
+		      0)
+	       (setq ms (1- ms)
+		     ls (+ ls 65536)))
+	     (format-time-string "%a, %d %b %Y %R +0900" (list ms ls)))
+	    (adj
+	     (format-time-string "%a, %d %b %Y %R +0900" (list ms ls)))
+	    (t
+	     date)))))
 
 (defvar shimbun-nikkei-tmp-ids nil)
 (defvar shimbun-nikkei-tmp-subjects nil)
@@ -854,214 +861,63 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 	  (throw 'stop nil))))
     headers))
 
-(defun shimbun-nikkei-get-headers-markets (group folder shimbun range)
-  "Function used to fetch headers for the markets group."
+(defun shimbun-nikkei-get-headers-stock (group folder shimbun range)
+  "Function used to fetch headers for stock groups."
   (let (headers)
     (while (re-search-forward
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"summary\\.cfm"
+		(concat "<a" s1 "\
+href=\"http://markets\\.nikkei\\.co\\.jp/[a-z]+/[a-z0-9]+\\.aspx"
 			;; 1. url
-			"\\(\\?genre="
+			"\\(\\?site=MARKET&genre="
 			;; 2. serial number
-			"\\([^\"]+date="
-			;; 3. year
+			"\\([0-9a-z]+\\)" "&id="
+			;; 3. serial number
+			"\\([\t\n 0-9a-z]+[0-3][0-9][01][0-9]"
+			;; 4. year
 			"\\(20[0-9][0-9]\\)"
-			"[01][0-9][0-3][0-9]"
 			"\\)"
 			"\\)"
-			s0 "\"" s0 ">" s0
-			;; 4. subject
+			"\"" s0 ">" s0
+			;; 5. subject
 			"\\([^<]+\\)"
-			s0 "（"
-			;; 5. month
+			"</a>" "\\(?:\n\\)?" "\\(?:\n\\)?" "[\t\n ]+("
+			;; 6. month
 			"\\([01]?[0-9]\\)"
 			"/"
-			;; 6. day
+			;; 7. day
 			"\\([0-3]?[0-9]\\)"
 			s1
-			;; 7. hour
+			;; 8. hour
 			"\\([0-2]?[0-9]\\)"
 			":"
-			;; 8. minute
+			;; 9. minute
 			"\\([0-5]?[0-9]\\)"
-			"）" s0 "</a>")))
+			")" s0 "\\(?:[\t\n ]+\\)?" "</li>")))
 	    nil t)
       (push (shimbun-create-header
 	     0
-	     (match-string 4)
+	     (match-string 5)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 3))
-	      (string-to-number (match-string 5))
+	      (string-to-number (match-string 4))
 	      (string-to-number (match-string 6))
+	      (string-to-number (match-string 7))
 	      (format "%02d:%02d"
-		      (string-to-number (match-string 7))
-		      (string-to-number (match-string 8))))
-	     (concat "<" (downcase (match-string 2)) "%" group "."
+		      (string-to-number (match-string 8))
+		      (string-to-number (match-string 9))))
+	     (concat "<" (downcase (match-string 2)) "."
+		     (downcase (save-match-data
+				 (shimbun-replace-in-string (match-string 3)
+							    "[\t\n ]+" ".")))
+		     "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
 	     (shimbun-nikkei-expand-url (match-string 1) folder))
 	    headers))
-    headers))
-
-(defun shimbun-nikkei-get-headers-kawase (group folder shimbun range)
-  "Function used to fetch headers for the kawase group."
-  (let (headers)
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((s0 "[\t\n ]*")
-		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"summary\\.cfm"
-			;; 1. url
-			"\\(\\?id="
-			;; 2. serial number
-			"\\([^\"]+date="
-			;; 3. year
-			"\\(20[0-9][0-9]\\)"
-			"[01][0-9][0-3][0-9]"
-			"\\)"
-			"\\)"
-			s0 "\"" s0 ">" s0
-			;; 4. subject
-			"\\([^<]+\\)"
-			s0 "（"
-			;; 5. month
-			"\\([01]?[0-9]\\)"
-			"/"
-			;; 6. day
-			"\\([0-3]?[0-9]\\)"
-			s1
-			;; 7. hour
-			"\\([0-2]?[0-9]\\)"
-			":"
-			;; 8. minute
-			"\\([0-5]?[0-9]\\)"
-			"）" s0 "</a>")))
-	    nil t)
-      (push (shimbun-create-header
-	     0
-	     (match-string 4)
-	     shimbun-nikkei-from-address
-	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 3))
-	      (string-to-number (match-string 5))
-	      (string-to-number (match-string 6))
-	      (format "%02d:%02d"
-		      (string-to-number (match-string 7))
-		      (string-to-number (match-string 8))))
-	     (concat "<" (downcase (match-string 2)) "%" group "."
-		     shimbun-nikkei-top-level-domain ">")
-	     "" 0 0
-	     (shimbun-nikkei-expand-url (match-string 1) folder))
-	    headers))
-    headers))
-
-(defun shimbun-nikkei-get-headers-bunkatsu2 (group folder shimbun range)
-  "Function used to fetch headers for the gyosuuchi group."
-  (let (headers)
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((s0 "[\t\n ]*")
-		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\""
-			;; 1. url
-			"\\(bunkatsu[0-9]\\.cfm\\?genre=m4&id="
-			;; 2. serial number
-			"\\([^\"]+date="
-			;; 3. year
-			"\\(20[0-9][0-9]\\)"
-			"[01][0-9][0-3][0-9][^\"]+"
-			"\\)"
-			"\\)"
-			s0 "\"" s0 ">" s0
-			;; 4. subject
-			"\\([^<]+\\)"
-			s0 "（"
-			;; 5. month
-			"\\([01]?[0-9]\\)"
-			"/"
-			;; 6. day
-			"\\([0-3]?[0-9]\\)"
-			s1
-			;; 7. hour
-			"\\([0-2]?[0-9]\\)"
-			":"
-			;; 8. minute
-			"\\([0-5]?[0-9]\\)"
-			"）" s0 "</a>")))
-	    nil t)
-      (push (shimbun-create-header
-	     0
-	     (match-string 4)
-	     shimbun-nikkei-from-address
-	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 3))
-	      (string-to-number (match-string 5))
-	      (string-to-number (match-string 6))
-	      (format "%02d:%02d"
-		      (string-to-number (match-string 7))
-		      (string-to-number (match-string 8))))
-	     (concat "<" (downcase (match-string 2)) "%" group "."
-		     shimbun-nikkei-top-level-domain ">")
-	     "" 0 0
-	     (shimbun-nikkei-expand-url
-	      (match-string 1) "http://markets.nikkei.co.jp/kokunai/"))
-	    headers))
-    headers))
-
-(defun shimbun-nikkei-get-headers-kinri (group folder shimbun range)
-  "Function used to fetch headers for the kinri group."
-  (let (headers)
-    (while (re-search-forward
-	    (eval-when-compile
-	      (let ((s0 "[\t\n ]*")
-		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"kinri\\.cfm"
-			;; 1. url
-			"\\(\\?id="
-			;; 2. serial number
-			"\\([^\"]+date="
-			;; 3. year
-			"\\(20[0-9][0-9]\\)"
-			"[01][0-9][0-3][0-9]"
-			"\\)"
-			"\\)"
-			s0 "\"" s0 ">" s0
-			;; 4. subject
-			"\\([^<]+\\)"
-			s0 "（"
-			;; 5. month
-			"\\([01]?[0-9]\\)"
-			"/"
-			;; 6. day
-			"\\([0-3]?[0-9]\\)"
-			s1
-			;; 7. hour
-			"\\([0-2]?[0-9]\\)"
-			":"
-			;; 8. minute
-			"\\([0-5]?[0-9]\\)"
-			"）" s0 "</a>")))
-	    nil t)
-      (push (shimbun-create-header
-	     0
-	     (match-string 4)
-	     shimbun-nikkei-from-address
-	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 3))
-	      (string-to-number (match-string 5))
-	      (string-to-number (match-string 6))
-	      (format "%02d:%02d"
-		      (string-to-number (match-string 7))
-		      (string-to-number (match-string 8))))
-	     (concat "<" (downcase (match-string 2)) "%" group "."
-		     shimbun-nikkei-top-level-domain ">")
-	     "" 0 0
-	     (shimbun-nikkei-expand-url (match-string 1) folder))
-	    headers))
-    headers))
+    (shimbun-sort-headers headers)))
 
 (defun shimbun-nikkei-get-headers-ft (group folder shimbun range)
   "Function used to fetch headers for the ft group."
@@ -1070,26 +926,26 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"ft\\.cfm"
+		(concat "<a" s1 "href=\"\
+http://markets\\.nikkei\\.co\\.jp/kaigai/ft\\.aspx"
 			;; 1. url
-			"\\(\\?id="
+			"\\(\\?site=MARKET&genre=ff&id="
 			;; 2. serial number
-			"\\([^\"]+date="
+			"\\([\t\n 0-9a-z]+[0-3][0-9][01][0-9]"
 			;; 3. year
 			"\\(20[0-9][0-9]\\)"
-			"[01][0-9][0-3][0-9]"
 			"\\)"
 			"\\)"
-			s0 "\"" s0 ">" s0
+			"\"" s0 ">" s0
 			;; 4. subject
 			"\\([^<]+\\)"
-			s0 "[(|（]"
+			s0 "[(（]"
 			;; 5. month
 			"\\([01]?[0-9]\\)"
 			"/"
 			;; 6. day
 			"\\([0-3]?[0-9]\\)"
-			"[）|)]" s0 "※" s0 "</a>")))
+			"[)）]")))
 	    nil t)
       (push (shimbun-create-header
 	     0
@@ -1098,8 +954,13 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 	     (shimbun-nikkei-make-date-string
 	      (string-to-number (match-string 3))
 	      (string-to-number (match-string 5))
-	      (string-to-number (match-string 6)))
-	     (concat "<" (downcase (match-string 2)) "%" group "."
+	      (string-to-number (match-string 6))
+	      nil nil 1)
+	     (concat "<ff."
+		     (downcase (save-match-data
+				 (shimbun-replace-in-string (match-string 2)
+							    "[\t\n ]+" ".")))
+		     "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
 	     (shimbun-nikkei-expand-url (match-string 1) folder))
@@ -1113,32 +974,27 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"dj\\.cfm"
+		(concat "<a" s1 "href=\"\
+http://markets\\.nikkei\\.co.jp/kaigai/dj\\.aspx"
 			;; 1. url
-			"\\(\\?id="
+			"\\(\\?site=MARKET&genre=dj&id="
 			;; 2. serial number
-			"\\([^\"]+date="
+			"\\([0-9a-z]+"
+			"[0-3][0-9][01][0-9]"
 			;; 3. year
 			"\\(20[0-9][0-9]\\)"
-			"[01][0-9][0-3][0-9]"
 			"\\)"
 			"\\)"
-			s0 "\"" s0 ">" s0
+			"\"" s0 ">\\(?:<DJ>\\)?" s0
 			;; 4. subject
 			"\\([^<]+\\)"
-			s0 "（"
+			s0 "[(（]"
 			;; 5. month
 			"\\([01]?[0-9]\\)"
 			"/"
 			;; 6. day
 			"\\([0-3]?[0-9]\\)"
-			s1
-			;; 7. hour
-			"\\([0-2]?[0-9]\\)"
-			":"
-			;; 8. minute
-			"\\([0-5]?[0-9]\\)"
-			"）" s0 "</a>")))
+			"[)）]" s0 "</a>")))
 	    nil t)
       (push (shimbun-create-header
 	     0
@@ -1147,68 +1003,73 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 	     (shimbun-nikkei-make-date-string
 	      (string-to-number (match-string 3))
 	      (string-to-number (match-string 5))
-	      (string-to-number (match-string 6))
-	      (format "%02d:%02d"
-		      (string-to-number (match-string 7))
-		      (string-to-number (match-string 8))))
-	     (concat "<" (downcase (match-string 2)) "%" group "."
+	      (string-to-number (match-string 6)))
+	     (concat "<dj." (downcase (match-string 2)) "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
 	     (shimbun-nikkei-expand-url (match-string 1) folder))
 	    headers))
-    headers))
+    (shimbun-sort-headers headers)))
 
-(defun shimbun-nikkei-get-headers-gyoseki (group folder shimbun range)
-  "Function used to fetch headers for the gyoseki group."
+(defun shimbun-nikkei-get-headers-gyosuuchi (group folder shimbun range)
+  "Function used to fetch headers for the gyosuuchi group."
   (let (headers)
     (while (re-search-forward
 	    (eval-when-compile
 	      (let ((s0 "[\t\n ]*")
 		    (s1 "[\t\n ]+"))
-		(concat "<a" s1 "href=\"gyoseki\\.cfm"
+		(concat "<a" s1 "\
+href=\"http://markets\\.nikkei\\.co\\.jp/[a-z]+/[a-z0-9]+\\.aspx"
 			;; 1. url
-			"\\(\\?id="
+			"\\(\\?site=MARKET&genre="
 			;; 2. serial number
-			"\\([^\"]+date="
-			;; 3. year
+			"\\([0-9a-z]+\\)" "&id="
+			;; 3. serial number
+			"\\([\t\n 0-9a-z]+[0-3][0-9][01][0-9]"
+			;; 4. year
 			"\\(20[0-9][0-9]\\)"
-			"[01][0-9][0-3][0-9]"
 			"\\)"
 			"\\)"
-			s0 "\"" s0 ">" s0
-			;; 4. subject
+			"\"" s0 ">" s0
+			;; 5. subject
 			"\\([^<]+\\)"
-			s0 "（"
-			;; 5. month
+			"</a>" "\\(?:\n\\)?" "\\(?:\n\\)?" "[\t\n ]+("
+			;; 6. month
 			"\\([01]?[0-9]\\)"
 			"/"
-			;; 6. day
+			;; 7. day
 			"\\([0-3]?[0-9]\\)"
 			s1
-			;; 7. hour
+			;; 8. hour
 			"\\([0-2]?[0-9]\\)"
 			":"
-			;; 8. minute
+			;; 9. minute
 			"\\([0-5]?[0-9]\\)"
-			"）" s0 "</a>")))
+			")" s0 "\\(?:[\t\n ]+\\)?" "</li>")))
 	    nil t)
       (push (shimbun-create-header
 	     0
-	     (match-string 4)
+	     (match-string 5)
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
-	      (string-to-number (match-string 3))
-	      (string-to-number (match-string 5))
+	      (string-to-number (match-string 4))
 	      (string-to-number (match-string 6))
+	      (string-to-number (match-string 7))
 	      (format "%02d:%02d"
-		      (string-to-number (match-string 7))
-		      (string-to-number (match-string 8))))
-	     (concat "<" (downcase (match-string 2)) "%" group "."
+		      (string-to-number (match-string 8))
+		      (string-to-number (match-string 9))))
+	     (concat "<" (downcase (match-string 2)) "."
+		     (downcase (save-match-data
+				 (shimbun-replace-in-string (match-string 3)
+							    "[\t\n ]+" ".")))
+		     "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
-	     (shimbun-nikkei-expand-url (match-string 1) folder))
+	     (shimbun-nikkei-expand-url
+	      (concat "\
+http://markets.nikkei.co.jp/kokunai/bunkatsu3.aspx" (match-string 1)) folder))
 	    headers))
-    headers))
+    (shimbun-sort-headers headers)))
 
 (defun shimbun-nikkei-get-headers-market (group folder shimbun range)
   "Function used to fetch headers for the market group."
@@ -1939,43 +1800,6 @@ Please visit <a href=\""
 	(shimbun-header-set-date header date))
       t)))
 
-(defun shimbun-nikkei-prepare-article-default3 (&rest args)
-  "Function used to prepare contents of an article for the market groups."
-  (when (re-search-forward "<a[\t\n ]+name=\"midashi\">[^<]*</a>[\t\n ]*"
-			   nil t)
-    (and (re-search-forward "<a[\t\n ]+href=\"[^\"]+\\.cfm\">[^<]*</a>[\t\n ]*"
-			    nil t)
-	 (re-search-forward "\
-<div\\(?:[\t\n ]+[^>]+\\)*[\t\n ]+\\(?:class=\"news\"\\|id=\"report\"\\)\
-\\(?:[\t\n ]+[^>]+\\)*>[\t\n ]*"
-			    nil t)
-	 (looking-at "<h[0-9]+>[^<]+</h[0-9]+>[\t\n ]*")
-	 (goto-char (match-end 0)))
-    (insert shimbun-nikkei-content-start)
-    (or (re-search-forward "\
-<[\t\n ]*p[\t\n ]+align[\t\n ]*=[\t\n ]*right[\t\n ]*>[^<]*\
-\([\t\n /0-9:　]+)[\t\n ]*</p>"
-			   nil t)
-	(and (or (re-search-forward "\
-\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<div\\(?:[\t\n ]+[^>]+\\)*[\t\n ]+\
-class=\"column\"\\(?:[\t\n ]+[^>]+\\)*>"
-				    nil t)
-		 (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
-\\(?:<li>\\|<a[\t\n ]+href=\"/ranking/\\|<img[\t\n ]+src=\\)"
-				    nil t))
-	     (goto-char (match-beginning 0))))
-    (insert shimbun-nikkei-content-end)
-    t))
-
-(defun shimbun-nikkei-prepare-article-bunkatsu2 (&rest args)
-  "Function used to prepare contents of an article for the gyosuuchi group."
-  (when (re-search-forward "[\t\n ]<div[\t\n ]+class=\"bg_gray\">" nil t)
-    (insert shimbun-nikkei-content-start)
-    (when (re-search-forward "[\t\n ]<div[\t\n ]+class=\"column\">" nil t)
-      (goto-char (match-beginning 0))
-      (insert shimbun-nikkei-content-end)
-      t)))
-
 (defun shimbun-nikkei-prepare-article-sports (&rest args)
   "Function used to prepare contents of an article for the sports group."
   (when (re-search-forward "\
@@ -2084,11 +1908,13 @@ tokushu[\t\n ]*\""
 (defun shimbun-nikkei-prepare-article-default4 (&rest args)
   "Function used to prepare contents of an article for some groups."
   (when (re-search-forward "\
-<!-+[\t\n ]*FJZONE[\t\n ]+START[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-+>"
+<!-+[\t\n ]*FJZONE[\t\n ]+START[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-+>\
+\\|</h2>\n[\t\n ]+<p>"
 			   nil t)
     (insert shimbun-nikkei-content-start)
     (when (re-search-forward "\
-<!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-+>"
+<!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-+>\
+\\|<script[\t\n ]+language=\"javascript\"[\t\n ]+type=\"text/javascript\">"
 			     nil t)
       (goto-char (match-beginning 0))
       (insert shimbun-nikkei-content-end)
