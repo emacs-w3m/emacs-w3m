@@ -8136,6 +8136,9 @@ the current page."
 	 current-prefix-arg
 	 (w3m-static-if (fboundp 'universal-coding-system-argument)
 	     coding-system-for-read)))
+  (when (and (stringp url)
+	     (not (interactive-p)))
+    (setq url (w3m-canonicalize-url url)))
   (set-text-properties 0 (length url) nil url)
   (setq url (w3m-uri-replace url))
   (unless (or (w3m-url-local-p url)

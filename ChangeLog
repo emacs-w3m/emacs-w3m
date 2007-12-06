@@ -1,3 +1,8 @@
+2007-12-06  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-goto-url): Canonicalize the url when it is called
+	non-interactively.
+
 2007-12-01  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m.el (w3m-name-anchor-from-hist): New buffer-local variable.
