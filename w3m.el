@@ -2632,7 +2632,7 @@ directory."
 ;;; Managing the arrived URLs database:
 (defmacro w3m-arrived-intern (url &optional soft)
   "Normalize URL by stripping last / and intern it into `w3m-arrived-db'.
-If SOFT is non-nil, use `intern-soft' insted."
+If SOFT is non-nil, use `intern-soft' instead."
   (let ((fn (if soft 'intern-soft 'intern))
 	(str (if (consp url)
 		 `(let ((url ,url))
