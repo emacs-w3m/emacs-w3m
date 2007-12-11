@@ -1,5 +1,9 @@
 2007-12-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-favicon.el (w3m-favicon-convert): Make last change revert.
+
+2007-12-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-favicon.el (w3m-favicon-convert): Apply the background color of
 	header line or mode line to pixels of which the color is transparent.
 

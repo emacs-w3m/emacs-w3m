@@ -234,8 +234,7 @@ favicon is ready."
       (w3m-static-if (featurep 'xemacs)
 	  (make-glyph
 	   (make-image-instance (vector w3m-favicon-type :data img)))
-	(create-image img w3m-favicon-type t
-		      :ascent 'center :mask 'heuristic)))))
+	(create-image img w3m-favicon-type t :ascent 'center)))))
 
 (defun w3m-favicon-retrieve (url type target)
   "Retrieve favicon from URL and convert it to image as TYPE in TARGET.
