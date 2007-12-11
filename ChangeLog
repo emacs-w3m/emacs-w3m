@@ -1,3 +1,8 @@
+2007-12-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-favicon.el (w3m-favicon-convert): Apply the background color of
+	header line or mode line to pixels of which the color is transparent.
+
 2007-12-06  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m.el (w3m-goto-url): Canonicalize the url when it is called
