@@ -92,6 +92,13 @@ nil forcibly."
 	((and (stringp w3m-imagick-convert-program)
 	      (file-executable-p w3m-imagick-convert-program))
 	 (put 'w3m-imagick-convert-program 'available-p 'yes)
+	 ;; Check whether convert supports png32.
+	 (put 'w3m-imagick-convert-program 'png32
+	      (let ((png (condition-case nil
+			     (w3m-imagick-convert-data
+			      "P1 1 1 1" "pbm" "png32")
+			   (error nil))))
+		(and png (string-match "\\`\211PNG\r\n" png) t)))
 	 t)
 	(t
 	 (message "ImageMagick's `convert' program is not available")
@@ -113,17 +120,22 @@ nil forcibly."
 	   return)
       (write-region (point-min) (point-max) in-file nil 'nomsg)
       (erase-buffer)
-      (setq return (apply 'call-process
-			  w3m-imagick-convert-program
-			  nil t nil
-			  (append args (list
-					(concat
-					 (if from-type
-					     (concat from-type ":"))
-					 in-file)
-					(if to-type
-					    (concat to-type ":-")
-					  "-")))))
+      (setq return
+	    (apply 'call-process
+		   w3m-imagick-convert-program
+		   nil t nil
+		   (append args (list
+				 (concat
+				  (if from-type
+				      (concat from-type ":"))
+				  in-file)
+				 (if to-type
+				     (if (and (string-equal to-type "png")
+					      (get 'w3m-imagick-convert-program
+						   'png32))
+					 "png32:-"
+				       (concat to-type ":-"))
+				   "-")))))
       (when (file-exists-p in-file) (delete-file in-file))
       (if (and (numberp return)
 	       (zerop return))
@@ -168,17 +180,22 @@ nil forcibly."
     (w3m-process-do
 	(success (with-current-buffer out-buffer
 		   (erase-buffer)
-		   (w3m-process-start handler
-				      w3m-imagick-convert-program
-				      (append args
-					      (list
-					       (concat
-						(if from-type
-						    (concat from-type ":"))
-						in-file)
-					       (if to-type
-						   (concat to-type ":-")
-						 "-"))))))
+		   (w3m-process-start
+		    handler
+		    w3m-imagick-convert-program
+		    (append args
+			    (list
+			     (concat
+			      (if from-type
+				  (concat from-type ":"))
+			      in-file)
+			     (if to-type
+				 (if (and (string-equal to-type "png")
+					  (get 'w3m-imagick-convert-program
+					       'png32))
+				     "png32:-"
+				   (concat to-type ":-"))
+			       "-"))))))
       (when (file-exists-p in-file)
 	(delete-file in-file))
       success)))

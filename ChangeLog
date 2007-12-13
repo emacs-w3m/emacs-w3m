@@ -1,3 +1,10 @@
+2007-12-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-image.el (w3m-imagick-convert-program-available-p): Check whether
+	the convert program supports the image type png32.
+	(w3m-imagick-convert-buffer, w3m-imagick-start-convert-buffer): Use
+	png32 if it is available.
+
 2007-12-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-favicon.el (w3m-favicon-convert): Make last change revert.
