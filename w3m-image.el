@@ -94,11 +94,13 @@ nil forcibly."
 	 (put 'w3m-imagick-convert-program 'available-p 'yes)
 	 ;; Check whether convert supports png32.
 	 (put 'w3m-imagick-convert-program 'png32
-	      (let ((png (condition-case nil
-			     (w3m-imagick-convert-data
-			      "P1 1 1 1" "pbm" "png32")
-			   (error nil))))
-		(and png (string-match "\\`\211PNG\r\n" png) t)))
+	      (unless (or (featurep 'xemacs)
+			  (< emacs-major-version 22))
+		(let ((png (condition-case nil
+			       (w3m-imagick-convert-data
+				"P1 1 1 1" "pbm" "png32")
+			     (error nil))))
+		  (and png (string-match "\\`\211PNG\r\n" png) t))))
 	 t)
 	(t
 	 (message "ImageMagick's `convert' program is not available")

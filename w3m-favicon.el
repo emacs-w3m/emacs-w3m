@@ -172,6 +172,10 @@ the cache file.")
   (if (featurep 'xemacs)
       `(set 'w3m-favicon-image ,image)
     `(when (setq w3m-favicon-image ,image)
+       (when (>= emacs-major-version 22)
+	 (setcdr w3m-favicon-image
+		 (plist-put (cdr w3m-favicon-image)
+			    :background (face-background 'mode-line))))
        (set 'w3m-modeline-favicon
 	    (list ""
 		  'w3m-space-before-favicon
