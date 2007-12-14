@@ -886,7 +886,7 @@ is non-nil means not to respond to too fast operation of mouse wheel."
 				  start 'display nil end)))
 	    (setq len (+ (cond
 			  ((eq (car disp) 'image)
-			   (or w3m-favicon-size (frame-char-height)))
+			   (or (car w3m-favicon-size) (frame-char-height)))
 			  ((eq (car disp) 'space)
 			   (* (or (plist-get (cdr disp) :width) 1) fcw))
 			  (t

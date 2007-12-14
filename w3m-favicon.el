@@ -54,20 +54,10 @@
   (autoload 'w3m-url-readable-string "w3m"))
 
 (defcustom w3m-favicon-size nil
-  "*Size of favicon. This value is used as geometry argument for `convert'."
+  "Size of favicon.  The value should be `(WIDTH . HEIGHT)' or nil.
+Where WIDTH and HEIGHT are positive integers; both or any of them can
+be omitted."
   :group 'w3m
-  :get (lambda (symbol)
-	 (let ((value (default-value symbol)))
-	   (if (and (stringp value)
-		    (string-match "\
-\\`[\t\n ]*\\([0-9]+\\)[\t\n ]*[Xx][\t\n ]*\\([0-9]+\\)[\t\n ]*\\'"
-				  value))
-	       (cons (string-to-number (match-string 1 value))
-		     (string-to-number (match-string 2 value))))))
-  :set (lambda (symbol value)
-	 (custom-set-default symbol
-			     (if (consp value)
-				 (format "%dx%d" (car value) (cdr value)))))
   :type '(radio (const :tag "Not specified" nil)
 		(cons :format "%v"
 		      (integer :format "Width: %v " :size 0 :value 16)
@@ -130,6 +120,27 @@ It may be better to use two or more spaces if you are using oblique or
 italic font in the modeline."
   :group 'w3m
   :type 'string)
+
+(defcustom w3m-favicon-convert-args nil
+  "List of additional arguments passed to ImageMagick's convert program.
+Args that are always passed to convert in addition to this value are:
+
+\"-geometry\" \"WIDTHxHEIGHT\" \"fromTYPE:temp-file\" \"toTYPE:-\"
+
+Note that this value is effective only with Emacs 22 and greater."
+  :group 'w3m
+  :type `(repeat (group :inline t
+			:match-inline
+			(lambda (widget vals)
+			  (if (and (eq (aref (car vals) 0) ?-)
+				   (cdr vals)
+				   (not (eq (aref (nth 1 vals) 0) ?-)))
+			      (cons (list (car vals) (nth 1 vals))
+				    (nthcdr 2 vals))
+			    (cons (list (car vals)) (cdr vals))))
+			(string :format "Arg: %v " :value "-" :size 0)
+			(checklist :inline t
+				   (string :format "Value: %v\n" :size 0)))))
 
 (defvar w3m-favicon-type-alist '((pbm . ppm))
   "A list of a difference type of image between Emacs and ImageMagick.
@@ -222,18 +233,23 @@ favicon is ready."
 		     ;; Since most of favicons are the `ico' types, we
 		     ;; make sure of the magic-numbers only as for them.
 		     (string-equal "\x00\x00\x01\x00" (substring data 0 4)))
-		(w3m-imagick-convert-data
+		(apply
+		 #'w3m-imagick-convert-data
 		 data (symbol-name type)
 		 (symbol-name (or (cdr (assq w3m-favicon-type
 					     w3m-favicon-type-alist))
 				  w3m-favicon-type))
 		 "-geometry"
-		 (or w3m-favicon-size
-		     (progn
-		       (setq height (w3m-static-if (featurep 'xemacs)
+		 (progn
+		   (setq height (or (cdr w3m-favicon-size)
+				    (w3m-static-if (featurep 'xemacs)
 					(face-height 'default)
-				      (frame-char-height)))
-		       (format "%dx%d" height height)))))))
+				      (frame-char-height))))
+		   (format "%dx%d"
+			   (or (car w3m-favicon-size) height) height))
+		 (w3m-static-unless (featurep 'xemacs)
+		   (when (>= emacs-major-version 22)
+		     w3m-favicon-convert-args))))))
     (when img
       (w3m-static-if (featurep 'xemacs)
 	  (make-glyph

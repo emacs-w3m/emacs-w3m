@@ -1,3 +1,13 @@
+2007-12-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-favicon.el (w3m-favicon-size): Change the value form into the
+	cons of WIDTH and HEIGHT.
+	(w3m-favicon-convert-args): New user option.
+	(w3m-favicon-convert): Pass it to convert.
+
+	* w3m-ems.el (w3m-tab-mouse-track-selected-tab): Follow change of
+	w3m-favicon-size.
+
 2007-12-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-ems.el (w3m-tab-line): Set the background color of favicon for
