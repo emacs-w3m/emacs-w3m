@@ -1785,7 +1785,8 @@ textarea")))
 			(if new-session
 			    'w3m-goto-url-new-session
 			  'w3m-goto-url))
-		      (concat url "?" (w3m-form-make-form-data form))))
+		      (concat (w3m-url-strip-query url) 
+			      "?" (w3m-form-make-form-data form))))
 	    (t
 	     (w3m-message "This form's method has not been supported: %s"
 			  (let (print-level print-length)

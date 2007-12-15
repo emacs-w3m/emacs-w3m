@@ -1,3 +1,8 @@
+2007-12-15  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-form.el (w3m-form-submit): Remove queey part from the from's
+	action url when using get method.
+
 2007-12-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-favicon.el (w3m-favicon-size): Change the value form into the
