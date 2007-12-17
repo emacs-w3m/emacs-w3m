@@ -1,3 +1,10 @@
+2007-12-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-proc.el (w3m-process-kill-stray-processes): Do not kill
+	process when the buffer associated to it is alive.
+	(w3m-process-sentinel): Do not call a handler when its parent
+	buffer have been killed.
+
 2007-12-15  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m-form.el (w3m-form-submit): Remove queey part from the from's
@@ -5,8 +12,8 @@
 
 2007-12-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m-favicon.el (w3m-favicon-size): Change the value form into the
-	cons of WIDTH and HEIGHT.
+	* w3m-favicon.el (w3m-favicon-size): Change the value form into
+	the cons of WIDTH and HEIGHT.
 	(w3m-favicon-convert-args): New user option.
 	(w3m-favicon-convert): Pass it to convert.
 
@@ -15,14 +22,16 @@
 
 2007-12-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m-ems.el (w3m-tab-line): Set the background color of favicon for
-	Emacs 22+.
+	* w3m-ems.el (w3m-tab-line): Set the background color of favicon
+	for Emacs 22+.
+
 	* w3m-favicon.el (w3m-favicon-set-image): Ditto.
 
-	* w3m-image.el (w3m-imagick-convert-program-available-p): Check whether
-	the convert program supports the image type png32 for Emacs 22+.
-	(w3m-imagick-convert-buffer, w3m-imagick-start-convert-buffer): Use
-	png32 if it is available.
+	* w3m-image.el (w3m-imagick-convert-program-available-p): Check
+	whether the convert program supports the image type png32 for
+	Emacs 22+.
+	(w3m-imagick-convert-buffer, w3m-imagick-start-convert-buffer):
+	Use png32 if it is available.
 
 2007-12-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -30,8 +39,9 @@
 
 2007-12-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m-favicon.el (w3m-favicon-convert): Apply the background color of
-	header line or mode line to pixels of which the color is transparent.
+	* w3m-favicon.el (w3m-favicon-convert): Apply the background color
+	of header line or mode line to pixels of which the color is
+	transparent.
 
 2007-12-06  Naohiro Aota  <nao.aota@gmail.com>
 
@@ -43,15 +53,15 @@
 	* w3m.el (w3m-name-anchor-from-hist): New buffer-local variable.
 	(w3m-clear-local-variables): Also clear w3m-name-anchor-from-hist.
 	(w3m-goto-url): Save and restoe w3m-name-anchor-from-hist.
-	(w3m-search-name-anchor): Record (point)s of before and after following
-	a name-anchor.
+	(w3m-search-name-anchor): Record (point)s of before and after
+	following a name-anchor.
 	(w3m-view-previous-page): If possible, move back the cursor to the
 	point where it was before following name-anchors.
 
 2007-11-30  Naohiro Aota  <nao.aota@gmail.com>
 
-	* w3m-proc.el (w3m-process-y-or-n-p): Ignore space to avoid answering y
-	without intention.
+	* w3m-proc.el (w3m-process-y-or-n-p): Ignore space to avoid
+	answering y without intention.
 
 2007-11-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -60,16 +70,16 @@
 
 	* w3m-ems.el (w3m-create-image): Don't modify case-fold-search.
 
-	* w3m-xmas.el (w3m-create-image): Ditto; parse image data to identify
-	its type in the beginning position.
+	* w3m-xmas.el (w3m-create-image): Ditto; parse image data to
+	identify its type in the beginning position.
 
 2007-11-29  Naohiro Aota  <nao.aota@gmail.com>
 
-	* w3m.el (w3m-w3m-dump-extra, w3m-w3m-retrieve): Removed image data
-	type tests.
+	* w3m.el (w3m-w3m-dump-extra, w3m-w3m-retrieve): Removed image
+	data type tests.
 
-	* w3m-xmas.el (w3m-create-image): Parse image data first, use server's
-	content-type when it failed to identify type.
+	* w3m-xmas.el (w3m-create-image): Parse image data first, use
+	server's content-type when it failed to identify type.
 
 	* w3m-ems.el (w3m-create-image): Ditto.
 
@@ -96,8 +106,8 @@
 2007-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>,
 	    TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
-	* w3m.el (w3m-retrieve-and-render): Permit leaving safe pages without
-	confirmation for several safe commands.
+	* w3m.el (w3m-retrieve-and-render): Permit leaving safe pages
+	without confirmation for several safe commands.
 
 2007-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 

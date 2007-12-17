@@ -232,14 +232,7 @@ generated asynchronous process is ignored.  Otherwise,
 (defun w3m-process-kill-stray-processes ()
   "Kill stray processes."
   (dolist (obj w3m-process-queue)
-    (if (buffer-name (w3m-process-buffer obj))
-	(save-excursion
-	  (set-buffer (w3m-process-buffer obj))
-	  (dolist (x (w3m-process-handlers w3m-process-object))
-	    (unless (buffer-name (w3m-process-handler-parent-buffer x))
-	      (setq w3m-process-queue (delq obj w3m-process-queue))
-	      (when (w3m-process-process obj)
-		(w3m-process-kill-process (w3m-process-process obj))))))
+    (unless (buffer-name (w3m-process-buffer obj))
       (setq w3m-process-queue (delq obj w3m-process-queue))
       (when (w3m-process-process obj)
 	(w3m-process-kill-process (w3m-process-process obj))))))
@@ -548,12 +541,16 @@ evaluated in a temporary buffer."
 		    (obj    w3m-process-object))
 		(setq w3m-process-object nil)
 		(dolist (x (w3m-process-handlers obj))
-		  (when (buffer-name (w3m-process-handler-buffer x))
+		  (when (and
+			 (buffer-name (w3m-process-handler-buffer x))
+			 (buffer-name (w3m-process-handler-parent-buffer x)))
 		    (set-buffer (w3m-process-handler-buffer x))
 		    (unless (eq buffer (current-buffer))
 		      (insert-buffer-substring buffer))))
 		(dolist (x (w3m-process-handlers obj))
-		  (when (buffer-name (w3m-process-handler-buffer x))
+		  (when (and
+			 (buffer-name (w3m-process-handler-buffer x))
+			 (buffer-name (w3m-process-handler-parent-buffer x)))
 		    (set-buffer (w3m-process-handler-buffer x))
 		    (let ((w3m-process-exit-status)
 			  (w3m-current-buffer
