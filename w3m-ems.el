@@ -1114,18 +1114,14 @@ is non-nil means not to respond to too fast operation of mouse wheel."
 		title (nth 2 datum)
 		favicon (nth 3 datum)
 		keymap (nth 4 datum)
-		face (if process
-			 (if current
-			     'w3m-tab-selected-retrieving
-			   'w3m-tab-unselected-retrieving)
-		       (if current
-			   'w3m-tab-selected
-			 'w3m-tab-unselected)))
-	  (when (and favicon (>= emacs-major-version 22))
-	    (setq favicon (copy-sequence favicon))
-	    (setcdr favicon (plist-put (cdr favicon)
-				       :background (face-background face))))
-	  (setq face (list face)
+		face (list
+		      (if process
+			  (if current
+			      'w3m-tab-selected-retrieving
+			    'w3m-tab-unselected-retrieving)
+			(if current
+			    'w3m-tab-selected
+			  'w3m-tab-unselected)))
 		icon (when graphic
 		       (cond
 			(process

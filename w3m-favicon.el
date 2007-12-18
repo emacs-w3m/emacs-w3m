@@ -125,8 +125,9 @@ italic font in the modeline."
   "List of additional arguments passed to ImageMagick's convert program.
 Args that are always passed to convert in addition to this value are:
 
-\"-geometry\" \"WIDTHxHEIGHT\" \"fromTYPE:temp-file\" \"toTYPE:-\"
+\(\"-geometry\" \"WIDTHxHEIGHT\" \"fromTYPE:temp-file\" \"toTYPE:-\")
 
+Args might also contain (\"-transparent\" \"COLOR\") in the beginning.
 Note that this value is effective only with Emacs 22 and greater."
   :group 'w3m
   :type `(repeat (group :inline t
@@ -141,6 +142,19 @@ Note that this value is effective only with Emacs 22 and greater."
 			(string :format "Arg: %v " :value "-" :size 0)
 			(checklist :inline t
 				   (string :format "Value: %v\n" :size 0)))))
+
+(defcustom w3m-favicon-default-background nil
+  "Color name used as transparent color of favicon image.
+Nil means to use the background color of the Emacs frame.  The null
+string \"\" is special, that will be replaced with the background color
+of the header line or the mode line on which the favicon is displayed.
+Note that this value is effective only with Emacs 22 and greater."
+  :group 'w3m
+  :type '(radio (string :format "Color: %v\n" :size 0
+			:match (lambda (widget value)
+				 (and (stringp value) (> (length value) 0))))
+		(const :tag "Use the background color of the Emacs frame" nil)
+		(const :tag "Null string" "")))
 
 (defvar w3m-favicon-type-alist '((pbm . ppm))
   "A list of a difference type of image between Emacs and ImageMagick.
@@ -183,10 +197,6 @@ the cache file.")
   (if (featurep 'xemacs)
       `(set 'w3m-favicon-image ,image)
     `(when (setq w3m-favicon-image ,image)
-       (when (>= emacs-major-version 22)
-	 (setcdr w3m-favicon-image
-		 (plist-put (cdr w3m-favicon-image)
-			    :background (face-background 'mode-line))))
        (set 'w3m-modeline-favicon
 	    (list ""
 		  'w3m-space-before-favicon
@@ -227,34 +237,62 @@ favicon is ready."
 
 (defun w3m-favicon-convert (data type)
   "Convert the favicon DATA in TYPE to the favicon image and return it."
-  (let* (height
-	 (img (when (or
-		     (not (eq type 'ico))
-		     ;; Since most of favicons are the `ico' types, we
-		     ;; make sure of the magic-numbers only as for them.
-		     (string-equal "\x00\x00\x01\x00" (substring data 0 4)))
-		(apply
+  (when (or (not (eq type 'ico))
+	    ;; Since most of favicons are the `ico' types, we make sure
+	    ;; of the magic-numbers only as for them.
+	    (string-equal "\x00\x00\x01\x00" (substring data 0 4)))
+    (let ((height (or (cdr w3m-favicon-size)
+		      (w3m-static-if (featurep 'xemacs)
+			  (face-height 'default)
+			(frame-char-height))))
+	  (new (w3m-static-unless (featurep 'xemacs)
+		 (>= emacs-major-version 22)))
+	  bg args img)
+      ;; Examine the transparent color of the image.
+      (when (and w3m-imagick-identify-program
+		 (equal w3m-favicon-default-background ""))
+	(with-temp-buffer
+	  (set-buffer-multibyte nil)
+	  (insert data)
+	  (let ((coding-system-for-read 'raw-text)
+		(coding-system-for-write 'binary))
+	    (condition-case nil
+		(call-process-region (point-min) (point-max)
+				     w3m-imagick-identify-program
+				     t t nil "-verbose" (format "%s:-" type))
+	      (error)))
+	  (goto-char (point-min))
+	  (setq case-fold-search t)
+	  (while (and (not bg)
+		      (re-search-forward "^ *Transparent +color: *\
+\\([^\n ]+\\(?: +[^\n ]+\\)*\\)" nil t))
+	    (when (string-match "\\`none\\'" (setq bg (match-string 1)))
+	      (setq bg nil)))))
+      (setq args (list "-geometry"
+		       (format "%dx%d"
+			       (or (car w3m-favicon-size) height) height)))
+      (w3m-static-unless (featurep 'xemacs)
+	(when new
+	  ;; "-transparent" should precede the other arguments.
+	  (setq args (nconc (when bg (list "-transparent" bg))
+			    args
+			    w3m-favicon-convert-args))))
+      (setq img (apply
 		 #'w3m-imagick-convert-data
 		 data (symbol-name type)
 		 (symbol-name (or (cdr (assq w3m-favicon-type
 					     w3m-favicon-type-alist))
 				  w3m-favicon-type))
-		 "-geometry"
-		 (progn
-		   (setq height (or (cdr w3m-favicon-size)
-				    (w3m-static-if (featurep 'xemacs)
-					(face-height 'default)
-				      (frame-char-height))))
-		   (format "%dx%d"
-			   (or (car w3m-favicon-size) height) height))
-		 (w3m-static-unless (featurep 'xemacs)
-		   (when (>= emacs-major-version 22)
-		     w3m-favicon-convert-args))))))
-    (when img
-      (w3m-static-if (featurep 'xemacs)
-	  (make-glyph
-	   (make-image-instance (vector w3m-favicon-type :data img)))
-	(create-image img w3m-favicon-type t :ascent 'center)))))
+		 args))
+      (when img
+	(w3m-static-if (featurep 'xemacs)
+	    (make-glyph
+	     (make-image-instance (vector w3m-favicon-type :data img)))
+	  (if new
+	      (create-image img w3m-favicon-type t
+			    :ascent 'center
+			    :background w3m-favicon-default-background)
+	    (create-image img w3m-favicon-type t :ascent 'center)))))))
 
 (defun w3m-favicon-retrieve (url type target)
   "Retrieve favicon from URL and convert it to image as TYPE in TARGET.

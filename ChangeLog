@@ -1,3 +1,15 @@
+2007-12-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-favicon.el (w3m-favicon-default-background): New user option.
+	(w3m-favicon-set-image): Don't set background color of favicon here.
+	(w3m-favicon-convert): Set the background color of favicon according to
+	w3m-favicon-default-background.
+
+	* w3m-ems.el (w3m-tab-line): Don't set the background color of favicon
+	here.
+
+	* w3m-image.el (w3m-imagick-identify-program): New user option.
+
 2007-12-17  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-proc.el (w3m-process-kill-stray-processes): Do not kill

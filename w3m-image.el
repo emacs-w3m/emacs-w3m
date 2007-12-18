@@ -71,6 +71,20 @@
 					  (w3m-which-command value)))))
   :type 'file)
 
+(defcustom w3m-imagick-identify-program (if noninteractive
+					    nil
+					  (w3m-which-command "identify"))
+  "*Program name of ImageMagick's `identify'."
+  :group 'w3m
+  :set (lambda (symbol value)
+	 (custom-set-default symbol (if (and (not noninteractive)
+					     value)
+					(if (file-name-absolute-p value)
+					    (if (file-executable-p value)
+						value)
+					  (w3m-which-command value)))))
+  :type 'file)
+
 ;;; Image handling functions.
 (defcustom w3m-resize-images (and w3m-imagick-convert-program t)
   "*If non-nil, resize images to the specified width and height."
