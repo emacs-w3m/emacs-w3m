@@ -1,3 +1,7 @@
+2007-12-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-prepare-article): Remove useless links.
+
 2007-12-05  NOMIYA Masaru  <nomiya@galaxy.dti.ne.jp>,
 	    Katsumi Yamaoka  <yamaoka@jpl.org>
 

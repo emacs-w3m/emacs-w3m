@@ -1483,6 +1483,11 @@ that day if it failed."
 \[\t\n ]*"
 			       nil t)
        (delete-region (match-beginning 0) (match-end 0)))
+     (goto-char (point-min))
+     (while (re-search-forward "[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)+\
+アサヒ・コムトップヘ\\(?:[\t\n ]*<[^>]+>\\)+[\t\n ]*"
+			       nil t)
+       (replace-match "\n"))
      ;; Remove trailing garbage.
      (goto-char (point-min))
      (when (and (not (string-match "ゆるゆるフェミニン" from))
