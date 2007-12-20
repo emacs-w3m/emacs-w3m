@@ -1,3 +1,25 @@
+2007-12-20  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-lynx-like-map): Bind `w3m-move-unseen-buffer'.
+	(w3m-info-like-map): Ditto.
+	(w3m-buffer-unseen): New buffer local variable.
+	(w3m-set-buffer-unseen): New function.
+	(w3m-set-buffer-seen): Ditto.
+	(w3m-move-unseen-buffer): Ditto.
+	(w3m-remove-local-hook): Ditto.
+	(w3m-goto-url): Set buffer to unseen.
+	(w3m-select-buffer-generate-contents): Support `unseen'.
+
+	* w3m-util.el (top): Add the variable definition of `w3m-buffer-unseen'
+	to avoid byte-compile warnings.
+	(w3m-unseen-buffer-p): New inline macro.
+
+	* w3m-tabmenu.el (w3m-tab-menubar-make-items-1): Support `unseen'.
+
+	* w3m-ems.el (w3m-remove-local-hook): New function.
+	(w3m-tab-unselected-unseen): New face.
+	(w3m-tab-line): Support `unseen'.
+
 2007-12-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-mode): Set show-trailing-whitespace to nil.

@@ -192,6 +192,10 @@ CODING-SYSTEM, DECODER and ENCODER must be symbol."
   "Add to the buffer-local value of HOOK the function FUNCTION."
   (add-hook hook function append t))
 
+(defun w3m-remove-local-hook (hook function)
+  "Remove to the buffer-local value of HOOK the function FUNCTION."
+  (remove-hook hook function t))
+
 ;; Function which returns non-nil when the current display device can
 ;; show images inline.
 (defalias 'w3m-display-graphic-p 'display-images-p)
@@ -640,6 +644,17 @@ otherwise works in all the emacs-w3m buffers."
 (put 'w3m-tab-unselected-retrieving-face
      'face-alias 'w3m-tab-unselected-retrieving)
 
+(defface w3m-tab-unselected-unseen
+  '((((type x w32 mac) (class color))
+     :background "Gray70" :foreground "Gray20"
+     :box (:line-width -1 :style released-button))
+    (((class color))
+     (:background "blue" :foreground "gray60")))
+  "*Face to fontify unselected and unseen tabs."
+  :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-tab-unselected-unseen-face 'face-alias 'w3m-tab-unselected-unseen)
+
 (defface w3m-tab-selected
   '((((type x w32 mac) (class color))
      :background "Gray90" :foreground "black"
@@ -1072,7 +1087,7 @@ is non-nil means not to respond to too fast operation of mouse wheel."
 		       1))
 	     (spinner (when w3m-process-queue
 			(w3m-make-spinner-image)))
-	     buffer title data datum process favicon keymap face icon line)
+	     buffer title data datum process unseen favicon keymap face icon line)
 	(setq w3m-tab-timer t)
 	(run-at-time 0.1 nil
 		     (lambda (buffer)
@@ -1100,6 +1115,7 @@ is non-nil means not to respond to too fast operation of mouse wheel."
 			 0)))
 	    (push (list (eq current buffer)
 			w3m-current-process
+			(w3m-unseen-buffer-p buffer)
 			title
 			(when w3m-use-favicon w3m-favicon-image)
 			w3m-tab-map)
@@ -1111,9 +1127,10 @@ is non-nil means not to respond to too fast operation of mouse wheel."
 	  (setq datum (pop data)
 		current (car datum)
 		process (nth 1 datum)
-		title (nth 2 datum)
-		favicon (nth 3 datum)
-		keymap (nth 4 datum)
+		unseen (nth 2 datum)
+		title (nth 3 datum)
+		favicon (nth 4 datum)
+		keymap (nth 5 datum)
 		face (list
 		      (if process
 			  (if current
@@ -1121,7 +1138,9 @@ is non-nil means not to respond to too fast operation of mouse wheel."
 			    'w3m-tab-unselected-retrieving)
 			(if current
 			    'w3m-tab-selected
-			  'w3m-tab-unselected)))
+			  (if unseen
+			      'w3m-tab-unselected-unseen
+			    'w3m-tab-unselected))))
 		icon (when graphic
 		       (cond
 			(process

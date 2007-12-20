@@ -5810,7 +5810,7 @@ when the URL of the retrieved page matches the REGEXP."
 	(message "No such anchor: %s" name)))
     (if (= (point) cur-pos)
 	nil
-      (setq w3m-name-anchor-from-hist 
+      (setq w3m-name-anchor-from-hist
 	    (append (list 1 nil (point) cur-pos)
 		    (and (integerp (car w3m-name-anchor-from-hist))
 			 (nthcdr (1+ (car w3m-name-anchor-from-hist))
@@ -7086,6 +7086,7 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "\C-c\C-b" 'report-emacs-w3m-bug)
     (define-key map "\C-c\C-c" 'w3m-submit-form)
     (define-key map "\C-c\C-k" 'w3m-process-stop)
+    (define-key map "\C-c\C-m" 'w3m-move-unseen-buffer)
     (setq w3m-lynx-like-map map)))
 
 (defvar w3m-info-like-map nil
@@ -7222,6 +7223,7 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "\C-c\C-b" 'report-emacs-w3m-bug)
     (define-key map "\C-c\C-c" 'w3m-submit-form)
     (define-key map "\C-c\C-k" 'w3m-process-stop)
+    (define-key map "\C-c\C-m" 'w3m-move-unseen-buffer)
     (setq w3m-info-like-map map)))
 
 (defun w3m-alive-p (&optional visible)
@@ -7459,6 +7461,35 @@ or a list which consists of the following elements:
   (interactive "e")
   (mouse-set-point event)
   (popup-menu w3m-link-menu))
+
+(defvar w3m-buffer-unseen nil)
+(make-variable-buffer-local 'w3m-buffer-unseen)
+
+(defun w3m-set-buffer-unseen (&optional url)
+  (setq w3m-buffer-unseen t)
+  (w3m-add-local-hook 'pre-command-hook 'w3m-set-buffer-seen))
+
+(defun w3m-set-buffer-seen ()
+  (setq w3m-buffer-unseen nil)
+  (w3m-remove-local-hook 'pre-command-hook 'w3m-set-buffer-seen))
+
+(defun w3m-move-unseen-buffer ()
+  "Move to the next unseen buffer."
+  (interactive)
+  (when (eq major-mode 'w3m-mode)
+    (let* ((bufs (w3m-list-buffers))
+	   (right (memq (current-buffer) bufs))
+      unseen)
+      (setq unseen
+	    (catch 'unseen
+	      (dolist (buf (append right bufs))
+		(when (w3m-unseen-buffer-p buf)
+		  (throw 'unseen buf)))))
+      (if (not unseen)
+	  (message "No unseen buffer.")
+	(switch-to-buffer unseen)
+	(run-hooks 'w3m-select-buffer-hook)
+	(w3m-select-buffer-update)))))
 
 (defun w3m-mode ()
   "Major mode for browsing web.
@@ -7987,7 +8018,11 @@ this function will prompt user for it."
       "Add to the buffer-local value of HOOK the function FUNCTION.
 This function is designed for XEmacs."
       (make-local-hook hook)
-      (add-hook hook function append t))))
+      (add-hook hook function append t))
+    (defun w3m-remove-local-hook (hook function)
+      "Remove to the buffer-local value of HOOK the function FUNCTION.
+This function is designed for XEmacs."
+      (remove-hook hook function t))))
 
 (defun w3m-store-current-position ()
   "Memorize the current positions whenever every command starts.
@@ -8270,7 +8305,7 @@ Cannot run two w3m processes simultaneously \
 						  (and (integerp (car w3m-name-anchor-from-hist))
 						       (nthcdr (1+ (car w3m-name-anchor-from-hist))
 							       w3m-name-anchor-from-hist)))))
-		 (setq w3m-name-anchor-from-hist 
+		 (setq w3m-name-anchor-from-hist
 		       (plist-get (nthcdr 3 element) :name-anchor-hist))
 		 (setq w3m-current-process
 		       (w3m-retrieve-and-render orig reload charset
@@ -8343,6 +8378,7 @@ Cannot run two w3m processes simultaneously \
 		(setq truncate-lines nil))
 	      (when (or reload redisplay)
 		(w3m-history-restore-position))
+	      (w3m-set-buffer-unseen)
 	      (w3m-refresh-at-time)))))))
    (t (w3m-message "Invalid URL: %s" url))))
 
@@ -8550,7 +8586,7 @@ function (which see)."
   (if (null w3m-current-url)
       (w3m-message "Can't execute this page")
     (setf (w3m-arrived-content-type w3m-current-url) nil)
-    (setf (w3m-arrived-content-charset 
+    (setf (w3m-arrived-content-charset
 	   (if (string-match "\\`about://source/" w3m-current-url)
 	       (substring w3m-current-url (match-end 0))
 	     w3m-current-url))
@@ -9256,7 +9292,9 @@ buffer list.  The following command keys are available:
     (dolist (buffer (w3m-list-buffers))
       (put-text-property (point)
 			 (progn
-			   (insert (format "%d: %s\n" (incf i)
+			   (insert (format "%d:%s %s\n" (incf i)
+					   (if (w3m-unseen-buffer-p buffer)
+					       "(u)" "   ")
 					   (w3m-buffer-title buffer)))
 			   (point))
 			 'w3m-select-buffer buffer))

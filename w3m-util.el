@@ -62,6 +62,7 @@
   (defvar w3m-use-japanese-menu)
   (defvar w3m-mode-map)
   (defvar w3m-use-title-buffer-name)
+  (defvar w3m-buffer-unseen)
   (unless (fboundp 'select-frame-set-input-focus)
     (defalias 'select-frame-set-input-focus 'ignore)))
 
@@ -1124,6 +1125,12 @@ If SECONDS is omitted, it defaults to 0.5."
   "Convert the car of `:args' as a widget type in WIDGET."
   (apply 'widget-convert (widget-type widget)
 	 (eval (car (widget-get widget :args)))))
+
+(defsubst w3m-unseen-buffer-p (buffer)
+  "Return t if buffer unseen."
+  (save-excursion
+    (set-buffer buffer)
+    w3m-buffer-unseen))
 
 (provide 'w3m-util)
 

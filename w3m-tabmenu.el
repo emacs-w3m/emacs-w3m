@@ -114,22 +114,27 @@
   (let ((i 0)
 	(current (current-buffer))
 	(width w3m-tab-menubar-items-width)
-	title)
+	title unseen)
     (mapcar
      (lambda (buffer)
        (if nomenu
 	   (list (buffer-name buffer)
-		 (w3m-buffer-title buffer)
+		 (format "%s%s"
+			 (if (w3m-unseen-buffer-p buffer) "(u)" "")
+			 (w3m-buffer-title buffer))
 		 (eq buffer current))
 	 (setq title (w3m-buffer-title buffer))
+	 (setq unseen (w3m-unseen-buffer-p buffer))
 	 (when (>= (string-width title) width)
 	   (setq title
 		 (concat (w3m-truncate-string title
 					      (- width 3))
 			 "...")))
-	 (vector (format "%d: %s%s"
+	 (vector (format "%d:%s%s"
 			 (incf i)
-			 (if (eq buffer current) "* " "  ")
+			 (cond ((eq buffer current) "* ")
+			       (unseen "u ")
+			       (t "  "))
 			 title)
 		 `(w3m-tab-menubar-open-item ,(buffer-name buffer))
 		 buffer)))
@@ -171,7 +176,7 @@
 		      '("-")
 		      (w3m-make-menu-commands
 		       w3m-tab-button-menu-commands)))))))
-  
+
 (provide 'w3m-tabmenu)
 
 ;;; w3m-tabmenu.el ends here
