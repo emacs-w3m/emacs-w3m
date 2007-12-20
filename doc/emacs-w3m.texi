@@ -6512,18 +6512,6 @@ check out the following external packages for even more usability:
 
 @itemize @bullet
 @item
-w3m-session.el
-
-The w3m-session.el package provides persistent emacs-w3m browsing
-sessions.  When quitting emacs-w3m you can save the current session
-(that is, the set of open tabs and the URLs they're visiting).  Upon
-restarting emacs-w3m you'll have the possibility of recovering the saved
-session.
-
-Download w3m-session.el from
-@uref{http://www.emacswiki.org/elisp/wthreem-session.el}.
-
-@item
 w3m-type-ahead.el
 
 The w3m-type-ahead.el package provides ``type ahead'' searching, similar
@@ -6534,6 +6522,21 @@ limited to anchors in the buffer.
 Download w3m-type-ahead.el from
 @uref{http://alioth.debian.org/project/showfiles.php?group_id=30594}.
 
+@item
+newsticker.el
+
+newsticker.el that has been incorporated in Emacs 22 and greater is a
+rowse rss feeds and also atom feeds.  Here is a configuration example to
+use newsticker.el together with emacs-w3m (put it in the @file{~/.emacs}
+file):
+
+@lisp
+(require 'w3m-load)
+(setq newsticker-html-renderer 'w3m-region
+      browse-url-browser-function 'w3m-browse-url)
+@end lisp
+
+@pxref{Top, ,Top, Newsticker, A Newsticker for Emacs}, for details.
 @end itemize
 
 @node Authors

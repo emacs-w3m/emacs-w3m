@@ -6517,18 +6517,6 @@ Emacs-w3m $B$O=aBt$J5!G=$rDs6!$7$^$9$,!"$5$i$KJXMx$K$9$k$?$a$K0J2<$N30It%Q%C(B
 
 @itemize @bullet
 @item
-w3m-session.el
-
-w3m-session.el $B$O!"(Bemacs-w3m $B$K$h$k1\Mw$N$?$a$N%;%C%7%g%s$r915WE*$K$9$k(B
-$B5!G=$rDs6!$7$^$9!#$3$l$r;H$&$H!"(BEmacs-w3m $B$r=*$o$k$H$-$K!"8=:_$N%;%C%7%g(B
-$B%s(B ($B$9$J$o$A!"3+$$$F$$$k%?%V$HFI$s$G$$$k(B URLs) $B$r%;!<%V$9$k$3$H$,$G$-$^(B
-$B$9!#(Bemacs-w3m $B$r:F3+$9$k$H!"%;!<%V$7$?%;%C%7%g%s$r2sI|$9$k$3$H$,$G$-$k$G(B
-$B$7$g$&!#(B
-
-w3m-session.el $B$N%@%&%s%m!<%I(B:
-@uref{http://www.emacswiki.org/elisp/wthreem-session.el}
-
-@item
 w3m-type-ahead.el
 
 w3m-type-ahead.el $B%Q%C%1!<%8$O(B ``type ahead'' $B8!:w5!G=(B (Mozilla $B%V%i%&%6(B
@@ -6539,6 +6527,21 @@ w3m-type-ahead.el $B%Q%C%1!<%8$O(B ``type ahead'' $B8!:w5!G=(B (Mozilla $B%
 w3m-type-ahead.el $B$N%@%&%s%m!<%I(B:
 @uref{http://alioth.debian.org/project/showfiles.php?group_id=30594}
 
+@item
+newsticker.el
+
+Emacs 22 $B0J>e$GAH$_9~$^$l$F$$$k(B newsticker.el $B$O(B rss $B%U%#!<%I$d$5$i(B
+$B$K(B atom $B%U%#!<%I$rD/$a$k$?$a$NF;6q$G$9!#0J2<$O(B Emacs-w3m $B$H$H$b(B
+$B$K(B newsticker.el $B$r;H$&$?$a$N@_DjNc$G$9(B (@file{~/.emacs} $B%U%!%$%k$KCV$$(B
+$B$F$/$@$5$$(B):
+
+@lisp
+(require 'w3m-load)
+(setq newsticker-html-renderer 'w3m-region
+      browse-url-browser-function 'w3m-browse-url)
+@end lisp
+
+$B>\$7$/$O(B: @xref{Top, ,Top, Newsticker, A Newsticker for Emacs}.
 @end itemize
 
 @node Authors
