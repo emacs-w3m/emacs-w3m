@@ -6531,7 +6531,7 @@ w3m-type-ahead.el のダウンロード:
 newsticker.el
 
 Emacs 22 以上で組み込まれている newsticker.el は rss フィードやさら
-に atom フィードを眺めるための道具です。以下は Emacs-w3m ととも
+に atom フィードを眺めるための道具です。以下は emacs-w3m ととも
 に newsticker.el を使うための設定例です (@file{~/.emacs} ファイルに置い
 てください):
 
