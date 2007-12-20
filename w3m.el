@@ -7614,6 +7614,8 @@ or a list which consists of the following elements:
     (when (boundp 'hscroll-mode)
       (set (make-local-variable 'hscroll-mode) nil)))
   (make-local-variable 'list-buffers-directory)
+  (w3m-static-unless (featurep 'xemacs)
+    (setq show-trailing-whitespace nil))
   (w3m-setup-toolbar)
   (w3m-setup-menu)
   (run-hooks 'w3m-mode-setup-functions)
