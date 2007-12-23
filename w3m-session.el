@@ -113,6 +113,16 @@
 ;;   (title2 time2 (url url url ...) current2)
 ;;   ...)
 
+(defsubst w3m-session-history-to-save ()
+  "Return a copy of `w3m-history-flat' without current page data."
+  (let ((pos (cadar w3m-history)))
+    (apply
+     'append
+     (mapcar (lambda (x)
+	       (unless (equal (nth 2 x) pos)
+		 (list x)))
+	     (copy-sequence w3m-history-flat)))))
+
 ;;;###autoload
 (defun w3m-session-save ()
   "Save list of displayed session."
@@ -149,7 +159,10 @@
 	  (when (eq cbuf (current-buffer))
 	    (setq cnum i))
 	  (setq i (1+ i))
-	  (setq urls (cons w3m-current-url urls)))))
+	  (setq urls (cons (list w3m-current-url
+				 (copy-sequence (caar w3m-history))
+				 (w3m-session-history-to-save))
+			   urls)))))
     (if (not urls)
 	(message "%s: no session save...done" title)
       (setq len (length urls))
@@ -181,7 +194,10 @@
 	      (when (eq cbuf (current-buffer))
 		(setq cnum i))
 	      (setq i (1+ i))
-	      (setq urls (cons w3m-current-url urls)))))
+	      (setq urls (cons (list w3m-current-url
+				     (copy-sequence (caar w3m-history))
+				     (w3m-session-history-to-save))
+			       urls)))))
 	(when urls
 	  (setq urls (nreverse urls))
 	  (when (assoc title sessions)
@@ -208,7 +224,10 @@
 	    (setq bufs (cdr bufs))
 	    (set-buffer buf)
 	    (when w3m-current-url
-	      (setq urls (cons w3m-current-url urls)))))
+	      (setq urls (cons (list w3m-current-url
+				     (copy-sequence (caar w3m-history))
+				     (w3m-session-history-to-save))
+			       urls)))))
 	(when urls
 	  (while (setq session (car sessions))
 	    (setq sessions (cdr sessions))
@@ -248,7 +267,11 @@
 	      (setq times (cons (format-time-string w3m-session-time-format
 						    (nth 1 x))
 				times))
-	      (setq urls (cons (mapconcat 'identity (nth 2 x) ", ")
+	      (setq urls (cons (mapconcat (lambda (url)
+					    (if (stringp url)
+						url
+					      (car url)))
+					  (nth 2 x) ", ")
 			       urls)))
 	    sessions)
       (setq titles (nreverse titles))
@@ -382,13 +405,20 @@
 	(cnum (nth 3 session))
 	(i 0)
 	(w3m-async-exec (and w3m-async-exec-with-many-urls w3m-async-exec))
-	url cbuf)
+	url cbuf pos history)
     (message "Session goto(%s)..." title)
     (while (setq url (car urls))
       (setq urls (cdr urls))
+      (unless (stringp url)
+	(setq pos     (nth 1 url)
+	      history (nth 2 url)
+	      url     (nth 0 url)))
       (w3m-goto-url-new-session url)
-      (when (and (numberp cnum) (= cnum i))
-	(setq cbuf (car (nreverse (w3m-list-buffers)))))
+      (setq cbuf (car (nreverse (w3m-list-buffers))))
+      (when (and cbuf pos history)
+	(set-buffer cbuf)
+	(setq w3m-history-flat history)
+	(w3m-history-tree pos))
       (setq i (1+ i)))
     (when (and cbuf (eq major-mode 'w3m-mode))
       (set-window-buffer (selected-window) cbuf))

@@ -1,3 +1,11 @@
+2007-12-24  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-session.el (w3m-session-history-to-save): New function.
+	(w3m-session-save): Also record history data.
+	(w3m-session-automatic-save, w3m-session-deleted-save): Ditto.
+	(w3m-session-select): Follow the format change.
+	(w3m-session-goto-session): Also restore history data.
+
 2007-12-23  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-tabmenu.el (w3m-tab-menubar-force-update): New function.
@@ -51,7 +59,7 @@
 
 2007-12-15  Naohiro Aota  <nao.aota@gmail.com>
 
-	* w3m-form.el (w3m-form-submit): Remove queey part from the from's
+	* w3m-form.el (w3m-form-submit): Remove query part from the form's
 	action url when using get method.
 
 2007-12-14  Katsumi Yamaoka  <yamaoka@jpl.org>
