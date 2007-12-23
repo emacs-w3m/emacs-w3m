@@ -1,3 +1,9 @@
+2007-12-23  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-tabmenu.el (w3m-tab-menubar-force-update): New function.
+	(top): Register `w3m-tab-menubar-force-update' to
+	`w3m-display-functions'.
+
 2007-12-20  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-lynx-like-map): Bind `w3m-move-unseen-buffer'.

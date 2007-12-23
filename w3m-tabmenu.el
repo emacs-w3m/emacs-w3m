@@ -145,6 +145,12 @@
 (defvar w3m-tab-menubar-make-items-preurl nil)
 (defvar w3m-tab-menubar-make-items-preitems nil)
 
+(defun w3m-tab-menubar-force-update (&rest args)
+  (setq w3m-tab-menubar-make-items-preitems nil)
+  (w3m-tab-menubar-update))
+
+(add-hook 'w3m-display-functions 'w3m-tab-menubar-force-update)
+
 (defun w3m-tab-menubar-make-items (&optional nomenu)
   "Create w3m tab menu items."
   (let (menu buflst total max)
