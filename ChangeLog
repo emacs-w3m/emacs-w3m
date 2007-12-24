@@ -1,3 +1,8 @@
+2007-12-24  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-session.el (w3m-session-goto-session): Go to the current w3m
+	buffer in data of session.
+
 2007-12-24  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m-session.el (w3m-session-history-to-save): New function.
