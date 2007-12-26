@@ -1,3 +1,8 @@
+2007-12-27  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-form.el (w3m-form-coding-system-accept-region-p): New function.
+	(w3m-form-input-textarea-save, w3m-form-input-textarea-set): Use it.
+
 2007-12-24  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-session.el (w3m-session-goto-session): Go to the current w3m

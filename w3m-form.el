@@ -221,6 +221,15 @@ It is useful to bind this variable with `let', but do not set it globally.")
   `(w3m-form-put-property ,form ,id :value (cons ,name ,value)))
 (defmacro w3m-form-get (form id)
   `(cdr (w3m-form-get-property ,form ,id :value)))
+(defun w3m-form-coding-system-accept-region-p (&optional from to coding-system)
+  "Check whether `coding-system' can encode specified region."
+  (let ((pos (unencodable-char-position (or from (point-min))
+					(or to   (point-max))
+					(or coding-system 
+					    w3m-form-input-textarea-coding-system))))
+    (or (not pos)
+	(y-or-n-p (format "\"%c\" would not be accepted. Continue? "
+			  (char-after pos))))))
 (defun w3m-form-get-by-name (form name)
   (let ((plist (w3m-form-plist form))
 	pair value)
@@ -942,9 +951,13 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 (defun w3m-form-input (form id name type width maxlength value)
   (save-excursion
     (let* ((fvalue (w3m-form-get form id))
-	   (input (read-from-minibuffer (concat (upcase type) ": ") fvalue)))
-      (w3m-form-put form id name input)
-      (w3m-form-replace input))))
+	   (input (read-from-minibuffer (concat (upcase type) ": ") fvalue))
+	   (coding (w3m-form-get-coding-system (w3m-form-charlst form))))
+      (when (with-temp-buffer
+	      (insert input)
+	      (w3m-form-coding-system-accept-region-p nil nil coding))
+	(w3m-form-put form id name input)
+	(w3m-form-replace input)))))
 
 (defun w3m-form-input-password (form id name)
   (let* ((fvalue (w3m-form-get form id))
@@ -1102,16 +1115,19 @@ character."
        (setq file (concat file id ".txt"))
        (convert-standard-filename file)))))
 
-(defun w3m-form-input-textarea-save (&optional buffer file)
+(defun w3m-form-input-textarea-save (&optional buffer file no-check)
   "Save textarea buffer."
   (interactive)
   (setq buffer (or buffer (current-buffer)))
   (setq file (or file w3m-form-input-textarea-file))
   (with-current-buffer buffer
     (if (/= (buffer-size) 0)
-	(when (or w3m-form-use-textarea-backup-p
-		  (and (eq this-command 'w3m-form-input-textarea-save)
-		       (y-or-n-p "Really save this buffer? ")))
+	(when (and
+	       (or w3m-form-use-textarea-backup-p
+		   (and (eq this-command 'w3m-form-input-textarea-save)
+			(y-or-n-p "Really save this buffer? ")))
+	       (or no-check
+		   (w3m-form-coding-system-accept-region-p)))
 	  (let ((buffer-file-coding-system
 		 w3m-form-input-textarea-coding-system)
 		(coding-system-for-write
@@ -1137,19 +1153,20 @@ character."
 	(wincfg w3m-form-input-textarea-wincfg)
 	(file w3m-form-input-textarea-file)
 	info)
-    (w3m-form-input-textarea-save buffer file)
-    (or (one-window-p) (delete-window))
-    (kill-buffer buffer)
-    (if (not (buffer-live-p w3mbuffer))
-	(and (eq this-command 'w3m-form-input-textarea-set)
-	     (message "No current w3m buffer"))
-      (pop-to-buffer w3mbuffer)
-      (set-window-configuration wincfg)
-      (when (and form point)
-	(goto-char point)
-	(setq info (w3m-form-textarea-info))
-	(w3m-form-put form (nth 0 info) (nth 1 info) input)
-	(w3m-form-textarea-replace hseq input)))))
+    (when (w3m-form-coding-system-accept-region-p)
+      (w3m-form-input-textarea-save buffer file t)
+      (or (one-window-p) (delete-window))
+      (kill-buffer buffer)
+      (if (not (buffer-live-p w3mbuffer))
+	  (and (eq this-command 'w3m-form-input-textarea-set)
+	       (message "No current w3m buffer"))
+	(pop-to-buffer w3mbuffer)
+	(set-window-configuration wincfg)
+	(when (and form point)
+	  (goto-char point)
+	  (setq info (w3m-form-textarea-info))
+	  (w3m-form-put form (nth 0 info) (nth 1 info) input)
+	  (w3m-form-textarea-replace hseq input))))))
 
 (defun w3m-form-input-textarea-exit ()
   "Exit from w3m form textarea mode."
