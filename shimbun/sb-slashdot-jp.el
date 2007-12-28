@@ -119,7 +119,7 @@
   ((shimbun shimbun-slashdot-jp) url date)
   (cond
    ((string-match
-     "\\`http://slashdot\\.jp/\\([a-zA-Z0-9]+\\)?/?article\\.pl\\?sid=\\([/0-9]+\\)&"
+     "\\`http://slashdot\\.jp/\\([a-zA-Z0-9]+\\)?/?article\\.pl\\?sid=\\([/0-9]+\\)\\(&\\|\\'\\)"
      url)
     (if (match-string-no-properties 1 url)
 	(concat "<" (match-string-no-properties 1 url)

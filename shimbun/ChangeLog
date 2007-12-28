@@ -1,3 +1,8 @@
+2007-12-28  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* sb-slashdot-jp.el (shimbun-rss-build-message-id): Relax a
+	regular expression to detect message-id basis.
+
 2007-12-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-prepare-article): Remove useless links.
