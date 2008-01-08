@@ -1,6 +1,6 @@
 ;;; sb-nytimes.el --- shimbun backend for The New York Times
 
-;; Copyright (C) 2007 Katsumi Yamaoka
+;; Copyright (C) 2007, 2008 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -221,13 +221,6 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
 
 (defvar shimbun-nytimes-retry-fetching 1)
 
-(defvar shimbun-nytimes-next-url nil
-  "Url of the next page that is about to fetch.")
-
-(luna-define-method shimbun-make-contents :before ((shimbun shimbun-nytimes)
-						   header)
-  (setq shimbun-nytimes-next-url nil))
-
 (luna-define-method shimbun-multi-next-url ((shimbun shimbun-nytimes)
 					    header url)
   (goto-char (point-min))
@@ -243,8 +236,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
 		 (progn
 		   (goto-char start)
 		   (re-search-forward "href=\"\\([^\"]+\\)\"" end t)))
-	(setq shimbun-nytimes-next-url
-	      (shimbun-expand-url (match-string 1) url))))))
+	(shimbun-expand-url (match-string 1) url)))))
 
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-nytimes)
 						    header)

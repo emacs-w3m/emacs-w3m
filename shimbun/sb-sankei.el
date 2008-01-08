@@ -1,6 +1,6 @@
 ;;; sb-sankei.el --- shimbun backend for the MSN Sankei News -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003, 2004, 2005, 2006, 2007 Katsumi Yamaoka
+;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -92,6 +92,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAGFBMVEX///8An/8Vb38CnwB
 (luna-define-method shimbun-index-url ((shimbun shimbun-sankei))
   (nth 2 (assoc (shimbun-current-group-internal shimbun)
 		shimbun-sankei-group-table)))
+
+(defvar shimbun-sankei-retry-fetching 1)
 
 (luna-define-method shimbun-headers :around ((shimbun shimbun-sankei)
 					     &optional range)
