@@ -1,3 +1,15 @@
+2008-01-09  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-form.el (w3m-form-coding-system-accept-region-p): Abolish.
+
+	* w3m-ems.el (w3m-form-coding-system-accept-region-p): Use
+	select-safe-coding-system if unencodable-char-position is not
+	available.
+
+	* w3m-xmas.el (w3m-form-coding-system-accept-region-p): Use
+	decode-coding-string and encode-coding-string instead of
+	unencodable-char-position; Only warn coding-system problem.
+
 2008-01-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-url-decode-string): Don't replace +'s with spaces.

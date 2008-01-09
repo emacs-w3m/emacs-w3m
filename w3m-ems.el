@@ -79,6 +79,7 @@
   ;; `w3m-tab-move-right' calls the inline function `w3m-buffer-set-number'
   ;; which uses it.
   (defvar w3m-use-title-buffer-name)
+  (defvar w3m-form-input-textarea-coding-system)
   (autoload 'w3m-copy-buffer "w3m")
   (autoload 'w3m-delete-buffer "w3m")
   (autoload 'w3m-image-type "w3m")
@@ -89,7 +90,9 @@
   (unless (fboundp 'frame-current-scroll-bars)
     (defalias 'frame-current-scroll-bars 'ignore))
   (unless (fboundp 'window-fringes)
-    (defalias 'window-fringes 'ignore)))
+    (defalias 'window-fringes 'ignore))
+  (unless (fboundp 'unencodable-char-position)
+    (defalias 'unencodable-char-position 'ignore)))
 
 ;;; Coding system and charset.
 
@@ -1329,6 +1332,22 @@ list."
 			    w3m-default-coding-system
 			    w3m-coding-system
 			    'iso-2022-7bit)))
+
+(defun w3m-form-coding-system-accept-region-p (&optional from to coding-system)
+  "Check whether `coding-system' can encode specified region."
+  (let ((from (or from (point-min)))
+	(to (or to   (point-max)))
+	(coding-system (or coding-system 
+			   w3m-form-input-textarea-coding-system)))
+    (if (fboundp 'unencodable-char-position)
+	(let ((pos (unencodable-char-position from to coding-system)))
+	  (or (not pos)
+	      (y-or-n-p (format "\"%c\" would not be accepted. Continue? "
+				(char-after pos)))))
+      (let ((select-safe-coding-system-accept-default-p nil))
+	(or (eq (select-safe-coding-system from to coding-system)
+		coding-system)
+	    (y-or-n-p "This text may cause coding-system problem. Continue? "))))))
 
 (provide 'w3m-ems)
 

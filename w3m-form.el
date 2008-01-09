@@ -221,15 +221,6 @@ It is useful to bind this variable with `let', but do not set it globally.")
   `(w3m-form-put-property ,form ,id :value (cons ,name ,value)))
 (defmacro w3m-form-get (form id)
   `(cdr (w3m-form-get-property ,form ,id :value)))
-(defun w3m-form-coding-system-accept-region-p (&optional from to coding-system)
-  "Check whether `coding-system' can encode specified region."
-  (let ((pos (unencodable-char-position (or from (point-min))
-					(or to   (point-max))
-					(or coding-system 
-					    w3m-form-input-textarea-coding-system))))
-    (or (not pos)
-	(y-or-n-p (format "\"%c\" would not be accepted. Continue? "
-			  (char-after pos))))))
 (defun w3m-form-get-by-name (form name)
   (let ((plist (w3m-form-plist form))
 	pair value)

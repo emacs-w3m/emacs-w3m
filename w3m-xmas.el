@@ -992,6 +992,17 @@ necessarily solve the problem completely."
 	(set-window-hscroll window (- (point) (point-at-bol))))))
   )
 
+(defun w3m-form-coding-system-accept-region-p (&optional from to coding-system)
+  "Check whether `coding-system' can encode specified region."
+  (let ((string (buffer-substring (or from (point-min)) 
+				  (or to   (point-max)))))
+    (unless (string= (decode-coding-string
+		      (encode-coding-string string coding-system)
+		      coding-system)
+		     string)
+      (message "Warning: this text may cause coding-system problem."))
+    t))
+
 (provide 'w3m-xmas)
 
 ;;; w3m-xmas.el ends here
