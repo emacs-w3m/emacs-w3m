@@ -1,6 +1,6 @@
 ;;; w3m.el --- an Emacs interface to w3m
 
-;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
+;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -3113,15 +3113,13 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 
 (defun w3m-url-decode-string (str &optional coding)
   (let ((start 0)
-	(buf))
-    (while (string-match "+\\|%\\(0D%0A\\|\\([0-9a-fA-F][0-9a-fA-F]\\)\\)"
-			 str start)
+	(buf)
+	(case-fold-search t))
+    (while (string-match "%\\(?:\\([0-9a-f][0-9a-f]\\)\\|0d%0a\\)" str start)
       (push (substring str start (match-beginning 0)) buf)
-      (push (cond
-	     ((match-beginning 2)
-	      (vector (string-to-number (match-string 2 str) 16)))
-	     ((match-beginning 1) "\n")
-	     (t " "))
+      (push (if (match-beginning 1)
+		(vector (string-to-number (match-string 1 str) 16))
+	      "\n")
 	    buf)
       (setq start (match-end 0)))
     (setq str (apply 'concat (nreverse (cons (substring str start) buf))))
