@@ -830,6 +830,9 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 		       "alt=\"写真\\(の拡大\\)\"")))
 	   nil t)
      (delete-region (match-beginning 1) (match-end 1)))
+   ;; Remove javascripts which will appear in text/plain articles.
+   (shimbun-remove-tags "<!--// rectangle_start //-->"
+			"<!--// rectangle_end //-->")
    (goto-char (point-min))
    (let ((group (shimbun-current-group-internal shimbun)))
      (cond ((string-equal group "editorial")
