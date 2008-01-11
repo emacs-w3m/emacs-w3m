@@ -1,3 +1,9 @@
+2008-01-11  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-filter.el (w3m-filter-iframe): New function.
+	(w3m-filter-rules): Add rule for inserting link to the url iframe
+	displays.
+
 2008-01-09  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m-form.el (w3m-form-coding-system-accept-region-p): Abolish.

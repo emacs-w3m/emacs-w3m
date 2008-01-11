@@ -57,7 +57,8 @@
     ("\\`http://mixi\\.jp" w3m-filter-mixi)
     ("\\`http://eow\\.alc\\.co\\.jp/[^/]+/UTF-8" w3m-filter-alc)
     ("\\`http://www\\.asahi\\.com/" w3m-filter-asahi-shimbun)
-    ("\\`http://imepita\\.jp/[0-9]+/[0-9]+" w3m-filter-imepita))
+    ("\\`http://imepita\\.jp/[0-9]+/[0-9]+" w3m-filter-imepita)
+    ("" w3m-filter-iframe))
   "Rules to filter advertisements on WEB sites."
   :group 'w3m
   :type '(repeat
@@ -315,5 +316,10 @@
       (setq tmp (match-string 1))
       (delete-region (match-beginning 0) (match-end 0))
       (insert tmp))))
+
+(defun w3m-filter-iframe (url)
+  (goto-char (point-min))
+  (while (re-search-forward "<iframe [^>]*src=\"\\([^\"]*\\)\"[^>]*>" nil t)
+    (insert (concat "[iframe:<a href=\"" (match-string 1) "\">" (match-string 1) "</a>]"))))
 
 ;;; w3m-filter.el ends here
