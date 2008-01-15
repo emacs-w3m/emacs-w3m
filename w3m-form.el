@@ -71,6 +71,20 @@ Files to save text are stored in the directory specified by the
 		 (const :tag "Remove when emacs-w3m exit" t)
 		 (const :tag "No expire" nil)))
 
+(defcustom w3m-form-textarea-file-coding-system
+  (cond ((or (featurep 'un-define) 
+	     (fboundp 'utf-translate-cjk-mode))
+	 'utf-8)
+	((equal "Japanese" w3m-language)
+	 'iso-2022-7bit-ss2)
+	((w3m-find-coding-system 'utf-8)
+	 'utf-8)
+	(t
+	 'iso-2022-7bit-ss2))
+  "Coding system for textarea's backup file."
+  :group 'w3m
+  :type '(coding-system :size 0))
+
 (defcustom w3m-form-textarea-directory
   (expand-file-name ".textarea" w3m-profile-directory)
   "*Name of the directory to save the file of textarea input."
@@ -104,7 +118,6 @@ Files to save text are stored in the directory specified by the
 (defvar w3m-form-input-textarea-point nil)
 (defvar w3m-form-input-textarea-wincfg nil)
 (defvar w3m-form-input-textarea-file nil)
-(defvar w3m-form-input-textarea-coding-system nil)
 (defvar w3m-form-use-textarea-backup-p nil)
 (make-variable-buffer-local 'w3m-form-input-textarea-buffer)
 (make-variable-buffer-local 'w3m-form-input-textarea-form)
@@ -112,7 +125,6 @@ Files to save text are stored in the directory specified by the
 (make-variable-buffer-local 'w3m-form-input-textarea-point)
 (make-variable-buffer-local 'w3m-form-input-textarea-wincfg)
 (make-variable-buffer-local 'w3m-form-input-textarea-file)
-(make-variable-buffer-local 'w3m-form-input-textarea-coding-system)
 (make-variable-buffer-local 'w3m-form-use-textarea-backup-p)
 
 (defvar w3m-form-textarea-files nil)
@@ -1120,9 +1132,9 @@ character."
 	       (or no-check
 		   (w3m-form-coding-system-accept-region-p)))
 	  (let ((buffer-file-coding-system
-		 w3m-form-input-textarea-coding-system)
+		 w3m-form-textarea-file-coding-system)
 		(coding-system-for-write
-		 w3m-form-input-textarea-coding-system))
+		 w3m-form-textarea-file-coding-system))
 	    (write-region (point-min) (point-max) file nil 'nomsg)))
       (when w3m-form-use-textarea-backup-p
 	(when (file-exists-p file)
@@ -1240,7 +1252,6 @@ textarea")))
 		   (max window-min-height
 			(1+ w3m-form-input-textarea-buffer-lines)))))
 	 (file (get-text-property (point) 'w3m-form-file-name))
-	 (coding (w3m-form-get-coding-system (w3m-form-charlst form)))
 	 (backup-p (w3m-form-use-textarea-backup-p))
 	 buffer)
     (setq w3m-form-use-textarea-backup-p backup-p)
@@ -1263,8 +1274,8 @@ textarea")))
     (unless (consp buffer)
       (when (and backup-p (file-exists-p file) (file-readable-p file))
 	(with-temp-buffer
-	  (let ((buffer-file-coding-system coding)
-		(coding-system-for-read coding))
+	  (let ((buffer-file-coding-system w3m-form-textarea-file-coding-system)
+		(coding-system-for-read w3m-form-textarea-file-coding-system))
 	    (insert-file-contents file))
 	  (let ((before (buffer-string)))
 	    (when (unless (w3m-form-textarea-same-check value before)
@@ -1287,7 +1298,6 @@ textarea")))
 	      w3m-form-input-textarea-point point
 	      w3m-form-input-textarea-wincfg wincfg
 	      w3m-form-input-textarea-file file
-	      w3m-form-input-textarea-coding-system coding
 	      w3m-form-use-textarea-backup-p backup-p)))
     (if (and (consp buffer)
 	     (get-buffer-window (cdr buffer)))
