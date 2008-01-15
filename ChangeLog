@@ -1,3 +1,9 @@
+2008-01-16  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-form.el (w3m-form-input-textarea-coding-system): Revert.
+	(w3m-form-input-textarea): Set w3m-form-input-textarea-coding-system to
+	use in w3m-form-coding-system-accept-region-p.
+
 2008-01-15  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m-form.el (w3m-form-textarea-file-coding-system): New variable.

@@ -118,6 +118,7 @@ Files to save text are stored in the directory specified by the
 (defvar w3m-form-input-textarea-point nil)
 (defvar w3m-form-input-textarea-wincfg nil)
 (defvar w3m-form-input-textarea-file nil)
+(defvar w3m-form-input-textarea-coding-system nil)
 (defvar w3m-form-use-textarea-backup-p nil)
 (make-variable-buffer-local 'w3m-form-input-textarea-buffer)
 (make-variable-buffer-local 'w3m-form-input-textarea-form)
@@ -125,6 +126,7 @@ Files to save text are stored in the directory specified by the
 (make-variable-buffer-local 'w3m-form-input-textarea-point)
 (make-variable-buffer-local 'w3m-form-input-textarea-wincfg)
 (make-variable-buffer-local 'w3m-form-input-textarea-file)
+(make-variable-buffer-local 'w3m-form-input-textarea-coding-system)
 (make-variable-buffer-local 'w3m-form-use-textarea-backup-p)
 
 (defvar w3m-form-textarea-files nil)
@@ -1252,6 +1254,7 @@ textarea")))
 		   (max window-min-height
 			(1+ w3m-form-input-textarea-buffer-lines)))))
 	 (file (get-text-property (point) 'w3m-form-file-name))
+	 (coding (w3m-form-get-coding-system (w3m-form-charlst form)))
 	 (backup-p (w3m-form-use-textarea-backup-p))
 	 buffer)
     (setq w3m-form-use-textarea-backup-p backup-p)
@@ -1298,6 +1301,7 @@ textarea")))
 	      w3m-form-input-textarea-point point
 	      w3m-form-input-textarea-wincfg wincfg
 	      w3m-form-input-textarea-file file
+	      w3m-form-input-textarea-coding-system coding
 	      w3m-form-use-textarea-backup-p backup-p)))
     (if (and (consp buffer)
 	     (get-buffer-window (cdr buffer)))
