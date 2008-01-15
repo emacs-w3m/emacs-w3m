@@ -1,3 +1,10 @@
+2008-01-15  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-form.el (w3m-form-textarea-file-coding-system): New variable.
+	(w3m-form-input-textarea-save): Use it.
+	(w3m-form-input-textarea): Ditto.
+	(w3m-form-input-textarea-coding-system): Abolish.
+
 2008-01-11  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m-filter.el (w3m-filter-iframe): New function.
