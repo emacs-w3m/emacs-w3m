@@ -1,6 +1,6 @@
 ;;; sb-asahi.el --- shimbun backend for asahi.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
