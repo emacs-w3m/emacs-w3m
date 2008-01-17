@@ -1,6 +1,6 @@
 ;;; shimbun.el --- interfacing with web newspapers -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -262,6 +262,7 @@ slot of SHIMBUN to encode URL."
   "Return a real URL."
   (w3m-real-url url no-cache))
 
+(defalias 'shimbun-decode-anchor-string 'w3m-decode-anchor-string)
 (defalias 'shimbun-decode-entities 'w3m-decode-entities)
 (defalias 'shimbun-decode-entities-string 'w3m-decode-entities-string)
 (defalias 'shimbun-expand-url 'w3m-expand-url)
@@ -621,9 +622,12 @@ image parts, and returns an alist of URLs and image entities."
 	    end (match-end 1)
 	    url (or (match-string 2) (match-string 3) (match-string 4)))
       (setq url (shimbun-expand-url
-		 (if (string-match "[\t\n\f\r ]+\\'" url)
-		     (substring url 0 (match-beginning 0))
-		   url)
+		 ;; See the FIXME comment within the function definition
+		 ;; of `w3m-decode-anchor-string' in w3m.el.
+		 (shimbun-decode-anchor-string
+		  (if (string-match "[\t\n\f\r ]+\\'" url)
+		      (substring url 0 (match-beginning 0))
+		    url))
 		 base-url))
       (unless (setq img (assoc url images))
 	(with-temp-buffer
