@@ -1,3 +1,7 @@
+2008-01-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-prepare-article): Update regexp.
+
 2008-01-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-yomiuri.el (shimbun-yomiuri-prepare-article): Remove javascripts.
