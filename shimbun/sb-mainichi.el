@@ -1,6 +1,6 @@
 ;;; sb-mainichi.el --- shimbun backend for Mainichi jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
 ;; Koichiro Ohba <koichiro@meadowy.org>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
@@ -219,6 +219,17 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 	(hankaku (shimbun-japanese-hankaku shimbun))
 	(case-fold-search t)
 	arts)
+    (when (string-equal group "weekly")
+      (when (and (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"Words\""
+				    nil t)
+		 (shimbun-end-of-tag "div"))
+	(setq arts (list (match-string 2))))
+      (when (and (re-search-forward "\
+<\\([^\t\n >]+\\)[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"NewsTitle\""
+				    nil t)
+		 (shimbun-end-of-tag (match-string 1)))
+	(setq arts (nconc arts (list (concat "<p>" (match-string 2) "</p>"))))))
     (while (and (re-search-forward "\
 <div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"\\(?:NewsBody\\|Credit\\)\""
 				   nil t)
