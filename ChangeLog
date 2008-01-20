@@ -1,3 +1,10 @@
+2008-01-20  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-search-name-anchor): Accept and optional argument
+	`no-record'.
+	(w3m-goto-url): Going other page's anchor, call
+	`w3m-search-name-anchor' with 3rd argument t.
+
 2008-01-16  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m-form.el (w3m-form-input-textarea-coding-system): Revert.

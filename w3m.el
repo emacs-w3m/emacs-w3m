@@ -5786,7 +5786,7 @@ when the URL of the retrieved page matches the REGEXP."
 							   (match-string 1)))
 			     url))))
 
-(defun w3m-search-name-anchor (name &optional quiet)
+(defun w3m-search-name-anchor (name &optional quiet no-record)
   (interactive "sName: ")
   (let ((pos (point-min))
 	(cur-pos (point)))
@@ -5808,11 +5808,12 @@ when the URL of the retrieved page matches the REGEXP."
 	(message "No such anchor: %s" name)))
     (if (= (point) cur-pos)
 	nil
-      (setq w3m-name-anchor-from-hist
-	    (append (list 1 nil (point) cur-pos)
-		    (and (integerp (car w3m-name-anchor-from-hist))
-			 (nthcdr (1+ (car w3m-name-anchor-from-hist))
-				 w3m-name-anchor-from-hist))))
+      (unless no-record
+	(setq w3m-name-anchor-from-hist
+	      (append (list 1 nil (point) cur-pos)
+		      (and (integerp (car w3m-name-anchor-from-hist))
+			   (nthcdr (1+ (car w3m-name-anchor-from-hist))
+				   w3m-name-anchor-from-hist)))))
       t)))
 
 
@@ -8320,7 +8321,9 @@ Cannot run two w3m processes simultaneously \
 			 (progn
 			   ;; Redisplay to search an anchor sure.
 			   (sit-for 0)
-			   (w3m-search-name-anchor name)))
+			   (w3m-search-name-anchor name 
+						   nil
+						   (not (eq action 'cursor-moved)))))
 		    (setf (w3m-arrived-time (w3m-url-strip-authinfo orig))
 			  (w3m-arrived-time url))
 		  (goto-char (point-min)))
