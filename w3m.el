@@ -2247,7 +2247,16 @@ If it is nil, a lot of messages issued by emacs-w3m will be displayed
 only in the echo area.")
 
 (defvar w3m-safe-url-regexp nil
-  "Regexp matching urls which are considered to be safe.")
+  "Regexp matching urls which are considered to be safe.
+The nil value means all urls are considered to be safe.
+
+Note: The value, that might be bound to a certain value while rendering
+contents, will be held by the `w3m-safe-url-regexp' text property that
+is set over the rendered contents in a buffer.  So, programs that use
+the value to test whether a url of a link in a buffer is safe should
+use the value of the text property, not the value of this variable.
+See the commands `w3m-toggle-inline-image', `w3m-toggle-inline-images',
+and `w3m-safe-view-this-url'.")
 
 (defvar w3m-current-buffer nil)
 (defvar w3m-cache-buffer nil)
@@ -3548,13 +3557,25 @@ non-nil, cached data will not be used."
     (error "Can't display images in this environment"))
   (let ((url (w3m-image))
 	(status (get-text-property (point) 'w3m-image-status))
-	(scale (get-text-property (point) 'w3m-image-scale)))
-    (if (and scale (equal status 'off))
+	safe-regexp)
+    (if (and (get-text-property (point) 'w3m-image-scale) (equal status 'off))
 	(w3m-zoom-in-image 0)
       (if (w3m-url-valid url)
-	  (progn
-	    (if force (setq status 'off))
-	    (w3m-toggle-inline-images-internal status no-cache url))
+	  (if (eq status 'on)
+	      (progn
+		(if force (setq status 'off))
+		(w3m-toggle-inline-images-internal status no-cache url))
+	    (setq safe-regexp (get-text-property (point) 'w3m-safe-url-regexp))
+	    (if (or (not safe-regexp)
+		    (string-match safe-regexp url)
+		    (and force
+			 (or (not (interactive-p))
+			     (yes-or-no-p "\
+Are you sure you really want to show this image (maybe insecure)? "))))
+		(w3m-toggle-inline-images-internal status no-cache url)
+	      (when (interactive-p)
+		(w3m-message "\
+This image is considered to be unsafe; use the prefix arg to force display"))))
 	(w3m-message "No image at point")))))
 
 (defun w3m-toggle-inline-images (&optional force no-cache)
@@ -3562,18 +3583,50 @@ non-nil, cached data will not be used."
 If FORCE is non-nil, displaying images is forced.  If NO-CACHE is
 non-nil, cached data will not be used."
   (interactive "P")
-  (let ((status w3m-display-inline-images))
-    (unless (w3m-display-graphic-p)
-      (error "Can't display images in this environment"))
-    (if force (setq w3m-display-inline-images nil
-		    status nil))
-    (unwind-protect
-	(w3m-toggle-inline-images-internal (if w3m-display-inline-images
-					       'on 'off)
-					   no-cache nil)
-      (unless (setq w3m-display-inline-images (not status))
-	(w3m-process-stop (current-buffer)))
-      (force-mode-line-update))))
+  (unless (w3m-display-graphic-p)
+    (error "Can't display images in this environment"))
+  (let ((status w3m-display-inline-images)
+	(safe-p t)
+	safe-regexp pos url)
+    (if status
+	(progn
+	  (if force (setq status nil))
+	  (unwind-protect
+	      (w3m-toggle-inline-images-internal (if status 'on 'off)
+						 no-cache nil)
+	    (unless (setq w3m-display-inline-images (not status))
+	      (w3m-process-stop (current-buffer))))
+	  (force-mode-line-update))
+      (when (setq safe-regexp (get-text-property (point) 'w3m-safe-url-regexp))
+	;; Scan the buffer for searching for an insecure image url.
+	(setq pos (point-min))
+	(setq
+	 safe-p
+	 (catch 'done
+	   (when (setq url (get-text-property pos 'w3m-image))
+	     (unless (string-match safe-regexp url)
+	       (throw 'done nil))
+	     (setq pos (next-single-property-change pos 'w3m-image)))
+	   (while (and pos
+		       (setq pos (next-single-property-change pos 'w3m-image))
+		       (setq url (get-text-property pos 'w3m-image)))
+	     (unless (string-match safe-regexp url)
+	       (throw 'done nil))
+	     (setq pos (next-single-property-change pos 'w3m-image)))
+	   t)))
+      (if (or (not safe-regexp)
+	      safe-p
+	      (and force
+		   (or (not (interactive-p))
+		       (yes-or-no-p "\
+Are you sure you really want to show all images (maybe insecure)? "))))
+	  (progn
+	    (unwind-protect
+		(w3m-toggle-inline-images-internal 'off no-cache nil)
+	      (setq w3m-display-inline-images t))
+	    (force-mode-line-update))
+	(w3m-message "There are some images considered unsafe;\
+ use the prefix arg to force display")))))
 
 (defsubst w3m-resize-inline-image-internal (url rate)
   "Resize an inline image on the cursor position.
@@ -3782,6 +3835,8 @@ If optional KEEP-PROPERTIES is non-nil, text property is reserved."
     (delete-region (point-min) (point-at-bol))
 
     (w3m-header-line-insert)
+    (put-text-property (point-min) (point-max)
+		       'w3m-safe-url-regexp w3m-safe-url-regexp)
     (w3m-message "Fontifying...done")
     (run-hooks 'w3m-fontify-after-hook)))
 
@@ -9637,79 +9692,78 @@ or `w3m-goto-url-new-session' is employed to display the page."
   :type '(radio (const :tag "Use emacs-w3m" nil)
 		(function :value browse-url)))
 
-(defun w3m-safe-view-this-url ()
+(defun w3m-safe-view-this-url (&optional force)
   "View the URL of the link under point.
 This command is quite similar to `w3m-view-this-url' except for the
-three differences: (1) this command accepts no arguments, (2) this
-command does not handle forms, and (3) this command does not consider
-URL-like strings under the cursor.  When an insecure page which may
-contain vicious forms is viewed, this command should be used instead
-of `w3m-view-this-url'.
-
-Note that this command depends on the value of `w3m-safe-url-regexp'
-\(which see) to consider whether the URL is safe.  You need to keep in
-mind that there may be pages which cause security problems.
+four differences: [1]don't handle forms, [2]don't consider URL-like
+string under the cursor, [3]compare URL with `w3m-safe-url-regexp'
+first to check whether it is safe, and [4]the arguments list differs;
+the optional FORCE, if it is non-nil, specifies URL is safe.  You
+should use this command rather than `w3m-view-this-url' when viewing
+doubtful pages that might contain vicious forms.
 
 This command makes a new emacs-w3m buffer if `w3m-make-new-session' is
 non-nil and a user invokes this command in a buffer not being running
 the `w3m-mode', otherwise use an existing emacs-w3m buffer."
-  (interactive)
+  (interactive "P")
   (let ((w3m-pop-up-windows nil)
-	(url (w3m-url-valid (w3m-anchor))))
+	(url (w3m-url-valid (w3m-anchor)))
+	safe-regexp)
     (cond
-     (url (unless (and (functionp w3m-goto-article-function)
+     (url
+      (setq safe-regexp (get-text-property (point) 'w3m-safe-url-regexp))
+      (if (or (not safe-regexp)
+	      (string-match safe-regexp url)
+	      (and force
+		   (or (not (interactive-p))
+		       (yes-or-no-p "\
+Are you sure you really want to follow this link (maybe insecure)? "))))
+	  (unless (and (functionp w3m-goto-article-function)
 		       (not (eq 'w3m-goto-url
 				(funcall w3m-goto-article-function url))))
 	    (if (and w3m-make-new-session
 		     (not (eq major-mode 'w3m-mode)))
 		(w3m-goto-url-new-session url)
-	      (w3m-goto-url url))))
+	      (w3m-goto-url url)))
+	(when (interactive-p)
+	  (w3m-message "\
+This link is considered to be unsafe; use the prefix arg to view anyway"))))
      ((w3m-url-valid (w3m-image))
       (if (w3m-display-graphic-p)
-	  (w3m-toggle-inline-image)
+	  (if (interactive-p)
+	      (call-interactively 'w3m-toggle-inline-image)
+	    (w3m-toggle-inline-image force))
 	(w3m-view-image)))
      (t (w3m-message "No URL at point")))))
 
 (defun w3m-mouse-safe-view-this-url (event)
   "Perform the command `w3m-safe-view-this-url' by the mouse event."
+  ;; A command invoked by [mouse-N] cannot accept the prefix argument
+  ;; since [down-mouse-N] eats it.  So, we prompt a user to confirm
+  ;; twice, unlike `w3m-safe-view-this-url', whether to follow the link
+  ;; if it might be insecure.
   (interactive "e")
   (mouse-set-point event)
-  (w3m-safe-view-this-url))
-
-(defun w3m-safe-toggle-inline-image (&optional force no-cache)
-  "Toggle the visibility of an image under point.
-This function is mostly equivalent to `w3m-toggle-inline-image', but
-the value of `w3m-safe-url-regexp' is bound to \"\\\\`cid:\" while
-displaying an image.  You can invalidate it (treat as nil) by
-specifying the prefix argument if you don't mind it may cause a
-security problem."
-  (interactive "P")
-  (let ((w3m-safe-url-regexp (unless (and force
-					  (yes-or-no-p "\
-Are you sure you really want to show this image (maybe insecure)? "))
-			       "\\`cid:")))
-    (w3m-toggle-inline-image force no-cache)))
-
-(defun w3m-safe-toggle-inline-images (&optional force no-cache)
-  "Toggle the visibility of all images in the buffer.
-This function is mostly equivalent to `w3m-toggle-inline-images', but
-the value of `w3m-safe-url-regexp' is bound to \"\\\\`cid:\" while
-displaying images.  You can invalidate it (treat as nil) by specifying
-the prefix argument if you don't mind it may cause a security problem."
-  (interactive "P")
-  (let ((w3m-safe-url-regexp (unless (and force
-					  (yes-or-no-p "\
-Are you sure you really want to show all images (maybe insecure)? "))
-			       "\\`cid:")))
-    (w3m-toggle-inline-images force no-cache)))
+  (let ((url (w3m-url-valid (or (w3m-anchor) (w3m-image)))))
+    (if url
+	(let ((safe-regexp (get-text-property (point) 'w3m-safe-url-regexp))
+	      (use-dialog-box t))
+	  (when (or (not safe-regexp)
+		    (string-match safe-regexp url)
+		    (and (y-or-n-p "\
+This link is considered to be unsafe; continue? ")
+			 (y-or-n-p "\
+Are you sure you really want to follow this link (maybe insecure)? ")))
+	    (w3m-safe-view-this-url t)))
+      (w3m-message "No URL at point"))))
 
 (defconst w3m-minor-mode-command-alist
   '((w3m-next-anchor)
     (w3m-previous-anchor)
     (w3m-next-image)
     (w3m-previous-image)
-    (w3m-toggle-inline-image . w3m-safe-toggle-inline-image)
-    (w3m-toggle-inline-images . w3m-safe-toggle-inline-images)
+    (w3m-toggle-inline-image)
+    (w3m-toggle-inline-images)
     (w3m-view-this-url . w3m-safe-view-this-url)
     (w3m-mouse-view-this-url . w3m-mouse-safe-view-this-url)
     (w3m-print-this-url))
