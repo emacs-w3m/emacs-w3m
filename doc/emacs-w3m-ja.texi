@@ -3764,10 +3764,12 @@ Gnus のマニュアルを読んでください (@pxref{Display Customization,
 @lisp
 (defun gnus-summary-w3m-safe-toggle-inline-images (&optional arg)
   "Toggle displaying of all images in the article buffer.
-If the prefix arg is given, all images are considered to be safe."
+If the prefix arg is given, force displaying of images."
   (interactive "P")
   (with-current-buffer gnus-article-buffer
-    (w3m-safe-toggle-inline-images arg)))
+    (if (interactive-p)
+        (call-interactively 'w3m-toggle-inline-images)
+      (w3m-toggle-inline-images arg))))
 
 (eval-after-load "gnus-sum"
   '(define-key gnus-summary-mode-map

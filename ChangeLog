@@ -1,3 +1,16 @@
+2008-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-safe-url-regexp): Add note to doc string.
+	(w3m-fontify): Hold the value of w3m-safe-url-regexp with the
+	w3m-safe-url-regexp text-property.
+	(w3m-toggle-inline-image, w3m-toggle-inline-images)
+	(w3m-safe-view-this-url, w3m-mouse-safe-view-this-url): Check whether
+	url is safe by comparing it with the value of the w3m-safe-url-regexp
+	text property; prompt a user to confirm whether to proceed.
+	(w3m-safe-toggle-inline-image, w3m-safe-toggle-inline-images): Abolish.
+	(w3m-minor-mode-command-alist): Map w3m-toggle-inline-image and
+	w3m-toggle-inline-images to themselves.
+
 2008-01-20  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m.el (w3m-search-name-anchor): Accept and optional argument
