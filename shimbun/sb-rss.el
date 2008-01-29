@@ -1,8 +1,8 @@
 ;;; sb-rss.el --- shimbun backend for RSS (Rich Site Summary).
 
-;; Copyright (C) 2003, 2004, 2005, 2006, 2007
+;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008
 ;; Koichiro Ohba <koichiro@meadowy.org>
-;; Copyright (C) 2003, 2004, 2005, 2006, 2007
+;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008
 ;; NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
@@ -210,7 +210,9 @@ But clarify need ignored URL return nil.")
 		      0
 		      (if hankaku
 			  (with-current-buffer hankaku
-			    (insert (shimbun-rss-node-text rss-ns 'title item))
+			    (insert (or (shimbun-rss-node-text rss-ns 'title
+							       item)
+					""))
 			    (shimbun-japanese-hankaku-region (point-min)
 							     (point-max))
 			    (prog1 (buffer-string) (erase-buffer)))

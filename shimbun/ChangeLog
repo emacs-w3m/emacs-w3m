@@ -1,3 +1,7 @@
+2008-01-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-rss.el (shimbun-rss-get-headers): Protect against null title.
+
 2008-01-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-mainichi.el (shimbun-mainichi-clear-contents): Add Japanese title
