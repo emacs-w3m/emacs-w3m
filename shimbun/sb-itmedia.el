@@ -1,6 +1,7 @@
 ;;; sb-itmedia.el --- shimbun backend for ITmedia -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2004, 2005, 2006, 2007 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2004, 2005, 2006, 2007, 2008
+;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
@@ -72,6 +73,8 @@
     ("default" . "X-Face: %JzFW&0lP]xKGl{Bk3\\`yC0zZp|!;\\KT9'rqE2AIk\
 R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
  j`}1YEnKc;U0:^#LQB*})Q}y=45<lIE4q<gZ88e2qS8a@Tys6S")))
+
+(defvar shimbun-itmedia-retry-fetching 1)
 
 (luna-define-method shimbun-groups ((shimbun shimbun-itmedia))
   (mapcar 'car shimbun-itmedia-group-alist))

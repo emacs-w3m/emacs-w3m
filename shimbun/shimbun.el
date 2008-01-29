@@ -173,6 +173,18 @@ and set `shimbun-SERVER-japanese-hankaku' to `never'."
 	  (const :tag "Don't convert" nil)
 	  (const :tag "Never convert" never)))
 
+(defcustom shimbun-retry-fetching nil
+  "Number of times to retry fetching the web contents of a url.
+If it is a positive number and the fetching of the contents of a url
+fails, it will be retried until it is successful or until the number
+of times to retry reaches to that number.  Note that a non-nil value
+of `shimbun-SERVER-retry-fetching' overrides this variable."
+  :group 'shimbun
+  :type '(radio (const :format "Don't retry " nil)
+		(integer :tag "Number of retries"
+			 :match (lambda (widget value) (natnump value))
+			 :value 1)))
+
 (defun shimbun-servers-list ()
   "Return a list of shimbun servers."
   (let (servers)
@@ -227,6 +239,13 @@ Non-ASCII characters `url' are escaped based on `url-coding-system'."
 	(set-buffer-multibyte t)
 	nil))))
 
+(luna-define-generic shimbun-retry-fetching (shimbun)
+  "Return the number of times to retry fetching the web contents of a url.")
+
+(luna-define-method shimbun-retry-fetching ((shimbun shimbun))
+  (or (shimbun-retry-fetching-internal shimbun)
+      shimbun-retry-fetching))
+
 (defun shimbun-fetch-url (shimbun url &optional no-cache no-decode referer)
   "Retrieve contents specified by URL for SHIMBUN.
 This function is exacly similar to `shimbun-retrieve-url', but
@@ -238,7 +257,7 @@ slot of SHIMBUN to encode URL."
 	  (if coding
 	      (cons coding w3m-coding-system-priority-list)
 	    w3m-coding-system-priority-list))
-	 (retry (shimbun-retry-fetching-internal shimbun)))
+	 (retry (shimbun-retry-fetching shimbun)))
     (setq coding (or (shimbun-url-coding-system-internal shimbun) coding))
     (save-restriction
       (narrow-to-region (point) (point))
