@@ -1,3 +1,7 @@
+2008-01-30  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-fontify-anchors): Don't expand icon's url when it is nil.
+
 2008-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-safe-url-regexp): Add note to doc string.
