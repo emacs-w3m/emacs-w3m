@@ -4310,9 +4310,9 @@ Q. なぜ @samp{shimbun} モジュールがインストールされないのですか?
 List}) を使って報告してください。
 
 @samp{Shimbun} ライブラリは、現在、朝日新聞、読売オンライン、Emacs Devel、
-XEmacs Beta、Gnus/Mew/Wanderlust などのメーリングリスト、Slashdot Japan、
-および他のたくさんのものに対応しています。具体的には、@ref{Shimbun
-Sites} を参照してください。
+XEmacs Beta、Gnus/Mew/Wanderlust などのメーリングリスト、Slashdot、
+Slashdot Japan、および他のたくさんのものに対応しています。具体的には、
+@ref{Shimbun Sites} を参照してください。
 
 ところで、@samp{Shimbun} ライブラリを利用する時は、著作権について注意が
 必要です。@samp{Shimbun} ライブラリによって加工・生成された記事の著作権
@@ -4945,6 +4945,13 @@ asahi-mytown.(hokkaido@dots{}okinawa)
 
 日本の全都道府県を網羅する朝日新聞の地方版です。
 
+@item @uref{http://www.bbc.co.uk/, BBC}
+bbc.news
+
+@item @uref{http://gendai.net/, ゲンダイネット}
+gendai-net.today gendai-net.syakai gendai-net.sports gendai-net.geino
+gendai-net.wadai gendai-net.kenko gendai-net.syoku gendai-net.book
+
 @item @uref{http://mainichi.jp/, 毎日jp}
 @itemx (2007年10月に MSN から自社サイトに移行)
 mainichi.flash mainichi.sports mainichi.entertainment mainichi.mantan
@@ -5047,9 +5054,27 @@ nikkei.release.service.lease nikkei.release.service.travel
 nikkei.release.service.etc nikkei.release.const.const
 nikkei.release.const.house nikkei.release.const.etc nikkei.shasetsu
 
+@item @uref{http://sankei.jp.msn.com/, MSN 産経ニュース}
+@itemx (2007年10月から MSN に移行)
+sankei.points sankei.affairs sankei.politics sankei.economy sankei.world
+sankei.sports sankei.entertainments sankei.life sankei.culture
+sankei.release sankei.region sankei.usatoday sankei.usatoday.ja
+sankei.column.sankeisho sankei.column.shucho sankei.column.seiron
+
+@item @uref{http://www.spiegel.de/, Spiegel Online}
+spiegel.news
+
 @item @uref{http://www.sponichi.co.jp/, スポニチ}
 sponichi.baseball sponichi.soccer sponichi.usa sponichi.others
 sponichi.society sponichi.entertainment sponichi.horseracing
+
+@item @uref{http://www.sueddeutsche.de/, 南ドイツ新聞}
+sueddeutsche-de.alles sueddeutsche-de.nachrichten
+sueddeutsche-de.politik sueddeutsche-de.wirtschaft
+sueddeutsche-de.finanzen sueddeutsche-de.kino sueddeutsche-de.kultur
+sueddeutsche-de.sport sueddeutsche-de.muenchen sueddeutsche-de.panorama
+sueddeutsche-de.leben sueddeutsche-de.gesundheit
+sueddeutsche-de.computer
 
 @item @uref{http://www.yomiuri.co.jp/, 讀売新聞}
 yomiuri.atmoney yomiuri.editorial yomiuri.entertainment yomiuri.iryou
@@ -5070,23 +5095,6 @@ yomiuri.world
 もできます。それを使うには、例えばグループ名とし
 て @samp{yomiuri.atmoney} の代わりに @samp{yomiuri-html.atmoney} を指定
 してください。
-
-@item @uref{http://sankei.jp.msn.com/, MSN 産経ニュース}
-@itemx (2007年10月から MSN に移行)
-sankei.points sankei.affairs sankei.politics sankei.economy sankei.world
-sankei.sports sankei.entertainments sankei.life sankei.culture
-sankei.release sankei.region sankei.usatoday sankei.usatoday.ja
-sankei.column.sankeisho sankei.column.shucho sankei.column.seiron
-
-@item @uref{http://www.bbc.co.uk/, BBC}
-bbc.news
-
-@item @uref{http://www.spiegel.de/, Spiegel Online}
-spiegel.news
-
-@item @uref{http://gendai.net/, ゲンダイネット}
-gendai-net.today gendai-net.syakai gendai-net.sports gendai-net.geino
-gendai-net.wadai gendai-net.kenko gendai-net.syoku gendai-net.book
 @end table
 
 @node News Sites Supported by Shimbun
@@ -5115,6 +5123,11 @@ cnet-jp.blog.staff cnet-jp.blog.takawata cnet-jp.blog.watanabe
 @item @uref{http://www.cnn.co.jp/, CNN Japan}
 cnn-jp.business cnn-jp.fringe cnn-jp.science cnn-jp.showbiz
 cnn-jp.sports cnn-jp.top cnn-jp.usa cnn-jp.world
+
+@item @uref{http://www.de-bug.de/, De-Bug Magazine}
+debugmagazin-de.news debugmagazin-de.reviews debugmagazin-de.texte
+debugmagazin-de.blog debugmagazin-de.podcast
+debugmagazin-de.musiktechnik debugmagazin-de.mode
 
 @item @uref{http://japanese.engadget.com/, Engadget Japanese}
 engadget-ja.top
@@ -5173,8 +5186,14 @@ opentechpress-jp.general opentechpress-jp.enterprise
 opentechpress-jp.opensource opentechpress-jp.security
 opentechpress-jp.news opentechpress-jp.pr
 
+@item @uref{http://www.perlentaucher.de/, Perlentaucher}
+perlentaucher-de.aktuell
+
 @item @uref{http://www.rediff.com/, Rediff.com}
 rediff.news
+
+@item @uref{http://www.slashdot.org/, Slashdot}
+slashdot.frontpage
 
 @item @uref{http://slashdot.jp/, Slashdot Japan}
 slashdot-jp.story slashdot-jp.askslashdot slashdot-jp.bookreview

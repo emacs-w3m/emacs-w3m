@@ -1,4 +1,15 @@
+2008-01-29  David Engster  <dengste@eml.cc>
+
+	* sb-debugmagazin-de.el, sb-perlentaucher-de.el, sb-slashdot.el
+	* sb-sueddeutsche-de.el: New files.
+
 2008-01-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-retry-fetching): New user option.
+	(shimbun-retry-fetching): New function.
+	(shimbun-fetch-url): Use it.
+
+	* sb-itmedia.el (shimbun-itmedia-retry-fetching): New variable.
 
 	* sb-rss.el (shimbun-rss-get-headers): Protect against null title.
 
