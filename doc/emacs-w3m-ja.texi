@@ -4948,6 +4948,15 @@ asahi-mytown.(hokkaido@dots{}okinawa)
 @item @uref{http://www.bbc.co.uk/, BBC}
 bbc.news
 
+@item @uref{http://www.welt.de/, ディー・ヴェルト}
+welt-de.news
+
+@item @uref{http://www.zeit.de/, ディー・ツァイト}
+zeit-de.auto zeit-de.computer zeit-de.deutschland zeit-de.feuilleton
+zeit-de.gesundheit zeit-de.international zeit-de.leben zeit-de.literatur
+zeit-de.musik zeit-de.news zeit-de.reisen zeit-de.schule zeit-de.sport
+zeit-de.studium zeit-de.wirtschaft zeit-de.wissen zeit-de.zuender
+
 @item @uref{http://gendai.net/, ゲンダイネット}
 gendai-net.today gendai-net.syakai gendai-net.sports gendai-net.geino
 gendai-net.wadai gendai-net.kenko gendai-net.syoku gendai-net.book
@@ -5135,10 +5144,10 @@ engadget-ja.top
 @item @uref{http://www.excite.co.jp/, エキサイト ニュース}
 excite.bit-koneta excite.world-odd
 
-@item @uref{http://www.fau.org/, FAU-IAA}
+@item @uref{http://www.fau.org/, 自由労働者同盟ドイツ}
 fau.news
 
-@item @uref{http://www.heise.de/, Heise Online}
+@item @uref{http://www.heise.de/, ハイゼ・オンライン}
 heise.news heise.telepolis
 
 @item @uref{http://news.infoshop.org/, Infoshop News}
@@ -5186,7 +5195,7 @@ opentechpress-jp.general opentechpress-jp.enterprise
 opentechpress-jp.opensource opentechpress-jp.security
 opentechpress-jp.news opentechpress-jp.pr
 
-@item @uref{http://www.perlentaucher.de/, Perlentaucher}
+@item @uref{http://www.perlentaucher.de/, Perlentaucher (真珠採り)}
 perlentaucher-de.aktuell
 
 @item @uref{http://www.rediff.com/, Rediff.com}
@@ -5238,9 +5247,6 @@ Tech-On! にログインするためのパスワードです。@code{nil} だと Tech-On
 これらの入力は、その Emacs セッションで最初に Tech-On! の記事を読み始め
 るときに一回だけ要求されます。
 
-@item @uref{http://www.welt.de/, Die Welt}
-welt-de.news
-
 @item @uref{http://hotwired.goo.ne.jp/, HotWired Japan}
 wired-jp.news wired-jp.business wired-jp.culture wired-jp.technology
 wired-jp.blog.ogura wired-jp.blog.sasaki wired-jp.blog.takahashi
@@ -5278,12 +5284,6 @@ zdnet-jp.column.solutionIT zdnet-jp.channel.security
 zdnet-jp.channel.ilm zdnet-jp.blog.iida zdnet-jp.blog.mhatta
 zdnet-jp.blog.kurei zdnet-jp.blog.opensource zdnet-jp.blog.soa
 zdnet-jp.blog.dp
-
-@item @uref{http://www.zeit.de/, Die Zeit}
-zeit-de.auto zeit-de.computer zeit-de.deutschland zeit-de.feuilleton
-zeit-de.gesundheit zeit-de.international zeit-de.leben zeit-de.literatur
-zeit-de.musik zeit-de.news zeit-de.reisen zeit-de.schule zeit-de.sport
-zeit-de.studium zeit-de.wirtschaft zeit-de.wissen zeit-de.zuender
 
 @item @uref{http://www.theonion.com/, The Onion}
 the-onion.news

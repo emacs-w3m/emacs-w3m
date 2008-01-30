@@ -4921,6 +4921,15 @@ Japan.
 @item @uref{http://www.bbc.co.uk/, BBC}
 bbc.news
 
+@item @uref{http://www.welt.de/, Die Welt}
+welt-de.news
+
+@item @uref{http://www.zeit.de/, Die Zeit}
+zeit-de.auto zeit-de.computer zeit-de.deutschland zeit-de.feuilleton
+zeit-de.gesundheit zeit-de.international zeit-de.leben zeit-de.literatur
+zeit-de.musik zeit-de.news zeit-de.reisen zeit-de.schule zeit-de.sport
+zeit-de.studium zeit-de.wirtschaft zeit-de.wissen zeit-de.zuender
+
 @item @uref{http://gendai.net/, Gendai Net}
 gendai-net.today gendai-net.syakai gendai-net.sports gendai-net.geino
 gendai-net.wadai gendai-net.kenko gendai-net.syoku gendai-net.book
@@ -5218,9 +5227,6 @@ default), you will never log in.
 Entering them is required only once in the Emacs session at the first
 time to start reading a Tech-On! article.
 
-@item @uref{http://www.welt.de/, Die Welt}
-welt-de.news
-
 @item @uref{http://hotwired.goo.ne.jp/, HotWired Japan}
 wired-jp.news wired-jp.business wired-jp.culture wired-jp.technology
 wired-jp.blog.ogura wired-jp.blog.sasaki wired-jp.blog.takahashi
@@ -5258,12 +5264,6 @@ zdnet-jp.column.solutionIT zdnet-jp.channel.security
 zdnet-jp.channel.ilm zdnet-jp.blog.iida zdnet-jp.blog.mhatta
 zdnet-jp.blog.kurei zdnet-jp.blog.opensource zdnet-jp.blog.soa
 zdnet-jp.blog.dp
-
-@item @uref{http://www.zeit.de/, Die Zeit}
-zeit-de.auto zeit-de.computer zeit-de.deutschland zeit-de.feuilleton
-zeit-de.gesundheit zeit-de.international zeit-de.leben zeit-de.literatur
-zeit-de.musik zeit-de.news zeit-de.reisen zeit-de.schule zeit-de.sport
-zeit-de.studium zeit-de.wirtschaft zeit-de.wissen zeit-de.zuender
 
 @item @uref{http://www.theonion.com/, The Onion}
 the-onion.news
