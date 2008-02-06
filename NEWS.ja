@@ -167,6 +167,8 @@ XEmacs 21.5 が固まってしまうのを防ぐために、一度にたくさんのページをア
 今後もこれは徹底して行ないます。それは emacs-w3m をコンパイルする際に
 真のエラーを見つけることを容易にします。
 
+** インストール先のディレクトリ名が空白文字を含むことを許容します。
+
 ** このリリースでは他にも多くの改良とバグの修正を行ないました。
 (それらのいくつかは新しいバグを引き起こすかもしれませんけれど。)
 
@@ -216,8 +218,9 @@ sb-yomiuri-html.el はやや旧式になっています。すべての shimbun モジュー
 $Bとに使ってください。
 
 ** 新しい shimbun モジュールが追加されました。
-sb-aljazeera.el sb-nytimes.el sb-tech-on.el sb-gendai-net.el
-sb-ohmynews-jp.el
+sb-aljazeera.el sb-debugmagazin-de.el sb-gendai-net.el sb-nytimes.el
+sb-ohmynews-jp.el sb-perlentaucher-de.el sb-slashdot.el
+sb-sueddeutsche-de.el sb-tech-on.el 
 
 ** いくつかの shimbun モジュールは良くメンテされていますが他は否。
 ボランティア歓迎!

@@ -167,6 +167,8 @@ at a time, in order to prevent it from freezing.
 We will continue to do this thoroughly.  It makes it easy to find real
 errors when compiling emacs-w3m.
 
+** The installation directory name is allowed to have spaces and/or tabs.
+
 ** We've done many other improvements and bug fixes in this release.
 (Some of them might cause new bugs, though.)
 
@@ -219,8 +221,9 @@ number of times if it is a positive number.  Use the variable
 `shimbun-SERVER-retry-fetching' per server.
 
 ** New shimbun modules have been added.
-sb-aljazeera.el sb-nytimes.el sb-tech-on.el sb-gendai-net.el
-sb-ohmynews-jp.el
+sb-aljazeera.el sb-debugmagazin-de.el sb-gendai-net.el sb-nytimes.el
+sb-ohmynews-jp.el sb-perlentaucher-de.el sb-slashdot.el
+sb-sueddeutsche-de.el sb-tech-on.el 
 
 ** Some shimbun modules are being well-maintained but others aren't.
 Volunteers welcome!

@@ -1,3 +1,14 @@
+2008-02-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (install-lisp, install-icons, install-icons30): Quote
+	directory name that might contain whitespace.
+
+	* doc/Makefile.in (install): Ditto.
+
+	* aclocal.m4 (AC_PATH_LISPDIR): Ditto; always report prefix name.
+
+	* mkinstalldirs: Replace it with the 2006-05-11.19 version.
+
 2008-01-30  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m.el (w3m-fontify-anchors): Don't expand icon's url when it is nil.
