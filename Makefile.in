@@ -62,64 +62,64 @@ install-en: install-lisp install-info-en
 install-ja: install-lisp install-info-ja
 
 install-lisp: lisp
-	@$(SHELL) $(srcdir)/mkinstalldirs $(lispdir);\
+	@$(SHELL) $(srcdir)/mkinstalldirs "$(lispdir)";\
 	for p in ChangeLog ChangeLog.[1-9] ChangeLog.[1-9][0-9] *.el; do\
 	  if test -f "$$p"; then\
 	    case "$$p" in\
 	      $(IGNORES)) ;;\
 	      w3m-ems\.el) if test -z "$(XEMACSDEBUG)"; then\
-	         echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
-	         $(INSTALL_DATA) $$p $(lispdir)/$$p; fi;;\
+	         echo "$(INSTALL_DATA) $$p \"$(lispdir)/$$p\"";\
+	         $(INSTALL_DATA) $$p "$(lispdir)/$$p"; fi;;\
 	      w3m-xmas\.el) if test -n "$(XEMACSDEBUG)"; then\
-	         echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
-	         $(INSTALL_DATA) $$p $(lispdir)/$$p; fi;;\
-	      *) echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
-	         $(INSTALL_DATA) $$p $(lispdir)/$$p;;\
+	         echo "$(INSTALL_DATA) $$p \"$(lispdir)/$$p\"";\
+	         $(INSTALL_DATA) $$p "$(lispdir)/$$p"; fi;;\
+	      *) echo "$(INSTALL_DATA) $$p \"$(lispdir)/$$p\"";\
+	         $(INSTALL_DATA) $$p "$(lispdir)/$$p";;\
 	    esac;\
 	  fi;\
 	done;\
 	for p in *.elc; do\
 	  if test -f "$$p"; then\
-	    echo " $(INSTALL_DATA) $$p $(lispdir)/$$p";\
-	    $(INSTALL_DATA) $$p $(lispdir)/$$p;\
+	    echo "$(INSTALL_DATA) $$p \"$(lispdir)/$$p\"";\
+	    $(INSTALL_DATA) $$p "$(lispdir)/$$p";\
 	  fi;\
 	done;\
 	if test -f shimbun/shimbun.elc; then\
 	  for p in `cd shimbun && echo ChangeLog ChangeLog.[1-9] ChangeLog.[1-9][0-9]`; do\
 	    if test -f "shimbun/$$p"; then\
-	      echo " $(INSTALL_DATA) shimbun/$$p $(lispdir)/s$$p";\
-	      $(INSTALL_DATA) shimbun/$$p $(lispdir)/s$$p;\
+	      echo "$(INSTALL_DATA) shimbun/$$p \"$(lispdir)/s$$p\"";\
+	      $(INSTALL_DATA) shimbun/$$p "$(lispdir)/s$$p";\
 	    fi;\
 	  done;\
 	  for p in `cd shimbun && echo *.el`; do\
-	    echo " $(INSTALL_DATA) shimbun/$$p $(lispdir)/$$p";\
-	    $(INSTALL_DATA) shimbun/$$p $(lispdir)/$$p;\
+	    echo "$(INSTALL_DATA) shimbun/$$p \"$(lispdir)/$$p\"";\
+	    $(INSTALL_DATA) shimbun/$$p "$(lispdir)/$$p";\
 	  done;\
 	  for p in `cd shimbun && echo *.elc`; do\
-	    echo " $(INSTALL_DATA) shimbun/$$p $(lispdir)/$$p";\
-	    $(INSTALL_DATA) shimbun/$$p $(lispdir)/$$p;\
+	    echo "$(INSTALL_DATA) shimbun/$$p \"$(lispdir)/$$p\"";\
+	    $(INSTALL_DATA) shimbun/$$p "$(lispdir)/$$p";\
 	  done;\
 	fi
 
 install-icons:
-	@if test $(ICONDIR) = NONE; then\
+	@if test "$(ICONDIR)" = NONE; then\
 	  echo "You don't have to install icon files for \"$(EMACS)\".";\
 	else\
-	  $(SHELL) $(srcdir)/mkinstalldirs $(ICONDIR);\
+	  $(SHELL) $(srcdir)/mkinstalldirs "$(ICONDIR)";\
 	  for i in `cd icons && echo *.gif *.png *.xpm`; do\
-	    echo " $(INSTALL_DATA) icons/$$i $(ICONDIR)/$$i";\
-	    $(INSTALL_DATA) icons/$$i $(ICONDIR)/$$i;\
+	    echo "$(INSTALL_DATA) icons/$$i \"$(ICONDIR)/$$i\"";\
+	    $(INSTALL_DATA) icons/$$i "$(ICONDIR)/$$i";\
 	  done;\
 	fi
 
 install-icons30:
-	@if test $(ICONDIR) = NONE; then\
+	@if test "$(ICONDIR)" = NONE; then\
 	  echo "You don't have to install icon files for \"$(EMACS)\".";\
 	else\
-	  $(SHELL) $(srcdir)/mkinstalldirs $(ICONDIR);\
+	  $(SHELL) $(srcdir)/mkinstalldirs "$(ICONDIR)";\
 	  for i in `cd icons30 && echo *.gif *.png *.xpm`; do\
-	    echo " $(INSTALL_DATA) icons30/$$i $(ICONDIR)/$$i";\
-	    $(INSTALL_DATA) icons30/$$i $(ICONDIR)/$$i;\
+	    echo "$(INSTALL_DATA) icons30/$$i \"$(ICONDIR)/$$i\"";\
+	    $(INSTALL_DATA) icons30/$$i "$(ICONDIR)/$$i";\
 	  done;\
 	fi
 

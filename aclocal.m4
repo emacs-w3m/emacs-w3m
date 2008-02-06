@@ -197,12 +197,12 @@ AC_DEFUN(AC_PATH_LISPDIR, [
   else
 	tribe=${EMACS_FLAVOR}
   fi
-  if test ${prefix} = NONE; then
-	AC_MSG_CHECKING([prefix for ${EMACS}])
+  AC_MSG_CHECKING([prefix for ${EMACS}])
+  if test "${prefix}" = NONE; then
 	AC_EMACS_LISP(prefix,(expand-file-name \"..\" invocation-directory),noecho)
 	prefix=${EMACS_cv_SYS_prefix}
-	AC_MSG_RESULT(${prefix})
   fi
+  AC_MSG_RESULT(${prefix})
   AC_ARG_WITH(lispdir,
     [  --with-lispdir=DIR      where lisp files should go
                           (use --with-packagedir for XEmacs package)],
@@ -210,14 +210,15 @@ AC_DEFUN(AC_PATH_LISPDIR, [
   AC_MSG_CHECKING([where lisp files should go])
   if test -z "${lispdir}"; then
     dnl Set the default value.
-    theprefix=${prefix}
-    if test x${theprefix} = xNONE; then
+    theprefix="${prefix}"
+    if test "${theprefix}" = NONE; then
 	theprefix=${ac_default_prefix}
     fi
     lispdir="\$(datadir)/${tribe}/site-lisp/w3m"
     for thedir in share lib; do
 	potential=
-	if test -d ${theprefix}/${thedir}/${tribe}/site-lisp; then
+	dnl The directory name should be quoted because it might contain spaces.
+	if test -d "${theprefix}/${thedir}/${tribe}/site-lisp"; then
 	   lispdir="\$(prefix)/${thedir}/${tribe}/site-lisp/w3m"
 	   break
 	fi
