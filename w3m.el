@@ -5975,31 +5975,32 @@ COUNT is treated as 1 by default if it is omitted."
   (interactive "p")
   (w3m-view-previous-page (if (integerp count) (- count) -1)))
 
-(eval-and-compile
-  (unless (fboundp 'w3m-expand-path-name)
-    (if w3m-treat-drive-letter
-	;; Avoid incompatibility of drive letters.
-	(defun w3m-expand-path-name (name &optional base)
-	  "Convert path string NAME to the canonicalized one."
-	  ;; cygwin-mount.el destroys `expand-file-name';
-	  ;; (expand-file-name "../index.html" "/foo/bar/")
-	  ;;  => "c:/cygwin/foo/index.html"
-	  (save-match-data
-	    (let ((inhibit-file-name-handlers
-		   '(cygwin-mount-name-hook-function
-		     cygwin-mount-map-drive-hook-function))
-		  (inhibit-file-name-operation 'expand-file-name)
-		  path)
-	      (setq path
-		    (w3m-static-if (featurep 'xemacs)
-			;; It is ?\ by default in XEmacs on Windows native.
-			(let ((directory-sep-char ?/))
-			  (expand-file-name name base))
-		      (expand-file-name name base)))
-	      (if (string-match "\\`.:" path)
-		  (substring path (match-end 0))
-		path))))
-      (defalias 'w3m-expand-path-name 'expand-file-name))))
+(defun w3m-expand-path-name (file base)
+  (let ((input (if (eq (elt file 0) ?/)
+		   file
+		 (concat base file)))
+	(output ""))
+    (save-match-data
+      (while (string-match "^\\(?:\\.\\.?/\\)+" input)
+	(setq input (substring input (match-end 0))))
+      (while (not (zerop (length input)))
+	(cond
+	 ((string-match "^/\\.\\(?:/\\|$\\)" input)
+	  (setq input (concat "/" (substring input (match-end 0)))))
+	 ((string-match "^/\\.\\.\\(?:/\\|$\\)" input)
+	  (setq input (concat "/" (substring input (match-end 0))))
+	  (when (string-match "/?[^/]+$" output)
+	    (setq output (substring output 0 (match-beginning 0)))))
+	 ((string-match "^\\.\\.?$" input)
+	  (setq input ""))
+	 (t
+	  (let ((end (and (string-match "^/[^/]*" input)
+			  (match-end 0))))
+	    (setq output
+		  (concat output (substring input 0 end)))
+	    (setq input
+		  (substring input end))))))
+      output)))
 
 (defconst w3m-url-hierarchical-schemes
   '("http" "https" "ftp" "ftps" "file")
@@ -6075,10 +6076,6 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	       (substring url 0 path-end)
 	       (or (file-name-directory (match-string 5 base))
 		   "/")))
-	(save-match-data
-	  (when (string-match "^/\\.\\./?" expanded-path)
-	    (setq expanded-path
-		  (concat "/" (substring expanded-path (match-end 0))))))
 	(concat
 	 (substring base 0 (match-beginning 5))
 	 (if (member (match-string 2 base) w3m-url-hierarchical-schemes)

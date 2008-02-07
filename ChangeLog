@@ -1,3 +1,8 @@
+2008-02-07  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-expand-path-name): New function.
+	(w3m-expand-url): Remove useless expanded path-name check.
+
 2008-02-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (install-lisp, install-icons, install-icons30): Quote
