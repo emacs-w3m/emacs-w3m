@@ -472,7 +472,20 @@ used together."
     ,@(unless (featurep 'gtk)
 	'((tool-bar-button-relief . global))))
   "Alist of the variables and the values controls the tool bar appearance.
-The value `global' means to use the global value of the variable."
+The value `global' means to use the global value of the variable.
+
+If you're annoyed with changing of the frame height of Emacs built for
+GTK because of the difference of the sizes between the emacs-w3m tool
+bar icons and the ones that Emacs natively uses, try customizing this
+variable or both the value of this variable and the global value of
+`tool-bar-button-margin'.  For examples:
+
+;; The case where the emacs-w3m icons are smaller than the others.
+\(setq w3m-toolbar-configurations '((tool-bar-button-relief . 5)))
+
+;; The case where the emacs-w3m icons are bigger than the others.
+\(setq w3m-toolbar-configurations '((tool-bar-button-margin . 0))
+      tool-bar-button-margin 7)"
   :group 'w3m
   :type '(repeat (cons :format "%v"
 		       (symbol :tag "Variable")
