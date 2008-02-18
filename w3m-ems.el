@@ -481,7 +481,7 @@ variable or both the value of this variable and the global value of
 `tool-bar-button-margin'.  For examples:
 
 ;; The case where the emacs-w3m icons are smaller than the others.
-\(setq w3m-toolbar-configurations '((tool-bar-button-relief . 5)))
+\(setq w3m-toolbar-configurations '((tool-bar-button-margin . 5)))
 
 ;; The case where the emacs-w3m icons are bigger than the others.
 \(setq w3m-toolbar-configurations '((tool-bar-button-margin . 0))
