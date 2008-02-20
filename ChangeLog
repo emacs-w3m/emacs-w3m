@@ -1,3 +1,8 @@
+2008-02-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-arrived-intern): Protect against null string.  It enables
+	url completion even for null string.  Suggested by Aota-san.
+
 2008-02-07  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m.el (w3m-expand-path-name): New function.
