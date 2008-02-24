@@ -1,6 +1,6 @@
 ;;; sb-heise.el --- heise online shimbun backend
 
-;; Copyright (C) 2004, 2005 David Hansen
+;; Copyright (C) 2004, 2005, 2008 David Hansen
 
 ;; Author: David Hansen <david.hansen@physik.fu-berlin.de>
 ;; Keywords: news
@@ -194,7 +194,7 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
     (while (re-search-forward "<TP\\(xBUT\\|:AD\\)>" nil t nil)
       (delete-region (point) (re-search-forward "</TP\\(xBUT\\|:AD\\)>" nil t nil)))
     (goto-char (point-min))
-    (while (re-search-forward "<!--OAS AD=\"Middle[0-9]*\"-->" nil t nil)
+    (while (re-search-forward "<!--OAS AD=\"Middle[0-9]*" nil t nil)
       (let ((beg (search-backward "<table" nil t nil))
             (end (search-forward "</table>" nil t nil)))
         (when (and beg end) (delete-region beg end))))))

@@ -1,6 +1,6 @@
 ;;; sb-spiegel.el --- spiegel online shimbun backend
 
-;; Copyright (C) 2004, 2006 David Hansen
+;; Copyright (C) 2004, 2006, 2008 David Hansen
 
 ;; Author: David Hansen <david.hansen@physik.fu-berlin.de>
 ;; Keywords: news
@@ -35,8 +35,12 @@
   "http://www.spiegel.de/schlagzeilen/rss/0,5291,,00.xml")
 (defvar shimbun-spiegel-groups '("news"))
 (defvar shimbun-spiegel-from-address  "spiegel_online@spiegel.de")
-(defvar shimbun-spiegel-content-start "^URL:.*")
+(defvar shimbun-spiegel-content-start "<div id=\"spMainContent\">")
 (defvar shimbun-spiegel-content-end "<div class=\"spArticleCredit\">")
+(defvar shimbun-spiegel-x-face-alist
+  '(("default" . "X-Face: \"F#SZ#pUmtu/<qtxz=G'w#244Hp7}y|vSO?j@i?6g-uGJ2&a/g#\
+U96H{_VK#k&,3O\"L)6;Z823T4;}r1R,rLedLu2hQ%biKv(LR@VJXA6XRJ`0xk!I'k!c<uH6R!.+}S\
+l1}uY-+WD)So~O]jsKT@}|?Z%!fVwHBde3rd5WLW^^I]UM*z>/K|u59;;-")))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-spiegel))
   shimbun-spiegel-url)
