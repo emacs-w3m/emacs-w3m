@@ -1,3 +1,13 @@
+2008-03-03  Naohiro Aota  <nao.aota@gmail.com>
+
+	* doc/emacs-w3m.texi (Inline Images): Updated.
+
+	* doc/emacs-w3m-ja.texi (Inline Images): Ditto.
+
+	* w3m.el (w3m-toggle-inline-images): Only toggle in the region if
+	Transient Mark mode.
+	(w3m-toggle-inline-image): Ditto.
+
 2008-02-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-arrived-intern): Protect against null string.  It enables

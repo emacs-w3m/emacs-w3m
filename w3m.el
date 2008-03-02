@@ -3554,37 +3554,54 @@ If URL is specified, only the image with URL is toggled."
 	(set-buffer-modified-p nil)))))
 
 (defun w3m-toggle-inline-image (&optional force no-cache)
-  "Toggle the visibility of an image under point.
+  "Toggle the visibility of an image under point or images in the region.
 If FORCE is non-nil, displaying an image is forced.  If NO-CACHE is
 non-nil, cached data will not be used."
   (interactive "P")
   (unless (w3m-display-graphic-p)
     (error "Can't display images in this environment"))
-  (let ((url (w3m-image))
-	(status (get-text-property (point) 'w3m-image-status))
-	safe-regexp)
-    (if (and (get-text-property (point) 'w3m-image-scale) (equal status 'off))
-	(w3m-zoom-in-image 0)
-      (if (w3m-url-valid url)
-	  (if (eq status 'on)
-	      (progn
-		(if force (setq status 'off))
-		(w3m-toggle-inline-images-internal status no-cache url))
-	    (setq safe-regexp (get-text-property (point) 'w3m-safe-url-regexp))
-	    (if (or (not safe-regexp)
-		    (string-match safe-regexp url)
-		    (and force
-			 (or (not (interactive-p))
-			     (yes-or-no-p "\
+  (if (w3m-region-active-p)
+      (let ((p (region-beginning))
+	    (end (region-end))
+	    iurl toggle-list)
+	(w3m-deactivate-region)
+	(while (not (eq end 
+			(setq p (next-single-property-change 
+				 p 'w3m-image nil end))))
+	  (when (and (setq iurl (w3m-image p))
+		     (not (assoc iurl toggle-list)))
+	    (setq toggle-list (cons (cons iurl p) toggle-list))))
+	(when (w3m-image end)
+	  (setq toggle-list (cons (cons iurl end) toggle-list)))
+	(save-excursion
+	  (dolist (item toggle-list)
+	    (goto-char (cdr item))
+	    (w3m-toggle-inline-image force no-cache))))
+    (let ((url (w3m-image))
+	  (status (get-text-property (point) 'w3m-image-status))
+	  safe-regexp)
+      (if (and (get-text-property (point) 'w3m-image-scale) (equal status 'off))
+	  (w3m-zoom-in-image 0)
+	(if (w3m-url-valid url)
+	    (if (eq status 'on)
+		(progn
+		  (if force (setq status 'off))
+		  (w3m-toggle-inline-images-internal status no-cache url))
+	      (setq safe-regexp (get-text-property (point) 'w3m-safe-url-regexp))
+	      (if (or (not safe-regexp)
+		      (string-match safe-regexp url)
+		      (and force
+			   (or (not (interactive-p))
+			       (yes-or-no-p "\
 Are you sure you really want to show this image (maybe insecure)? "))))
-		(w3m-toggle-inline-images-internal status no-cache url)
-	      (when (interactive-p)
-		(w3m-message "\
+		  (w3m-toggle-inline-images-internal status no-cache url)
+		(when (interactive-p)
+		  (w3m-message "\
 This image is considered to be unsafe; use the prefix arg to force display"))))
-	(w3m-message "No image at point")))))
+	  (w3m-message "No image at point"))))))
 
 (defun w3m-toggle-inline-images (&optional force no-cache)
-  "Toggle the visibility of all images in the buffer.
+  "Toggle the visibility of all images in the buffer or in the region.
 If FORCE is non-nil, displaying images is forced.  If NO-CACHE is
 non-nil, cached data will not be used."
   (interactive "P")
@@ -3602,6 +3619,8 @@ non-nil, cached data will not be used."
 	    (unless (setq w3m-display-inline-images (not status))
 	      (w3m-process-stop (current-buffer))))
 	  (force-mode-line-update))
+      (when (w3m-region-active-p)
+	(narrow-to-region (region-beginning) (region-end)))
       (when (setq safe-regexp (get-text-property (point) 'w3m-safe-url-regexp))
 	;; Scan the buffer for searching for an insecure image url.
 	(setq pos (point-min))
@@ -3628,6 +3647,7 @@ Are you sure you really want to show all images (maybe insecure)? "))))
 	  (progn
 	    (unwind-protect
 		(w3m-toggle-inline-images-internal 'off no-cache nil)
+	      (widen)
 	      (setq w3m-display-inline-images t))
 	    (force-mode-line-update))
 	(w3m-message "There are some images considered unsafe;\

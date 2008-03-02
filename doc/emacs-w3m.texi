@@ -1200,8 +1200,9 @@ image in an emacs-w3m buffer.
 @kindex T (Lynx-like keymap)
 @kindex I (Info-like keymap)
 @findex w3m-toggle-inline-images
-Toggle displaying of inline images in this buffer and buffers created
-from this buffer, later on (@code{w3m-toggle-inline-images}).
+Toggle displaying of inline images in this buffer (or in the region if
+Transient Mark mode) and buffers created from this buffer, later on
+(@code{w3m-toggle-inline-images}).
 
 @item @kbd{I} (Lynx-like keymap)
 @itemx @kbd{i} (Info-like keymap)

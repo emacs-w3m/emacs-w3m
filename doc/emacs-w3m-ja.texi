@@ -1218,8 +1218,9 @@ emacs-w3m はウェブページにそれらを表示することができます。下記のコマンド
 @kindex T (Lynx-like キーマップ)
 @kindex I (Info-like キーマップ)
 @findex w3m-toggle-inline-images
-現在のバッファ (および後でそれを元に生成されるバッファ) におけるインライ
-ン画像の表示をトグルで切り替えます (@code{w3m-toggle-inline-images})。
+現在のバッファ(Transient-Mark-Mode が有効であれば、選択された範囲) (およ
+び後でそれを元に生成されるバッファ) におけるインライン画像の表示をトグル
+で切り替えます (@code{w3m-toggle-inline-images})。
 
 @item @kbd{I} (Lynx-like キーマップ)
 @itemx @kbd{i} (Info-like キーマップ)
