@@ -1246,7 +1246,7 @@ emacs-w3m はウェブページにそれらを表示することができます。下記のコマンド
 は、もし Emacs が画像表示をサポートしないならば、このキーは外部ビューワー
 を起動するコマンド (@code{w3m-view-image}) にバインドされます。
 
-@kbd{I} (Lynx-like キーマップ)
+@item @kbd{I} (Lynx-like キーマップ)
 @kindex I (Lynx-like キーマップ)
 @findex w3m-view-image
 @cindex Viewing images
