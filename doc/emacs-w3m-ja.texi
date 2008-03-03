@@ -642,7 +642,7 @@ Proxy ゲートウェイを通すべきではないホスト (イントラネットのサイトな
 @end menu
 
 @node Key Binding
-@subsection There are two types of the key bindings
+@subsection 二つのキーバインド
 @cindex Key binding
 @cindex Lynx-like keymap
 @cindex Info-like keymap
@@ -1218,14 +1218,36 @@ emacs-w3m はウェブページにそれらを表示することができます。下記のコマンド
 @kindex T (Lynx-like キーマップ)
 @kindex I (Info-like キーマップ)
 @findex w3m-toggle-inline-images
-現在のバッファ(Transient-Mark-Mode が有効であれば、選択された範囲) (およ
-び後でそれを元に生成されるバッファ) におけるインライン画像の表示をトグル
-で切り替えます (@code{w3m-toggle-inline-images})。
+現在のバッファにあるすべてのインライン画像の表示をトグルで切り替えま
+す (@code{w3m-toggle-inline-images})。
+@code{transient-mark-mode} が on で、かつ領域が設定されている場合に限っ
+て、その領域内にある画像だけが on になります。
 
-@item @kbd{I} (Lynx-like キーマップ)
+注1: 初めて訪れたページで最初からインライン画像を表示するかどうかは、前
+述の通り変数 @code{w3m-default-display-inline-images} の値で制御されま
+す (デフォルトは off です)。しかし、そのバッファを起点にして訪れるバッファ
+で画像を表示するかどうかは、
+@code{w3m-toggle-inline-images-permanently} が @code{nil} ではない値だっ
+た場合 (それがデフォルト) は、そのバッファで画像を表示していたかどうかの
+最後の状態を継承します。
+@code{w3m-toggle-inline-images-permanently} が @code{nil} だったら、常
+に @code{w3m-default-display-inline-images} がそれを制御します。
+
+注2: このコマンドは領域を不活性にします。したがって、再び特定の領域にあ
+る画像だけを表示したいならば、もう一度その領域を設定しなければなりません。
+
+@item @kbd{t} (Lynx-like キーマップ)
 @itemx @kbd{i} (Info-like キーマップ)
-@kindex I (Lynx-like キーマップ)
+@kindex t (Lynx-like キーマップ)
 @kindex i (Info-like キーマップ)
+@findex w3m-toggle-inline-image
+カーソルの場所にある単一の画像の表示をトグルで切り替えま
+す (@code{w3m-toggle-inline-image})。@samp{Info-like} キーマップについて
+は、もし Emacs が画像表示をサポートしないならば、このキーは外部ビューワー
+を起動するコマンド (@code{w3m-view-image}) にバインドされます。
+
+@kbd{I} (Lynx-like キーマップ)
+@kindex I (Lynx-like キーマップ)
 @findex w3m-view-image
 @cindex Viewing images
 ポイントの下にある画像を外部ビューワで見ます (@code{w3m-view-image})。
@@ -1581,12 +1603,12 @@ Emacs-w3m ユーザにもっと視覚効果を!
 @cindex Creating new buffers
 @cindex Killing buffers
 
-時に、ウェブページを開かないで単に新しいバッファーを作ることが役に立つこ
-とがあります。この操作を emacs-w3m の用語では「ふたごのコピーを作る」
+時に、ウェブページを開かないで単に新しいバッファを作ることが役に立つこと
+があります。この操作を emacs-w3m の用語では「ふたごのコピーを作る」
 (creating a twin copy) と言います。これは単に、その内容が現在のバッファ
 と同一な新しいバッファを作ります。
 
-この反対はバッファーを閉じることで、今はその内容に興味が無い一つのバッファ
+この反対はバッファを閉じることで、今はその内容に興味が無い一つのバッファ
 を、単に閉じることができます。あるいは、現在のバッファ以外のすべてを閉じ
 ることを決断しても良いです。以下のコマンドでそれを行なってください:
 

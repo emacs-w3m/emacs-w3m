@@ -1200,14 +1200,36 @@ image in an emacs-w3m buffer.
 @kindex T (Lynx-like keymap)
 @kindex I (Info-like keymap)
 @findex w3m-toggle-inline-images
-Toggle displaying of inline images in this buffer (or in the region if
-Transient Mark mode) and buffers created from this buffer, later on
-(@code{w3m-toggle-inline-images}).
+Toggle displaying of all the inline images in this buffer
+(@code{w3m-toggle-inline-images}).  If and only if
+@code{transient-mark-mode} is turned on and the region is active, only
+the images within the region will be turned on.
+
+Note1: whether to display inline images in a page from the start when
+you first visit the page is controlled by the value of the variable
+@code{w3m-default-display-inline-images} (the default is off) as
+mentioned above.  But the visibility of images in pages that you visit
+from this buffer inherits the last status of the visibility in this
+buffer if @code{w3m-toggle-inline-images-permanently} is non-@code{nil}
+(which is the default).  If @code{w3m-toggle-inline-images-permanently}
+is @code{nil}, @code{w3m-default-display-inline-images} always controls
+it.
+
+Note2: this command deactivates the region, so you have to set it again
+if you want to turn on only the images in a certain area again.
+
+@item @kbd{t} (Lynx-like keymap)
+@itemx @kbd{i} (Info-like keymap)
+@kindex t (Lynx-like keymap)
+@kindex i (Info-like keymap)
+@findex w3m-toggle-inline-image
+Toggle displaying of the single inline image under the cursor
+(@code{w3m-toggle-inline-image}).  For the @samp{Info-like keymap}, this
+key is bound to the command (@code{w3m-view-image}) that launches the
+external viewer if Emacs does not support displaying images.
 
 @item @kbd{I} (Lynx-like keymap)
-@itemx @kbd{i} (Info-like keymap)
 @kindex I (Lynx-like keymap)
-@kindex i (Info-like keymap)
 @findex w3m-view-image
 @cindex Viewing images
 View the image under point in an external viewer
