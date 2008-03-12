@@ -1094,7 +1094,28 @@ when we implement the mailcap parser to set `w3m-content-type-alist'.")
       ("application/rdf+xml" "\\.rdf\\'" nil "text/plain")
       ("application/rss+xml" "\\.rss\\'" nil "text/plain")
       ("application/xhtml+xml" nil nil "text/html")))
-  "*Alist of file suffixes and content types."
+  "*Alist of content types, regexps, commands to view, and filters.
+Each element is a list which consists of the following data:
+
+1. Content type.
+
+2. Regexp matching a url or a file name.
+
+3. Method to view contents.  The following three types may be used:
+   3a. Lisp function which takes the url to view as an argument.
+   3b. (\"COMMAND\" [ARG...]) -- where \"COMMAND\" is the external command
+       and ARG's are the arguments passed to the command if any.  The
+       symbols `file' and `url' that appear in ARG's will be replaced
+       respectively with the name of a temporary file which contains
+       the contents and the string of the url to view.
+   3c. nil which means to download the url into the local file.
+
+4. Content type that overrides the one specified by `1. Content type'.
+   Valid values include:
+   4a. Lisp function that takes three arguments URL, CONTENT-TYPE, and
+       CHARSET, and returns a content type.
+   4b. String that specifies a content type.
+   4c. nil that means not to override the content type."
   :group 'w3m
   :type '(repeat
 	  (group
