@@ -2509,7 +2509,46 @@ this option.  The default value is @code{t}.
 
 @item w3m-content-type-alist
 @vindex w3m-content-type-alist
-Alist of file suffixes and content types.
+Alist of content types, regexps, commands to view, and filters.  Each
+element is a list which consists of the following data:
+
+@enumerate
+@item
+Content type.
+
+@item
+Regexp matching a url or a file name.
+
+@item
+Method to view contents.  The following three types may be used:
+
+@enumerate a
+@item
+Lisp function which takes the url to view as an argument.
+@item
+("@var{command}" [@var{arg}@dots{}]) -- where "@var{command}" is the
+external command and @var{arg}'s are the arguments passed to the command
+if any.  The symbols @code{file} and @code{url} that appear in
+@var{arg}'s will be replaced respectively with the name of a temporary
+file which contains the contents and the string of the url to view.
+@item
+@code{nil} which means to download the url into the local file.
+@end enumerate
+
+@item
+Content type that overrides the one specified by @code{1. Content type}.
+Valid values include:
+
+@enumerate a
+@item
+Lisp function that takes three arguments @var{url}, @var{content-type},
+and @var{charset}, and returns a content type.
+@item
+String that specifies a content type.
+@item
+@code{nil} that means not to override the content type.
+@end enumerate
+@end enumerate
 
 @item w3m-correct-charset-alist
 @vindex w3m-correct-charset-alist
