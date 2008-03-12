@@ -1,6 +1,6 @@
 ;;; w3m-image.el --- Image conversion routines.
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2007
+;; Copyright (C) 2001, 2002, 2003, 2005, 2007, 2008
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>
@@ -110,11 +110,16 @@ nil forcibly."
 	 (put 'w3m-imagick-convert-program 'png32
 	      (unless (or (featurep 'xemacs)
 			  (< emacs-major-version 22))
-		(let ((png (condition-case nil
-			       (w3m-imagick-convert-data
-				"P1 1 1 1" "pbm" "png32")
-			     (error nil))))
-		  (and png (string-match "\\`\211PNG\r\n" png) t))))
+		(with-temp-buffer
+		  (set-buffer-multibyte nil)
+		  (insert "P1 1 1 1")
+		  (condition-case nil
+		      (call-process-region (point-min) (point-max)
+					   w3m-imagick-convert-program
+					   t t nil "pbm:-" "png32:-")
+		    (error))
+		  (goto-char (point-min))
+		  (looking-at "\211PNG\r\n"))))
 	 t)
 	(t
 	 (message "ImageMagick's `convert' program is not available")

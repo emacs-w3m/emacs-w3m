@@ -1,3 +1,9 @@
+2008-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-image.el (w3m-imagick-convert-program-available-p): Don't use
+	w3m-imagick-convert-data which may issue a warning when checking
+	whether the convert program supports png32.  cf. [emacs-w3m:10048]
+
 2008-03-03  Naohiro Aota  <nao.aota@gmail.com>
 
 	* doc/emacs-w3m.texi (Inline Images): Updated.
