@@ -161,6 +161,8 @@
 
 ;; Avoid byte-compile warnings.
 (eval-when-compile
+  (autoload 'doc-view-mode "doc-view" nil t)
+  (autoload 'doc-view-mode-p "doc-view")
   (autoload 'rfc2368-parse-mailto-url "rfc2368")
   (autoload 'widget-convert-button "wid-edit")
   (autoload 'widget-forward "wid-edit" nil t)
@@ -394,6 +396,18 @@ nil while popping to a buffer up."
   "*Non-nil means that `ange-ftp' or `efs' is used to access FTP servers."
   :group 'w3m
   :type 'boolean)
+
+(defcustom w3m-doc-view-content-types
+  (condition-case nil
+      (delq nil (mapcar (lambda (type)
+			  (if (doc-view-mode-p type)
+			      (format "application/%s" type)))
+			'(dvi postscript pdf)))
+    (error nil))
+  "List of content types for which to use `doc-view-mode' to view contents.
+This overrides `w3m-content-type-alist'."
+  :group 'w3m
+  :type '(repeat (string :tag "Type" :value "application/")))
 
 (defcustom w3m-imitate-widget-button '(eq major-mode 'gnus-article-mode)
   "*If non-nil, imitate the widget buttons on link (anchor) buttons.
@@ -1065,6 +1079,10 @@ when we implement the mailcap parser to set `w3m-content-type-alist'.")
 	 (video-viewer (or fiber-viewer
 			   (when (w3m-which-command "mpeg_play")
 			     (list "mpeg_play" 'file))))
+	 (dvi-viewer (or fiber-viewer
+			 (cond ((w3m-which-command "xdvi") (list "xdvi" 'file))
+			       ((w3m-which-command "dvitty")
+				(list "dvitty" 'file)))))
 	 (ps-viewer (or fiber-viewer
 			(cond
 			 ((w3m-which-command "gv") (list "gv" 'file))
@@ -1088,6 +1106,7 @@ when we implement the mailcap parser to set `w3m-content-type-alist'.")
       ("image/x-bmp" "\\.bmp\\'" ,image-viewer nil)
       ("video/mpeg" "\\.mpe?g\\'" ,video-viewer nil)
       ("video/quicktime" "\\.mov\\'" ,video-viewer nil)
+      ("application/dvi" "\\.dvi\\'" ,dvi-viewer nil)
       ("application/postscript" "\\.e?ps\\'" ,ps-viewer nil)
       ("application/pdf" "\\.pdf\\'" ,pdf-viewer nil)
       ("application/xml" "\\.xml\\'" nil w3m-detect-xml-type)
@@ -1102,20 +1121,20 @@ Each element is a list which consists of the following data:
 2. Regexp matching a url or a file name.
 
 3. Method to view contents.  The following three types may be used:
-   3a. Lisp function which takes the url to view as an argument.
-   3b. (\"COMMAND\" [ARG...]) -- where \"COMMAND\" is the external command
-       and ARG's are the arguments passed to the command if any.  The
-       symbols `file' and `url' that appear in ARG's will be replaced
-       respectively with the name of a temporary file which contains
-       the contents and the string of the url to view.
-   3c. nil which means to download the url into the local file.
+   a. Lisp function which takes the url to view as an argument.
+   b. (\"COMMAND\" [ARG...]) -- where \"COMMAND\" is the external command
+      and ARG's are the arguments passed to the command if any.  The
+      symbols `file' and `url' that appear in ARG's will be replaced
+      respectively with the name of a temporary file which contains
+      the contents and the string of the url to view.
+   c. nil which means to download the url into the local file.
 
 4. Content type that overrides the one specified by `1. Content type'.
    Valid values include:
-   4a. Lisp function that takes three arguments URL, CONTENT-TYPE, and
-       CHARSET, and returns a content type.
-   4b. String that specifies a content type.
-   4c. nil that means not to override the content type."
+   a. Lisp function that takes three arguments URL, CONTENT-TYPE, and
+      CHARSET, and returns a content type.
+   b. String that specifies a content type.
+   c. nil that means not to override the content type."
   :group 'w3m
   :type '(repeat
 	  (group
@@ -1676,7 +1695,17 @@ Nil for the regexp matches any file names.
 For instance, the value `(nil . \"\\\\.[sx]?html?\\\\'\")' allows
 \"file:///some/where/w3m.el\", not \"file:///any/where/index.html\", to
 open by the function specified by `w3m-local-find-file-function'.  The
-latter will be opened as a normal web page.
+latter will be opened as a normal web page.  Furthermore, if you would
+like to view some types of contents in the local system using the
+viewers specified by the `w3m-content-type-alist' variable, you can
+add regexps matching those file names to the second element of this
+variable.  For example:
+
+\(setq w3m-local-find-file-regexps
+      '(nil . \"\\\\.\\\\(?:[sx]?html?\\\\|dvi\\\\|ps\\\\|pdf\\\\)\\\\'\"))
+
+See also `w3m-use-doc-view-mode', which you will need to modify for
+such a case.
 
 It is effective only when the `w3m-local-find-file-function' variable
 is set properly."
@@ -5751,6 +5780,8 @@ If so return \"text/html\", otherwise \"text/plain\"."
     (w3m-create-text-page url type charset page-buffer))
    ((string-match "\\`image/" type)
     (w3m-create-image-page url type charset page-buffer))
+   ((member type w3m-doc-view-content-types)
+    (w3m-doc-view url))
    (t
     (with-current-buffer page-buffer
       (w3m-external-view url)
@@ -6918,7 +6949,9 @@ passed to the `w3m-quit' function (which see)."
 	(w3m-quit force)
       (setq cur (current-buffer))
       (if (w3m-use-tab-p)
-	  (w3m-next-buffer -1)
+	  (save-window-excursion
+	    (select-window (or (get-buffer-window cur t) (selected-window)))
+	    (w3m-next-buffer -1))
 	;; List buffers being shown in the other windows of the current frame.
 	(save-current-buffer
 	  (walk-windows (lambda (window)
@@ -8102,6 +8135,39 @@ this function will prompt user for it."
 		  (error "Permission denied, %s" filename)))
 	(copy-file ftp filename)
 	(message "Wrote %s" filename)))))
+
+(defun w3m-doc-view (url)
+  "View PDF/PostScript/DVI files using `doc-view-mode'.
+`w3m-pop-up-windows' and `w3m-pop-up-frames' control how the document
+window turns up."
+  (let* ((basename (file-name-nondirectory (w3m-url-strip-query url)))
+	 (regexp (concat "\\`" (regexp-quote basename) "\\(?:<[0-9]+>\\)?\\'"))
+	 (buffers (buffer-list))
+	 buffer data case-fold-search)
+    (save-current-buffer
+      (while buffers
+	(setq buffer (pop buffers))
+	(if (and (string-match regexp (buffer-name buffer))
+		 (progn
+		   (set-buffer buffer)
+		   (eq major-mode 'doc-view-mode))
+		 (equal buffer-file-name url))
+	    (setq buffers nil)
+	  (setq buffer nil))))
+    (unless (prog1
+		buffer
+	      (unless buffer
+		(setq buffer (generate-new-buffer basename)
+		      data (buffer-string)))
+	      (let ((pop-up-windows w3m-pop-up-windows)
+		    (pop-up-frames w3m-pop-up-frames))
+		(pop-to-buffer buffer)))
+      (set-buffer-multibyte nil)
+      (insert data)
+      (set-buffer-modified-p nil)
+      (setq buffer-file-name url)
+      (doc-view-mode)
+      'internal-view)))
 
 (eval-and-compile
   (unless (fboundp 'w3m-add-local-hook)
