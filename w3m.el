@@ -2420,7 +2420,8 @@ nil value means it has not been initialized.")
        [,(w3m-make-menu-item "他のセッションを閉じる" "Close Other Sessions")
 	w3m-delete-other-buffers
 	(> (safe-length (w3m-list-buffers)) 1)]
-       [,(w3m-make-menu-item "現在のセッションを保存する" "Save Displayed Sessions")
+       [,(w3m-make-menu-item "現在のセッションを保存する"
+			     "Save Displayed Sessions")
 	w3m-session-save t]
        [,(w3m-make-menu-item "セッションを選択する" "Select Sessions")
 	w3m-session-select t]
@@ -2478,7 +2479,8 @@ nil value means it has not been initialized.")
       (,(w3m-make-menu-item "ブックマーク" "Bookmark")
        [,(w3m-make-menu-item "ブックマークを表示" "View Bookmark")
 	w3m-bookmark-view t]
-       [,(w3m-make-menu-item "新しいセッションでブックマークを表示" "View Bookmark in a New Session")
+       [,(w3m-make-menu-item "新しいセッションでブックマークを表示"
+			     "View Bookmark in a New Session")
 	w3m-bookmark-view-new-session t])
       [,(w3m-make-menu-item "移動..." "Go to...")
        w3m-goto-url t]
@@ -3548,7 +3550,8 @@ If URL is specified, only the image with URL is toggled."
 		(when (and (w3m-url-valid iurl)
 			   (or (not w3m-current-ssl)
 			       (string-match "\\`\\(?:ht\\|f\\)tps://" iurl)
-			       (y-or-n-p "You are retrieving non-secure image. Continue?")))
+			       (y-or-n-p "\
+You are retrieving non-secure image. Continue?")))
 		  (w3m-process-with-null-handler
 		    (lexical-let ((start (set-marker (make-marker) start))
 				  (end (set-marker (make-marker) end))
@@ -3615,8 +3618,8 @@ non-nil, cached data will not be used."
 	    (end (region-end))
 	    iurl toggle-list)
 	(w3m-deactivate-region)
-	(while (not (eq end 
-			(setq p (next-single-property-change 
+	(while (not (eq end
+			(setq p (next-single-property-change
 				 p 'w3m-image nil end))))
 	  (when (and (setq iurl (w3m-image p))
 		     (not (assoc iurl toggle-list)))
@@ -3637,7 +3640,8 @@ non-nil, cached data will not be used."
 		(progn
 		  (if force (setq status 'off))
 		  (w3m-toggle-inline-images-internal status no-cache url))
-	      (setq safe-regexp (get-text-property (point) 'w3m-safe-url-regexp))
+	      (setq safe-regexp
+		    (get-text-property (point) 'w3m-safe-url-regexp))
 	      (if (or (not safe-regexp)
 		      (string-match safe-regexp url)
 		      (and force
@@ -3733,7 +3737,8 @@ resizing an image."
       (when (and (w3m-url-valid iurl)
 		 (or (not w3m-current-ssl)
 		     (string-match "\\`\\(?:ht\\|f\\)tps://" iurl)
-		     (y-or-n-p "You are retrieving non-secure image. Continue?")))
+		     (y-or-n-p "\
+You are retrieving non-secure image. Continue?")))
 	(w3m-process-with-null-handler
 	  (lexical-let ((start (set-marker (make-marker) start))
 			(end (set-marker (make-marker) end))
@@ -6247,7 +6252,8 @@ point."
   (let ((w3m-prefer-cache
 	 (or w3m-prefer-cache
 	     (and (stringp w3m-current-url)
-		  (string-match "\\`about://\\(?:db-\\)?history/" w3m-current-url))))
+		  (string-match "\\`about://\\(?:db-\\)?history/"
+				w3m-current-url))))
 	act url)
     (cond
      ((setq act (w3m-action))
@@ -7479,7 +7485,8 @@ closed.  See also `w3m-quit'."
 	(leftp '(and w3m-tab-button-menu-current-buffer
 		     (w3m-lefttab-exist-p w3m-tab-button-menu-current-buffer)))
 	(rightp '(and w3m-tab-button-menu-current-buffer
-		      (w3m-righttab-exist-p w3m-tab-button-menu-current-buffer)))
+		      (w3m-righttab-exist-p
+		       w3m-tab-button-menu-current-buffer)))
 	(many2p '(and w3m-tab-button-menu-current-buffer
 		      (cdr (w3m-list-buffers)))))
     `((w3m-goto-url-new-session
@@ -8463,11 +8470,12 @@ Cannot run two w3m processes simultaneously \
 		     (w3m-refontify-anchor)
 		     'cursor-moved)
 		 (when w3m-name-anchor-from-hist
-		   (w3m-history-plist-put :name-anchor-hist
-					  (append (list 1 nil)
-						  (and (integerp (car w3m-name-anchor-from-hist))
-						       (nthcdr (1+ (car w3m-name-anchor-from-hist))
-							       w3m-name-anchor-from-hist)))))
+		   (w3m-history-plist-put
+		    :name-anchor-hist
+		    (append (list 1 nil)
+			    (and (integerp (car w3m-name-anchor-from-hist))
+				 (nthcdr (1+ (car w3m-name-anchor-from-hist))
+					 w3m-name-anchor-from-hist)))))
 		 (setq w3m-name-anchor-from-hist
 		       (plist-get (nthcdr 3 element) :name-anchor-hist))
 		 (setq w3m-current-process
@@ -8485,9 +8493,8 @@ Cannot run two w3m processes simultaneously \
 			 (progn
 			   ;; Redisplay to search an anchor sure.
 			   (sit-for 0)
-			   (w3m-search-name-anchor name 
-						   nil
-						   (not (eq action 'cursor-moved)))))
+			   (w3m-search-name-anchor
+			    name nil (not (eq action 'cursor-moved)))))
 		    (setf (w3m-arrived-time (w3m-url-strip-authinfo orig))
 			  (w3m-arrived-time url))
 		  (goto-char (point-min)))
