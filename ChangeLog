@@ -1,3 +1,10 @@
+2008-03-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-doc-view-content-types): New variable.
+	(w3m-doc-view): New function.
+	(w3m-create-page): Use it.
+	(w3m-delete-buffer): Save windows layout.
+
 2008-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-image.el (w3m-imagick-convert-program-available-p): Don't use

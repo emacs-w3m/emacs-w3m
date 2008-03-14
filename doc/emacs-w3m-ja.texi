@@ -2658,6 +2658,11 @@ Name of the @acronym{CGI} program to list a local directory.  If it is
 @code{nil}, the dirlist.cgi module of the @samp{w3m} command will be
 used.
 
+@item w3m-doc-view-content-types
+@vindex w3m-doc-view-content-types
+List of content types for which to use @code{doc-view-mode} to view
+contents.  This overrides @code{w3m-content-type-alist}.
+
 @item w3m-edit-function
 @vindex w3m-edit-function
 Function used for editing local files.  It is used when the
@@ -2811,7 +2816,18 @@ For instance, the value @code{(nil . "\\.html?\\'")} allows
 @file{file:///some/where/w3m.el}, not
 @file{file:///any/where/index.html}, to open by the function specified
 by @code{w3m-local-find-file-function}.  The latter will be opened as a
-normal web page.
+normal web page.  Furthermore, if you would like to view some types of
+contents in the local system using the viewers specified by the
+@code{w3m-content-type-alist} variable, you can add regexps matching
+those file names to the second element of this variable.  For example:
+
+@lisp
+(setq w3m-local-find-file-regexps
+      '(nil . "\\.\\(?:[sx]?html?\\|dvi\\|ps\\|pdf\\)\\'"))
+@end lisp
+
+See also @code{w3m-use-doc-view-mode}, which you will need to modify for
+such a case.
 
 It is effective only when the @code{w3m-local-find-file-function}
 variable is set properly.
