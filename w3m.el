@@ -2305,8 +2305,9 @@ contents, will be held by the `w3m-safe-url-regexp' text property that
 is set over the rendered contents in a buffer.  So, programs that use
 the value to test whether a url of a link in a buffer is safe should
 use the value of the text property, not the value of this variable.
-See the commands `w3m-toggle-inline-image', `w3m-toggle-inline-images',
-and `w3m-safe-view-this-url'.")
+See the function definitions of `w3m-toggle-inline-image',
+`w3m-toggle-inline-images', `w3m-safe-view-this-url', and
+`w3m-mouse-safe-view-this-url'.")
 
 (defvar w3m-current-buffer nil)
 (defvar w3m-cache-buffer nil)
@@ -9854,10 +9855,8 @@ This link is considered to be unsafe; use the prefix arg to view anyway"))))
 
 (defun w3m-mouse-safe-view-this-url (event)
   "Perform the command `w3m-safe-view-this-url' by the mouse event."
-  ;; A command invoked by [mouse-N] cannot accept the prefix argument
-  ;; since [down-mouse-N] eats it.  So, we prompt a user to confirm
-  ;; twice, unlike `w3m-safe-view-this-url', whether to follow the link
-  ;; if it might be insecure.
+  ;; Note: a command invoked by [mouse-N] cannot accept the prefix
+  ;; argument since [down-mouse-N] eats it.
   (interactive "e")
   (mouse-set-point event)
   (let ((url (w3m-url-valid (or (w3m-anchor) (w3m-image)))))
@@ -9866,10 +9865,8 @@ This link is considered to be unsafe; use the prefix arg to view anyway"))))
 	      (use-dialog-box t))
 	  (when (or (not safe-regexp)
 		    (string-match safe-regexp url)
-		    (and (y-or-n-p "\
-This link is considered to be unsafe; continue? ")
-			 (y-or-n-p "\
-Are you sure you really want to follow this link (maybe insecure)? ")))
+		    (y-or-n-p "\
+This link is considered to be unsafe; continue? "))
 	    (w3m-safe-view-this-url t)))
       (w3m-message "No URL at point"))))
 
