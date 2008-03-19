@@ -3932,7 +3932,7 @@ If the prefix arg is given, all images are considered to be safe."
   (interactive "P")
   (save-excursion
     (set-buffer wl-message-buffer)
-    (w3m-safe-toggle-inline-images arg)))
+    (w3m-toggle-inline-images arg)))
 
 (eval-after-load "wl-summary"
   '(define-key wl-summary-mode-map
