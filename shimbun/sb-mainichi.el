@@ -121,9 +121,23 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 		      (shimbun-current-group-name shimbun) ")"))
 	headers)
     (if (string-match "\\.rss\\'" (shimbun-index-url shimbun))
-	(dolist (header (setq headers (luna-call-next-method)) headers)
-	  (shimbun-header-set-from header from))
+	(progn
+	  (shimbun-strip-cr)
+	  (goto-char (point-min))
+	  (while (and (search-forward "<title><![CDATA[AD:" nil t)
+		      (re-search-backward "<item[\t\n ]*" nil t)
+		      (shimbun-end-of-tag "item" t))
+	    (replace-match "\n"))
+	  (dolist (header (setq headers (luna-call-next-method)) headers)
+	    (shimbun-header-set-from header from)))
       (shimbun-mainichi-get-headers shimbun range from))))
+
+(luna-define-method shimbun-rss-build-message-id :around ((shimbun
+							   shimbun-mainichi)
+							  url &optional date)
+  ;; Don't strip string following "?" or "#" in url.  See sb-rss.el.
+  (concat "<" (md5 url) "%" (shimbun-current-group shimbun)
+	  "@" (shimbun-server shimbun) ".shimbun.namazu.org>"))
 
 (defun shimbun-mainichi-get-headers (shimbun range from)
   "Get headers for non-RSS groups."

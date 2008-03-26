@@ -1,3 +1,9 @@
+2008-03-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-mainichi.el (shimbun-get-headers): Remove ads.
+	(shimbun-rss-build-message-id): New function that doesn't strip string
+	following "?" or "#" in url when calculating its md5.
+
 2008-03-21  David Engster  <dengste@eml.cc>
 
 	* sb-heise.el (shimbun-heise-get-newsticker-headers): Adapt to the new
