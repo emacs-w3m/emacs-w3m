@@ -1,6 +1,6 @@
 ;;; sb-elips.el --- shimbun backend for the Elips mailing list
 
-;; Copyright(C) 2003 Katsumi Yamaoka
+;; Copyright(C) 2003, 2008 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -27,11 +27,11 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-fml)
+(require 'sb-mailman)
 
-(luna-define-class shimbun-elips (shimbun-fml) ())
+(luna-define-class shimbun-elips (shimbun-mailman-ja) ())
 
-(defvar shimbun-elips-url "http://heimat.jp/~nakaji/elips/")
+(defvar shimbun-elips-url "http://www.heimat.gr.jp/pipermail/elips/")
 (defvar shimbun-elips-groups '("elips"))
 (defvar shimbun-elips-x-face-alist
   '(("default" . "X-Face: 4(*_4GGM'.9>v7]}eY@L8:2Zn7:&ANIR4778Vg*'(f\

@@ -1,7 +1,7 @@
 ;;; sb-mailman.el --- shimbun backend class for mailman archiver -*- coding: iso-2022-7bit; -*-
 
 ;; Copyright (C) 2002, 2003 NAKAJIMA Mikio <minakaji@namazu.org>
-;; Copyright (C) 2002       Katsumi Yamaoka <yamaoka@jpl.org>
+;; Copyright (C) 2002, 2008 Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Copyright (C) 2005       Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Authors: NAKAJIMA Mikio  <minakaji@namazu.org>,
@@ -81,8 +81,9 @@
       (let ((pages (shimbun-header-index-pages range))
 	    (count 0))
 	(while (and (if pages (<= (incf count) pages) t)
-		    (re-search-forward "<a href=\"\\(20[0-9][0-9]q[1-4]\
-\\|20[0-9][0-9]-\\(January\\|February\\|March\\|April\\|May\\|June\
+		    (re-search-forward "\
+<a href=\"\\(20[0-9][0-9]\\(?:q[1-4]\\)?\
+\\|20[0-9][0-9]-\\(?:January\\|February\\|March\\|April\\|May\\|June\
 \\|July\\|August\\|September\\|October\\|November\\|December\\)\
 \\)/date.html\">"
 				       nil t))

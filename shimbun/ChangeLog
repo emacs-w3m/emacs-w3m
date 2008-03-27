@@ -1,3 +1,10 @@
+2008-03-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-elips.el: Depend on sb-mailman.el.
+	(shimbun-elips-url): Update.
+
+	* sb-mailman.el (shimbun-mailman-header): Work for yearly archives.
+
 2008-03-27  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* sb-impress.el (shimbun-impress-ignored-subject-regexp): New variable.
