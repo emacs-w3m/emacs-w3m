@@ -1,3 +1,8 @@
+2008-03-27  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* sb-impress.el (shimbun-impress-ignored-subject-regexp): New variable.
+	(shimbun-headers): Use it.
+
 2008-03-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-mainichi.el (shimbun-get-headers): Remove ads.
