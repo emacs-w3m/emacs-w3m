@@ -1,6 +1,6 @@
 ;;; sb-cnn-jp.el --- shimbun backend for CNN Japan
 
-;; Copyright (C) 2003, 2004, 2005 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2003, 2004, 2005, 2008 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: news
@@ -40,8 +40,11 @@
 (defvar shimbun-cnn-jp-server-name "CNN Japan")
 (defvar shimbun-cnn-jp-from-address "webmaster@cnn.co.jp")
 (defvar shimbun-cnn-jp-content-start
-  "Web\\(\\s \\|&nbsp;\\)+posted\\(\\s \\|&nbsp;\\)+at:[^<]*<br>")
-(defvar shimbun-cnn-jp-content-end "<div class=\"box\">")
+  "<div[\t\n ]+class=\"topPhImg\">[\t\n ]*\
+\\|<div[\t\n ]class=\"topArtBox\">[\t\n ]*\
+\\|Web\\(?:\\s \\|&nbsp;\\)+posted\\(?:\\s \\|&nbsp;\\)+at:[^<]*<br>")
+(defvar shimbun-cnn-jp-content-end
+  "[\t\n ]*<div class=\"\\(?:txtPR\\|box\\)\">")
 (defvar shimbun-cnn-jp-expiration-days 14)
 
 (defvar shimbun-cnn-jp-group-alist
@@ -56,14 +59,11 @@
 
 (defvar shimbun-cnn-jp-x-face-alist
   '(("default" . "\
-Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAWAgMAAAD7mfc/AAAABGdBTUEAALGPC/xhBQAAAAx
- QTFRFtgEB4mlp9bGx/vT0/VCoMAAAAC90RVh0U29mdHdhcmUAWFYgVmVyc2lvbiAzLjEwYStGTG1
- hc2sgIFJldjogMTIvMjkvOTQbx6p8AAAA9ElEQVR42j3OMU7DQBAF0L8TxRviIg1IhCYUES0cYbM
- FNRROJFwQSioq6oxzAgspkTgCziHiI2xD78Y9RZBAsjwZS4hmvl7z/0Da+7RO5XchoYQEpJu51Em
- HFme7JJHPZBUYP1TsFvVq832tqMaI568v2/eRolwijp4ftw9WwXyxj8bp2y0pvBOJrF/PWEEkQiZ
- bu/xOYRXIyV1CEXe4Me78H6fGnXTodRgYR/gr6JPxxjEy3gtZmnlm/SDvJ2Q582HJCFNoffnkqyn
- ja+gQ2erKHwYlGlMUH/FhSE3EEAdg1KDXakqlZ9LCii6J5DB7CROp4iPbnmrk8JWgOgAAAAd0SU1
- FB9QGBAQGEAm9iVAAAAAASUVORK5CYII=")))
+Face: iVBORw0KGgoAAAANSUhEUgAAACMAAAAQAgMAAADhWS7JAAAADFBMVEW2AQHojY3xxsb////
+ LZAepAAAAmUlEQVQI12P4P0F86v6v8R8aGH4ySIXmXw3/4MDwQDQqKnraJCCrwYFNLHxqAJDlyBg
+ pGjZVoMCBgYX/r0hAI4sCkKX/l0WAkZEByKr/y8ICYdn/ZWEAMiCyQBZQzJX7L0uAI4uAA0MjAwN
+ LgSMviwPDhQAGlhJRPiDrg2howB4WeUcHhr8MDAz/GOQPMDD8X8LA9r+h/gEHAHPyLQOjNU7WAAA
+ AAElFTkSuQmCC")))
 
 (luna-define-method shimbun-groups ((shimbun shimbun-cnn-jp))
   (mapcar 'car shimbun-cnn-jp-group-alist))

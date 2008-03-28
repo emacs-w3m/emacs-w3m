@@ -1,3 +1,9 @@
+2008-03-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-cnn-jp.el (shimbun-cnn-jp-content-start)
+	(shimbun-cnn-jp-content-end): Update.
+	(shimbun-cnn-jp-x-face-alist): Shrink image size.
+
 2008-03-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-elips.el: Depend on sb-mailman.el.
