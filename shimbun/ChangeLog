@@ -1,3 +1,10 @@
+2008-03-29  David Engster  <dengste@eml.cc>
+
+	* sb-slashdot.el (shimbun-slashdot-group-url): New variable.
+	(shimbun-slashdot-groups): Default to a list of the groups that
+	shimbun-slashdot-group-url defines.
+	(shimbun-index-url): Use it.
+
 2008-03-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-cnn-jp.el (shimbun-cnn-jp-content-start)

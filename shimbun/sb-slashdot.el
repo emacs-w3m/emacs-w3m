@@ -26,6 +26,22 @@
 
 (luna-define-class shimbun-slashdot (shimbun) ())
 
+(defvar shimbun-slashdot-group-url
+  '(("frontpage" "http://www.slashdot.org")
+    ("apple" "http://apple.slashdot.org")
+    ("askslashdot" "http://ask.slashdot.org")
+    ("books" "http://books.slashdot.org")
+    ("developers" "http://developers.slashdot.org")
+    ("games" "http://games.slashdot.org")
+    ("hardware" "http://hardware.slashdot.org")
+    ("interviews" "http://interviews.slashdot.org")
+    ("IT" "http://it.slashdot.org")
+    ("linux" "http://linux.slashdot.org")
+    ("mobile" "http://mobile.slashdot.org")
+    ("politics" "http://politics.slashdot.org")
+    ("science" "http://science.slashdot.org")
+    ("YRO" "http://yro.slashdot.org")))
+
 (defvar shimbun-slashdot-url "http://www.slashdot.org")
 
 (defvar shimbun-slashdot-content-start
@@ -43,7 +59,8 @@
 (defvar shimbun-slashdot-regexp-author-time
   "Posted by[^a-zA-Z]*\\(.*\\)[^\0]*?@\\([0-9]+\\):\\([0-9]+\\)\\(AM\\|PM\\)")
 
-(defvar shimbun-slashdot-groups '("frontpage"))
+(defvar shimbun-slashdot-groups
+  (mapcar 'car shimbun-slashdot-group-url))
 
 (defvar shimbun-slashdot-x-face-alist
   '(("default" . "\
@@ -54,7 +71,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAgID////5Zpl0AAA
 (defvar shimbun-slashdot-retry-fetching 1)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-slashdot))
-  shimbun-slashdot-url)
+  (let ((group (shimbun-current-group-internal shimbun)))
+    (cadr (assoc group shimbun-slashdot-group-url))))
 
 (luna-define-method shimbun-get-headers
   ((shimbun shimbun-slashdot) &optional range)
