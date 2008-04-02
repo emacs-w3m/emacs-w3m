@@ -5075,9 +5075,14 @@ such a case if the @code{windows-1252} coding system is available in
 your (X)Emacs.
 
 @item @uref{http://www.nikkansports.com/, Nikkan Sports}
-nikkansports.baseball nikkansports.soccer nikkansports.sports
-nikkansports.battle nikkansports.horseracing nikkansports.entertainment
-nikkansports.society nikkansports.lifestyle
+nikkansports.flash nikkansports.baseball
+nikkansports.baseball.highschool nikkansports.baseball.amateur
+nikkansports.baseball.mlb nikkansports.soccer nikkansports.soccer.japan
+nikkansports.soccer.world nikkansports.sports nikkansports.sumo
+nikkansports.nba nikkansports.nfl nikkansports.nhl nikkansports.rugby
+nikkansports.golf nikkansports.motor nikkansports.battle
+nikkansports.race nikkansports.race.kka nikkansports.entertainment
+nikkansports.cinema nikkansports.general
 
 @item @uref{http://www.nikkei.co.jp/, Nihon Keizai Shimbun}
 nikkei.top nikkei.main nikkei.keizai nikkei.sangyo nikkei.tento
