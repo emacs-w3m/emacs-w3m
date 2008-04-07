@@ -1933,16 +1933,22 @@ Here are some predefined functions which can be used for those ways:
   :group 'w3m
   :type '(repeat
 	  (choice
-	   (group :tag "Estimate relationships from anchors matching"
-		 (function :format "" w3m-relationship-simple-estimate)
+	   :format "%[Value Menu%] %v"
+	   (list :tag "Estimate relationships from anchors matching"
+		 :indent 1
+		 (const :format "Function: %v\n"
+			w3m-relationship-simple-estimate)
 		 (regexp :tag "URL")
 		 (regexp :tag "Next")
-		 (regexp :tag "Previous")
-		 (regexp :tag "Start")
-		 (regexp :tag "Contents"))
+		 (regexp :tag "Prev")
+		 (radio :format "Start: %v"
+			(const :format "%v " nil) regexp)
+		 (radio :format "Contents: %v"
+			(const :format "%v " nil) regexp))
 	   (list :tag "Estimate with a user defined function"
+		 :indent 1
 		 function
-		 (repeat :tag "Arguments" sexp)))))
+		 (repeat :tag "Args" :extra-offset 1 (sexp :format "%v"))))))
 
 (defcustom w3m-enable-google-feeling-lucky t
   "Non-nil enables you to enter any words as well as a url when prompted.
