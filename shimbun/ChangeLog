@@ -1,3 +1,8 @@
+2008-04-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-japanese-hankaku-region-1): Fix regexp used to
+	find urls that are expressed with wide characters.
+
 2008-04-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nikkansports.el: Rewrite.

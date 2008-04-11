@@ -1532,7 +1532,7 @@ it considers the buffer has already been narrowed to an article."
       (while (re-search-forward "\
 \\(?:[Ｆｆ][Ｉｉ][Ｌｌ][Ｅｅ]\\|[Ｆｆ][Ｔｔ][Ｐｐ]\
 \\|[Ｈｈ][Ｔｔ][Ｔｔ][Ｐｐ][Ｓｓ]?\\|[Ｍｍ][Ａａ][Ｉｉ][Ｌｌ][Ｔｔ][Ｏｏ]\\)\
-：\\cA+"
+：\\cj+"
 				nil t)
 	(japanese-hankaku-region (match-beginning 0) (match-end 0) t))
       (goto-char start)
