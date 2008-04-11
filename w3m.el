@@ -7063,7 +7063,7 @@ as if the folder command of MH performs with the -pack option."
     (w3m-delete-buffers buffers)))
 
 (defun w3m-delete-left-tabs ()
-  "Delete tabs of left side from current tab."
+  "Delete tabs on the left side of the current tab."
   (interactive)
   (let ((cbuf (current-buffer))
 	bufs)
@@ -7076,7 +7076,7 @@ as if the folder command of MH performs with the -pack option."
       (w3m-delete-buffers bufs))))
 
 (defun w3m-delete-right-tabs ()
-  "Delete tabs of right side from current tab."
+  "Delete tabs on the right side of the current tab."
   (interactive)
   (let ((bufs (w3m-righttab-exist-p)))
     (when bufs
