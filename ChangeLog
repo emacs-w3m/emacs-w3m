@@ -1,3 +1,13 @@
+2008-04-15  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-turnoff-inline-images): New command.
+	(w3m-toggle-inline-images): If force is 'turnoff, turn off to display
+	images.
+	(w3m-menubar): Add w3m-turnoff-inline-images.
+	(w3m-lynx-like-map): Ditto.
+	(w3m-info-like-map): Ditto.
+	(w3m-mode): Ditto.
+
 2008-04-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-relationship-estimate-rules): Fix custom type.

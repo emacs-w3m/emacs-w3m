@@ -1228,6 +1228,14 @@ Toggle displaying of the single inline image under the cursor
 key is bound to the command (@code{w3m-view-image}) that launches the
 external viewer if Emacs does not support displaying images.
 
+@item @kbd{M-S-t} (Lynx-like keymap)
+@itemx @kbd{M-S-i} (Info-like keymap)
+@kindex M-T (Lynx-like keymap)
+@kindex M-I (Info-like keymap)
+@findex w3m-turnoff-inline-images
+Turn off displaying of all the inline images in this buffer.
+(@code{w3m-turnoff-inline-images}).
+
 @item @kbd{I} (Lynx-like keymap)
 @kindex I (Lynx-like keymap)
 @findex w3m-view-image

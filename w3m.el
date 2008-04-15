@@ -2469,6 +2469,8 @@ nil value means it has not been initialized.")
 	w3m-toggle-inline-images (w3m-display-graphic-p)]
        [,(w3m-make-menu-item "画像表示の切替(この画像)" "Toggle This Image")
 	w3m-toggle-inline-image (w3m-image)]
+       [,(w3m-make-menu-item "画像表示を止める" "Turn off Images")
+	w3m-turnoff-inline-images (w3m-display-graphic-p)]
        "----" ;; separator
        [,(w3m-make-menu-item "再描画する" "Redisplay This Page")
 	w3m-redisplay-this-page w3m-current-url]
@@ -3662,16 +3664,24 @@ Are you sure you really want to show this image (maybe insecure)? "))))
 This image is considered to be unsafe; use the prefix arg to force display"))))
 	  (w3m-message "No image at point"))))))
 
+(defun w3m-turnoff-inline-images ()
+  "Turn off to display all images in the buffer or in the region."
+  (interactive)
+  (w3m-toggle-inline-images 'turnoff))
+  
 (defun w3m-toggle-inline-images (&optional force no-cache)
   "Toggle the visibility of all images in the buffer or in the region.
-If FORCE is non-nil, displaying images is forced.  If NO-CACHE is
-non-nil, cached data will not be used."
+If FORCE is non-nil, displaying images is forced.  If FORCE is 'turnoff,
+displaying images turn off. If NO-CACHE is non-nil, cached data will
+not be used. "
   (interactive "P")
   (unless (w3m-display-graphic-p)
     (error "Can't display images in this environment"))
-  (let ((status w3m-display-inline-images)
-	(safe-p t)
-	safe-regexp pos url)
+  (let* ((turnoff (eq force 'turnoff))
+	 (status (or w3m-display-inline-images turnoff))
+	 (safe-p t)
+	 safe-regexp pos url)
+    (if turnoff (setq force nil))
     (if status
 	(progn
 	  (if force (setq status nil))
@@ -7167,6 +7177,7 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "G" 'w3m-goto-url-new-session)
     (define-key map "g" 'w3m-goto-url)
     (define-key map "T" 'w3m-toggle-inline-images)
+    (define-key map "\M-T" 'w3m-turnoff-inline-images)
     (define-key map "t" 'w3m-toggle-inline-image)
     (when (w3m-display-graphic-p)
       (define-key map "\M-[" 'w3m-zoom-out-image)
@@ -7297,6 +7308,7 @@ as if the folder command of MH performs with the -pack option."
 			    'w3m-toggle-inline-image
 			  'w3m-view-image))
     (define-key map "I" 'w3m-toggle-inline-images)
+    (define-key map "\M-I" 'w3m-turnoff-inline-images)
     (when (w3m-display-graphic-p)
       (define-key map "\M-[" 'w3m-zoom-out-image)
       (define-key map "\M-]" 'w3m-zoom-in-image))
@@ -7691,6 +7703,7 @@ or a list which consists of the following elements:
 \\[w3m-view-image]	Display the image under point in the external viewer.
 \\[w3m-save-image]	Save the image under point to a file.
 \\[w3m-toggle-inline-images]	Toggle the visibility of all images.
+\\[w3m-turnoff-inline-images]	Turn off to display all images.
 \\[w3m-zoom-out-image]	Zoom in an image on the point.
 \\[w3m-zoom-in-image]	Zoom out an image on the point.
 

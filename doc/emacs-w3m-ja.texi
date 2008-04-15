@@ -1246,6 +1246,14 @@ emacs-w3m はウェブページにそれらを表示することができます。下記のコマンド
 は、もし Emacs が画像表示をサポートしないならば、このキーは外部ビューワ
 を起動するコマンド (@code{w3m-view-image}) にバインドされます。
 
+@item @kbd{M-S-t} (Lynx-like キーマップ)
+@itemx @kbd{M-S-i} (Info-like キーマップ)
+@kindex M-T (Lynx-like キーマップ)
+@kindex M-I (Info-like キーマップ)
+@findex w3m-turnoff-inline-images
+現在のバッファにあるすべてのインライン画像の表示を取り止めます。
+(@code{w3m-turnoff-inline-images})。
+
 @item @kbd{I} (Lynx-like キーマップ)
 @kindex I (Lynx-like キーマップ)
 @findex w3m-view-image
