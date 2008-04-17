@@ -1,3 +1,13 @@
+2008-04-17  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (top): Add the variables definition of `w3m-bookmark-mode',
+	`w3m-bookmark-menu-items', `w3m-bookmark-menu-items-pre' and
+	`w3m-tab-menubar-make-items-preitems' avoid byte-compile warnings.
+	(w3m-rmouse-menubar): New user option.
+	(w3m-setup-menu): Add the setup of `w3m-rmouse-menubar'.
+	(w3m-mouse-major-mode-menu): Rewrite to use `w3m-rmouse-menubar'.
+	(w3m-link-menu): Add `w3m-external-view-this-url'.
+
 2008-04-15  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-turnoff-inline-images): New command.

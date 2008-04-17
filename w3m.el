@@ -168,7 +168,11 @@
   (autoload 'widget-forward "wid-edit" nil t)
   (autoload 'widget-get "wid-edit")
   (unless (fboundp 'char-to-int)
-    (defalias 'char-to-int 'identity)))
+    (defalias 'char-to-int 'identity))
+  (defvar w3m-bookmark-mode)
+  (defvar w3m-bookmark-menu-items)
+  (defvar w3m-bookmark-menu-items-pre)
+  (defvar w3m-tab-menubar-make-items-preitems))
 
 (defconst emacs-w3m-version
   (eval-when-compile
@@ -2536,6 +2540,26 @@ nil value means it has not been initialized.")
       )) ;; end w3m
   "Menubar definition for emacs-w3m.")
 
+(defvar w3m-rmouse-menubar
+  `("w3m"
+    [,(w3m-make-menu-item "前のページに戻る" "Back to Previous Page")
+     w3m-view-previous-page
+     (w3m-history-previous-link-available-p)]
+    [,(w3m-make-menu-item "次のページに移動する" "Forward to Next Page")
+     w3m-view-next-page
+     (w3m-history-next-link-available-p)]
+    [,(w3m-make-menu-item "上の階層に移動する" "Up to Parent Page")
+     w3m-view-parent-page
+     (w3m-parent-page-available-p)]
+    "----" ;; separator
+    [,(w3m-make-menu-item "このページを再取得する" "Reload This Page")
+     w3m-reload-this-page w3m-current-url]
+    [,(w3m-make-menu-item "すべてのページを再取得する" "Reload All Pages")
+     w3m-reload-all-pages (cdr (w3m-list-buffers))]
+    [,(w3m-make-menu-item "プロセスを中止する" "Cancel Process")
+     w3m-process-stop w3m-current-process])
+  "*Menubar for click the right mouse button.")
+
 (defvar w3m-cid-retrieve-function-alist nil)
 (defvar w3m-force-redisplay t)
 
@@ -3481,7 +3505,11 @@ The database is kept in `w3m-entity-table'."
 	  (easy-menu-define
 	    w3m-mode-menu w3m-mode-map
 	    "w3m menu item" w3m-menubar)
-	  (easy-menu-add w3m-mode-menu))))))
+	  (easy-menu-add w3m-mode-menu))
+	(let ((map (make-sparse-keymap)))
+	  (easy-menu-define
+	    w3m-rmouse-menu map
+	    "w3m rmouse menu item" w3m-rmouse-menubar))))))
 
 (defun w3m-fontify-images ()
   "Fontify img_alt strings of images in the buffer containing halfdump."
@@ -7483,18 +7511,40 @@ closed.  See also `w3m-quit'."
   "Pop up a W3M mode-specific menu of mouse commands."
   (interactive "e")
   (mouse-set-point event)
-  (w3m-static-if (featurep 'xemacs)
-      (let (menubar)
-	(when current-menubar
-	  (run-hooks 'activate-menubar-hook))
-	(setq menubar
-	      (cons "w3m Mode"
-		    (delq nil
-			  (list (assoc "w3m" current-menubar)
-				(assoc "Bookmark" current-menubar)
-				(assoc "Tab" current-menubar)))))
-	(popup-menu menubar event))
-    (mouse-major-mode-menu event nil)))
+  (let* ((bmkitems (if w3m-bookmark-mode
+		       (cdr w3m-bookmark-menu-items)
+		     (car w3m-bookmark-menu-items)))
+	 (bmkmenu (if w3m-bookmark-menu-items-pre
+		      `(,@bmkitems
+			"----"
+			,@w3m-bookmark-menu-items-pre)
+		    bmkitems)))
+    (w3m-static-if (featurep 'xemacs)
+	(let (menubar)
+	  (when current-menubar
+	    (run-hooks 'activate-menubar-hook))
+	  (setq menubar
+		(cons "w3m"
+		      (delq nil
+			    `(,@(cdr w3m-rmouse-menubar)
+			      "----"
+			      "----"
+			      ,(assoc "w3m" current-menubar)
+			      "----"
+			      ,(assoc "Bookmark" current-menubar)
+			      ,(assoc "Tab" current-menubar)))))
+	  (popup-menu menubar event))
+      (run-hooks 'menu-bar-update-hook)
+      (popup-menu (delete nil
+			  `(,@w3m-rmouse-menubar
+			    "----"
+			    "----"
+			    ,w3m-menubar
+			    "----"
+			    ,(cons "Bookmark" bmkmenu)
+			    ,(when w3m-tab-menubar-make-items-preitems
+			       (cons "Tab" w3m-tab-menubar-make-items-preitems))))
+		  event))))
 
 (defvar w3m-tab-button-menu-current-buffer nil
   "Internal variable used by `w3m-tab-button-menu'.")
@@ -7600,8 +7650,11 @@ or a list which consists of the following elements:
 			  "Open Link in This Session")
      w3m-view-this-url]
     [,(w3m-make-menu-item "リンクを新しいセッションで開く"
-			  "Open Link In New Session")
+			  "Open Link in New Session")
      w3m-view-this-url-new-session]
+    [,(w3m-make-menu-item "リンクを外部ブラウザで開く"
+			  "Open Link in an External Browser")
+     w3m-external-view-this-url]
     "-"
     [,(w3m-make-menu-item "このリンクをブックマーク..."
 			  "Bookmark This Link...")
