@@ -1915,6 +1915,13 @@ Here are some predefined functions which can be used for those ways:
 	      "\\|\\(?:<span>Previous</span>\\)\\)")
      nil nil)
     (w3m-relationship-simple-estimate
+     "\\`http://www\\.google\\.[^/]+/gwt/n\\?u="
+     ,(concat "<a[^>]+?href=" w3m-html-string-regexp
+	      "[ \t\n]+accesskey=\"3\">")
+     ,(concat "<a[^>]+?href=" w3m-html-string-regexp
+	      "[ \t\n]+accesskey=\"1\">")
+     nil nil)
+    (w3m-relationship-simple-estimate
      "\\`http://beta\\.search\\.yahoo\\.co\\.jp/"
      ,(concat "<a href=" w3m-html-string-regexp
 	      "><img src=http://i\\.yimg\\.jp/images/common/ar_next\\.gif")

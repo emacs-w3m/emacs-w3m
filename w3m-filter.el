@@ -58,6 +58,7 @@
     ("\\`http://eow\\.alc\\.co\\.jp/[^/]+/UTF-8" w3m-filter-alc)
     ("\\`http://www\\.asahi\\.com/" w3m-filter-asahi-shimbun)
     ("\\`http://imepita\\.jp/[0-9]+/[0-9]+" w3m-filter-imepita)
+    ("\\`http://allatanys\\.jp/" w3m-filter-allatanys)
     ("" w3m-filter-iframe))
   "Rules to filter advertisements on WEB sites."
   :group 'w3m
@@ -311,7 +312,7 @@
   (let (tmp)
     (when (re-search-forward
 	   (concat "<script><!--\ndocument.write('\\([^\n]*\\)');\r\n//--></script>\n"
-		   "<noscript>.*</noscript>") 
+		   "<noscript>.*</noscript>")
 	   nil t)
       (setq tmp (match-string 1))
       (delete-region (match-beginning 0) (match-end 0))
@@ -321,5 +322,33 @@
   (goto-char (point-min))
   (while (re-search-forward "<iframe [^>]*src=\"\\([^\"]*\\)\"[^>]*>" nil t)
     (insert (concat "[iframe:<a href=\"" (match-string 1) "\">" (match-string 1) "</a>]"))))
+
+(defun w3m-filter-allatanys (url)
+  "JavaScript emulation."
+  (goto-char (point-min))
+  (let (aturl atexpurl)
+    (if (re-search-forward
+	 (concat "<body[ \t\r\f\n]+onload=\"window\\.top\\.location\\.replace('"
+		 w3m-html-string-regexp
+		 "');\">")
+	 nil t)
+	(progn
+	  (setq aturl (match-string 1))
+	  (setq atexpurl (w3m-expand-url aturl url))
+	  (delete-region (match-beginning 0) (match-end 0))
+	  (insert "<body>\n"
+		  "<hr>"
+		  "Body has a <b>url=window.top.location.replace()</b><br><br>\n"
+		  (format "Goto: <a href=%s>%s</a>\n" aturl atexpurl)
+		  "<hr>")
+	  (goto-char (point-min))
+	  (insert (format "<meta HTTP-EQUIV=\"Refresh\" CONTENT=\"0;URL=%s\">\n"
+			  aturl)))
+      (while (re-search-forward (concat "<a[ \t\r\l\n]+href=\"javascript:[^(]+('"
+					"\\([^']+\\)')\">")
+				nil t)
+	(setq aturl (match-string 1))
+	(delete-region (match-beginning 0) (match-end 0))
+	(insert (format "<a href=\"%s\">" aturl))))))
 
 ;;; w3m-filter.el ends here

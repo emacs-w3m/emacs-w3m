@@ -1,7 +1,10 @@
 2008-04-18  Hideyuki SHIRAI  <shirai@meadowy.org>
 
+	* w3m-filter.el (w3m-filter-rules): Add rule for the site of Allatanys.
+	(w3m-filter-allatanys): New function.
+
 	* w3m.el (w3m-relationship-estimate-rules): Fix regexp for Google
-	search within EmacsWiki.
+	search within EmacsWiki. Add rule for Google Mobile Proxy.
 
 2008-04-17  Hideyuki SHIRAI  <shirai@meadowy.org>
 
