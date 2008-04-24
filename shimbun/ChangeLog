@@ -1,3 +1,15 @@
+2008-04-22 David Hansen <david.hansen@gmx.net>
+
+	* sb-zeit-de.el (shimbun-zeit-de-x-face-alist): New variable.
+        (shimbun-zeit-de-content-end): Follow new page layout.
+        (shimbun-get-headers): Remove "from=rss" parameter from the URL.
+        (shimbun-clear-contents): Filter more junk.
+
+2008-04-22 David Hansen <david.hansen@gmx.net>
+	* sb-the-register.el (shimbun-the-register-x-face-alist): New variable.
+        (shimbun-get-headers): Remove URL rewriting.
+        (shimbun-make-contents): Remove more ads.
+
 2008-04-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-japanese-hankaku-region-1): Fix regexp used to

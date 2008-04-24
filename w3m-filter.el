@@ -54,7 +54,7 @@
     ("\\`https?://\\(?:www\\.\\)?amazon\\.\
 \\(?:com\\|co\\.\\(?:jp\\|uk\\)\\|fr\\|de\\)/"
      w3m-filter-amazon)
-    ("\\`http://mixi\\.jp" w3m-filter-mixi)
+    ("\\`https?://mixi\\.jp" w3m-filter-mixi)
     ("\\`http://eow\\.alc\\.co\\.jp/[^/]+/UTF-8" w3m-filter-alc)
     ("\\`http://www\\.asahi\\.com/" w3m-filter-asahi-shimbun)
     ("\\`http://imepita\\.jp/[0-9]+/[0-9]+" w3m-filter-imepita)
