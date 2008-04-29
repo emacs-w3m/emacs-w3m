@@ -1,3 +1,16 @@
+2008-04-30  Naohiro Aota  <nao.aota@gmail.com>
+
+	* doc/emacs-w3m-ja.texi: Update translation.
+
+	* w3m.el (w3m-goto-url): Use w3m-current-coding-system first to encode
+	url if available; Also encode name part when url is local.
+	(w3m-ignored-image-url-regexp): New variable.
+	(w3m-toggle-inline-images-internal): Don't display image whose url
+	match `w3m-ignored-image-url-regexp'.
+	(w3m-decode-entities, w3m-decode-entities-string): Replace
+	"(match-beginning 2)" with "(match-end 1)" to deal with emacs-21's
+	strange behavior.
+
 2008-04-24  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-filter.el (w3m-filter-rules): Support Mixi with SSL.

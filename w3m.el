@@ -2171,6 +2171,15 @@ It shows a percentage of the data loaded from the web server."
   :group 'w3m
   :type '(choice (string :tag "Format") function))
 
+(defcustom w3m-ignored-image-url-regexp nil
+  "*Regexp matching image urls which you don't want to view.
+It is effective even if `w3m-display-inline-images' is non-nil.
+For instance, the value \"^http://www\\.google\\.com/\" conceals
+Google's logo and navigation images, but display YouTube's
+thumbnail."
+  :group 'w3m
+  :type '(regexp :format "URL: %v\n" :size 0))
+
 (defvar w3m-modeline-process-status-on "<PRC>"
   "Modeline control for displaying the status when the process is running.
 The value will be modified for displaying the graphic icon.")
@@ -3575,7 +3584,10 @@ If URL is specified, only the image with URL is toggled."
 			  (point-max))
 		  iurl (w3m-image start)
 		  size (get-text-property start 'w3m-image-size))
-	    (when (and (or (not url)
+	    (when (and (or (and (not url)
+				(or (not w3m-ignored-image-url-regexp)
+				    (not (string-match w3m-ignored-image-url-regexp
+						       iurl))))
 			   ;; URL is specified and is same as the image URL.
 			   (string= url iurl))
 		       (not (eq (get-text-property start 'w3m-image-status)
@@ -3866,8 +3878,8 @@ If optional KEEP-PROPERTIES is non-nil, text property is reserved."
 				     fid)))
 	  (when keep-properties
 	    (setq prop (text-properties-at start)))
-	  (unless (eq (char-after (match-beginning 2)) ?\;)
-	    (goto-char (match-beginning 2)))
+	  (unless (eq (char-after (match-end 1)) ?\;)
+	    (goto-char (match-end 1)))
 	  ;; Note that `w3m-entity-value' breaks `match-data' at the 1st
 	  ;; time in XEmacs because of the autoloading unicode.elc for
 	  ;; the `ucs-to-char' function.
@@ -3888,7 +3900,7 @@ If optional KEEP-PROPERTIES is non-nil, text property is reserved."
 			    (match-string 1 str))
 			(cons (substring str pos (match-beginning 0))
 			      buf))
-	      pos (if (eq (aref str (match-beginning 2)) ?\;)
+	      pos (if (eq (aref str (match-end 1)) ?\;)
 		      (match-end 0)
 		    (match-end 1))))
       (if buf
@@ -8433,7 +8445,9 @@ the current page."
   (setq url (w3m-uri-replace url))
   (unless (or (w3m-url-local-p url)
 	      (string-match "\\`about:" url))
-    (setq url (w3m-url-transfer-encode-string url w3m-default-coding-system)))
+    (setq url (w3m-url-transfer-encode-string url
+					      (or w3m-current-coding-system
+						  w3m-default-coding-system))))
   (cond
    ;; process mailto: protocol
    ((string-match "\\`mailto:" url)
@@ -8540,9 +8554,13 @@ Cannot run two w3m processes simultaneously \
 	  (and (match-beginning 8)
 	       (setq name (match-string 9 url)
 		     url (substring url 0 (match-beginning 8))))
-	  (when (and (w3m-url-local-p url)
-		     (not(string-match "[^\000-\177]" url)))
-	    (setq url (w3m-url-decode-string url)))
+	  (when (w3m-url-local-p url)
+	    (unless (string-match "[^\000-\177]" url)
+	      (setq url (w3m-url-decode-string url)))
+	    (when name
+	      (setq name (w3m-url-transfer-encode-string name
+							 (or w3m-current-coding-system
+							     w3m-default-coding-system)))))
 	  (w3m-process-do
 	      (action
 	       (if (and (not reload)

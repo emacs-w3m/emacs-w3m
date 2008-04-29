@@ -2442,43 +2442,40 @@ Emacs-w3m $B$,5/F0$9$k$H!"(B@code{w3m-init-file} $B%U%!%$%k$rFI$_9~$_$^$9!#%G
 @table @code
 @item w3m-accept-languages
 @vindex w3m-accept-languages
-List of acceptable languages in descending order of priority.  The
-default value is set according to the @samp{accept_language} entry of
-the @samp{w3m} configuration file (normally @file{~/.w3m/config}).
+$B<u$1F~$l2DG=$J8@8l$rM%@hEY$K$h$j9_=g$KJB$Y$?$b%j%9%H!#%G%U%)%k%HCM$O(B
+@samp{w3m} $B$N@_Dj%U%!%$%k(B($BDL>o$O(B @file{~/.w3m/config}) $B$N(B
+@samp{accept_language} $B$N%(%s%H%j$K$h$C$F@_Dj$5$l$k!#(B
 
 @item w3m-add-referer
 @vindex w3m-add-referer
 
-Rule of sending referers.  There are five choices as the valid values of
-this option.
+$B%j%U%!%i$NAw$j$+$?!#(B5$B$D$NA*Br;R$,$"$k!#(B
 
 @enumerate
 @item
-@code{nil}: this means that emacs-w3m never send referers.
+@code{nil}: $B7h$7$F%j%U%!%i$rAw$i$J$$!#(B
 
 @item
-@code{t}: this means that emacs-w3m always send referers.
+@code{t}: $B>o$K%j%U%!%i$rAw$k!#(B
 
 @item
-@code{lambda}: this means that emacs-w3m send referers only when both
-the current page and the target page are provided by the same server.
+@code{lambda}: $B0\F085$N%Z!<%8$H0\F0@h$N%Z!<%8$NN>J}$,F1$8%5!<%P$K$h$jDs6!$5(B
+$B$l$F$$$k;~$N$_%j%U%!%i$rAw$k!#(B
 
 @item
-a cons cell keeping two regular expressions: this means that emacs-w3m
-send referers when the url of the current page matches the first regular
-expression and does not match the second regular expression.  @code{Nil}
-for the regexp matches any url.
+$BFs$D$N@55,I=8=$N%3%s%9!&%;%k(B: $B0\F085$N%Z!<%8$N(B URL $B$,(B1$B$D$a$N@55,I=8=$K%^%C(B
+$B%A$7!"$+$D!"(B2$B$D$a$N@55,I=8=$K%^%C%A$7$J$$>l9g$N$_%j%U%!%i$rAw$k!#(B
+@code{nil} $B$,;XDj$5$l$k$HA4$F$N(B URL $B$K%^%C%A$9$k!#(B
 
 @item
-a function: emacs-w3m send referers when this function which has two
-arguments, URL and REFERER, returns non-@code{nil}.
+$B4X?t(B: URL$B$H%j%U%!%i$N(B2$B$D$r0z?t$K$H$k4X?t$,(B non-@code{nil} $B$rJV$;$P%j%U%!(B
+$B%i$rAw$k!#(B
 @end enumerate
 
-If you're nervous about leaking private WEB browsing history
-information, set this option to `nil' or `lambda'.  If your computer
-belongs to a secret network, you may set a pair of regular expressions
-to inhibit sending referers which will disclose your private
-information, as follows:
+$B%V%i%&%8%s%0MzNr$,1L$l$k$N$r?4G[$9$k$N$J$i!"(B `nil' $B$+(B `lambda' $B$K@_Dj$7$F(B
+$B$/$@$5$$!#(B $B$"$J$?$N%3%s%T%e!<%?$,HkL)$N%M%C%H%o!<%/$KB0$7$F$$$k$N$J$i!"0J(B
+$B2<$N$h$&$K(B2$B$D$N@55,I=8=$r@_Dj$7$F!"8D?M>pJs$,1L$l$k$N$rKI$0$H$$$$$G$7$g(B
+$B$&!#(B:
 
 @lisp
 (setq w3m-add-referer
@@ -2488,64 +2485,61 @@ information, as follows:
 
 @item w3m-add-user-agent
 @vindex w3m-add-user-agent
-Non-@code{nil} means add the User-Agent field to the request header.
-The value of @code{w3m-user-agent} is used for the field body.
+non-@code{nil} $B$J$i$P!"%j%/%(%9%H%X%C%@$K(B User-Agent $B$r4^$a$^$9!#(B
+@code{w3m-user-agent} $B$NCM$,(B User-Agent $B$H$7$F;H$o$l$^$9!#(B
 
 @item w3m-arrived-file
 @vindex w3m-arrived-file
-Name of the file to keep the arrived @acronym{URL}s database.
+$B1\Mw$7$?(B @acronym{URL} $B$N%G!<%?%Y!<%9$rJ]B8$9$k%U%!%$%kL>!#(B
 
 @item w3m-auto-show
 @vindex w3m-auto-show
-Non-@code{nil} means provide the ability to horizontally scroll the
-window.  Automatic horizontal scrolling happens when the point gets away
-from both ends of the window, but nothing occurs if
-@code{truncate-lines} is set to @code{nil}.
+non-@code{nil} $B$J$i$P%&%#%s%I%&$N?eJ?%9%/%m!<%k$rM-8z$K$9$k!#(B point $B$,%&%#(B
+$B%s%I%&$NN>C<$N30$K=P$?>l9g$K<+F0E*$K?eJ?%9%/%m!<%k$9$k$,!"(B
+@code{truncate-lines} $B$,(B @code{nil} $B$J$i$P2?$b5/$3$i$J$$!#(B
 
-This feature works with specific emacs-w3m code; usual
-@code{auto-hscroll-mode}, @code{automatic-hscrolling},
-@code{auto-show-mode} or @code{hscroll-mode} will all be invalidated in
-emacs-w3m buffers.
+$B$3$N5!G=$OFCDj$N(B emacs-w3m $B$N%3!<%I$N$_$G;H$o$l$k!#$9$J$o$A!"DL>o(B
+@code{auto-hscroll-mode} $B$d(B @code{automatic-hscrolling} $B$d(B
+@code{auto-show-mode} $B$d(B @code{hscroll-mode} $B$OA4$F(B emacs-w3m $B$N%P%C%U%!(B
+$B$G$OL58z$K$J$k$@$m$&!#(B
 
 @item w3m-charset-coding-system-alist
 @vindex w3m-charset-coding-system-alist
-Alist of @acronym{MIME} charsets and coding systems.  Both charsets and
-coding systems must be symbols.
+@acronym{MIME} charset $B$H%3!<%G%#%s%0%7%9%F%`$NO"A[G[Ns!#(B charset $B$H%3!<(B
+$B%G%#%s%0%7%9%F%`$NN>J}$,%7%s%\%k$G$J$1$l$P$J$i$J$$!#(B
 
 @item w3m-coding-system
 @vindex w3m-coding-system
-Default coding system used to communicate with the @samp{w3m} command.
+@samp{w3m} $B%3%^%s%I$HDL?.$9$k$?$a$K;H$&%3!<%G%#%s%0%7%9%F%`$N%G%U%)%k%HCM!#(B
 
 @item w3m-coding-system-priority-list
 @vindex w3m-coding-system-priority-list
-Coding systems in order of priority used for emacs-w3m sessions.
+emacs-w3m $B$G;H$o$l$k%3!<%G%#%s%0%7%9%F%`$rM%@hEY$K$h$jJB$Y$?%j%9%H!#(B
 
 @item w3m-command
 @vindex w3m-command
-Name of the executable file of the @samp{w3m} command.  You normally
-don't have to specify the value, since emacs-w3m looks for the existing
-commands @samp{w3m}, @samp{w3mmee} and @samp{w3m-m17n} (in this order)
-in the @code{exec-path} directories in order if it is @code{nil} in the
-beginning.
+@samp{w3m} $B%3%^%s%I$N<B9T%U%!%$%kL>!#(B $B$3$NCM$,(B nil $B$J$i$P:G=i$K(B
+emacs-w3m $B$,B8:_$9$k(B @samp{w3m} $B$d(B @samp{w3mmee} $B$d(B @samp{w3m-m17n}$B$r(B ($B$3(B
+$B$N=gHV$K(B) @code{exec-path} $B%G%#%l%/%H%j$+$iC5:w$7$F$/$l$k$N$G!"DL>o$O$3$N(B
+$BCM$r@_Dj$9$kI,MW$O$J$$!#(B
 
-If you want to use the other @samp{w3m} command, specify the value of
-this variable explicitly in the .emacs file or customize the value and
-save it.  In this case, you need to restart Emacs and emacs-w3m: there
-is currently no way to apply the changing of the @samp{w3m} command to
-all the emacs-w3m programs safely after loading the @file{w3m.elc}
-module.
+$BB>$N(B @samp{w3m} $B%3%^%s%I$r;H$$$?$1$l$P!"(B .emacs $B$G$3$NCM$rL@<(E*$K@_Dj$9(B
+$B$k$+!"%+%9%?%^%$%:$7$FJ]B8$7$F$/$@$5$$!#(B $B$3$N>l9g!"(B Emacs $B$H(B emacs-w3m $B$r(B
+$B:F5/F0$7$J$1$l$P$$$1$^$;$s!#(B $B:#$N$H$3$m!"(B @file{w3m.elc} $B$rFI$_$3$s$@8e$K(B
+@samp{w3m} $B%3%^%s%I$NJQ99$r0BA4$KA4$F$N(B emacs-w3m $B%W%m%0%i%`$K9T$J$&$3$H(B
+$B$O$G$-$J$$$+$i$G$9!#(B
 
 @item w3m-command-arguments
 @c @vindex w3m-command-arguments
-List of the default arguments passed to the @samp{w3m} command.  See
-also @code{w3m-command-arguments-alist}.
+@samp{w3m} $B%3%^%s%I$N0z?t$N%G%U%)%k%HCM!#(B
+@code{w3m-command-arguments-alist} $B$b;2>H$9$k$H$h$$!#(B
 
 @item w3m-command-arguments-alist
 @vindex w3m-command-arguments-alist
-Alist of regexps matching urls and additional arguments passed to
-@samp{w3m}.  A typical usage of this variable is to specify whether to
-use a proxy server for particular hosts.  The first match made will be
-used.  Here is an example of how to set this variable:
+URL $B$K%^%C%A$9$k@55,I=8=$H(B @samp{w3m} $B$KDI2C$GEO$5$l$k0z?t$H$NO"A[G[Ns!#(B
+$B$3$NJQ?t$OFCDj$N%[%9%H$X$N@\B3$K%W%m%-%7$rMQ$$$k$J$I$N$3$H$K;H$o$l$^$9!#(B
+$B:G=i$K%^%C%A$7$?MWAG$,E,MQ$5$l$^$9!#(B $B0J2<$K$I$N$h$&$K$3$NJQ?t$r@_Dj$9$k$+(B
+$B$NNc$r<($7$^$9!#(B
 
 @lisp
 (setq w3m-command-arguments-alist
@@ -2558,205 +2552,201 @@ used.  Here is an example of how to set this variable:
 @end lisp
 
 @noindent
-Here the first element matches any url where the scheme is @samp{http}
-and the hostname is either @samp{your-company.com} or a name ending with
-@samp{.your-company.com}; the proxy server is not used for those hosts.
-If you are a regexp novice, you can use the @code{w3m-no-proxy-domains}
-variable instead.
+$B$3$N(B1$B$D$a$NMWAG$O!"%9%-!<%`$,(B @samp{http} $B$G$"$j!"%[%9%HL>$,(B
+@samp{your-company.com} $B$G$"$k$+!"(B @samp{.your-company.com} $B$G=*$o$kA4$F(B
+$B$N(B URL $B$K%^%C%A$7$^$9!#(B $B$3$l$i$N%[%9%H$K@\B3$9$k$N$K%W%m%-%7$OMQ$$$i$l$^(B
+$B$;$s!#(B $B$"$J$?$,@55,I=8=$N=i?4<T$G$"$k$N$J$i!"(B
+@code{w3m-no-proxy-domains} $B$rBe$o$j$K;H$C$F$/$@$5$$!#(B
 
 @item w3m-command-environment
 @vindex w3m-command-environment
-Alist of environment variables for subprocesses to inherit.
+$B%5%V%W%m%;%9$,7Q>5$9$k4D6-JQ?t$NO"A[G[Ns!#(B
 
 @item w3m-confirm-leaving-secure-page
 @vindex w3m-confirm-leaving-secure-page
-If non-@code{nil}, you'll be asked for confirmation when leaving secure
-pages.  It is STRONGLY recommended to set a non-nil value to this option.
-You MUST understand what you want to do completely before switching off
-this option.  The default value is @code{t}.
+non-@code{nil} $B$J$i$P!"%;%-%e%"$J%Z!<%8$r5n$k;~$K(B emacs-w3m $B$O3NG'$r5a$a(B
+$B$^$9!#$3$NJQ?t$K$O(B non-nil $B$NCM$r(B @emph{$B6/$/(B} $B$*$9$9$a$7$^$9!#$3$N%*%W%7%g(B
+$B%s$r@Z$kA0$K(B @emph{$BI,$:(B} $B$I$&$$$&$3$H$r$7$?$$$N$+$r40A4$KM}2r$7$F$/$@$5$$!#(B
+$B%G%U%)%k%H$G$O!"(B @code{t} $B$K$J$C$F$$$^$9!#(B
 
 @item w3m-content-type-alist
 @vindex w3m-content-type-alist
-Alist of content types, regexps, commands to view, and filters.  Each
-element is a list which consists of the following data:
+$B%3%s%F%s%H%?%$%W$H@55,I=8=$HI=<($9$k$?$a$N%3%^%s%I$H%U%#%k%?$H$NO"A[G[Ns!#(B
+$B$=$l$>$l$NMWAG$O!"0J2<$N%G!<%?$,9=@.$9$k%j%9%H$G$"$k!#(B
 
 @enumerate
 @item
-Content type.
+$B%3%s%F%s%H%?%$%W!#(B
 
 @item
-Regexp matching a url or a file name.
+URL $B$^$?$O%U%!%$%kL>$K%^%C%A$9$k@55,I=8=!#(B
 
 @item
-Method to view contents.  The following three types may be used:
+$B%U%!%$%k$r1\Mw$9$k$?$a$NJ}K!!#(B $B0J2<$N;0$D$N<oN`$,;H$o$l$k$G$7$g$&!#(B
 
 @enumerate a
 @item
-Lisp function which takes the url to view as an argument.
+$B1\Mw$9$k(B URL $B$r0z?t$K$H$k(B lisp $B$N4X?t!#(B
 @item
-("@var{command}" [@var{arg}@dots{}]) -- where "@var{command}" is the
-external command and @var{arg}'s are the arguments passed to the command
-if any.  The symbols @code{file} and @code{url} that appear in
-@var{arg}'s will be replaced respectively with the name of a temporary
-file which contains the contents and the string of the url to view.
+("@var{command}" [@var{arg}@dots{}]) -- "@var{command}" $B$O30It%3%^%s%I$G(B
+$B$"$j!"(B@var{arg} $B$O(B($B$"$k$J$i$P(B)$B%3%^%s%I$KEO$90z?t$G$"$k!#(B@code{file} $B$H(B
+@code{url} $B$N%7%s%\%k$r(B @var{arg} $B$H$7$F;XDj$9$k$H!"$=$l$>$l1\Mw$9$k%U%!(B
+$B%$%k$NFbMF$r4^$s$@%F%s%]%i%j%U%!%$%k$N%U%!%$%kL>$H!"1\Mw$9$k(B URL $B$H$KCV49(B
+$B$($i$l$k!#(B
 @item
-@code{nil} which means to download the url into the local file.
+@code{nil} $B$J$i$P!"(B URL $B$r%m!<%+%k$N%U%!%$%k$K%@%&%s%m!<%I$7$^$9!#(B
 @end enumerate
 
 @item
-Content type that overrides the one specified by @code{1. Content type}.
-Valid values include:
+@code{1. $B%3%s%F%s%H%?%$%W(B} $B$G;XDj$5$l$?$b$N$r>e=q$-$9$k%3%s%F%s%H%?%$%W!#(B
+$B0J2<$NCM$bM-8z$G$9!#(B
 
 @enumerate a
 @item
-Lisp function that takes three arguments @var{url}, @var{content-type},
-and @var{charset}, and returns a content type.
+@var{url} $B$H(B @var{content-type} $B$H(B @var{charset} $B$N(B3$B$D$N0z?t$r$H$j!"%3%s(B
+$B%F%s%H%?%$%W$rJV$9(B Lisp $B4X?t!#(B
 @item
-String that specifies a content type.
+$B%3%s%F%s%H%?%$%W$r<($9J8;zNs!#(B
 @item
-@code{nil} that means not to override the content type.
+@code{nil} $B$J$i$P!"%3%s%F%s%H%?%$%W$r>e=q$-$7$J$$!#(B
 @end enumerate
 @end enumerate
 
 @item w3m-correct-charset-alist
 @vindex w3m-correct-charset-alist
-Alist of @acronym{MIME} charsets; strange ones and standard ones.
+$BFC<l$J(B @acronym{MIME} $BJ8;z%;%C%H$HI8=`$N(B @acronym{MIME} $BJ8;z%;%C%H$H$NO"(B
+$BA[G[Ns!#(B
 
 @item w3m-db-history-display-size
 @vindex w3m-db-history-display-size
-Maximum number of arrived @acronym{URL}s which are displayed per page.
+about://arived-db/ $B$G0lEY$KI=<($9$k(B @acronym{URL} $B$N:GBg?t!#(B
 
 @item w3m-decoder-alist
 @vindex w3m-decoder-alist
-Alist of encoding types, decoder commands, and arguments.
+$B%(%s%3!<%I$N<oN`$H%G%3!<%@$H0z?t$H$NO"A[G[Ns!#(B
 
 @item w3m-default-coding-system
 @c @vindex w3m-default-coding-system
-Default coding system used to encode url strings and post-data.
+URL $BJ8;zNs$H(B POST $B$5$l$k%G!<%?$H$r%(%s%3!<%I$9$k$N$K%G%U%)%k%H$G;H$o$l$k(B
+$B%3!<%G%#%s%0%7%9%F%`!#(B
 
 @item w3m-default-content-type
 @vindex w3m-default-content-type
-Default value assumed as the content type of local files.
+$B%m!<%+%k$N%U%!%$%k$r;2>H$9$k;~$K%G%U%)%k%H$G;H$o$l$k%3%s%F%s%H%?%$%W!#(B
 
 @item w3m-default-directory
 @vindex w3m-default-directory
-Directory used as the current directory in emacs-w3m buffers.  The valid
-values include a string specifying an existing directory, a symbol of
-which the value specifies an existing directory, a function which takes
-a url as an argument and returns a directory, and @code{nil} (which is
-the default).  If the specified directory does not exist or it is
-@code{nil}, the value of @code{w3m-profile-directory} is used.
+emacs-w3m $B$N%P%C%U%!$K$*$$$F!"8=:_$N%G%#%l%/%H%j$H$7$F;H$o$l$k%G%#%l%/%H(B
+$B%j!#B8:_$9$k%G%#%l%/%H%j$r<($9J8;zNs!"$=$NCM$,B8:_$9$k%G%#%l%/%H%j$r<($9(B
+$B%7%s%\%k!"(B url $B$r0z?t$K$H$j%G%#%l%/%H%j$rJV$94X?t!"$b$7$/$O(B @code{nil}
+($B%G%U%)%k%HCM(B)$B$,M-8z$JCM$H$J$j$^$9!#(B $B;XDj$5$l$?%G%#%l%/%H%j$,B8:_$7$J$$>l(B
+$B9g$d!"(B @code{nil} $B$,;XDj$5$l$?>l9g$O(B @code{w3m-profile-directory} $B$NCM$,(B
+$B;H$o$l$^$9!#(B
 
-Note that there is an exception: if a page visits a local file or visits
-a remote file using ftp, the directory in which the file exists is used
-as the current directory instead.
+$BNc30(B: $B%m!<%+%k$N%U%!%$%k$d!"%j%b!<%H$N%U%!%$%k$r(B ftp $B$G%"%/%;%9$7$F$$$k>l(B
+$B9g$O$=$N%U%!%$%k$N%G%#%l%/%H%j$,8=:_$N%G%#%l%/%H%j$H$7$F;H$o$l$^$9!#(B
 
 @item w3m-default-save-directory
 @vindex w3m-default-save-directory
-Default directory where downloaded files will be saved to.
+$B%@%&%s%m!<%I$7$?%U%!%$%k$,%G%U%)%k%H$GJ]B8$5$l$k%G%#%l%/%H%j!#(B
 
 @item w3m-delete-duplicated-empty-lines
 @vindex w3m-delete-duplicated-empty-lines
-Non-@code{nil} means display two or more continuous empty lines into
-single.
+non-@code{nil} $B$J$i$PFs9T0J>e$NO"B3$7$?6uGr9T$r0l9T$K$^$H$a$k!#(B
 
 @item w3m-dirlist-cgi-program
 @vindex w3m-dirlist-cgi-program
-Name of the @acronym{CGI} program to list a local directory.  If it is
-@code{nil}, the dirlist.cgi module of the @samp{w3m} command will be
-used.
+$B%m!<%+%k$N%G%#%l%/%H%jNs5s$9$k$N$K;H$o$l$k(B @acronym{CGI} $B%W%m%0%i%`$NL>A0!#(B
+@code{nil} $B$J$i$P!"(B @samp{w3m} $B%3%^%s%I$N(B dirlist.cgi $B$N%b%8%e!<%k$,;H$o(B
+$B$l$k!#(B
 
 @item w3m-doc-view-content-types
 @vindex w3m-doc-view-content-types
-List of content types for which to use @code{doc-view-mode} to view
-contents.  This overrides @code{w3m-content-type-alist}.
+$B%U%!%$%k$r1\Mw$9$k$N$K(B @code{doc-view-mode} $B$r;H$&%3%s%F%s%H%?%$%W$N%j%9(B
+$B%H!#$3$NJQ?t$O(B @code{w3m-content-type-alist} $B$NCM$r>e=q$-$9$k!#(B
 
 @item w3m-edit-function
 @vindex w3m-edit-function
-Function used for editing local files.  It is used when the
-@code{w3m-edit-current-url} command or the @code{w3m-edit-this-url}
-command is invoked.
+$B%m!<%+%k$N%U%!%$%k$rJT=8$9$k$?$a$N4X?t!#(B@code{w3m-edit-current-url} $B$d(B
+@code{w3m-edit-this-url} $B$N%3%^%s%I$,8F$P$l$?;~$K;H$o$l$^$9!#(B
 
 @item w3m-edit-function-alist
 @vindex w3m-edit-function-alist
-Alist of functions used for editing pages.  This option is referred to
-decide which function should be used to edit a specified page, when
-either @code{w3m-edit-current-url} or @code{w3m-edit-this-url} is
-invoked.  When no suitable function is found from this alist,
-@code{w3m-edit-function} is used.
+$B%Z!<%8$rJT=8$9$k$?$a$K;H$&4X?t$NO"A[G[Ns!#$3$N%*%W%7%g%s$O!"(B
+@code{w3m-edit-current-url} $B$d(B @code{w3m-edit-this-url} $B$N%3%^%s%I$,8F$P(B
+$B$l$?;~$K$I$N4X?t$G$=$N%Z!<%8$rJT=8$9$k$+$r7h$a$k$N$K;H$o$l$^$9!#(B $B$3$NO"A[(B
+$BG[Ns$+$iE,Ev$J4X?t$,8+$D$+$i$J$1$l$P!"(B @code{w3m-edit-function} $B$,;H$o$l(B
+$B$^$9!#(B
 
 @item w3m-enable-google-feeling-lucky
 @vindex w3m-enable-google-feeling-lucky
-Non-@code{nil} enables you to enter any words as well as a url when
-prompted.  In that case, emacs-w3m uses Google to search for the words.
-The default value is @code{t}.
+non-@code{nil} $B$J$i$P!"(B url $B$H$7$F$I$s$JC18l$bF~NO$9$k$3$H$,$G$-$k$h$&$K(B
+$B$J$j$^$9!#$=$N>l9g!"(B emacs-w3m $B$O(B Google $B$r;H$C$F$=$N8@MU$r8!:w$7$^$9!#%G(B
+$B%U%)%k%H$G$O(B @code{t} $B$G$9!#(B
 
 @item w3m-encoding-type-alist
 @vindex w3m-encoding-type-alist
-Alist of file suffixes and content encoding types.
+$B%U%!%$%k$N3HD%;R$H%U%!%$%k$N%(%s%3!<%I$N<oN`$H$NO"A[G[Ns!#(B
 
 @item w3m-file-coding-system
 @vindex w3m-file-coding-system
-Coding system used when writing configuration files.  This value will be
-referred to by the @code{w3m-save-list} function.
+$B@_Dj%U%!%$%k$r=q$/$?$a$K;H$o$l$k%3!<%G%#%s%0%7%9%F%`!#(B $B$3$NJQ?t$O!"(B
+@code{w3m-save-list} $B4X?t$G;H$o$l$^$9!#(B
 
 @item w3m-file-name-coding-system
 @vindex w3m-file-name-coding-system
-Coding system used to convert pathnames when emacs-w3m accesses files.
+emacs-w3m $B$,%U%!%$%k$K%"%/%;%9$9$k;~$K!"%Q%9L>$rJQ49$9$k@h$N%3!<%G%#%s%0(B
+$B%7%9%F%`!#(B
 
 @item w3m-fill-column
 @vindex w3m-fill-column
-Integer used as the value for @code{fill-column} in emacs-w3m buffers.
-If it is positive, pages will be displayed within the columns of that
-number.  If it is zero or negative, the number of columns which
-subtracted that number from the window width is applied to the maximum
-width of pages.  Note that XEmacs does not always obey this setting.
+emacs-w3m $B$N%P%C%U%!$G(B @code{fill-column} $B$H$7$F;H$o$l$k?t;z!#@5$NCM$J$i(B
+$B$P!"%Z!<%8$,$=$N7e?t$GI=<($5$l$k!#(B0 $B$+Ii$NCM$J$i$P!"%&%#%s%I%&$NI}$+$i$=(B
+$B$N?t;z$r$,%Z!<%8$N:GBgI}$H$7$F;H$o$l$k!#(BXEmacs $B$G$O$3$N@_Dj$,>o$KF/$/$o$1(B
+$B$G$O$J$$$H$$$&$3$H$KCm0U$7$F$/$@$5$$!#(B
 
 @item w3m-follow-redirection
 @vindex w3m-follow-redirection
-Maximum number of redirections which emacs-w3m honors and follows.  If
-@code{nil}, redirections are followed by the @samp{w3m} command.  Don't
-set it to @code{nil} if you allow to use cookies (i.e., you have set
-@code{w3m-use-cookies} to non-@code{nil}) since cookies may be shared
-among many redirected pages.
+emacs-w3m $B$,%j%@%$%l%/%H$rB:=E$7%j%@%$%l%/%H@h$rDI$$$+$1$k:GBg?t!#(B
+@code{nil} $B$J$i$P!"(B @samp{w3m} $B%3%^%s%I$,%j%@%$%l%/%H$r=hM}$7$^$9!#%/%C%-!<(B
+$B$,%j%@%$%l%/%H$5$l$k%Z!<%84V$G6&M-$5$l$k$3$H$,$"$j$&$k$N$G!"%/%C%-!<$r5v(B
+$B2D$9$k$J$i$P(B($B$D$^$j!"(B @code{w3m-use-cookies} $B$r(B non-@code{nil} $B$K$7$F$$$k(B
+$B$J$i$P(B)$B!"$3$NJQ?t$r(B @code{nil} $B$K$7$J$$$G$/$@$5$$!#(B
 
 @item w3m-home-page
 @c @vindex w3m-home-page
-This variable specifies the url string to open when emacs-w3m starts.
-Don't say HP, it's the abbreviated name of a certain company. ;-)
+emacs-w3m $B$,5/F0$7$?;~$K3+$/(B URL $B$NJ8;zNs$r;XDj$7$^$9!#(B $BK?2q<R$NN,>N$K$J$C(B
+$B$A$c$$$^$9$+$i(B HP $B$H$O8@$o$J$$$G$/$@$5$$$M!#(B
 
 @item w3m-horizontal-scroll-columns
 @c @vindex w3m-horizontal-scroll-columns
-Number of steps in columns used when scrolling a window horizontally.
+$B%&%#%s%I%&$r?eJ?%9%/%m!<%k$9$k;~$K!"%9%/%m!<%k$9$kJ8;z?t!#(B
 
 @item w3m-horizontal-scroll-division
 @vindex w3m-horizontal-scroll-division
-Integer used by the program making the point certainly visible.  The
-cursor definitely does not go missing even when it has been driven out
-of the window while wandering around anchors and forms in an emacs-w3m
-buffer.
+$B%+!<%=%k0LCV$,$-$A$s$HI=<($5$l$k$h$&$K$9$k$N$K;H$o$l$k?t;z!#(Bemacs-w3m $B$N(B
+$B%P%C%U%!$G%"%s%+!<$d%U%)!<%`$r0\F0$7$F$$$F%+!<%=%k$,%&%#%s%I%&$N30$K=P$F(B
+$B$7$^$C$F$b%+!<%=%k$,8+$D$+$i$J$/$J$k$3$H$O7h$7$F$"$j$^$;$s!#(B
 
-Suppose that the value of this variable is N.  When the point is outside
-the left of the window, emacs-w3m scrolls the window so that the point
-may be displayed on the position within 1/N of the width of the window
-from the left.  Similarly, when the point is outside the right of the
-window, emacs-w3m scrolls the window so that the point may be displayed
-on the position of 1/N of the width of the window from the right.
+$B$3$NJQ?t$NCM$r(B N $B$H$7$^$9!#(B $B%+!<%=%k$,%&%#%s%I%&$N:8$K=P$F$7$^$&$H(B
+emacs-w3m $B$O%&%#%s%I%&$r%9%/%m!<%k$7!"%+!<%=%k$,%&%#%s%I%&$N:8$+$i%&%#%s(B
+$B%I%&$NI}$N(B 1/N $B$N=j$KCV$+$l$k$h$&$K$7$^$9!#F1MM$K%+!<%=%k$,%&%#%s%I%&$N1&(B
+$B$+$i=P$F$7$^$&$H!"(B emacs-w3m $B$O%&%#%s%I%&$r%9%/%m!<%k$7!"%+!<%=%k$,%&%#%s(B
+$B%I%&$N1&$+$i%&%#%s%I%&$NI}$N(B 1/N $B$N=j$KCV$+$l$k$h$&$K$7$^$9!#(B
 
-This feature doesn't work if @code{w3m-auto-show} is @code{nil}.  The
-value must be a larger integer than 1.
+@code{w3m-auto-show} $B$,(B @code{nil} $B$J$i$P$3$N5!G=$OF0$-$^$;$s!#(B $BCM$O(B 1 $B$h(B
+$B$j$bBg$-$$@0?t$G$J$1$l$P$$$1$^$;$s!#(B
 
 @item w3m-horizontal-shift-columns
 @c @vindex w3m-horizontal-shift-columns
-Number of steps in columns used when shifting a window horizontally.
-The term @samp{shifting} means a fine level scrolling.
+$B%&%#%s%I%&$r(B shifting $B$9$k;~$K!"%9%/%m!<%k$9$kJ8;z?t!#(B@samp{shifting} $B$H(B
+$B$$$&$N$O!"%9%`!<%:$J%9%/%m!<%k$r0UL#$7$^$9!#(B
 
 @item w3m-imitate-widget-button
 @vindex w3m-imitate-widget-button
-If non-@code{nil}, imitate the widget buttons on link (anchor) buttons.
-It is useful for moving about in a Gnus article buffer using
-@kbd{@key{TAB}} key.  It can also be any Lisp form that should return a
-boolean value.
+non-@code{nil} $B$J$i$P!"%j%s%/(B($B%"%s%+!<(B)$B%\%?%s$G%&%#%8%'%C%H$N%\%?%s$NF0:n(B
+$B$r$7$^$9!#$3$l$O(B @kbd{@key{TAB}} $B$r;H$C$F(B Gnus $B$N5-;v%P%C%U%!$NCf$r0\F0$9(B
+$B$k$N$KJXMx$G$9!#??56CM$rJV$9(B Lisp $B4X?t$r@_Dj$9$k$3$H$b$G$-$^$9!#(B
 
 @item w3m-init-file
 @c @vindex w3m-init-file
