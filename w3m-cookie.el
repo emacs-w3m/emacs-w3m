@@ -439,7 +439,7 @@ If ask, ask user whether accept bad cookies or not."
 
 ;;;###autoload
 (defun w3m-cookie-shutdown ()
-  "Save cookies."
+  "Save cookies, and reset cookies' data."
   (interactive)
   (w3m-cookie-save)
   (setq w3m-cookie-init nil)

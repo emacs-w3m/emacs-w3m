@@ -1,3 +1,7 @@
+2008-05-08  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-cookie.el (w3m-cookie-shutdown): Fixed docstring.
+
 2008-05-08  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-filter.el (w3m-filter-amazon): Fix string to search the body.
