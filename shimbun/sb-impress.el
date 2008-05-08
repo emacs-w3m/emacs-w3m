@@ -153,9 +153,10 @@ JzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r\
 	    (mapcar
 	     (lambda (header)
 	       (let ((subject (shimbun-header-subject header)))
-		 (unless (string-match shimbun-impress-ignored-subject-regexp
-				       subject)
-		   header)))
+		 (and subject
+		      (not (string-match
+			    shimbun-impress-ignored-subject-regexp subject))
+		      header)))
 	     (luna-call-next-method)))
     (with-temp-buffer
       (shimbun-fetch-url shimbun (shimbun-index-url shimbun) t)
