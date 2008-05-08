@@ -76,6 +76,11 @@ If ask, ask user whether accept bad cookies or not."
 	  (const :tag "Ask accepting bad cookies" ask)
 	  (const :tag "Always accept bad cookies" t)))
 
+(defcustom w3m-cookie-save-cookies t
+  "*Non-nil means save cookies when emacs-w3m cookie system shutdown."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-cookie-file
   (expand-file-name ".cookie" w3m-profile-directory)
   "File in which cookies are kept."
@@ -415,6 +420,7 @@ If ask, ask user whether accept bad cookies or not."
 
 (defun w3m-cookie-save ()
   "Save cookies."
+  (interactive)
   (let (cookies)
     (dolist (cookie w3m-cookies)
       (when (and (w3m-cookie-expires cookie)
@@ -441,7 +447,8 @@ If ask, ask user whether accept bad cookies or not."
 (defun w3m-cookie-shutdown ()
   "Save cookies, and reset cookies' data."
   (interactive)
-  (w3m-cookie-save)
+  (when w3m-cookie-save-cookies
+    (w3m-cookie-save))
   (setq w3m-cookie-init nil)
   (w3m-cookie-clear)
   (if (get-buffer " *w3m-cookie-parse-temp*")

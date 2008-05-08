@@ -1,3 +1,11 @@
+2008-05-09  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-cookie.el (w3m-cookie-save): Make it interactive function.
+	(w3m-cookie-save-cookies): New variable.
+	(w3m-cookie-shutdown): Use it.
+
+	* w3m.el (toplevel): Shutdown cookie system when exiting emacs.
+
 2008-05-08  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m-cookie.el (w3m-cookie-shutdown): Fixed docstring.
