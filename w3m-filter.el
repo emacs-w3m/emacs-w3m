@@ -201,7 +201,8 @@
       (goto-char (point-min))
       (setq url (file-name-as-directory url))
       (when (or (and (not w3m-filter-amazon-short-url-bottom)
-		     (search-forward "<body>" nil t))
+		     (search-forward "<body" nil t)
+		     (search-forward ">" nil t))
 		(and w3m-filter-amazon-short-url-bottom
 		     (search-forward "</body>" nil t)
 		     (goto-char (match-beginning 0))))

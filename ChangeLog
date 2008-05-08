@@ -1,3 +1,7 @@
+2008-05-08  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-filter.el (w3m-filter-amazon): Fix string to search the body.
+
 2008-04-30  Naohiro Aota  <nao.aota@gmail.com>
 
 	* doc/emacs-w3m-ja.texi: Update translation.
