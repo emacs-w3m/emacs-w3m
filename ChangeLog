@@ -1,3 +1,9 @@
+2008-05-16  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* mew-w3m.el (mew-w3m-add-text-properties): New inline macro.
+	(mew-w3m-view-inline-image): Use `mew-w3m-add-text-properties'.
+	(mew-mime-text/html-w3m): Ditto.
+
 2008-05-09  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m-cookie.el (w3m-cookie-save): Make it interactive function.
