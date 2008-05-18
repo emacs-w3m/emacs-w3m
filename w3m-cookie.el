@@ -418,17 +418,28 @@ If ask, ask user whether accept bad cookies or not."
   "Clear cookie list."
   (setq w3m-cookies nil))
 
-(defun w3m-cookie-save ()
-  "Save cookies."
+(defun w3m-cookie-save (&optional domain)
+  "Save cookies.
+When DOMAIN is non-nil, only save cookies whose domains match it."
   (interactive)
   (let (cookies)
     (dolist (cookie w3m-cookies)
-      (when (and (w3m-cookie-expires cookie)
+      (when (and (or (not domain)
+		     (string= (w3m-cookie-domain cookie) domain))
+		 (w3m-cookie-expires cookie)
 		 (w3m-time-newer-p (w3m-time-parse-string
 				    (w3m-cookie-expires cookie))
 				   (current-time)))
 	(push cookie cookies)))
     (w3m-save-list w3m-cookie-file cookies)))
+
+(defun w3m-cookie-save-current-site-cookies ()
+  "Save cookies for the current site."
+  (interactive)
+  (when (and w3m-current-url
+	     (not (w3m-url-local-p w3m-current-url)))
+    (w3m-string-match-url-components w3m-current-url)
+    (w3m-cookie-save (match-string 4 w3m-current-url))))
 
 (defun w3m-cookie-load ()
   "Load cookies."
