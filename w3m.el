@@ -8446,9 +8446,13 @@ the current page."
   (setq url (w3m-uri-replace url))
   (unless (or (w3m-url-local-p url)
 	      (string-match "\\`about:" url))
-    (setq url (w3m-url-transfer-encode-string url
-					      (or w3m-current-coding-system
-						  w3m-default-coding-system))))
+    (w3m-string-match-url-components url)
+    (setq url (concat (w3m-url-transfer-encode-string (substring url 0 (match-beginning 8))
+						      (or w3m-current-coding-system
+							  w3m-default-coding-system))
+		      (if (match-beginning 8)
+			  (concat "#" (match-string 9 url))
+			""))))
   (cond
    ;; process mailto: protocol
    ((string-match "\\`mailto:" url)
@@ -8557,11 +8561,7 @@ Cannot run two w3m processes simultaneously \
 		     url (substring url 0 (match-beginning 8))))
 	  (when (w3m-url-local-p url)
 	    (unless (string-match "[^\000-\177]" url)
-	      (setq url (w3m-url-decode-string url)))
-	    (when name
-	      (setq name (w3m-url-transfer-encode-string name
-							 (or w3m-current-coding-system
-							     w3m-default-coding-system)))))
+	      (setq url (w3m-url-decode-string url))))
 	  (w3m-process-do
 	      (action
 	       (if (and (not reload)
@@ -8596,7 +8596,10 @@ Cannot run two w3m processes simultaneously \
 			   ;; Redisplay to search an anchor sure.
 			   (sit-for 0)
 			   (w3m-search-name-anchor
-			    name nil (not (eq action 'cursor-moved)))))
+			    (w3m-url-transfer-encode-string name
+							    (or w3m-current-coding-system
+								w3m-default-coding-system))
+			    nil (not (eq action 'cursor-moved)))))
 		    (setf (w3m-arrived-time (w3m-url-strip-authinfo orig))
 			  (w3m-arrived-time url))
 		  (goto-char (point-min)))

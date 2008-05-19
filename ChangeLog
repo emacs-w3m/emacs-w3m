@@ -1,3 +1,7 @@
+2008-05-20  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-goto-url): Delayed encoding of fragment part.
+
 2008-05-18  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m-cookie.el (w3m-cookie-save-current-site-cookies): New function.
