@@ -83,6 +83,11 @@
 
          % ./configure
 
+     If you can't find the `configure' script, rus the `autoconf'
+     command. It create this script.
+
+         % autoconf
+
      Important notice to the Gnus users:
      ===================================
      If the various versions of Gnusae are installed in your system (it

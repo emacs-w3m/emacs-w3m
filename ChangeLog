@@ -1,5 +1,9 @@
 2008-05-20  Naohiro Aota  <nao.aota@gmail.com>
 
+	* README: Add information about how to create `configure' script.
+
+	* README.ja: Ditto.
+
 	* w3m.el (w3m-goto-url): Delayed encoding of fragment part.
 
 2008-05-18  Naohiro Aota  <nao.aota@gmail.com>
