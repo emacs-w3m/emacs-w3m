@@ -1906,7 +1906,7 @@ Here are some predefined functions which can be used for those ways:
   `((w3m-relationship-simple-estimate
      "\\`http://\\(?:www\\|blogsearch\\|groups\\|news\\|images\\)\
 \\.google\\.[^/]+/\\(?:\\(?:blog\\|code\\)?search\\|groups\\|news\\|images\
-\\|cse\\?cx=\\|custom\\?q=\\)"
+\\|cse\\?cx=\\|custom\\?\\(?:q\\|hl\\)=\\)"
      ,(concat "<a[^>]+?href=" w3m-html-string-regexp
 	      ">\\(?:\\(?:<img src=[^>]*nav_next\\.gif\\)"
 	      "\\|\\(?:<span>Next</span>\\)\\)")
