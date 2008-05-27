@@ -55,6 +55,11 @@
 
 	* w3m-filter.el (w3m-filter-rules): Support Mixi with SSL.
 
+2008-04-22  TAKAHASHI Kaoru  <kaoru@kaisei.org>
+
+	* doc/ptexinfmt.el: Fix Comments.
+	(texinfo-format-geq, texinfo-format-leq,): Support @geq and @leq.
+
 2008-04-18  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-filter.el (w3m-filter-rules): Add rule for the site of Allatanys.
