@@ -1224,9 +1224,12 @@ if you want to turn on only the images in a certain area again.
 @kindex i (Info-like keymap)
 @findex w3m-toggle-inline-image
 Toggle displaying of the single inline image under the cursor
-(@code{w3m-toggle-inline-image}).  For the @samp{Info-like keymap}, this
-key is bound to the command (@code{w3m-view-image}) that launches the
-external viewer if Emacs does not support displaying images.
+(@code{w3m-toggle-inline-image}).  If and only if
+@code{transient-mark-mode} is turned on and the region is active, only
+the images within the region will be turned on.  For the @samp{Info-like
+keymap}, this key is bound to the command (@code{w3m-view-image}) that
+launches the external viewer if Emacs does not support displaying
+images.
 
 @item @kbd{M-S-t} (Lynx-like keymap)
 @itemx @kbd{M-S-i} (Info-like keymap)

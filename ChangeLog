@@ -1,3 +1,9 @@
+2008-05-28  Naohiro Aota  <nao.aota@gmail.com>
+
+	* doc/emacs-w3m.texi (Inline Images): Update.
+
+	* doc/emacs-w3m-ja.texi (Inline Images): Ditto.
+
 2008-05-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-url-readable-string): Don't decode url if it looks not to

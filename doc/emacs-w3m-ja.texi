@@ -1241,10 +1241,12 @@ emacs-w3m はウェブページにそれらを表示することができます。下記のコマンド
 @kindex t (Lynx-like キーマップ)
 @kindex i (Info-like キーマップ)
 @findex w3m-toggle-inline-image
-カーソルの場所にある単一の画像の表示をトグルで切り替えま
-す (@code{w3m-toggle-inline-image})。@samp{Info-like} キーマップについて
-は、もし Emacs が画像表示をサポートしないならば、このキーは外部ビューワ
-を起動するコマンド (@code{w3m-view-image}) にバインドされます。
+カーソルの場所にある単一の画像の表示をトグルで切り替えます
+(@code{w3m-toggle-inline-image})。@code{transient-mark-mode} が on で、か
+つ領域が設定されている場合に限って、その領域内にある画像だけが on になり
+ます。@samp{Info-like} キーマップについては、もし Emacs が画像表示をサポー
+トしないならば、このキーは外部ビューワを起動するコマンド
+(@code{w3m-view-image}) にバインドされます。
 
 @item @kbd{M-S-t} (Lynx-like キーマップ)
 @itemx @kbd{M-S-i} (Info-like キーマップ)
