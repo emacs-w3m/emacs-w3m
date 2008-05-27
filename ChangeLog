@@ -2,6 +2,12 @@
 
 	* w3m.el (w3m-url-readable-string): Don't decode url if it looks not to
 	have been encoded.
+	(w3m-current-longest-line): New variable.
+	(w3m-set-current-longest-line): New function.
+	(w3m-scroll-left, w3m-shift-left): Don't scroll the window endlessly;
+	beep if the window can't be scrolled any more.
+	(w3m-scroll-right, w3m-shift-right): Beep if the window can't be
+	scrolled any more.
 
 2008-05-25  Naohiro Aota  <nao.aota@gmail.com>
 

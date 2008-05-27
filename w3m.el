@@ -7925,41 +7925,76 @@ greater."
 	(signal 'beginning-of-buffer nil))
     (scroll-down arg)))
 
+(defvar w3m-current-longest-line nil
+  "The length of the longest line in the window.")
+
+(defun w3m-set-current-longest-line ()
+  "Set the value of `w3m-current-longest-line'."
+  (save-excursion
+    (goto-char (window-start))
+    (end-of-line)
+    (setq w3m-current-longest-line 0)
+    ;; The XEmacs version of `window-end' returns the point beyond
+    ;; `point-max' if it is visible in the window.
+    (let ((end (min (window-end) (point-max))))
+      (while (progn
+	       (skip-chars-backward " ")
+	       (setq w3m-current-longest-line
+		     (max w3m-current-longest-line (current-column)))
+	       (end-of-line 2)
+	       (< (point) end))))))
+
 (defun w3m-scroll-left (arg)
   "Scroll to the left.
 If ARG (the prefix) is a number, scroll the window ARG columns.
 Otherwise, it defaults to `w3m-horizontal-scroll-columns'."
   (interactive "P")
-  (w3m-horizontal-scroll 'left (if arg
-				   (prefix-numeric-value arg)
-				 w3m-horizontal-scroll-columns)))
+  (when (if (memq last-command '(w3m-scroll-left w3m-shift-left))
+	    (or (< (window-hscroll) w3m-current-longest-line)
+		(progn (ding) nil))
+	  (w3m-set-current-longest-line)
+	  (< (window-hscroll) w3m-current-longest-line))
+    (w3m-horizontal-scroll 'left (if arg
+				     (prefix-numeric-value arg)
+				   w3m-horizontal-scroll-columns))))
 
 (defun w3m-scroll-right (arg)
   "Scroll to the right.
 If ARG (the prefix) is a number, scroll the window ARG columns.
 Otherwise, it defaults to `w3m-horizontal-scroll-columns'."
   (interactive "P")
-  (w3m-horizontal-scroll 'right (if arg
-				    (prefix-numeric-value arg)
-				  w3m-horizontal-scroll-columns)))
+  (if (zerop (window-hscroll))
+      (when (memq last-command '(w3m-scroll-right w3m-shift-right))
+	(ding))
+    (w3m-horizontal-scroll 'right (if arg
+				      (prefix-numeric-value arg)
+				    w3m-horizontal-scroll-columns))))
 
 (defun w3m-shift-left (arg)
   "Shift to the left.  Shift means a fine level horizontal scrolling.
 If ARG (the prefix) is a number, scroll the window ARG columns.
 Otherwise, it defaults to `w3m-horizontal-shift-columns'."
   (interactive "P")
-  (w3m-horizontal-scroll 'left (if arg
-				   (prefix-numeric-value arg)
-				 w3m-horizontal-shift-columns)))
+  (when (if (memq last-command '(w3m-scroll-left w3m-shift-left))
+	    (or (< (window-hscroll) w3m-current-longest-line)
+		(progn (ding) nil))
+	  (w3m-set-current-longest-line)
+	  (< (window-hscroll) w3m-current-longest-line))
+    (w3m-horizontal-scroll 'left (if arg
+				     (prefix-numeric-value arg)
+				   w3m-horizontal-shift-columns))))
 
 (defun w3m-shift-right (arg)
   "Shift to the right.  Shift means a fine level horizontal scrolling.
 If ARG (the prefix) is a number, scroll the window ARG columns.
 Otherwise, it defaults to `w3m-horizontal-shift-columns'."
   (interactive "P")
-  (w3m-horizontal-scroll 'right (if arg
-				    (prefix-numeric-value arg)
-				  w3m-horizontal-shift-columns)))
+  (if (zerop (window-hscroll))
+      (when (memq last-command '(w3m-scroll-right w3m-shift-right))
+	(ding))
+    (w3m-horizontal-scroll 'right (if arg
+				      (prefix-numeric-value arg)
+				    w3m-horizontal-shift-columns))))
 
 (defvar w3m-horizontal-scroll-done nil)
 (make-variable-buffer-local 'w3m-horizontal-scroll-done)
