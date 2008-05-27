@@ -3,17 +3,18 @@
 	* sb-impress.el (shimbun-headers): Ignore headers if there's no
 	subject.
 
-2008-04-22 David Hansen <david.hansen@gmx.net>
+2008-04-22  David Hansen  <david.hansen@gmx.net>
 
 	* sb-zeit-de.el (shimbun-zeit-de-x-face-alist): New variable.
-        (shimbun-zeit-de-content-end): Follow new page layout.
-        (shimbun-get-headers): Remove "from=rss" parameter from the URL.
-        (shimbun-clear-contents): Filter more junk.
+	(shimbun-zeit-de-content-end): Follow new page layout.
+	(shimbun-get-headers): Remove "from=rss" parameter from the URL.
+	(shimbun-clear-contents): Filter more junk.
 
-2008-04-22 David Hansen <david.hansen@gmx.net>
+2008-04-22  David Hansen  <david.hansen@gmx.net>
+
 	* sb-the-register.el (shimbun-the-register-x-face-alist): New variable.
-        (shimbun-get-headers): Remove URL rewriting.
-        (shimbun-make-contents): Remove more ads.
+	(shimbun-get-headers): Remove URL rewriting.
+	(shimbun-make-contents): Remove more ads.
 
 2008-04-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
