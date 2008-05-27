@@ -3244,23 +3244,26 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
     (w3m-decode-coding-string-with-priority str coding)))
 
 (defun w3m-url-readable-string (url)
-  "Return a readable string for a give encoded URL.
-If `w3m-show-decoded-url' has non-nil value, it is refered to decide
-a decoding scheme."
+  "Return a readable string for a given encoded URL.
+If `w3m-show-decoded-url' has a non-nil value, it is referred to to
+decide a decoding scheme."
   (when (stringp url)
     (let ((rule
-	   (if (and (listp w3m-show-decoded-url)
-		    (consp (car w3m-show-decoded-url)))
-	       (catch 'found-rule
-		 (save-match-data
-		   (dolist (elem w3m-show-decoded-url)
-		     (when (if (stringp (car elem))
-			       (string-match (car elem) url)
-			     (if (functionp (car elem))
-				 (funcall (car elem) url)
-			       (eval (car elem))))
-		       (throw 'found-rule (cdr elem))))))
-	     w3m-show-decoded-url)))
+	   (cond ((string-match "[^\000-\177]" url)
+		  ;; It looks not to have been encoded.
+		  nil)
+		 ((and (listp w3m-show-decoded-url)
+		       (consp (car w3m-show-decoded-url)))
+		  (catch 'found-rule
+		    (save-match-data
+		      (dolist (elem w3m-show-decoded-url)
+			(when (if (stringp (car elem))
+				  (string-match (car elem) url)
+				(if (functionp (car elem))
+				    (funcall (car elem) url)
+				  (eval (car elem))))
+			  (throw 'found-rule (cdr elem)))))))
+		 (t w3m-show-decoded-url))))
       (if rule
 	  (w3m-url-decode-string url
 				 (if (eq t rule)

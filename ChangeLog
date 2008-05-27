@@ -1,3 +1,8 @@
+2008-05-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-url-readable-string): Don't decode url if it looks not to
+	have been encoded.
+
 2008-05-25  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m.el (w3m-relationship-estimate-rules): Fix regexp for Google
