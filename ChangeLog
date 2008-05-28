@@ -1,3 +1,8 @@
+2008-05-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-examine-command-line-args): Treat the null string given
+	as a url in the command line args as `w3m-home-page' or "about:".
+
 2008-05-28  Naohiro Aota  <nao.aota@gmail.com>
 
 	* doc/emacs-w3m.texi (Inline Images): Update.

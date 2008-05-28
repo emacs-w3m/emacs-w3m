@@ -8953,7 +8953,11 @@ defaults to the value of `w3m-home-page' or \"about:\"."
 	(directives '("-f" "-funcall" "--funcall" "-e"))
 	args)
     (if (and url (not (string-match "\\`-" url)))
-	(setq command-line-args-left (cdr command-line-args-left))
+	(progn
+	  (setq command-line-args-left (cdr command-line-args-left))
+	  (when (string-match "\\`[\t ]*\\'" url)
+	    ;; emacs -f w3m '' ...
+	    (setq url (or w3m-home-page "about:"))))
       (setq args (nthcdr (max (- (length command-line-args)
 				 (length command-line-args-left)
 				 2)
