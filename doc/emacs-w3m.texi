@@ -1314,11 +1314,17 @@ the emacs-w3m buffer visiting the page.
 
 @table @asis
 @item @kbd{s} (Lynx-like keymap)
+@itemx @kbd{C-u s} (Lynx-like keymap)
 @itemx @kbd{o} (Info-like keymap)
+@itemx @kbd{C-u o} (Info-like keymap)
 @kindex s (Lynx-like keymap)
+@kindex C-u s (Lynx-like keymap)
 @kindex o (Info-like keymap)
+@kindex C-u o (Info-like keymap)
 @findex w3m-history
-Display the list of visited URLs in this session.
+Display the list of URLs visited in this session.  If called with a
+prefix argument (see below), show the list of arrived URLs instead
+(@code{w3m-history}).
 
 @item @kbd{C-c C-@@}
 @itemx @kbd{C-c C-@key{SPC}}
@@ -1365,21 +1371,6 @@ exceed 500 by default.  @xref{Customizable Variables}.
 Of course, in all cases all the lines showed in the examples are links,
 you can go to any of the pages you visited previously just like if you
 were visiting a regular page, by following the link.
-
-@table @asis
-@item @kbd{s} (Lynx-like keymap)
-@itemx @kbd{C-u s} (Lynx-like keymap)
-@itemx @kbd{o} (Info-like keymap)
-@itemx @kbd{C-u o} (Info-like keymap)
-@kindex s (Lynx-like keymap)
-@kindex C-u s (Lynx-like keymap)
-@kindex o (Info-like keymap)
-@kindex C-u o (Info-like keymap)
-@findex w3m-history
-Display the list of URLs visited in this session.  If called with a
-prefix argument, show the list of arrived URLs instead
-(@code{w3m-history}).
-@end table
 
 Also see the @ref{Moving over pages} section, it explains how to move in
 the history with simple keybindings, i.e. the ``Back'' and ``Next''
