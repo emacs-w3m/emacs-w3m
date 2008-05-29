@@ -708,7 +708,7 @@ Emacs-w3m $B$r5/F0$7$F!"(B@code{w3m-home-page} $B$H$$$&JQ?t$G;XDj$5$l$?%[!<%`
 $B$K$7$?$$>l9g$O!"JQ?t(B @code{w3m-quick-start} $B$NCM$r(B @code{nil} $B$K$7$F$/$@(B
 $B$5$$(B (@pxref{Customizable Variables})$B!#(B
 
-$B$3$l$O(B Emacs $B$N%P%C%A%3%^%s%I$H$7$F;H$&$3$H$b$G$-$^$9!#0J2<$ONc$G$9(B:
+$B$3$l$O(B Emacs $B$r5/F0$9$k$H$-$K0z?t$H$7$F;H$&$3$H$b$G$-$^$9!#Nc$G$9(B:
 
 @example
 % emacs -f w3m

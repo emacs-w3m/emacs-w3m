@@ -694,7 +694,7 @@ Start emacs-w3m, displaying the homepage specified in the
 variable to @code{nil} if you want to input a target URL every time you
 start emacs-w3m.
 
-You can also use this as an Emacs batch command.  Here's an example:
+You can also use this as an argument when starting emacs.  Examples:
 
 @example
 % emacs -f w3m
