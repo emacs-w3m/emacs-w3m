@@ -4487,7 +4487,7 @@ It supports the encoding types of gzip, bzip2, deflate, etc."
 			       (content :case-ignore))
 	  (when (and (string= http-equiv "content-type")
 		     content
-		     (string-match ";[ \t\n]*charset=\\([^\"]+\\)" content))
+		     (string-match ";[ \t\n]*charset=\\([^\";]+\\)" content))
 	    (throw 'found (match-string 1 content))))))))
 
 (defun w3m-detect-xml-charset ()
