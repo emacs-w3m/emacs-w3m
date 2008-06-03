@@ -1227,9 +1227,9 @@ emacs-w3m はウェブページにそれらを表示することができます。下記のコマンド
 述の通り変数 @code{w3m-default-display-inline-images} の値で制御されま
 す (デフォルトは off です)。しかし、そのバッファを起点にして訪れるバッファ
 で画像を表示するかどうかは、
-@code{w3m-toggle-inline-images-permanently} が @code{nil} ではない値だっ
-た場合 (それがデフォルト) は、そのバッファで画像を表示していたかどうかの
-最後の状態を継承します。
+@code{w3m-toggle-inline-images-permanently} が @code{nil} ではない値 (デ
+フォルトは @code{t}) だった場合は、そのバッファで画像を表示していたかど
+うかの最後の状態を継承します。
 @code{w3m-toggle-inline-images-permanently} が @code{nil} だったら、常
 に @code{w3m-default-display-inline-images} がそれを制御します。
 

@@ -1211,9 +1211,8 @@ you first visit the page is controlled by the value of the variable
 mentioned above.  But the visibility of images in pages that you visit
 from this buffer inherits the last status of the visibility in this
 buffer if @code{w3m-toggle-inline-images-permanently} is non-@code{nil}
-(which is the default).  If @code{w3m-toggle-inline-images-permanently}
-is @code{nil}, @code{w3m-default-display-inline-images} always controls
-it.
+(default=@code{t}).  If @code{w3m-toggle-inline-images-permanently} is
+@code{nil}, @code{w3m-default-display-inline-images} always controls it.
 
 Note2: this command deactivates the region, so you have to set it again
 if you want to turn on only the images in a certain area again.
