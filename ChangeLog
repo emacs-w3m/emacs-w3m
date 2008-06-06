@@ -1,3 +1,10 @@
+2008-06-06  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-select-buffer): Don't delete other windows.
+
+	* w3m-filter.el (w3m-filter-wikipedia): New function.
+	(w3m-filter-rules): Add w3m-filter-wikipedia.
+
 2008-06-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el: Add coding cookie.

@@ -59,6 +59,7 @@
     ("\\`http://www\\.asahi\\.com/" w3m-filter-asahi-shimbun)
     ("\\`http://imepita\\.jp/[0-9]+/[0-9]+" w3m-filter-imepita)
     ("\\`http://allatanys\\.jp/" w3m-filter-allatanys)
+    ("\\`http://.*\\.wikipedia\\.org/" w3m-filter-wikipedia)
     ("" w3m-filter-iframe))
   "Rules to filter advertisements on WEB sites."
   :group 'w3m
@@ -351,5 +352,20 @@
 	(setq aturl (match-string 1))
 	(delete-region (match-beginning 0) (match-end 0))
 	(insert (format "<a href=\"%s\">" aturl))))))
+
+(defun w3m-filter-wikipedia (url)
+  "Make anchor reference to work."
+  (goto-char (point-min))
+  (let (refname citename citenum)
+    (while (re-search-forward 
+	    "<sup id=\"\\(cite_ref-[^\"]*\\)\" class=\"reference\"><a href=\"\\(#cite_note-[^\"]*\\\)\" title=\"\">\\[\\([0-9]*\\)\\]</a></sup>"
+	    nil t)
+      (setq refname (match-string 1)
+	    citename (match-string 2)
+	    citenum (match-string 3))
+      (delete-region (match-beginning 0) (match-end 0))
+      (insert (format "<a name=\"%s\"><a href=\"%s\" title=\"\">[%s]</a></a>"
+		      refname citename citenum)))))
+			    
 
 ;;; w3m-filter.el ends here
