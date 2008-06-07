@@ -3065,7 +3065,8 @@ Non-@code{nil} means display the header line.
 
 @item w3m-use-header-line-title
 @vindex w3m-use-header-line-title
-Non-@code{nil} means display the current title at the header line.
+Non-@code{nil} means display the current title at the header line. This
+variable is effective only when @code{w3m-use-tab} is @code{nil}.
 
 @item w3m-use-mule-ucs
 @vindex w3m-use-mule-ucs
@@ -3113,15 +3114,10 @@ Non-@code{nil} activates toolbar of @samp{w3m}.
 String used for the User-Agent field.  See also
 @code{w3m-add-user-agent}.
 
-@item w3m-view-this-url-new-session-in-background
-@vindex w3m-view-this-url-new-session-in-background
-Run @code{w3m-view-this-url} without switching to the newly created
-buffer.  It is useful if you enabled the tabs line or the buffers
-selection window for the @code{w3m-select-buffer} feature.  Note that it
-is meaningful only when specifying a prefix argument to the
-@code{w3m-view-this-url} command or using the
-@code{w3m-view-this-url-new-session} command in order to create a new
-emacs-w3m session.
+@item w3m-new-session-in-background
+@vindex w3m-new-session-in-background
+Say whether not to focus on a new tab or a new session in target.
+It influences only when a new emacs-w3m buffer is created.
 @end table
 
 @node Image Variables

@@ -9866,7 +9866,8 @@ passed to the `w3m-quit' function (which see)."
   :type 'boolean)
 
 (defcustom w3m-use-header-line-title nil
-  "Non-nil means display the current title at the header line."
+  "Non-nil means display the current title at the header line.
+This variable is effective only when `w3m-use-tab' is nil."
   :group 'w3m
   :type 'boolean)
 
