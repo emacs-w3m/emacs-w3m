@@ -1,3 +1,8 @@
+2008-06-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-content-start, shimbun-asahi-content-end):
+	Update regexps temporarily.
+
 2008-06-07  David Engster  <dengste@eml.cc>
 
 	* sb-debugmagazin-de.el (shimbun-debugmagazin-de-group-url-regexp):
