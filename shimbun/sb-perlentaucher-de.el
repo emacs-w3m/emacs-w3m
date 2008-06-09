@@ -32,6 +32,7 @@
 (defvar shimbun-perlentaucher-de-from-address "invalid@perlentaucher.de")
 (defvar shimbun-perlentaucher-de-content-start "<div class=\"col_middle\">")
 (defvar shimbun-perlentaucher-de-content-end "<div class=\"col_right\">")
+(defvar shimbun-perlentaucher-de-url-regexp "rss.feedsportal.com/.*/\\([0-9a-f]+\\)/story.*\\.htm")
 
 (defvar shimbun-perlentaucher-de-x-face-alist
   '(("default" . "\
@@ -61,10 +62,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPAgMAAABGuH3ZAAAADFBMVEUAern/+/D///8aGhp
 (luna-define-method shimbun-rss-build-message-id ((shimbun
 						   shimbun-perlentaucher-de)
 						  url date)
-  ;;(message url)
-  (unless (string-match "rssteaser/\\(.*\\)\\.html" url)
+  (unless (string-match shimbun-perlentaucher-de-url-regexp url)
     (error "Cannot find message-id base"))
-  ;;(message (concat "<" (match-string 1 url) "@perlentaucher.de>"))
   (concat "<" (match-string 1 url)
 	  "." (shimbun-current-group-internal shimbun) "@perlentaucher.de>"))
 

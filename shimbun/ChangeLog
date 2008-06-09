@@ -1,3 +1,14 @@
+2008-06-07  David Engster  <dengste@eml.cc>
+
+	* sb-debugmagazin-de.el (shimbun-debugmagazin-de-group-url-regexp):
+	Update groups configuration.
+	(shimbun-debugmagazin-de-content-start)
+	(shimbun-debugmagazin-de-content-end): Update regexps.
+
+	* sb-perlentaucher-de.el (shimbun-perlentaucher-de-url-regexp): New
+	variable.
+	(shimbun-rss-build-message-id): Use it.
+
 2008-05-08  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* sb-impress.el (shimbun-headers): Ignore headers if there's no

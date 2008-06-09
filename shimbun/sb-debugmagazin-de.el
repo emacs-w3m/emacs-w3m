@@ -28,28 +28,38 @@
 (luna-define-class shimbun-debugmagazin-de (shimbun-rss) ())
 
 (defvar shimbun-debugmagazin-de-group-url-regexp
-  '(("news" "http://www.de-bug.de/news/news.xml"
-     "news/\\(.*\\)\\.html")
+  '(("frontpage" "http://feeds.feedburner.com/DebugAllInOne"
+     ".*/\\(.*\\)\\.html")
+    ("musik" "http://www.de-bug.de/musik/news.xml"
+     "musik/\\(.*\\)\\.html")
     ("reviews" "http://www.de-bug.de/reviews/reviews.xml"
      "reviews/\\(.*\\)\\.html")
-    ("texte" "http://www.de-bug.de/texte/texte.xml"
-     "texte/\\(.*\\)\\.html")
-    ("blog" "http://www.de-bug.de/blog/feed"
-     "blog/archives/\\(.*\\)\\.html")
-    ("podcast" "http://www.de-bug.de/pod/wp-rss2.php"
-     "pod/archives/\\(.*\\)\\.html")
+    ("magazin" "http://www.de-bug.de/mag/texte.xml"
+     "mag/\\(.*\\)\\.html")
+    ("medien" "http://feeds.feedburner.com/DebugMedien"
+     ".*/\\(.*\\)\\.html")
+    ("podcast" "http://feeds.feedburner.com/DebugPod"
+     ".*/\\(.*\\)\\.html")
     ("musiktechnik" "http://feeds.feedburner.com/de-bug/SSgQ"
-     "de-bug/.*/.*/\\(.*\\)\\.html")
-    ("mode" "http://www.de-bug.de/fee/feed/"
-     "fee/archives/\\(.*\\)\\.html")))
+     ".*/\\(.*\\)\\.html")
+    ("screen" "http://feeds.feedburner.com/DebugScreen"
+     ".*/\\(.*\\)\\.html")
+    ("gadgets" "http://feeds.feedburner.com/DebugGadgets"
+     ".*/\\(.*\\)\\.html")
+    ("games" "http://feeds.feedburner.com/DebugGames"
+     ".*/\\(.*\\)\\.html")
+    ("mode" "http://feeds.feedburner.com/DebugMode"
+     ".*/\\(.*\\)\\.html")))
 
 (defvar shimbun-debugmagazin-de-groups
   (mapcar 'car shimbun-debugmagazin-de-group-url-regexp))
 (defvar shimbun-debugmagazin-de-from-address "invalid@debugmagazin.de")
+
 (defvar shimbun-debugmagazin-de-content-start
-  "<div id=\"content\" class=\"narrowcolumn\">")
+  "<div class=\"post\"\\( id=\"post-[0-9]+\"\\)?>")
+
 (defvar shimbun-debugmagazin-de-content-end
-  "\\(?:You can start editing here\\|<h3 id=\"comments\">\\)")
+  "\\(?:You can start editing here\\|<h3 id=\"comments\">\\|DIE MASSE MEINT\\)")
 
 (defvar shimbun-debugmagazin-de-x-face-alist
   '(("default" . "\
