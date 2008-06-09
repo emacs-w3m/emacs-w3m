@@ -5212,9 +5212,10 @@ cnn-jp.business cnn-jp.fringe cnn-jp.science cnn-jp.showbiz
 cnn-jp.sports cnn-jp.top cnn-jp.usa cnn-jp.world
 
 @item @uref{http://www.de-bug.de/, De-Bug Magazine}
-debugmagazin-de.news debugmagazin-de.reviews debugmagazin-de.texte
-debugmagazin-de.blog debugmagazin-de.podcast
-debugmagazin-de.musiktechnik debugmagazin-de.mode
+debugmagazin-de.frontpage debugmagazin-de.musik debugmagazin-de.reviews
+debugmagazin-de.magazin debugmagazin-de.medien debugmagazin-de.podcast
+debugmagazin-de.musiktechnik debugmagazin-de.screen
+debugmagazin-de.gadgets debugmagazin-de.games debugmagazin-de.mode
 
 @item @uref{http://japanese.engadget.com/, Engadget Japanese}
 engadget-ja.top
