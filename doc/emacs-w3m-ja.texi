@@ -4620,12 +4620,13 @@ Gnus Manual})$B!#(B} $B$K2C$($F!"(B@samp{nnshimbun} $B@lMQ$K@_$1$i$l$?%0%k!
 $BF04|8B@Z$l>C5n$r9T$J$o$;$?$$$?$$$9$Y$F$N(B @samp{nnshimbun} $B%0%k!<%W$G!"%0(B
 $B%k!<%W%Q%i%a!<%?(B @code{auto-expire} $B$r(B @code{t} $B$K@_Dj$7$F!"%0%k!<%W%Q%i(B
 $B%a!<%?(B @code{expiry-wait} $B$G>C5n$9$k$^$G$N4|8B$r;XDj$9$k$d$jJ}$G$9!#>\$7(B
-$B$$$3$H$O(B @ref{(gnus)Expiring Mail} $B$r;2>H$7$F$/$@$5$$!#(B
-@code{expiry-wait} $B%0%k!<%W%Q%i%a!<%?$,@_Dj$5$l$F$$$J$$%0%k!<%W$G$O!"%G(B
-$B%U%)%k%H$NCM$,E,MQ$5$l$^$9!#(B}$B!#5-;v$,4|8B@Z$l>C5n$5$l$k$H8@$C$F$b!"$=$l(B
-$B$,1s3V%5!<%P!<$+$i:o=|$5$l$k$o$1$G$O$J$/!"$=$l$O$:$C$H$=$3$+$i<hF@2DG=$G(B
-$B$"$k$3$H$r3P$($F$*$$$F$/$@$5$$!#>C$($k$N$O$"$J$?<+?H(B
-$B$N(B @samp{nnshimbun} $BMQ$N(B @acronym{NOV} $B%U%!%$(B
+$B$$$3$H(B
+$B$O(B @xref{Expiring Mail, ,$B%a!<%k$N4|8B@Z$l>C5n(B, gnus-ja, The Gnus
+manual}, $B$r;2>H$7$F$/$@$5$$!#(B@code{expiry-wait} $B%0%k!<%W%Q%i%a!<%?$,@_Dj(B
+$B$5$l$F$$$J$$%0%k!<%W$G$O!"%G%U%)%k%H$NCM$,E,MQ$5$l$^$9!#(B}$B!#5-;v$,4|8B@Z(B
+$B$l>C5n$5$l$k$H8@$C$F$b!"$=$l$,1s3V%5!<%P!<$+$i:o=|$5$l$k$o$1$G$O$J$/!"$=(B
+$B$l$O$:$C$H$=$3$+$i<hF@2DG=$G$"$k$3$H$r3P$($F$*$$$F$/$@$5$$!#>C$($k$N$O$"(B
+$B$J$?<+?H$N(B @samp{nnshimbun} $BMQ$N(B @acronym{NOV} $B%U%!%$(B
 $B%k(B@footnote{@samp{Nnshimbun} $BMQ$N(B @acronym{NOV} $B%U%!%$%k(B
 $B$O(B ``~/News/shimbun/asahi/national/.overview'' $B$N$h$&$JL>A0$G$9!#(B} $B$N!"(B
 $B>C5n$5$l$k5-;v$K3:Ev$9$k9T$G$9!#$=$l$K$h$C$F$=$N5-;v$OFsEY$H35N,%P%C%U%!(B
