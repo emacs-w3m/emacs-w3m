@@ -1,3 +1,8 @@
+2008-06-12  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-auto-show): Scrool horizontally after executing a search
+	command.
+
 2008-06-07  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-use-header-line-title): Modify the doc-string.
