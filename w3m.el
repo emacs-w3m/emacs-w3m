@@ -6422,7 +6422,7 @@ command instead."
 	     w3m-current-url
 	     (w3m-url-valid w3m-current-url)
 	     (if w3m-submit-form-safety-check
-		 (y-or-n-p "Submit? ")
+		 (prog1 (y-or-n-p "Submit? ") (message nil))
 	       t))
 	(let ((w3m-form-new-session new-session)
 	      (w3m-form-download nil))
