@@ -1288,6 +1288,11 @@ The term `shifting' means a fine level scrolling."
   :type 'boolean
   :require 'w3m-form)
 
+(defcustom w3m-submit-form-safety-check nil
+  "Non-nil means ask you for confirmation when submitting a form."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-use-cookies nil
   "*Non-nil means enable emacs-w3m to use cookies.  (EXPERIMENTAL)"
   :group 'w3m
@@ -6415,7 +6420,10 @@ command instead."
   (let ((submit (w3m-submit)))
     (if (and submit
 	     w3m-current-url
-	     (w3m-url-valid w3m-current-url))
+	     (w3m-url-valid w3m-current-url)
+	     (if w3m-submit-form-safety-check
+		 (y-or-n-p "Submit? ")
+	       t))
 	(let ((w3m-form-new-session new-session)
 	      (w3m-form-download nil))
 	  (eval submit))
