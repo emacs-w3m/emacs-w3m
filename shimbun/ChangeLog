@@ -1,3 +1,9 @@
+2008-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-content-start, shimbun-asahi-content-end):
+	Update regexps.
+	(shimbun-asahi-prepare-article): Update regexp matching a top link.
+
 2008-06-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-content-start, shimbun-asahi-content-end):
