@@ -1,3 +1,9 @@
+2008-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-submit-form-safety-check): New user option.  Suggested by
+	Dan Jacobson <jidanni@jidanni.org>.
+	(w3m-submit-form): Use it.
+
 2008-06-12  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-auto-show): Scrool horizontally after executing a search

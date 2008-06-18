@@ -3059,6 +3059,11 @@ value and the documentation of @code{w3m-filter-rules}, type
 Non-@code{nil} means make it possible to use form
 extensions. @emph{(EXPERIMENTAL)}
 
+@item w3m-submit-form-safety-check
+@vindex w3m-submit-form-safety-check
+Non-@code{nil} means ask you for confirmation when submitting a form.
+The default value is @code{nil}.
+
 @item w3m-use-header-line
 @vindex w3m-use-header-line
 Non-@code{nil} means display the header line.
