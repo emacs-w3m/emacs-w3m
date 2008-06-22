@@ -1,3 +1,12 @@
+2008-06-22  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-search.el (w3m-search-engine-alist): Improve detection of utf-8
+	capability.
+	(w3m-search-engine-alist): Abolish `yahoo beta' entry; Improve `blog'
+	entry to work like `google' entry.
+
+	* w3m-session.el: Add coding cookie.
+
 2008-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-submit-form-safety-check): New user option.  Suggested by

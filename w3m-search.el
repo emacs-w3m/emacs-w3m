@@ -42,7 +42,8 @@
 
 (defcustom w3m-search-engine-alist
   (let* ((ja (equal "Japanese" w3m-language))
-	 (utf-8 (or (featurep 'un-define)
+	 (utf-8 (or (not (string< mule-version "6.0"))
+		    (featurep 'un-define)
 		    (fboundp 'utf-translate-cjk-mode)
 		    (and (not ja) (w3m-find-coding-system 'utf-8)))))
     `(,@(if ja
@@ -56,23 +57,34 @@
 	    ("yahoo-ja"
 	     "http://search.yahoo.co.jp/bin/search?p=%s"
 	     euc-japan)))
-      ("yahoo beta"
-       "http://beta.search.yahoo.co.jp/search?p=%s&ei=UTF-8&eo=UTF-8"
-       utf-8)
       ("alc" "http://eow.alc.co.jp/%s/UTF-8/" utf-8)
-      ,@(if ja
-	    '(("blog"
-	       "http://blogsearch.google.com/blogsearch?q=%s&lr=lang_ja&oe=utf-8&ie=utf-8"
-	       utf-8)
-	      ("blog-en"
-	       "http://blogsearch.google.com/blogsearch?q=%s&oe=utf-8&ie=utf-8"
-	       utf-8))
+      ,@(cond
+	 ((and ja utf-8)
+	  '(("blog"
+	     "http://blogsearch.google.com/blogsearch?q=%s&hl=ja&lr=lang_ja&oe=utf-8&ie=utf-8"
+	     utf-8)
+	    ("blog-en"
+	     "http://blogsearch.google.com/blogsearch?q=%s&hl=en&oe=utf-8&ie=utf-8"
+	     utf-8)))
+	 (ja
+	  '(("blog"
+	     "http://blogsearch.google.com/blogsearch?q=%s&hl=ja&lr=lang_ja&ie=Shift_JIS&oe=Shift_JIS"
+	     shift_jis)
+	    ("blog-en"
+	     "http://blogsearch.google.com/blogsearch?q=%s&hl=en")))
+	 (utf-8
 	  '(("blog"
 	     "http://blogsearch.google.com/blogsearch?q=%s&oe=utf-8&ie=utf-8"
 	     utf-8)
-	    ("blog-ja"
-	     "http://blogsearch.google.com/blogsearch?q=%s&lr=lang_ja&oe=utf-8&ie=utf-8"
+	    ("blog-en"
+	     "http://blogsearch.google.com/blogsearch?q=%s&hl=en&oe=utf-8&ie=utf-8"
 	     utf-8)))
+	 (t
+	  '(("blog"
+	     "http://blogsearch.google.com/blogsearch?q=%s")
+	    ("blog-ja"
+	     "http://blogsearch.google.com/blogsearch?q=%s&lr=lang_ja&ie=Shift_JIS&oe=Shift_JIS"
+	     shift_jis))))
       ,@(cond
 	 ((and ja utf-8)
 	  '(("google"
