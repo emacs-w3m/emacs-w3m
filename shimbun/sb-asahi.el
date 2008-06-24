@@ -919,7 +919,9 @@ Each table is the same as the `cdr' of the element of
 \\|<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
 
 (defvar shimbun-asahi-content-end
-  "\\(?:<dl[\t\n ]+class=\"PrInfo\">\\|<!-[^>]+ここまで[\t\n ]*-+>\\)\
+  "<dl[\t\n ]+class=\"PrInfo\">\
+\\|<!--[\t\n ]*google_ad_section_end\
+\\|<!-[^>]+ここまで[\t\n ]*-+>\
 \\|\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<!--[\t\n ]*Start of hatenab[\t\n ]*-->\
 \\|<!--[\t\n ]*End of Kiji[\t\n ]*-->\
 \\|<!--[\t\n ]*End of related link[\t\n ]*-->\
@@ -1332,9 +1334,9 @@ that day if it failed."
 	      (save-restriction
 		(narrow-to-region start (goto-char (match-beginning 0)))
 		(setq retry nil)
-		(insert "\n<!-- End of Kiji -->")
+		(insert "</p>\n<!-- End of Kiji -->")
 		(goto-char start)
-		(insert "<!-- Start of Kiji -->")
+		(insert "<!-- Start of Kiji --><p>")
 		(when (string-match "/column\\.html\\'" url)
 		  (insert "\
 \n<p>(指定された&nbsp;url&nbsp;が&nbsp;まだ/すでに&nbsp;無いので、\

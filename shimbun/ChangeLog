@@ -1,3 +1,9 @@
+2008-06-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-content-end): Update.
+	(shimbun-asahi-prepare-article): Add <p>...</p> to articles in tenjin
+	group.
+
 2008-06-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-group-table): Update index urls for
