@@ -1,12 +1,23 @@
 2008-06-25  Naohiro Aota  <nao.aota@gmail.com>
 
+	* w3m-form.el (w3m-form-input-textarea): Make buffer unmodified when
+	user selected to reuse saved text; parse readonly attribute; kill newly
+	generated buffer when the reusing question aborted.
+	(w3m-form-textarea-info): Also provide readonly info.
+	(w3m-fontify-textareas): Parse readonly attribute.
+	(w3m-form-parse-and-fontify): Ditto.
+	(w3m-form-input): Ignore cursor moving while read from minibuffer.
+	(w3m-form-input-password): Ditto.
+	(w3m-form-input-file): Ditto.
+
 	* w3m.el (w3m-toggle-inline-image): Don't toggle images that are
 	outside of the region even if they are identical to the ones in the
 	region; don't do recursive call of itself; rearrange the source code.
 	(w3m-toggle-inline-images): Check whether images are safe even if it is
 	called with w3m-display-inline-images=t and force=t; rearrange the
 	source code.
-	(w3m-toggle-inline-images-internal): Do.
+	(w3m-toggle-inline-images-internal): Add new argument: `begin-pos' and
+	`end-pos'. Only process region from `begin-pos' to `end-pos'.
 
 2008-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 

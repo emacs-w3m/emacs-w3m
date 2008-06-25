@@ -540,7 +540,7 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
     (save-excursion
       (goto-char (point-min))
       (let (form fid start end type name rows start-column end-column
-		 hseq abs-hseq buffer-read-only text id filename)
+		 hseq abs-hseq buffer-read-only text id filename readonly)
 	(while (w3m-form-goto-next-field)
 	  (setq fid (get-text-property (point) 'w3m-form-field-id))
 	  (setq filename (get-text-property (point) 'w3m-form-file-name))
@@ -558,6 +558,7 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
 	    (when (string= type "textarea")
 	      (setq rows (get-text-property (point) 'w3m-textarea-rows)
 		    hseq (get-text-property (point) 'w3m-form-hseq)
+		    readonly (get-text-property (point) 'w3m-form-readonly)
 		    abs-hseq (w3m-anchor-sequence))
 	      (setq start-column (- (current-column) 1))
 	      (goto-char (next-single-property-change (point)
@@ -589,7 +590,8 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
 		     w3m-anchor-sequence ,abs-hseq
 		     w3m-form-id ,id
 		     w3m-form-name ,name
-		     w3m-form-file-name ,filename)))
+		     w3m-form-file-name ,filename
+		     w3m-form-readonly ,readonly)))
 		(when (setq text (w3m-form-get form id))
 		  (w3m-form-textarea-replace hseq text))))))))))
 
@@ -695,6 +697,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			       (rows :integer)		 ; textarea
 			       (top_mergin :integer)	 ; textarea
 			       (checked :bool) ; checkbox, radio
+			       (readonly :bool)
 			       no_effect       ; map
 			       name value)
 	  (incf id)
@@ -747,7 +750,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 				 (w3m-url-decode-string value
 							w3m-current-coding-system)
 				 w3m-output-coding-system))
-		(setq textareas (cons (list textareanumber form id name)
+		(setq textareas (cons (list textareanumber form id name readonly)
 				      textareas)))
 	      (when w3m-current-url
 		(setq filename (expand-file-name
@@ -773,7 +776,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		 w3m-anchor-sequence ,abs-hseq
 		 w3m-form-id ,id
 		 w3m-form-name ,name
-		 w3m-form-file-name ,filename)))
+		 w3m-form-file-name ,filename
+		 w3m-form-readonly ,readonly)))
 	     ((string= type "select")
 	      (when (if (eq w3m-type 'w3mmee)
 			(when value
@@ -804,7 +808,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					     (w3m-form-get ,form ,id)
 					     w3m-form-new-session
 					     w3m-form-download)
-		 w3m-anchor-sequence ,abs-hseq)))
+		 w3m-anchor-sequence ,abs-hseq
+		 w3m-form-readonly ,readonly)))
 	     ((string= type "checkbox")
 	      (let ((cvalue (w3m-form-get form id)))
 		(w3m-form-put form id name
@@ -865,7 +870,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					     (w3m-form-get ,form ,id)
 					     w3m-form-new-session
 					     w3m-form-download)
-		 w3m-anchor-sequence ,abs-hseq)))))))))
+		 w3m-anchor-sequence ,abs-hseq
+		 w3m-form-readonly ,readonly)))))))))
     ;; Process <internal> tag.
     (when (search-forward "<internal>" nil t)
       (setq internal-start (match-beginning 0))
@@ -956,7 +962,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 (defun w3m-form-input (form id name type width maxlength value)
   (save-excursion
     (let* ((fvalue (w3m-form-get form id))
-	   (input (read-from-minibuffer (concat (upcase type) ": ") fvalue))
+	   (input (save-excursion
+		    (read-from-minibuffer (concat (upcase type) ": ") fvalue)))
 	   (coding (w3m-form-get-coding-system (w3m-form-charlst form))))
       (when (with-temp-buffer
 	      (insert input)
@@ -966,12 +973,13 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 
 (defun w3m-form-input-password (form id name)
   (let* ((fvalue (w3m-form-get form id))
-	 (input (read-passwd (concat "PASSWORD"
-				     (if fvalue
-					 " (default is no change)")
-				     ": ")
-			     nil
-			     fvalue)))
+	 (input (save-excursion
+		  (read-passwd (concat "PASSWORD"
+				       (if fvalue
+					   " (default is no change)")
+				       ": ")
+			       nil
+			       fvalue))))
     (w3m-form-put form id name input)
     (w3m-form-replace input 'invisible)))
 
@@ -1017,9 +1025,10 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
   (w3m-form-replace "*"))
 
 (defun w3m-form-input-file (form id name value)
-  (let ((input (read-file-name "File name: "
-			       (or (cdr (w3m-form-get form id))
-				   "~/"))))
+  (let ((input (save-excursion
+		 (read-file-name "File name: "
+				 (or (cdr (w3m-form-get form id))
+				     "~/")))))
     (w3m-form-put form id name (cons 'file input))
     (w3m-form-replace input)))
 
@@ -1078,7 +1087,7 @@ character."
     (goto-char p)))
 
 (defun w3m-form-textarea-info ()
-  "Return a list of (ID NAME LINE) for current text area."
+  "Return a list of (ID NAME LINE READONLY) for current text area."
   (let ((s (get-text-property (point) 'w3m-form-hseq))
 	(lines 1))
     (save-excursion
@@ -1086,7 +1095,8 @@ character."
 	(incf lines))
       (list (get-text-property (point) 'w3m-form-id)
 	    (get-text-property (point) 'w3m-form-name)
-	    lines))))
+	    lines
+	    (get-text-property (point) 'w3m-form-readonly)))))
 
 (defvar w3m-form-input-textarea-map nil)
 (unless w3m-form-input-textarea-map
@@ -1255,7 +1265,9 @@ textarea")))
 			(1+ w3m-form-input-textarea-buffer-lines)))))
 	 (file (get-text-property (point) 'w3m-form-file-name))
 	 (coding (w3m-form-get-coding-system (w3m-form-charlst form)))
-	 (backup-p (w3m-form-use-textarea-backup-p))
+	 (readonly (nth 3 info))
+	 (backup-p (and (not readonly)
+			(w3m-form-use-textarea-backup-p)))
 	 buffer)
     (setq w3m-form-use-textarea-backup-p backup-p)
     (when backup-p
@@ -1287,11 +1299,17 @@ textarea")))
 		      (goto-char (abs (w3m-compare-strings
 				       before 0 (length before)
 				       value 0 (length value))))
-		      (y-or-n-p
-		       "The saved text for this form exists. Use it? ")))
+		      (condition-case nil
+			  (y-or-n-p
+			   "The saved text for this form exists. Use it? ")
+			(quit
+			 (kill-buffer buffer)
+			 (error "Abort textarea editing")))))
 	      (setq value before)))))
       (with-current-buffer buffer
 	(insert value)
+	(set-buffer-modified-p nil)
+	(when readonly (setq buffer-read-only t))
 	(goto-char (point-min))
 	(forward-line (1- (nth 2 info)))
 	(w3m-form-input-textarea-mode-setup w3mbuffer)
