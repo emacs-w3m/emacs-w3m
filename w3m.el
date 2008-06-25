@@ -3580,7 +3580,6 @@ The database is kept in `w3m-entity-table'."
 STATUS is current image status.
 If NO-CACHE is non-nil, cache is not used.
 If URL is specified, only the image with URL is toggled."
-  (interactive "P")
   (let ((cur-point (point))
 	(buffer-read-only)
 	(end (or begin-pos (point-min)))

@@ -1,5 +1,7 @@
 2008-06-25  Naohiro Aota  <nao.aota@gmail.com>
 
+	* w3m.el (w3m-toggle-inline-images-internal): Make it non-interactive.
+
 	* w3m-form.el (w3m-form-input-textarea): Make buffer unmodified when
 	user selected to reuse saved text; parse readonly attribute; kill newly
 	generated buffer when the reusing question aborted.
@@ -16,8 +18,9 @@
 	(w3m-toggle-inline-images): Check whether images are safe even if it is
 	called with w3m-display-inline-images=t and force=t; rearrange the
 	source code.
-	(w3m-toggle-inline-images-internal): Add new argument: `begin-pos' and
-	`end-pos'. Only process region from `begin-pos' to `end-pos'.
+	(w3m-toggle-inline-images-internal): Add new optional argument:
+	`begin-pos' and `end-pos'. Only process region from `begin-pos' to
+	`end-pos'.
 
 2008-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
