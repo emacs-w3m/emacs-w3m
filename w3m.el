@@ -3782,11 +3782,13 @@ variable is non-nil (default=t)."
 	     (setq pos (next-single-property-change pos 'w3m-image)))
 	   (while (< pos end)
 	     (when (and
-		    (setq pos (next-single-property-change pos 'w3m-image end))
+		    (setq pos (next-single-property-change pos 'w3m-image
+							   nil end))
 		    (setq url (get-text-property pos 'w3m-image)))
 	       (unless (string-match safe-regexp url)
 		 (throw 'done nil)))
-	     (setq pos (next-single-property-change pos 'w3m-image end)))
+	     (setq pos (next-single-property-change pos 'w3m-image
+						    nil end)))
 	   t))))
     (if (or status
 	    (not safe-regexp)
