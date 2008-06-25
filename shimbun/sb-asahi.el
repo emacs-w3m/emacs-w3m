@@ -928,14 +928,18 @@ Each table is the same as the `cdr' of the element of
 \\|<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
 
 (defvar shimbun-asahi-text-content-start
-  "<!--[\t\n ]*End of Headline[\t\n ]*-->\
+  "<div[\t\n ]+class=\"\\(?:ThmbSet256\\|Kansai-ThmbSet100\\)\">\
+\\|<!--[\t\n ]*End of Headline[\t\n ]*-->\
 \\(?:[\t\n ]*<div[\t\n ]+[^<]+</div>[\t\n ]*\
 \\|[\t\n ]*<p[\t\n ]+[^<]+</p>[\t\n ]*\\)?\
 \\|<!--[\t\n ]*Start of Kiji[\t\n ]*-->\
 \\|<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
 
 (defvar shimbun-asahi-text-content-end
-  "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<!--[\t\n ]*Start of hatenab[\t\n ]*-->\
+  "<dl[\t\n ]+class=\"PrInfo\">\
+\\|<!--[\t\n ]*google_ad_section_end\
+\\|<!-[^>]+ここまで[\t\n ]*-+>\
+\\|\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<!--[\t\n ]*Start of hatenab[\t\n ]*-->\
 \\|<!--[\t\n ]*\\(?:google_ad_section\\|[AD★☆]+\\)\
 \\|<!--[\t\n ]*End of Kiji[\t\n ]*-->\
 \\|<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
@@ -1486,6 +1490,22 @@ that day if it failed."
 \\(\\(?:<![^>]+>\\|<br>\\)[\t\n 　]*\\)*<p>"
 			       nil t)
        (replace-match "\\1\n<p>"))
+     ;; Add line breaks after images that captions or images follow.
+     (goto-char (point-min))
+     (while (re-search-forward
+	     "\\(<img[\t\n ]+[^>]+>\\(?:[\t\n ]*</[^>]+>\\)*\\)[\t\n ]*"
+	     nil t)
+       (when (or (save-match-data
+		   (looking-at "\\(?:<[^\t\n >]+>[\t\n ]*\\)*<img[\t\n ]"))
+		 (not (eq (char-after) ?<)))
+	 (replace-match "\\1<br>\n")))
+     ;; Add line breaks before images that follow captions.
+     (goto-char (point-min))
+     (while (re-search-forward
+	     "[\t\n ]*\\(\\(?:<[^/>][^>]*>[\t\n ]*\\)*<img[\t\n ]\\)"
+	     nil t)
+       (unless (eq (char-before (match-beginning 0)) ?>)
+	 (replace-match "<br>\n\\1")))
      ;; Remove any other useless things.
      (shimbun-remove-tags "[\t\n ]*<form[\t\n ]+" "</form>[\t\n ]*")
      (shimbun-remove-tags "[\t\n ]*<noscript>" "</noscript>[\t\n ]*")

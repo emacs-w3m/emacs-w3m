@@ -1,7 +1,9 @@
 2008-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* sb-asahi.el (shimbun-asahi-prepare-article): Update regexp matching
-	useless links.
+	* sb-asahi.el (shimbun-asahi-text-content-start)
+	(shimbun-asahi-text-content-end): Update.
+	(shimbun-asahi-prepare-article): Update regexp matching useless links;
+	add line breaks around images.
 
 2008-06-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
