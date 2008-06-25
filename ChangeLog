@@ -1,3 +1,22 @@
+2008-06-25  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-toggle-inline-image): Don't toggle images that are
+	outside of the region even if they are identical to the ones in the
+	region; don't do recursive call of itself; rearrange the source code.
+	(w3m-toggle-inline-images): Check whether images are safe even if it is
+	called with w3m-display-inline-images=t and force=t; rearrange the
+	source code.
+	(w3m-toggle-inline-images-internal): Do.
+
+2008-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-toggle-inline-image): Work for an image in which there is
+	the region end within its anchor.  Reported by Dan Jacobson
+	<jidanni@jidanni.org>.
+
+	* w3m-util.el (w3m-deactivate-region): Use zmacs-deactivate-region for
+	XEmacs.
+
 2008-06-22  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m-search.el (w3m-search-engine-alist): Improve detection of utf-8
