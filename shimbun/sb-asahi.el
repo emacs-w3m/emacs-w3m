@@ -1498,7 +1498,7 @@ that day if it failed."
        (delete-region (match-beginning 0) (match-end 0)))
      (goto-char (point-min))
      (while (re-search-forward "[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)+\
-アサヒ・コムトップ[へヘ]\
+\\(?:アサヒ・コム\\|ニュース\\)トップ[へヘ]\
 \\(?:\\(?:[\t\n ]*<[!/][^>]+>\\)+[\t\n ]*\\|[\t\n ]*\\'\\)"
 			       nil t)
        (replace-match "\n"))
