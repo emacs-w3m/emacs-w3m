@@ -38,9 +38,9 @@
 
 
 (defvar shimbun-heise-content-start
-  "\\(<!-- Meldung -->\\|<!-- INHALT -->\\|<HEISETEXT>\\)")
+  "\\(<!-- Meldung -->\\|<!-- INHALT -->\\|<!-- HEISETEXT -->\\)")
 (defvar shimbun-heise-content-end
-  "\\(<!-- untere News-Navigation -->\\|<!-- INHALT -->\\|</HEISETEXT>\\)")
+  "\\(<!-- untere News-Navigation -->\\|<!-- INHALT -->\\|<!-- /HEISETEXT -->\\)")
 
 (defvar shimbun-heise-x-face-alist
   '(("default" . "X-Face: #RVD(kjrS;RY\"2yH]w.1U,ZC_DbR,9{tQnhyYe|,\\J)\"\

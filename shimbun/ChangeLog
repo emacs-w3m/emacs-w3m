@@ -1,3 +1,8 @@
+2008-06-27  David Hansen  <david.hansen@gmx.net>
+
+	* sb-heise.el: (shimbun-heise-content-start)
+	(shimbun-heise-content-end): Updated regexps.
+
 2008-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-text-content-start)
