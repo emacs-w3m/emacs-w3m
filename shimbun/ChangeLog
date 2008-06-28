@@ -1,4 +1,4 @@
-2008-06-27  David Hansen  <david.hansen@gmx.net>
+2008-06-27  David Engster  <dengste@eml.cc>
 
 	* sb-heise.el: (shimbun-heise-content-start)
 	(shimbun-heise-content-end): Updated regexps.
