@@ -960,28 +960,32 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
       (goto-char p))))
 
 (defun w3m-form-input (form id name type width maxlength value)
-  (save-excursion
-    (let* ((fvalue (w3m-form-get form id))
-	   (input (save-excursion
-		    (read-from-minibuffer (concat (upcase type) ": ") fvalue)))
-	   (coding (w3m-form-get-coding-system (w3m-form-charlst form))))
-      (when (with-temp-buffer
-	      (insert input)
-	      (w3m-form-coding-system-accept-region-p nil nil coding))
-	(w3m-form-put form id name input)
-	(w3m-form-replace input)))))
+  (let ((fvalue (w3m-form-get form id)))
+    (if (get-text-property (point) 'w3m-form-readonly)
+	(message "READONLY %s: %s" (upcase type) fvalue)
+      (save-excursion
+	(let ((input (save-excursion
+		       (read-from-minibuffer (concat (upcase type) ": ") fvalue)))
+	      (coding (w3m-form-get-coding-system (w3m-form-charlst form))))
+	  (when (with-temp-buffer
+		  (insert input)
+		  (w3m-form-coding-system-accept-region-p nil nil coding))
+	    (w3m-form-put form id name input)
+	    (w3m-form-replace input)))))))
 
 (defun w3m-form-input-password (form id name)
-  (let* ((fvalue (w3m-form-get form id))
-	 (input (save-excursion
-		  (read-passwd (concat "PASSWORD"
-				       (if fvalue
-					   " (default is no change)")
-				       ": ")
-			       nil
-			       fvalue))))
-    (w3m-form-put form id name input)
-    (w3m-form-replace input 'invisible)))
+  (if (get-text-property (point) 'w3m-form-readonly)
+      (message "This input box is read-only.")
+    (let* ((fvalue (w3m-form-get form id))
+	   (input (save-excursion
+		    (read-passwd (concat "PASSWORD"
+					 (if fvalue
+					     " (default is no change)")
+					 ": ")
+				 nil
+				 fvalue))))
+      (w3m-form-put form id name input)
+      (w3m-form-replace input 'invisible))))
 
 (defun w3m-form-input-checkbox (form id name value)
   (let ((fvalue (w3m-form-get form id)))

@@ -1,3 +1,8 @@
+2008-06-30  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-form.el (w3m-form-input, w3m-form-input-password): Process
+	readonly attribute.
+
 2008-06-25  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m.el (w3m-toggle-inline-images-internal): Make it non-interactive.
