@@ -1,6 +1,6 @@
 ;;; w3m-search.el --- functions convenient to access web search engines
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Keisuke Nishida    <kxn30@po.cwru.edu>,
@@ -42,7 +42,8 @@
 
 (defcustom w3m-search-engine-alist
   (let* ((ja (equal "Japanese" w3m-language))
-	 (utf-8 (or (not (string< mule-version "6.0"))
+	 (utf-8 (or (and (boundp 'mule-version)
+			 (not (string< (symbol-value 'mule-version) "6.0")))
 		    (featurep 'un-define)
 		    (fboundp 'utf-translate-cjk-mode)
 		    (and (not ja) (w3m-find-coding-system 'utf-8)))))
