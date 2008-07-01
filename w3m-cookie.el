@@ -1,6 +1,6 @@
 ;;; w3m-cookie.el --- Functions for cookie processing
 
-;; Copyright (C) 2002, 2003, 2005, 2006
+;; Copyright (C) 2002, 2003, 2005, 2006, 2008
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Teranishi Yuuichi  <teranisi@gohome.org>
