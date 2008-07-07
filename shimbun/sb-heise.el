@@ -38,9 +38,10 @@
 
 
 (defvar shimbun-heise-content-start
-  "\\(<!-- Meldung -->\\|<!-- INHALT -->\\|<!-- HEISETEXT -->\\)")
+  "\\(<!-- Meldung -->\\|<!-- INHALT -->\\|<[^>]*HEISETEXT[^>]*>\\)")
 (defvar shimbun-heise-content-end
-  "\\(<!-- untere News-Navigation -->\\|<!-- INHALT -->\\|<!-- /HEISETEXT -->\\)")
+  "\\(<!-- untere News-Navigation -->\\|<!-- INHALT -->\
+\\|<[^>]*/HEISETEXT[^>]*>\\)")
 
 (defvar shimbun-heise-x-face-alist
   '(("default" . "X-Face: #RVD(kjrS;RY\"2yH]w.1U,ZC_DbR,9{tQnhyYe|,\\J)\"\
@@ -117,8 +118,8 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
                             (string-to-number month)
                             (string-to-number day)
                             "00:00"
-                            ;; FIXME: timezone is always wrong, slightly better than
-                            ;; the default "+0900"
+                            ;; FIXME: timezone is always wrong, slightly better
+                            ;; than the default "+0900"
                             "+0000")
                            mid "" 0 0 url) headers)))))))))
     headers))
@@ -149,7 +150,7 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
 	      (string-to-number (match-string 3)) ; year
 	      (string-to-number (match-string 2)) ; month
 	      (string-to-number (match-string 1)) ; day
-	      (match-string 4)		; time
+	      (match-string 4)                    ; time
 	      ;; FIXME: timezone is always wrong, slightly better than the
 	      ;; default "+0900"
 	      "+0000"))))))
@@ -175,18 +176,10 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
 
     ;; strip ads
     (goto-char (point-min))
-    (let ((regexp-ad-begin "<!-- Meldung -->\\|<HEISETEXT>")
-	  (regexp-ad-end "<!-- untere News-Navigation -->")
-	  (regexp-ad "<!--OAS AD=\"Middle[0-9]*\"-->")
-	  (bound-min) (bound-max))
-      (when (setq bound-min (re-search-forward regexp-ad-begin nil t nil))
-	(when (setq bound-max (re-search-forward regexp-ad-end nil t nil))
-	  (goto-char bound-min)
-	  (while (re-search-forward regexp-ad bound-max t nil)
-	    (let ((begin-region (re-search-backward "<table" bound-min t nil))
-		  (end-region (re-search-forward "</table>" bound-max t nil)))
-	      (when (and begin-region end-region)
-		(delete-region begin-region end-region)))))))))
+    (let (beg end)
+      (while (and (setq beg (re-search-forward "<!-- b?cadv -->" nil t))
+                  (setq end (re-search-forward "<!-- /b?cadv -->" nil t)))
+        (delete-region beg end)))))
 
 
 (defun shimbun-heise-wash-telepolis-article (header)

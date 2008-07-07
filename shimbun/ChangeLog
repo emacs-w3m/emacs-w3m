@@ -1,6 +1,12 @@
+2008-07-07  David Hansen  <david.hansen@gmx.net>
+
+	* sb-heise.el (shimbun-heise-content-start)
+	(shimbun-heise-content-end): Updated regexp.
+	(shimbun-heise-wash-newsticker-article): Update ad filtering.
+
 2008-06-27  David Engster  <dengste@eml.cc>
 
-	* sb-heise.el: (shimbun-heise-content-start)
+	* sb-heise.el (shimbun-heise-content-start)
 	(shimbun-heise-content-end): Updated regexps.
 
 2008-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
