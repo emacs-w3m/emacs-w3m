@@ -1,3 +1,7 @@
+2008-07-15  David Engster  <dengste@eml.cc>
+
+	* sb-heise.el (shimbun-heise-get-newsticker-headers): Fix regexp.
+
 2008-07-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi): Use shimbun-multi.
