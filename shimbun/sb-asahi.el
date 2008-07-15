@@ -36,8 +36,10 @@
 (eval-when-compile (require 'cl))
 
 (require 'shimbun)
+(require 'sb-multi)
 
-(luna-define-class shimbun-asahi (shimbun-japanese-newspaper shimbun) ())
+(luna-define-class shimbun-asahi (shimbun-japanese-newspaper shimbun-multi
+							     shimbun) ())
 
 (defvar shimbun-asahi-prefer-text-plain t
   "*Non-nil means prefer text/plain articles rather than html articles.")
@@ -1224,6 +1226,25 @@ It works for only the groups `editorial' and `tenjin'."
 	;; xref
 	(shimbun-expand-url url shimbun-asahi-url))))))
 
+(defun shimbun-asahi-multi-next-url (shimbun header url)
+  (goto-char (point-min))
+  (when (and (re-search-forward "\
+<div[\t\n ]\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"SeqNav forSplit\""
+				nil t)
+	     (shimbun-end-of-tag "div" t))
+    (let ((end (match-beginning 0))
+	  (next (when (re-search-backward "\
+<a[\t\n ]+href=\"\\([^\"]+\\)\"[^>]*>[\t\n ]*次ページ[\t\n ]*</a>"
+					  (match-beginning 0) t)
+		  (shimbun-expand-url (match-string 1) url))))
+      (goto-char end)
+      (insert (if next "&#012;\n" "\n") "<!-- End of Kiji -->\n")
+      next)))
+
+(luna-define-method shimbun-multi-next-url ((shimbun shimbun-asahi)
+					    header url)
+  (shimbun-asahi-multi-next-url shimbun header url))
+
 (defun shimbun-asahi-prepare-article (shimbun header)
   "Prepare an article.
 For the groups editorial and tenjin, it tries to fetch the article for
@@ -1456,72 +1477,10 @@ that day if it failed."
 広告終わり\\(?:[\t\n ]*</p>[\t\n ]*\\|\\'\\)"
 				  nil t)
 	   (delete-region start (match-end 0)))))
-     ;; Remove table tags that surround image tags.
-     (goto-char (point-min))
-     (let (end start found images)
-       (while (re-search-forward "[\t\n ]*<table[\t\n ]+[^>]+>[\t\n ]*\
-\\(?:\\(?:<[^>]+>[\t\n ]*\\)*\
-<img[\t\n ]+[^>]+>[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*[^<]+\\)+\
-\\(?:<[^>]+>[\t\n ]*\\)*</table>[\t\n ]*"
-				 nil t)
-	 (setq found nil
-	       images nil
-	       end (match-end 0))
-	 (goto-char (setq start (match-beginning 0)))
-	 (while (re-search-forward "\
-\\(<img[\t\n ]+[^>]+>\\)[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*\\([^<]+\\)"
-		 end t)
-	   (skip-chars-backward "\t\n ")
-	   (when (> (point) (match-beginning 2))
-	     (setq found t))
-	   (push (concat (match-string 1) "<br>"
-			 (buffer-substring (match-beginning 2) (point)))
-		 images)))
-	 (when found
-	   (setq images (nreverse images))
-	   (delete-region start end)
-	   (insert "\n")
-	   (while images
-	     (insert (pop images))
-	     (insert (if images "<br><br>\n" "\n")))))
-     ;; Remove garbage after images.
-     (goto-char (point-min))
-     (while (re-search-forward "\\(<img[\t\n ]+[^>]+>\\)[\t\n 　]*\
-\\(\\(?:<![^>]+>\\|<br>\\)[\t\n 　]*\\)*<p>"
-			       nil t)
-       (replace-match "\\1\n<p>"))
-     ;; Add line breaks after images that captions or images follow.
-     (goto-char (point-min))
-     (while (re-search-forward
-	     "\\(<img[\t\n ]+[^>]+>\\(?:[\t\n ]*</[^>]+>\\)*\\)[\t\n ]*"
-	     nil t)
-       (when (or (save-match-data
-		   (looking-at "\\(?:<[^\t\n >]+>[\t\n ]*\\)*<img[\t\n ]"))
-		 (not (eq (char-after) ?<)))
-	 (replace-match "\\1<br>\n")))
-     ;; Add line breaks before images that follow captions.
-     (goto-char (point-min))
-     (while (re-search-forward
-	     "[\t\n ]*\\(\\(?:<[^/>][^>]*>[\t\n ]*\\)*<img[\t\n ]\\)"
-	     nil t)
-       (unless (eq (char-before (match-beginning 0)) ?>)
-	 (replace-match "<br>\n\\1")))
      ;; Remove any other useless things.
      (shimbun-remove-tags "[\t\n ]*<form[\t\n ]+" "</form>[\t\n ]*")
      (shimbun-remove-tags "[\t\n ]*<noscript>" "</noscript>[\t\n ]*")
      (shimbun-remove-tags "[\t\n ]*<script[\t\n ]" "</script>[\t\n ]*")
-     (goto-char (point-min))
-     (while (re-search-forward "[\t\n ]*\
-\\(?:<div[\t\n ]+[^>]+>\\|</div>\\|<ul>[\t\n ]*</ul>\\)\
-\[\t\n ]*"
-			       nil t)
-       (delete-region (match-beginning 0) (match-end 0)))
-     (goto-char (point-min))
-     (while (re-search-forward "[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)+\
-\\(?:アサヒ・コム\\|ニュース\\)トップ[へヘ]\
-\\(?:\\(?:[\t\n ]*<[!/][^>]+>\\)+[\t\n ]*\\|[\t\n ]*\\'\\)"
-			       nil t)
-       (replace-match "\n"))
      ;; Remove trailing garbage.
      (goto-char (point-min))
      (when (and (not (string-match "ゆるゆるフェミニン" from))
@@ -1541,12 +1500,84 @@ that day if it failed."
 						   header)
   (shimbun-asahi-prepare-article shimbun header))
 
-(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-asahi)
-						    header)
+(defun shimbun-asahi-clear-contents (shimbun header)
   (when (luna-call-next-method)
+    ;; Remove table tags that surround image tags.
+    (goto-char (point-min))
+    (let (end start found images)
+      (while (re-search-forward "[\t\n ]*<table[\t\n ]+[^>]+>[\t\n ]*\
+\\(?:\\(?:<[^>]+>[\t\n ]*\\)*\
+<img[\t\n ]+[^>]+>[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*[^<]+\\)+\
+\\(?:<[^>]+>[\t\n ]*\\)*</table>[\t\n ]*"
+				nil t)
+	(setq found nil
+	      images nil
+	      end (match-end 0))
+	(goto-char (setq start (match-beginning 0)))
+	(while (re-search-forward "\
+\\(<img[\t\n ]+[^>]+>\\)[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*\\([^<]+\\)"
+				  end t)
+	  (skip-chars-backward "\t\n ")
+	  (when (> (point) (match-beginning 2))
+	    (setq found t))
+	  (push (concat (match-string 1) "<br>"
+			(buffer-substring (match-beginning 2) (point)))
+		images)))
+      (when found
+	(setq images (nreverse images))
+	(delete-region start end)
+	(insert "\n")
+	(while images
+	  (insert (pop images))
+	  (insert (if images "<br><br>\n" "\n")))))
+    ;; Remove garbage before images.
+    (goto-char (point-min))
+    (while (re-search-forward
+	    "\\(?:<\\(?:p\\|span\\)>[\t\n ]*\\)+\\(<img[\t\n ]+\\)"
+	    nil t)
+      (replace-match "\\1"))
+    ;; Remove garbage after images.
+    (goto-char (point-min))
+    (while (re-search-forward "\\(<img[\t\n ]+[^>]+>\\)[\t\n 　]*\
+\\(\\(?:<![^>]+>\\|<br>\\)[\t\n 　]*\\)*<p>"
+			      nil t)
+      (replace-match "\\1\n<p>"))
+    ;; Add line breaks after images that captions or images follow.
+    (goto-char (point-min))
+    (while (re-search-forward
+	    "\\(<img[\t\n ]+[^>]+>\\(?:[\t\n ]*</[^>]+>\\)*\\)[\t\n ]*"
+	    nil t)
+      (when (or (save-match-data
+		  (looking-at "\\(?:<[^\t\n >]+>[\t\n ]*\\)*<img[\t\n ]"))
+		(not (eq (char-after) ?<)))
+	(replace-match "\\1<br>\n")))
+    ;; Add line breaks before images that follow captions.
+    (goto-char (point-min))
+    (while (re-search-forward
+	    "[\t\n ]*\\(\\(?:<[^/>][^>]*>[\t\n ]*\\)*<img[\t\n ]\\)"
+	    nil t)
+      (unless (memq (char-before (match-beginning 0)) '(nil ?>))
+	(replace-match "<br>\n\\1")))
+    ;; Remove any other useless things.
+    (goto-char (point-min))
+    (while (re-search-forward "[\t\n ]*\
+\\(?:<div[\t\n ]+[^>]+>\\|</div>\\|<ul>[\t\n ]*</ul>\\)\
+\[\t\n ]*"
+			      nil t)
+      (delete-region (match-beginning 0) (match-end 0)))
+    (goto-char (point-min))
+    (while (re-search-forward "[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)+\
+\\(?:アサヒ・コム\\|ニュース\\)トップ[へヘ]\
+\\(?:\\(?:[\t\n ]*<[!/][^>]+>\\)+[\t\n ]*\\|[\t\n ]*\\'\\)"
+			      nil t)
+      (replace-match "\n"))
     (unless (shimbun-prefer-text-plain-internal shimbun)
       (shimbun-break-long-japanese-lines))
     t))
+
+(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-asahi)
+						    header)
+  (shimbun-asahi-clear-contents shimbun header))
 
 (provide 'sb-asahi)
 

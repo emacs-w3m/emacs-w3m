@@ -1,3 +1,11 @@
+2008-07-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi): Use shimbun-multi.
+	(shimbun-asahi-multi-next-url): New function.
+	(shimbun-asahi-prepare-article): Move some programs that clean contents
+	to shimbun-asahi-clear-contents.
+	(shimbun-asahi-clear-contents): New function.
+
 2008-07-07  David Hansen  <david.hansen@gmx.net>
 
 	* sb-heise.el (shimbun-heise-content-start)
