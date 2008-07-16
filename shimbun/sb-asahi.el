@@ -1238,7 +1238,11 @@ It works for only the groups `editorial' and `tenjin'."
 					  (match-beginning 0) t)
 		  (shimbun-expand-url (match-string 1) url))))
       (goto-char end)
-      (insert (if next "&#012;\n" "\n") "<!-- End of Kiji -->\n")
+      (if (and (re-search-backward "[^\t\n >]\\([\t\n ]*<\\)" nil t)
+	       (re-search-forward "[\t\n ]*<[\t\n ]*[^/]" end t))
+	  (delete-region (match-beginning 0) end)
+	(goto-char end))
+      (insert "<!-- End of Kiji -->\n")
       next)))
 
 (luna-define-method shimbun-multi-next-url ((shimbun shimbun-asahi)
@@ -1578,6 +1582,25 @@ that day if it failed."
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-asahi)
 						    header)
   (shimbun-asahi-clear-contents shimbun header))
+
+(defun shimbun-asahi-multi-clear-contents (shimbun header
+						   has-previous-page
+						   has-next-page)
+  (when (luna-call-next-method)
+    (when has-previous-page
+      (goto-char (point-min))
+      (insert "&#012;\n")
+      (when (looking-at "[\t\n ]*<p>[\t\n ]*")
+	(delete-region (match-beginning 0) (match-end 0))))
+    t))
+
+(luna-define-method shimbun-multi-clear-contents :around ((shimbun
+							   shimbun-asahi)
+							  header
+							  has-previous-page
+							  has-next-page)
+  (shimbun-asahi-multi-clear-contents shimbun header
+				      has-previous-page has-next-page))
 
 (provide 'sb-asahi)
 

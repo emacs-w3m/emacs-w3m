@@ -1,3 +1,10 @@
+2008-07-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-multi-next-url): Don't insert page
+	delimiter here; remove garbage at the end of pages.
+	(shimbun-asahi-multi-clear-contents): New function; insert page
+	delimiter.
+
 2008-07-15  David Engster  <dengste@eml.cc>
 
 	* sb-heise.el (shimbun-heise-get-newsticker-headers): Fix regexp.
