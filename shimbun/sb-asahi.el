@@ -1232,18 +1232,18 @@ It works for only the groups `editorial' and `tenjin'."
 <div[\t\n ]\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"SeqNav forSplit\""
 				nil t)
 	     (shimbun-end-of-tag "div" t))
-    (let ((end (match-beginning 0))
-	  (next (when (re-search-backward "\
+    (let ((end (match-beginning 0)))
+      (prog1
+	  (when (re-search-backward "\
 <a[\t\n ]+href=\"\\([^\"]+\\)\"[^>]*>[\t\n ]*次ページ[\t\n ]*</a>"
-					  (match-beginning 0) t)
-		  (shimbun-expand-url (match-string 1) url))))
-      (goto-char end)
-      (if (and (re-search-backward "[^\t\n >]\\([\t\n ]*<\\)" nil t)
-	       (re-search-forward "[\t\n ]*<[\t\n ]*[^/]" end t))
-	  (delete-region (match-beginning 0) end)
-	(goto-char end))
-      (insert "<!-- End of Kiji -->\n")
-      next)))
+				    end 'move)
+	    (goto-char end)
+	    (shimbun-expand-url (match-string 1) url))
+	(if (and (re-search-backward "[^\t\n >]\\([\t\n ]*<\\)" nil t)
+		 (re-search-forward "[\t\n ]*<[\t\n ]*[^/]" end t))
+	    (delete-region (match-beginning 0) end)
+	  (goto-char end))
+	(insert "<!-- End of Kiji -->\n")))))
 
 (luna-define-method shimbun-multi-next-url ((shimbun shimbun-asahi)
 					    header url)
