@@ -455,6 +455,19 @@ to set this variable properly."
   :type '(radio (const :tag "Auto Detect" nil)
 		(integer :format "Specify Pixels: %v\n" :size 0)))
 
+(defcustom w3m-image-default-background nil
+  "Color name used as transparent color of image.
+Nil means to use the background color of the Emacs frame.  The
+null string \"\" is special, that will be replaced with the
+background color of the buffer. Note that this value is effective
+only with Emacs 22 and greater."
+  :group 'w3m
+  :type '(radio (string :format "Color: %v\n" :size 0
+			:match (lambda (widget value)
+				 (and (stringp value) (> (length value) 0))))
+		(const :tag "Use the background color of the Emacs frame" nil)
+		(const :tag "Null string" "")))
+
 (defvar w3m-accept-japanese-characters
   (and (not noninteractive)
        (featurep 'mule)

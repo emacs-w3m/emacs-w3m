@@ -356,16 +356,12 @@
 (defun w3m-filter-wikipedia (url)
   "Make anchor reference to work."
   (goto-char (point-min))
-  (let (refname citename citenum)
+  (let (matched-text refid)
     (while (re-search-forward 
-	    "<sup id=\"\\(cite_ref-[^\"]*\\)\" class=\"reference\"><a href=\"\\(#cite_note-[^\"]*\\\)\" title=\"\">\\[\\([0-9]*\\)\\]</a></sup>"
-	    nil t)
-      (setq refname (match-string 1)
-	    citename (match-string 2)
-	    citenum (match-string 3))
+	    "<\\(?:sup\\|cite\\) id=\"\\([^\"]*\\)\"" nil t)
+      (setq matched-text (match-string 0)
+	    refid        (match-string 1))
       (delete-region (match-beginning 0) (match-end 0))
-      (insert (format "<a name=\"%s\"><a href=\"%s\" title=\"\">[%s]</a></a>"
-		      refname citename citenum)))))
-			    
+      (insert (format "<a name=\"%s\"></a>%s" refid matched-text)))))
 
 ;;; w3m-filter.el ends here
