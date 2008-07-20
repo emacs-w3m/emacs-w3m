@@ -1,3 +1,8 @@
+2008-07-20  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-hist.el (w3m-history-restore-position): Run
+	w3m-after-cursor-move-hook after restoring cursor position.
+
 2008-07-18  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m.el (w3m-image-default-background): New variable.

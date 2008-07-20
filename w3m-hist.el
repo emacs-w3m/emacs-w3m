@@ -637,7 +637,9 @@ it works although it may not be perfect."
 	       (setq window (get-buffer-window (current-buffer) 'all-frames))
 	       (when window
 		 (set-window-start window start))
-	       (goto-char (min position (point-max)))))
+	       (goto-char (min position (point-max)))
+	       (let ((deactivate-mark nil))
+		 (run-hooks 'w3m-after-cursor-move-hook))))
 	    ((interactive-p)
 	     (message "No cursor position saved"))))))
 
