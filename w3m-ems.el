@@ -52,15 +52,21 @@
 ;; Functions and variables which should be defined in the other module
 ;; at run-time.
 (eval-when-compile
+  (defvar w3m-add-tab-number)
+  (defvar w3m-coding-system)
   (defvar w3m-current-process)
-  (defvar w3m-current-url)
   (defvar w3m-current-title)
+  (defvar w3m-current-url)
+  (defvar w3m-default-coding-system)
   (defvar w3m-display-inline-images)
   (defvar w3m-favicon-image)
+  (defvar w3m-form-input-textarea-coding-system)
   (defvar w3m-form-use-fancy-faces)
   (defvar w3m-icon-directory)
+  (defvar w3m-image-default-background)
   (defvar w3m-mode-map)
   (defvar w3m-modeline-process-status-on)
+  (defvar w3m-new-session-in-background)
   (defvar w3m-process-queue)
   (defvar w3m-show-graphic-icons-in-header-line)
   (defvar w3m-show-graphic-icons-in-mode-line)
@@ -68,18 +74,13 @@
   (defvar w3m-toolbar-buttons)
   (defvar w3m-use-favicon)
   (defvar w3m-use-header-line)
-  (defvar w3m-use-tab)
-  (defvar w3m-add-tab-number)
-  (defvar w3m-work-buffer-name)
-  (defvar w3m-work-buffer-list)
-  (defvar w3m-new-session-in-background)
-  (defvar w3m-default-coding-system)
-  (defvar w3m-coding-system)
   (defvar w3m-use-header-line-title)
+  (defvar w3m-use-tab)
   ;; `w3m-tab-move-right' calls the inline function `w3m-buffer-set-number'
   ;; which uses it.
   (defvar w3m-use-title-buffer-name)
-  (defvar w3m-form-input-textarea-coding-system)
+  (defvar w3m-work-buffer-list)
+  (defvar w3m-work-buffer-name)
   (autoload 'w3m-copy-buffer "w3m")
   (autoload 'w3m-delete-buffer "w3m")
   (autoload 'w3m-image-type "w3m")
@@ -234,8 +235,8 @@ and its cdr element is used as height."
 				    ((match-beginning 2) 'jpeg)
 				    (t 'png)))
 			 (w3m-image-type type))))
-	  (setq image (create-image (buffer-string) type t 
-				    :ascent 'center 
+	  (setq image (create-image (buffer-string) type t
+				    :ascent 'center
 				    :background w3m-image-default-background))
 	  (if (and w3m-resize-images set-size)
 	      (progn
@@ -1105,7 +1106,8 @@ is non-nil means not to respond to too fast operation of mouse wheel."
 		       1))
 	     (spinner (when w3m-process-queue
 			(w3m-make-spinner-image)))
-	     buffer title data datum process unseen favicon keymap face icon line)
+	     buffer title data datum process unseen favicon keymap face icon
+	     line)
 	(setq w3m-tab-timer t)
 	(run-at-time 0.1 nil
 		     (lambda (buffer)
@@ -1245,9 +1247,10 @@ italic font in the modeline."
     ;; Prefer xpm icons rather than png icons since Emacs doesn't display
     ;; background colors of icon images other than xpm images transparently
     ;; in the mode line.
-    (let* ((w3m-toolbar-icon-preferred-image-types (if (image-type-available-p 'xpm)
-						       '(xpm)
-						     '(png)))
+    (let* ((w3m-toolbar-icon-preferred-image-types
+	    (if (image-type-available-p 'xpm)
+		'(xpm)
+	      '(png)))
 	   (defs `((w3m-modeline-status-off-icon
 		    ,(w3m-find-image "state-00")
 		    w3m-modeline-status-off)
@@ -1272,11 +1275,13 @@ italic font in the modeline."
 	    (progn
 	      (when (or force (not (symbol-value icon)))
 		(unless keymap
-		  (setq keymap (make-mode-line-mouse-map 'mouse-2
-							 'w3m-reload-this-page)))
+		  (setq keymap
+			(make-mode-line-mouse-map 'mouse-2
+						  'w3m-reload-this-page)))
 		(set icon (propertize
 			   "  "
-			   'display (create-image file type nil :ascent 'center)
+			   'display (create-image file type nil
+						  :ascent 'center)
 			   'local-map keymap
 			   'mouse-face 'mode-line-highlight
 			   'help-echo "mouse-2 reloads this page"))
@@ -1357,7 +1362,7 @@ list."
   "Check whether `coding-system' can encode specified region."
   (let ((from (or from (point-min)))
 	(to (or to   (point-max)))
-	(coding-system (or coding-system 
+	(coding-system (or coding-system
 			   w3m-form-input-textarea-coding-system)))
     (if (fboundp 'unencodable-char-position)
 	(let ((pos (unencodable-char-position from to coding-system)))
@@ -1367,7 +1372,8 @@ list."
       (let ((select-safe-coding-system-accept-default-p nil))
 	(or (eq (select-safe-coding-system from to coding-system)
 		coding-system)
-	    (y-or-n-p "This text may cause coding-system problem. Continue? "))))))
+	    (y-or-n-p
+	     "This text may cause coding-system problem. Continue? "))))))
 
 (provide 'w3m-ems)
 
