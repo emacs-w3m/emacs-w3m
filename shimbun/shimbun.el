@@ -1480,9 +1480,9 @@ it considers the buffer has already been narrowed to an article."
 	  (narrow-to-region start (match-beginning 0)))))
     (goto-char (point-min))
     (while (re-search-forward
-	    "<p[\t\n ]+[^>]*>\\|</p>\\|\\([、。）」]+\\)\\(\\cj\\)"
+	    "<p[\t\n ]+[^>]*>\\|</p>\\|\\([、。）」]+\\)\\(\\cj\\)?"
 	    nil t)
-      (if (match-beginning 1)
+      (if (match-beginning 2)
 	  (replace-match "\\1\n\\2")
 	(unless (eolp)
 	  (insert "\n")))))
