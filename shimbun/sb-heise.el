@@ -61,7 +61,7 @@ _rBgD*Xj,t;iPKWh:!B}ijDOoCxs!}rs&(r-TLwU8=>@[w^H(>^u$wM*}\":9LANQs)1\"cZP\
 
 (defun shimbun-heise-get-newsticker-headers (shimbun)
   (let ((regexp
-	 "<a href=\"/newsticker/\\([^\"/]+?\\)/meldung/\\([0-9]+\\)\">\\([^<]+\\)</a>")
+	 "<a href=\"/newsticker/\\([^\"]+?\\)/meldung/\\([0-9]+\\)\"[^>]*>\\([^<]+\\)</a>")
 	(from "Heise Online News <invalid@heise.de>")
 	(date "") (longurl) (id) (url) (subject) (headers))
     (catch 'stop
