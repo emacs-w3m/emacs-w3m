@@ -1,3 +1,7 @@
+2008-07-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-break-long-japanese-lines): Fix position to break.
+
 2008-07-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-multi-next-url): Remove useless
