@@ -189,7 +189,14 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 
 (luna-define-method shimbun-clear-contents ((shimbun shimbun-itmedia) header)
   (prog1
-      (let ((case-fold-search t) (start))
+      (let ((case-fold-search t)
+	    icon start)
+	(goto-char (point-min))
+	(when (and (re-search-forward "<div\\(?:[\t\n ]+[^\t\n >]+\\)*\
+\[\t\n ]+class=\"article-icon\""
+				      nil t)
+		   (shimbun-end-of-tag "div"))
+	  (setq icon (match-string 0)))
 	(goto-char (point-min))
 	(when (and (search-forward "<!--BODY-->" nil t)
 		   (progn
@@ -215,6 +222,9 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 	  (skip-chars-forward " \t\r\f\n")
 	  (when (looking-at "<P ALIGN=\"CENTER\"><[AB]")
 	    (delete-region (point-min) (point-at-eol)))
+	  (when icon
+	    (goto-char (point-min))
+	    (insert icon "\n"))
 	  t))
     (shimbun-remove-tags "<!-- AD START -->" "<!-- AD END -->")
     (shimbun-remove-tags "\

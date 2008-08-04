@@ -1,7 +1,8 @@
 2008-08-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-itmedia.el (shimbun-clear-contents): Divide too complicated regexp
-	into pieces.  Reported by NOMIYA Masaru <nomiya@galaxy.dti.ne.jp>.
+	into pieces.  Reported by NOMIYA Masaru <nomiya@galaxy.dti.ne.jp>;
+	don't remove article icon.
 
 2008-07-23  David Hansen  <david.hansen@gmx.net>
 
