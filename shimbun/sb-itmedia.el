@@ -191,13 +191,16 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
   (prog1
       (let ((case-fold-search t) (start))
 	(goto-char (point-min))
-	(when (and (re-search-forward "\
-\\(<h[0-9]>[^<]+</h[0-9]>[^<]*\\(\\(?:<[^>h][^>]*>[^<]*\\)*\\)\\)?<!--BODY-->"
-				      nil t)
+	(when (and (search-forward "<!--BODY-->" nil t)
 		   (progn
-		     (if (setq start (match-beginning 1))
-			 (delete-region (match-beginning 2) (match-end 2))
-		       (setq start (match-end 0)))
+		     (setq start (match-end 0))
+		     (when (and (re-search-backward "<h[0-9]>[^<]+</h[0-9]>"
+						    nil t)
+				(progn
+				  (goto-char (match-end 0))
+				  (not (re-search-forward "<h[0-9]>" start t))))
+		       (delete-region (match-end 0) start)
+		       (setq start (match-beginning 0)))
 		     (re-search-forward "<!--BODY ?END-->" nil t)))
 	  (delete-region (match-beginning 0) (point-max))
 	  (delete-region (point-min) start)
