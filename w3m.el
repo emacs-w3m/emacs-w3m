@@ -9237,7 +9237,9 @@ non-ASCII characters."
   (interactive "p")
   (if w3m-current-url
       (let ((w3m-prefer-cache t)
-	    (w3m-view-source-decode-level (if (numberp arg) arg 0)))
+	    (w3m-view-source-decode-level (if (numberp arg) arg 0))
+	    (w3m-history-reuse-history-elements t))
+	(w3m-history-store-position)
 	(cond
 	 ((string-match "\\`about://source/" w3m-current-url)
 	  (w3m-goto-url (substring w3m-current-url (match-end 0))))
@@ -9245,7 +9247,8 @@ non-ASCII characters."
 	  (w3m-goto-url (concat "about://source/"
 				(substring w3m-current-url (match-end 0)))))
 	 (t
-	  (w3m-goto-url  (concat "about://source/" w3m-current-url)))))
+	  (w3m-goto-url  (concat "about://source/" w3m-current-url))))
+	(w3m-history-restore-position))
     (w3m-message "Can't view page source")))
 
 (defun w3m-make-separator ()
@@ -9313,17 +9316,24 @@ non-ASCII characters."
   "Display the header of the current page."
   (interactive)
   (if w3m-current-url
-      (let ((w3m-prefer-cache t))
-	(cond
-	 ((string-match "\\`about://header/" w3m-current-url)
-	  (w3m-goto-url (substring w3m-current-url (match-end 0))))
-	 ((string-match "\\`about://source/" w3m-current-url)
-	  (w3m-goto-url (concat "about://header/"
-				(substring w3m-current-url (match-end 0)))))
-	 ((string-match "\\`about:" w3m-current-url)
-	  (error "Can't load a header for %s" w3m-current-url))
-	 (t
-	  (w3m-goto-url (concat "about://header/" w3m-current-url)))))
+      (let ((w3m-prefer-cache t)
+	    (w3m-history-reuse-history-elements t)
+	    (url (cond
+		  ((string-match "\\`about://header/" w3m-current-url)
+		   (substring w3m-current-url (match-end 0)))
+		  ((string-match "\\`about://source/" w3m-current-url)
+		   (concat "about://header/"
+			   (substring w3m-current-url (match-end 0))))
+		  ((string-match "\\`about:" w3m-current-url)
+		   nil)
+		  (t
+		   (concat "about://header/" w3m-current-url)))))
+	(if url
+	    (progn
+	      (w3m-history-store-position)
+	      (w3m-goto-url url)
+	      (w3m-history-restore-position))
+	  (w3m-message "Can't load a header for %s" w3m-current-url)))
     (w3m-message "Can't view page header")))
 
 (defvar w3m-about-history-max-indentation '(/ (* (window-width) 2) 3)
