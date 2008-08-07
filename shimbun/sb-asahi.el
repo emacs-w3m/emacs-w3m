@@ -1534,6 +1534,12 @@ that day if it failed."
 	(while images
 	  (insert (pop images))
 	  (insert (if images "<br><br>\n" "\n")))))
+    ;; Remove zoom buttons.
+    (goto-char (point-min))
+    (while (re-search-forward "[\t\n ]*<img\\(?:[\t\n ]+[^\t\n >]+\\)*\
+\[\t\n ]+class=\"ThmbZoomBtn\"[^>]*>[\t\n ]*"
+			      nil t)
+      (replace-match "\n"))
     ;; Remove garbage before images.
     (goto-char (point-min))
     (while (re-search-forward
