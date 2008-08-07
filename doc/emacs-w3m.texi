@@ -3788,15 +3788,20 @@ are displayed by emacs-w3m, though.  Here's an example:
 If the prefix arg is given, force displaying of images."
   (interactive "P")
   (with-current-buffer gnus-article-buffer
-    (save-restriction
-      (widen)
-      (article-goto-body)
-      (goto-char (or (text-property-not-all (point) (point-max)
-                                            'w3m-safe-url-regexp nil)
-                     (point)))
-      (if (interactive-p)
-          (call-interactively 'w3m-toggle-inline-images)
-        (w3m-toggle-inline-images arg)))))
+    (let ((st (point-min))
+          (nd (point-max))
+          (w3m-async-exec w3m-async-exec))
+      (save-restriction
+        (widen)
+        (if (or (> st (point-min)) (< nd (point-max)))
+            (setq w3m-async-exec nil))
+        (article-goto-body)
+        (goto-char (or (text-property-not-all (point) (point-max)
+                                              'w3m-safe-url-regexp nil)
+                       (point)))
+        (if (interactive-p)
+            (call-interactively 'w3m-toggle-inline-images)
+          (w3m-toggle-inline-images arg))))))
 
 (eval-after-load "gnus-sum"
   '(define-key gnus-summary-mode-map
