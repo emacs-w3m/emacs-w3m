@@ -1,3 +1,7 @@
+2008-08-25  David Hansen  <david.hansen@gmx.net>
+
+	* w3m.el (w3m-about-header): Fixed typo.
+
 2008-08-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-view-source, w3m-view-header): Save points positioned

@@ -9280,7 +9280,7 @@ non-ASCII characters."
 	  (case-fold-search t)
 	  header ssl beg)
       (when (or ct charset)
-	(insert "\n\n" separator "\n\nModifer Information\n")
+	(insert "\n\n" separator "\n\nModifier Information\n")
 	(insert "\nDocument Content-Type:  " (or ct ""))
 	(insert "\nDocument Charset:       " (or charset "")))
       (when (and (not (w3m-url-local-p url))
