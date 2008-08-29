@@ -1,6 +1,6 @@
 ;;; sb-kantei.el --- shimbun backend for kantei mail magazine backnumber -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2003, 2003, 2004, 2005, 2006, 2007
+;; Copyright (C) 2001, 2003, 2003, 2004, 2005, 2006, 2007, 2008
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
@@ -31,7 +31,7 @@
 
 (luna-define-class shimbun-kantei (shimbun) ())
 
-(defvar shimbun-kantei-url "http://www.kantei.go.jp/")
+(defvar shimbun-kantei-url "http://www.mmz.kantei.go.jp/")
 
 (defvar shimbun-kantei-groups '("m-magazine-en"
 				"m-magazine-ja"
