@@ -5,6 +5,8 @@
 	an inline function; remove interactive.
 	(w3m-zoom-in-image, w3m-zoom-out-image): Error if ImageMagick's convert
 	program is not available; improve doc string.
+	(w3m-auto-show): Don't make the cursor position disappear after
+	executing beginning-of-buffer and end-of-buffer.
 
 2008-08-25  David Hansen  <david.hansen@gmx.net>
 
