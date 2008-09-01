@@ -1,3 +1,11 @@
+2008-09-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-use-favicon): Assume w3m-image.elc is always loaded.
+	(w3m-resize-inline-image-internal): Change it to a normal function from
+	an inline function; remove interactive.
+	(w3m-zoom-in-image, w3m-zoom-out-image): Error if ImageMagick's convert
+	program is not available; improve doc string.
+
 2008-08-25  David Hansen  <david.hansen@gmx.net>
 
 	* w3m.el (w3m-about-header): Fixed typo.

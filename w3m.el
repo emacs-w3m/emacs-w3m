@@ -1563,19 +1563,17 @@ a new buffer if a user invokes it in a buffer not being running the
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-use-favicon (featurep 'w3m-image)
+(defcustom w3m-use-favicon t
   "*Non-nil means show favicon images if they are available.
 It will be set to nil automatically if ImageMagick's `convert' program
 does not support the ico format."
   :get (lambda (symbol)
 	 (and (not noninteractive)
 	      (default-value symbol)
-	      (featurep 'w3m-image)
 	      (w3m-favicon-usable-p)))
   :set (lambda (symbol value)
 	 (custom-set-default symbol (and (not noninteractive)
 					 value
-					 (featurep 'w3m-image)
 					 (w3m-favicon-usable-p))))
   :group 'w3m
   :type 'boolean)
@@ -3819,11 +3817,10 @@ Are you sure you really want to show all images (maybe insecure)? "))))
       (w3m-message "There are some images considered unsafe;\
  use the prefix arg to force display"))))
 
-(defsubst w3m-resize-inline-image-internal (url rate)
+(defun w3m-resize-inline-image-internal (url rate)
   "Resize an inline image on the cursor position.
 URL is a url of an image.  RATE is a number of percent used when
 resizing an image."
-  (interactive "P")
   (let* ((buffer-read-only)
 	 (start (point))
 	 (end (or (next-single-property-change start 'w3m-image)
@@ -3883,27 +3880,37 @@ You are retrieving non-secure image. Continue?")))
 		(set-marker end nil)))))))))
 
 (defun w3m-zoom-in-image (&optional rate)
-  "Zoom in an image on the point."
+  "Zoom in an image on the point.
+Numeric prefix specifies how many percent the image is enlarged by
+\(30 means enlarging the image by 130%).  The default is the value of
+the `w3m-resize-image-scale' variable."
   (interactive "P")
   (unless (w3m-display-graphic-p)
     (error "Can't display images in this environment"))
+  (unless (w3m-imagick-convert-program-available-p)
+    (error "ImageMagick's `convert' program is required"))
   (let ((url (w3m-image)))
-    (unless rate
-      (setq rate w3m-resize-image-scale))
     (if url
-	(w3m-resize-inline-image-internal url (+ 100 rate))
+	(w3m-resize-inline-image-internal
+	 url
+	 (+ 100 (or rate w3m-resize-image-scale)))
       (w3m-message "No image at point"))))
 
 (defun w3m-zoom-out-image (&optional rate)
-  "Zoom out an image on the point."
+  "Zoom out an image on the point.
+Numeric prefix specifies how many percent the image is shrunk by
+\(30 means shrinking the image by 70%).  The default is the value of
+the `w3m-resize-image-scale' variable."
   (interactive "P")
   (unless (w3m-display-graphic-p)
     (error "Can't display images in this environment"))
+  (unless (w3m-imagick-convert-program-available-p)
+    (error "ImageMagick's `convert' program is required"))
   (let ((url (w3m-image)))
-    (unless rate
-      (setq rate w3m-resize-image-scale))
     (if url
-	(w3m-resize-inline-image-internal url (- 100 rate))
+	(w3m-resize-inline-image-internal
+	 url
+	 (- 100 (or rate w3m-resize-image-scale)))
       (w3m-message "No image at point"))))
 
 (defun w3m-decode-entities (&optional keep-properties)
