@@ -74,6 +74,9 @@
 R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
  j`}1YEnKc;U0:^#LQB*})Q}y=45<lIE4q<gZ88e2qS8a@Tys6S")))
 
+(defvar shimbun-itmedia-content-start "<div class=\"body-rap\">")
+(defvar shimbun-itmedia-content-end "<div class=\"credit-rap\">")
+
 (defvar shimbun-itmedia-retry-fetching 1)
 
 (luna-define-method shimbun-groups ((shimbun shimbun-itmedia))
@@ -187,84 +190,87 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 	  (replace-match "\n\\3\n")))
       t)))
 
-(luna-define-method shimbun-clear-contents ((shimbun shimbun-itmedia) header)
-  (prog1
-      (let ((case-fold-search t)
-	    icon start)
-	(goto-char (point-min))
-	(when (and (re-search-forward "<div\\(?:[\t\n ]+[^\t\n >]+\\)*\
-\[\t\n ]+class=\"article-icon\""
-				      nil t)
-		   (shimbun-end-of-tag "div"))
-	  (setq icon (match-string 0)))
-	(goto-char (point-min))
-	(when (and (search-forward "<!--BODY-->" nil t)
-		   (progn
-		     (setq start (match-end 0))
-		     (when (and (re-search-backward "<h[0-9]>[^<]+</h[0-9]>"
-						    nil t)
-				(progn
-				  (goto-char (match-end 0))
-				  (not (re-search-forward "<h[0-9]>" start t))))
-		       (delete-region (match-end 0) start)
-		       (setq start (match-beginning 0)))
-		     (re-search-forward "<!--BODY ?END-->" nil t)))
-	  (delete-region (match-beginning 0) (point-max))
-	  (delete-region (point-min) start)
-	  ;; Remove anchors to both the next page and the previous page.
-	  ;; These anchors are inserted into the head and the tail of the
-	  ;; article body.
-	  (skip-chars-backward " \t\r\f\n")
-	  (forward-line 0)
-	  (when (looking-at "<P ALIGN=\"CENTER\"><[AB]")
-	    (delete-region (point) (point-max)))
+(luna-define-method shimbun-clear-contents :around
+  ((shimbun shimbun-itmedia) header)
+  (if (string= (substring (shimbun-current-group-internal shimbun) 0 2) "+D")
+      (luna-call-next-method)
+    (prog1
+	(let ((case-fold-search t)
+	      icon start)
 	  (goto-char (point-min))
-	  (skip-chars-forward " \t\r\f\n")
-	  (when (looking-at "<P ALIGN=\"CENTER\"><[AB]")
-	    (delete-region (point-min) (point-at-eol)))
-	  (when icon
+	  (when (and (re-search-forward "<div\\(?:[\t\n ]+[^\t\n >]+\\)*\
+\[\t\n ]+class=\"article-icon\""
+					nil t)
+		     (shimbun-end-of-tag "div"))
+	    (setq icon (match-string 0)))
+	  (goto-char (point-min))
+	  (when (and (search-forward "<!--BODY-->" nil t)
+		     (progn
+		       (setq start (match-end 0))
+		       (when (and (re-search-backward "<h[0-9]>[^<]+</h[0-9]>"
+						      nil t)
+				  (progn
+				    (goto-char (match-end 0))
+				    (not (re-search-forward "<h[0-9]>" start t))))
+			 (delete-region (match-end 0) start)
+			 (setq start (match-beginning 0)))
+		       (re-search-forward "<!--BODY ?END-->" nil t)))
+	    (delete-region (match-beginning 0) (point-max))
+	    (delete-region (point-min) start)
+	    ;; Remove anchors to both the next page and the previous page.
+	    ;; These anchors are inserted into the head and the tail of the
+	    ;; article body.
+	    (skip-chars-backward " \t\r\f\n")
+	    (forward-line 0)
+	    (when (looking-at "<P ALIGN=\"CENTER\"><[AB]")
+	      (delete-region (point) (point-max)))
 	    (goto-char (point-min))
-	    (insert icon "\n"))
-	  t))
-    (shimbun-remove-tags "<!-- AD START -->" "<!-- AD END -->")
-    (shimbun-remove-tags "\
+	    (skip-chars-forward " \t\r\f\n")
+	    (when (looking-at "<P ALIGN=\"CENTER\"><[AB]")
+	      (delete-region (point-min) (point-at-eol)))
+	    (when icon
+	      (goto-char (point-min))
+	      (insert icon "\n"))
+	    t))
+      (shimbun-remove-tags "<!-- AD START -->" "<!-- AD END -->")
+      (shimbun-remove-tags "\
 <IMG [^>]*SRC=\"http:/[^\"]*/\\(ad\\.itmedia\\.co\\.jp\\|\
 a1100\\.g\\.akamai\\.net\\)/[^>]+>")
-    (shimbun-remove-tags "\
+      (shimbun-remove-tags "\
 <A [^>]*HREF=\"http:/[^\"]*/\\(ad\\.itmedia\\.co\\.jp\\|\
 a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>")
 
-    ;; Insert line-break after images.
-    (goto-char (point-min))
-    (let (start md)
-      (while (re-search-forward
-	      "\\(<img[\t\n ]+[^>]+>\\(?:[\t\n ]*<[^>]+>\\)*\\)[\t\n ]*"
-	      nil t)
-	(when (or
-	       ;; Look forward for </a>.
-	       (progn
-		 (setq start (point)
-		       md (match-data))
-		 (and (re-search-forward "<a[\t\n ]+\\|\\(</a>\\)[\t\n ]*"
-					 nil t)
-		      (or (match-beginning 1)
-			  (progn
-			    (goto-char start)
-			    (set-match-data md)
-			    nil))))
-	       ;; Look backward for </foo>.
-	       (re-search-backward "\\(</[^>]+>\\)[\t\n ]*"
-				   (match-beginning 1) t))
-	  (goto-char (match-end 0)))
-	(unless
-	    ;; Check if there's a tag that is likely to cause the line-break.
-	    (looking-at "\\(?:<![^>]+>[\t\n ]*\\)*\
+      ;; Insert line-break after images.
+      (goto-char (point-min))
+      (let (start md)
+	(while (re-search-forward
+		"\\(<img[\t\n ]+[^>]+>\\(?:[\t\n ]*<[^>]+>\\)*\\)[\t\n ]*"
+		nil t)
+	  (when (or
+		 ;; Look forward for </a>.
+		 (progn
+		   (setq start (point)
+			 md (match-data))
+		   (and (re-search-forward "<a[\t\n ]+\\|\\(</a>\\)[\t\n ]*"
+					   nil t)
+			(or (match-beginning 1)
+			    (progn
+			      (goto-char start)
+			      (set-match-data md)
+			      nil))))
+		 ;; Look backward for </foo>.
+		 (re-search-backward "\\(</[^>]+>\\)[\t\n ]*"
+				     (match-beginning 1) t))
+	    (goto-char (match-end 0)))
+	  (unless
+	      ;; Check if there's a tag that is likely to cause the line-break.
+	      (looking-at "\\(?:<![^>]+>[\t\n ]*\\)*\
 <\\(?:br\\|div\\|h[0-9]+\\|p\\)\\(?:[\t\n ]*>\\|[\t\n ]\\)")
-	  (replace-match "\\1<br>\n"))))
+	    (replace-match "\\1<br>\n"))))
 
-    (let ((hankaku (shimbun-japanese-hankaku shimbun)))
-      (when (and hankaku (not (memq hankaku '(header subject))))
-	(shimbun-japanese-hankaku-buffer t)))))
+      (let ((hankaku (shimbun-japanese-hankaku shimbun)))
+	(when (and hankaku (not (memq hankaku '(header subject))))
+	  (shimbun-japanese-hankaku-buffer t))))))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-itmedia)
 						   header)
