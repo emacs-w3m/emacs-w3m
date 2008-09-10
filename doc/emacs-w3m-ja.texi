@@ -4003,8 +4003,8 @@ If the prefix arg is given, all images are considered to be safe."
 @section VM (vieW maiL) は Wanderlust にあらず
 
 VM で html メールを表示する機能を提供する vm-w3m.el モジュールとパッチ
-は VM の新しいメインテイナーに引き継がれましたが、まだ VM の安定版に洗わ
-れていません。@uref{http://www.nongnu.org/viewmail/, VM ホームページ} を
+は VM の新しいメインテイナーに引き継がれましたが、まだ VM の安定版に現れ
+ていません。@uref{http://www.nongnu.org/viewmail/, VM ホームページ} を
 訪ねてみてください。
 
 @node Frequently Asked Questions

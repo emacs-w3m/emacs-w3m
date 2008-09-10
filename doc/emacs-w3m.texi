@@ -3954,7 +3954,7 @@ If the prefix arg is given, all images are considered to be safe."
 The module vm-w3m.el that provides the feature for VM to display html
 mails and a patch have been handed over to the new VM maintainer,
 although it has not appeared in the stable version of VM yet.  Try
-Visiting @uref{http://www.nongnu.org/viewmail/, the VM home page}.
+visiting @uref{http://www.nongnu.org/viewmail/, the VM home page}.
 
 @node Frequently Asked Questions
 @chapter There isn't always an answer
