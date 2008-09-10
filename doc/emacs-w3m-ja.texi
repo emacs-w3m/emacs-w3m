@@ -4002,19 +4002,10 @@ If the prefix arg is given, all images are considered to be safe."
 @node VM
 @section VM (vieW maiL) は Wanderlust にあらず
 
-VM は現在 emacs-w3m をサポートしています。8.x 以上のバージョンの VM を使っ
-てください。それらは @uref{http://www.nongnu.org/viewmail/,
-VM ホームページ} にあります。以前 emacs-w3m に含まれてい
-た @file{vm-w3m.el} と @file{vm-7.19.patch} は VM に統合されました。
-
-@quotation
-ヒント: VM のどれかのバッファにいるときに、プレゼンテーション・バッファ
-の画像表示をトグルに切り換えたい場合は、例えば以下を使ってください:
-
-@lisp
-(define-key vm-mode-map "T" 'vm-w3m-safe-toggle-inline-images)
-@end lisp
-@end quotation
+VM で html メールを表示する機能を提供する vm-w3m.el モジュールとパッチ
+は VM の新しいメインテイナーに引き継がれましたが、まだ VM の安定版に洗わ
+れていません。@uref{http://www.nongnu.org/viewmail/, VM ホームページ} を
+訪ねてみてください。
 
 @node Frequently Asked Questions
 @chapter 必ず答があるとは限らない
