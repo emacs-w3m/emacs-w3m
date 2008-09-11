@@ -4116,7 +4116,7 @@ be generated.  In that case, Gmane might fail to find the thread since
 it is possible that the root article has been posted to another group.
 
 That it returns an invalid url for the article of the group which is
-not being archived in Gmane cannott be helped."
+not being archived in Gmane cannot be helped."
   (save-excursion
     (let ((fmt "http://news.gmane.org/group/thread=%s/force_load=t")
 	  (start (point))
