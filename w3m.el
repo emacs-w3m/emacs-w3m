@@ -4105,14 +4105,23 @@ It replaces the faces on the arrived anchors from `w3m-anchor' to
 
 (defun w3m-gmane-url-at-point ()
   "Return a url that indicates the thread page in Gmane.
-This function works only when the cursor stays in the References header
-or the Message-ID header, otherwise returns nil.  That it returns an
-invalid url if Gmane doesn't handle the group cannot be helped."
+This function works only when the cursor stays in the References
+header or the Message-ID header, otherwise returns nil.
+
+On the Message-ID header, the url that asks Gmane for the thread
+beginning with the current article will be generated.
+On the References header, the url that asks Gmane for the whole thread
+\(namely it begins with the article of the first ID in the header) will
+be generated.  In that case, Gmane might fail to find the thread since
+it is possible that the root article has been posted to another group.
+
+That it returns an invalid url for the article of the group which is
+not being archived in Gmane cannott be helped."
   (save-excursion
     (let ((fmt "http://news.gmane.org/group/thread=%s/force_load=t")
 	  (start (point))
 	  (inhibit-point-motion-hooks t)
-	  md case-fold-search)
+	  case-fold-search)
       (goto-char (point-min))
       (re-search-forward (concat "^\\(?:"
 				 (regexp-quote mail-header-separator)
@@ -4126,15 +4135,8 @@ invalid url if Gmane doesn't handle the group cannot be helped."
 	  (beginning-of-line)
 	  (while (and (memq (char-after) '(?\t ? ))
 		      (zerop (forward-line -1))))
-	  (when (or (looking-at "References:[\t\n ]*<\\([^\t\n <>]+\\)>")
-		    (prog1
-			(looking-at "Message-ID:[\t\n ]*<\\([^\t\n <>]+\\)>")
-		      (setq md (match-data))
-		      (goto-char (point-min))
-		      (unless (re-search-forward
-			       "^References:[\t\n ]*<\\([^\t\n <>]+\\)>"
-			       nil t)
-			(set-match-data md))))
+	  (when (looking-at
+		 "\\(?:Message-ID\\|References\\):[\t\n ]*<\\([^\t\n <>]+\\)>")
 	    (format
 	     fmt
 	     (w3m-url-encode-string (match-string-no-properties 1)))))))))
@@ -9029,7 +9031,7 @@ defaults to the value of `w3m-home-page' or \"about:\"."
 			   (not (and (setq args (cdr (member "w3m" args)))
 				     (member (car args) directives)))))
 	       args))
-      (defalias 'w3m-examine-command-line-args 'ignore))
+      (defalias 'w3m-examine-command-line-args (lambda nil)))
     ;; Inhibit the startup screen.
     (when (and url
 	       ;; Since XEmacs provides `inhibit-startup-message' as

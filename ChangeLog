@@ -1,3 +1,12 @@
+2008-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-gmane-url-at-point): Return a url used for asking Gmane
+	for the thread that begins with the current article instead of the
+	whole thread if it is run on the Message-ID header.
+	(w3m-examine-command-line-args): Make it an alias to `(lambda nil)'
+	instead of `ignore' after it is run for the first time in order to
+	silence the byte compiler.
+
 2008-09-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-use-favicon): Assume w3m-image.elc is always loaded.
