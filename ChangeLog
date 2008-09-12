@@ -1,3 +1,10 @@
+2008-09-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-download): Add doc string.
+	(w3m-lynx-like-map): Bind M-d key to w3m-download.
+	(w3m-mode): Add w3m-download to major mode info; clarify description of
+	w3m-download-this-url.
+
 2008-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-gmane-url-at-point): Return a url used for asking Gmane

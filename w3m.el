@@ -5437,6 +5437,9 @@ POST-DATA and REFERER will be sent to the web server with a request."
 
 ;;;###autoload
 (defun w3m-download (url &optional filename no-cache handler post-data)
+  "Download contents of URL to a file named FILENAME.
+NO-CHACHE (which the prefix argument gives when called interactively)
+specifies not using the cached data."
   (interactive
    (let* ((url (w3m-input-url "Download URL (default HOME): "
 			      (when (stringp w3m-current-url)
@@ -7274,6 +7277,7 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "B" 'w3m-view-previous-page)
     (define-key map "N" 'w3m-view-next-page)
     (define-key map "^" 'w3m-view-parent-page)
+    (define-key map "\M-d" 'w3m-download)
     (define-key map "d" 'w3m-download-this-url)
     (define-key map "u" 'w3m-print-this-url)
     (define-key map "I" 'w3m-view-image)
@@ -7829,7 +7833,8 @@ or a list which consists of the following elements:
 \\[w3m-view-url-with-external-browser]	Display the current page using the\
  external browser.
 
-\\[w3m-download-this-url]	Download the file or the page under point.
+\\[w3m-download]	Download the URL.
+\\[w3m-download-this-url]	Download the URL under point.
 
 \\[w3m-view-image]	Display the image under point in the external viewer.
 \\[w3m-save-image]	Save the image under point to a file.
