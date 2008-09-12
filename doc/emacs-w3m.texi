@@ -1737,6 +1737,7 @@ down or up.
 
 @node Downloading
 @section Downloading a file
+@cindex Downloading files
 
 It is possible to download (i.e. fetch, but not display) any web page or
 file with emacs-w3m: just put the point on the link you want to
@@ -1757,9 +1758,16 @@ look at our friend project ``emacs-wget'', its homepage is at
 @kindex d (Lynx-like keymap)
 @kindex D (Info-like keymap)
 @findex w3m-download-this-url
-@cindex Downloading files
-Download the file or page pointed by the link under point
+Download the file or the page pointed to by the link under point
 (@code{w3m-download-this-url}).
+
+@item @kbd{M-d} (Lynx-like keymap)
+@itemx @kbd{d} (Info-like keymap)
+@kindex M-d (Lynx-like keymap)
+@kindex d (Info-like keymap)
+@findex w3m-download
+Download the contents of URL to a local file (@code{w3m-download}).  You
+will be prompted for the URL and the name of a local file.
 @end table
 
 @node Submitting Forms

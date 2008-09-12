@@ -1757,6 +1757,7 @@ Search'' のページを開いてあるならば、``Goo'' に続けて @kbd{@key{TAB}
 
 @node Downloading
 @section ファイルをダウンロードする
+@cindex Downloading files
 
 どんなウェブページやファイルも emacs-w3m でダウンロード (すなわち取得、
 表示ではありません) できます。単にダウンロードしたいリンクにポイントを置
@@ -1777,9 +1778,16 @@ Search'' のページを開いてあるならば、``Goo'' に続けて @kbd{@key{TAB}
 @kindex d (Lynx-like キーマップ)
 @kindex D (Info-like キーマップ)
 @findex w3m-download-this-url
-@cindex Downloading files
 ポイントのところにあるリンクが指し示すファイルかページをダウンロードしま
 す (@code{w3m-download-this-url})。
+
+@item @kbd{M-d} (Lynx-like キーマップ)
+@itemx @kbd{d} (Info-like キーマップ)
+@kindex M-d (Lynx-like キーマップ)
+@kindex d (Info-like キーマップ)
+@findex w3m-download
+URL の内容をローカルファイルにダウンロードします (@code{w3m-download})。
+その URL とローカルファイルの名前の入力を求められます。
 @end table
 
 @node Submitting Forms
