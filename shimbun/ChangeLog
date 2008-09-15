@@ -1,3 +1,10 @@
+2008-09-15  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* sb-yahoo-auctions.el (shimbun-yahoo-auctions-content-start)
+	(shimbun-yahoo-auctions-content-end): Follow the change of the site
+	design.
+	(shimbun-make-contents): Remove.
+
 2008-09-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-ohmynews-jp.el: Remove.
