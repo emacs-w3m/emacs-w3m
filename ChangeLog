@@ -1,3 +1,12 @@
+2008-09-17  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-buffer-local-url): New constant variable.
+	(w3m-buffer-local-url-p): New function.
+	(w3m-goto-url): Also process buffer local url.
+	(w3m-region): Use w3m-buffer-local-url as url if it is not set.
+	(w3m-safe-view-this-url, w3m-mouse-safe-view-this-url): Check if url is
+	buffer local.
+
 2008-09-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-download): Add doc string.

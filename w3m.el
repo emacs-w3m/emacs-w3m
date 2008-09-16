@@ -8501,6 +8501,11 @@ It currently works only with Emacs 22 and newer."
 			       (setq w3m-modeline-title-timer nil))))
 			 (current-buffer)))))))
 
+(defconst w3m-buffer-local-url "buffer://")
+(defun w3m-buffer-local-url-p (url)
+  (save-match-data
+    (string-match (concat "^" w3m-buffer-local-url) url)))
+
 ;;;###autoload
 (defun w3m-goto-url (url &optional reload charset post-data referer handler
 			 element)
@@ -8583,6 +8588,22 @@ the current page."
 				 (eval w3m-local-find-file-function))
 			       file)))))
       (error nil)))
+   ;; process buffer-local url
+   ((w3m-buffer-local-url-p url)
+    (let (file-part fragment-part)
+      (w3m-string-match-url-components url)
+      (setq file-part (concat (match-string 4 url)
+			      (match-string 5 url))
+	    fragment-part (match-string 9 url))
+      (cond
+       ((and (string= file-part "")
+	     fragment-part)
+	(w3m-search-name-anchor fragment-part))
+       ((not (string= file-part ""))
+	(w3m-goto-url (w3m-expand-url (substring url (match-beginning 4))
+				      (concat "file://" default-directory))
+		      reload charset post-data referer handler element))
+       (t (w3m-message "No URL at point")))))
    ((w3m-url-valid url)
     (w3m-buffer-setup)			; Setup buffer.
     (w3m-arrived-setup)			; Setup arrived database.
@@ -9202,7 +9223,9 @@ parse the meta tag to extract the charset."
     (let ((w3m-current-buffer (current-buffer)))
       (unless charset
 	(setq charset (w3m-correct-charset (w3m-detect-meta-charset))))
-      (setq w3m-current-url url
+      (setq url (or url
+		    w3m-buffer-local-url)
+	    w3m-current-url url
 	    w3m-current-base-url url
 	    w3m-current-coding-system
 	    (if charset
@@ -10044,6 +10067,7 @@ the `w3m-mode', otherwise use an existing emacs-w3m buffer."
      (url
       (setq safe-regexp (get-text-property (point) 'w3m-safe-url-regexp))
       (if (or (not safe-regexp)
+	      (w3m-buffer-local-url-p url)
 	      (string-match safe-regexp url)
 	      (and force
 		   (or (not (interactive-p))
@@ -10078,6 +10102,7 @@ This link is considered to be unsafe; use the prefix arg to view anyway"))))
 	(let ((safe-regexp (get-text-property (point) 'w3m-safe-url-regexp))
 	      (use-dialog-box t))
 	  (when (or (not safe-regexp)
+		    (w3m-buffer-local-url-p url)
 		    (string-match safe-regexp url)
 		    (y-or-n-p "\
 This link is considered to be unsafe; continue? "))
