@@ -3193,56 +3193,61 @@ It influences only when a new emacs-w3m buffer is created.
 @table @code
 @item w3m-default-display-inline-images
 @vindex w3m-default-display-inline-images
-Non-@code{nil} means display images inline in emacs-w3m buffers.  You
-can toggle the visibility of images with the
-@code{w3m-toggle-inline-images} command.  See also
-@code{w3m-toggle-inline-images-permanently}.
+非@code{nil} ならば、インライン画像を emacs-w3m のバッファに表示します。
+画像表示の ON/OFF は @code{w3m-toggle-inline-images} で切り替えられます。
+@code{w3m-toggle-inline-images-permanently} も参照してください。
 
 @item w3m-favicon-cache-expire-wait
 @vindex w3m-favicon-cache-expire-wait
-The cache will be expired after specified seconds passed since
-retrieval.  If this variable is @code{nil}, never expired.
+取得からこの変数で指定された秒数以上経過したキャッシュは削除されます。こ
+の変数が @code{nil} ならば、削除されることはありません。
 
 @item w3m-favicon-cache-file
 @vindex w3m-favicon-cache-file
-Filename of saving favicon cache.  It defaults to the file named
-@file{.favicon} under the directory specified by the
-@code{w3m-profile-directory} variable.
+favicon のキャッシュを保存するファイル名。デフォルトは、変数
+@code{w3m-profile-directory} で指定されたディレクトリ下の
+@file{.favicon} という名前のファイルです。
 
 @item w3m-favicon-size
 @vindex w3m-favicon-size
-Size of favicon. This value is used as geometry argument for
-@code{convert}.
+favicon のサイズ。 この値は、 @code{convert} への geometry 引数として使わ
+れます。
 
 @item w3m-favicon-type
 @vindex w3m-favicon-type
-Image type of display favicon.
+favicon を表示するのに使われる画像の種類。
 
 @item w3m-favicon-use-cache-file
 @vindex w3m-favicon-use-cache-file
-If non-@code{nil}, use favicon cache file.
+非@code{nil} ならば、 favicon のキャッシュファイルを使います。
+
+@item w3m-favicon-default-background
+@vindex w3m-favicon-default-background
+favicon 画像の透過色として使われる色の名前。 @code{nil} であれば、 Emacs
+のフレームの背景色を使う。 空文字は特別で、ヘッダラインかモードラインかの
+favicon が表示されているほうの背景色に置換えられる。 この変数は、 Emacs
+22 以上でしか効力を持たないことに注意。
 
 @item w3m-icon-directory
 @vindex w3m-icon-directory
-Directory where emacs-w3m should find icon files.
+emacs-w3m がアイコンを探すディレクトリ。
 
 @item w3m-imagick-convert-program
 @vindex w3m-imagick-convert-program
-Program name of ImageMagick's @samp{convert}.
+ImageMagick の @samp{convert} のプログラム名。
 
 @item w3m-treat-image-size
 @vindex w3m-treat-image-size
-Non-@code{nil} means let the @samp{w3m} command mind the ratio of the
-size of images and text.  The default value is @code{t}.
+非@code{nil} ならば、 @samp{w3m} が画像とテキストの比率を考慮します。デフォ
+ルトは @code{t} です。
 
-If it is non-@code{nil}, the @samp{w3m} command will make a
-@samp{halfdump} which reserves rectangle spaces in which images will be
-put, and also @samp{alt} texts will be truncated or padded with spaces
-so that their display width will be the same as the width of images.
+非@code{nil} ならば、 @samp{w3m} 画像が置かれる場所を確保した
+@samp{halfdump} を生成し、@samp{alt} テキストは画像の表示幅に等しくなるよ
+うに切り詰められる、あるいはスぺースを詰められます。
 
-See also @code{w3m-pixels-per-character} and @code{w3m-pixels-per-line}.
-Those values will be passed to the @samp{w3m} command in order to
-compute columns and lines which images occupy.
+@code{w3m-pixels-per-character} と @code{w3m-pixels-per-line} も参照して
+ください。これらの値が画像が占める桁と行とを計算するために @samp{w3m} コ
+マンドに渡されます。
 
 @item w3m-pixels-per-character
 @vindex w3m-pixels-per-character
@@ -3301,6 +3306,12 @@ Non-@code{nil} means show favicon images if they are available.  It will
 be set to @code{nil} automatically if ImageMagick's @code{convert}
 program does not support the ico format.
 @end table
+
+@item w3m-image-default-background
+@vindex w3m-image-default-background
+画像の透過色として使われる色の名前。 @code{nil} ならば、Emacs のフレー
+ムの背景色が使われる。空文字("")は特別に、バッファの背景色に置き換えら
+れる。 この変数は Emacs 22 以降でのみ有効である。
 
 @node Form Variables
 @section フォームに関連した変数

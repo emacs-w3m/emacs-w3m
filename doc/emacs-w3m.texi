@@ -3169,6 +3169,14 @@ Image type of display favicon.
 @vindex w3m-favicon-use-cache-file
 If non-@code{nil}, use favicon cache file.
 
+@item w3m-favicon-default-background
+@vindex w3m-favicon-default-background
+Color name used as transparent color of favicon image.  @code{Nil} means
+to use the background color of the Emacs frame.  The null string "" is
+special, that will be replaced with the background color of the header
+line or the mode line on which the favicon is displayed.  Note that this
+value is effective only with Emacs 22 and greater.
+
 @item w3m-icon-directory
 @vindex w3m-icon-directory
 Directory where emacs-w3m should find icon files.
@@ -3248,6 +3256,13 @@ Non-@code{nil} means show favicon images if they are available.  It will
 be set to @code{nil} automatically if ImageMagick's @code{convert}
 program does not support the ico format.
 @end table
+
+@item w3m-image-default-background
+@vindex w3m-image-default-background
+Color name used as transparent color of image.  @code{Nil} means to use
+the background color of the Emacs frame.  The null string "" is special,
+that will be replaced with the background color of the buffer. Note that
+this value is effective only with Emacs 22 and greater.
 
 @node Form Variables
 @section Variables related to forms
