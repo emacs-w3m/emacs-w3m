@@ -1,3 +1,9 @@
+2008-09-21  Akinori MUSHA  <knu@iDaemons.org>
+
+	* doc/emacs-w3m.texi (Image Variables): Fix syntax error.
+
+	* doc/emacs-w3m-ja.texi (Image Variables): Ditto.
+
 2008-09-17  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m.el (w3m-buffer-local-url): New constant variable.

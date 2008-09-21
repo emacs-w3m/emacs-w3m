@@ -3305,13 +3305,13 @@ or reload the current page in an emacs-w3m buffer.
 Non-@code{nil} means show favicon images if they are available.  It will
 be set to @code{nil} automatically if ImageMagick's @code{convert}
 program does not support the ico format.
-@end table
 
 @item w3m-image-default-background
 @vindex w3m-image-default-background
 画像の透過色として使われる色の名前。 @code{nil} ならば、Emacs のフレー
 ムの背景色が使われる。空文字("")は特別に、バッファの背景色に置き換えら
 れる。 この変数は Emacs 22 以降でのみ有効である。
+@end table
 
 @node Form Variables
 @section フォームに関連した変数
