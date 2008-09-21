@@ -1,3 +1,18 @@
+2008-09-20  David Engster  <dengste@eml.cc>
+
+	* sb-perlentaucher-de.el (shimbun-perlentaucher-de-url-regexp): Adapt
+	to new URL scheme in RSS feed.
+
+	* sb-slashdot.el: Require sb-multi and use it.
+	(shimbun-slashdot-content-end, shimbun-slashdot-content-start): Remove.
+	(shimbun-slashdot-get-comments, shimbun-slashdot-comment-threshold)
+	(shimbun-slashdot-comment-display): New variables.
+	(shimbun-slashdot-regexp-author-time): Relax regexp.
+	(shimbun-slashdot-regexp-comment-system): New variable.
+	(shimbun-slashdot-get-headers): Replace HTML tags in subject.
+	(shimbun-multi-next-url, shimbun-clear-contents): New overriden
+	methods.
+
 2008-09-15  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* sb-yahoo-auctions.el (shimbun-yahoo-auctions-content-start)

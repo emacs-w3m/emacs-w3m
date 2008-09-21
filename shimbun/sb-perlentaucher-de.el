@@ -32,7 +32,7 @@
 (defvar shimbun-perlentaucher-de-from-address "invalid@perlentaucher.de")
 (defvar shimbun-perlentaucher-de-content-start "<div class=\"col_middle\">")
 (defvar shimbun-perlentaucher-de-content-end "<div class=\"col_right\">")
-(defvar shimbun-perlentaucher-de-url-regexp "rss.feedsportal.com/.*/\\([0-9a-f]+\\)/story.*\\.htm")
+(defvar shimbun-perlentaucher-de-url-regexp "rss.feedsportal.com/.*/\\([^/]+\\)/story.*\\.htm")
 
 (defvar shimbun-perlentaucher-de-x-face-alist
   '(("default" . "\

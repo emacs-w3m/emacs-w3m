@@ -23,8 +23,9 @@
 ;;; Code:
 
 (require 'shimbun)
+(require 'sb-multi)
 
-(luna-define-class shimbun-slashdot (shimbun) ())
+(luna-define-class shimbun-slashdot (shimbun-multi shimbun) ())
 
 (defvar shimbun-slashdot-group-url
   '(("frontpage" "http://www.slashdot.org")
@@ -44,20 +45,25 @@
 
 (defvar shimbun-slashdot-url "http://www.slashdot.org")
 
-(defvar shimbun-slashdot-content-start
-  "<div class=\"intro\".*?>")
+(defvar shimbun-slashdot-get-comments t
+  "Flag if comments should be retrieved.")
 
-;; This also strips the comments - change this accordingly if you want
-;; to see them.
-(defvar shimbun-slashdot-content-end
-  "<div class=\"commentBox\".*?>")
+(defvar shimbun-slashdot-comment-threshold 3
+  "Threshold for displayed comments.")
+
+(defvar shimbun-slashdot-comment-display "flat"
+  "Display type of comments.
+Can be 'flat', 'thread', or 'nested'.")
 
 (defvar shimbun-slashdot-regexp-section-id-subject
   "<div class=\"\\(generaltitle\\|briefarticles\\)\"[^\0]*?\
 <a href=\".*slashdot.org/\\(.*?\\)/\\(.*?\\).shtml\">\\(.*?\\)</a>")
 
 (defvar shimbun-slashdot-regexp-author-time
-  "Posted by[^a-zA-Z]*\\(.*\\)[^\0]*?@\\([0-9]+\\):\\([0-9]+\\)\\(AM\\|PM\\)")
+  "Posted[\t \n]+by[^a-zA-Z]*\\(.*\\)[^\0]*?@\\([0-9]+\\):\\([0-9]+\\)\\(AM\\|PM\\)")
+
+(defvar shimbun-slashdot-regexp-comment-system
+  "use <a href=\"\\(.+\\)\">the classic discussion system")
 
 (defvar shimbun-slashdot-groups
   (mapcar 'car shimbun-slashdot-group-url))
@@ -93,6 +99,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAgID////5Zpl0AAA
 			   (upcase section)
 			 (capitalize section))
 		       ": " (match-string 4)))
+	(while (string-match "</?[a-zA-Z]+?>" subject)
+	  (setq subject (replace-match "\"" t t subject)))
 	(if (string= (match-string 1) "briefarticles")
 	    (progn
 	      (setq hour "00")
@@ -135,6 +143,41 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAgID////5Zpl0AAA
 	       date id "" 0 0 url)
 	      headers)))
     headers))
+
+(luna-define-method shimbun-multi-next-url ((shimbun shimbun-slashdot)
+                                            header url)
+  (if (and shimbun-slashdot-get-comments
+	   (progn
+	     (goto-char (point-min))
+	     (re-search-forward shimbun-slashdot-regexp-comment-system nil t)))
+      (let ((url (concat "http:" (match-string 1))))
+	(when (string-match "threshold=\\([0-9]\\)" url)
+	  (setq url
+		(replace-match
+		 (number-to-string shimbun-slashdot-comment-threshold)
+		 t t url 1)))
+	(when (string-match "mode=\\([a-zA-Z]+\\)" url)
+	  (setq url
+		(replace-match shimbun-slashdot-comment-display t t url 1)))
+	url)
+    nil))
+
+(luna-define-method shimbun-clear-contents :around ((shimbun
+						     shimbun-slashdot)
+						    header)
+  (goto-char (point-min))
+  (if (or (null shimbun-slashdot-get-comments)
+	  (re-search-forward "<div class=\"intro\".*?>" nil t))
+      (progn
+	(goto-char (point-min))
+	(shimbun-remove-tags "<html>" "<div class=\"intro\".*?>")
+	(shimbun-remove-tags "<div class=\"commentBox\".*?>" "</html>")
+	(when shimbun-slashdot-get-comments
+	  (goto-char (point-max))
+	  (insert "\n<br><br>&#012\n")))
+    (shimbun-remove-tags "<html>" "<a name=\"topcomment\">")
+    (shimbun-remove-tags "<div id=\"footer\">" "</html>")))
+
 
 (provide 'sb-slashdot)
 
