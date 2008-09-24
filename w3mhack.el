@@ -1,6 +1,6 @@
 ;;; w3mhack.el --- a hack to setup the environment for building w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
@@ -756,10 +756,6 @@ NOTE: This function must be called from the top directory."
     ;; we need to force it to load the correct one.
     (when texinfmt
       (push (file-name-directory texinfmt) load-path))
-    ;; ptexinfmt.el uses `with-temp-buffer' which is not available in
-    ;; Emacs 19.
-    (unless (fboundp 'with-temp-buffer)
-      (require 'poe))
     (load "doc/ptexinfmt.el" nil t t)
     (cd "doc")
     (if (and (string-match "-ja\\.texi\\'" file)
@@ -775,46 +771,6 @@ NOTE: This function must be called from the top directory."
 	    (when (boundp 'buffer-file-coding-system)
 	      (setq coding-system-for-write
 		    (symbol-value 'buffer-file-coding-system)))
-	    ;; process @include before updating node
-	    ;; This might produce some problem if we use @lowersection or
-	    ;; such.
-	    (let ((input-directory default-directory)
-		  (texinfo-command-end))
-	      (while (re-search-forward "^@include" nil t)
-		(setq texinfo-command-end (point))
-		(let ((filename (concat input-directory
-					(texinfo-parse-line-arg))))
-		  (re-search-backward "^@include")
-		  (delete-region (point) (save-excursion
-					   (forward-line 1)
-					   (point)))
-		  (message "Reading included file: %s" filename)
-		  (save-excursion
-		    (save-restriction
-		      (narrow-to-region
-		       (point) (+ (point)
-				  (car (cdr (insert-file-contents filename)))))
-		      (goto-char (point-min))
-		      ;; Remove `@setfilename' line from included file,
-		      ;; if any, so @setfilename command not duplicated.
-		      (if (re-search-forward "^@setfilename"
-					     (save-excursion
-					       (forward-line 100)
-					       (point))
-					     t)
-			  (progn
-			    (beginning-of-line)
-			    (delete-region (point) (save-excursion
-						     (forward-line 1)
-						     (point))))))))))
-	    ;; Remove ignored areas.
-	    (goto-char (point-min))
-	    (while (re-search-forward "^@ignore[\t\r ]*$" nil t)
-	      (delete-region (match-beginning 0)
-			     (if (re-search-forward
-				  "^@end[\t ]+ignore[\t\r ]*$" nil t)
-				 (1+ (match-end 0))
-			       (point-max))))
 	    ;; Remove unsupported commands.
 	    (goto-char (point-min))
 	    (while (re-search-forward "@\\(?:end \\)?ifnottex" nil t)
@@ -823,12 +779,40 @@ NOTE: This function must be called from the top directory."
 	    (while (search-forward "\n@iflatex\n" nil t)
 	      (delete-region (1+ (match-beginning 0))
 			     (search-forward "\n@end iflatex\n")))
+	    ;; Insert @include files.
+	    (goto-char (point-min))
+	    (set-syntax-table texinfo-format-syntax-table)
+	    (let (start texinfo-command-end filename)
+	      (while (re-search-forward "^@include" nil t)
+		(setq start (match-beginning 0)
+		      texinfo-command-end (point)
+		      filename (texinfo-parse-line-arg))
+		(delete-region start (point-at-bol 2))
+		(message "Reading included file: %s" filename)
+		(save-excursion
+		  (save-restriction
+		    (narrow-to-region
+		     (point) (+ (point)
+				(car (cdr (insert-file-contents filename)))))
+		    (goto-char (point-min))
+		    ;; Remove `@setfilename' line from included file, if any,
+		    ;; so @setfilename command not duplicated.
+		    (if (re-search-forward "^@setfilename"
+					   (point-at-eol 100) t)
+			(delete-region (point-at-bol 1) (point-at-bol 2)))))))
+	    ;; Remove ignored areas.
+	    (goto-char (point-min))
+	    (while (re-search-forward "^@ignore[\t\r ]*$" nil t)
+	      (delete-region (match-beginning 0)
+			     (if (re-search-forward
+				  "^@end[\t ]+ignore[\t\r ]*$" nil t)
+				 (1+ (match-end 0))
+			       (point-max))))
 	    ;; Format @key{...}.
 	    (goto-char (point-min))
 	    (while (re-search-forward "@key{\\([^}]+\\)}" nil t)
 	      (replace-match "<\\1>"))
 	    ;;
-	    (texinfo-mode)
 	    (texinfo-every-node-update)
 	    (set-buffer-modified-p nil)
 	    (message "texinfo formatting %s..." file)
