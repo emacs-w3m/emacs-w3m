@@ -1,5 +1,12 @@
 2008-09-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-toggle-inline-images-internal)
+	(w3m-resize-inline-image-internal): Confirm whether to retrieve
+	insecure image only once, or don't confirm it if
+	w3m-confirm-leaving-secure-page is nil.  Suggested by Dan Jacobson
+	<jidanni@jidanni.org>.
+	(w3m-confirm-leaving-secure-page): Doc fix.
+
 	* w3mhack.el (w3mhack-makeinfo): Remove Emacs 19 stuff; remove TeX
 	directives first; don't call texinfo-mode.
 

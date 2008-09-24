@@ -3594,6 +3594,7 @@ If URL is specified, only the image with URL is toggled."
   (let ((cur-point (point))
 	(buffer-read-only)
 	(end (or begin-pos (point-min)))
+	(allow-non-secure-images (not w3m-confirm-leaving-secure-page))
 	start iurl image size)
     (unless end-pos (setq end-pos (point-max)))
     (save-excursion
@@ -3634,8 +3635,12 @@ If URL is specified, only the image with URL is toggled."
 		(when (and (w3m-url-valid iurl)
 			   (or (not w3m-current-ssl)
 			       (string-match "\\`\\(?:ht\\|f\\)tps://" iurl)
-			       (y-or-n-p "\
-You are retrieving non-secure image. Continue?")))
+			       allow-non-secure-images
+			       (and (prog1
+					(y-or-n-p "\
+You are retrieving non-secure image(s).  Continue? ")
+				      (message nil))
+				    (setq allow-non-secure-images t))))
 		  (w3m-process-with-null-handler
 		    (lexical-let ((start (set-marker (make-marker) start))
 				  (end (set-marker (make-marker) end))
@@ -3828,6 +3833,7 @@ resizing an image."
 	 (iurl (w3m-image start))
 	 (size (get-text-property start 'w3m-image-size))
 	 (iscale (or (get-text-property start 'w3m-image-scale) '100))
+	 (allow-non-secure-images (not w3m-confirm-leaving-secure-page))
 	 scale image)
     (w3m-add-text-properties start end '(w3m-image-status on))
     (setq scale (truncate (* iscale rate 0.01)))
@@ -3846,8 +3852,12 @@ resizing an image."
       (when (and (w3m-url-valid iurl)
 		 (or (not w3m-current-ssl)
 		     (string-match "\\`\\(?:ht\\|f\\)tps://" iurl)
-		     (y-or-n-p "\
-You are retrieving non-secure image. Continue?")))
+		     allow-non-secure-images
+		     (and (prog1
+			      (y-or-n-p "\
+You are retrieving non-secure image(s).  Continue? ")
+			    (message nil))
+			  (setq allow-non-secure-images t))))
 	(w3m-process-with-null-handler
 	  (lexical-let ((start (set-marker (make-marker) start))
 			(end (set-marker (make-marker) end))
@@ -5696,7 +5706,9 @@ be displayed especially in shimbun articles."
 
 (defcustom w3m-confirm-leaving-secure-page t
   "If non-nil, you'll be asked for confirmation when leaving secure pages.
-It is STRONGLY recommended to set non-nil value to this option.
+This option controls whether the confirmation is made also when
+retrieving data (typically images) in a secure page from non-secure
+pages.  It is STRONGLY recommended to set non-nil value to this option.
 You MUST understand what you want to do completely before
 switching off this option."
   :group 'w3m
