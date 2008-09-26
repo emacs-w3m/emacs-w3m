@@ -5865,8 +5865,9 @@ vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
 vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
 vinelinux.errata.1x
 
-@item @uref{http://www.mmz.kantei.go.jp/, 福田内閣メールマガジン}
-kantei.m-magazine-en kantei.m-magazine-ja kantei.m-magazine-en.abe
+@item @uref{http://www.mmz.kantei.go.jp/, 麻生内閣メールマガジン}
+kantei.m-magazine-en kantei.m-magazine-ja kantei.m-magazine-en.fukuda
+kantei.m-magazine-ja.fukuda kantei.m-magazine-en.abe
 kantei.m-magazine-ja.abe kantei.m-magazine-en.koizumi
 kantei.m-magazine-ja.koizumi
 
