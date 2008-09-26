@@ -35,6 +35,8 @@
 
 (defvar shimbun-kantei-groups '("m-magazine-en"
 				"m-magazine-ja"
+				"m-magazine-en.fukuda"
+				"m-magazine-ja.fukuda"
 				"m-magazine-en.abe"
 				"m-magazine-ja.abe"
 				"m-magazine-en.koizumi"
@@ -47,10 +49,13 @@ is for the backward compatibility.")
 (defvar shimbun-kantei-x-face-alist
   ;; Don't change the order of the faces.  See the method function that
   ;; is applied to `shimbun-make-contents'.
-  '(("default" . "X-Face: R![ems6?kedF&(},`\";7nbUIT6Uyt2A9jSQ'\\$=;,\
-n.9<lIS+DFBTdMEJ$nh0[t)XU!.D*p\n kd~cuh0/nvCm;1~B;Ib!g^TC*OHm5(<Z%=A2\
-H_,kDt0E*HaI&^C%Wzb/EC_PF1f!jk7VHf=s*mqe91\n `H.J(Bq9(S'71?$O\\+=Kp\"\
-yNww;MOGO&N+tm<MbYT}Mlh4<hahJgCV`P/<&9Fm|FRmb>vM+PFYQB}O\n <Se")
+  '(("default" . "X-Face: ;MO&rH_,\"Wntyp?o4f4Dzo~Dj$+@_Ia=,i;kSjs<|d\
+&x:\"]>y%nS7Ot,RiSht_>F6D^;<l\"\n e>-^VgA_hwn<p:t(}s+4cd.)|P(O:4..+=i\
+L`;-JR9%'>f{[=.k7Q-P~]dW-<]0A+T.cHxW2>+QF;s\n 7wNv81]2L;")
+    ("\\.fukuda\\'" . "X-Face: R![ems6?kedF&(},`\";7nbUIT6Uyt2A9jSQ'\\\
+$=;,n.9<lIS+DFBTdMEJ$nh0[t)XU!.D*p\n kd~cuh0/nvCm;1~B;Ib!g^TC*OHm5(<Z\
+%=A2H_,kDt0E*HaI&^C%Wzb/EC_PF1f!jk7VHf=s*mqe91\n `H.J(Bq9(S'71?$O\\+=\
+Kp\"yNww;MOGO&N+tm<MbYT}Mlh4<hahJgCV`P/<&9Fm|FRmb>vM+PFYQB}O\n <Se")
     ("\\.abe\\'" . "X-Face: 2lqMN=orK#d]Xl-K5P`=ApJHMB3[faCtca;G(i=qL\
 ^3qh<kEoLHF\"L\"x/a:|xD>x=IKEqN%\n 3EL93@D{*BW-{GE88b7{d^m-%v9}=-7=^M\
 #$?zJm$]Yy07J^}:#V?9t_<{fhavZVZQ1^1=SLQf3X=<\n z|Af_njD},U!m}4V}$]L_7\
@@ -66,6 +71,10 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
     (concat (shimbun-url-internal shimbun)
 	    (cond ((string-equal group "m-magazine-en")
 		   "foreign/m-magazine/backnumber/")
+		  ((string-equal group "m-magazine-en.fukuda")
+		   "foreign/m-magazine/backnumber/fukuda.html")
+		  ((string-equal group "m-magazine-ja.fukuda")
+		   "jp/m-magazine/backnumber/hukuda.html")
 		  ((string-equal group "m-magazine-en.abe")
 		   "foreign/m-magazine/backnumber/abe.html")
 		  ((string-equal group "m-magazine-ja.abe")
@@ -82,7 +91,11 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 (luna-define-method shimbun-from-address ((shimbun shimbun-kantei))
   (let ((group (shimbun-current-group-internal shimbun)))
     (cond ((string-equal group "m-magazine-en")
+	   "Taro Aso")
+	  ((string-equal group "m-magazine-en.fukuda")
 	   "Yasuo Fukuda")
+	  ((string-equal group "m-magazine-ja.fukuda")
+	   "福田康夫")
 	  ((string-equal group "m-magazine-en.abe")
 	   "Shinzo Abe")
 	  ((string-equal group "m-magazine-ja.abe")
@@ -94,7 +107,7 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 	  ((string-equal group "m-magazine") ;; Backward compatibility.
 	   "小泉純一郎")
 	  (t
-	   "福田康夫"))))
+	   "麻生太郎"))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-kantei)
 					 &optional range)
@@ -210,12 +223,15 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 		 (let ((from (shimbun-header-from header t)))
 		   `(lambda (ignore)
 		      ,(cdr (nth
-			     (cond ((member from '("Shinzo Abe"
-						   "安倍晋三"))
+			     (cond ((member from '("Yasuo Fukuda"
+						   "福田康夫"))
 				    1)
+				   ((member from '("Shinzo Abe"
+						   "安倍晋三"))
+				    2)
 				   ((member from '("Junichiro Koizumi"
 						   "小泉純一郎"))
-				    2)
+				    3)
 				   (t
 				    0))
 			     shimbun-kantei-x-face-alist)))))))
