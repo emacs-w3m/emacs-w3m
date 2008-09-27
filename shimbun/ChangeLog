@@ -1,3 +1,19 @@
+2008-09-26  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* sb-rss.el (luna-define-class): Add a new slot `ignored-subject'.
+	Define internal accessor.
+	(initialize-instance): Initialize `ignored-subject'.
+	(shimbun-rss-get-headers): Chech if a subject matches with
+	`ignored-subject'.
+
+	* sb-impress.el (shimbun-impress-groups-alist): Use rss for
+	forest group.
+	(shimbun-impress-ignored-subject): Rename from
+	shimbun-impress-ignored-subject-regexp.
+	(shimbun-headers): Don't check ignored-subject here.
+
+	* sb-itmedia.el (shimbun-itmedia-ignored-subject): New variable.
+
 2008-09-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el: Support Aso Cabinet E-mail Magazine.

@@ -64,12 +64,10 @@
     ("bb" rss
      "<!-- ?本文開始 ?-->" "<!-- ?本文終了 ?-->"
      "http://bb.watch.impress.co.jp/cda/rss/broadband.rdf")
-    ("forest"
-     "<a href=\"\\(/?article/\\([0-9][0-9][0-9][0-9]\\)/\\([0-9][0-9]\\)/\
-\\([0-9][0-9]\\)/\\([^>]*\\)\\)\">"
+    ("forest" rss
      "<!-- ?\\(▲▲▲ダイレクト関連▲▲▲\\|本文開始\\) ?-->"
      "<!-- ?\\(本文終了\\|■■■■本文セル右スペースセル■■■■\\|■goostick開始■\\) ?-->"
-     "http://www.forest.impress.co.jp/")
+     "http://www.forest.impress.co.jp/rss.xml")
     ("robot" rss
      "<!-- 本文開始 -->" "<!-- 本文終了 -->"
      "http://robot.watch.impress.co.jp/cda/rss/robot.rdf")
@@ -86,7 +84,7 @@ oSoe'Y.gU#(EqHA5K}v}2ah,QlHa[S^}5ZuTefR\n ZA[pF1_ZNlDB5D_D\
 JzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r\
 9wC\"6\n ebr5rj1[UJ5zDEDsfo`N7~s%;P`\\JK'#y.w^>K]E~{`wZru")))
 ;;(defvar shimbun-impress-expiration-days 7)
-(defvar shimbun-impress-ignored-subject-regexp "^\\(AD\\|PR\\):")
+(defvar shimbun-impress-ignored-subject "^\\(AD\\|PR\\):")
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-impress))
   (or (nth 4 (assoc (shimbun-current-group-internal shimbun)
@@ -149,15 +147,7 @@ JzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r\
   (if (eq (nth 1 (assoc (shimbun-current-group-internal shimbun)
 			shimbun-impress-groups-alist))
 	  'rss)
-      (delq nil
-	    (mapcar
-	     (lambda (header)
-	       (let ((subject (shimbun-header-subject header)))
-		 (and subject
-		      (not (string-match
-			    shimbun-impress-ignored-subject-regexp subject))
-		      header)))
-	     (luna-call-next-method)))
+      (luna-call-next-method)
     (with-temp-buffer
       (shimbun-fetch-url shimbun (shimbun-index-url shimbun) t)
       (shimbun-remove-tags "<!--" "-->") ;; clear comment-outed html source
