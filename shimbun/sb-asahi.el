@@ -1191,7 +1191,7 @@ It works for only the groups `editorial' and `tenjin'."
 	       (re-search-forward
 		(eval-when-compile
 		  (concat
-		   "/\\(?:editorial\\|column\\)\\.html\"[^\n]+"
+		   "/\\(?:editorial\\|column\\)\\.html\"[^\n0-9]+"
 		   ;; 1. month
 		   "\\([01]?[0-9]\\)" "月"
 		   ;; 2. day
