@@ -213,7 +213,47 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 			       nil t)
 	    (delete-region (match-beginning 0) (point-max))
 	    (insert "\n")
-	    (delete-region (point-min) start))))))
+	    (delete-region (point-min) start)))
+      ;; Remove style sheet.
+      (goto-char (point-min))
+      (when (and (re-search-forward "<style[\t\n ]+" nil t)
+		 (shimbun-end-of-tag "style" t))
+	(replace-match "\n"))
+      ;; Remove navigation button.
+      (goto-char (point-min))
+      (when (and (re-search-forward "<\\(td\\|span\\)\
+\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+class=\"breadcrumbs\""
+				    nil t)
+		 (shimbun-end-of-tag (match-string 1) t))
+	(replace-match "\n"))
+      ;; Remove table tags.
+      (goto-char (point-min))
+      (while (re-search-forward "\
+\[\t\n ]*</?table\\(?:[\t\n ]+[^>]+\\)?>[\t\n ]*"
+				nil t)
+	(replace-match "\n"))
+      ;; Shrink boundary lines.
+      (let ((limit (w3m-static-if (featurep 'xemacs)
+		       (when (device-on-window-system-p)
+			 (font-width (face-font 'default)))
+		     (when window-system
+		       (frame-char-width)))))
+	(when limit
+	  (setq limit (* limit (1- (window-width))))
+	  (goto-char (point-min))
+	  (while (re-search-forward
+		  "<img\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+height=\"1\""
+		  nil t)
+	    (when (shimbun-end-of-tag)
+	      (goto-char (match-beginning 0))
+	      (if (re-search-forward "width=\"\\([0-9]+\\)\"" (match-end 0) t)
+		  (when (> (string-to-number (match-string 1)) limit)
+		    (replace-match (concat "width=\"" (number-to-string limit)
+					   "\"")))
+		(goto-char (match-end 0)))))))
+      ;; Zenkaku ASCII -> Hankaku
+      (unless (memq (shimbun-japanese-hankaku shimbun) '(header subject nil))
+	(shimbun-japanese-hankaku-buffer t)))))
 
 (luna-define-method shimbun-make-contents :around ((shimbun shimbun-kantei)
 						   header)

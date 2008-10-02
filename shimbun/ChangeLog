@@ -1,6 +1,8 @@
 2008-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-kantei-x-face-alist): Update.
+	(shimbun-clear-contents): Remove style sheet, navigation button, and
+	table tags; shrink boundary lines; convert zenkaku ASCII to hankaku.
 
 2008-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
