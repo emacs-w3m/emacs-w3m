@@ -49,9 +49,11 @@ is for the backward compatibility.")
 (defvar shimbun-kantei-x-face-alist
   ;; Don't change the order of the faces.  See the method function that
   ;; is applied to `shimbun-make-contents'.
-  '(("default" . "X-Face: ;MO&rH_,\"Wntyp?o4f4Dzo~Dj$+@_Ia=,i;kSjs<|d\
-&x:\"]>y%nS7Ot,RiSht_>F6D^;<l\"\n e>-^VgA_hwn<p:t(}s+4cd.)|P(O:4..+=i\
-L`;-JR9%'>f{[=.k7Q-P~]dW-<]0A+T.cHxW2>+QF;s\n 7wNv81]2L;")
+  '(("default" . "X-Face: #(b'i|jCr9M1k*o`B1YbD.C*%\\T3~.mUK@q?}o4.TC\
+*~*~fPaHg\\]V+Q2$3wu$=:[<k^Y<s\n X{VB1rZN[(X$(Cej@QV?FaoslWKi,fxp\"m\\\
+<Cb#4vo!!hDZI@9I8gAMMp6>HZ'C/&9e15i*4e>OV4`\n pdAVvpz`w<$QCu9'~:}|h`S\
+EZv\\U]f']V(QbE5'%u$InJltT4~|Ru\\vs~g!;y;1uY#8v<8|eGbb*i=\n a/RM<?`*?\
+5`AL1#G(9F50D}`>Y:'\"^)0:;L!2x8j|br~q/E=j.s!FBI-6xr")
     ("\\.fukuda\\'" . "X-Face: R![ems6?kedF&(},`\";7nbUIT6Uyt2A9jSQ'\\\
 $=;,n.9<lIS+DFBTdMEJ$nh0[t)XU!.D*p\n kd~cuh0/nvCm;1~B;Ib!g^TC*OHm5(<Z\
 %=A2H_,kDt0E*HaI&^C%Wzb/EC_PF1f!jk7VHf=s*mqe91\n `H.J(Bq9(S'71?$O\\+=\

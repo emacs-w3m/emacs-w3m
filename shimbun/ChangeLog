@@ -1,3 +1,7 @@
+2008-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kantei.el (shimbun-kantei-x-face-alist): Update.
+
 2008-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-get-headers-for-today): Fix regexp.
