@@ -1,3 +1,8 @@
+2008-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-italic): Make it be a underline face on a non-window
+	system by default.
+
 2008-09-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-toggle-inline-images-internal)
