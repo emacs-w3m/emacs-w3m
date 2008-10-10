@@ -1,3 +1,8 @@
+2008-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kantei.el (shimbun-clear-contents): Remove contents other than the
+	ones written by the Prime Minister.
+
 2008-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-kantei-x-face-alist): Update.

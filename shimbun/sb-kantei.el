@@ -214,18 +214,27 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 	    (delete-region (match-beginning 0) (point-max))
 	    (insert "\n")
 	    (delete-region (point-min) start)))
-      ;; Remove style sheet.
       (goto-char (point-min))
-      (when (and (re-search-forward "<style[\t\n ]+" nil t)
-		 (shimbun-end-of-tag "style" t))
-	(replace-match "\n"))
-      ;; Remove navigation button.
-      (goto-char (point-min))
-      (when (and (re-search-forward "<\\(td\\|span\\)\
+      (if (and (re-search-forward "<!--総理原稿-->[\t\n ]*" nil t)
+	       (progn
+		 (setq start (match-end 0))
+		 (re-search-forward "[\t\n ]*<!--/総理原稿-->" nil t)))
+	  (progn
+	    (delete-region (match-beginning 0) (point-max))
+	    (insert "\n")
+	    (delete-region (point-min) start))
+	;; Remove style sheet.
+	(goto-char (point-min))
+	(when (and (re-search-forward "<style[\t\n ]+" nil t)
+		   (shimbun-end-of-tag "style" t))
+	  (replace-match "\n"))
+	;; Remove navigation button.
+	(goto-char (point-min))
+	(when (and (re-search-forward "<\\(td\\|span\\)\
 \\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+class=\"breadcrumbs\""
-				    nil t)
-		 (shimbun-end-of-tag (match-string 1) t))
-	(replace-match "\n"))
+				      nil t)
+		   (shimbun-end-of-tag (match-string 1) t))
+	  (replace-match "\n")))
       ;; Remove table tags.
       (goto-char (point-min))
       (while (re-search-forward "\
