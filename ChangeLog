@@ -1,3 +1,16 @@
+2008-10-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-active-region-or-url-at-point): Take notice of the link
+	under the point as well; return the url of the current page by default
+	if the new optional argument `default=current' is given.
+	(w3m-input-url): Make w3m-active-region-or-url-at-point return the url
+	of the current page by default; modify the prompt string according to
+	whether there is an initial input.
+	(w3m-download, w3m-goto-url, w3m-goto-url-new-session): Simplify args
+	passed to w3m-input-url.
+	(w3m-view-this-url): Make w3m-active-region-or-url-at-point return the
+	url of the current page by default.
+
 2008-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-italic): Make it be a underline face on a non-window

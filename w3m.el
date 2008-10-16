@@ -4224,16 +4224,26 @@ Like `ffap-url-at-point', except that text props will be stripped."
 	 (setq ffap-url-regexp (replace-match "\\1\\\\|nntp:\\2"
 					      nil nil ffap-url-regexp)))))
 
-(defun w3m-active-region-or-url-at-point ()
+(defun w3m-active-region-or-url-at-point (&optional default=current)
   "Return an active region or a url around the cursor.
-In Transient Mark mode, deactivate the mark."
+In Transient Mark mode, deactivate the mark.  If DEFAULT=CURRENT is
+non-nil, return the url of the current page by default."
   (if (w3m-region-active-p)
       (prog1
 	  (w3m-replace-in-string (buffer-substring-no-properties
 				  (region-beginning) (region-end))
 				 "[\t\r\f\n 　]+" "")
 	(w3m-deactivate-region))
-    (w3m-url-at-point)))
+    (or (w3m-url-at-point)
+	(w3m-anchor)
+	(unless w3m-display-inline-images
+	  (w3m-image))
+	(and default=current
+	     (stringp w3m-current-url)
+	     (if (string-match "\\`about://\\(?:header\\|source\\)/"
+			       w3m-current-url)
+		 (substring w3m-current-url (match-end 0))
+	       w3m-current-url)))))
 
 (defsubst w3m-canonicalize-url (url &optional feeling-lucky)
   "Add a scheme part to an URL or make an URL for \"I'm Feeling Lucky on Google\"
@@ -4262,7 +4272,7 @@ if it has no scheme part."
     (unless default
       (setq default w3m-home-page))
     (unless initial
-      (setq initial (w3m-active-region-or-url-at-point)))
+      (setq initial (w3m-active-region-or-url-at-point t)))
     (if (and quick-start
 	     default
 	     (not initial))
@@ -4277,17 +4287,27 @@ if it has no scheme part."
 		      'self-insert-command))
 		  (unwind-protect
 		      (completing-read
-		       (or prompt
-			   (if default
-			       (format "URL %s(default %s): "
-				       (if feeling-lucky
-					   "or Keyword "
-					 "")
-				       (if (stringp default)
-					   (if (eq default w3m-home-page)
-					       "HOME" default)
-					 (prin1-to-string default)))
-			     "URL: "))
+		       (if prompt
+			   (if (or initial (not default))
+			       prompt
+			     (when (string-match " *: *\\'" prompt)
+			       (setq prompt (substring prompt 0
+						       (match-beginning 0))))
+			     (concat prompt " (default "
+				     (if (equal default w3m-home-page)
+					 "HOME"
+				       default)
+				     "): "))
+			 (if default
+			     (format "URL %s(default %s): "
+				     (if feeling-lucky
+					 "or Keyword "
+				       "")
+				     (if (stringp default)
+					 (if (eq default w3m-home-page)
+					     "HOME" default)
+				       (prin1-to-string default)))
+			   "URL: "))
 		       'w3m-url-completion nil nil initial
 		       'w3m-input-url-history)
 		    (define-key minibuffer-local-completion-map " " ofunc))))
@@ -5453,14 +5473,7 @@ POST-DATA and REFERER will be sent to the web server with a request."
 NO-CHACHE (which the prefix argument gives when called interactively)
 specifies not using the cached data."
   (interactive
-   (let* ((url (w3m-input-url "Download URL (default HOME): "
-			      (when (stringp w3m-current-url)
-				(if (string-match
-				     "\\`about://\\(?:header\\|source\\)/"
-				     w3m-current-url)
-				    (substring w3m-current-url (match-end 0))
-				  w3m-current-url))
-			      w3m-home-page))
+   (let* ((url (w3m-input-url "Download URL: "))
 	  (basename (file-name-nondirectory (w3m-url-strip-query url))))
      (if (string-match "^[\t ]*$" basename)
 	 (list url
@@ -6404,7 +6417,7 @@ point."
       (if (w3m-display-graphic-p)
 	  (w3m-toggle-inline-image)
 	(w3m-view-image)))
-     ((setq url (w3m-active-region-or-url-at-point))
+     ((setq url (w3m-active-region-or-url-at-point t))
       (unless (eq 'quit (setq url (w3m-input-url nil url 'quit nil
 						 'feeling-lucky)))
 	(w3m-view-this-url-1 url arg new-session)))
@@ -8546,15 +8559,7 @@ already been registered in the `w3m-history-flat' variable.  It is
 corresponding to URL to be retrieved at this time, not for the url of
 the current page."
   (interactive
-   (list (w3m-input-url
-	  nil
-	  (or (w3m-active-region-or-url-at-point)
-	      (when (stringp w3m-current-url)
-		(if (string-match "\\`about://\\(?:header\\|source\\)/"
-				  w3m-current-url)
-		    (substring w3m-current-url (match-end 0))
-		  w3m-current-url)))
-	  nil nil 'feeling-lucky)
+   (list (w3m-input-url nil nil nil nil 'feeling-lucky)
 	 current-prefix-arg
 	 (w3m-static-if (fboundp 'universal-coding-system-argument)
 	     coding-system-for-read)))
@@ -8882,15 +8887,7 @@ If you invoke this command in the emacs-w3m buffer, the new session
 will be created by copying the current session.  Otherwise, the new
 session will start afresh."
   (interactive
-   (list (w3m-input-url
-	  nil
-	  (or (w3m-active-region-or-url-at-point)
-	      (when (stringp w3m-current-url)
-		(if (string-match "\\`about://\\(?:header\\|source\\)/"
-				  w3m-current-url)
-		    (substring w3m-current-url (match-end 0))
-		  w3m-current-url)))
-	  nil nil 'feeling-lucky)
+   (list (w3m-input-url nil nil	nil nil 'feeling-lucky)
 	 current-prefix-arg
 	 (w3m-static-if (fboundp 'universal-coding-system-argument)
 	     coding-system-for-read)
