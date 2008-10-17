@@ -4298,16 +4298,14 @@ if it has no scheme part."
 					 "HOME"
 				       default)
 				     "): "))
-			 (if default
-			     (format "URL %s(default %s): "
-				     (if feeling-lucky
-					 "or Keyword "
-				       "")
-				     (if (stringp default)
-					 (if (eq default w3m-home-page)
-					     "HOME" default)
-				       (prin1-to-string default)))
-			   "URL: "))
+			 (if (or initial (not default))
+			     (if feeling-lucky "URL or Keyword: " "URL: ")
+			   (format "URL %s(default %s): "
+				   (if feeling-lucky "or Keyword " "")
+				   (if (stringp default)
+				       (if (eq default w3m-home-page)
+					   "HOME" default)
+				     (prin1-to-string default)))))
 		       'w3m-url-completion nil nil initial
 		       'w3m-input-url-history)
 		    (define-key minibuffer-local-completion-map " " ofunc))))
