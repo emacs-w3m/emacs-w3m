@@ -218,7 +218,7 @@ But clarify need ignored URL return nil.")
 		  (when (and id
 			     (or need-all-items
 				 (not (shimbun-search-id shimbun id)))
-			     (if ignored-subject
+			     (if (and ignored-subject subject)
 				 (not (string-match ignored-subject subject))
 			       t))
 		    (push

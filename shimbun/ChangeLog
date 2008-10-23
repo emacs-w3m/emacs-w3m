@@ -1,3 +1,8 @@
+2008-10-23  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* sb-rss.el (shimbun-rss-get-headers): Don't check `ignored-subject'
+	when subject is empty.
+
 2008-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-clear-contents): Remove contents other than the
