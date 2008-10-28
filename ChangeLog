@@ -1,3 +1,8 @@
+2008-10-28  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-view-header): Check if current page is source of
+	about:something.
+
 2008-10-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-active-region-or-url-at-point): Take notice of the link
