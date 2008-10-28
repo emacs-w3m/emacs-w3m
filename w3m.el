@@ -9372,8 +9372,8 @@ non-ASCII characters."
 		   (substring w3m-current-url (match-end 0)))
 		  ((string-match "\\`about://source/" w3m-current-url)
 		   (let ((real-url (substring w3m-current-url (match-end 0))))
-			 (unless (string-match "\\`about:" real-url)
-			   (concat "about://header/" real-url))))
+		     (unless (string-match "\\`about:" real-url)
+		       (concat "about://header/" real-url))))
 		  ((string-match "\\`about:" w3m-current-url)
 		   nil)
 		  (t
