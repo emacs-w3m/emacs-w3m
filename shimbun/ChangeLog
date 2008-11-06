@@ -1,3 +1,8 @@
+2008-11-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-clear-contents): Add another regexp to
+	look for the content start.
+
 2008-10-23  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* sb-rss.el (shimbun-rss-get-headers): Don't check `ignored-subject'
