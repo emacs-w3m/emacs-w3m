@@ -5285,7 +5285,34 @@ perlentaucher-de.aktuell
 rediff.news
 
 @item @uref{http://www.slashdot.org/, Slashdot}
-slashdot.frontpage
+slashdot.frontpage slashdot.apple slashdot.askslashdot slashdot.books
+slashdot.developers slashdot.games slashdot.hardware slashdot.interviews
+slashdot.IT slashdot.linux slashdot.mobile slashdot.politics
+slashdot.science
+
+The following variables are available for configuring the comment section
+of the Slashdot shimbun:
+
+@table @code
+@item shimbun-slashdot-get-comments
+@vindex shimbun-slashdot-get-comments
+If set to @code{t} (the default), comments will be retrieved for every
+article.  They are separated from the intro text through a linefeed
+character, so that you can access them by pressing the ``Next Page''
+button in the article buffer.  Setting this variable to @code{nil} will
+deactivate retrieval of comments.
+
+@item shimbun-slashdot-comment-threshold
+@vindex shimbun-slashdot-comment-threshold
+Threshold for displayed comments (default: 3).  Can be a number between
+-1 (all comments) and 5 (highest rating).
+
+@item shimbun-slashdot-comment-display
+@vindex shimbun-slashdot-comment-display
+Type of display for the comments (default: ``flat'').  Can be either
+``flat'', ``thread'' or ``nested''.  Note that this must be a string,
+not a symbol.
+@end table
 
 @item @uref{http://slashdot.jp/, Slashdot Japan}
 slashdot-jp.story slashdot-jp.askslashdot slashdot-jp.bookreview
