@@ -56,14 +56,14 @@
 Can be 'flat', 'thread', or 'nested'.")
 
 (defvar shimbun-slashdot-regexp-section-id-subject
-  "<div class=\"\\(generaltitle\\|briefarticles\\)\"[^\0]*?\
-<a href=\".*slashdot.org/\\(.*?\\)/\\(.*?\\).shtml\">\\(.*?\\)</a>")
+  "<\\(?:div\\|h3\\)[ \t]+class=\"\\(generaltitle\\|briefarticles\\|story\\)\"[^\0]*?\
+<a[ \t]+href=\".*slashdot.org/\\(.*?\\)/\\(.*?\\).shtml\".*?>\\(.*?\\)</a>")
 
 (defvar shimbun-slashdot-regexp-author-time
   "Posted[\t \n]+by[^a-zA-Z]*\\(.*\\)[^\0]*?@\\([0-9]+\\):\\([0-9]+\\)\\(AM\\|PM\\)")
 
 (defvar shimbun-slashdot-regexp-comment-system
-  "use <a href=\"\\(.+\\)\">the classic discussion system")
+  "use[ \t]+<a[ \t]+href=\"\\(.+\\)\">[ \t]*the classic discussion system")
 
 (defvar shimbun-slashdot-groups
   (mapcar 'car shimbun-slashdot-group-url))

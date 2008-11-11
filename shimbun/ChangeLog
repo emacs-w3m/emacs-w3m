@@ -1,3 +1,8 @@
+2008-11-10  David Engster  <dengste@eml.cc>
+
+	* sb-slashdot.el (shimbun-slashdot-regexp-section-id-subject)
+	(shimbun-slashdot-regexp-comment-system): Updated regexps.
+
 2008-11-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-clear-contents): Add another regexp to
