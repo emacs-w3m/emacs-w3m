@@ -229,8 +229,13 @@ not to update the page."
 (defun w3m-antenna-alist ()
   (let ((alist (w3m-load-list w3m-antenna-file)))
     (mapcar (lambda (site)
-	      (or (assoc (w3m-antenna-site-key site) alist)
-		  (append site (list nil nil nil nil))))
+	      (let ((l (assoc (w3m-antenna-site-key site) alist)))
+		(if l
+		    (progn
+		      (setf (w3m-antenna-site-class l)
+			    (w3m-antenna-site-class site))
+		      l)
+		  (append site (list nil nil nil nil)))))
 	    w3m-antenna-sites)))
 
 (defun w3m-antenna-hns-last-modified (url handler)
@@ -280,7 +285,7 @@ In order to use this function, `xml.el' is required."
 		(site site))
     (w3m-process-do-with-temp-buffer
 	(type (w3m-retrieve url nil t nil nil handler))
-      (let (link date dc-dates)
+      (let (link date dates)
 	(when type
 	  (w3m-decode-buffer url)
 	  (let* ((xml (ignore-errors
@@ -291,16 +296,25 @@ In order to use this function, `xml.el' is required."
 			  xml "http://purl.org/rss/1.0/"))
 		 (channel (car (w3m-rss-find-el
 				(intern (concat rss-ns "channel"))
-				xml))))
+				xml)))
+		 (items (w3m-rss-find-el
+			 (intern (concat rss-ns "item"))
+			 xml)))
 	    (setq link (nth 2 (car (w3m-rss-find-el
 				    (intern (concat rss-ns "link"))
 				    channel))))
-	    (setq dc-dates (w3m-rss-find-el
-			    (intern (concat dc-ns "date"))
-			    channel))
-	    (when dc-dates
+	    (setq dates (append
+			    (w3m-rss-find-el
+			     (intern (concat dc-ns "date"))
+			     channel)
+			    (w3m-rss-find-el
+			     (intern (concat dc-ns "date"))
+			     items)
+			    (w3m-rss-find-el 'pubDate channel)
+			    (w3m-rss-find-el 'pubDate items)))
+	    (when dates
 	      (setq date '(0 0))
-	      (dolist (tmp dc-dates)
+	      (dolist (tmp dates)
 		(setq tmp (w3m-rss-parse-date-string (nth 2 tmp)))
 		(when (w3m-time-newer-p tmp date)
 		  (setq date tmp))))))

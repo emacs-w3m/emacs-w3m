@@ -143,14 +143,10 @@ Minor mode to edit bookmark.
 (add-hook 'w3m-display-functions 'w3m-bookmark-mode-setter)
 
 (defun w3m-bookmark-file-modtime ()
-  "Return the bookmark file modification time.
-The value is a list of the form (HIGH . LOW), like the time values
-that `visited-file-modtime' returns.  When the bookmark file does not
-exist, returns (0 . 0)."
-  (if (file-exists-p w3m-bookmark-file)
-      (let ((time (nth 5 (file-attributes w3m-bookmark-file))))
-	(cons (car time) (cadr time)))
-    (cons 0 0)))
+  "Return the modification time of the bookmark file `w3m-bookmark-file'.
+The value is a list of two time values `(HIGH LOW)' if the bookmark
+file exists, otherwise nil."
+  (nth 5 (file-attributes w3m-bookmark-file)))
 
 (defun w3m-bookmark-buffer (&optional no-verify-modtime)
   "Return the buffer reading `w3m-bookmark-file' current."
@@ -164,7 +160,7 @@ exist, returns (0 . 0)."
       (with-current-buffer (w3m-get-buffer-create " *w3m bookmark*")
 	(unless (and w3m-bookmark-buffer-file-name
 		     (or no-verify-modtime
-			 (equal (visited-file-modtime)
+			 (equal (w3m-visited-file-modtime)
 				(w3m-bookmark-file-modtime))))
 	  (when (file-readable-p w3m-bookmark-file)
 	    (buffer-disable-undo)
@@ -185,7 +181,7 @@ exist, returns (0 . 0)."
 	(current-buffer)))))
 
 (defun w3m-bookmark-verify-modtime ()
-  (unless (equal (visited-file-modtime)
+  (unless (equal (w3m-visited-file-modtime)
 		 (w3m-bookmark-file-modtime))
     (if (buffer-file-name)
 	(ask-user-about-supersession-threat w3m-bookmark-file)

@@ -31,23 +31,20 @@
 
 (luna-define-class shimbun-aljazeera (shimbun-rss) ())
 
-(defvar shimbun-aljazeera-url "http://english.aljazeera.net/NR/exeres/\
-4D6139CD-6BB5-438A-8F33-96A7F25F40AF.htm?ArticleGuid=")
+(defvar shimbun-aljazeera-url "http://english.aljazeera.net/Services/Rss/?PostingId=")
 
 (defvar shimbun-aljazeera-path-alist
-  '(("news" . "55ABE840-AC30-41D2-BDC9-06BBE2A36665")
-    ("africa" . "16ED2681-04F1-4E20-987D-441249318394")
-    ("america" . "BE36B87D-5D66-4F3E-9BB6-7A0166FD8086")
-    ("asia-pacific" . "73B34486-9703-4A5B-8536-9630AF60A8AB")
-    ("central-asia" . "4F328D41-F0FF-434F-B392-BC3F16BAEBB0")
-    ("europe" . "F7B82066-4245-4746-AE8E-6DA403DDB128")
-    ("middle-east" . "736515E4-37CE-4242-8A5F-854381D9DFEE")
-    ;; rss feed not working?
-    ("focus" . "E61E22A6-6776-4E73-BDE0-644778A336E3")
-    ("business" . "6710D253-4D19-4C4E-BF56-14C94349545C")
-    ("sport" . "F182B1C7-D945-43CA-888B-B24D86973A13")
-    ;; rss feed not working?
-    ("programmes" . "3D7AB564-6F62-4899-B982-63B520D409F1")))
+  '(("news" . "2007731105943979989")
+    ("africa" . "2007721151816881407")
+    ("america" . "200772115196613309")
+    ("asia-pacific" . "2007722144444234906")
+    ("central-asia" . "2007721155716791636")
+    ("europe" . "2007721152443657412")
+    ("middle-east" . "200861163157760548")
+    ("focus" . "200861611391795581")
+    ("business" . "20078615030782166")
+    ("sport" . "200772215035764169")
+    ("programmes" . "200772215116371443")))
 
 (defvar shimbun-aljazeera-from-address  "press.int@aljazeera.net")
 
@@ -76,21 +73,6 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABgAAAAgAgMAAAB1MFCrAAAADFBMVEXIiyP27tr9/v7ixH8
     (concat "\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\) " ; M/D/Y
 	    "\\([0-9]+\\):\\([0-9]+:[0-9]+\\) "       ; h:m:s
 	    "\\(AM\\|PM\\)")))
-
-(luna-define-method shimbun-rss-process-date
-  :around ((shimbun shimbun-aljazeera) date)
-  ;; M/D/Y h:m:s (A|P)M (violates RSS 2.0 spec)
-  (if (string-match shimbun-aljazeera-date-re date)
-      (let ((year (string-to-number (match-string 3 date)))
-	    (month (string-to-number (match-string 1 date)))
-	    (day (string-to-number (match-string 2 date)))
-	    (hours (string-to-number (match-string 4 date)))
-	    (minutes (match-string 5 date)))
-	(when (string= "PM" (match-string 6 date))
-	  (setq hours (+ hours 12)))
-	(shimbun-make-date-string
-	 year month day (format "%d:%s" hours minutes) "+0000"))
-    (luna-call-next-method)))
 
 (defun sb-aljazeera-wash-article ()
   ;; html coded by drunken monkeys

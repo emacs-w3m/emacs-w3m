@@ -1131,6 +1131,23 @@ If SECONDS is omitted, it defaults to 0.5."
     (set-buffer buffer)
     w3m-buffer-unseen))
 
+(defun w3m-visited-file-modtime ()
+  "Replacement of `visited-file-modtime'.
+It returns a list of two integers if the current buffer visits a file,
+otherwise returns the number 0.  In modern Emacsen, this function will
+get to be the alias to `visited-file-modtime'."
+  (let ((modtime (visited-file-modtime)))
+    (cond ((consp (cdr-safe modtime))
+	   (defalias 'w3m-visited-file-modtime 'visited-file-modtime)
+	   modtime)
+	  ((integerp (cdr-safe modtime))
+	   ;; XEmacs version returns `(0 . 0)' if no file is visited.
+	   (if (and (= (car modtime) 0) (= (cdr modtime) 0))
+	       0
+	     (list (car modtime) (cdr modtime))))
+	  (t
+	   modtime))))
+
 (provide 'w3m-util)
 
 ;;; w3m-util.el ends here

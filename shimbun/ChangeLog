@@ -1,3 +1,8 @@
+2008-11-11  Naohiro Aota  <nao.aota@gmail.com>
+
+	* sb-aljazeera.el (shimbun-aljazeera-url)
+	(shimbun-aljazeera-path-alist): Update to follow changes.
+
 2008-11-10  David Engster  <dengste@eml.cc>
 
 	* sb-slashdot.el (shimbun-slashdot-regexp-section-id-subject)

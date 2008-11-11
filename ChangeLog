@@ -1,3 +1,19 @@
+2008-11-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-visited-file-modtime): New function.
+
+	* w3m-bookmark.el (w3m-bookmark-file-modtime): Just return result of
+	file-attributes().
+
+2008-11-11  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-antenna.el (w3m-antenna-check-rss): Support RSS2.0. Check also
+	items.
+	(w3m-antenna-alist): Update site-class if needed.
+
+	* w3m-bookmark.el (w3m-bookmark-buffer, w3m-bookmark-verify-modtime):
+	Replace visited-file-modtime with w3m-visited-file-modtime.
+
 2008-10-28  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m.el (w3m-view-header): Check if current page is source of
