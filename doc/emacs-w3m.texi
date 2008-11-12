@@ -5297,9 +5297,10 @@ of the Slashdot shimbun:
 @item shimbun-slashdot-get-comments
 @vindex shimbun-slashdot-get-comments
 If set to @code{t} (the default), comments will be retrieved for every
-article.  They are separated from the intro text through a linefeed
-character, so that you can access them by pressing the ``Next Page''
-button in the article buffer.  Setting this variable to @code{nil} will
+article.  They are separated from the intro text through a formfeed
+character (i.e. ``^L''); you can access them by scrolling the article
+buffer as usual (for Gnus you can use the ``Next page'' button and the
+``Previous page'' button).  Setting this variable to @code{nil} will
 deactivate retrieval of comments.
 
 @item shimbun-slashdot-comment-threshold

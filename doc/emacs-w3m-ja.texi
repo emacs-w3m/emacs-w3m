@@ -5309,10 +5309,11 @@ Slashdot shimbun のコメントの部分を設定するための以下の変数があります:
 @item shimbun-slashdot-get-comments
 @vindex shimbun-slashdot-get-comments
 もし @code{t} に設定されていると (それがデフォルトです)、すべての記事の
-コメントを取得します。それらは記事バッファで「次のページ」ボタンを押すと
-見ることができるようにするために、 LF 文字でイントロ・テキストから分離さ
-れます。この変数を @code{nil} に設定すると、記事のコメントを取得しなくな
-ります。
+コメントを取得します。それらはフォームフィード文字 (``^L'' のこと) でイ
+ントロ・テキストから分離されます。それらを見るには、いつものように記事バッ
+ファをスクロールしてください (Gnus では ``Next page'' ボタン
+と ``Previous page'' ボタンを使うことができます)。この変数
+を @code{nil} に設定すると、記事のコメントを取得しなくなります。
 
 @item shimbun-slashdot-comment-threshold
 @vindex shimbun-slashdot-comment-threshold
