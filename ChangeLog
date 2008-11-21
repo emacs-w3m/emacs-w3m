@@ -1,3 +1,8 @@
+2008-11-21  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-w3m-parse-header): Also remove parameters when charset is
+	specified.
+
 2008-11-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-visited-file-modtime): New function.

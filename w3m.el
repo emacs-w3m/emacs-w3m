@@ -4877,9 +4877,9 @@ Return a list which includes:
 			   (match-string 1 type))
 		  type (w3m-remove-redundant-spaces
 			(substring type 0 (match-beginning 0))))
-	  (setq type (w3m-remove-redundant-spaces type))
-	  (when (string-match ";" type)
-	    (setq type (substring type 0 (match-beginning 0)))))
+	  (setq type (w3m-remove-redundant-spaces type)))
+	(when (string-match ";" type)
+	  (setq type (substring type 0 (match-beginning 0))))
 	(setq type (downcase type)))
       (setq w3m-current-ssl (cdr (assoc "w3m-ssl-certificate" headers)))
       (when (string-match "\\`ftps?:" url)
