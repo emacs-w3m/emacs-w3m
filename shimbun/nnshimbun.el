@@ -1,6 +1,6 @@
 ;;; nnshimbun.el --- interfacing with web newspapers
 
-;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
+;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -86,7 +86,8 @@
 
 (eval-when-compile
   (defvar gnus-level-default-subscribed)
-  (defvar gnus-level-killed))
+  (defvar gnus-level-killed)
+  (defvar gnus-level-subscribed))
 
 (defgroup nnshimbun nil
   "Reading web contents with Gnus."
@@ -992,6 +993,34 @@ Are you sure you want to make %d groups for nnshimbun+%s:? "
 		    (forward-line -1))
 		(gnus-group-make-group grp (list 'nnshimbun server)))))
 	(message "No group is found in nnshimbun+%s:" server)))))
+
+(defun nnshimbun-generate-download-script (&optional async)
+  "Generate download script for all subscribed schimbuns.
+Output will be put in a new buffer.  If called with a prefix,
+puts a '&' after each w3m command."
+  (interactive "P")
+  (switch-to-buffer
+   (get-buffer-create "*shimbun download script*"))
+  (erase-buffer)
+  (insert
+   (concat "#!/bin/sh\n# shimbun download script\n\n"
+	   "W3M=" (if w3m-command w3m-command "/usr/bin/w3m")
+	   "\nOPTS=\"-no-cookie -o accept_encoding=identity -dump_both\"\n\n"))
+  (let ((path (file-name-as-directory
+	       (expand-file-name shimbun-local-path)))
+	url fname)
+    ;; get all subscribed shimbun groups
+    (dolist (cur gnus-newsrc-alist)
+      (when (and (eq (car-safe (nth 4 cur)) 'nnshimbun)
+		 (<= (nth 1 cur) gnus-level-subscribed))
+	(when (string-match "nnshimbun\\+\\(.+\\):\\(.+\\)" (car cur))
+	  (nnshimbun-possibly-change-group (match-string 2 (car cur))
+					   (match-string 1 (car cur)))
+	  (when (setq url (shimbun-index-url nnshimbun-shimbun))
+	    (setq fname (concat path (substring (md5 url) 0 10) "_shimbun"))
+	    (insert
+	     (concat "$W3M $OPTS " (shell-quote-argument url) " > " fname
+		     (if async " &\n" "\n")))))))))
 
 (provide 'nnshimbun)
 

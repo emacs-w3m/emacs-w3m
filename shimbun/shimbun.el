@@ -78,6 +78,7 @@
 (require 'eword-encode)
 (require 'luna)
 (require 'std11)
+(require 'w3m)
 
 (eval-and-compile
   (luna-define-class shimbun ()
@@ -185,6 +186,21 @@ of `shimbun-SERVER-retry-fetching' overrides this variable."
 			 :match (lambda (widget value) (natnump value))
 			 :value 1)))
 
+(defcustom shimbun-use-local nil
+  "Specifies if local files should be used (\"offline\" mode).
+This way, you can use an external script to retrieve the
+necessary HTML/XML files.  For an example, see
+`nnshimbun-generate-download-script'.  If a local file for an URL
+cannot be found, it will silently be retrieved as usual."
+  :group 'shimbun
+  :type 'boolean)
+
+(defcustom shimbun-local-path w3m-default-save-directory
+  "Directory where local shimbun files are stored.
+Default is the value of `w3m-default-save-directory'."
+  :group 'shimbun
+  :type 'directory)
+
 (defun shimbun-servers-list ()
   "Return a list of shimbun servers."
   (let (servers)
@@ -219,20 +235,43 @@ of `shimbun-SERVER-retry-fetching' overrides this variable."
   (shimbun-mua-shimbun-internal mua))
 
 ;;; emacs-w3m implementation of url retrieval and entity decoding.
-(require 'w3m)
 (defun shimbun-retrieve-url (url &optional no-cache no-decode
 				 referer url-coding-system)
   "Rertrieve URL contents and insert to current buffer.
 Return content-type of URL as string when retrieval succeeded.
 Non-ASCII characters `url' are escaped based on `url-coding-system'."
-  (let (type)
+  (let (type charset fname)
     (if (and url
-	     (setq type (w3m-retrieve
-			 (w3m-url-transfer-encode-string url url-coding-system)
-			 nil no-cache nil referer)))
+	     shimbun-use-local
+	     shimbun-local-path
+	     (file-regular-p
+	      (setq fname (concat (file-name-as-directory
+				   (expand-file-name shimbun-local-path))
+				  (substring (md5 url) 0 10)
+				  "_shimbun"))))
+	;; get local file contents
+	(progn
+	  (let ((coding-system-for-read 'no-conversion))
+	    (insert-file-contents fname))
+	  (when (re-search-forward "^$" nil t)
+	    (let ((pos (match-beginning 0)))
+	      (re-search-backward
+	       "^Content-Type: \\(.*?\\)\\(?:[ ;]+\\|$\\)\\(charset=\\(.*\\)\\)?"
+	       nil t)
+	      (setq type (match-string 1)
+		    charset (match-string 3))
+	      (delete-region (point-min) pos))))
+      ;; retrieve URL
+      (when url
+	(setq type (w3m-retrieve
+		    (w3m-url-transfer-encode-string url url-coding-system)
+		    nil no-cache nil referer))))
+    (if type
 	(progn
 	  (unless no-decode
-	    (w3m-decode-buffer url)
+	    (if charset
+		(w3m-decode-buffer url charset type)
+	      (w3m-decode-buffer url))
 	    (goto-char (point-min)))
 	  type)
       (unless no-decode

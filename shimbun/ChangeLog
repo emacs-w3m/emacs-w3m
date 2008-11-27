@@ -1,3 +1,10 @@
+2008-11-27  David Engster  <dengste@eml.cc>
+
+	* shimbun.el (shimbun-use-local, shimbun-local-path): New variables.
+	(shimbun-retrieve-url): Support offline retrieving of indices.
+
+	* nnshimbun.el (nnshimbun-generate-download-script): New command.
+
 2008-11-11  Naohiro Aota  <nao.aota@gmail.com>
 
 	* sb-aljazeera.el (shimbun-aljazeera-url)
