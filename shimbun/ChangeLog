@@ -1,3 +1,7 @@
+2008-11-28  David Engster  <dengste@eml.cc>
+
+	* sb-rss-blogs.el: New file.
+
 2008-11-27  David Engster  <dengste@eml.cc>
 
 	* shimbun.el (shimbun-use-local, shimbun-local-path): New variables.
