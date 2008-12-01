@@ -212,8 +212,7 @@ Default is the value of `w3m-default-save-directory'."
 	       (not (member (setq file (match-string 1 file))
 			    '("fml" "glimpse" "lump" "mailarc"
 			      "mailman" "mhonarc" "text" "hash"
-			      "rss" "rss-hash" "atom" "atom-hash"
-			      "multi")))
+			      "rss" "atom" "multi")))
 	       (not (member file servers))
 	       (push file servers)))))
     (sort servers 'string-lessp)))

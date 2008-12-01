@@ -1,3 +1,8 @@
+2008-12-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-servers-list): Don't exclude rss-hash and
+	atom-hash.
+
 2008-11-28  David Engster  <dengste@eml.cc>
 
 	* sb-rss-blogs.el: New file.
