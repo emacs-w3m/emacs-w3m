@@ -1261,12 +1261,9 @@ textarea")))
 	 (wincfg (current-window-configuration))
 	 (w3mbuffer (current-buffer))
 	 (point (point))
-	 (size (min
-		(- (window-height cur-win)
-		   window-min-height 1)
-		(- (window-height cur-win)
-		   (max window-min-height
-			(1+ w3m-form-input-textarea-buffer-lines)))))
+	 (size (- (window-height cur-win)
+		  (1+ (max window-min-height
+			   w3m-form-input-textarea-buffer-lines))))
 	 (file (get-text-property (point) 'w3m-form-file-name))
 	 (coding (w3m-form-get-coding-system (w3m-form-charlst form)))
 	 (readonly (nth 3 info))
@@ -1329,13 +1326,21 @@ textarea")))
 	     (get-buffer-window (cdr buffer)))
 	;; same frame only
 	(select-window (get-buffer-window (cdr buffer)))
-      (condition-case nil
-	  (split-window cur-win (if (> size 0) size window-min-height))
-	(error
-	 (delete-other-windows)
-	 (split-window cur-win (- (window-height cur-win)
-				  w3m-form-input-textarea-buffer-lines))))
-      (select-window (next-window))
+      ;; Use the whole current window for the textarea when a user added
+      ;; the buffer name "*w3m form textarea*" to `same-window-buffer-names'
+      ;; (that is available only in Emacs).
+      ;; cf. http://article.gmane.org/gmane.emacs.w3m/7797
+      (unless (w3m-static-unless (featurep 'xemacs)
+		(same-window-p (buffer-name (if (consp buffer)
+						(cdr buffer)
+					      buffer))))
+	(condition-case nil
+	    (split-window cur-win (if (> size 0) size window-min-height))
+	  (error
+	   (delete-other-windows)
+	   (split-window cur-win (- (window-height cur-win)
+				    w3m-form-input-textarea-buffer-lines))))
+	(select-window (next-window)))
       (let ((pop-up-windows nil))
 	(switch-to-buffer (if (consp buffer) (cdr buffer) buffer))))))
 

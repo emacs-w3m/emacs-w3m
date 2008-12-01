@@ -1,3 +1,9 @@
+2008-12-01  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m-form.el (w3m-form-input-textarea): Use the whole current window
+	for the textarea when `same-window-buffer-names' contains the buffer
+	name "*w3m form textarea*"; simplify the window size calculation.
+
 2008-11-21  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m.el (w3m-w3m-parse-header): Also remove parameters when charset is
