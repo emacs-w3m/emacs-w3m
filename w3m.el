@@ -3991,8 +3991,12 @@ If optional KEEP-PROPERTIES is non-nil, text property is reserved."
   "Fontify the current buffer."
   (let ((case-fold-search t)
 	(buffer-read-only))
-    (run-hooks 'w3m-fontify-before-hook)
     (w3m-message "Fontifying...")
+    (run-hooks 'w3m-fontify-before-hook)
+    ;; Remove hidden anchors like "<a href=url> </a>".
+    (goto-char (point-min))
+    (while (re-search-forward "<a[\t\n ]+[^>]+>[\t\n ]*</a>" nil t)
+      (delete-region (match-beginning 0) (match-end 0)))
     ;; Delete <?xml ... ?> tag
     (goto-char (point-min))
     (if (search-forward "<?xml" nil t)
