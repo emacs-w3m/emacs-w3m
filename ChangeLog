@@ -1,5 +1,8 @@
 2008-12-05  Naohiro Aota  <nao.aota@gmail.com>
 
+	* w3m-form.el (w3m-same-window-p): New function.
+	(w3m-form-input-textarea): Use it.
+
 	* w3m.el (w3m-local-find-file-regexps): Try to open with emacs-w3m as
 	many types as possible.
 
