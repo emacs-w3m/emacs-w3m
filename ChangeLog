@@ -1,3 +1,14 @@
+2008-12-06  Naohiro Aota  <nao.aota@gmail.com>
+
+	* w3m.el (w3m-show-redirection-error-information): New function.
+	(w3m-retrieve-and-render): Use it.
+	(w3m-w3m-retrieve-1): Return 'redirection-exceeded if redirect counter
+	exceeded.
+	(w3m-w3m-retrieve): Return "X-w3m-error/redirection" if attr eq
+	'redirection-exceeded.
+	(w3m-w3m-attributes-1): Return dummy attribute if redirect counter
+	exceeded.
+
 2008-12-05  Naohiro Aota  <nao.aota@gmail.com>
 
 	* w3m-form.el (w3m-same-window-p): New function.

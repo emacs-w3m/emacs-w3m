@@ -4997,7 +4997,7 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 	  (if (memq (car attr) '(301 302 303 304 305 306 307))
 	      (if (zerop counter)
 		  ;; Redirect counter exceeds `w3m-follow-redirection'.
-		  nil
+		  (list "text/html" "us-ascii" nil nil nil url)
 		;; Follow redirection.
 		(w3m-w3m-attributes-1 (nth 6 attr) no-cache
 				      (1- counter) handler))
@@ -5195,19 +5195,23 @@ It will put the retrieved contents into the current buffer.  See
 		(set-buffer-multibyte nil)
 		(w3m-w3m-retrieve-1 url post-data referer no-cache
 				    (or w3m-follow-redirection 0) handler)))
-      (when (and attr
-		 (or (not (string-match "\\`https?:" url))
-		     (memq (car attr) '(200 300))))
-	(if (or no-uncompress
-		(w3m-decode-encoded-contents (nth 4 attr)))
-	    (let ((temp-buffer (current-buffer)))
-	      (with-current-buffer current-buffer
-		(insert-buffer-substring temp-buffer))
-	      (goto-char (point-min))
-	      (cadr attr))
-	  (ding)
-	  (w3m-message "Can't decode encoded contents: %s" url)
-	  nil)))))
+      (when attr
+	(cond
+	 ((eq attr 'redirection-exceeded)
+	  "X-w3m-error/redirection")
+	 ((or (not (string-match "\\`https?:" url))
+	      (memq (car attr) '(200 300)))
+	  (if (or no-uncompress
+		  (w3m-decode-encoded-contents (nth 4 attr)))
+	      (let ((temp-buffer (current-buffer)))
+		(with-current-buffer current-buffer
+		  (insert-buffer-substring temp-buffer))
+		(goto-char (point-min))
+		(cadr attr))
+	    (ding)
+	    (w3m-message "Can't decode encoded contents: %s" url)
+	    nil))
+	 (t nil))))))
 
 (defun w3m-w3m-retrieve-1 (url post-data referer no-cache counter handler)
   "A subroutine for `w3m-w3m-retrieve'."
@@ -5258,7 +5262,7 @@ It will put the retrieved contents into the current buffer.  See
 	(if (memq (car attr) '(301 302 303 304 305 306 307))
 	    (if (zerop counter)
 		;; Redirect counter exceeds `w3m-follow-redirection'.
-		nil
+		'redirection-exceeded
 	      ;; Follow redirection.
 	      (erase-buffer)
 	      (unless (and post-data
@@ -5786,29 +5790,33 @@ called with t as an argument.  Otherwise, it will be called with nil."
 	(when (buffer-live-p page-buffer)
 	  (setq url (w3m-url-strip-authinfo url))
 	  (if type
-	      (let ((modified-time (w3m-last-modified url)))
-		(w3m-arrived-add url nil modified-time arrival-time)
-		(unless modified-time
-		  (setf (w3m-arrived-last-modified url) nil))
-		(let ((real (w3m-real-url url)))
-		  (unless (string= url real)
-		    (w3m-arrived-add url nil nil arrival-time)
-		    (setf (w3m-arrived-title real)
-			  (w3m-arrived-title url))
-		    (setf (w3m-arrived-last-modified real)
-			  (w3m-arrived-last-modified url))
-		    (setq url real)))
-		(prog1 (w3m-create-page url
-					(or (w3m-arrived-content-type url)
-					    type)
-					(or charset
-					    (w3m-arrived-content-charset url)
-					    (w3m-content-charset url))
-					page-buffer)
-		  (w3m-force-window-update-later page-buffer)
-		  (unless (get-buffer-window page-buffer)
-		    (w3m-message "The content (%s) has been retrieved in %s"
-				 url (buffer-name page-buffer)))))
+	      (if (string= type "X-w3m-error/redirection")
+		  (when (w3m-show-redirection-error-information url page-buffer)
+		    (w3m-message (w3m-message "Cannot retrieve URL: %s"
+					      url)))
+		(let ((modified-time (w3m-last-modified url)))
+		  (w3m-arrived-add url nil modified-time arrival-time)
+		  (unless modified-time
+		    (setf (w3m-arrived-last-modified url) nil))
+		  (let ((real (w3m-real-url url)))
+		    (unless (string= url real)
+		      (w3m-arrived-add url nil nil arrival-time)
+		      (setf (w3m-arrived-title real)
+			    (w3m-arrived-title url))
+		      (setf (w3m-arrived-last-modified real)
+			    (w3m-arrived-last-modified url))
+		      (setq url real)))
+		  (prog1 (w3m-create-page url
+					  (or (w3m-arrived-content-type url)
+					      type)
+					  (or charset
+					      (w3m-arrived-content-charset url)
+					      (w3m-content-charset url))
+					  page-buffer)
+		    (w3m-force-window-update-later page-buffer)
+		    (unless (get-buffer-window page-buffer)
+		      (w3m-message "The content (%s) has been retrieved in %s"
+				   url (buffer-name page-buffer))))))
 	    (ding)
 	    (when (eq (car w3m-current-forms) t)
 	      (setq w3m-current-forms (cdr w3m-current-forms)))
@@ -5861,6 +5869,17 @@ called with t as an argument.  Otherwise, it will be called with nil."
 		  header "</pre>\n"))))
   (w3m-create-page url "text/html" charset page-buffer)
   nil)
+
+(defun w3m-show-redirection-error-information (url page-buffer)
+  (erase-buffer)
+  (insert
+   (format "\n<br><h1>Cannot retrieve URL: %s</h1><br><br>%s"
+	   (format "<a href=\"%s\">%s</a>" url url)
+	   "Redirect counter exceeded `w3m-follow-redirection'.<br>\
+Check your <b>`w3m-follow-redirection'</b> is large enough.<br>\
+If it is enough, this may be because of the server's miss-configuration.<br>"))
+  ;; (w3m-cache-request-header url)
+  (w3m-create-page url "text/html" "us-ascii" page-buffer))
 
 (defun w3m-prepare-content (url type charset)
   "Prepare contents in the current buffer according to TYPE.
