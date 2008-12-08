@@ -119,12 +119,42 @@ PRIORITY-LIST is a list of coding systems ordered by priority."
        (charsetp 'mule-unicode-2500-33ff)
        (charsetp 'mule-unicode-e000-ffff)))
 
-(defun w3m-make-ccl-coding-system
-  (coding-system mnemonic docstring decoder encoder)
-  "Define a new CODING-SYSTEM by CCL programs DECODER and ENCODER.
-CODING-SYSTEM, DECODER and ENCODER must be symbol."
-  (make-coding-system coding-system 4 mnemonic docstring
-		      (cons decoder encoder)))
+(defalias 'w3m-make-ccl-coding-system
+  (if (fboundp 'define-coding-system)
+      (eval-when-compile
+	(funcall (if (and (fboundp 'define-coding-system)
+			  (featurep 'bytecomp))
+		     'byte-compile
+		   'identity)
+		 '(lambda (coding-system mnemonic docstring decoder encoder) "\
+Define a new CODING-SYSTEM by CCL programs DECODER and ENCODER.
+CODING-SYSTEM, DECODER and ENCODER must be symbols.
+This function is an interface to `define-coding-system'."
+		    (define-coding-system coding-system docstring
+		      :mnemonic mnemonic :coding-type 'ccl
+		      :ccl-decoder decoder :ccl-encoder encoder))))
+    (eval-when-compile
+      (funcall (if (featurep 'bytecomp)
+		   (lambda (form)
+		     (let ((byte-compile-warnings
+			    (if (eq (get 'make-coding-system 'byte-compile)
+				    'byte-compile-obsolete)
+				(delq 'obsolete
+				      (copy-sequence
+				       (cond ((consp byte-compile-warnings)
+					      byte-compile-warnings)
+					     (byte-compile-warnings
+					      byte-compile-warning-types)
+					     (t nil))))
+			      byte-compile-warnings)))
+		       (byte-compile form)))
+		 'identity)
+	       '(lambda (coding-system mnemonic docstring decoder encoder) "\
+Define a new CODING-SYSTEM by CCL programs DECODER and ENCODER.
+CODING-SYSTEM, DECODER and ENCODER must be symbols.
+This function is an interface to `make-coding-system'."
+		  (make-coding-system coding-system 4 mnemonic docstring
+				      (cons decoder encoder)))))))
 
 ;; For Emacsen of which the `mule-version' is 5.x, redefine the ccl
 ;; programs that been defined in w3m-ccl.el.
