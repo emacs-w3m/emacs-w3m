@@ -1,7 +1,16 @@
+2008-12-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-show-redirection-error-information): Improve the
+	error message.
+
 2008-12-10  Naohiro Aota  <nao.aota@gmail.com>
 
-	* w3m.el (w3m-url-encode-string): Encode SPC only when
-	encode-space is non-nil.
+	* w3m.el (w3m-next-anchor): Go to the first anchor when next
+	anchor is not found.
+	(w3m-previous-anchor): Go to the last anchor when previous anchor
+	is not found.
+	(w3m-url-encode-string): Encode SPC only when encode-space is
+	non-nil.
 
 	* w3m-form.el (w3m-form-make-form-data): Follow the above change.
 

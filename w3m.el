@@ -5877,10 +5877,9 @@ called with t as an argument.  Otherwise, it will be called with nil."
   (insert
    (format "\n<br><h1>Cannot retrieve URL: %s</h1><br><br>%s"
 	   (format "<a href=\"%s\">%s</a>" url url)
-	   "Redirect counter exceeded `w3m-follow-redirection'.<br>\
-Check your <b>`w3m-follow-redirection'</b> is large enough.<br>\
-If it is enough, this may be because of the server's miss-configuration.<br>"))
-  ;; (w3m-cache-request-header url)
+	   "The number of redirections has exceeded a limit.  This may have<br>\n
+happened due to the server side miss-configuration.  Otherwise,<br>\n
+try increasing the limit, the value of <b>`w3m-follow-redirection'</b>.<br>\n"))
   (w3m-create-page url "text/html" "us-ascii" page-buffer))
 
 (defun w3m-prepare-content (url type charset)
@@ -6836,9 +6835,10 @@ Return t if highlighting is successful."
 	(setq w3m-goto-anchor-hist nil)
 	(if (w3m-imitate-widget-button)
 	    (widget-forward 1)
-	  ;; Make a search from the beginning of the buffer.
-	  (goto-char (point-min))
-	  (w3m-goto-next-anchor)))
+	  (let ((pos (text-property-any
+		      (point-min) (point-max) 'w3m-anchor-sequence 1)))
+	    (when pos
+	      (goto-char pos)))))
       (setq arg (1- arg))
       (if (member (w3m-anchor-sequence) w3m-goto-anchor-hist)
 	  (setq arg (1+ arg))
@@ -6885,9 +6885,12 @@ Return t if highlighting is successful."
 	(setq w3m-goto-anchor-hist nil)
 	(if (w3m-imitate-widget-button)
 	    (widget-forward -1)
-	  ;; Make a search from the end of the buffer.
-	  (goto-char (point-max))
-	  (w3m-goto-previous-anchor)))
+	  (let ((pos (and w3m-max-anchor-sequence
+			  (text-property-any
+			   (point-min) (point-max) 
+			   'w3m-anchor-sequence w3m-max-anchor-sequence))))
+	    (when pos
+	      (goto-char pos)))))
       (setq arg (1- arg))
       (if (member (w3m-anchor-sequence) w3m-goto-anchor-hist)
 	  (setq arg (1+ arg))
