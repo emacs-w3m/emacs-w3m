@@ -1,3 +1,11 @@
+2008-12-10  David Engster  <dengste@eml.cc>
+
+	* sb-atom.el (shimbun-atom-get-headers): Use the first link if the atom
+	feed don't have an "alternate" link element.
+
+	* sb-atom-hash.el (shimbun-hash-update-items-impl): Deal with feeds who
+	just publish a summary, in addition to feeds with published content.
+
 2008-12-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-servers-list): Don't exclude rss-hash and

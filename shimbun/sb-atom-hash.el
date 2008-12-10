@@ -1,6 +1,6 @@
 ;;; sb-atom-hash.el --- shimbun backend for atom content -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2006 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2006, 2008 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: shimbun
@@ -93,6 +93,11 @@
 				    "alternate")
 		       (throw 'url (shimbun-atom-attribute-value
 				    (intern (concat atom-ns "href")) link)))))))
+	    (unless url
+	      (setq url (shimbun-atom-attribute-value
+			 (intern (concat atom-ns "href"))
+			 (car (shimbun-rss-find-el
+			       (intern (concat atom-ns "link")) entry)))))
 	    (when url
 	      (let* ((date (or (shimbun-rss-get-date shimbun url)
 			       (shimbun-rss-node-text atom-ns 'modified entry)
@@ -102,10 +107,16 @@
 		     (id (shimbun-atom-build-message-id shimbun url date))
 		     content)
 		;; save contents
-		(let (type mode)
-		  (dolist (content-node (shimbun-rss-find-el
-					 (intern (concat atom-ns "content"))
-					 entry))
+		(let ((contentsym 'content)
+		      type mode)
+		  (dolist (content-node (or (shimbun-rss-find-el
+					     (intern (concat atom-ns "content"))
+					     entry)
+					    (progn
+					      (setq contentsym 'summary)
+					      (shimbun-rss-find-el
+					       (intern (concat atom-ns "summary"))
+					       entry))))
 		    (setq type (or (shimbun-atom-attribute-value
 				    (intern (concat atom-ns "type"))
 				    content-node)
@@ -118,17 +129,17 @@
 		     ((string-match "xhtml" type)
 		      ;; xhtml (type text/xhtml,application/xhtml+xml)
 		      (setq content (shimbun-atom-rebuild-node
-				     atom-ns 'content entry)))
+				     atom-ns contentsym entry)))
 		     (t
 		      ;; text or html(without xhtml)
 		      (if (string= "escaped" mode)
 			  ;; escaped CDATA
 			  (setq content (shimbun-rss-node-text
-					 atom-ns 'content entry))
+					 atom-ns contentsym entry))
 			;; non-escaped, but  "<>& to &xxx;
 			(setq content (shimbun-decode-entities-string
 				       (shimbun-rss-node-text
-					atom-ns 'content entry))))))))
+					    atom-ns contentsym entry))))))))
 		(when (and id content)
 		  (shimbun-hash-set-item shimbun id content))))))))))
 
