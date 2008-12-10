@@ -155,6 +155,7 @@ Shimbun Library
 * Nnshimbun::                   Turning Gnus into a web browser!
 * Mew Shimbun::                 Reading web newspapers with Mew
 * Shimbun with Wanderlust::     Reading web newspapers with Wanderlust
+* Shimbun local mode::          Use a shell script to fetch shimbun feeds
 * Shimbun Sites::               Sites supported by Shimbun
 * Shimbun Basics::              How to make a new shimbun module
 
@@ -4391,6 +4392,7 @@ yourself (you need to be able to write Emacs Lisp programs).
 * Nnshimbun::                   Turning Gnus into a web browser!
 * Mew Shimbun::                 Reading web newspapers with Mew
 * Shimbun with Wanderlust::     Reading web newspapers with Wanderlust
+* Shimbun local mode::          Use a shell script to fetch shimbun feeds
 * Shimbun Sites::               Sites supported by Shimbun
 * Shimbun Basics::              How to make a new shimbun module
 @end menu
@@ -4966,6 +4968,49 @@ like to replace the @samp{$} mark with another.
 Wanderlust includes @samp{elmo-shimbun} as an ELMO module, so you can
 read @samp{shimbun} by just accessing a folder beginning with @samp{@@}
 (@pxref{Shimbun Folder, ,Shimbun Folder, wl, The Wanderlust Manual}).
+
+@node Shimbun local mode
+@section Using a shell script to fetch shimbun feeds
+
+If you read lots of @samp{shimbuns}, checking those for new articles can
+take some time due to emacs-w3m retrieving the feeds one by one.  If you
+want to speed this up, you can use a shell script to retrieve the feeds,
+which you can either call manually (e.g. from within Emacs) or
+automatically through schedulers like cron.  The feeds must be saved in
+specially named files, and emacs-w3m will then use those files instead
+of calling w3m.
+
+The following variables control the local mode:
+
+@table @code
+@item shimbun-use-local
+@vindex shimbun-use-local
+Setting this to @code{t} will activate the local mode, meaning that
+emacs-w3m will first check if a feed is available as a local file.  If
+it cannot be found, it will be retrieved through w3m as usual.
+
+@item shimbun-local-path
+@vindex shimbun-local-path
+This is the directory where the shimbun files are stored.  The default
+value is @code{w3m-default-save-directory}.
+@end table
+
+The file name for a feed is expected to be the MD5 of the URL, truncated
+to the first 10 characters, appended with the string @samp{_shimbun}.
+You can easily generate the file name for a feed in Emacs through
+
+@lisp
+(concat (substring (md5 "http://example/feed") 0 10) "_shimbun")
+@end lisp
+
+@findex nnshimbun-generate-download-script
+If you use Gnus with @samp{nnshimbun}, there is already a function which
+will generate a download shell script for all currently subscribed
+shimbun groups.  Just call @code{nnshimbun-generate-download-script},
+and it will generate the shell script in a new buffer which you can save
+afterwards.  If you call the function with a prefix, it will put an
+ampersand after each w3m call, so that the feeds are retrieved in
+parallel.
 
 @node Shimbun Sites
 @section Sites supported by Shimbun
@@ -5832,6 +5877,32 @@ also read the Atom feeds which contain published contents.  To do that,
 configure the variable @code{shimbun-atom-hash-group-path-alist} (and
 possibly @code{shimbun-atom-hash-x-face-alist}, etc.) in the way similar
 to shimbun-rss-hash-*.  The name of the back end is @samp{atom-hash}.
+
+@item RSS feeds without published content
+Many feeds do not contain the full content of the articles, or only so
+called teasers, i.e. quick summaries.  If a site publishes such a feed,
+instead of writing a special shimbun for it, you can in many cases use
+the @samp{rss-blogs} back end.  The setup is similar to the
+@samp{rss-hash} shimbun; here is an example:
+
+@lisp
+(setq shimbun-rss-blogs-group-url-regexp
+  '(("first-feed" "http://example/wordpressfeed")
+    ("second-feed" "http://example/somefeed"
+     "<div name=\"content\">" "<div name=\"comments\">")
+    ("third-feed" "http://example/someotherfeed" 'none)))
+@end lisp
+
+The first two items are the name and the URL of the feed.  Optionally,
+you can give two regular expressions denoting the start and end of the
+actual content on the HTML pages the feed is pointing to.  If you just
+use the symbol @code{none} here, no filtering will be done whatsoever.
+Additionally, the @samp{rss-blogs} shimbun can deal automatically with
+some popular blogging engines, namely Google's Blogger/Blogspot
+(including comment feeds), WordPress, and TypePad.  If your feed is from
+a site using one of those (which you can see by looking at the
+@code{generator} tag), just omit the optional parameters and the code
+will try to extract the content automatically for you.
 
 @item Wiki contents
 This is an example to use @samp{sb-wiki}.  @samp{sb-wiki} support
