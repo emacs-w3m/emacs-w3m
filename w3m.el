@@ -3246,7 +3246,7 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 	  (write-region (point-min) (point-max) file nil 'nomsg)
 	  (when mode (set-file-modes file mode)))))))
 
-(defun w3m-url-encode-string (str &optional coding)
+(defun w3m-url-encode-string (str &optional coding encode-space)
   (apply (function concat)
 	 (mapcar
 	  (lambda (ch)
@@ -3255,7 +3255,8 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 	      "%0D%0A")
 	     ((string-match "[-a-zA-Z0-9_:/.]" (char-to-string ch)) ; xxx?
 	      (char-to-string ch))	; printable
-	     ((char-equal ch ?\x20)	; space
+	     ((and (char-equal ch ?\x20); space
+		   encode-space)
 	      "+")
 	     (t
 	      (format "%%%02X" ch))))	; escape
@@ -4175,7 +4176,8 @@ not being archived in Gmane cannot be helped."
 		 "\\(?:Message-ID\\|References\\):[\t\n ]*<\\([^\t\n <>]+\\)>")
 	    (format
 	     fmt
-	     (w3m-url-encode-string (match-string-no-properties 1)))))))))
+	     (w3m-url-encode-string (match-string-no-properties 1)
+				    nil t))))))))
 
 (defun w3m-header-line-url ()
   "Return w3m-current-url if point on header line."
@@ -4281,7 +4283,7 @@ if it has no scheme part."
    (feeling-lucky
     (let* ((charset w3m-google-feeling-lucky-charset)
 	   (cs (w3m-charset-to-coding-system charset))
-	   (str (w3m-url-encode-string url cs)))
+	   (str (w3m-url-encode-string url cs t)))
       (format (concat "http://www.google.com/search"
 		      "?btnI=I%%27m+Feeling+Lucky&ie=%s&oe=%s&q=%s")
 	      charset charset str)))

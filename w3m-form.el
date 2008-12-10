@@ -348,11 +348,12 @@ If no field in forward, return nil without moving."
 	(mapconcat (lambda (elem)
 		     (setq elem (cdr elem))
 		     (format "%s=%s"
-			     (w3m-url-encode-string (car elem) coding)
+			     (w3m-url-encode-string (car elem) coding t)
 			     (w3m-url-encode-string (if (stringp (cdr elem))
 							(cdr elem)
 						      "")
-						    coding)))
+						    coding
+						    t)))
 		   bufs "&")))))
 
 (defun w3m-form-resume (forms)
