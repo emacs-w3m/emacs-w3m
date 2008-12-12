@@ -342,7 +342,7 @@ otherwise returns nil."
     (let ((start (current-time)))
       (while (or (and (prog2
 			  (discard-input)
-			  (not (save-current-buffer (sit-for 1)))
+			  (not (save-current-buffer (sit-for 0.1)))
 			(discard-input))
 		      ;; Some input is detected but it may be a key
 		      ;; press event which should be ignored when the
@@ -531,6 +531,8 @@ evaluated in a temporary buffer."
     (unwind-protect
 	(if (buffer-name (process-buffer process))
 	    (with-current-buffer (process-buffer process)
+	      (w3m-static-unless (featurep 'xemacs)
+		(accept-process-output process 1))
 	      (setq w3m-process-queue
 		    (delq w3m-process-object w3m-process-queue))
 	      (let ((exit-status (process-exit-status process))
