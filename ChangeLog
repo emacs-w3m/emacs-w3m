@@ -1,3 +1,7 @@
+2008-12-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-compatible-encoding-alist): Add (gb2312 . gbk).
+
 2008-12-12  David Engster  <dengste@eml.cc>
 
 	* w3m-proc.el (w3m-process-wait-process): Reduce sit-for time.
