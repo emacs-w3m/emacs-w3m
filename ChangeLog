@@ -1,3 +1,10 @@
+2008-12-17  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-session.el (w3m-session-select-mode-map): Add new key.
+	(w3m-session-select-mode): Modify doc-string.
+	(w3m-session-select-rename): New command.
+	(w3m-session-rename): New function.
+
 2008-12-17  Naohiro Aota  <naota@elisp.net>
 
 	* w3m.el (autoload): Add w3m-setup-session-menu.

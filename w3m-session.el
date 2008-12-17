@@ -264,6 +264,8 @@
     (define-key map "D" 'w3m-session-select-delete)
     (define-key map "s" 'w3m-session-select-save)
     (define-key map "S" 'w3m-session-select-save)
+    (define-key map "r" 'w3m-session-select-rename)
+    (define-key map "R" 'w3m-session-select-rename)
     (define-key map "n" 'w3m-session-select-next)
     (define-key map "j" 'w3m-session-select-next)
     (define-key map "\C-n" 'w3m-session-select-next)
@@ -287,6 +289,7 @@
 \\[w3m-session-select-select]	Select the session.
 \\[w3m-session-select-open-session-group]	Open the session group.
 \\[w3m-session-select-delete]	Delete the session.
+\\[w3m-session-select-rename]	Rename the session.
 \\[w3m-session-select-save]	Save the session.
 \\[w3m-session-select-next]	Move the point to the next session.
 \\[w3m-session-select-previous]	Move the point to the previous session.
@@ -496,6 +499,17 @@
     (w3m-session-save)
     (w3m-session-select)))
 
+(defun w3m-session-select-rename ()
+  "Rename this session."
+  (interactive)
+  (beginning-of-line)
+  (let ((num (get-text-property
+	      (point) 'w3m-session-number))
+	(sessions w3m-session-select-sessions))
+    (w3m-session-select-quit)
+    (w3m-session-rename sessions num)
+    (w3m-session-select)))
+
 (defun w3m-session-select-delete ()
   "Delete the session."
   (interactive)
@@ -568,6 +582,39 @@
     (when (and cbuf (eq major-mode 'w3m-mode))
       (set-window-buffer (selected-window) cbuf))
     (message "Session goto(%s)...done" title)))
+
+(defun w3m-session-rename (sessions num)
+    (if (consp num)
+	(message "This command can execute in Main session area")
+      (let ((prompt "New session title: ")
+	    (overwrite nil)
+	    tmp title otitle)
+	(setq tmp (nth num sessions))
+	(setq otitle (car tmp))
+	(setq title otitle)
+	(catch 'loop
+	  (while t
+	    (setq title (read-from-minibuffer prompt otitle))
+	    (cond
+	     ((string= title "")
+	      nil)
+	     ((string= title otitle)
+	      (when (y-or-n-p
+		     (format "\"%s\" is same as original title. Do not rename? "
+			     title))
+		(throw 'loop t)))
+	     ((assoc title sessions)
+	      (when (y-or-n-p (format "\"%s\" is exist. Overwrite? " title))
+		(setq overwrite t)
+		(throw 'loop t))))
+	    (setq prompt "Again New session title: ")))
+	(when overwrite
+	  (setq sessions (delete (assoc title sessions) sessions)))
+	(unless (string= title otitle)
+	  (setq sessions (delete tmp sessions))
+	  (setcar tmp title)
+	  (setq sessions (cons tmp sessions))
+	  (w3m-save-list w3m-session-file sessions)))))
 
 (defun w3m-session-delete (sessions num)
   (let (tmp)
