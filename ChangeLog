@@ -1,3 +1,12 @@
+2008-12-17  Naohiro Aota  <naota@elisp.net>
+
+	* w3m.el (autoload): Add w3m-setup-session-menu.
+	(w3m-menubar): Moved session menu to w3m-session-menu-items.
+	(top): Call w3m-setup-session-menu.
+
+	* w3m-session.el: Change to use major mode; Add session menu.
+	(w3m-session-unknown-title): New option.
+
 2008-12-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-compatible-encoding-alist): Add (gb2312 . gbk).

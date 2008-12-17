@@ -156,6 +156,7 @@
     "Select session from session list." t)
   (autoload 'w3m-session-save "w3m-session"
     "Save list of displayed session." t)
+  (autoload 'w3m-setup-session-menu "w3m-session")
   (autoload 'w3m-session-automatic-save "w3m-session")
   (autoload 'w3m-session-deleted-save "w3m-session"))
 
@@ -2467,33 +2468,6 @@ nil value means it has not been initialized.")
   (let ((a (when w3m-use-japanese-menu
 	     (decode-coding-string "\e$B%\"\e(B" 'iso-2022-jp)))) ;; ア
     `("w3m"
-      (,(w3m-make-menu-item "セッション" "Session")
-       [,(w3m-make-menu-item "新しいセッションを作る..."
-			     "Create New Session...")
-	w3m-goto-new-session-url t]
-       [,(w3m-make-menu-item "このセッションを複製する" "Copy This Session")
-	w3m-copy-buffer w3m-current-url]
-       "----" ;; separator
-       [,(w3m-make-menu-item "前のセッションに移動する"
-			     "Move Previous Session")
-	w3m-previous-buffer
-	(> (safe-length (w3m-list-buffers)) 1)]
-       [,(w3m-make-menu-item "次のセッションに移動する" "Move Next Session")
-	w3m-next-buffer
-	(> (safe-length (w3m-list-buffers)) 1)]
-       "----" ;; separator
-       [,(w3m-make-menu-item "このセッションを閉じる" "Close This Session")
-	w3m-delete-buffer
-	(> (safe-length (w3m-list-buffers)) 1)]
-       [,(w3m-make-menu-item "他のセッションを閉じる" "Close Other Sessions")
-	w3m-delete-other-buffers
-	(> (safe-length (w3m-list-buffers)) 1)]
-       [,(w3m-make-menu-item "現在のセッションを保存する"
-			     "Save Displayed Sessions")
-	w3m-session-save t]
-       [,(w3m-make-menu-item "セッションを選択する" "Select Sessions")
-	w3m-session-select t]
-       ) ;; end session
       [,(w3m-make-menu-item "この URL を新しいセッションで開く"
 	  "Open This URL in a new session")
        w3m-view-this-url-new-session (or (w3m-anchor) (w3m-image))]
@@ -3561,6 +3535,7 @@ The database is kept in `w3m-entity-table'."
 	  (define-key w3m-mode-map [menu-bar] (make-sparse-keymap))
 	  (when w3m-use-tab-menubar (w3m-setup-tab-menu))
 	  (w3m-setup-bookmark-menu)
+	  (w3m-setup-session-menu)
 	  (define-key w3m-mode-map [menu-bar w3m] (cons (car w3m-menubar) map))
 	  (require 'easymenu)
 	  (easy-menu-define
