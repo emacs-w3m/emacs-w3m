@@ -1,5 +1,8 @@
 2008-12-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-aljazeera.el (shimbun-aljazeera-content-end): Add comment.
+	(sb-aljazeera-wash-article): Look for content-start and content-end.
+
 	* sb-nytimes.el (shimbun-nytimes-japanese-hankaku): Default to `never'.
 	(shimbun-nytimes-clear-contents, shimbun-get-headers): Replace wide
 	apostrophe with the normal one.

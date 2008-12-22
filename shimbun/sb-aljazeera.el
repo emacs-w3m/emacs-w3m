@@ -50,6 +50,7 @@
 
 (defvar shimbun-aljazeera-content-start "<td[^>]*DetaildTitle[^>]*>")
 
+;; FIXME: The value is currently useless.  See `sb-aljazeera-wash-article'.
 (defvar shimbun-aljazeera-content-end "<TD id=\"tdRightColumn\"")
 
 (defvar shimbun-aljazeera-groups (mapcar 'car shimbun-aljazeera-path-alist))
@@ -86,7 +87,17 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABgAAAAgAgMAAAB1MFCrAAAADFBMVEXIiyP27tr9/v7ixH8
   (while (re-search-forward "<tr[^>]*id=\"trMainImages" nil t)
     (let ((beg (match-beginning 0)))
       (when (search-forward "</tr>" nil t)
-	(delete-region beg (point))))))
+	(delete-region beg (point)))))
+  ;; Look for content-start and content-end again and remove garbage.
+  ;; (It's failed if either one has not been found.)
+  (goto-char (point-min))
+  (when (and (re-search-forward shimbun-aljazeera-content-start nil t)
+	     (progn
+	       (delete-region (point-min) (match-beginning 0))
+	       (re-search-forward "<td\\(?:[\t\n ]+[^>]*\\)?>[\t\n ]*\
+&nbsp;Source:</td>[^<]*<td>[^<]*</td>\\(?:[^<]*</[^>]+>\\)*" nil t)))
+    (delete-region (match-end 0) (point-max))
+    (insert "\n")))
 
 (luna-define-method shimbun-make-contents
   :before ((shimbun shimbun-aljazeera) header)
