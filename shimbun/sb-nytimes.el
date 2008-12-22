@@ -221,6 +221,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
 
 (defvar shimbun-nytimes-retry-fetching 1)
 
+(defvar shimbun-nytimes-japanese-hankaku 'never)
+
 (luna-define-method shimbun-multi-next-url ((shimbun shimbun-nytimes)
 					    header url)
   (goto-char (point-min))
@@ -397,6 +399,10 @@ Skip[\t\n ]+to[\t\n ]+next[\t\n ]+paragraph[\t\n ]*</a>[\t\n ]*"
 \[\t\n ]*"
 				nil t)
 	(delete-region (match-beginning 0) (match-end 0)))
+      ;; Replace wide apostrophe with the normal one.
+      (goto-char (point-min))
+      (while (re-search-forward "&#8217;\\|&#x2019;" nil t)
+	(replace-match "&#39;"))
       ;; Add page delimiters.
       (goto-char (point-min))
       (while (re-search-forward "[\t\n ]*\\(?:<p>[\t\n ]*\\)+\
@@ -412,14 +418,22 @@ Skip[\t\n ]+to[\t\n ]+next[\t\n ]+paragraph[\t\n ]*</a>[\t\n ]*"
 
 (luna-define-method shimbun-get-headers :around ((shimbun shimbun-nytimes)
 						 &optional range)
-  ;; Show the group name in the From header.
   (let ((name (cadr (assoc (shimbun-current-group-internal shimbun)
 			   shimbun-nytimes-group-table)))
+	(apostrophe (condition-case nil
+			(make-char 'japanese-jisx0208 33 71)
+		      (error nil)))
 	(headers (luna-call-next-method)))
     (dolist (header headers headers)
+      ;; Show the group name in the From header.
       (shimbun-header-set-from header
 			       (concat (shimbun-header-from header)
-				       " <" name ">")))))
+				       " <" name ">"))
+      ;; Replace wide apostrophe with the normal one in the subject.
+      (when apostrophe
+	(shimbun-header-set-subject
+	 header (shimbun-subst-char-in-string
+		 apostrophe ?' (shimbun-header-subject header t)))))))
 
 (provide 'sb-nytimes)
 

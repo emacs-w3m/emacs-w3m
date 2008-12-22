@@ -1,5 +1,9 @@
 2008-12-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-nytimes.el (shimbun-nytimes-japanese-hankaku): Default to `never'.
+	(shimbun-nytimes-clear-contents, shimbun-get-headers): Replace wide
+	apostrophe with the normal one.
+
 	* sb-multi.el (toplevel): Load sb-text for shimbun-shallow-rendering
 	when compiling; autoload sb-text for shimbun-fill-line at run-time.
 	(shimbun-multi-retrieve-next-pages): Support making text/plain articles.
