@@ -913,7 +913,7 @@ Each table is the same as the `cdr' of the element of
 `shimbun-asahi-group-table'.")
 
 (defvar shimbun-asahi-content-start
-  "<div[\t\n ]+class=\"\\(?:ThmbSet256\\|Kansai-ThmbSet100\\)\">\
+  "<div[\t\n ]+class=\"\\(?:ThmbSet256\\|Kansai-ThmbSet100\\|ThmbCol\\)\">\
 \\|<!--[\t\n ]*End of Headline[\t\n ]*-->\
 \\(?:[\t\n ]*<div[\t\n ]+[^<]+</div>[\t\n ]*\
 \\|[\t\n ]*<p[\t\n ]+[^<]+</p>[\t\n ]*\\)?\
@@ -930,7 +930,7 @@ Each table is the same as the `cdr' of the element of
 \\|<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
 
 (defvar shimbun-asahi-text-content-start
-  "<div[\t\n ]+class=\"\\(?:ThmbSet256\\|Kansai-ThmbSet100\\)\">\
+  "<div[\t\n ]+class=\"\\(?:ThmbSet256\\|Kansai-ThmbSet100\\|ThmbCol\\)\">\
 \\|<!--[\t\n ]*End of Headline[\t\n ]*-->\
 \\(?:[\t\n ]*<div[\t\n ]+[^<]+</div>[\t\n ]*\
 \\|[\t\n ]*<p[\t\n ]+[^<]+</p>[\t\n ]*\\)?\
