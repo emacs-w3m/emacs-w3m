@@ -1,6 +1,6 @@
 ;;; sb-atom-hash.el --- shimbun backend for atom content -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2006, 2008 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2006, 2007, 2008 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: shimbun

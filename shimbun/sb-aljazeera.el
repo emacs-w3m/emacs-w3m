@@ -1,6 +1,6 @@
 ;;; sb-aljazeera.el --- Al Jazeera shimbun backend
 
-;; Copyright (C) 2007 David Hansen
+;; Copyright (C) 2007, 2008 David Hansen
 
 ;; Author: David Hansen <david.hansen@physik.fu-berlin.de>
 ;; Keywords: news
