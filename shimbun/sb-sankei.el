@@ -307,7 +307,8 @@ title[\t\n ]+end[\t\n ]+-+>"
 	    (shimbun-japanese-hankaku-buffer t))
 
 	  ;; Break long lines.
-	  (shimbun-break-long-japanese-lines)
+	  (unless (shimbun-prefer-text-plain-internal shimbun)
+	    (shimbun-break-long-japanese-lines))
 	  (not no-footer))
 
       (erase-buffer)

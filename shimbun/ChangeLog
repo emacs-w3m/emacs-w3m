@@ -1,5 +1,12 @@
 2008-12-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-multi.el (toplevel): Load sb-text for shimbun-shallow-rendering
+	when compiling; autoload sb-text for shimbun-fill-line at run-time.
+	(shimbun-multi-retrieve-next-pages): Support making text/plain articles.
+
+	* sb-sankei.el (shimbun-sankei-clear-contents): Don't break long lines
+	in text/plain articles.
+
 	* sb-asahi.el (shimbun-asahi-content-start)
 	(shimbun-asahi-text-content-start): Update.
 

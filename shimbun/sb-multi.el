@@ -1,6 +1,6 @@
 ;;; sb-multi.el --- Virtual shimbun class to retrieve multiple pages.
 
-;; Copyright (C) 2006 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2006, 2007, 2008 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: news
@@ -31,6 +31,9 @@
 
 (require 'shimbun)
 
+(eval-when-compile (require 'sb-text)) ;; `shimbun-shallow-rendering'
+(autoload 'shimbun-fill-line "sb-text")
+
 (luna-define-class shimbun-multi () ())
 
 (luna-define-generic shimbun-multi-next-url (shimbun header url)
@@ -51,7 +54,8 @@ Return nil, unless a content is cleared successfully.")
 
 (defun shimbun-multi-retrieve-next-pages (shimbun header base-cid url
 						  &optional images cont)
-  (let ((case-fold-search t) base-url next-url)
+  (let ((prefer-text-plain (shimbun-prefer-text-plain-internal shimbun))
+	(case-fold-search t) base-url next-url)
     (setq base-url (or (shimbun-current-base-url) url)
 	  next-url (shimbun-multi-next-url shimbun header base-url))
     (when (shimbun-multi-clear-contents shimbun header cont next-url)
@@ -62,13 +66,20 @@ Return nil, unless a content is cleared successfully.")
       (goto-char (point-max))
       (if next-url
 	  (insert "\n</body>\n</html>\n")
-	(shimbun-insert-footer shimbun header t "</body>\n</html>\n")))
-    (when shimbun-encapsulate-images
-      (setq images (shimbun-mime-replace-image-tags shimbun
-						    base-cid
-						    base-url
-						    images)))
-    (let ((body (shimbun-make-text-entity "text/html" (buffer-string)))
+	(if prefer-text-plain
+	    (shimbun-insert-footer shimbun header)
+	  (shimbun-insert-footer shimbun header t "</body>\n</html>\n"))))
+    (if prefer-text-plain
+	(shimbun-shallow-rendering)
+      (when shimbun-encapsulate-images
+	(setq images (shimbun-mime-replace-image-tags shimbun
+						      base-cid
+						      base-url
+						      images))))
+    (let ((body (shimbun-make-text-entity (if prefer-text-plain
+					      "text/plain"
+					    "text/html")
+					  (buffer-string)))
 	  (result
 	   (when next-url
 	     (with-temp-buffer
