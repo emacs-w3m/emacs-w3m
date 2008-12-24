@@ -38,8 +38,6 @@
      "http://www.sueddeutsche.de/app/service/rss/ressort/wirtschaft/rss.xml")
     ("finanzen"
      "http://www.sueddeutsche.de/app/service/rss/ressort/finanzen/rss.xml")
-    ("kino"
-     "http://www.sueddeutsche.de/app/service/rss/kino/neuimkino.xml")
     ("kultur"
      "http://www.sueddeutsche.de/app/service/rss/ressort/kultur/rss.xml")
     ("sport"
@@ -85,10 +83,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEXLyspMSkr///9+fX1
     (mapcar
      (lambda (header)
        (setq url (shimbun-header-xref header))
-       (when (string-match "target=http%3A%2F%2F\\(.*\\)%2F" url)
-	 (setq url (concat "http://" (match-string 1 url) "/print.html"))
-	 (while (string-match "%2F" url)
-	   (setq url (replace-match "/" t t url)))
+       (when (string-match "ns_url=\\(http://www.sueddeutsche.de/.*\\)/" url)
+	 (setq url (concat (match-string 1 url) "/print.html"))
 	 (shimbun-header-set-xref header url))
        header)
      headers)))
@@ -98,11 +94,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEXLyspMSkr///9+fX1
 						  url date)
   (let ((group (shimbun-current-group-internal shimbun))
 	id)
-    (cond ((and (string-equal group "kino")
-		(string-match "/\\([0-9]+\\)/" url))
-	   (concat "<" (match-string 1 url) "." group "@sueddeutsche.de>"))
-	  ((string-match
-	    "target=.*sueddeutsche.de.*%2F\\([0-9]+\\)%2F\\([0-9]+\\)%2F" url)
+    (cond ((string-match
+	    "ns_url=.*sueddeutsche.de.*/\\([0-9]+\\)/\\([0-9]+\\)/" url)
 	   (concat "<" (match-string 1 url) "." (match-string 2 url) "." group
 		   "@sueddeutsche.de>"))
 	  (t

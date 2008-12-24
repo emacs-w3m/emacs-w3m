@@ -23,12 +23,11 @@
 ;;; Code:
 
 (require 'shimbun)
-(require 'sb-multi)
 
-(luna-define-class shimbun-slashdot (shimbun-multi shimbun) ())
+(luna-define-class shimbun-slashdot (shimbun) ())
 
 (defvar shimbun-slashdot-group-url
-  '(("frontpage" "http://www.slashdot.org")
+  '(("frontpage" "http://slashdot.org")
     ("apple" "http://apple.slashdot.org")
     ("askslashdot" "http://ask.slashdot.org")
     ("books" "http://books.slashdot.org")
@@ -56,14 +55,14 @@
 Can be 'flat', 'thread', or 'nested'.")
 
 (defvar shimbun-slashdot-regexp-section-id-subject
-  "<\\(?:div\\|h3\\)[ \t]+class=\"\\(generaltitle\\|briefarticles\\|story\\)\"[^\0]*?\
-<a[ \t]+href=\".*slashdot.org/\\(.*?\\)/\\(.*?\\).shtml\".*?>\\(.*?\\)</a>")
+  "<\\s-*h3\\s-+class=\"story\"[^\0]*?<a\\s-+href=\"\
+\\(?:/*\\([a-zA-Z]+\\)?\\.?slashdot.org/article.pl\\?sid=\\(.*?\\)\
+\\|.*slashdot.org/\\(.*?\\)/\\(.*?\\).shtml\\)\
+\".*?>\\(.*?\\)</a>")
 
 (defvar shimbun-slashdot-regexp-author-time
-  "Posted[\t \n]+by[^a-zA-Z]*\\(.*\\)[^\0]*?@\\([0-9]+\\):\\([0-9]+\\)\\(AM\\|PM\\)")
-
-(defvar shimbun-slashdot-regexp-comment-system
-  "use[ \t]+<a[ \t]+href=\"\\(.+\\)\">[ \t]*the classic discussion system")
+  "Posted[\t \n]+by[^a-zA-Z]*\\(.*\\)[^\0]*?on\\s-+[a-zA-Z]+\\s-+\
+\\([a-zA-Z]+\\)\\s-+\\([0-9]+\\).+@\\([0-9]+\\):\\([0-9]+\\)\\(AM\\|PM\\)")
 
 (defvar shimbun-slashdot-groups
   (mapcar 'car shimbun-slashdot-group-url))
@@ -86,98 +85,98 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAgID////5Zpl0AAA
 
 (defun shimbun-slashdot-get-headers (shimbun)
   (let ((from "Slashdot <invalid@slashdot.org>")
-	hour minute date ampm id url subject headers section)
-    (catch 'stop
-      (while (re-search-forward shimbun-slashdot-regexp-section-id-subject
-				nil t)
-	(setq section (match-string 2))
-	(setq id (match-string 3))
-	(setq url (concat "http://www.slashdot.org/" section "/" id ".shtml"))
-	;; Make section prettier
+	(allmonths '("january" "february" "march" "april" "may" "june"
+		     "july" "august" "september" "october" "november"
+		     "december"))
+	month day hour minute date ampm id url subject headers section)
+    ;; Make article URL
+    (while (re-search-forward shimbun-slashdot-regexp-section-id-subject
+			      nil t)
+      (setq section (or (match-string 1) (match-string 3))
+	    id (or (match-string 2) (match-string 4))
+	    url (concat "http://" section ".slashdot.org/article.pl?sid=" id
+			"&simpledesign=1&lowbandwidth=1")
+	    subject (match-string 5))
+      (if (null shimbun-slashdot-get-comments)
+	  (setq url (concat url "&no_d2=1&threshold=5"))
+	(setq url (concat url "&no_d2=1&threshold="
+			  (number-to-string shimbun-slashdot-comment-threshold)
+			  "&mode=" shimbun-slashdot-comment-display
+			  "&commentsort=0&pid=0")))
+      ;; Make section prettier
+      (when section
+	(when (string= section "ask")
+	  (setq section "askslashdot"))
 	(setq subject (concat
 		       (if (< (length section) 4)
 			   (upcase section)
 			 (capitalize section))
-		       ": " (match-string 4)))
-	(while (string-match "</?[a-zA-Z]+?>" subject)
-	  (setq subject (replace-match "\"" t t subject)))
-	(if (string= (match-string 1) "briefarticles")
-	    (progn
-	      (setq hour "00")
-	      (setq minute "00")
-	      (setq from "Slashdot")
-	      (setq subject (concat "(brief article) " subject)))
-	  (when (re-search-forward shimbun-slashdot-regexp-author-time
-				   nil t)
-	    (setq from (match-string 1))
-	    (setq hour (match-string 2))
-	    (setq minute (match-string 3))
-	    ;; US->European time conversion
-	    (cond
-	     ((and (string= (match-string 4) "PM")
-		   (not (string= hour "12")))
-	      (setq hour
-		    (number-to-string (+ (string-to-number hour) 12))))
-	     ((and (string= (match-string 4) "AM")
-		   (string= hour "12"))
-	      (setq hour "00")))
-	    ;; remove link from author name if necessary
-	    (when (string-match ">\\(.*\\)</a>" from)
-	      (setq from (match-string 1 from))))
-	  (while (string-match "/" id)
-	    (setq id (replace-match "" t t id)))
-	  (setq date (shimbun-make-date-string
-		      ;; Hey, my first year 2100 bug!
-		      (string-to-number (concat "20" (substring id 0 2)))
-		      (string-to-number (substring id 2 4))
-		      (string-to-number (substring id 4 6))
-		      (format "%s:%s" hour minute)
-		      ;; Maybe we should derive this from current-time-zone?
-		      "+0000")))
+		       ": " subject)))
+      (while (string-match "</?[a-zA-Z]+?>" subject)
+	(setq subject (replace-match "\"" t t subject)))
+      (when (re-search-forward shimbun-slashdot-regexp-author-time
+			       nil t)
+	(setq from (match-string 1)
+	      month (match-string 2)
+	      day (match-string 3)
+	      hour (match-string 4)
+	      minute (match-string 5)
+	      ampm (match-string 6))
+	(setq month
+	      (- 13 (length
+		     (member-ignore-case month allmonths))))
+	;; US->European time conversion
+	(cond
+	 ((and (string= ampm "PM")
+	       (not (string= hour "12")))
+	  (setq hour
+		(number-to-string (+ (string-to-number hour) 12))))
+	 ((and (string= ampm "AM")
+	       (string= hour "12"))
+	  (setq hour "00")))
+	;; remove link from author name if necessary
+	(when (string-match ">\\(.*\\)</a>" from)
+	  (setq from (match-string 1 from)))
+	(while (string-match "/" id)
+	  (setq id (replace-match "" t t id)))
+	(setq date (shimbun-make-date-string
+		    ;; Hey, my first year 2100 bug!
+		    (string-to-number (concat "20" (substring id 0 2)))
+		    month (string-to-number day)
+		    (format "%s:%s" hour minute)
+		    ;; Maybe we should derive this from current-time-zone?
+		    "+0000"))
 	(setq id (concat "<" section id "@slashdot.org>"))
-	(when (shimbun-search-id shimbun id)
-	  (throw 'stop nil))
-	(push (shimbun-make-header
-	       0 (shimbun-mime-encode-string subject)
-	       (shimbun-mime-encode-string from)
-	       date id "" 0 0 url)
-	      headers)))
+	(unless (shimbun-search-id shimbun id)
+	  (push (shimbun-make-header
+		 0 (shimbun-mime-encode-string subject)
+		 (shimbun-mime-encode-string from)
+		 date id "" 0 0 url)
+		headers))))
     headers))
-
-(luna-define-method shimbun-multi-next-url ((shimbun shimbun-slashdot)
-                                            header url)
-  (if (and shimbun-slashdot-get-comments
-	   (progn
-	     (goto-char (point-min))
-	     (re-search-forward shimbun-slashdot-regexp-comment-system nil t)))
-      (let ((url (concat "http:" (match-string 1))))
-	(when (string-match "threshold=\\([0-9]\\)" url)
-	  (setq url
-		(replace-match
-		 (number-to-string shimbun-slashdot-comment-threshold)
-		 t t url 1)))
-	(when (string-match "mode=\\([a-zA-Z]+\\)" url)
-	  (setq url
-		(replace-match shimbun-slashdot-comment-display t t url 1)))
-	url)
-    nil))
 
 (luna-define-method shimbun-clear-contents :around ((shimbun
 						     shimbun-slashdot)
 						    header)
   (goto-char (point-min))
-  (if (or (null shimbun-slashdot-get-comments)
-	  (re-search-forward "<div class=\"intro\".*?>" nil t))
-      (progn
-	(goto-char (point-min))
-	(shimbun-remove-tags "<html>" "<div class=\"intro\".*?>")
-	(shimbun-remove-tags "<div class=\"commentBox\".*?>" "</html>")
-	(when shimbun-slashdot-get-comments
-	  (goto-char (point-max))
-	  (insert "\n<br><br>&#012\n")))
-    (shimbun-remove-tags "<html>" "<a name=\"topcomment\">")
-    (shimbun-remove-tags "<div id=\"footer\">" "</html>")))
-
+  (shimbun-remove-tags "<html>" "<div class=\"intro\".*?>")
+  (if (null shimbun-slashdot-get-comments)
+      (shimbun-remove-tags "<div class=\"commentBox\".*?>" "</html>")
+    (re-search-forward "<a name=\"topcomment\">" nil t)
+    (insert "\n<br><br>&#012\n")
+    (shimbun-remove-tags "<div id=\"footer\">" "</html>")
+    (shimbun-remove-tags "<div class=\"commentwrap\"" "<a name=\"topcomment\">")
+    ;; convert quote tags to italics
+    (goto-char (point-min))
+    (while (re-search-forward "\
+\\(<[ ]*div[ ]+class=[\"']quote[\"'][ ]*>\\|<[ ]*blockquote[ ]*>\\)"
+			      nil t)
+      (let ((str (match-string 0)))
+	(replace-match "<i>")
+	(if (string-match "class" str)
+	    (re-search-forward "</div>")
+	  (re-search-forward "</blockquote>"))
+	(replace-match "</i>")))))
 
 (provide 'sb-slashdot)
 

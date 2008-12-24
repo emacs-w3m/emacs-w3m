@@ -1,3 +1,22 @@
+2008-12-23  David Engster  <dengste@eml.cc>
+
+	* sb-sueddeutsche-de.el (shimbun-sueddeutsche-de-group-url): Removed
+	kino group since feed is broken.
+	(shimbun-get-headers, shimbun-rss-build-message-id): Adapt to new URL
+	scheme.
+
+	* sb-slashdot.el (sb-multi): Removed.
+	(shimbun-slashdot-group-url): Changed frontpage URL.
+	(shimbun-slashdot-regexp-section-id-subject): Adapt regexp.
+	(shimbun-slashdot-regexp-author-time): Changed for better date parsing.
+	(shimbun-slashdot-regexp-comment-system): Removed.
+	(shimbun-slashdot-get-headers): Adapt to new site design.  Improved
+	date parsing.  Immediately retrieve old comment system.  Removed
+	catch/throw since new articles need not be at the top.
+	(shimbun-multi-next-url): Removed.
+	(shimbun-clear-contents): Changed due to removal of sb-multi.  Set
+	quotes in italics.
+
 2008-12-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-aljazeera.el (shimbun-aljazeera-content-end): Add comment.
