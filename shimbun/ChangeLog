@@ -1,5 +1,8 @@
 2008-12-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun.el (shimbun-headers-1): New function to support refresh.
+	(shimbun-headers): Use it.
+
 	* sb-slashdot.el (shimbun-slashdot-get-headers): Don't use
 	member-ignore-case that's unavailable in XEmacs 21.4.
 
