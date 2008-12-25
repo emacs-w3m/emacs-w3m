@@ -122,9 +122,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAgID////5Zpl0AAA
 	      hour (match-string 4)
 	      minute (match-string 5)
 	      ampm (match-string 6))
-	(setq month
-	      (- 13 (length
-		     (member-ignore-case month allmonths))))
+	(setq month (- 13 (length (member (downcase month) allmonths))))
 	;; US->European time conversion
 	(cond
 	 ((and (string= ampm "PM")

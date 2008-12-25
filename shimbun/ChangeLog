@@ -1,3 +1,8 @@
+2008-12-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-slashdot.el (shimbun-slashdot-get-headers): Don't use
+	member-ignore-case that's unavailable in XEmacs 21.4.
+
 2008-12-23  David Engster  <dengste@eml.cc>
 
 	* sb-sueddeutsche-de.el (shimbun-sueddeutsche-de-group-url): Removed
