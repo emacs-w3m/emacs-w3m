@@ -1,3 +1,15 @@
+2008-12-30  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-select-buffer-mode-map): Bind `w3m-select-buffer-quit' to
+	C-g.
+
+	* w3m-form.el (w3m-form-input-select-keymap): Bind
+	`w3m-form-input-select-keymap' to C-g.
+	(w3m-form-input-map-keymap): Bind `w3m-form-input-map-exit' to C-g.
+
+	* w3m-session.el (w3m-session-select-mode-map): Bind
+	`w3m-session-select-quit' to C-g.
+
 2008-12-17  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-session.el (w3m-session-select-mode-map): Add new key.
@@ -8486,7 +8498,7 @@
 	* w3m-bug.el: New file.
 
 	* w3m.el: Autoload "w3m-bug" for `report-emacs-w3m-bug'.
-	(w3m-lynx-like-map): Bind `report-emacs-w3m-bug' to C-cb.
+	(w3m-lynx-like-map): Bind `report-emacs-w3m-bug' to C-cb.<
 	(w3m-info-like-map): Ditto.
 
 	* w3m-om.el (compose-mail): New function.

@@ -258,6 +258,7 @@
     (suppress-keymap map)
     (define-key map "q" 'w3m-session-select-quit)
     (define-key map "Q" 'w3m-session-select-quit)
+    (define-key map "\C-g" 'w3m-session-select-quit)
     (define-key map "\C-m" 'w3m-session-select-select)
     (define-key map "\M-s" 'w3m-session-select-open-session-group)
     (define-key map "d" 'w3m-session-select-delete)

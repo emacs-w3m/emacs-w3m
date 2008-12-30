@@ -9788,6 +9788,7 @@ buffer list.  The following command keys are available:
     (define-key map "\C-c\C-c" 'w3m-select-buffer-show-this-line-and-quit)
     (define-key map "\C-c\C-k" 'w3m-select-buffer-quit)
     (define-key map "\C-c\C-q" 'w3m-select-buffer-quit)
+    (define-key map "\C-g" 'w3m-select-buffer-quit)
     (define-key map "?" 'describe-mode)
     (setq w3m-select-buffer-mode-map map)))
 
