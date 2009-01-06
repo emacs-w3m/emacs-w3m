@@ -1,3 +1,15 @@
+2009-01-06  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (top): Add the variable definitions of
+	`w3m-tab-menubar-make-items-preitems' and `w3m-session-menu-items-pre'
+	to avoid byte-compile warnings.
+	(w3m-setup-menu): Move the postion of session menu.
+	(w3m-mouse-major-mode-menu): Add session menu.
+
+	* w3m-xmas.el (autoload): Add w3m-setup-session-menu.
+	(w3m-menu-on-forefront): Treat "Session" menu.
+	(w3m-setup-menu): Call `w3m-setup-session-menu'.
+
 2008-12-30  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-select-buffer-mode-map): Bind `w3m-select-buffer-quit' to

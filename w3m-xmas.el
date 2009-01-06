@@ -68,7 +68,8 @@
   (autoload 'w3m-image-type "w3m")
   (autoload 'w3m-retrieve "w3m")
   (autoload 'w3m-setup-tab-menu "w3m-tabmenu")
-  (autoload 'w3m-setup-bookmark-menu "w3m-bookmark"))
+  (autoload 'w3m-setup-bookmark-menu "w3m-bookmark")
+  (autoload 'w3m-setup-session-menu "w3m-session"))
 
 ;; Dummies to shut some XEmacs variants up.
 (eval-when-compile
@@ -638,18 +639,19 @@ otherwise works in all the emacs-w3m buffers."
       (let ((w3m (car (find-menu-item current-menubar '("w3m"))))
 	    (bookmark (car (find-menu-item current-menubar '("Bookmark"))))
 	    (tab (car (find-menu-item current-menubar '("Tab"))))
+	    (session (car (find-menu-item current-menubar '("Session"))))
 	    (items (copy-sequence current-menubar)))
-	(when (or w3m bookmark tab)
-	  (setq items (delq tab (delq bookmark (delq w3m items))))
+	(when (or w3m bookmark tab session)
+	  (setq items (delq session (delq tab (delq bookmark (delq w3m items)))))
 	  (set-buffer-menubar
 	   (cond (arg
-		  (append (delq nil (list w3m bookmark tab)) items))
+		  (append (delq nil (list w3m bookmark tab session)) items))
 		 ((memq nil items)
 		  (append (nreverse (cdr (memq nil (reverse items))))
-			  (delq nil (list w3m bookmark tab))
+			  (delq nil (list w3m bookmark tab session))
 			  (memq nil items)))
 		 (t
-		  (nconc items (delq nil (list w3m bookmark tab))))))))
+		  (nconc items (delq nil (list w3m bookmark tab session))))))))
     (save-current-buffer
       (dolist (buffer (w3m-list-buffers t))
 	(set-buffer buffer)
@@ -660,6 +662,7 @@ otherwise works in all the emacs-w3m buffers."
   (when (and (featurep 'menubar)
 	     current-menubar
 	     (not (assoc (car w3m-menubar) current-menubar)))
+    (w3m-setup-session-menu)
     (when w3m-use-tab-menubar (w3m-setup-tab-menu))
     (w3m-setup-bookmark-menu)
     (set-buffer-menubar (cons w3m-menubar current-menubar))

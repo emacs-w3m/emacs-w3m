@@ -173,7 +173,9 @@
   (defvar w3m-bookmark-mode)
   (defvar w3m-bookmark-menu-items)
   (defvar w3m-bookmark-menu-items-pre)
-  (defvar w3m-tab-menubar-make-items-preitems))
+  (defvar w3m-tab-menubar-make-items-preitems)
+  (defvar w3m-session-menu-items-pre)
+  (defvar w3m-session-menu-items))
 
 (defconst emacs-w3m-version
   (eval-when-compile
@@ -1708,8 +1710,8 @@ of the w3m command.  See also `w3m-command'."
   :group 'w3m
   :type '(string :size 0))
 
-(defcustom w3m-local-find-file-regexps 
-  (cons nil 
+(defcustom w3m-local-find-file-regexps
+  (cons nil
 	(concat "\\."
 		(regexp-opt (append '("htm"
 				      "html"
@@ -3533,9 +3535,9 @@ The database is kept in `w3m-entity-table'."
       (unless (keymapp (lookup-key w3m-mode-map [menu-bar w3m]))
 	(let ((map (make-sparse-keymap (car w3m-menubar))))
 	  (define-key w3m-mode-map [menu-bar] (make-sparse-keymap))
+	  (w3m-setup-session-menu)
 	  (when w3m-use-tab-menubar (w3m-setup-tab-menu))
 	  (w3m-setup-bookmark-menu)
-	  (w3m-setup-session-menu)
 	  (define-key w3m-mode-map [menu-bar w3m] (cons (car w3m-menubar) map))
 	  (require 'easymenu)
 	  (easy-menu-define
@@ -6863,7 +6865,7 @@ Return t if highlighting is successful."
 	    (widget-forward -1)
 	  (let ((pos (and w3m-max-anchor-sequence
 			  (text-property-any
-			   (point-min) (point-max) 
+			   (point-min) (point-max)
 			   'w3m-anchor-sequence w3m-max-anchor-sequence))))
 	    (when pos
 	      (goto-char pos)))))
@@ -7663,7 +7665,8 @@ closed.  See also `w3m-quit'."
 			      ,(assoc "w3m" current-menubar)
 			      "----"
 			      ,(assoc "Bookmark" current-menubar)
-			      ,(assoc "Tab" current-menubar)))))
+			      ,(assoc "Tab" current-menubar)
+			      ,(assoc "Session" current-menubar)))))
 	  (popup-menu menubar event))
       (run-hooks 'menu-bar-update-hook)
       (popup-menu (delete nil
@@ -7674,7 +7677,12 @@ closed.  See also `w3m-quit'."
 			    "----"
 			    ,(cons "Bookmark" bmkmenu)
 			    ,(when w3m-tab-menubar-make-items-preitems
-			       (cons "Tab" w3m-tab-menubar-make-items-preitems))))
+			       (cons "Tab" w3m-tab-menubar-make-items-preitems))
+			    ,(cons "Session" (if w3m-session-menu-items-pre
+						 (append w3m-session-menu-items
+							 '("----")
+							 w3m-session-menu-items-pre)
+					       w3m-session-menu-items))))
 		  event))))
 
 (defvar w3m-tab-button-menu-current-buffer nil
