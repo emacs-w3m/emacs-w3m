@@ -1,6 +1,6 @@
 ;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009
 ;; Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>
 
 ;; Author: Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>,
@@ -171,7 +171,7 @@
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
     ("it.pc" "PC＆デジタルカメラ"
-     "http://it.nikkei.co.jp/pc/news/index.aspx?ichiran=True"
+     "http://it.nikkei.co.jp/pc/news/index.aspx"
      shimbun-nikkei-get-headers-it-pc
      shimbun-nikkei-prepare-article-default2)
     ("kokunai" "市場概況" "http://markets.nikkei.co.jp/kokunai/summary.aspx"
@@ -795,70 +795,44 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 
 (defun shimbun-nikkei-get-headers-it-pc (group folder shimbun range)
   "Function used to fetch headers for the it.pc group."
-  (let ((pages (shimbun-header-index-pages range))
-	(count 0)
-	id headers)
-    (catch 'stop
-      (while t
-	(while (and (re-search-forward
-		     (eval-when-compile
-		       (let ((s0 "[\t\n ]*")
-			     (s1 "[\t\n ]+"))
-			 (concat "<a" s1 "href=\"/"
-				 ;; 1. url
-				 "\\(pc/news/index\\.aspx\\?ichiran=True&n="
-				 ;; 2. serial number
-				 "\\([^&]+"
-				 ;; 3. year
-				 "\\(20[0-9][0-9]\\)"
-				 "\\)&Page=[0-9]+\\)"
-				 s0 "\"" s0 ">" s0 "("
-				 ;; 4. month
-				 "\\([01]?[0-9]\\)"
-				 s0 "/" s0
-				 ;; 5. day
-				 "\\([0-3]?[0-9]\\)"
-				 s0 ")" s0
-				 ;; 6. subject
-				 "\\([^<]+\\)"
-				 s0 "</a>")))
-		     nil t)
-		    (not (string-match "\\`[\t\n 　]*\\'" (match-string 6))))
-	  (setq id (concat "<" (shimbun-subst-char-in-string
-				?  ?_ (downcase (match-string 2)))
-			   "%" group "." shimbun-nikkei-top-level-domain ">"))
-	  (if (shimbun-search-id shimbun id)
-	      (unless (zerop count)
-		(throw 'stop nil))
-	    (push (shimbun-create-header
-		   0
-		   (match-string 6)
-		   shimbun-nikkei-from-address
-		   (shimbun-nikkei-make-date-string
-		    (string-to-number (match-string 3))
-		    (string-to-number (match-string 4))
-		    (string-to-number (match-string 5)))
-		   id "" 0 0
-		   (shimbun-nikkei-expand-url
-		    (concat "http://it.nikkei.co.jp/" (match-string 1))
-		    folder))
-		  headers)))
-	(if (and (or (not pages)
-		     (< (setq count (1+ count)) pages))
-		 (progn
-		   (goto-char (point-min))
-		   (re-search-forward "<a[\t\n ]+href=\"/\
-\\(pc/news/index\\.aspx\\?ichiran=True&Page=[0-9]+\\)[\t\n ]*\"[\t\n ]*>\
-\[\t\n ]*次へ[\t\n ]*&gt;[\t\n ]*</a>"
-				      nil t)))
-	    (progn
-	      (shimbun-retrieve-url (prog1
-					(concat "http://it.nikkei.co.jp/"
-						(match-string 1))
-				      (erase-buffer))
-				    t)
-	      (goto-char (point-min)))
-	  (throw 'stop nil))))
+  (let (headers)
+    (while (and (re-search-forward
+		 (eval-when-compile
+		   (let ((s0 "[\t\n ]*")
+			 (s1 "[\t\n ]+"))
+		     (concat "<a" s1 "href=\"/"
+			     ;; 1. url
+			     "\\(pc/news/index\\.aspx\\?n="
+			     ;; 2. serial number
+			     "\\([^\"]+"
+			     ;; 3. day
+			     "\\([0-3][0-9]\\)"
+			     ;; 4. month
+			     "\\([01][0-9]\\)"
+			     ;; 5. year
+			     "\\(20[0-9][0-9]\\)"
+			     "\\)\\)" s0 "\"" s0 ">" s0
+			     ;; 6. subject
+			     "\\([^<]+\\)"
+			     s0 "</a>")))
+		 nil t)
+		(not (string-match "\\`[\t\n 　]*\\'" (match-string 6))))
+      (push (shimbun-create-header
+	     0
+	     (match-string 6)
+	     shimbun-nikkei-from-address
+	     (shimbun-nikkei-make-date-string
+	      (string-to-number (match-string 5))
+	      (string-to-number (match-string 4))
+	      (string-to-number (match-string 3)))
+	     (concat "<" (shimbun-subst-char-in-string
+			  ?  ?_ (downcase (match-string 2)))
+		     "%" group "." shimbun-nikkei-top-level-domain ">")
+	     "" 0 0
+	     (shimbun-nikkei-expand-url
+	      (concat "http://it.nikkei.co.jp/" (match-string 1))
+	      folder))
+	    headers))
     headers))
 
 (defun shimbun-nikkei-get-headers-stock (group folder shimbun range)

@@ -1,3 +1,8 @@
+2009-01-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nikkei.el (shimbun-nikkei-group-table): Update url for it.pc.
+	(shimbun-nikkei-get-headers-it-pc): Rewrite.
+
 2008-12-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-headers-1): New function to support refresh.
