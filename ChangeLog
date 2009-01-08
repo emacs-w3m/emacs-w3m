@@ -1,3 +1,8 @@
+2009-01-09  Naohiro Aota  <naota@elisp.net>
+
+	* w3m.el (w3m-create-text-page, w3m-goto-url): Check if the url is
+	arrived before getting real-url.
+
 2009-01-06  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (top): Add the variable definitions of

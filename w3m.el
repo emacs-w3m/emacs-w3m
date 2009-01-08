@@ -5892,7 +5892,9 @@ If so return \"text/html\", otherwise \"text/plain\"."
 
 (defun w3m-create-text-page (url type charset page-buffer)
   (w3m-safe-decode-buffer url charset type)
-  (setq w3m-current-url (w3m-real-url url)
+  (setq w3m-current-url (if (w3m-arrived-p url)
+			    (w3m-real-url url)
+			  url)
 	w3m-current-title
 	(if (string= "text/html" type)
 	    (let ((title (w3m-rendering-buffer charset)))
@@ -8814,7 +8816,9 @@ Cannot run two w3m processes simultaneously \
 	      (w3m-buffer-name-add-title)
 	      (w3m-update-toolbar)
 	      (w3m-select-buffer-update)
-	      (let ((real-url (or (w3m-real-url url) url)))
+	      (let ((real-url (if (w3m-arrived-p url)
+				  (or (w3m-real-url url) url)
+				url)))
 		(run-hook-with-args 'w3m-display-functions real-url)
 		(run-hook-with-args 'w3m-display-hook real-url))
 	      ;; restore position must call after hooks for localcgi.
