@@ -5,8 +5,8 @@
 
 	* w3m-symbol.el (w3m-symbol): Ditto.
 
-	* w3mhack.el (w3mhack-makeinfo): Use locale-coding-system for Emacs or
-	terminal-coding-system for XEmacs to encode Japanese messages.
+	* w3mhack.el (w3mhack-makeinfo): Use locale-coding-system for Emacs to
+	encode Japanese messages.
 
 2009-01-09  Naohiro Aota  <naota@elisp.net>
 
