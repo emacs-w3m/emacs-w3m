@@ -1,6 +1,6 @@
 ;;; w3m-symbol.el --- Stuffs to replace symbols for emacs-w3m -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007
+;; Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2009
 ;; ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
 
 ;; Author: ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
@@ -184,6 +184,8 @@
 	 (funcall w3m-use-symbol))
 	(t w3m-use-symbol)))
 
+(eval-when-compile (defvar current-language-environment))
+
 (defun w3m-symbol ()
   (cond (w3m-symbol
 	 (if (symbolp w3m-symbol)
@@ -193,7 +195,14 @@
 	      w3m-mule-unicode-symbol))
 	((let ((lang (or w3m-language
 			 (and (boundp 'current-language-environment)
-			      (symbol-value 'current-language-environment)))))
+			      current-language-environment
+			      ;; In XEmacs 21.5 it may be the one like
+			      ;; "Japanese (UTF-8)".
+			      (if (string-match "[\t ]+("
+						current-language-environment)
+				  (substring current-language-environment
+					     0 (match-beginning 0))
+				current-language-environment)))))
 	   (when (boundp (intern (format "w3m-%s-symbol" lang)))
 	     (symbol-value (intern (format "w3m-%s-symbol" lang))))))
 	(t w3m-default-symbol)))

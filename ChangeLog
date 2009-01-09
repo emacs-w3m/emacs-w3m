@@ -1,3 +1,13 @@
+2009-01-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-language): Allow the value like "Japanese (UTF-8)" of
+	current-language-environment.
+
+	* w3m-symbol.el (w3m-symbol): Ditto.
+
+	* w3mhack.el (w3mhack-makeinfo): Use locale-coding-system for Emacs or
+	terminal-coding-system for XEmacs to encode Japanese messages.
+
 2009-01-09  Naohiro Aota  <naota@elisp.net>
 
 	* w3m.el (w3m-create-text-page, w3m-goto-url): Check if the url is

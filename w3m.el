@@ -282,7 +282,9 @@ The value of `w3m-user-agent' is used for the field body."
 
 (defcustom w3m-language
   (if (and (boundp 'current-language-environment)
-	   (string= "Japanese" (symbol-value 'current-language-environment)))
+	   ;; In XEmacs 21.5 it may be the one like "Japanese (UTF-8)".
+	   (string-match "\\`Japanese"
+			 (symbol-value 'current-language-environment)))
       "Japanese")
   "*Your preferred language used in emacs-w3m sessions."
   :group 'w3m
