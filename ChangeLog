@@ -1,3 +1,8 @@
+2009-01-10  Naohiro Aota  <naota@elisp.net>
+
+	* w3m.el (w3m-image-anchor): New face.
+	(w3m-fontify-images): Use it.
+
 2009-01-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-language): Allow the value like "Japanese (UTF-8)" of

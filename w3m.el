@@ -909,6 +909,15 @@ of the original request method."
 ;; backward-compatibility alias
 (put 'w3m-image-face 'face-alias 'w3m-image)
 
+(defface w3m-image-anchor
+  '((((class color) (background light)) (:background "light yellow"))
+    (((class color) (background dark)) (:background "dark green"))
+    (t (:underline t)))
+  "Face used for displaying alternate strings of images."
+  :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-image-face 'face-alias 'w3m-image)
+
 (defface w3m-history-current-url
   ;; The following strange code compounds the attributes of the
   ;; `secondary-selection' face and the `w3m-arrived-anchor' face,
@@ -3578,13 +3587,16 @@ The database is kept in `w3m-entity-table'."
 					 'w3m-image-usemap usemap
 					 'w3m-image-status 'off
 					 'w3m-image-redundant upper))
-	  (unless (or (w3m-anchor start)
-		      (w3m-action start))
-	    ;; No need to use `w3m-add-text-properties' here.
-	    (w3m-add-face-property start end 'w3m-image)
-	    (add-text-properties start end (list 'mouse-face 'highlight
-						 'help-echo help
-						 'balloon-help balloon))))))))
+	   (unless (w3m-action start)
+	     ;; No need to use `w3m-add-text-properties' here.
+	     (w3m-add-face-property start end 
+				    (if (w3m-anchor start)
+					'w3m-image-anchor
+				      'w3m-image))
+	     (unless (w3m-anchor start)
+	       (add-text-properties start end (list 'mouse-face 'highlight
+						    'help-echo help
+						    'balloon-help balloon)))))))))
 
 (defsubst w3m-toggle-inline-images-internal (status
 					     &optional no-cache url
