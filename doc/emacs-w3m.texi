@@ -117,6 +117,7 @@ Pretty Good Features
 * Using Namazu::                Searching files with Namazu
 * Octet::                       Viewing data in various octal form
 * Frame Local Buffers::         Grouping sessions into separate frames
+* Session Manager::             Saving and loading sessions
 
 Customizable Variables
 
@@ -132,6 +133,7 @@ Customizable Variables
 * Perldoc Variables::           Variables related to perldoc
 * Namazu Variables::            Variables related to namazu
 * Octet Variables::             Variables related to the octet feature
+* Session Manager Variables::   Variables related to session manager
 * Hooks::                       Hooks
 * Other Variables::             Other variables
 
@@ -1894,6 +1896,7 @@ emacs-w3m with other commands and Emacs subsystems.
 * Using Namazu::                Searching files with Namazu
 * Octet::                       Viewing data in various octal form
 * Frame Local Buffers::         Grouping sessions into separate frames
+* Session Manager::             Saving and loading sessions
 @end menu
 
 @node Using Search Engines
@@ -2315,6 +2318,71 @@ those frames.  In other words, sessions associated with one frame don't
 appear in other frames.  @code{w3m-fb-mode} doesn't create any new
 frames, so you need to make them yourself in some way.
 
+@node Session Manager
+@section Saving and loading sessions
+
+It is possible to save and load emacs-w3m session sets.
+
+@kindex @kbd{M-S}
+You can save opened sessions for the future use. Just hit @kbd{M-S} and
+input the session set's name.
+
+@kindex @kbd{M-s}
+@findex w3m-session-select
+Then you may want to load saved session set back. Hitting @kbd{M-s}
+opens session select menu. This menu's key binding is as follows.
+
+@table @asis
+@item @kbd{@key{RET}}
+@findex w3m-session-select-select
+Open all sessions of selected session set.
+
+@item @kbd{M-s}
+@findex w3m-session-select-open-session-group
+Open detailed menu of selected session set. You can use this for opening
+session one by one.
+
+@item @kbd{d}
+@findex w3m-session-select-delete
+Delete selected session set or session.
+
+@item @kbd{r}
+@findex w3m-session-select-rename
+Rename selected session set's name.
+
+@item @kbd{s}
+@findex w3m-session-select-save
+Save opened sessions. Do as the same thing as @kbd{M-S} does.
+
+@item @kbd{n}
+@findex w3m-session-select-next
+Move cursor to next session set.
+
+@item @kbd{p}
+@findex w3m-session-select-previous
+Move cursor to previous session set.
+
+@item @kbd{q}
+@findex w3m-session-select-quit
+Quit session select menu.
+@end table
+
+@vindex w3m-session-deleted-save
+@vindex w3m-session-automatic-save
+Emacs-w3m save some sessions automatically. When
+@code{w3m-session-deleted-save} is non-@code{nil}, emacs-w3m save closed
+session automatically. This would be convenient when you close a session
+inadvertently. When @code{w3m-session-automatic-save} is non-@code{nil},
+emacs-w3m save opened sessions automatically when you quit emacs-w3m.
+
+@vindex w3m-session-load-last-sessions
+We sometimes forget automatically saved session set, and forget
+interesting page's URL. Emacs-w3m can solve this problem. If
+@code{w3m-session-load-last-sessions} is @code{auto}, emacs-w3m
+automatically load the last session set back. If
+@code{w3m-session-load-last-sessions} is @code{ask}, emacs-w3m asks you
+whether to load the set back. (default = @code{nil})
+
 @node Customizable Variables
 @chapter Customizable variables
 @cindex Customizing user options
@@ -2373,6 +2441,7 @@ words, @file{~/.emacs-w3m.elc}, @file{~/.emacs-w3m.el} and
 * Perldoc Variables::           Variables related to perldoc
 * Namazu Variables::            Variables related to namazu
 * Octet Variables::             Variables related to the octet feature
+* Session Manager Variables::   Variables related to session manager
 * Hooks::                       Hooks
 * Other Variables::             Other variables
 @end menu
@@ -3555,6 +3624,40 @@ the value of @code{namazu-search-num} if any, or @code{30}.
 @cindex Variables related to the octet feature
 
 There is no user option for the moment.
+
+@node Session Manager Variables
+@section Variables related to session manager
+@cindex Variables related to session manager
+
+@table @code
+@item w3m-session-file
+@vindex w3m-session-file
+File name to keep sessions.
+
+@item w3m-session-time-format
+@vindex w3m-session-time-format
+Format of saved time.
+
+@item w3m-session-automatic-title
+@vindex w3m-session-automatic-title
+String of title to save session automatically.
+
+@item w3m-session-deleted-title
+@vindex w3m-session-deleted-title
+String of title to save session when buffer delete.
+
+@item w3m-session-deleted-keep-number
+@vindex w3m-session-deleted-keep-number
+Number to keep sessions when buffers delete.
+
+@item w3m-session-automatic-keep-number
+@vindex w3m-session-automatic-keep-number
+Number to keep sessions automatically.
+
+@item w3m-session-unknown-title
+@vindex w3m-session-unknown-title
+String of title to use when title is not specified.
+@end table
 
 @node Hooks
 @section Hooks
@@ -6786,6 +6889,8 @@ TSUCHIYA Masatoshi
 Katsumi Yamaoka
 @item
 Masatake YAMATO
+@item
+Naohiro Aota
 @end itemize
 
 @node Index

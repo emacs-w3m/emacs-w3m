@@ -137,6 +137,7 @@ Pretty Good Features
 * Using Namazu::                Namazu $B$G%U%!%$%k$r8!:w$9$k(B
 * Octet::                       application/octet-stream $B%G!<%?$r8+$k(B
 * Frame Local Buffers::         $BB??t$N%;%C%7%g%s$r%U%l!<%`$G%0%k!<%WJ,$1$9$k(B
+* Session Manager::             $B%;%C%7%g%s$NJ]B8$HFI$_$3$_(B
 
 Customizable Variables
 
@@ -152,6 +153,7 @@ Customizable Variables
 * Perldoc Variables::           Perldoc $B$K4XO"$7$?JQ?t(B
 * Namazu Variables::            Namazu $B$K4XO"$7$?JQ?t(B
 * Octet Variables::             Octet $B$K4XO"$7$?JQ?t(B
+* Session Manager Variables::   $B%;%C%7%g%s%^%M!<%8%c$K4XO"$7$?JQ?t(B
 * Hooks::                       $B%U%C%/(B
 * Other Variables::             $B$=$NB>$NJQ?t(B
 
@@ -1914,6 +1916,7 @@ HTML $B%U%!%$%k$r3+$$$F$$$k(B Emacs $B$N%P%C%U%!$NL>A0$rL@<(E*$K;XDj$7$F%P%C%
 * Using Namazu::                Namazu $B$G%U%!%$%k$r8!:w$9$k(B
 * Octet::                       application/octet-stream $B%G!<%?$r8+$k(B
 * Frame Local Buffers::         $BB??t$N%;%C%7%g%s$r%U%l!<%`$G%0%k!<%WJ,$1$9$k(B
+* Session Manager::             $B%;%C%7%g%s$NJ]B8$HFI$_$3$_(B
 @end menu
 
 @node Using Search Engines
@@ -2376,6 +2379,73 @@ Emacs-w3m $B$O$?$/$5$s$N%Z!<%8$rF1;~$K8+$k$?$a$N$$$/$D$+$N5!G=$rDs6!$7$^$9!#(B
 @code{w3m-fb-mode} $B$O?7$7$$%U%l!<%`$r:n$i$J$$$N$G!"$=$l$i$O2?$i$+$NJ}K!(B
 $B$G$"$J$?<+?H$,:n$kI,MW$,$"$j$^$9!#(B
 
+@node Session Manager
+@section $B%;%C%7%g%s$NJ]B8$HFI$_$3$_(B
+
+emacs-w3m $B$G$O%;%C%7%g%sAH$rJ]B8$7$?$jFI$_$3$s$@$j$9$k$3$H$,$G$-$^$9!#(B
+
+@kindex @kbd{M-S}
+$B>-Mh;H$&$?$a$K!":#3+$$$F$$$k%;%C%7%g%sAH$rJ]B8$G$-$^$9!#(B @kbd{M-S} $B$r2!$7(B
+$B$F!"$=$N%;%C%7%g%s>pJs$KL>A0$r$D$1$F$/$@$5$$!#(B
+
+@kindex @kbd{M-s}
+@findex w3m-session-select
+$B$=$&$9$k$H<!$O!"J]B8$7$?%;%C%7%g%sAH$rI|5"$7$?$/$J$k$H;W$$$^$9!#(B
+@kbd{M-s} $B$r2!$9$H%;%C%7%g%sA*Br%a%K%e!<$,3+$-$^$9!#$3$N%a%K%e!<$N%-!<%P(B
+$B%$%s%I$O0J2<$N$h$&$K$J$C$F$$$^$9!#(B
+
+@table @asis
+@item @kbd{@key{RET}}
+@findex w3m-session-select-select
+$BA*Br$5$l$F$$$k%;%C%7%g%sAH$K4^$^$l$kA4$F$N%;%C%7%g%s$r3+$-$^$9!#(B
+
+@item @kbd{M-s}
+@findex w3m-session-select-open-session-group
+$BA*Br$5$l$F$$$k%;%C%7%g%sAH$N>\:Y$J%a%K%e!<$r3+$-$^$9!#(B $B$3$l$r;H$C$F%;%C%7%g(B
+$B%sAH$NCf$N%;%C%7%g%s$r0l$D$:$D3+$/$3$H$,$G$-$^$9!#(B
+
+@item @kbd{d}
+@findex w3m-session-select-delete
+$BA*Br$5$l$F$$$k%;%C%7%g%sAH!"$^$?$O%;%C%7%g%s$r:o=|$7$^$9!#(B
+
+@item @kbd{r}
+@findex w3m-session-select-rename
+$BA*Br$5$l$F$$$k%;%C%7%g%sAH$NL>A0$rJQ99$7$^$9!#(B
+
+@item @kbd{s}
+@findex w3m-session-select-save
+$B8=:_3+$$$F$$$kA4$F$N%;%C%7%g%s$rJ]B8$7$^$9!#(B @kbd{M-S} $B$HF1$8$G$9!#(B
+
+@item @kbd{n}
+@findex w3m-session-select-next
+$B%+!<%=%k$r<!$N%;%C%7%g%sAH$KF0$+$7$^$9!#(B
+
+@item @kbd{p}
+@findex w3m-session-select-previous
+$B%+!<%=%k$rA0$N%;%C%7%g%sAH$KF0$+$7$^$9!#(B
+
+@item @kbd{q}
+@findex w3m-session-select-quit
+$B%;%C%7%g%sA*Br%a%K%e!<$r=*N;$7$^$9!#(B
+@end table
+
+@vindex w3m-session-deleted-save
+@vindex w3m-session-automatic-save
+emacs-w3m $B$O%;%C%7%g%sAH$r<+F0E*$KJ]B8$9$k$3$H$,$G$-$^$9!#(B
+@code{w3m-session-deleted-save} $B$,(B non-@code{nil} $B$N;~!"(Bemacs-w3m $B$OJD$8(B
+$B$i$l$?%;%C%7%g%s$r<+F0E*$KJ]B8$7$^$9!#(B $B$3$l$O!"$&$C$+$j%;%C%7%g%s$rJD$8(B
+$B$F$7$^$C$?;~$J$I$KJXMx$G$7$g$&!#(B @code{w3m-session-automatic-save} $B$,(B
+non-@code{nil} $B$J$i$P!"(B emacs-w3m $B=*N;;~$K3+$$$F$$$?A4$F$N%;%C%7%g%s$r<+(B
+$BF0E*$KJ]B8$7$^$9!#(B
+
+@vindex w3m-session-load-last-sessions
+$B<+F0E*$KJ]B8$5$l$F$$$k%;%C%7%g%sAH$N$3$H$rK:$l$F$7$^$C$F!"$J$K$+$*$b$7$m(B
+$B$$%Z!<%8$N(B URL $B$rK:$l$F$7$^$&$H$$$&$3$H$,;~!9$"$j$^$9!#(B emacs-w3m $B$O$3$&(B
+$B$$$&$3$H$rKI;_$9$k$3$H$,$G$-$^$9!#(B @code{w3m-session-load-last-sessions}
+$B$,(B @code{auto} $B$G$"$l$P!"(B emacs-w3m $B$O<+F0E*$KA02s3+$$$F$$$?%;%C%7%g%s$?(B
+$B$A$rI|5"$7$^$9!#(B @code{w3m-session-load-last-sessions} $B$,(B @code{ask} $B$G(B
+$B$"$l$P!"(B emacs-w3m $B$O$=$l$rI|5"$9$k$+$I$&$+$r$?$:$M$^$9!#(B ($B%G%U%)%k%H$O(B
+@code{nil} $B$K$J$C$F$$$^$9!#(B)
 
 @node Customizable Variables
 @chapter $B%G%U%)%k%H$N$^$^$G$b7k9=NI$$$H;W$&$1$l$I(B
@@ -2434,6 +2504,7 @@ Emacs-w3m $B$,5/F0$9$k$H!"(B@code{w3m-init-file} $B%U%!%$%k$rFI$_9~$_$^$9!#%G
 * Perldoc Variables::           Perldoc $B$K4XO"$7$?JQ?t(B
 * Namazu Variables::            Namazu $B$K4XO"$7$?JQ?t(B
 * Octet Variables::             Octet $B$K4XO"$7$?JQ?t(B
+* Session Manager Variables::   $B%;%C%7%g%s%^%M!<%8%c$K4XO"$7$?JQ?t(B
 * Hooks::                       $B%U%C%/(B
 * Other Variables::             $B$=$NB>$NJQ?t(B
 @end menu
@@ -3604,6 +3675,41 @@ the value of @code{namazu-search-num} if any, or @code{30}.
 @cindex Variables related to the octet feature
 
 There is no user option for the moment.
+
+* Session Manager Variables::   
+@node Session Manager Variables
+@section $B%;%C%7%g%s%^%M!<%8%c$K4XO"$7$?JQ?t(B
+@cindex Variables related to session manager
+
+@table @code
+@item w3m-session-file
+@vindex w3m-session-file
+$B%;%C%7%g%s$rJ]B8$9$k%U%!%$%kL>!#(B
+
+@item w3m-session-time-format
+@vindex w3m-session-time-format
+$BJ]B8;~4V$N7A<0!#(B
+
+@item w3m-session-automatic-title
+@vindex w3m-session-automatic-title
+emacs-w3m $B=*N;;~$N<+F0J]B8%;%C%7%g%s$N%?%$%H%k!#(B
+
+@item w3m-session-deleted-title
+@vindex w3m-session-deleted-title
+$B%P%C%U%!$rJD$8$?;~$N<+F0J]B8%;%C%7%g%s$N%?%$%H%k!#(B
+
+@item w3m-session-deleted-keep-number
+@vindex w3m-session-deleted-keep-number
+$B%P%C%U%!$rJD$8$?;~$N<+F0J]B8%;%C%7%g%s$r$$$/$DJ]B8$7$F$*$/$+!#(B
+
+@item w3m-session-automatic-keep-number
+@vindex w3m-session-automatic-keep-number
+emacs-w3m $B=*N;;~$N<+F0J]B8%;%C%7%g%s$r$$$/$DJ]B8$7$F$*$/$+!#(B
+
+@item w3m-session-unknown-title
+@vindex w3m-session-unknown-title
+$B%?%$%H%k$,;XDj$5$l$J$+$C$?;~$K;H$o$l$kJ8;zNs!#(B
+@end table
 
 @node Hooks
 @section $B%U%C%/(B
@@ -6780,6 +6886,8 @@ Romain Francoise
 $B;32,(B $B9nH~(B
 @item
 $BBgOB(B $B@5Ip(B
+@item
+$B@DED(B $BD>Bg(B
 @end itemize
 
 @node Index

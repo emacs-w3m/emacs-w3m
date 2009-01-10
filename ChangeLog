@@ -1,5 +1,14 @@
 2009-01-10  Naohiro Aota  <naota@elisp.net>
 
+	* w3m.el (w3m): Check whether to load the last autosaved
+	sessions.  Suggested by Samuel Wales <samologist@gmail.com>.
+
+	* w3m-session.el (w3m-session-automatic-keep-number): New variable.
+	Suggested by Samuel Wales <samologist@gmail.com>.
+	(w3m-session-automatic-save): Use it.
+	(w3m-session-last-autosave-session): New function.
+	(w3m-session-load-last-sessions): New variable.
+
 	* w3m.el (w3m-image-anchor): New face.
 	(w3m-fontify-images): Use it.
 

@@ -1,6 +1,6 @@
 ;;; w3m-session.el --- Functions to operate session of w3m -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2008
+;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2008, 2009
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Hideyuki SHIRAI <shirai@meadowy.org>
@@ -78,10 +78,22 @@
   :group 'w3m
   :type '(integer :size 0))
 
+(defcustom w3m-session-automatic-keep-number 5
+  "*Number to keep sessions automatically."
+  :group 'w3m
+  :type '(integer :size 0))
+
 (defcustom w3m-session-unknown-title "<Unknown Title>"
   "*String of title to use when title is not specified."
   :group 'w3m
   :type '(string :size 0))
+
+(defcustom w3m-session-load-last-sessions nil
+  "*Whether to load the last sessions when emacs-w3m starts."
+  :group 'w3m
+  :type '(radio (const :format "Load the last sessions automatically." auto)
+		(const :format "Ask whether to load the last sessions." ask)
+		(const :format "Never load the last sessions." nil)))
 
 (defface w3m-session-select
   `((((class color) (background light) (type tty))
@@ -186,10 +198,14 @@
   (when w3m-session-autosave
     (let ((sessions (w3m-load-list w3m-session-file))
 	  (bufs (w3m-list-buffers))
-	  (title w3m-session-automatic-title)
+	  (title (concat w3m-session-automatic-title "-1"))
+	  (titleregex (concat "^"
+			      (regexp-quote w3m-session-automatic-title)
+			      "-[0-9]+$"))
 	  (cnum 0)
 	  (i 0)
-	  urls buf cbuf)
+	  urls buf cbuf session
+	  tmp tmptitle tmptime tmpurls)
       (when bufs
 	(setq cbuf (current-buffer))
 	(save-excursion
@@ -206,9 +222,19 @@
 				     w3m-current-title)
 			       urls)))))
 	(when urls
+	  (setq i 2)
+	  (while (setq session (car sessions))
+	    (setq sessions (cdr sessions))
+	    (if (string-match titleregex (nth 0 session))
+		(when (<= i w3m-session-automatic-keep-number)
+		  (setq tmptitle (format (concat w3m-session-automatic-title "-%d") i))
+		  (setq tmptime (nth 1 session))
+		  (setq tmpurls (nth 2 session))
+		  (setq tmp (cons (list tmptitle tmptime tmpurls nil) tmp))
+		  (setq i (1+ i)))
+	      (setq tmp (cons session tmp))))
+	  (setq sessions (nreverse tmp))
 	  (setq urls (nreverse urls))
-	  (when (assoc title sessions)
-	    (setq sessions (delete (assoc title sessions) sessions)))
 	  (setq sessions (cons (list title (current-time) urls cnum) sessions))
 	  (w3m-save-list w3m-session-file sessions))))))
 
@@ -744,6 +770,16 @@ file exists, otherwise nil."
 						nil))))))
 				 (nth 2 entry)))))
 		  sessions))))))
+;;;###autoload
+(defun w3m-session-last-autosave-session ()
+  (and (or (eq w3m-session-load-last-sessions 'auto)
+	   (and (eq w3m-session-load-last-sessions 'ask)
+		(y-or-n-p "Load the last sessions? ")))
+       (let ((sessions (assoc (concat w3m-session-automatic-title "-1")
+				   (w3m-load-list w3m-session-file))))
+	 (and sessions
+	      (cons 'last-sessions
+		    sessions)))))
 
 (provide 'w3m-session)
 ;;; w3m-session.el ends here
