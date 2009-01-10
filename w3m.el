@@ -9191,10 +9191,7 @@ interactive command in the batch mode."
      (list
       ;; url
       (or url
-	  (let ((default (if (w3m-alive-p)
-			     'popup
-			   (or (w3m-session-last-autosave-session)
-			       w3m-home-page))))
+	  (let ((default (if (w3m-alive-p) 'popup w3m-home-page)))
 	    (setq new (if current-prefix-arg
 			  default
 			(w3m-input-url nil nil default w3m-quick-start
@@ -9206,23 +9203,20 @@ interactive command in the batch mode."
       ;; interactive-p
       (not url))))
   (let ((nofetch (eq url 'popup))
+	(alived (w3m-alive-p))
 	(buffer (unless new-session (w3m-alive-p t)))
-	(last-sessions (and (consp url) (eq (car url) 'last-sessions)))
 	(w3m-pop-up-frames (and interactive-p w3m-pop-up-frames))
 	(w3m-pop-up-windows (and interactive-p w3m-pop-up-windows)))
     (unless (and (stringp url)
 		 (> (length url) 0))
-      (cond 
-       (buffer
-	(setq nofetch t))
-       (last-sessions) ;; do nothing
-       (t
+      (if buffer
+	  (setq nofetch t)
 	;; This command was possibly be called non-interactively or as
 	;; the batch mode.
 	(setq url (or (w3m-examine-command-line-args)
 		      ;; Unlikely but this function was called with no url.
 		      "about:")
-	      nofetch nil))))
+	      nofetch nil)))
     (unless buffer
       ;; It means `new-session' is non-nil or there's no emacs-w3m buffer.
       ;; At any rate, we create a new emacs-w3m buffer in this case.
@@ -9232,9 +9226,11 @@ interactive command in the batch mode."
     (unless nofetch
       ;; `unwind-protect' is needed since a process may be terminated by C-g.
       (unwind-protect
-	  (if last-sessions
-	      (w3m-session-goto-session (cdr url))
-	    (w3m-goto-url url))
+	  (let ((last (and (not alived)
+			   (w3m-session-last-autosave-session))))
+	    (w3m-goto-url url)
+	    (when last
+	      (w3m-session-goto-session last)))
 	;; Delete useless newly created buffer if it is empty.
 	(w3m-delete-buffer-if-empty buffer)))))
 

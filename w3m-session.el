@@ -775,11 +775,8 @@ file exists, otherwise nil."
   (and (or (eq w3m-session-load-last-sessions 'auto)
 	   (and (eq w3m-session-load-last-sessions 'ask)
 		(y-or-n-p "Load the last sessions? ")))
-       (let ((sessions (assoc (concat w3m-session-automatic-title "-1")
+       (assoc (concat w3m-session-automatic-title "-1")
 				   (w3m-load-list w3m-session-file))))
-	 (and sessions
-	      (cons 'last-sessions
-		    sessions)))))
 
 (provide 'w3m-session)
 ;;; w3m-session.el ends here

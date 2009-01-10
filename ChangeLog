@@ -1,3 +1,11 @@
+2009-01-11  Naohiro Aota  <naota@elisp.net>
+
+	* w3m.el (w3m): Move last session restoring asking afterward, so that
+	the restoring wouldn't be avoided by w3m-input-url's input.
+
+	* w3m-session.el (w3m-session-last-autosave-session): Follow the above
+	change.
+
 2009-01-10  Naohiro Aota  <naota@elisp.net>
 
 	* w3m.el (w3m): Check whether to load the last autosaved
