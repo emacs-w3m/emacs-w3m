@@ -62,7 +62,7 @@ emacs-w3m-ja.info: version.texi emacs-w3m-ja.texi
 	      $(EMACSINFO) $$texi ;\
 	    else \
 	      echo "Formatting $$texi using $(MAKEINFO)..." ;\
-	      LC_ALL=C $(MAKEINFO) -o $@ $$texi ;\
+	      LC_ALL=C $(MAKEINFO) --no-split -o $@ $$texi ;\
 	      echo "Formatting $$texi using $(MAKEINFO)...done" ;\
 	    fi ;;\
 	esac

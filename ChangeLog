@@ -1,3 +1,7 @@
+2009-01-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* doc/Makefile.in (.texi.info): Use --no-split.
+
 2009-01-11  Naohiro Aota  <naota@elisp.net>
 
 	* w3m.el (w3m): Move last session restoring asking afterward, so that
