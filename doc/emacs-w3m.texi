@@ -2321,67 +2321,68 @@ frames, so you need to make them yourself in some way.
 @node Session Manager
 @section Saving and loading sessions
 
-It is possible to save and load emacs-w3m session sets.
+It is possible to save and load the emacs-w3m sessions sets.
 
 @kindex @kbd{M-S}
-You can save opened sessions for the future use. Just hit @kbd{M-S} and
-input the session set's name.
+You can save the set of the currently opened sessions for the future
+use.  Just hit @kbd{M-S} and name the set.
 
 @kindex @kbd{M-s}
 @findex w3m-session-select
-Then you may want to load saved session set back. Hitting @kbd{M-s}
-opens session select menu. This menu's key binding is as follows.
+Then you will ask how to take the saved sessions set back, won't you?
+Hit @kbd{M-s} to open the sessions selection menu.  The available
+command keys include:
 
 @table @asis
 @item @kbd{@key{RET}}
 @findex w3m-session-select-select
-Open all sessions of selected session set.
+Open all the sessions of the selected sessions set.
 
 @item @kbd{M-s}
 @findex w3m-session-select-open-session-group
-Open detailed menu of selected session set. You can use this for opening
-session one by one.
+Open the detail menu for the selected sessions set.  You can open the
+sessions one by one in that menu.
 
 @item @kbd{d}
 @findex w3m-session-select-delete
-Delete selected session set or session.
+Delete the selected sessions set or the session.
 
 @item @kbd{r}
 @findex w3m-session-select-rename
-Rename selected session set's name.
+Rename the selected sessions set.
 
 @item @kbd{s}
 @findex w3m-session-select-save
-Save opened sessions. Do as the same thing as @kbd{M-S} does.
+Save all the opened sessions.  So does @kbd{M-S}.
 
 @item @kbd{n}
 @findex w3m-session-select-next
-Move cursor to next session set.
+Move the cursor to the next sessions set.
 
 @item @kbd{p}
 @findex w3m-session-select-previous
-Move cursor to previous session set.
+Move the cursor to the previous sessions set.
 
 @item @kbd{q}
 @findex w3m-session-select-quit
-Quit session select menu.
+Quit the sessions selection menu.
 @end table
 
 @vindex w3m-session-deleted-save
 @vindex w3m-session-automatic-save
-Emacs-w3m save some sessions automatically. When
-@code{w3m-session-deleted-save} is non-@code{nil}, emacs-w3m save closed
-session automatically. This would be convenient when you close a session
-inadvertently. When @code{w3m-session-automatic-save} is non-@code{nil},
-emacs-w3m save opened sessions automatically when you quit emacs-w3m.
+Emacs-w3m saves some sessions automatically.  If
+@code{w3m-session-deleted-save} is non-@code{nil}, emacs-w3m saves the
+closed sessions automatically.  This would be helpful for recovering a
+session that has been closed inadvertently.  If
+@code{w3m-session-automatic-save} is non-@code{nil}, emacs-w3m saves the
+opened sessions automatically when quitting emacs-w3m.
 
 @vindex w3m-session-load-last-sessions
-We sometimes forget automatically saved session set, and forget
-interesting page's URL. Emacs-w3m can solve this problem. If
+Sometimes you might forget the URLs of the pages you viewed with the
+interest.  Of course emacs-w3m helps you even in such a case.  If
 @code{w3m-session-load-last-sessions} is @code{auto}, emacs-w3m
-automatically load the last session set back. If
-@code{w3m-session-load-last-sessions} is @code{ask}, emacs-w3m asks you
-whether to load the set back. (default = @code{nil})
+automatically opens the sessions set viewed last.  If it is @code{ask},
+you will be asked whether to take the set back (default @code{nil}).
 
 @node Customizable Variables
 @chapter Customizable variables
