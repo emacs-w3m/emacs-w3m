@@ -1,3 +1,11 @@
+2009-01-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* sb-opentechpress-jp.el (shimbun-opentechpress-jp-content-start)
+	(shimbun-opentechpress-jp-content-end)
+	(shimbun-multi-next-url)
+	(shimbun-multi-clear-contents)
+	(shimbun-clear-contents): Follow the site design change.
+
 2009-01-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nikkei.el (shimbun-nikkei-group-table): Update url for it.pc.
