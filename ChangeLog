@@ -1,3 +1,11 @@
+2009-01-15  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-fontify-images): Put the 'full alt text' on new
+	'w3m-image-alt' property.
+	(w3m-print-this-url): Print the content of 'w3m-image-alt'.
+
+	* w3m-util.el (w3m-image-alt): New macro.
+
 2009-01-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* doc/Makefile.in (.texi.info): Use --no-split.

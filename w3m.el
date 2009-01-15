@@ -3576,6 +3576,7 @@ The database is kept in `w3m-entity-table'."
       (w3m-parse-attributes (src
 			     (width :integer)
 			     (height :integer)
+			     title
 			     usemap)
 	(delete-region start end)
 	(setq src (w3m-expand-url (w3m-decode-anchor-string src)))
@@ -3586,12 +3587,13 @@ The database is kept in `w3m-entity-table'."
 					 'w3m-image-size
 					 (when (or width height)
 					   (cons width height))
+					 'w3m-image-alt title
 					 'w3m-image-usemap usemap
 					 'w3m-image-status 'off
 					 'w3m-image-redundant upper))
 	   (unless (w3m-action start)
 	     ;; No need to use `w3m-add-text-properties' here.
-	     (w3m-add-face-property start end 
+	     (w3m-add-face-property start end
 				    (if (w3m-anchor start)
 					'w3m-image-anchor
 				      'w3m-image))
@@ -6706,10 +6708,16 @@ of the url currently displayed.  The browser is defined in
   (let ((deactivate-mark nil)
 	(url (if interactive-p
 		 (or (w3m-anchor) (w3m-image))
-	       (or (w3m-anchor (point)) (w3m-image (point))))))
+	       (or (w3m-anchor (point)) (w3m-image (point)))))
+	(alt (or (if interactive-p
+		     (w3m-image-alt)
+		   (w3m-image-alt (point))))))
     (when (or url interactive-p)
       (and url interactive-p (kill-new url))
-      (w3m-message "%s"
+      (w3m-message "%s%s"
+		   (if alt
+		       (format "%s: " alt)
+		     "")
 		   (or (w3m-url-readable-string url)
 		       (and (w3m-action) "There is a form")
 		       "There is no url")))))
