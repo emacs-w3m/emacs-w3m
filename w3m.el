@@ -915,10 +915,10 @@ of the original request method."
   '((((class color) (background light)) (:background "light yellow"))
     (((class color) (background dark)) (:background "dark green"))
     (t (:underline t)))
-  "Face used for displaying alternate strings of images."
+  "Face used for displaying alternate strings of images which are in anchors."
   :group 'w3m-face)
 ;; backward-compatibility alias
-(put 'w3m-image-face 'face-alias 'w3m-image)
+(put 'w3m-image-anchor-face 'face-alias 'w3m-image-anchor)
 
 (defface w3m-history-current-url
   ;; The following strange code compounds the attributes of the
