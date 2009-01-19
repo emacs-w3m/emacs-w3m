@@ -39,7 +39,7 @@
 (require 'sb-rss)
 (require 'sb-multi)
 
-(luna-define-class shimbun-itmedia (shimbun-multi shimbun-rss) ())
+(luna-define-class shimbun-itmedia (shimbun-rss shimbun-multi) ())
 
 (defvar shimbun-itmedia-group-alist
   `(,@(mapcar

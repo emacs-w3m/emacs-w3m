@@ -1,3 +1,7 @@
+2009-01-19  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* sb-itmedia.el (shimbun-itmedia): Switch the order of parent classes.
+
 2009-01-15  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* sb-opentechpress-jp.el (shimbun-opentechpress-jp-content-start)
