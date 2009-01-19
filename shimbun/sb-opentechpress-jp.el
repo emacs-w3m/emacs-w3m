@@ -30,7 +30,7 @@
 (require 'sb-multi)
 (require 'sb-rss)
 
-(luna-define-class shimbun-opentechpress-jp (shimbun-multi shimbun-rss) ())
+(luna-define-class shimbun-opentechpress-jp (shimbun-rss shimbun-multi) ())
 
 (defvar shimbun-opentechpress-jp-table
   '(("general" . "http://opentechpress.jp/index.rss")
