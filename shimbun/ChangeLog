@@ -5,6 +5,7 @@
 	(shimbun-multi-next-url)
 	(shimbun-multi-clear-contents)
 	(shimbun-clear-contents): Follow the site design change.
+	(shimbun-opentechpress-jp-ignored-subject): New variable.
 
 2009-01-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
