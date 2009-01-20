@@ -3438,8 +3438,8 @@ The database is kept in `w3m-entity-table'."
 
 (defun w3m-fontify-anchors ()
   "Fontify anchor tags in the buffer which contains halfdump."
-  (let ((help (w3m-make-help-echo w3m-href-anchor))
-	(balloon (w3m-make-balloon-help w3m-href-anchor))
+  (let ((help (w3m-make-help-echo w3m-balloon-help))
+	(balloon (w3m-make-balloon-help w3m-balloon-help))
 	prenames start end)
     (goto-char (point-min))
     (setq w3m-max-anchor-sequence 0)	;; reset max-hseq
@@ -3495,6 +3495,7 @@ The database is kept in `w3m-entity-table'."
 						   'w3m-anchor))
 	    (w3m-add-text-properties start end
 				     (list 'w3m-href-anchor href
+					   'w3m-balloon-help href
 					   'mouse-face 'highlight
 					   'w3m-anchor-sequence hseq
 					   'help-echo help
@@ -3565,9 +3566,9 @@ The database is kept in `w3m-entity-table'."
 (defun w3m-fontify-images ()
   "Fontify img_alt strings of images in the buffer containing halfdump."
   (goto-char (point-min))
-  (let ((help (w3m-make-help-echo w3m-image))
-	(balloon (w3m-make-balloon-help w3m-image))
-	upper start end)
+  (let ((help (w3m-make-help-echo w3m-balloon-help))
+	(balloon (w3m-make-balloon-help w3m-balloon-help))
+	upper start end help)
     (while (re-search-forward "<\\(img_alt\\)[^>]+>" nil t)
       (setq upper (string= (match-string 1) "IMG_ALT")
 	    start (match-beginning 0)
@@ -3582,12 +3583,23 @@ The database is kept in `w3m-entity-table'."
 	(setq src (w3m-expand-url (w3m-decode-anchor-string src)))
 	(when (search-forward "</img_alt>" nil t)
 	  (delete-region (setq end (match-beginning 0)) (match-end 0))
+	  (setq help (get-text-property start 'w3m-balloon-help))
+	  (cond
+	   ((and help title)
+	    (setq help (format "%s\nalt: %s\nimg: %s" help title src)))
+	   (help
+	    (setq help (format "%s\nimg: %s" help src)))
+	   (title
+	    (setq help (format "alt: %s\nimg: %s" title src)))
+	   (t
+	    (setq help (format "img: %s" src))))
 	  (w3m-add-text-properties start end
 				   (list 'w3m-image src
 					 'w3m-image-size
 					 (when (or width height)
 					   (cons width height))
 					 'w3m-image-alt title
+					 'w3m-balloon-help help
 					 'w3m-image-usemap usemap
 					 'w3m-image-status 'off
 					 'w3m-image-redundant upper))

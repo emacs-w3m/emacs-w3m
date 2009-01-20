@@ -1,3 +1,10 @@
+2009-01-20  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-fontify-anchors): Use new `w3m-balloon-help'
+	text-property for balloon help.
+	(w3m-fontify-images): Ditto and create help together href, alt and URL
+	of image.
+
 2009-01-19  Naohiro Aota  <naota@elisp.net>
 
 	* w3m.el (w3m-image-anchor): Fix docstring.
