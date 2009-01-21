@@ -30,7 +30,7 @@
 (require 'sb-multi)
 (require 'sb-rss)
 
-(luna-define-class shimbun-opentechpress-jp (shimbun-rss shimbun-multi) ())
+(luna-define-class shimbun-opentechpress-jp (shimbun-multi shimbun-rss) ())
 
 (defvar shimbun-opentechpress-jp-table
   '(("general" . "http://opentechpress.jp/index.rss")
@@ -47,6 +47,11 @@
   "</div><!-- end: class=\"article\" -->")
 
 (defvar shimbun-opentechpress-jp-ignored-subject "^PR:")
+
+(luna-define-method initialize-instance :after ((shimbun
+						 shimbun-opentechpress-jp)
+						&rest init-args)
+  (shimbun-rss-initialize-ignored-subject shimbun))
 
 (luna-define-method shimbun-groups ((shimbun shimbun-opentechpress-jp))
   (mapcar 'car shimbun-opentechpress-jp-table))

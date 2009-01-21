@@ -39,7 +39,7 @@
 (require 'sb-rss)
 (require 'sb-multi)
 
-(luna-define-class shimbun-itmedia (shimbun-rss shimbun-multi) ())
+(luna-define-class shimbun-itmedia (shimbun-multi shimbun-rss) ())
 
 (defvar shimbun-itmedia-group-alist
   `(,@(mapcar
@@ -80,6 +80,10 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 
 (defvar shimbun-itmedia-retry-fetching 1)
 (defvar shimbun-itmedia-ignored-subject "^PR:")
+
+(luna-define-method initialize-instance :after ((shimbun shimbun-itmedia)
+						&rest init-args)
+  (shimbun-rss-initialize-ignored-subject shimbun))
 
 (luna-define-method shimbun-groups ((shimbun shimbun-itmedia))
   (mapcar 'car shimbun-itmedia-group-alist))
