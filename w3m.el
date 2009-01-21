@@ -6132,33 +6132,34 @@ when the URL of the retrieved page matches the REGEXP."
 (defun w3m-search-name-anchor (name &optional quiet no-record)
   (interactive "sName: ")
   (let ((pos (point-min))
-	(cur-pos (point)))
+	(cur-pos (point))
+	found)
     (catch 'found
       (while (setq pos (next-single-property-change pos 'w3m-name-anchor))
 	(when (member name (get-text-property pos 'w3m-name-anchor))
 	  (goto-char pos)
 	  (when (eolp) (forward-line))
 	  (w3m-horizontal-on-screen)
-	  (throw 'found t)))
+	  (throw 'found (setq found t))))
       (setq pos (point-min))
       (while (setq pos (next-single-property-change pos 'w3m-name-anchor2))
 	(when (member name (get-text-property pos 'w3m-name-anchor2))
 	  (goto-char pos)
 	  (when (eolp) (forward-line))
 	  (w3m-horizontal-on-screen)
-	  (throw 'found t)))
+	  (throw 'found (setq found t))))
       (unless quiet
 	(message "No such anchor: %s" name)))
-    (if (= (point) cur-pos)
-	nil
-      (unless no-record
+
+    (when (and found
+	       (not no-record)
+	       (/= (point) cur-pos))
 	(setq w3m-name-anchor-from-hist
 	      (append (list 1 nil (point) cur-pos)
 		      (and (integerp (car w3m-name-anchor-from-hist))
 			   (nthcdr (1+ (car w3m-name-anchor-from-hist))
 				   w3m-name-anchor-from-hist)))))
-      t)))
-
+    found))
 
 (defun w3m-parent-page-available-p ()
   (if (null w3m-current-url)
