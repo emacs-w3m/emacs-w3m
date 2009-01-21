@@ -48,6 +48,11 @@
   :group 'w3m
   :type 'boolean)
 
+(defcustom w3m-session-crash-recovery nil
+  "*Non-nil means emacs-w3m save session set automatically, and recover it when emacs-w3m crash."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-session-time-format
   (if (and (equal "Japanese" w3m-language)
 	   (not (featurep 'xemacs)))
@@ -73,6 +78,14 @@
   :group 'w3m
   :type '(string :size 0))
 
+(defcustom w3m-session-crash-recovery-title
+  (if (equal "Japanese" w3m-language)
+      "クラッシュ回復"
+    "Crash recovery sessions")
+  "*String of title to save session to use for crash recovering."
+  :group 'w3m
+  :type '(string :size 0))
+
 (defcustom w3m-session-deleted-keep-number 5
   "*Number to keep sessions when buffers delete."
   :group 'w3m
@@ -91,9 +104,16 @@
 (defcustom w3m-session-load-last-sessions nil
   "*Whether to load the last sessions when emacs-w3m starts."
   :group 'w3m
-  :type '(radio (const :format "Load the last sessions automatically." auto)
+  :type '(radio (const :format "Load the last sessions automatically." t)
 		(const :format "Ask whether to load the last sessions." ask)
-		(const :format "Never load the last sessions." nil)))
+		(const :format "Never load the last sessions automatically." nil)))
+
+(defcustom w3m-session-load-crashed-sessions 'ask
+  "*Whether to load the crashed sessions when emacs-w3m starts."
+  :group 'w3m
+  :type '(radio (const :format "Load the crashed sessions automatically." t)
+		(const :format "Ask whether to load the crashed sessions." ask)
+		(const :format "Never load the crashed sessions automatically." nil)))
 
 (defface w3m-session-select
   `((((class color) (background light) (type tty))
@@ -277,6 +297,42 @@
 	  (setq urls (nreverse urls))
 	  (setq sessions (cons (list title (current-time) urls nil) sessions))
 	  (w3m-save-list w3m-session-file sessions))))))
+
+(defun w3m-session-crash-recovery-save ()
+  "Save list of displayed session."
+  (when w3m-session-crash-recovery
+    (let ((sessions (w3m-load-list w3m-session-file))
+	  (bufs (w3m-list-buffers))
+	  (title w3m-session-crash-recovery-title)
+	  urls buf cbuf session
+	  tmp)
+      (when bufs
+	(setq cbuf (current-buffer))
+	(save-excursion
+	  (while (setq buf (car bufs))
+	    (setq bufs (cdr bufs))
+	    (set-buffer buf)
+	    (when w3m-current-url
+	      (setq urls (cons (list w3m-current-url
+				     (copy-sequence (caar w3m-history))
+				     (w3m-session-history-to-save)
+				     w3m-current-title)
+			       urls)))))
+	(when urls
+	  (setq urls (nreverse urls))
+	  (setq tmp (assoc title sessions))
+	  (when tmp (setq sessions (delete tmp sessions)))
+	  (setq sessions (cons (list title (current-time) urls nil) sessions))
+	  (w3m-save-list w3m-session-file sessions))))))
+
+(defun w3m-session-crash-recovery-remove ()
+  "Remove crash recovery session set."
+  (when w3m-session-crash-recovery
+    (let* ((sessions (w3m-load-list w3m-session-file))
+	   (item (assoc w3m-session-crash-recovery-title sessions)))
+      (when item
+	(setq sessions (delete item sessions))
+	(w3m-save-list w3m-session-file sessions)))))
 
 (defvar w3m-session-select-mode-map nil)
 (unless w3m-session-select-mode-map
@@ -772,11 +828,34 @@ file exists, otherwise nil."
 		  sessions))))))
 ;;;###autoload
 (defun w3m-session-last-autosave-session ()
-  (and (or (eq w3m-session-load-last-sessions 'auto)
-	   (and (eq w3m-session-load-last-sessions 'ask)
-		(y-or-n-p "Load the last sessions? ")))
-       (assoc (concat w3m-session-automatic-title "-1")
-				   (w3m-load-list w3m-session-file))))
+  (when w3m-session-load-last-sessions
+    (let ((item
+	   (let ((sessions (w3m-load-list w3m-session-file))
+		 (n 1) x)
+	     (catch 'loop
+	       (while t
+		 (if (< w3m-session-automatic-keep-number n)
+		     (throw 'loop nil)
+		   (setq x (assoc (format "%s-%d" w3m-session-automatic-title n)
+				  sessions))
+		   (when x (throw 'loop x)))
+		 (setq n (1+ n)))))))
+      (when (and item
+		 (or (and (eq w3m-session-load-last-sessions 'ask)
+			  (y-or-n-p "Load the last sessions? "))
+		     w3m-session-load-last-sessions))
+	item))))
+
+;;;###autoload
+(defun w3m-session-last-crashed-session ()
+  (when (and w3m-session-crash-recovery w3m-session-load-crashed-sessions)
+    (let ((item (assoc w3m-session-crash-recovery-title
+		       (w3m-load-list w3m-session-file))))
+      (when (and item
+		 (or (and (eq w3m-session-load-crashed-sessions 'ask)
+			  (y-or-n-p "Load the crashed sessions? "))
+		     w3m-session-load-crashed-sessions))
+	item))))
 
 (provide 'w3m-session)
 ;;; w3m-session.el ends here

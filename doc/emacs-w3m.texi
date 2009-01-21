@@ -2380,9 +2380,21 @@ opened sessions automatically when quitting emacs-w3m.
 @vindex w3m-session-load-last-sessions
 Sometimes you might forget the URLs of the pages you viewed with the
 interest.  Of course emacs-w3m helps you even in such a case.  If
-@code{w3m-session-load-last-sessions} is @code{auto}, emacs-w3m
+@code{w3m-session-load-last-sessions} is non-@code{nil}, emacs-w3m
 automatically opens the sessions set viewed last.  If it is @code{ask},
 you will be asked whether to take the set back (default @code{nil}).
+
+@vindex w3m-session-crash-recovery
+@vindex w3m-session-load-crashed-sessions
+You may have had a bad experience with a crash. It makes you
+disappointing, and makes displayed web pages lost. Emacs-w3m helps you
+also in such a case. If @code{w3m-session-crash-recovery} is
+non-@code{nil}, emacs-w3m saves displayed sessions set to use for crash
+recovering automatically and recovers saved sessions when emacs-w3m (or
+emacs, etc) crashes (default @code{nil}). If
+@code{w3m-session-load-crashed-sessions} is non-@code{nil}, emacs-w3m
+automatically recovers the crashed sessions set. If it is @code{ask},
+you will be asked whether to recover the set (default @code{ask}).
 
 @node Customizable Variables
 @chapter Customizable variables
@@ -3646,6 +3658,10 @@ String of title to save session automatically.
 @item w3m-session-deleted-title
 @vindex w3m-session-deleted-title
 String of title to save session when buffer delete.
+
+@item w3m-session-crash-recovery-title
+@vindex w3m-session-crash-recovery-title
+String of title to save session to use for crash recovering.
 
 @item w3m-session-deleted-keep-number
 @vindex w3m-session-deleted-keep-number

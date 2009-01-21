@@ -2448,6 +2448,20 @@ emacs-w3m は自動的に前回開いていたセッションたちを復帰します。
 emacs-w3m はそれを復帰するかどうかをたずねます。(デフォルト
 は @code{nil} になっています。)
 
+@vindex w3m-session-crash-recovery
+@vindex w3m-session-load-crashed-sessions
+クラッシュで苦い経験をしたことがあると思います。 クラッシュにあうとがっか
+りしますし、見ていたページがどこかも忘れてしまいます。 emacs-w3m はこんな
+状況でも助けてくれます。 @code{w3m-session-crash-recovery} が
+non-@code{nil} ならば、 emacs-w3m は表示しているセッション組をクラッシュ
+復元用に自動的に保存し、クラッシュが起こった時に保存していたセッション組
+を復元します。 (デフォルトは @code{nil} になっています。)
+@code{w3m-session-load-crashed-sessions} がnon-@code{nil} であれば、
+emacs-w3m はこの復元を自動的に行ないます。
+@code{w3m-session-load-crashed-sessions} が @code{ask} であれば、
+emacs-w3m は復元するかどうかをたずねます。 (デフォルトは @code{ask} になっ
+ています。)
+
 @node Customizable Variables
 @chapter デフォルトのままでも結構良いと思うけれど
 @cindex Customizing user options
@@ -3694,6 +3708,10 @@ There is no user option for the moment.
 @item w3m-session-automatic-title
 @vindex w3m-session-automatic-title
 emacs-w3m 終了時の自動保存セッションのタイトル。
+
+@item w3m-session-crash-recovery-title
+@vindex w3m-session-crash-recovery-title
+クラッシュ復元用セッションのタイトル。
 
 @item w3m-session-deleted-title
 @vindex w3m-session-deleted-title

@@ -1,3 +1,20 @@
+2009-01-21  Naohiro Aota  <naota@elisp.net>
+
+	* w3m-session.el (w3m-session-last-autosave-session): Check if
+	autosaved sessions set exists before asking whether to load the last
+	sessions set; Search older sessions sets when the last sessions set
+	doesn't exist (maybe it is removed by user); Load autosaved sessions
+	set when w3m-session-load-last-sessions is non-nil.
+	(w3m-session-load-last-sessions): Fix docstring; Change `auto' to `t'.
+	(w3m-session-crash-recovery-title): New variable.
+	(w3m-session-load-crashed-sessions): Ditto.
+	(w3m-session-crash-recovery-save): New function.
+
+	* w3m.el (w3m-goto-url): Save sessions set for crash recovering.
+	(w3m-delete-buffer): Ditto.
+	(w3m): Load crashed sessions if necessary.  Suggested by Samuel Wales
+	<samologist@gmail.com>.
+
 2009-01-20  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-fontify-anchors): Use new `w3m-balloon-help'

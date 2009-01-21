@@ -160,7 +160,9 @@
   (autoload 'w3m-session-automatic-save "w3m-session")
   (autoload 'w3m-session-deleted-save "w3m-session")
   (autoload 'w3m-session-last-autosave-session "w3m-session")
-  (autoload 'w3m-session-goto-session "w3m-session"))
+  (autoload 'w3m-session-goto-session "w3m-session")
+  (autoload 'w3m-session-crash-recovery-save "w3m-session")
+  (autoload 'w3m-session-last-crashed-session "w3m-session"))
 
 ;; Avoid byte-compile warnings.
 (eval-when-compile
@@ -2953,6 +2955,7 @@ is specified by `w3m-arrived-file'."
 (add-hook 'kill-emacs-hook 'w3m-arrived-shutdown)
 (add-hook 'kill-emacs-hook 'w3m-cookie-shutdown)
 (add-hook 'w3m-arrived-shutdown-functions 'w3m-session-automatic-save)
+(add-hook 'w3m-arrived-shutdown-functions 'w3m-session-crash-recovery-remove)
 
 ;;; Generic macros and inline functions:
 (defun w3m-attributes (url &optional no-cache handler)
@@ -7224,7 +7227,8 @@ passed to the `w3m-quit' function (which see)."
       (kill-buffer cur)
       (when w3m-use-form
 	(w3m-form-kill-buffer cur))
-      (run-hooks 'w3m-delete-buffer-hook)))
+      (run-hooks 'w3m-delete-buffer-hook)
+      (w3m-session-crash-recovery-save)))
   (w3m-select-buffer-update)
   (unless w3m-fb-inhibit-buffer-selection
     (w3m-fb-select-buffer)))
@@ -7302,6 +7306,7 @@ as if the folder command of MH performs with the -pack option."
       (when w3m-use-form
 	(w3m-form-kill-buffer buffer))))
   (run-hooks 'w3m-delete-buffer-hook)
+  (w3m-session-crash-recovery-save)
   (w3m-select-buffer-update)
   (w3m-force-window-update))
 
@@ -8857,6 +8862,7 @@ Cannot run two w3m processes simultaneously \
 				url)))
 		(run-hook-with-args 'w3m-display-functions real-url)
 		(run-hook-with-args 'w3m-display-hook real-url))
+	      (w3m-session-crash-recovery-save)
 	      ;; restore position must call after hooks for localcgi.
 	      (when (and w3m-current-url
 			 (stringp w3m-current-url)
@@ -9246,11 +9252,14 @@ interactive command in the batch mode."
     (unless nofetch
       ;; `unwind-protect' is needed since a process may be terminated by C-g.
       (unwind-protect
-	  (let ((last (and (not alived)
-			   (w3m-session-last-autosave-session))))
+	  (let* ((crash (and (not alived)
+			     (w3m-session-last-crashed-session)))
+		 (last (and (not alived)
+			    (not crash)
+			    (w3m-session-last-autosave-session))))
 	    (w3m-goto-url url)
-	    (when last
-	      (w3m-session-goto-session last)))
+	    (when (or crash last)
+	      (w3m-session-goto-session (or crash last))))
 	;; Delete useless newly created buffer if it is empty.
 	(w3m-delete-buffer-if-empty buffer)))))
 
