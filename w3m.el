@@ -3618,6 +3618,70 @@ The database is kept in `w3m-entity-table'."
 						    'help-echo help
 						    'balloon-help balloon)))))))))
 
+(defvar w3m-idle-images-show-timer nil)
+(defvar w3m-idle-images-show-list nil)
+(defvar w3m-idle-images-show-interval 1)
+
+(defun w3m-idle-images-show ()
+  (let ((repeat t))
+    (while (and repeat w3m-idle-images-show-list)
+      (setq w3m-idle-images-show-list (nreverse w3m-idle-images-show-list))
+      (let* ((item (car w3m-idle-images-show-list))
+	     (start    (nth 0 item))
+	     (end      (nth 1 item))
+	     (iurl     (nth 2 item))
+	     (url      (nth 3 item))
+	     (no-cache (nth 4 item))
+	     (size     (nth 5 item)))
+	(when (buffer-live-p (marker-buffer start))
+	  (with-current-buffer (marker-buffer start)
+	    (w3m-process-with-null-handler
+	      (lexical-let ((start start)
+			    (end end)
+			    (iurl iurl)
+			    (url url))
+		(w3m-process-do
+		    (image (let ((w3m-current-buffer (current-buffer)))
+			     (w3m-create-image
+			      iurl no-cache
+			      url
+			      size handler)))
+		  (when (buffer-live-p (marker-buffer start))
+		    (with-current-buffer (marker-buffer start)
+		      (if image
+			  (when (equal url w3m-current-url)
+			    (let (buffer-read-only)
+			      (w3m-insert-image start end image iurl))
+			    ;; Redisplay
+			    (when w3m-force-redisplay
+			      (sit-for 0)))
+			(let (buffer-read-only)
+			  (w3m-add-text-properties
+			   start end '(w3m-image-status off))))
+		      (set-buffer-modified-p nil))
+		    (set-marker start nil)
+		    (set-marker end nil))))))))
+      (setq w3m-idle-images-show-list
+	    (nreverse (cdr w3m-idle-images-show-list)))
+      (setq repeat (sit-for 0.1 nil)))
+    (unless w3m-idle-images-show-list
+      (cancel-timer w3m-idle-images-show-timer)
+      (setq w3m-idle-images-show-timer nil))))
+
+(defun w3m-idle-images-show-unqueue (buffer)
+  (when w3m-idle-images-show-timer
+    (cancel-timer w3m-idle-images-show-timer)
+    (setq w3m-idle-images-show-list
+	  (delq nil
+		(mapcar (lambda (x)
+			  (and (not (eq buffer (marker-buffer (nth 0 x))))
+			       x))
+			w3m-idle-images-show-list)))
+    (when w3m-idle-images-show-list
+      (run-with-idle-timer w3m-idle-images-show-interval
+			   t
+			   'w3m-idle-images-show))))
+
 (defsubst w3m-toggle-inline-images-internal (status
 					     &optional no-cache url
 					     begin-pos end-pos)
@@ -3675,32 +3739,49 @@ If URL is specified, only the image with URL is toggled."
 You are retrieving non-secure image(s).  Continue? ")
 				      (message nil))
 				    (setq allow-non-secure-images t))))
-		  (w3m-process-with-null-handler
-		    (lexical-let ((start (set-marker (make-marker) start))
-				  (end (set-marker (make-marker) end))
-				  (iurl (w3m-url-transfer-encode-string iurl))
-				  (url w3m-current-url))
-		      (w3m-process-do
-			  (image (let ((w3m-current-buffer (current-buffer)))
-				   (w3m-create-image
-				    iurl no-cache
-				    w3m-current-url
-				    size handler)))
-			(when (buffer-live-p (marker-buffer start))
-			  (with-current-buffer (marker-buffer start)
-			    (if image
-				(when (equal url w3m-current-url)
+		  (if (and (null (and size w3m-resize-images))
+			   (or (string-match "\\`\\(?:cid\\|data\\):" iurl)
+			       (w3m-url-local-p iurl)
+			       (w3m-cache-available-p iurl)))
+		      (w3m-process-with-null-handler
+			(lexical-let ((start (set-marker (make-marker) start))
+				      (end (set-marker (make-marker) end))
+				      (iurl iurl)
+				      (url w3m-current-url))
+			  (w3m-process-do
+			      (image (let ((w3m-current-buffer (current-buffer)))
+				       (w3m-create-image
+					iurl no-cache
+					w3m-current-url
+					size handler)))
+			    (when (buffer-live-p (marker-buffer start))
+			      (with-current-buffer (marker-buffer start)
+				(if image
+				    (when (equal url w3m-current-url)
+				      (let (buffer-read-only)
+					(w3m-insert-image start end image iurl))
+				      ;; Redisplay
+				      (when w3m-force-redisplay
+					(sit-for 0)))
 				  (let (buffer-read-only)
-				    (w3m-insert-image start end image iurl))
-				  ;; Redisplay
-				  (when w3m-force-redisplay
-				    (sit-for 0)))
-			      (let (buffer-read-only)
-				(w3m-add-text-properties
-				 start end '(w3m-image-status off))))
-			    (set-buffer-modified-p nil))
-			  (set-marker start nil)
-			  (set-marker end nil)))))))))
+				    (w3m-add-text-properties
+				     start end '(w3m-image-status off))))
+				(set-buffer-modified-p nil)))
+			    (set-marker start nil)
+			    (set-marker end nil))))
+		    (setq w3m-idle-images-show-list
+			  (cons (list (set-marker (make-marker) start)
+				      (set-marker (make-marker) end)
+				      (w3m-url-transfer-encode-string iurl)
+				      w3m-current-url
+				      no-cache
+				      size)
+				w3m-idle-images-show-list))
+		    (unless w3m-idle-images-show-timer
+		      (setq w3m-idle-images-show-timer
+			    (run-with-idle-timer w3m-idle-images-show-interval
+						 t
+						 'w3m-idle-images-show))))))))
 	;; Remove.
 	(while (< (setq start (if (w3m-image end)
 				  end

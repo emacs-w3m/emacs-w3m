@@ -1,3 +1,12 @@
+2009-01-27  Naohiro Aota  <naota@elisp.net>
+
+	* w3m-proc.el (w3m-process-stop): Call `w3m-idle-images-show-unqueue'.
+
+	* w3m.el (w3m-idle-images-show-timer, w3m-idle-images-show-list)
+	(w3m-idle-images-show-interval): New variables.
+	(w3m-idle-images-show, w3m-idle-images-show-unqueue): New functions.
+	(w3m-toggle-inline-images-internal): Use them.
+
 2009-01-26  Naohiro Aota  <naota@elisp.net>
 
 	* w3m.el (w3m-content-type-alist): Add "application/x-pdf" content
