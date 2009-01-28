@@ -1,6 +1,6 @@
 ;;; sb-tech-on.el --- shimbun backend for Tech-On! -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2007 Katsumi Yamaoka
+;; Copyright (C) 2007, 2009 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -171,7 +171,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAADFBMVEUAAAB/gP+ttr7///8
   (goto-char (point-min))
   (when (re-search-forward "[\t\n ]*\\(?:（[\t\n ]*\\)*<a[\t\n ]+\
 \\(?:[^\t\n >]+[\t\n ]+\\)*href=\"\\([^\"]+\\)\"\
-\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>[\t\n ]*次の?ページへ[\t\n ]*</a>"
+\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>[\t\n ]*次の?ページへ[^<]*</a>"
 		   nil t)
     (shimbun-expand-url (match-string 1) url)))
 
