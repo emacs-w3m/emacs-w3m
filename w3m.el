@@ -3684,7 +3684,8 @@ The database is kept in `w3m-entity-table'."
 
 (defsubst w3m-toggle-inline-images-internal (status
 					     &optional no-cache url
-					     begin-pos end-pos)
+					     begin-pos end-pos
+					     safe-regexp)
   "Toggle displaying of inline images on current buffer.
 STATUS is current image status.
 If NO-CACHE is non-nil, cache is not used.
@@ -3731,6 +3732,8 @@ If URL is specified, only the image with URL is toggled."
 		    (setq end (point)))
 		(goto-char cur-point)
 		(when (and (w3m-url-valid iurl)
+			   (or (null safe-regexp)
+			       (string-match safe-regexp iurl))
 			   (or (not w3m-current-ssl)
 			       (string-match "\\`\\(?:ht\\|f\\)tps://" iurl)
 			       allow-non-secure-images
@@ -3930,7 +3933,9 @@ Are you sure you really want to show all images (maybe insecure)? "))))
 	(progn
 	  (unwind-protect
 	      (w3m-toggle-inline-images-internal (if status 'on 'off)
-						 no-cache nil beg end)
+						 no-cache nil beg end
+						 (unless (interactive-p)
+						   safe-regexp))
 	    (setq w3m-display-inline-images (not status))
 	    (when status (w3m-process-stop (current-buffer)))
 	    (force-mode-line-update)))

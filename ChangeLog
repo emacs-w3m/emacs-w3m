@@ -1,3 +1,10 @@
+2009-02-01  Naohiro Aota  <naota@elisp.net>
+
+	* w3m.el (w3m-toggle-inline-images-internal): Add new argument
+	`safe-regexp'.
+	(w3m-toggle-inline-images): Pass `safe-regexp' to
+	w3m-toggle-inline-images-internal when called non-interactively.
+
 2009-01-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-proc.el: Autoload w3m-idle-images-show-unqueue when compiling.
