@@ -3623,18 +3623,44 @@ The database is kept in `w3m-entity-table'."
 (defvar w3m-idle-images-show-interval 1)
 
 (defun w3m-idle-images-show ()
-  (let ((repeat t))
+  (let ((repeat t)
+	(onbuffer (member (current-buffer) (w3m-list-buffers)))
+	(current (get-text-property (point) 'w3m-idle-image-item)))
     (while (and repeat w3m-idle-images-show-list)
-      (setq w3m-idle-images-show-list (nreverse w3m-idle-images-show-list))
-      (let* ((item (car w3m-idle-images-show-list))
+      (let* ((item (or (and onbuffer
+			    (or current
+				(let* ((prev (previous-single-property-change 
+					      (point) 'w3m-idle-image-item))
+				       (next (next-single-property-change
+					      (point) 'w3m-idle-image-item))
+				       (prev-diff (and prev (abs (- (point) prev))))
+				       (next-diff (and next (abs (- (point) next)))))
+				  (cond
+				   ((and prev next)
+				    (get-text-property
+				     (if (< prev-diff next-diff) prev next)
+				     'w3m-idle-image-item))
+				   (prev
+				    (get-text-property prev
+						       'w3m-idle-image-item))
+				   (next
+				    (get-text-property next
+						       'w3m-idle-image-item))
+				   (t nil)))))
+		       (car (last w3m-idle-images-show-list))))
 	     (start    (nth 0 item))
 	     (end      (nth 1 item))
 	     (iurl     (nth 2 item))
 	     (url      (nth 3 item))
 	     (no-cache (nth 4 item))
 	     (size     (nth 5 item)))
+	(setq w3m-idle-images-show-list 
+	      (delete item w3m-idle-images-show-list))
 	(when (buffer-live-p (marker-buffer start))
 	  (with-current-buffer (marker-buffer start)
+	    (let (buffer-read-only)
+	      (remove-text-properties start end '(w3m-idle-image-item))
+	      (set-buffer-modified-p nil))
 	    (w3m-process-with-null-handler
 	      (lexical-let ((start start)
 			    (end end)
@@ -3661,8 +3687,6 @@ The database is kept in `w3m-entity-table'."
 		      (set-buffer-modified-p nil))
 		    (set-marker start nil)
 		    (set-marker end nil))))))))
-      (setq w3m-idle-images-show-list
-	    (nreverse (cdr w3m-idle-images-show-list)))
       (setq repeat (sit-for 0.1 nil)))
     (unless w3m-idle-images-show-list
       (cancel-timer w3m-idle-images-show-timer)
@@ -3772,19 +3796,22 @@ You are retrieving non-secure image(s).  Continue? ")
 				(set-buffer-modified-p nil)))
 			    (set-marker start nil)
 			    (set-marker end nil))))
-		    (setq w3m-idle-images-show-list
-			  (cons (list (set-marker (make-marker) start)
+		    (let ((item (list (set-marker (make-marker) start)
 				      (set-marker (make-marker) end)
 				      (w3m-url-transfer-encode-string iurl)
 				      w3m-current-url
 				      no-cache
-				      size)
-				w3m-idle-images-show-list))
-		    (unless w3m-idle-images-show-timer
-		      (setq w3m-idle-images-show-timer
-			    (run-with-idle-timer w3m-idle-images-show-interval
-						 t
-						 'w3m-idle-images-show))))))))
+				      size)))
+		      (setq w3m-idle-images-show-list
+			    (cons item w3m-idle-images-show-list))
+		      (w3m-add-text-properties
+		       start end
+		       `(w3m-idle-image-item ,item))
+		      (unless w3m-idle-images-show-timer
+			(setq w3m-idle-images-show-timer
+			      (run-with-idle-timer w3m-idle-images-show-interval
+						   t
+						   'w3m-idle-images-show)))))))))
 	;; Remove.
 	(while (< (setq start (if (w3m-image end)
 				  end
@@ -3812,7 +3839,9 @@ You are retrieving non-secure image(s).  Continue? ")
 	      (delete-region start end)
 	      (setq end start))
 	     (t (w3m-remove-image start end)))
-	    (w3m-add-text-properties start end '(w3m-image-status off))))
+	    (w3m-add-text-properties start end
+				     '(w3m-image-status off
+							w3m-idle-image-item nil))))
 	(set-buffer-modified-p nil)))))
 
 (defun w3m-toggle-inline-image (&optional force no-cache)
