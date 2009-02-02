@@ -3,6 +3,8 @@
 	* w3m.el (w3m-idle-images-show): Change the order of image retrieving.
 	(w3m-toggle-inline-images-internal): Use `w3m-idle-image-item'
 	text-property.
+	(w3m-goto-url): Add new argument `no-popup'.
+	(w3m-goto-url-with-timer): Call w3m-goto-url with `no-popup' nil.
 
 2009-02-01  Naohiro Aota  <naota@elisp.net>
 

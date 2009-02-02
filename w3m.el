@@ -8725,7 +8725,7 @@ It currently works only with Emacs 22 and newer."
 
 ;;;###autoload
 (defun w3m-goto-url (url &optional reload charset post-data referer handler
-			 element)
+			 element no-popup)
   "Visit World Wide Web pages.  This is the primitive function of `w3m'.
 If the second argument RELOAD is non-nil, reload a content of URL.
 Except that if it is 'redisplay, re-display the page without reloading.
@@ -8738,8 +8738,8 @@ car of a cell is used as the content-type and the cdr of a cell is
 used as the body.
 If the fifth argument REFERER is specified, it is used for a Referer:
 field for this request.
-The remaining HANDLER and ELEMENT[1] are for the internal operations
-of emacs-w3m.
+The remaining HANDLER, ELEMENT[1], and NO-POPUP are for the
+internal operations of emacs-w3m.
 You can also use \"quicksearch\" url schemes such as \"gg:emacs\" which
 would search for the term \"emacs\" with the Google search engine.  See
 the `w3m-search' function and the variable `w3m-uri-replace-alist'.
@@ -8816,7 +8816,8 @@ the current page."
    ((w3m-url-valid url)
     (w3m-buffer-setup)			; Setup buffer.
     (w3m-arrived-setup)			; Setup arrived database.
-    (w3m-popup-buffer (current-buffer))
+    (unless no-popup
+      (w3m-popup-buffer (current-buffer)))
     (w3m-cancel-refresh-timer (current-buffer))
     (when w3m-current-process
       (error "%s"
@@ -9059,7 +9060,8 @@ See `w3m-default-directory'."
 	(with-current-buffer buffer
 	  (w3m-cancel-refresh-timer buffer)
 	  (w3m-goto-url url (and w3m-current-url
-				 (string= url w3m-current-url))))
+				 (string= url w3m-current-url))
+			nil nil nil nil nil t))
 	(set-window-buffer cwin cbuf)))
      (t
       (with-current-buffer buffer
