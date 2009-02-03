@@ -1,3 +1,9 @@
+2009-02-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-input-url): Offer decoded url in the minibuffer.
+	(w3m-copy-buffer): Copy w3m-current-coding-system.
+	(w3m-header-line-insert): Display decoded url.
+
 2009-02-02  Naohiro Aota  <naota@elisp.net>
 
 	* w3m.el (w3m-idle-images-show): Change the order of image retrieving.

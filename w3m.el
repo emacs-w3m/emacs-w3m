@@ -4423,8 +4423,10 @@ if it has no scheme part."
     (w3m-arrived-setup)
     (unless default
       (setq default w3m-home-page))
-    (unless initial
-      (setq initial (w3m-active-region-or-url-at-point t)))
+    (unless (or initial
+		(not (setq initial (w3m-active-region-or-url-at-point t)))
+		(string-match "[^\000-\177]" initial))
+      (setq initial (w3m-url-decode-string initial w3m-current-coding-system)))
     (if (and quick-start
 	     default
 	     (not initial))
@@ -7209,11 +7211,12 @@ a page in a new buffer with the correct width."
     (setq newname (buffer-name buffer)))
   (when (string-match "<[0-9]+>\\'" newname)
     (setq newname (substring newname 0 (match-beginning 0))))
-  (let (url images init-frames new)
+  (let (url coding images init-frames new)
     (save-current-buffer
       (set-buffer buffer)
       (setq url (or w3m-current-url
 		    (car (w3m-history-element (cadar w3m-history))))
+	    coding w3m-current-coding-system
 	    images w3m-display-inline-images
 	    init-frames (when (w3m-popup-frame-p)
 			  (copy-sequence w3m-initial-frames)))
@@ -7224,7 +7227,8 @@ a page in a new buffer with the correct width."
       (w3m-mode)
       ;; Make copies of `w3m-history' and `w3m-history-flat'.
       (w3m-history-copy buffer)
-      (setq w3m-initial-frames init-frames
+      (setq w3m-current-coding-system coding
+	    w3m-initial-frames init-frames
 	    w3m-display-inline-images
 	    (if w3m-toggle-inline-images-permanently
 		images
@@ -10225,7 +10229,8 @@ This variable is effective only when `w3m-use-tab' is nil."
 					   (t "")))))
     (w3m-add-face-property (point-min) (point) 'w3m-header-line-location-title)
     (let ((start (point)))
-      (insert w3m-current-url)
+      (insert (w3m-url-decode-string w3m-current-url
+				     w3m-current-coding-system))
       (w3m-add-face-property start (point) 'w3m-header-line-location-content)
       (w3m-add-text-properties start (point)
 			       `(mouse-face highlight
