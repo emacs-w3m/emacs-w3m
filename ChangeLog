@@ -1,3 +1,7 @@
+2009-02-03  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* mew-w3m.el (mew-w3m-cid-retrieve): Remove a wrong set-buffer().
+
 2009-02-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-input-url): Offer decoded url in the minibuffer.
@@ -344,7 +348,7 @@
 
 	* w3m-ems.el (w3m-create-image): Use it.
 	(w3m-initialize-graphic-icons): Check if xpm is available.  Reported by
-	Diego 'Flameeyes' Pettenò <flameeyes@gmail.com>.
+	Diego 'Flameeyes' Petten,Ar <flameeyes@gmail.com>.
 
 	* w3m-filter.el (w3m-filter-wikipedia): Improve regexp.
 

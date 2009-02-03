@@ -240,25 +240,24 @@ This variable is effective only in XEmacs, Emacs 21 and Emacs 22."
       (when (and w3m-mew-support-cid
 		 (string-match "^cid:\\(.+\\)" url))
 	(setq url (match-string 1 url))
-	(let ((fld (mew-current-get-fld (mew-frame-id))))
-	  (set-buffer fld)
-	  (let* ((msg (mew-current-get-msg (mew-frame-id)))
-		 (cache (mew-cache-hit fld msg 'must-hit))
-		 (syntax (mew-cache-decode-syntax cache))
-		 cidstx beg end)
-	    (if (string< "4.0.53" mew-version-number)
-		(setq cidstx (mew-syntax-get-entry-by-cid syntax (concat "<" url ">")))
- 	      (setq cidstx (mew-syntax-get-entry-by-cid syntax url)))
-	    (when cidstx
-	      (setq beg (mew-syntax-get-begin cidstx))
-	      (setq end (mew-syntax-get-end cidstx))
-	      (prog1
-		  (with-current-buffer output-buffer
-		    (set-buffer-multibyte t)
-		    (insert-buffer-substring cache beg end)
-		    (set-buffer-multibyte nil)
-		    (downcase (car (mew-syntax-get-ct cidstx))))
-		(run-hooks 'mew-w3m-cid-retrieve-hook)))))))))
+	(let* ((fld (mew-current-get-fld (mew-frame-id)))
+	       (msg (mew-current-get-msg (mew-frame-id)))
+	       (cache (mew-cache-hit fld msg 'must-hit))
+	       (syntax (mew-cache-decode-syntax cache))
+	       cidstx beg end)
+	  (if (string< "4.0.53" mew-version-number)
+	      (setq cidstx (mew-syntax-get-entry-by-cid syntax (concat "<" url ">")))
+	    (setq cidstx (mew-syntax-get-entry-by-cid syntax url)))
+	  (when cidstx
+	    (setq beg (mew-syntax-get-begin cidstx))
+	    (setq end (mew-syntax-get-end cidstx))
+	    (prog1
+		(with-current-buffer output-buffer
+		  (set-buffer-multibyte t)
+		  (insert-buffer-substring cache beg end)
+		  (set-buffer-multibyte nil)
+		  (downcase (car (mew-syntax-get-ct cidstx))))
+	      (run-hooks 'mew-w3m-cid-retrieve-hook))))))))
 
 (when w3m-mew-support-cid
   (push (cons 'mew-message-mode 'mew-w3m-cid-retrieve)
