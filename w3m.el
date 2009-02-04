@@ -10229,8 +10229,10 @@ This variable is effective only when `w3m-use-tab' is nil."
 					   (t "")))))
     (w3m-add-face-property (point-min) (point) 'w3m-header-line-location-title)
     (let ((start (point)))
-      (insert (w3m-url-decode-string w3m-current-url
-				     w3m-current-coding-system))
+      (insert (if (string-match "[^\000-\177]" w3m-current-url)
+		  w3m-current-url
+		(w3m-url-decode-string w3m-current-url
+				       w3m-current-coding-system)))
       (w3m-add-face-property start (point) 'w3m-header-line-location-content)
       (w3m-add-text-properties start (point)
 			       `(mouse-face highlight
