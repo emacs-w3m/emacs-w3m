@@ -1,6 +1,6 @@
 ;;; w3m-bookmark.el --- Functions to operate bookmark file of w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007
+;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2008, 2009
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -561,7 +561,8 @@ Format as (list (\"Group name\" . (\"Entry URL\" . \"Entry name\")* )* )."
 		    (w3m-bookmark-file-modtime)))
 	w3m-bookmark-menu-items-pre
       (setq w3m-bookmark-menu-items-time (w3m-bookmark-file-modtime))
-      (let ((entries (w3m-bookmark-iterator)))
+      (let ((entries (when (file-exists-p w3m-bookmark-file)
+		       (w3m-bookmark-iterator))))
 	(setq w3m-bookmark-menu-items-pre
 	      (and entries
 		   (mapcar
