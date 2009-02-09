@@ -360,7 +360,9 @@ With prefix, ask for a new url instead of the present one."
 (defun w3m-bookmark-view (&optional reload)
   "Display the bookmark."
   (interactive "P")
-  (w3m-goto-url "about://bookmark/" reload))
+  (if (file-exists-p w3m-bookmark-file)
+      (w3m-goto-url "about://bookmark/" reload)
+    (message "No bookmark file is available")))
 
 ;;;###autoload
 (defun w3m-bookmark-view-new-session (&optional reload)
@@ -368,7 +370,9 @@ With prefix, ask for a new url instead of the present one."
   (interactive "P")
   (if (not (eq major-mode 'w3m-mode))
       (message "This command can be used in w3m mode only")
-    (w3m-view-this-url-1 "about://bookmark/" reload 'new-session)))
+    (if (file-exists-p w3m-bookmark-file)
+	(w3m-view-this-url-1 "about://bookmark/" reload 'new-session)
+      (message "No bookmark file is available"))))
 
 ;;;###autoload
 (defun w3m-about-bookmark (&rest args)

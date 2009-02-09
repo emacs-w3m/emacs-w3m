@@ -1,7 +1,7 @@
 2009-02-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m-bookmark.el (w3m-bookmark-make-menu-items): Check if bookmark
-	file exists.
+	* w3m-bookmark.el (w3m-bookmark-view, w3m-bookmark-view-new-session)
+	(w3m-bookmark-make-menu-items): Check if bookmark file exists.
 
 2009-02-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
