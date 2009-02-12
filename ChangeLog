@@ -1,3 +1,8 @@
+2009-02-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-buffer-setup): Add keymap that cycles buffers as usual to
+	mode-line-buffer-identification.
+
 2009-02-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bookmark.el (w3m-bookmark-view, w3m-bookmark-view-new-session)

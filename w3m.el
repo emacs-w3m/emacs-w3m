@@ -8647,7 +8647,9 @@ generate a new buffer."
   (w3m-add-local-hook 'post-command-hook 'w3m-check-current-position)
   (w3m-initialize-graphic-icons)
   (setq mode-line-buffer-identification
-	`("%b "
+	`(,@(w3m-static-if (featurep 'xemacs)
+		(list (cons modeline-buffer-id-right-extent "%b") " ")
+	      (nconc (propertized-buffer-identification "%b") '(" ")))
 	  (w3m-current-process
 	   w3m-modeline-process-status-on
 	   (w3m-current-ssl
