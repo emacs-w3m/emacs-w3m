@@ -1,3 +1,7 @@
+2009-02-15  Naohiro Aota  <naota@elisp.net>
+
+	* w3m-session.el (w3m-session-crash-recovery): Change the default to t.
+
 2009-02-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-buffer-setup): Add keymap that cycles buffers as usual to

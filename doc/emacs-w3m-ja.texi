@@ -2455,7 +2455,7 @@ emacs-w3m はそれを復帰するかどうかをたずねます。(デフォルト
 状況でも助けてくれます。 @code{w3m-session-crash-recovery} が
 non-@code{nil} ならば、 emacs-w3m は表示しているセッション組をクラッシュ
 復元用に自動的に保存し、クラッシュが起こった時に保存していたセッション組
-を復元します。 (デフォルトは @code{nil} になっています。)
+を復元します。 (デフォルトは @code{t} になっています。)
 @code{w3m-session-load-crashed-sessions} がnon-@code{nil} であれば、
 emacs-w3m はこの復元を自動的に行ないます。
 @code{w3m-session-load-crashed-sessions} が @code{ask} であれば、

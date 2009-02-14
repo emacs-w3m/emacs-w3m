@@ -2391,7 +2391,7 @@ disappointing, and makes displayed web pages lost. Emacs-w3m helps you
 also in such a case. If @code{w3m-session-crash-recovery} is
 non-@code{nil}, emacs-w3m saves displayed sessions set to use for crash
 recovering automatically and recovers saved sessions when emacs-w3m (or
-emacs, etc) crashes (default @code{nil}). If
+emacs, etc) crashes (default @code{t}). If
 @code{w3m-session-load-crashed-sessions} is non-@code{nil}, emacs-w3m
 automatically recovers the crashed sessions set. If it is @code{ask},
 you will be asked whether to recover the set (default @code{ask}).

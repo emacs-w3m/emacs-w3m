@@ -48,7 +48,7 @@
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-session-crash-recovery nil
+(defcustom w3m-session-crash-recovery t
   "*Non-nil means emacs-w3m save session set automatically, and recover it when emacs-w3m crash."
   :group 'w3m
   :type 'boolean)
