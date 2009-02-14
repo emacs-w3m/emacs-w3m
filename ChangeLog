@@ -1,5 +1,8 @@
 2009-02-15  Naohiro Aota  <naota@elisp.net>
 
+	* w3m.el (w3m-idle-images-show): If detect deleted buffer, unqueue
+	processes related to the buffer.
+
 	* w3m-session.el (w3m-session-crash-recovery): Change the default to t.
 
 2009-02-12  Katsumi Yamaoka  <yamaoka@jpl.org>

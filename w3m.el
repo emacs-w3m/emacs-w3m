@@ -3656,37 +3656,40 @@ The database is kept in `w3m-entity-table'."
 	     (size     (nth 5 item)))
 	(setq w3m-idle-images-show-list 
 	      (delete item w3m-idle-images-show-list))
-	(when (buffer-live-p (marker-buffer start))
-	  (with-current-buffer (marker-buffer start)
-	    (let (buffer-read-only)
-	      (remove-text-properties start end '(w3m-idle-image-item))
-	      (set-buffer-modified-p nil))
-	    (w3m-process-with-null-handler
-	      (lexical-let ((start start)
-			    (end end)
-			    (iurl iurl)
-			    (url url))
-		(w3m-process-do
-		    (image (let ((w3m-current-buffer (current-buffer)))
-			     (w3m-create-image
-			      iurl no-cache
-			      url
-			      size handler)))
-		  (when (buffer-live-p (marker-buffer start))
-		    (with-current-buffer (marker-buffer start)
-		      (if image
-			  (when (equal url w3m-current-url)
-			    (let (buffer-read-only)
-			      (w3m-insert-image start end image iurl))
-			    ;; Redisplay
-			    (when w3m-force-redisplay
-			      (sit-for 0)))
-			(let (buffer-read-only)
-			  (w3m-add-text-properties
-			   start end '(w3m-image-status off))))
-		      (set-buffer-modified-p nil))
-		    (set-marker start nil)
-		    (set-marker end nil))))))))
+	(if (buffer-live-p (marker-buffer start))
+	    (with-current-buffer (marker-buffer start)
+	      (let (buffer-read-only)
+		(remove-text-properties start end '(w3m-idle-image-item))
+		(set-buffer-modified-p nil))
+	      (w3m-process-with-null-handler
+		(lexical-let ((start start)
+			      (end end)
+			      (iurl iurl)
+			      (url url))
+		  (w3m-process-do
+		      (image (let ((w3m-current-buffer (current-buffer)))
+			       (w3m-create-image
+				iurl no-cache
+				url
+				size handler)))
+		    (when (buffer-live-p (marker-buffer start))
+		      (with-current-buffer (marker-buffer start)
+			(if image
+			    (when (equal url w3m-current-url)
+			      (let (buffer-read-only)
+				(w3m-insert-image start end image iurl))
+			      ;; Redisplay
+			      (when w3m-force-redisplay
+				(sit-for 0)))
+			  (let (buffer-read-only)
+			    (w3m-add-text-properties
+			     start end '(w3m-image-status off))))
+			(set-buffer-modified-p nil))
+		      (set-marker start nil)
+		      (set-marker end nil))))))
+	  (set-marker start nil)
+	  (set-marker end nil)
+	  (w3m-idle-images-show-unqueue (marker-buffer start))))
       (setq repeat (sit-for 0.1 nil)))
     (unless w3m-idle-images-show-list
       (cancel-timer w3m-idle-images-show-timer)
