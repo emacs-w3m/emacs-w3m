@@ -854,7 +854,7 @@ file exists, otherwise nil."
       (when (and item
 		 (or (and (eq w3m-session-load-crashed-sessions 'ask)
 			  (y-or-n-p "Load the crashed sessions? "))
-		     w3m-session-load-crashed-sessions))
+		     (eq w3m-session-load-crashed-sessions t)))
 	item))))
 
 (provide 'w3m-session)

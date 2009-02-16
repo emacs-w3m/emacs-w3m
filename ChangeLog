@@ -1,3 +1,7 @@
+2009-02-16  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-session.el (w3m-session-last-crashed-session): Fix tiny typo.
+
 2009-02-15  Naohiro Aota  <naota@elisp.net>
 
 	* w3m.el (w3m-idle-images-show): If detect deleted buffer, unqueue
