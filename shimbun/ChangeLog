@@ -1,3 +1,8 @@
+2009-02-14  David Engster  <dengste@eml.cc>
+
+	* sb-slashdot.el (shimbun-slashdot-regexp-section-id-subject): Adapted
+	regexp.
+
 2009-01-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-tech-on.el (shimbun-multi-next-url): Fix regexp matching next

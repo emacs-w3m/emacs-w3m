@@ -1,6 +1,6 @@
 ;;; sb-slashdot.el --- slashdot.org shimbun backend
 
-;; Copyright (C) 2008 David Engster
+;; Copyright (C) 2008, 2009 David Engster
 
 ;; Author: David Engster <dengste@eml.cc>
 ;; Keywords: news
@@ -55,7 +55,7 @@
 Can be 'flat', 'thread', or 'nested'.")
 
 (defvar shimbun-slashdot-regexp-section-id-subject
-  "<\\s-*h3\\s-+class=\"story\"[^\0]*?<a\\s-+href=\"\
+  "<\\s-*h3\\s-+class=\"story\"[^\0]*?<a\\s-.*\\s-href=\"\
 \\(?:/*\\([a-zA-Z]+\\)?\\.?slashdot.org/article.pl\\?sid=\\(.*?\\)\
 \\|.*slashdot.org/\\(.*?\\)/\\(.*?\\).shtml\\)\
 \".*?>\\(.*?\\)</a>")
