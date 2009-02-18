@@ -1,6 +1,6 @@
 ;;; shimbun.el --- interfacing with web newspapers -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -962,6 +962,10 @@ Return nil if all pages should be retrieved."
        (if (eq 'all ,range) nil
 	 ,range))))
 
+(defvar shimbun-use-refresh t
+  "Non-nil means honor the REFRESH attribute in META tags.
+Bind it to nil per shimbun if the refresh brings unwanted page.")
+
 ;; FIXME: It seems better that `shimbun-fetch-url' provides the redirection
 ;; support, whereas it is currently done by `shimbun-headers-1' for headers
 ;; and `shimbun-article-1' for articles separately.  The reason doing so is
@@ -971,7 +975,7 @@ Return nil if all pages should be retrieved."
   "Run `shimbun-fetch-url' and refresh the contents if necessary."
   (let (;; The default url used when it is not specified for refresh.
 	(w3m-current-url url)
-	(w3m-use-refresh t))
+	(w3m-use-refresh shimbun-use-refresh))
     (when (and (shimbun-fetch-url shimbun url 'reload)
 	       (progn
 		 (w3m-check-refresh-attribute)
@@ -1073,7 +1077,7 @@ If OUTBUF is not specified, article is retrieved to the current buffer.")
   (let* ((url (shimbun-article-url shimbun header))
 	 ;; The default url used when it is not specified for refresh.
 	 (w3m-current-url url)
-	 (w3m-use-refresh t)
+	 (w3m-use-refresh shimbun-use-refresh)
 	 real)
     (when (shimbun-fetch-url shimbun url nil nil
 			     (shimbun-article-base-url shimbun header))

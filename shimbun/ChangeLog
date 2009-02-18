@@ -1,3 +1,8 @@
+2009-02-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-use-refresh): New variable.
+	(shimbun-headers-1, shimbun-article-1): Bind w3m-use-refresh to it.
+
 2009-02-14  David Engster  <dengste@eml.cc>
 
 	* sb-slashdot.el (shimbun-slashdot-regexp-section-id-subject): Adapted
