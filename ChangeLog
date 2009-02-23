@@ -1,3 +1,17 @@
+2009-02-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-session.el (w3m-session-ignore-errors): New macro.
+	(w3m-session-save, w3m-session-automatic-save)
+	(w3m-session-deleted-save, w3m-session-crash-recovery-save)
+	(w3m-session-crash-recovery-remove, w3m-session-select-mode)
+	(w3m-session-select, w3m-session-make-menu-items)
+	(w3m-session-last-autosave-session, w3m-session-last-crashed-session):
+	Use it.
+
+	(toplevel): Require cl when compiling.
+	(w3m-session-crash-recovery-save)
+	(w3m-session-select-list-all-sessions): Remove unused variables.
+
 2009-02-16  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-session.el (w3m-session-last-crashed-session): Fix tiny typo.
