@@ -152,6 +152,7 @@
   (autoload 'report-emacs-w3m-bug "w3m-bug" nil t)
   (autoload 'w3m-replace-symbol "w3m-symbol" nil t)
   (autoload 'w3m-mail "w3m-mail" nil t)
+  (autoload 'w3m-go-to-linknum "w3m-lnum" nil t)
   (autoload 'w3m-session-select "w3m-session"
     "Select session from session list." t)
   (autoload 'w3m-session-save "w3m-session"
@@ -7570,6 +7571,7 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "\C-c\C-c" 'w3m-submit-form)
     (define-key map "\C-c\C-k" 'w3m-process-stop)
     (define-key map "\C-c\C-m" 'w3m-move-unseen-buffer)
+    (define-key map "\C-c\C-l" 'w3m-go-to-linknum)
     (setq w3m-lynx-like-map map)))
 
 (defvar w3m-info-like-map nil
@@ -7708,6 +7710,7 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "\C-c\C-c" 'w3m-submit-form)
     (define-key map "\C-c\C-k" 'w3m-process-stop)
     (define-key map "\C-c\C-m" 'w3m-move-unseen-buffer)
+    (define-key map "\C-c\C-l" 'w3m-go-to-linknum)
     (setq w3m-info-like-map map)))
 
 (defun w3m-alive-p (&optional visible)
@@ -8041,6 +8044,7 @@ or a list which consists of the following elements:
 
 \\[w3m-next-anchor]	Move the point to the next anchor.
 \\[w3m-previous-anchor]	Move the point to the previous anchor.
+\\[w3m-go-to-linknum] Move the point to the numbered anchor.
 \\[w3m-next-form]	Move the point to the next form.
 \\[w3m-previous-form]	Move the point to the previous form.
 \\[w3m-next-image]	Move the point to the next image.

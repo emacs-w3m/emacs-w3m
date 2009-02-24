@@ -1,3 +1,17 @@
+2009-02-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el: Autoload w3m-go-to-linknum.
+	(w3m-lynx-like-map, w3m-info-like-map): Bind `C-c C-l' to it.
+	(w3m-mode): Mention w3m-go-to-linknum in doc string.
+
+	* w3m-util.el (w3m-read-number): New function.
+
+	* w3m-lnum.el (w3m-go-to-linknum): Use w3m-read-number.
+
+2008-04-12  Jose A. Ortega Ruiz  <jao@gnu.org>
+
+	* w3m-lnum.el (w3m-go-to-linknum): New function.
+
 2009-02-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-session.el (w3m-session-ignore-errors): New macro.
@@ -5580,7 +5594,7 @@
 	(w3m-attributes, w3m-local-attributes, w3m-w3m-attributes): Do not
 	return a base URI of retrieved page.
 
-2003-10-14  Jose A. Ortega Ruiz  <jao@abra.uab.es>
+2003-10-14  Jose A. Ortega Ruiz  <jao@gnu.org>
 
 	* w3m.el (w3m-decode-entities-string): Move `save-match-data' to the
 	exterior of `with-temp-buffer'.

@@ -1089,6 +1089,36 @@ If SECONDS is omitted, it defaults to 0.5."
 		   buffer))
   (defalias 'w3m-force-window-update-later 'ignore))
 
+(if (fboundp 'read-number)
+    (defalias 'w3m-read-number 'read-number)
+  (defun w3m-read-number (prompt &optional default)
+    "Read a numeric value in the minibuffer, prompting with PROMPT.
+DEFAULT specifies a default value to return if the user just types RET.
+The value of DEFAULT is inserted into PROMPT."
+    (let ((n nil))
+      (when default
+	(setq prompt
+	      (if (string-match "\\(\\):[ \t]*\\'" prompt)
+		  (replace-match (format " (default %s)" default) t t prompt 1)
+		(w3m-replace-in-string prompt "[ \t]*\\'"
+				       (format " (default %s) " default)
+				       t))))
+      (while
+	  (progn
+	    (let ((str (read-from-minibuffer
+			prompt nil nil nil nil
+			(and default (number-to-string default)))))
+	      (condition-case nil
+		  (setq n (cond
+			   ((zerop (length str)) default)
+			   ((stringp str) (read str))))
+		(error nil)))
+	    (unless (numberp n)
+	      (message "Please enter a number.")
+	      (sit-for 1)
+	      t)))
+      n)))
+
 (defun w3m-make-menu-item (japan english)
   "Make menu item."
   (cond

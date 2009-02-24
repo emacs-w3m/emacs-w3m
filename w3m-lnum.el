@@ -132,10 +132,12 @@ of moving cursor."
   "Turn on link numbers and ask for one to go to."
   (interactive)
   (let ((active w3m-link-numbering-mode))
-    (when (not active) (w3m-link-numbering-mode))
+    (unless active
+      (w3m-link-numbering-mode 1))
     (unwind-protect
-	(w3m-move-numbered-anchor (read-number "Anchor number: "))
-      (when (not active) (w3m-link-numbering-mode)))))
+	(w3m-move-numbered-anchor (w3m-read-number "Anchor number: "))
+      (unless active
+	(w3m-link-numbering-mode 0)))))
 
 (provide 'w3m-lnum)
 
