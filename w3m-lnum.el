@@ -1,6 +1,6 @@
 ;;; w3m-lnum.el --- Operations using link numbers
 
-;; Copyright (C) 2004, 2005, 2006, 2007
+;; Copyright (C) 2004, 2005, 2006, 2007, 2009
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -127,6 +127,15 @@ of moving cursor."
 	    (throw 'found (w3m-print-this-url))))
 	(error "Cannot found your specified link: %d" arg))
     (w3m-view-this-url)))
+
+(defun w3m-go-to-linknum ()
+  "Turn on link numbers and ask for one to go to."
+  (interactive)
+  (let ((active w3m-link-numbering-mode))
+    (when (not active) (w3m-link-numbering-mode))
+    (unwind-protect
+	(w3m-move-numbered-anchor (read-number "Anchor number: "))
+      (when (not active) (w3m-link-numbering-mode)))))
 
 (provide 'w3m-lnum)
 
