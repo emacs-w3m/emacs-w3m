@@ -1,3 +1,13 @@
+2009-02-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el: Require w3m-session instead of autoloading it.
+
+	* w3m-session.el: Don't require w3m; require w3m-util; silent warnings.
+	(w3m-session-select): Use w3m-get-buffer-create instead of
+	get-buffer-create to kill the session select buffer when quitting.
+
+	* w3m-util.el (w3m-replace-in-string): eval-and-compile.
+
 2009-02-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el: Autoload w3m-go-to-linknum.

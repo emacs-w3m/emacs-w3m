@@ -1039,19 +1039,20 @@ the region active."
       (list 'region-active-p)
     (list 'and 'transient-mark-mode 'mark-active)))
 
-(cond
- ((fboundp 'replace-regexp-in-string)
-  (defun w3m-replace-in-string  (string regexp newtext &optional literal)
-    ;;(replace-regexp-in-string regexp newtext string nil literal)))
-    ;;
-    ;; Don't call the symbol function `replace-regexp-in-string' directly
-    ;; in order to silence the byte-compiler when an Emacs which doesn't
-    ;; provide it is used.  The following form generates exactly the same
-    ;; byte-code.
-    (funcall (symbol-function 'replace-regexp-in-string)
-	     regexp newtext string nil literal)))
- (t
-  (defalias 'w3m-replace-in-string 'replace-in-string)))
+(eval-and-compile
+  (cond
+   ((fboundp 'replace-regexp-in-string)
+    (defun w3m-replace-in-string  (string regexp newtext &optional literal)
+      ;;(replace-regexp-in-string regexp newtext string nil literal)))
+      ;;
+      ;; Don't call the symbol function `replace-regexp-in-string' directly
+      ;; in order to silence the byte-compiler when an Emacs which doesn't
+      ;; provide it is used.  The following form generates exactly the same
+      ;; byte-code.
+      (funcall (symbol-function 'replace-regexp-in-string)
+	       regexp newtext string nil literal)))
+   (t
+    (defalias 'w3m-replace-in-string 'replace-in-string))))
 
 (if (fboundp 'compare-strings)
     (defalias 'w3m-compare-strings 'compare-strings)

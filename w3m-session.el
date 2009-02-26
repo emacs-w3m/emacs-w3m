@@ -31,7 +31,22 @@
 
 ;;; Code:
 (eval-when-compile (require 'cl))
-(require 'w3m)
+(require 'w3m-util)
+
+(eval-when-compile
+  (defvar w3m-async-exec)
+  (defvar w3m-async-exec-with-many-urls)
+  (defvar w3m-current-title)
+  (defvar w3m-current-url)
+  (defvar w3m-history)
+  (defvar w3m-history-flat)
+  (defvar w3m-language)
+  (defvar w3m-mode-map)
+  (defvar w3m-profile-directory)
+  (autoload 'w3m-goto-url-new-session "w3m")
+  (autoload 'w3m-history-tree "w3m-hist")
+  (autoload 'w3m-load-list "w3m")
+  (autoload 'w3m-save-list "w3m"))
 
 (defcustom w3m-session-file
   (expand-file-name ".sessions" w3m-profile-directory)
@@ -638,7 +653,7 @@ Sorry, an error found in \"%s\"; may we remove it? "
   (interactive)
   (w3m-session-ignore-errors
    (let* ((sessions (w3m-load-list w3m-session-file))
-	  (showbuf (get-buffer-create " *w3m-session select*"))
+	  (showbuf (w3m-get-buffer-create " *w3m-session select*"))
 	  (wheight (max (+ (length sessions) 5) window-min-height))
 	  (wincfg (current-window-configuration))
 	  window last-window)
