@@ -682,9 +682,12 @@ objects will not be deleted:
 			    (if (eq w exception)
 				(setq flag nil)
 			      (set-buffer (window-buffer w))
-			      (setq flag (memq major-mode
-					       '(w3m-mode
-						 w3m-select-buffer-mode))))))
+			      (setq flag (or (memq major-mode
+						   '(w3m-mode
+						     w3m-select-buffer-mode
+						     w3m-session-select-mode))
+					     (string-match "\\` ?\\*w3m[ -]"
+							   (buffer-name)))))))
 			'no-minibuf)
 		       (set-buffer buffer)
 		       flag))
