@@ -28,10 +28,6 @@ Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 @end quotation
 @end copying
 
-@ifnottex
-@insertcopying
-@end ifnottex
-
 @dircategory GNU Emacs Lisp
 @direntry
 * Emacs-w3m: (emacs-w3m).  An Emacs interface to w3m
@@ -53,7 +49,8 @@ This edition is for emacs-w3m version @value{VERSION}.
 @insertcopying
 @end titlepage
 
-@ifnottex
+@contents
+
 @node Top
 @top Emacs-w3m User's Manual
 
@@ -63,6 +60,8 @@ The emacs-w3m development team
 
 This manual corresponds to emacs-w3m version @value{VERSION}.
 
+@ifnottex
+@insertcopying
 @end ifnottex
 
 @menu
@@ -6936,8 +6935,6 @@ Naohiro Aota
 @unnumberedsec Function Index
 @printindex fn
 
-@summarycontents
-@contents
 @bye
 
 @c Local Variables:

@@ -25,10 +25,10 @@ WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
 
-この文書は有用であることを願って頒布されますが、@emph{全くの無保証}です。
-@emph{商業可能性}の保証や@emph{特定の目的への適合性}は、言外に示されたも
-のも含め全く存在しません。詳しくは GNU 一般公衆利用許諾契約書をご覧くだ
-さい。
+この文書は有用であることを願って頒布されますが、@emph{全くの無保証} です。
+@emph{商業可能性} の保証や @emph{特定の目的への適合性} は、言外に示され
+たものも含め全く存在しません。詳しくは GNU 一般公衆利用許諾契約書をご覧
+ください。
 
 You should have received a copy of the GNU General Public License along
 with this document; see the file COPYING.  If not, write to the Free
@@ -43,10 +43,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA)。
 @c を参考にしました。
 @end quotation
 @end copying
-
-@ifnottex
-@insertcopying
-@end ifnottex
 
 @dircategory GNU Emacs Lisp
 @direntry
@@ -74,7 +70,8 @@ This edition is for emacs-w3m version @value{VERSION}.
 @insertcopying
 @end titlepage
 
-@ifnottex
+@contents
+
 @node Top
 @top Emacs-w3m ユーザマニュアル
 
@@ -83,6 +80,9 @@ Emacs-w3m 開発チーム
 @end flushright
 
 この文書は emacs-w3m バージョン @value{VERSION} に対応します。
+
+@ifnottex
+@insertcopying
 @end ifnottex
 
 @menu
@@ -6935,8 +6935,6 @@ Romain Francoise
 @unnumberedsec 関数索引
 @printindex fn
 
-@summarycontents
-@contents
 @bye
 
 @c Local Variables:
