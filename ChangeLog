@@ -1,3 +1,10 @@
+2009-03-03  Naohiro Aota  <naota@elisp.net>
+
+	* w3m-hist.el (w3m-history-slimmed-history-flat, w3m-history-slim): New
+	funtions.
+
+	* w3m-session.el (w3m-session-history-to-save): Use it.
+
 2009-02-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el: Require w3m-session instead of autoloading it.

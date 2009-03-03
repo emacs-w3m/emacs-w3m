@@ -655,6 +655,35 @@ it works although it may not be perfect."
 	    w3m-history (list (list nil (list 0) nil)
 			      (list (car element) (cadr element)))))))
 
+(defun w3m-history-slimmed-history-flat ()
+  "Return slimmed history."
+  (let ((position (cadar w3m-history))
+	flat-map new-flat)
+    (dolist (l w3m-history-flat)
+      (setq flat-map (cons (cons (nth 2 l) l)
+			   flat-map)))
+    (setq new-flat (cons (cdr (assoc position flat-map)) nil))
+    (let ((pos (w3m-history-previous-position position)))
+      (while pos
+	(setq new-flat (cons (cdr (assoc pos flat-map))
+			     new-flat))
+	(setq pos (w3m-history-previous-position pos))))
+    (let ((pos (w3m-history-next-position position)))
+      (while pos
+	(setq new-flat (cons (cdr (assoc pos flat-map))
+			     new-flat))
+	(setq pos (w3m-history-next-position pos))))
+    new-flat))
+
+(defun w3m-history-slim ()
+  "Slim the history.
+This makes the history slim so that it may have only the pages that
+are accessible by PREV and NEXT operations."
+  (interactive)
+  (let ((position (cadar w3m-history)))
+    (setq w3m-history-flat (w3m-history-slimmed-history-flat))
+    (w3m-history-tree position)))
+
 (eval-when-compile
   (defvar w3m-arrived-db)
   (autoload 'w3m-goto-url "w3m"))

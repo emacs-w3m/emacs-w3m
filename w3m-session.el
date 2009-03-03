@@ -169,7 +169,7 @@
      (mapcar (lambda (x)
 	       (unless (equal (nth 2 x) pos)
 		 (list x)))
-	     (copy-sequence w3m-history-flat)))))
+	     (copy-sequence (w3m-history-slimmed-history-flat))))))
 
 ;; format of sessin file.
 ;; '((sessiontitle1 time1 ((url11 pos11 hflat11 urltitle11)
