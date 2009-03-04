@@ -1,3 +1,13 @@
+2009-03-04  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-decode-buffer): If context-charset is x-moe-internal,
+	x-moe-internal is used as charset regardless of w3m-type.
+	(w3m-w3m-parse-header): Add w3m-document-charset to handle of the
+	headers. If w3m-document-charset is x-moe-internal, charset sets to
+	x-moe-internal compulsorily. If x-w3m-content-encoding is exist, the
+	value of x-w3m-content-encoding is used as encoding method regardless
+	of w3m-type.
+
 2009-03-03  Naohiro Aota  <naota@elisp.net>
 
 	* w3m-hist.el (w3m-history-slimmed-history-flat, w3m-history-slim): New

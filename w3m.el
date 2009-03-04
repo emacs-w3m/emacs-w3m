@@ -3630,7 +3630,7 @@ The database is kept in `w3m-entity-table'."
     (while (and repeat w3m-idle-images-show-list)
       (let* ((item (or (and onbuffer
 			    (or current
-				(let* ((prev (previous-single-property-change 
+				(let* ((prev (previous-single-property-change
 					      (point) 'w3m-idle-image-item))
 				       (next (next-single-property-change
 					      (point) 'w3m-idle-image-item))
@@ -3655,7 +3655,7 @@ The database is kept in `w3m-entity-table'."
 	     (url      (nth 3 item))
 	     (no-cache (nth 4 item))
 	     (size     (nth 5 item)))
-	(setq w3m-idle-images-show-list 
+	(setq w3m-idle-images-show-list
 	      (delete item w3m-idle-images-show-list))
 	(if (buffer-live-p (marker-buffer start))
 	    (with-current-buffer (marker-buffer start)
@@ -4765,10 +4765,9 @@ Users should never modify the value.  See also `w3m-view-source'.")
 		    (w3m-detect-meta-charset))
 		  (w3m-detect-xml-charset))))
       (cond
-       ((and (eq w3m-type 'w3mmee)
-	     (or (and (stringp content-charset)
-		      (string= "x-moe-internal" (downcase content-charset)))
-		 (eq content-charset 'x-moe-internal)))
+       ((or (and (stringp content-charset)
+		 (string= "x-moe-internal" (downcase content-charset)))
+	    (eq content-charset 'x-moe-internal))
 	(setq cs (w3m-x-moe-decode-buffer))
 	(setq content-charset (symbol-name cs)))
        (content-charset
@@ -5013,6 +5012,7 @@ Return a list which includes:
 				   "last-modified"
 				   "location"
 				   "w3m-current-url"
+				   "w3m-document-charset"
 				   "w3m-ssl-certificate"
 				   "x-w3m-content-encoding"
 				   "alternates"))
@@ -5021,7 +5021,7 @@ Return a list which includes:
 	(push (cons (downcase (match-string 1 line))
 		    (substring line (match-end 0)))
 	      headers))))
-    (let (alt real-url type charset)
+    (let (alt real-url type charset xmoe)
       (when (and (setq alt (cdr (assoc "alternates" headers)))
 		 (string-match "\\`{[\t ]*\"\\(.+\\)\"" alt))
 	(setq real-url (w3m-expand-url (match-string 1 alt) url))
@@ -5044,6 +5044,9 @@ Return a list which includes:
       (when (string-match "\\`ftps?:" url)
 	(setq url (or (cdr (assoc "w3m-current-url" headers))
 		      url)))
+      (when (and (setq xmoe (cdr (assoc "w3m-document-charset" headers)))
+		 (string= xmoe "x-moe-internal"))
+	(setq charset xmoe))
       (list status
 	    (if (string-match "\\`ftps?:.*/\\'" url)
 		"text/html"
@@ -5059,8 +5062,7 @@ Return a list which includes:
 	    (let ((v (cdr (assoc "content-length" headers))))
 	      (and v (setq v (string-to-number v)) (> v 0) v))
 	    (cdr (or (assoc "content-encoding" headers)
-		     (when (eq w3m-type 'w3mmee)
-		       (assoc "x-w3m-content-encoding" headers))))
+		     (assoc "x-w3m-content-encoding" headers)))
 	    (let ((v (cdr (assoc "last-modified" headers))))
 	      (and v (w3m-time-parse-string v)))
 	    (or real-url
