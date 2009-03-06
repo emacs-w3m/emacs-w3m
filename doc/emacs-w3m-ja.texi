@@ -5230,11 +5230,11 @@ gendai-net.wadai gendai-net.kenko gendai-net.syoku gendai-net.book
 
 @item @uref{http://mainichi.jp/, 毎日jp}
 @itemx (2007年10月に MSN から自社サイトに移行)
-mainichi.flash mainichi.sports mainichi.entertainment mainichi.mantan
-mainichi.electronics mainichi.weekly mainichi.opinion.editorial
-mainichi.opinion.yoroku mainichi.opinion.hasshinbako
-mainichi.opinion.eye mainichi.opinion.hito mainichi.opinion.kinji
-mainichi.opinion.yuraku mainichi.opinion.closeup
+mainichi.flash mainichi.sports mainichi.entertainment
+mainichi.entertainment.art mainichi.mantan mainichi.electronics
+mainichi.weekly mainichi.opinion.editorial mainichi.opinion.yoroku
+mainichi.opinion.hasshinbako mainichi.opinion.eye mainichi.opinion.hito
+mainichi.opinion.kinji mainichi.opinion.yuraku mainichi.opinion.closeup
 mainichi.opinion.kaisetsu mainichi.opinion.newsup
 
 これらのグループは、デフォルトで写真をも含む HTML の記事を作ります。それ
