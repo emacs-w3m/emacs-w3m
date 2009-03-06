@@ -1,3 +1,10 @@
+2009-03-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-mainichi.el: Use sb-multi.
+	(shimbun-mainichi-group-table): Add entertainment.art group.
+	(shimbun-mainichi-multi-next-url)
+	(shimbun-mainichi-multi-clear-contents): New functions.
+
 2009-02-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-use-refresh): New variable.
