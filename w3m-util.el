@@ -250,6 +250,18 @@ If POSITION is omitted, the current position is assumed."
 (def-edebug-spec w3m-parse-attributes
   ((&rest &or (symbolp &optional symbolp) symbolp) body))
 (defmacro w3m-parse-attributes (attributes &rest form)
+  "Extract ATTRIBUTES, KEYWORD=\"VALUE\" pairs, in a tag and run FORMS.
+ATTRIBUTES is a list of symbols that looks like `(KEYWORD KEYWORD...)'.
+A symbol KEYWORD, that will express a value extracted from a tag, can
+be used as a Lisp variable within FORMS.  The point has to be within
+a tag initially, and only attributes that follow the point will be
+extracted.
+
+The value of KEYWORD is a string by default, or is nil if the KEYWORD
+is not found in a tag.  KEYWORD can be `(KEYWORD TYPE)', where TYPE is
+one of `:case-ignore', `:integer', `:bool', and `:decode-entity'.
+Those types mean converting the value into a lower-case string,
+an integer, a boolean (t or nil), and a decoded string respectively."
   `(let (,@(mapcar (lambda (attr)
 		     (if (listp attr)
 			 (car attr)
