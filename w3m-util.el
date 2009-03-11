@@ -249,7 +249,7 @@ If POSITION is omitted, the current position is assumed."
 (put 'w3m-parse-attributes 'lisp-indent-function '1)
 (def-edebug-spec w3m-parse-attributes
   ((&rest &or (symbolp &optional symbolp) symbolp) body))
-(defmacro w3m-parse-attributes (attributes &rest form)
+(defmacro w3m-parse-attributes (attributes &rest forms)
   "Extract ATTRIBUTES, KEYWORD=\"VALUE\" pairs, in a tag and run FORMS.
 ATTRIBUTES is a list of symbols that looks like `(KEYWORD KEYWORD...)'.
 A symbol KEYWORD, that will express a value extracted from a tag, can
@@ -314,7 +314,7 @@ an integer, a boolean (t or nil), and a decoded string respectively."
        (skip-chars-forward " \t\r\f\n"))
      (skip-chars-forward "^>")
      (forward-char)
-     ,@form))
+     ,@forms))
 
 
 ;;; Working buffers:
