@@ -5054,11 +5054,7 @@ Return a list which includes:
 	    (if (string-match "\\`ftps?:.*/\\'" url)
 		(if w3m-accept-japanese-characters
 		    "w3m-euc-japan" "w3m-iso-latin-1")
-	      (or charset
-		  (and (eq w3m-type 'w3mmee)
-		       (setq charset
-			     (cdr (assoc "w3m-document-charset" headers)))
-		       (car (split-string charset)))))
+	      charset)
 	    (let ((v (cdr (assoc "content-length" headers))))
 	      (and v (setq v (string-to-number v)) (> v 0) v))
 	    (cdr (or (assoc "content-encoding" headers)
