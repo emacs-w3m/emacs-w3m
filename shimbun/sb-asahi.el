@@ -1,6 +1,6 @@
 ;;; sb-asahi.el --- shimbun backend for asahi.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -294,7 +294,27 @@ Every `.' in NAME will be replaced with `/'."
 	 "\"")
        1 nil nil nil 2 3 4)
       ("travel" "トラベル" "%s/news/"
-       ,@(shimbun-asahi-make-regexp "travel.news"))))
+       ,@(shimbun-asahi-make-regexp "travel.news"))
+      ("wakata" "若田さんきぼう滞在記" "%s/report/"
+       ,(concat
+	 "<a" s1 "href=\"/"
+	 ;; 1. url
+	 "\\(wakata\\(?:/[^\"/]+\\)*/"
+	 ;; 2. serial number
+	 "\\([a-z]*"
+	 ;; 3. year
+	 "\\(20[0-9][0-9]\\)"
+	 ;; 4. month
+	 "\\([01][0-9]\\)"
+	 ;; 5. day
+	 "\\([0-3][0-9]\\)"
+	 "[0-9]+\\)"
+	 "\\.html\\)"
+	 "\">" s0
+	 ;; 6. subject
+	 "\\([^\n<>]+\\)"
+	 s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)*</a>")
+       1 nil 2 6 3 4 5)))
   "Alist of group names, their Japanese translations, index pages,
 regexps and numbers.  Where index pages and regexps may contain the
 \"%s\" token which is replaced with group names, numbers point to the
