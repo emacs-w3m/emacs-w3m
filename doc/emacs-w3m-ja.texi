@@ -5192,7 +5192,7 @@ asahi.shopping asahi.shopping.column asahi.shopping.yakimono
 asahi.shougi asahi.sports asahi.sports.baseball asahi.sports.battle
 asahi.sports.etc asahi.sports.football asahi.sports.golf
 asahi.sports.rugby asahi.sports.usa asahi.sports.winter asahi.tenjin
-asahi.travel
+asahi.travel asahi.wakata
 
 これらのグループは、デフォルトでテキストだけの記事を作ります。それらに、
 テキストだけでなく写真をも含む HTML の記事を生成させたいならば、以下の行

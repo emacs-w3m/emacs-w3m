@@ -5166,7 +5166,7 @@ asahi.shopping asahi.shopping.column asahi.shopping.yakimono
 asahi.shougi asahi.sports asahi.sports.baseball asahi.sports.battle
 asahi.sports.etc asahi.sports.football asahi.sports.golf
 asahi.sports.rugby asahi.sports.usa asahi.sports.winter asahi.tenjin
-asahi.travel
+asahi.travel asahi.wakata
 
 Those groups generate articles containing only text by default.  If you
 would like to make them generate HTML articles that contain not only
