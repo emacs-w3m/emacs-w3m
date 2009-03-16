@@ -295,7 +295,7 @@ Every `.' in NAME will be replaced with `/'."
        1 nil nil nil 2 3 4)
       ("travel" "トラベル" "%s/news/"
        ,@(shimbun-asahi-make-regexp "travel.news"))
-      ("wakata" "若田さんきぼう滞在記" "%s/report/"
+      ("wakata" "若田さんきぼう滞在記" "%s/"
        ,(concat
 	 "<a" s1 "href=\"/"
 	 ;; 1. url
