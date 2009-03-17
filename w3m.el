@@ -2721,7 +2721,7 @@ and the net_loc part from URL.  It is meaningless to give an argument
 whose net_loc part is not empty, a null string or the localhost name
 to this function."
   (cond
-   ((string-match "\\`\\(\\(file:\\(//\\)?\\)\\|about://dtree\\)/" url)
+   ((string-match "\\`\\(\\(file:/\\{1,2\\}\\)\\|about://dtree\\)/" url)
     (setq url (substring url (match-end 1)))
     ;; Strip the localhost name.
     (when (and (match-beginning 2) ;; file:

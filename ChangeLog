@@ -1,6 +1,11 @@
+2009-03-12  <victor.ren@ericsson.com>
+
+	* w3m.el (w3m-url-to-file-name): Support "file://c:/" in addition to
+	"file:///c:/".
+
 2009-03-12  Hideyuki SHIRAI  <shirai@meadowy.org>
 
-	* w3m.el (w3m-w3m-parse-header):  The value of w3m-document-charset is
+	* w3m.el (w3m-w3m-parse-header): The value of w3m-document-charset is
 	not used excluding x-moe-internal.
 
 2009-03-04  Hideyuki SHIRAI  <shirai@meadowy.org>
