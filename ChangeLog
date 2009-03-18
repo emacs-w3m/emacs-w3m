@@ -1,3 +1,9 @@
+2009-03-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-link-menu): Always provide title string.  Suggested by
+	David Abrahams <dave@boostpro.com>.
+	Cf. <URL:http://news.gmane.org/group/gmane.emacs.w3m/thread=8126>.
+
 2009-03-17  Victor Ren  <victor.ren@ericsson.com>
 
 	* w3m.el (w3m-url-to-file-name): Support "file://c:/" in addition to

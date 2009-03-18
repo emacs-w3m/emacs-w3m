@@ -7950,9 +7950,7 @@ or a list which consists of the following elements:
 	 (define-key w3m-link-map [mouse-3] 'w3m-link-menu))))
 
 (easy-menu-define w3m-link-menu w3m-link-map "w3m link menu."
-  `(,(if (or (featurep 'xemacs)
-	     (< emacs-major-version 22))
-	 "Link")
+  `("Link" ;; This cannot be omitted for at least MacOS.
     [,(w3m-make-menu-item "リンクをこのセッションで開く"
 			  "Open Link in This Session")
      w3m-view-this-url]
