@@ -1,4 +1,4 @@
-2009-03-17  <victor.ren@ericsson.com>
+2009-03-17  Victor Ren  <victor.ren@ericsson.com>
 
 	* w3m.el (w3m-url-to-file-name): Support "file://c:/" in addition to
 	"file:///c:/".
