@@ -42,18 +42,17 @@
 (eval '(require 'xml))
 
 (eval-and-compile
-  (luna-define-class shimbun-rss (shimbun) (ignored-subject))
-  (luna-define-internal-accessors 'shimbun-rss))
+  (luna-define-class shimbun-rss (shimbun) (ignored-subject)))
 
 (luna-define-method initialize-instance :after ((shimbun shimbun-rss)
 						&rest init-args)
   (shimbun-rss-initialize-ignored-subject shimbun))
 
 (defun shimbun-rss-initialize-ignored-subject (shimbun)
-  (shimbun-rss-set-ignored-subject-internal
-   shimbun
-   (symbol-value (intern-soft (format "shimbun-%s-ignored-subject"
-				      (shimbun-server shimbun)))))
+  (luna-set-slot-value shimbun 'ignored-subject
+		       (symbol-value
+			(intern-soft (format "shimbun-%s-ignored-subject"
+					     (shimbun-server shimbun)))))
   shimbun)
 
 (luna-define-generic shimbun-rss-process-date (shimbun-rss date)
@@ -185,7 +184,7 @@ But clarify need ignored URL return nil.")
 			 (shimbun-index-url shimbun)
 			 (error-message-string err))
 		nil)))
-	(ignored-subject (shimbun-rss-ignored-subject-internal shimbun))
+	(ignored-subject (luna-slot-value shimbun 'ignored-subject))
 	dc-ns rss-ns author hankaku headers)
     (when xml
       (setq dc-ns (shimbun-rss-get-namespace-prefix

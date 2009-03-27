@@ -1,3 +1,12 @@
+2009-03-27  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* sb-rss.el: Don't use internal accessor because luna does not
+	support it in multiple inheritance.
+	(shimbun-rss-initialize-ignored-subject): Use luna-set-slot-value
+	instead of shimbun-rss-set-ignored-subject-internal.
+	(shimbun-rss-get-headers): Use luna-slot-value instead of
+	shimbun-rss-ignored-subject-internal.
+
 2009-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-group-table): Add wakata group.
