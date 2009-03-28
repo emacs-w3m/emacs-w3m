@@ -5,6 +5,7 @@
 	(w3m-image-no-idle-timer): New variable.
 	(w3m-toggle-inline-images-internal): Use it.
 	(w3m-arrived-add): Add also decoded url.
+	(w3m-goto-url): Restore forms also when url is local.
 
 2009-03-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 

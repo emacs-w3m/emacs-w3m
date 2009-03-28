@@ -8889,7 +8889,8 @@ Cannot run two w3m processes simultaneously \
 	  (when (setq w3m-current-forms
 		      (when (and (not reload) ; If reloading, ignore history.
 				 (null post-data) ; If post, ignore history.
-				 (w3m-cache-available-p url))
+				 (or (w3m-cache-available-p url)
+				     (w3m-url-local-p url)))
 			;; Don't use `w3m-history-plist-get' here.
 			(plist-get (nthcdr 3 element) :forms)))
 	    ;; Mark that the form is from history structure.
