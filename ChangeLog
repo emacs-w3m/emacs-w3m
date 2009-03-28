@@ -27,7 +27,7 @@
 2009-03-03  Naohiro Aota  <naota@elisp.net>
 
 	* w3m-hist.el (w3m-history-slimmed-history-flat, w3m-history-slim): New
-	funtions.
+	functions.
 
 	* w3m-session.el (w3m-session-history-to-save): Use it.
 
