@@ -9061,16 +9061,20 @@ See `w3m-default-directory'."
 	(pop-to-buffer buffer)
 	(with-current-buffer buffer
 	  (w3m-cancel-refresh-timer buffer)
-	  (w3m-goto-url url (and w3m-current-url
-				 (string= url w3m-current-url))))))
+	  (if (and w3m-current-url
+		   (string= url w3m-current-url))
+	      (w3m-reload-this-page t)
+	    (w3m-goto-url url)))))
      ((buffer-live-p buffer)
       (let* ((cwin (selected-window))
 	     (cbuf (window-buffer cwin)))
 	(with-current-buffer buffer
 	  (w3m-cancel-refresh-timer buffer)
-	  (w3m-goto-url url (and w3m-current-url
-				 (string= url w3m-current-url))
-			nil nil nil nil nil t))
+	  (if (and w3m-current-url
+		   (string= url w3m-current-url))
+	      (w3m-reload-this-page t)
+	    (w3m-goto-url url nil
+			  nil nil nil nil nil t)))
 	(set-window-buffer cwin cbuf)))
      (t
       (with-current-buffer buffer
