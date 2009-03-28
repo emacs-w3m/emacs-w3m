@@ -2798,7 +2798,16 @@ If SOFT is non-nil, use `intern-soft' instead."
 Optional TITLE, MODIFICATION-TIME, ARRIVAL-TIME, CONTENT-CHARSET and
 CONTENT-TYPE are also be added."
   (unless (string-match w3m-arrived-ignored-regexp url)
-    (let ((ident (w3m-arrived-intern url)))
+    (let ((ident (w3m-arrived-intern url))
+	  (decoded-url (w3m-url-decode-string 
+			url 
+			(and content-charset
+			     (w3m-charset-to-coding-system 
+			      content-charset)))))
+      (unless (string= url decoded-url)
+	(w3m-arrived-add decoded-url
+			 title modification-time arrival-time
+			   content-charset content-type))
       (if (string-match "\\`\\([^#]+\\)#" url)
 	  (w3m-arrived-add (substring url 0 (match-end 1))
 			   title modification-time arrival-time
@@ -3710,6 +3719,7 @@ The database is kept in `w3m-entity-table'."
 			   t
 			   'w3m-idle-images-show))))
 
+(defvar w3m-image-no-idle-timer nil)
 (defsubst w3m-toggle-inline-images-internal (status
 					     &optional no-cache url
 					     begin-pos end-pos
@@ -3770,10 +3780,11 @@ If URL is specified, only the image with URL is toggled."
 You are retrieving non-secure image(s).  Continue? ")
 				      (message nil))
 				    (setq allow-non-secure-images t))))
-		  (if (and (null (and size w3m-resize-images))
-			   (or (string-match "\\`\\(?:cid\\|data\\):" iurl)
-			       (w3m-url-local-p iurl)
-			       (w3m-cache-available-p iurl)))
+		  (if (or w3m-image-no-idle-timer
+			  (and (null (and size w3m-resize-images))
+			       (or (string-match "\\`\\(?:cid\\|data\\):" iurl)
+				   (w3m-url-local-p iurl)
+				   (w3m-cache-available-p iurl))))
 		      (w3m-process-with-null-handler
 			(lexical-let ((start (set-marker (make-marker) start))
 				      (end (set-marker (make-marker) end))

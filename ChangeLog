@@ -2,6 +2,9 @@
 
 	* w3m.el (w3m-goto-url-with-timer): When going to the same url, use
 	`w3m-reload-this-page'.
+	(w3m-image-no-idle-timer): New variable.
+	(w3m-toggle-inline-images-internal): Use it.
+	(w3m-arrived-add): Add also decoded url.
 
 2009-03-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
