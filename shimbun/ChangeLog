@@ -1,3 +1,8 @@
+2009-03-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-content-start, shimbun-asahi-content-end):
+	Update.
+
 2009-03-27  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* sb-rss.el: Don't use internal accessor because luna does not

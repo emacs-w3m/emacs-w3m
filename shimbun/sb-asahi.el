@@ -933,7 +933,8 @@ Each table is the same as the `cdr' of the element of
 `shimbun-asahi-group-table'.")
 
 (defvar shimbun-asahi-content-start
-  "<div[\t\n ]+class=\"\\(?:ThmbSet256\\|Kansai-ThmbSet100\\|ThmbCol\\)\">\
+  "<div[\t\n ]+class=\"\
+\\(?:ThmbSet300Tb\\|ThmbSet256\\|Kansai-ThmbSet100\\|ThmbCol\\)\">\
 \\|<!--[\t\n ]*End of Headline[\t\n ]*-->\
 \\(?:[\t\n ]*<div[\t\n ]+[^<]+</div>[\t\n ]*\
 \\|[\t\n ]*<p[\t\n ]+[^<]+</p>[\t\n ]*\\)?\
@@ -943,7 +944,7 @@ Each table is the same as the `cdr' of the element of
 (defvar shimbun-asahi-content-end
   "<dl[\t\n ]+class=\"PrInfo\">\
 \\|<!--[\t\n ]*google_ad_section_end\
-\\|<!-[^>]+ここまで[\t\n ]*-+>\
+\\|<!-[^>]+[^>★]ここまで[\t\n ]*-+>\
 \\|\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<!--[\t\n ]*Start of hatenab[\t\n ]*-->\
 \\|<!--[\t\n ]*End of Kiji[\t\n ]*-->\
 \\|<!--[\t\n ]*End of related link[\t\n ]*-->\
