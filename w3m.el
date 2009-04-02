@@ -2799,15 +2799,17 @@ Optional TITLE, MODIFICATION-TIME, ARRIVAL-TIME, CONTENT-CHARSET and
 CONTENT-TYPE are also be added."
   (unless (string-match w3m-arrived-ignored-regexp url)
     (let ((ident (w3m-arrived-intern url))
-	  (decoded-url (w3m-url-decode-string 
-			url 
+	  (decoded-url (w3m-url-decode-string
+			url
 			(and content-charset
-			     (w3m-charset-to-coding-system 
+			     (w3m-charset-to-coding-system
 			      content-charset)))))
-      (unless (string= url decoded-url)
+      (unless (or (string= url decoded-url)
+		  (string-match "[^\000-\177]" url)
+		  (not (string-match "[^\000-\177]" decoded-url)))
 	(w3m-arrived-add decoded-url
 			 title modification-time arrival-time
-			   content-charset content-type))
+			 content-charset content-type))
       (if (string-match "\\`\\([^#]+\\)#" url)
 	  (w3m-arrived-add (substring url 0 (match-end 1))
 			   title modification-time arrival-time
