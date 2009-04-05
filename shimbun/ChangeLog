@@ -1,3 +1,25 @@
+2009-04-05  ARISAWA Akihiro  <ari@mbf.ocn.ne.jp>
+
+	* sb-atom.el (shimbun-atom-get-headers): Check `updated' and
+	`published' element.
+
+	* sb-atom-hash.el (content-hash-update-items-impl): Ditto.
+
+2009-04-05  ARISAWA Akihiro  <ari@mbf.ocn.ne.jp>
+
+	* sb-hash.el: Don't inherit shimbun;
+	Rename class name shimbun-hash -> content-hash.
+
+	* sb-rss-hash.el (shimbun-rss-hash): Don't inherit shimbun-hash;
+	Add a new slot `content'.
+	(rss-content-hash): New class.
+	(shimbun-article): New overriden method.
+
+	* sb-atom-hash.el (shimbun-atom-hash): Don't inherit shimbun-hash;
+	Add a new slot `content'.
+	(atom-content-hash): New class.
+	(shimbun-article): New overriden method.
+
 2009-03-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-content-start, shimbun-asahi-content-end):

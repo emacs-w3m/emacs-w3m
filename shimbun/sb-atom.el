@@ -1,6 +1,6 @@
 ;;; sb-atom.el --- shimbun backend for ATOM (Rich Site Summary).
 
-;; Copyright (C) 2006, 2008 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2006, 2008, 2009 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: news
@@ -88,6 +88,8 @@ But clarify need ignored URL return nil.")
 			     (intern (concat atom-ns "link")) entry)))))
 	  (when url
 	    (let* ((date (or (shimbun-rss-get-date shimbun url)
+			     (shimbun-rss-node-text atom-ns 'updated entry)
+			     (shimbun-rss-node-text atom-ns 'published entry)
 			     (shimbun-rss-node-text atom-ns 'modified entry)
 			     (shimbun-rss-node-text atom-ns 'created entry)
 			     (shimbun-rss-node-text atom-ns 'issued entry)
