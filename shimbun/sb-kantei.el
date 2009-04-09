@@ -1,6 +1,6 @@
 ;;; sb-kantei.el --- shimbun backend for kantei mail magazine backnumber -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2003, 2003, 2004, 2005, 2006, 2007, 2008
+;; Copyright (C) 2001, 2003, 2003, 2004, 2005, 2006, 2007, 2008, 2009
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
@@ -188,7 +188,7 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-kantei)
 						    header)
   (let ((case-fold-search t)
-	start)
+	start end)
     (if (and (search-forward "<pre>" nil t)
 	     (progn
 	       (setq start (match-beginning 0))
@@ -220,7 +220,13 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 		 (setq start (match-end 0))
 		 (re-search-forward "[\t\n ]*<!--/総理原稿-->" nil t)))
 	  (progn
-	    (delete-region (match-beginning 0) (point-max))
+	    (setq end (match-beginning 0))
+	    (while (when (re-search-forward "<!--総理原稿-->[\t\n ]*" nil t)
+		     (delete-region end (match-end 0))
+		     (insert "\n&#012;\n")
+		     (and (re-search-forward "[\t\n ]*<!--/総理原稿-->" nil t)
+			  (setq end (match-beginning 0)))))
+	    (delete-region end (point-max))
 	    (insert "\n")
 	    (delete-region (point-min) start))
 	;; Remove style sheet.

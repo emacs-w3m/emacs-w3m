@@ -1,3 +1,8 @@
+2009-04-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kantei.el (shimbun-clear-contents): Don't remove succeeding
+	contents.
+
 2009-04-05  ARISAWA Akihiro  <ari@mbf.ocn.ne.jp>
 
 	* sb-atom.el (shimbun-atom-get-headers): Check `updated' and
