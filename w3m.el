@@ -3667,36 +3667,40 @@ The database is kept in `w3m-entity-table'."
 	      (delete item w3m-idle-images-show-list))
 	(if (buffer-live-p (marker-buffer start))
 	    (with-current-buffer (marker-buffer start)
-	      (let (buffer-read-only)
-		(remove-text-properties start end '(w3m-idle-image-item))
-		(set-buffer-modified-p nil))
-	      (w3m-process-with-null-handler
-		(lexical-let ((start start)
-			      (end end)
-			      (iurl iurl)
-			      (url url))
-		  (w3m-process-do
-		      (image (let ((w3m-current-buffer (current-buffer))
-				   (w3m-message-silent t))
-			       (w3m-create-image
-				iurl no-cache
-				url
-				size handler)))
-		    (when (buffer-live-p (marker-buffer start))
-		      (with-current-buffer (marker-buffer start)
-			(if image
-			    (when (equal url w3m-current-url)
+	      (save-restriction
+		(widen)
+		(let (buffer-read-only)
+		  (remove-text-properties start end '(w3m-idle-image-item))
+		  (set-buffer-modified-p nil))
+		(w3m-process-with-null-handler
+		  (lexical-let ((start start)
+				(end end)
+				(iurl iurl)
+				(url url))
+		    (w3m-process-do
+			(image (let ((w3m-current-buffer (current-buffer))
+				     (w3m-message-silent t))
+				 (w3m-create-image
+				  iurl no-cache
+				  url
+				  size handler)))
+		      (when (buffer-live-p (marker-buffer start))
+			(with-current-buffer (marker-buffer start)
+			  (save-restriction
+			    (widen)
+			    (if image
+				(when (equal url w3m-current-url)
+				  (let (buffer-read-only)
+				    (w3m-insert-image start end image iurl))
+				  ;; Redisplay
+				  (when w3m-force-redisplay
+				    (sit-for 0)))
 			      (let (buffer-read-only)
-				(w3m-insert-image start end image iurl))
-			      ;; Redisplay
-			      (when w3m-force-redisplay
-				(sit-for 0)))
-			  (let (buffer-read-only)
-			    (w3m-add-text-properties
-			     start end '(w3m-image-status off))))
-			(set-buffer-modified-p nil))
-		      (set-marker start nil)
-		      (set-marker end nil))))))
+				(w3m-add-text-properties
+				 start end '(w3m-image-status off))))
+			    (set-buffer-modified-p nil))
+			  (set-marker start nil)
+			  (set-marker end nil))))))))
 	  (set-marker start nil)
 	  (set-marker end nil)
 	  (w3m-idle-images-show-unqueue (marker-buffer start))))
@@ -3989,7 +3993,9 @@ Are you sure you really want to show all images (maybe insecure)? "))))
 						 (unless (interactive-p)
 						   safe-regexp))
 	    (setq w3m-display-inline-images (not status))
-	    (when status (w3m-process-stop (current-buffer)))
+	    (when status 
+	      (w3m-process-stop (current-buffer))
+	      (w3m-idle-images-show-unqueue (current-buffer)))
 	    (force-mode-line-update)))
       (w3m-message "There are some images considered unsafe;\
  use the prefix arg to force display"))))
@@ -7377,6 +7383,7 @@ passed to the `w3m-quit' function (which see)."
 		   (delete-window))))))
       (w3m-session-deleted-save (list cur))
       (w3m-process-stop cur)
+      (w3m-idle-images-show-unqueue cur)
       (kill-buffer cur)
       (when w3m-use-form
 	(w3m-form-kill-buffer cur))
@@ -7455,6 +7462,7 @@ as if the folder command of MH performs with the -pack option."
     (while buffers
       (setq buffer (pop buffers))
       (w3m-process-stop buffer)
+      (w3m-idle-images-show-unqueue buffer)
       (kill-buffer buffer)
       (when w3m-use-form
 	(w3m-form-kill-buffer buffer))))
@@ -8864,6 +8872,7 @@ the current page."
 Cannot run two w3m processes simultaneously \
 \(Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)")))
     (w3m-process-stop (current-buffer))	; Stop all processes retrieving images.
+    (w3m-idle-images-show-unqueue (current-buffer))
     ;; Store the current position in the history structure.
     (w3m-history-store-position)
     ;; Access url group
@@ -10149,6 +10158,7 @@ passed to the `w3m-quit' function (which see)."
     (let ((buffer (w3m-select-buffer-current-buffer)))
       (forward-line -1)
       (w3m-process-stop buffer)
+      (w3m-idle-images-show-unqueue buffer)
       (kill-buffer buffer)
       (when w3m-use-form
 	(w3m-form-kill-buffer buffer))

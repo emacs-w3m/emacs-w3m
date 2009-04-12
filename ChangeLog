@@ -1,5 +1,12 @@
 2009-04-12  Naohiro Aota  <naota@elisp.net>
 
+	* w3m.el (w3m-select-buffer-delete-buffer, w3m-goto-url)
+	(w3m-delete-buffers): Unqueue image retrieving process manually.
+	(w3m-idle-images-show): Widen narrowing.
+
+	* w3m-proc.el (w3m-process-stop): Don't unqueue image retrieving
+	process.
+
 	* w3m.el (w3m-message-silent): New variable.
 	(w3m-message): Use it: when the variable is `t', don't show a message.
 	(w3m-idle-images-show): Use it.

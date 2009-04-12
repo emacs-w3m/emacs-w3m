@@ -294,7 +294,6 @@ which have no handler."
 		       (w3m-kill-buffer (w3m-process-handler-buffer handler)))
 		     nil)))
 	       w3m-process-queue)))
-  (w3m-idle-images-show-unqueue buffer)
   (when (buffer-name buffer)
     (with-current-buffer buffer
       (setq w3m-current-process nil)))
