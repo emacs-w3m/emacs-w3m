@@ -7,6 +7,10 @@
 	(w3m-w3m-dump-extra): Ditto.
 	(w3m-w3m-retrieve): Ditto.
 	(w3m-retrieve-and-render): Ditto.
+	(w3m-refresh-minimum-interval): New variable.
+	(w3m-check-refresh-attribute): Use it.
+	(w3m-view-previous-page): When visiting pages by history-back or
+	history-next, don't just ignore refresh, but wait for a while.
 
 	* w3m-favicon.el (w3m-favicon-retrieve): Ditto.
 

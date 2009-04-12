@@ -3231,6 +3231,10 @@ Non-@code{nil} means honor the REFRESH attribute in META tags.
 Emacs-w3m arbitrarily takes you to a url specified by that attribute.
 Note that they may be malicious traps.
 
+@item w3m-refresh-minimum-interval
+@vindex w3m-refresh-minimum-interval
+history-back, history-next でページを見た時に最低限 refresh を待つ秒数。
+
 @item w3m-use-symbol
 @vindex w3m-use-symbol
 Non-@code{nil} means replace symbols that the @samp{<_SYMBOL>} tags lead

@@ -2238,6 +2238,12 @@ thumbnail."
   :group 'w3m
   :type '(regexp :format "URL: %v\n" :size 0))
 
+(defcustom w3m-refresh-minimum-interval 60
+  "*Minimum seconds to wait for refresh, when visiting a page by
+history-back or history-next."
+  :group 'w3m
+  :type '(integer :size 0))
+
 (defvar w3m-modeline-process-status-on "<PRC>"
   "Modeline control for displaying the status when the process is running.
 The value will be modified for displaying the graphic icon.")
@@ -5790,6 +5796,9 @@ be displayed especially in shimbun articles."
 		(when (string-match "\\`[\"']\\(.*\\)[\"']\\'" refurl)
 		  (setq refurl (match-string 1 refurl)))))
 	      (when (and sec (string-match "\\`[0-9]+\\'" sec))
+		(when (and (eq w3m-use-refresh 'wait-minimum)
+			   (< (string-to-number sec) w3m-refresh-minimum-interval))
+		  (setq sec (number-to-string w3m-refresh-minimum-interval)))
 		(throw 'found
 		       (setq w3m-current-refresh
 			     (cons (string-to-number sec)
@@ -6386,7 +6395,7 @@ COUNT is treated as 1 by default if it is omitted."
 	       (w3m-history-backward)))
 	    ;; Inhibit sprouting of a new history.
 	    (w3m-history-reuse-history-elements t)
-	    (w3m-use-refresh nil))
+	    (w3m-use-refresh 'wait-minimum))
 	(if hist
 	    (let ((w3m-prefer-cache t))
 	      (w3m-goto-url (caar hist) nil nil
