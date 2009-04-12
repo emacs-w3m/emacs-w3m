@@ -1,3 +1,15 @@
+2009-04-12  Naohiro Aota  <naota@elisp.net>
+
+	* w3m.el (w3m-message-silent): New variable.
+	(w3m-message): Use it: when the variable is `t', don't show a message.
+	(w3m-idle-images-show): Use it.
+	(w3m-w3m-dump-head): lexical-let it.
+	(w3m-w3m-dump-extra): Ditto.
+	(w3m-w3m-retrieve): Ditto.
+	(w3m-retrieve-and-render): Ditto.
+
+	* w3m-favicon.el (w3m-favicon-retrieve): Ditto.
+
 2009-04-02  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-arrived-add): If url has a multi-byte character, do not

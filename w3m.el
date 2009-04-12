@@ -3111,6 +3111,8 @@ message."
 
 (defvar w3m-current-message nil
   "The string currently displayed by `w3m-message' in the echo area.")
+(defvar w3m-message-silent nil
+  "When set to `t', w3m-message is just ignored.")
 
 (defun w3m-message (&rest args)
   "Print a one-line message at the bottom of the screen.
@@ -3126,19 +3128,20 @@ string.  When `w3m-verbose' is non-nil, it behaves identically as
 	      (< emacs-major-version 22)
 	      (< (string-width (or (current-message) "")) (window-width)))
     (message nil))
-  (if w3m-verbose
-      (apply (function message) args)
-    (if (when w3m-process-background
-	  (or (window-minibuffer-p (selected-window))
-	      (when (current-message)
-		(not (equal (current-message) w3m-current-message)))))
-	(apply (function format) args)
-      (w3m-static-if (featurep 'xemacs)
-	  (progn
-	    (setq w3m-current-message (apply (function format) args))
-	    (display-message 'no-log w3m-current-message))
-	(let (message-log-max)
-	  (setq w3m-current-message (apply (function message) args)))))))
+  (unless w3m-message-silent
+    (if w3m-verbose
+	(apply (function message) args)
+      (if (when w3m-process-background
+	    (or (window-minibuffer-p (selected-window))
+		(when (current-message)
+		  (not (equal (current-message) w3m-current-message)))))
+	  (apply (function format) args)
+	(w3m-static-if (featurep 'xemacs)
+	    (progn
+	      (setq w3m-current-message (apply (function format) args))
+	      (display-message 'no-log w3m-current-message))
+	  (let (message-log-max)
+	    (setq w3m-current-message (apply (function message) args))))))))
 
 (defun w3m-time-parse-string (string)
   "Parse the time-string STRING into a time in the Emacs style."
@@ -3679,7 +3682,8 @@ The database is kept in `w3m-entity-table'."
 			      (iurl iurl)
 			      (url url))
 		  (w3m-process-do
-		      (image (let ((w3m-current-buffer (current-buffer)))
+		      (image (let ((w3m-current-buffer (current-buffer))
+				   (w3m-message-silent t))
 			       (w3m-create-image
 				iurl no-cache
 				url
@@ -5085,7 +5089,8 @@ Return a list which includes:
 
 (defun w3m-w3m-dump-head (url handler)
   "Return the header string of URL."
-  (lexical-let ((url url))
+  (lexical-let ((url url)
+		(silent w3m-message-silent))
     (w3m-message "Request sent, waiting for response...")
     (w3m-process-do-with-temp-buffer
 	(success (progn
@@ -5096,9 +5101,10 @@ Return a list which includes:
 				      (append w3m-command-arguments
 					      (list "-o" "follow_redirection=0"
 						    "-dump_head" url)))))
-      (w3m-message "Request sent, waiting for response...done")
-      (when success
-	(buffer-string)))))
+      (let ((w3m-message-silent silent))
+	(w3m-message "Request sent, waiting for response...done")
+	(when success
+	  (buffer-string))))))
 
 (defsubst w3m-w3m-canonicalize-url (url)
   "Add a slash to an URL, when its server part is not ended with a slash."
@@ -5167,7 +5173,8 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 
 (defun w3m-w3m-dump-extra (url handler)
   "Retrive headers and contents pointed to by URL"
-  (lexical-let ((url url))
+  (lexical-let ((url url)
+		(silent w3m-message-silent))
     (setq w3m-current-url url
 	  url (w3m-url-strip-authinfo url))
     (w3m-message "Reading %s...%s"
@@ -5184,21 +5191,22 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 				    (w3m-w3m-expand-arguments
 				     w3m-dump-head-source-command-arguments)
 				    (list url))))
-      (w3m-message "Reading %s...done" (w3m-url-readable-string url))
-      (when success
-	(goto-char (point-min))
-	(let ((case-fold-search t))
-	  (when (and (re-search-forward "^w3m-current-url:" nil t)
-		     (progn
-		       (delete-region (point-min) (match-beginning 0))
-		       (search-forward "\n\n" nil t)))
-	    (let ((header (buffer-substring (point-min) (point))))
-	      (when w3m-use-cookies
-		(w3m-cookie-set url (point-min) (point)))
-	      (delete-region (point-min) (point))
-	      (w3m-cache-header url header)
-	      (w3m-cache-contents url (current-buffer))
-	      (w3m-w3m-parse-header url header))))))))
+      (let ((w3m-message-silent silent))
+	(w3m-message "Reading %s...done" (w3m-url-readable-string url))
+	(when success
+	  (goto-char (point-min))
+	  (let ((case-fold-search t))
+	    (when (and (re-search-forward "^w3m-current-url:" nil t)
+		       (progn
+			 (delete-region (point-min) (match-beginning 0))
+			 (search-forward "\n\n" nil t)))
+	      (let ((header (buffer-substring (point-min) (point))))
+		(when w3m-use-cookies
+		  (w3m-cookie-set url (point-min) (point)))
+		(delete-region (point-min) (point))
+		(w3m-cache-header url header)
+		(w3m-cache-contents url (current-buffer))
+		(w3m-w3m-parse-header url header)))))))))
 
 (defun w3m-additional-command-arguments (url)
   "Return a list of additional arguments passed to the w3m command.
@@ -5335,29 +5343,31 @@ It will put the retrieved contents into the current buffer.  See
 `w3m-retrieve' for how does it work asynchronously with the arguments."
   (lexical-let ((url (w3m-w3m-canonicalize-url url))
 		(no-uncompress no-uncompress)
-		(current-buffer (current-buffer)))
+		(current-buffer (current-buffer))
+		(silent w3m-message-silent))
     (w3m-process-do-with-temp-buffer
 	(attr (progn
 		(set-buffer-multibyte nil)
 		(w3m-w3m-retrieve-1 url post-data referer no-cache
 				    (or w3m-follow-redirection 0) handler)))
-      (when attr
-	(cond
-	 ((eq attr 'redirection-exceeded)
-	  "X-w3m-error/redirection")
-	 ((or (not (string-match "\\`https?:" url))
-	      (memq (car attr) '(200 300)))
-	  (if (or no-uncompress
-		  (w3m-decode-encoded-contents (nth 4 attr)))
-	      (let ((temp-buffer (current-buffer)))
-		(with-current-buffer current-buffer
-		  (insert-buffer-substring temp-buffer))
-		(goto-char (point-min))
-		(cadr attr))
-	    (ding)
-	    (w3m-message "Can't decode encoded contents: %s" url)
-	    nil))
-	 (t nil))))))
+      (let ((w3m-message-silent silent))
+	(when attr
+	  (cond
+	   ((eq attr 'redirection-exceeded)
+	    "X-w3m-error/redirection")
+	   ((or (not (string-match "\\`https?:" url))
+		(memq (car attr) '(200 300)))
+	    (if (or no-uncompress
+		    (w3m-decode-encoded-contents (nth 4 attr)))
+		(let ((temp-buffer (current-buffer)))
+		  (with-current-buffer current-buffer
+		    (insert-buffer-substring temp-buffer))
+		  (goto-char (point-min))
+		  (cadr attr))
+	      (ding)
+	      (w3m-message "Can't decode encoded contents: %s" url)
+	      nil))
+	   (t nil)))))))
 
 (defun w3m-w3m-retrieve-1 (url post-data referer no-cache counter handler)
   "A subroutine for `w3m-w3m-retrieve'."
@@ -5928,54 +5938,56 @@ called with t as an argument.  Otherwise, it will be called with nil."
     (lexical-let ((url (w3m-url-strip-fragment url))
 		  (charset charset)
 		  (page-buffer (current-buffer))
-		  (arrival-time (current-time)))
+		  (arrival-time (current-time))
+		  (silent w3m-message-silent))
       (w3m-process-do-with-temp-buffer
 	  (type (progn
 		  (w3m-clear-local-variables)
 		  (w3m-retrieve url nil no-cache post-data referer handler)))
-	(when (buffer-live-p page-buffer)
-	  (setq url (w3m-url-strip-authinfo url))
-	  (if type
-	      (if (string= type "X-w3m-error/redirection")
-		  (when (w3m-show-redirection-error-information url page-buffer)
-		    (w3m-message (w3m-message "Cannot retrieve URL: %s"
-					      url)))
-		(let ((modified-time (w3m-last-modified url)))
-		  (w3m-arrived-add url nil modified-time arrival-time)
-		  (unless modified-time
-		    (setf (w3m-arrived-last-modified url) nil))
-		  (let ((real (w3m-real-url url)))
-		    (unless (string= url real)
-		      (w3m-arrived-add url nil nil arrival-time)
-		      (setf (w3m-arrived-title real)
-			    (w3m-arrived-title url))
-		      (setf (w3m-arrived-last-modified real)
-			    (w3m-arrived-last-modified url))
-		      (setq url real)))
-		  (prog1 (w3m-create-page url
-					  (or (w3m-arrived-content-type url)
-					      type)
-					  (or charset
-					      (w3m-arrived-content-charset url)
-					      (w3m-content-charset url))
-					  page-buffer)
-		    (w3m-force-window-update-later page-buffer)
-		    (unless (get-buffer-window page-buffer)
-		      (w3m-message "The content (%s) has been retrieved in %s"
-				   url (buffer-name page-buffer))))))
-	    (ding)
-	    (when (eq (car w3m-current-forms) t)
-	      (setq w3m-current-forms (cdr w3m-current-forms)))
-	    (prog1 (when (and w3m-show-error-information
-			      (not (or (w3m-url-local-p url)
-				       (string-match "\\`about:" url))))
-		     (w3m-show-error-information url charset page-buffer))
-	      (w3m-message "Cannot retrieve URL: %s%s"
-			   url
-			   (if w3m-process-exit-status
-			       (format " (exit status: %s)"
-				       w3m-process-exit-status)
-			     "")))))))))
+	(let ((w3m-message-silent silent))
+	  (when (buffer-live-p page-buffer)
+	    (setq url (w3m-url-strip-authinfo url))
+	    (if type
+		(if (string= type "X-w3m-error/redirection")
+		    (when (w3m-show-redirection-error-information url page-buffer)
+		      (w3m-message (w3m-message "Cannot retrieve URL: %s"
+						url)))
+		  (let ((modified-time (w3m-last-modified url)))
+		    (w3m-arrived-add url nil modified-time arrival-time)
+		    (unless modified-time
+		      (setf (w3m-arrived-last-modified url) nil))
+		    (let ((real (w3m-real-url url)))
+		      (unless (string= url real)
+			(w3m-arrived-add url nil nil arrival-time)
+			(setf (w3m-arrived-title real)
+			      (w3m-arrived-title url))
+			(setf (w3m-arrived-last-modified real)
+			      (w3m-arrived-last-modified url))
+			(setq url real)))
+		    (prog1 (w3m-create-page url
+					    (or (w3m-arrived-content-type url)
+						type)
+					    (or charset
+						(w3m-arrived-content-charset url)
+						(w3m-content-charset url))
+					    page-buffer)
+		      (w3m-force-window-update-later page-buffer)
+		      (unless (get-buffer-window page-buffer)
+			(w3m-message "The content (%s) has been retrieved in %s"
+				     url (buffer-name page-buffer))))))
+	      (ding)
+	      (when (eq (car w3m-current-forms) t)
+		(setq w3m-current-forms (cdr w3m-current-forms)))
+	      (prog1 (when (and w3m-show-error-information
+				(not (or (w3m-url-local-p url)
+					 (string-match "\\`about:" url))))
+		       (w3m-show-error-information url charset page-buffer))
+		(w3m-message "Cannot retrieve URL: %s%s"
+			     url
+			     (if w3m-process-exit-status
+				 (format " (exit status: %s)"
+					 w3m-process-exit-status)
+			       ""))))))))))
 
 (defun w3m-show-error-information (url charset page-buffer)
   "Create and prepare the error information."
