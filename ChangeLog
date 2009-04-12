@@ -24,7 +24,7 @@
 	properly.
 	(w3m-arrived-add): Revert recent changes.
 
-	* w3m-favicon.el (w3m-favicon-retrieve): Ditto.
+	* w3m-favicon.el (w3m-favicon-retrieve): lexical-let w3m-message-silent.
 
 2009-04-02  Hideyuki SHIRAI  <shirai@meadowy.org>
 
