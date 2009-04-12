@@ -11,6 +11,10 @@
 	(w3m-check-refresh-attribute): Use it.
 	(w3m-view-previous-page): When visiting pages by history-back or
 	history-next, don't just ignore refresh, but wait for a while.
+	(w3m-idle-images-show): When there are events pended, re-create the
+	idle timer; Check current position's item every time loop starts.
+	(w3m-idle-images-show-unqueue): Set w3m-idle-images-show-timer
+	properly.
 
 	* w3m-favicon.el (w3m-favicon-retrieve): Ditto.
 

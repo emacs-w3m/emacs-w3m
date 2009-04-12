@@ -3645,11 +3645,10 @@ The database is kept in `w3m-entity-table'."
 
 (defun w3m-idle-images-show ()
   (let ((repeat t)
-	(onbuffer (member (current-buffer) (w3m-list-buffers)))
-	(current (get-text-property (point) 'w3m-idle-image-item)))
+	(onbuffer (member (current-buffer) (w3m-list-buffers))))
     (while (and repeat w3m-idle-images-show-list)
       (let* ((item (or (and onbuffer
-			    (or current
+			    (or (get-text-property (point) 'w3m-idle-image-item)
 				(let* ((prev (previous-single-property-change
 					      (point) 'w3m-idle-image-item))
 				       (next (next-single-property-change
@@ -3712,14 +3711,21 @@ The database is kept in `w3m-entity-table'."
 	  (set-marker start nil)
 	  (set-marker end nil)
 	  (w3m-idle-images-show-unqueue (marker-buffer start))))
-      (setq repeat (sit-for 0.1 nil)))
-    (unless w3m-idle-images-show-list
+      (setq repeat (sit-for 0.1 t)))
+    (if w3m-idle-images-show-list
+      (when (input-pending-p)
+	(cancel-timer w3m-idle-images-show-timer)
+	(setq w3m-idle-images-show-timer
+	      (run-with-idle-timer w3m-idle-images-show-interval
+				   t
+				   'w3m-idle-images-show)))
       (cancel-timer w3m-idle-images-show-timer)
       (setq w3m-idle-images-show-timer nil))))
 
 (defun w3m-idle-images-show-unqueue (buffer)
   (when w3m-idle-images-show-timer
     (cancel-timer w3m-idle-images-show-timer)
+    (setq w3m-idle-images-show-timer nil)
     (setq w3m-idle-images-show-list
 	  (delq nil
 		(mapcar (lambda (x)
@@ -3727,9 +3733,10 @@ The database is kept in `w3m-entity-table'."
 			       x))
 			w3m-idle-images-show-list)))
     (when w3m-idle-images-show-list
-      (run-with-idle-timer w3m-idle-images-show-interval
-			   t
-			   'w3m-idle-images-show))))
+      (setq w3m-idle-images-show-timer
+	    (run-with-idle-timer w3m-idle-images-show-interval
+				 t
+				 'w3m-idle-images-show)))))
 
 (defvar w3m-image-no-idle-timer nil)
 (defsubst w3m-toggle-inline-images-internal (status
