@@ -15,6 +15,7 @@
 	idle timer; Check current position's item every time loop starts.
 	(w3m-idle-images-show-unqueue): Set w3m-idle-images-show-timer
 	properly.
+	(w3m-arrived-add): Revert recent changes.
 
 	* w3m-favicon.el (w3m-favicon-retrieve): Ditto.
 
