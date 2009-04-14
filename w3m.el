@@ -4650,13 +4650,32 @@ BUFFER is nil, all contents will be inserted in the current buffer."
 	w3m-prefer-cache
 	(save-match-data
 	  (let ((case-fold-search t)
-		(head (and (boundp ident) (symbol-value ident))))
-	    (and
-	     (string-match "^\\(?:Last-Modified\\|ETag\\):[ \t]" head)
-	     (not (or (string-match "^Pragma:[ \t]+no-cache\n" head)
-		      (string-match
-		       "^Cache-control:[ \t]+\\(?:no-cache\\|max-age=0\\)\n"
-		       head)))))))
+		(head (and (boundp ident) (symbol-value ident)))
+		time expire)
+	    (cond
+	     ((and (string-match "^\\(?:Last-Modified\\|ETag\\):[ \t]" head)
+		   (or (string-match "^Pragma:[ \t]+no-cache\n" head)
+		       (string-match
+			"^Cache-control:[ \t]+\\(?:no-cache\\|max-age=0\\)\n"
+			head)))
+	      nil)
+	     ((and
+	       (string-match "^date:[ \t]\\([^\n]+\\)\n" head)
+	       (setq time (match-string 1 head))
+	       (setq time (w3m-time-parse-string time))
+	       (string-match "^cache-control:[ \t]+max-age=\\([1-9][0-9]*\\)"
+			     head)
+	       (setq expire (string-to-number (match-string 1 head))))
+	      (setq time (decode-time time))
+	      (setcar time (+ (car time) expire))
+	      (setq expire (apply 'encode-time time))
+	      (w3m-time-newer-p expire (current-time)))
+	     ((and
+	       (string-match "^expires:[ \t]+\\([^\n]+\\)\n" head)
+	       (setq expire (match-string 1 head))
+	       (setq expire (w3m-time-parse-string expire)))
+	      (w3m-time-newer-p expire (current-time)))
+	     (t t)))))
        ident))))
 
 (defun w3m-read-file-name (&optional prompt dir default existing)
@@ -5385,11 +5404,12 @@ It will put the retrieved contents into the current buffer.  See
 		   (list "-no-cookie"))
 		 (list "-o" "follow_redirection=0")
 		 (w3m-additional-command-arguments url)))
-	(temp-file))
-    (and no-cache
-	 w3m-broken-proxy-cache
-	 (setq w3m-command-arguments
-	       (append w3m-command-arguments '("-o" "no_cache=1"))))
+	(cachep (w3m-cache-available-p url))
+	temp-file)
+    (when (and w3m-broken-proxy-cache
+	       (or no-cache (not cachep)))
+      (setq w3m-command-arguments
+	    (append w3m-command-arguments '("-o" "no_cache=1"))))
     (setq temp-file
 	  (when (or (eq w3m-type 'w3mmee) post-data)
 	    (make-temp-name
@@ -5415,7 +5435,7 @@ It will put the retrieved contents into the current buffer.  See
 		  (temp-file temp-file))
       (w3m-process-do
 	  (attr (or (unless no-cache
-		      (and (w3m-cache-available-p url)
+		      (and cachep
 			   (w3m-cache-request-contents url)
 			   (w3m-w3m-parse-header
 			    url (w3m-cache-request-header url))))

@@ -1,3 +1,9 @@
+2009-04-14  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-cache-available-p): The control of expire is added.
+	(w3m-w3m-retrieve-1): The case where the option "no_cache=1" is put has
+	been increased.
+
 2009-04-12  Naohiro Aota  <naota@elisp.net>
 
 	* w3m.el (w3m-select-buffer-delete-buffer, w3m-goto-url)
