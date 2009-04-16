@@ -1,6 +1,6 @@
 ;;; sb-sankei.el --- shimbun backend for the MSN Sankei News -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008 Katsumi Yamaoka
+;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -67,7 +67,7 @@
      "http://sankei.jp.msn.com/rss/news/usatoday.xml")
     ;; Non-RSS groups.
     ("column.sankeisho" "産経抄"
-     "http://sankei.jp.msn.com/column/1221/clm1221-t.htm")
+     "http://sankei.jp.msn.com/column/11272/clm11272-t.htm")
     ("column.shucho" "主張"
      "http://sankei.jp.msn.com/column/1521/clm1521-t.htm")
     ("column.seiron" "正論"

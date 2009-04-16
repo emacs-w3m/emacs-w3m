@@ -1,3 +1,8 @@
+2009-04-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-group-table): Update index url for
+	sankeisho group.
+
 2009-04-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-clear-contents): Don't remove succeeding
