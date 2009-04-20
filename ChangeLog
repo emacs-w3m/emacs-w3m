@@ -1,3 +1,8 @@
+2009-04-20  Kevin Ryde  <user42@zip.com.au>
+
+	* w3m.el (w3m-local-find-file-regexps): Work around regexp-opt bug in
+	old Emacsen.
+
 2009-04-14  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-cache-available-p): The control of expire is added.

@@ -1746,7 +1746,8 @@ of the w3m command.  See also `w3m-command'."
 				    (and (w3m-image-type-available-p 'xbm)
 					 '("xbm"))
 				    (and (w3m-image-type-available-p 'xpm)
-					 '("xpm"))))
+					 '("xpm")))
+			    t) ;; with surrounding parens (for old Emacsen).
 		"\\'"))
   "*Cons of two regexps matching and not matching with local file names.
 If a url of the `file:' scheme in which you entered matches the first
