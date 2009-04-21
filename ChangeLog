@@ -1,7 +1,7 @@
 2009-04-20  Kevin Ryde  <user42@zip.com.au>
 
-	* w3m.el (w3m-local-find-file-regexps): Work around regexp-opt bug in
-	old Emacsen.
+	* w3m.el (w3m-local-find-file-regexps): Make regexp-opt group regexps
+	explicitly.
 
 2009-04-14  Hideyuki SHIRAI  <shirai@meadowy.org>
 
