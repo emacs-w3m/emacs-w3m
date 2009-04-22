@@ -6587,7 +6587,8 @@ compatibility which is described in Section 5.2 of RFC 2396.")
   (sit-for 0))
 
 (defsubst w3m-view-this-url-1 (url reload new-session)
-  (lexical-let (pos buffer newbuffer wconfig)
+  (lexical-let ((url url)
+		pos buffer newbuffer wconfig)
     (if new-session
 	(let ((empty
 	       ;; If a new url has the #name portion, we simply copy
@@ -8495,19 +8496,17 @@ Non-nil value for NAME means use the cdr of `w3m-view-recenter'."
 		   (car w3m-view-recenter))
 	       w3m-view-recenter)))
     (when (and val (eq (window-buffer) (current-buffer)))
-      (goto-char
-       (prog1
-	   (point)
-	 ;; A version of `recenter' that does not redisplay the frame.
-	 (let ((height (w3m-static-if (featurep 'xemacs)
-			   (1- (window-height))
-			 (- (window-height) 1 (if header-line-format 1 0)))))
-	   (when (zerop (forward-line (if (integerp val)
-					  (if (< val 0)
-					      (- 0 height val)
-					    (- val))
-					(- (/ height 2)))))
-	     (set-window-start nil (point)))))))))
+      ;; A version of `recenter' that does not redisplay the frame.
+      (let ((height (w3m-static-if (featurep 'xemacs)
+			(1- (window-height))
+		      (- (window-height) 1 (if header-line-format 1 0)))))
+	(save-excursion
+	  (when (zerop (forward-line (if (integerp val)
+					 (if (< val 0)
+					     (- 0 height val)
+					   (- val))
+				       (- (/ height 2)))))
+	    (set-window-start nil (point))))))))
 
 (defun w3m-beginning-of-line (&optional arg)
   "Make the beginning of the line visible and move the point to there."
