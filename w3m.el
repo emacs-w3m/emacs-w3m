@@ -1317,6 +1317,21 @@ The term `shifting' means a fine level scrolling."
   :group 'w3m
   :type '(integer :size 0))
 
+(defcustom w3m-view-recenter '(t . 1)
+  "Argument passed to `recenter' that runs when visiting a link.
+Valid values include an integer, t and nil, and cons of them.
+T means run `recenter' with no argument.  Nil means don't perform it.
+If it is cons, the car is used for an ordinary link, and the cdr is
+used for a name link, i.e., the case where the url string ends up with
+\"#NAME\"."
+  :group 'w3m
+  :type (let ((val '((const :format "%t " t) (const :format "%t " nil)
+		     (integer :format "%{%t%}: %v\n" :value 1 :size 1))))
+	  `(radio ,@val
+		  (cons :format "%{Cons%}:\n%v"
+			(radio :format "%v" ,@val)
+			(radio :format "%v" ,@val)))))
+
 (defcustom w3m-use-form t
   "*Non-nil means make it possible to use form extensions. (EXPERIMENTAL)"
   :group 'w3m
@@ -6336,6 +6351,8 @@ when the URL of the retrieved page matches the REGEXP."
 		      (and (integerp (car w3m-name-anchor-from-hist))
 			   (nthcdr (1+ (car w3m-name-anchor-from-hist))
 				   w3m-name-anchor-from-hist)))))
+    (when found
+      (w3m-recenter t))
     found))
 
 (defun w3m-parent-page-available-p ()
@@ -6621,7 +6638,8 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	      (set-buffer (marker-buffer pos))
 	      (save-excursion
 		(goto-char pos)
-		(w3m-refontify-anchor)))))))))
+		(w3m-refontify-anchor)))))
+	(w3m-recenter (string-match "#.+\\'" url))))))
 
 (defun w3m-view-this-url (&optional arg new-session)
   "Display the page pointed to by the link under point.
@@ -7027,19 +7045,22 @@ Return t if highlighting is successful."
       (setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-previous-anchor (- arg))
-    (while (> arg 0)
-      (unless (w3m-goto-next-anchor)
-	(setq w3m-goto-anchor-hist nil)
-	(if (w3m-imitate-widget-button)
-	    (widget-forward 1)
-	  (let ((pos (text-property-any
-		      (point-min) (point-max) 'w3m-anchor-sequence 1)))
-	    (when pos
-	      (goto-char pos)))))
-      (setq arg (1- arg))
-      (if (member (w3m-anchor-sequence) w3m-goto-anchor-hist)
-	  (setq arg (1+ arg))
-	(push (w3m-anchor-sequence) w3m-goto-anchor-hist)))
+    (let ((st (point))
+	  pos)
+      (while (> arg 0)
+	(unless (w3m-goto-next-anchor)
+	  (setq w3m-goto-anchor-hist nil)
+	  (if (w3m-imitate-widget-button)
+	      (widget-forward 1)
+	    (when (setq pos (text-property-any
+			     (point-min) (point-max) 'w3m-anchor-sequence 1))
+	      (goto-char pos))))
+	(setq arg (1- arg))
+	(if (member (w3m-anchor-sequence) w3m-goto-anchor-hist)
+	    (setq arg (1+ arg))
+	  (push (w3m-anchor-sequence) w3m-goto-anchor-hist)))
+      (if (/= st (point))
+	  (w3m-recenter)))
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
@@ -7077,21 +7098,25 @@ Return t if highlighting is successful."
       (setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-next-anchor (- arg))
-    (while (> arg 0)
-      (unless (w3m-goto-previous-anchor)
-	(setq w3m-goto-anchor-hist nil)
-	(if (w3m-imitate-widget-button)
-	    (widget-forward -1)
-	  (let ((pos (and w3m-max-anchor-sequence
-			  (text-property-any
-			   (point-min) (point-max)
-			   'w3m-anchor-sequence w3m-max-anchor-sequence))))
-	    (when pos
-	      (goto-char pos)))))
-      (setq arg (1- arg))
-      (if (member (w3m-anchor-sequence) w3m-goto-anchor-hist)
-	  (setq arg (1+ arg))
-	(push (w3m-anchor-sequence) w3m-goto-anchor-hist)))
+    (let ((st (point))
+	  pos)
+      (while (> arg 0)
+	(unless (w3m-goto-previous-anchor)
+	  (setq w3m-goto-anchor-hist nil)
+	  (if (w3m-imitate-widget-button)
+	      (widget-forward -1)
+	    (when (setq pos (and w3m-max-anchor-sequence
+				 (text-property-any
+				  (point-min) (point-max)
+				  'w3m-anchor-sequence
+				  w3m-max-anchor-sequence)))
+	      (goto-char pos))))
+	(setq arg (1- arg))
+	(if (member (w3m-anchor-sequence) w3m-goto-anchor-hist)
+	    (setq arg (1+ arg))
+	  (push (w3m-anchor-sequence) w3m-goto-anchor-hist)))
+      (if (/= st (point))
+	  (w3m-recenter)))
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
@@ -7118,16 +7143,19 @@ Return t if highlighting is successful."
       (setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-previous-form (- arg))
-    (while (> arg 0)
-      (unless (w3m-goto-next-form)
-	;; Make a search from the beginning of the buffer.
-	(setq w3m-goto-anchor-hist nil)
-	(goto-char (point-min))
-	(w3m-goto-next-form))
-      (setq arg (1- arg))
-      (if (member (w3m-action (point)) w3m-goto-anchor-hist)
-	  (setq arg (1+ arg))
-	(push (w3m-action (point)) w3m-goto-anchor-hist)))
+    (let ((st (point)))
+      (while (> arg 0)
+	(unless (w3m-goto-next-form)
+	  ;; Make a search from the beginning of the buffer.
+	  (setq w3m-goto-anchor-hist nil)
+	  (goto-char (point-min))
+	  (w3m-goto-next-form))
+	(setq arg (1- arg))
+	(if (member (w3m-action (point)) w3m-goto-anchor-hist)
+	    (setq arg (1+ arg))
+	  (push (w3m-action (point)) w3m-goto-anchor-hist)))
+      (if (/= st (point))
+	  (w3m-recenter)))
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
@@ -7156,16 +7184,19 @@ Return t if highlighting is successful."
       (setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-next-form (- arg))
-    (while (> arg 0)
-      (unless (w3m-goto-previous-form)
-	;; search from the end of the buffer
-	(setq w3m-goto-anchor-hist nil)
-	(goto-char (point-max))
-	(w3m-goto-previous-form))
-      (setq arg (1- arg))
-      (if (member (w3m-action (point)) w3m-goto-anchor-hist)
-	  (setq arg (1+ arg))
-	(push (w3m-action (point)) w3m-goto-anchor-hist)))
+    (let ((st (point)))
+      (while (> arg 0)
+	(unless (w3m-goto-previous-form)
+	  ;; search from the end of the buffer
+	  (setq w3m-goto-anchor-hist nil)
+	  (goto-char (point-max))
+	  (w3m-goto-previous-form))
+	(setq arg (1- arg))
+	(if (member (w3m-action (point)) w3m-goto-anchor-hist)
+	    (setq arg (1+ arg))
+	  (push (w3m-action (point)) w3m-goto-anchor-hist)))
+      (if (/= st (point))
+	  (w3m-recenter)))
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
@@ -7194,16 +7225,19 @@ Return t if highlighting is successful."
       (setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-previous-image (- arg))
-    (while (> arg 0)
-      (unless (w3m-goto-next-image)
-	;; Make a search for an image from the beginning of the buffer.
-	(setq w3m-goto-anchor-hist nil)
-	(goto-char (point-min))
-	(w3m-goto-next-image))
-      (setq arg (1- arg))
-      (if (member (w3m-image (point)) w3m-goto-anchor-hist)
-	  (setq arg (1+ arg))
-	(push (w3m-image (point)) w3m-goto-anchor-hist)))
+    (let ((st (point)))
+      (while (> arg 0)
+	(unless (w3m-goto-next-image)
+	  ;; Make a search for an image from the beginning of the buffer.
+	  (setq w3m-goto-anchor-hist nil)
+	  (goto-char (point-min))
+	  (w3m-goto-next-image))
+	(setq arg (1- arg))
+	(if (member (w3m-image (point)) w3m-goto-anchor-hist)
+	    (setq arg (1+ arg))
+	  (push (w3m-image (point)) w3m-goto-anchor-hist)))
+      (if (/= st (point))
+	  (w3m-recenter)))
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
@@ -7232,16 +7266,19 @@ Return t if highlighting is successful."
       (setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-next-image (- arg))
-    (while (> arg 0)
-      (unless (w3m-goto-previous-image)
-	;; Make a search from the end of the buffer.
-	(setq w3m-goto-anchor-hist nil)
-	(goto-char (point-max))
-	(w3m-goto-previous-image))
-      (setq arg (1- arg))
-      (if (member (w3m-image (point)) w3m-goto-anchor-hist)
-	  (setq arg (1+ arg))
-	(push (w3m-image (point)) w3m-goto-anchor-hist)))
+    (let ((st (point)))
+      (while (> arg 0)
+	(unless (w3m-goto-previous-image)
+	  ;; Make a search from the end of the buffer.
+	  (setq w3m-goto-anchor-hist nil)
+	  (goto-char (point-max))
+	  (w3m-goto-previous-image))
+	(setq arg (1- arg))
+	(if (member (w3m-image (point)) w3m-goto-anchor-hist)
+	    (setq arg (1+ arg))
+	  (push (w3m-image (point)) w3m-goto-anchor-hist)))
+      (if (/= st (point))
+	  (w3m-recenter)))
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
@@ -8448,6 +8485,29 @@ window's hscroll."
 	   (max (- (current-column) (/ (window-width) 2) -1)
 		0))))
     (set-window-hscroll (selected-window) 0)))
+
+(defun w3m-recenter (&optional name)
+  "Recenter the link according to `w3m-view-recenter'.
+Non-nil value for NAME means use the cdr of `w3m-view-recenter'."
+  (let ((val (if (consp w3m-view-recenter)
+		 (if name
+		     (cdr w3m-view-recenter)
+		   (car w3m-view-recenter))
+	       w3m-view-recenter)))
+    (when (and val (eq (window-buffer) (current-buffer)))
+      (goto-char
+       (prog1
+	   (point)
+	 ;; A version of `recenter' that does not redisplay the frame.
+	 (let ((height (w3m-static-if (featurep 'xemacs)
+			   (1- (window-height))
+			 (- (window-height) 1 (if header-line-format 1 0)))))
+	   (when (zerop (forward-line (if (integerp val)
+					  (if (< val 0)
+					      (- 0 height val)
+					    (- val))
+					(- (/ height 2)))))
+	     (set-window-start nil (point)))))))))
 
 (defun w3m-beginning-of-line (&optional arg)
   "Make the beginning of the line visible and move the point to there."

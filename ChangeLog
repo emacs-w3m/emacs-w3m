@@ -1,3 +1,11 @@
+2009-04-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-view-recenter): New user option.
+	(w3m-recenter): New function.
+	(w3m-search-name-anchor, w3m-view-this-url-1, w3m-next-anchor)
+	(w3m-previous-anchor, w3m-next-form, w3m-previous-form, w3m-next-image)
+	(w3m-previous-image): Use it.
+
 2009-04-20  Kevin Ryde  <user42@zip.com.au>
 
 	* w3m.el (w3m-local-find-file-regexps): Make regexp-opt group regexps
