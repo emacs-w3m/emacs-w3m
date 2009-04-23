@@ -279,6 +279,19 @@ title[\t\n ]+end[\t\n ]+-+>"
 				   nil t)
 	    (delete-region (match-beginning 0) (point-max))
 	    (insert "\n"))
+	  (goto-char (point-min))
+	  (while (re-search-forward "\
+\[\t\n ]*\\(?:<div\\(?:[\t\n ]+[^>]+\\)?>[\t\n ]*\\)+\
+<span>[\t\n ]*\\[PR\\][\t\n ]*</span>[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*" nil t)
+	    (setq start (match-beginning 0)
+		  end (match-end 0))
+	    (goto-char start)
+	    (if (shimbun-end-of-tag "div" t)
+		(replace-match "\n")
+	      (goto-char end)
+	      (when (eobp)
+		(delete-region start end)
+		(insert "\n"))))
 
 	  (cond ((string-equal group "usatoday.ja")
 		 ;; Insert a newline after the headline.
