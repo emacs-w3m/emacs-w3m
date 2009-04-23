@@ -176,7 +176,11 @@ file exists, otherwise nil."
 	       w3m-current-coding-system))
 	    (set-buffer-modified-p nil))
 	  (setq w3m-bookmark-buffer-file-name w3m-bookmark-file)
-	  (set-visited-file-modtime (w3m-bookmark-file-modtime))
+	  (set-visited-file-modtime (or (w3m-bookmark-file-modtime)
+					;; No bookmark file.
+					(with-temp-buffer
+					  ;; 0 in Emacs; (0 . 0) in XEmacs
+					  (visited-file-modtime))))
 	  (buffer-enable-undo))
 	(current-buffer)))))
 

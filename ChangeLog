@@ -1,3 +1,8 @@
+2009-04-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-bookmark.el (w3m-bookmark-buffer): Use the time 0 as modtime of
+	the bookmark buffer by default.
+
 2009-04-22  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-view-this-url-1): Pass url to sentinel.
