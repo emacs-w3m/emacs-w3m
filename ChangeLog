@@ -1,3 +1,8 @@
+2009-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-url-to-file-name): Allow "file:/foo.html" in addition to
+	"file://foo.html" and "file:///foo.html".
+
 2009-04-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bookmark.el (w3m-bookmark-buffer): Use the time 0 as modtime of
