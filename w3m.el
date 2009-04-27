@@ -2745,26 +2745,37 @@ to this function."
   (cond
    ((string-match "\\`\\(\\(file:/\\{0,2\\}\\)\\|about://dtree\\)/" url)
     (setq url (substring url (match-end 1)))
-    ;; Strip the localhost name.
     (when (and (match-beginning 2) ;; file:
-	       (string-match (concat "\\`//\\(localhost\\|127\\.0\\.0\\.1\\|"
-				     (regexp-quote (system-name)) "\\)/")
-			     url))
-      (setq url (substring url (match-end 1))))
+	       (< (match-end 2) 7) ;; file:// or file:/
+	       (string-match "\\`\\(/[^/]+[^/:|]\\)/" url))
+      (cond ((file-directory-p (match-string 0 url))
+	     ) ;; The directory "/hostname/" exists.
+	    ((string-match (concat "\\`/\\(localhost\\|127\\.0\\.0\\.1\\|"
+				   (regexp-quote (system-name)) "\\)/")
+			   url)
+	     ;; Strip the localhost name.
+	     (setq url (substring url (match-end 1))))
+	    (t
+	     ;; Make it a Tramp url: /hostname:/...
+	     ;; See `tramp-default-method' and `tramp-default-method-alist'.
+	     (setq url (concat (substring url 0 (match-end 1))
+			       ":"
+			       (substring url (match-end 1)))))))
     ;; Process abs_path part in Windows.
-    (setq url
-	  (if (and w3m-treat-drive-letter
-		   (string-match
-		    "\\`/\\(?:\\([a-zA-Z]\\)[|:]?\\|cygdrive/\\([a-zA-Z]\\)\\)/"
-		    url))
-	      (concat (or (match-string 1 url) (match-string 2 url))
-		      ":/"
-		      (substring url (match-end 0)))
-	    url))
-    (if (file-exists-p url)
+    (when (and w3m-treat-drive-letter
+	       (string-match
+		"\\`/\\(?:\\([a-zA-Z]\\)[|:]?\\|cygdrive/\\([a-zA-Z]\\)\\)/"
+		url))
+      (setq url (concat (or (match-string 1 url) (match-string 2 url))
+			":/"
+			(substring url (match-end 0)))))
+    (if (string-match "\\`/[^/:]\\{2,\\}:/" url)
+	;; Don't check for a Tramp url.
 	url
-      (let ((x (w3m-url-decode-string url w3m-file-name-coding-system)))
-	(if (file-exists-p x) x url))))
+      (if (file-exists-p url)
+	  url
+	(let ((x (w3m-url-decode-string url w3m-file-name-coding-system)))
+	  (if (file-exists-p x) x url)))))
    ((string-match "\\`\\(?:[~/]\\|[a-zA-Z]:/\\|\\.\\.?/\\)" url) url)
    (t
     (catch 'found-file

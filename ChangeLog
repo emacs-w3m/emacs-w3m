@@ -1,3 +1,8 @@
+2009-04-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-url-to-file-name): Fix regexp used for stripping
+	localhost part; make url a Tramp name if it is guessed.
+
 2009-04-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-url-to-file-name): Allow "file:/foo.html" in addition to
