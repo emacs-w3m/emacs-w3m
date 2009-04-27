@@ -1,3 +1,14 @@
+2009-04-26  David Engster  <dengste@eml.cc>
+
+	* sb-sueddeutsche-de.el (shimbun-sueddeutsche-de-group-url): New RSS
+	feeds.
+	(shimbun-sueddeutsche-de-content-start)
+	(shimbun-sueddeutsche-de-content-end): Adapt to new layout.
+	(shimbun-get-headers): Removed. Use shimbun-article-url instead.
+	(shimbun-rss-build-message-id): New URL scheme.
+	(shimbun-clear-contents): Adapt to new layout.
+	(shimbun-article-url): Retrieve URL for print version of article.
+
 2009-04-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-clear-contents): Remove ads.
