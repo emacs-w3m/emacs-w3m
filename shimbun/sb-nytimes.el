@@ -1,6 +1,6 @@
 ;;; sb-nytimes.el --- shimbun backend for The New York Times
 
-;; Copyright (C) 2007, 2008 Katsumi Yamaoka
+;; Copyright (C) 2007, 2008, 2009 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -415,6 +415,13 @@ Skip[\t\n ]+to[\t\n ]+next[\t\n ]+paragraph[\t\n ]*</a>[\t\n ]*"
       (unless (bolp)
 	(insert "\n"))
       t)))
+
+(luna-define-method shimbun-rss-build-message-id :around ((shimbun
+							   shimbun-nytimes)
+							  url &optional date)
+  ;; Don't strip string following "?" or "#" in url.  See sb-rss.el.
+  (concat "<" (md5 url) "%" (shimbun-current-group shimbun)
+	  "@" (shimbun-server shimbun) ".shimbun.namazu.org>"))
 
 (luna-define-method shimbun-get-headers :around ((shimbun shimbun-nytimes)
 						 &optional range)

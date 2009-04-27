@@ -1,3 +1,9 @@
+2009-04-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nytimes.el (shimbun-rss-build-message-id): New function that
+	doesn't strip string following "?" or "#" in url when calculating its
+	md5.
+
 2009-04-26  David Engster  <dengste@eml.cc>
 
 	* sb-sueddeutsche-de.el (shimbun-sueddeutsche-de-group-url): New RSS
