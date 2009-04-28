@@ -4695,6 +4695,9 @@ BUFFER is nil, all contents will be inserted in the current buffer."
 	       (setq expire (string-to-number (match-string 1 head))))
 	      (setq time (decode-time time))
 	      (setcar time (+ (car time) expire))
+	      ;; Work around too large integer.
+	      (when (floatp (car time))
+		(setcar time (eval '(lsh -1 -1))))
 	      (setq expire (apply 'encode-time time))
 	      (w3m-time-newer-p expire (current-time)))
 	     ((and

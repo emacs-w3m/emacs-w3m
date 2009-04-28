@@ -1,3 +1,8 @@
+2009-04-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-cache-available-p): Work around too large integer in
+	Cache-Control header.
+
 2009-04-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-url-to-file-name): Fix regexp used for stripping
