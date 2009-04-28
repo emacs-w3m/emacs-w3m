@@ -1589,6 +1589,18 @@ that day if it failed."
 	    nil t)
       (unless (memq (char-before (match-beginning 0)) '(nil ?>))
 	(replace-match "<br>\n\\1")))
+    ;; Remove related topics.
+    (goto-char (point-min))
+    (let (start)
+      (while (and (re-search-forward "\\(\\(?:[\t\n ]*</div>\\)*[\t\n ]*\\)\
+<div[\t\n ]+[^>]+>\\(?:[\t\n ]*<h[0-9]+>\\)?[\t\n ]*関連トピックス[\t\n ]*<"
+				     nil t)
+		  (progn
+		    (setq start (match-beginning 0))
+		    (goto-char (match-end 1))
+		    (shimbun-end-of-tag "div" t)))
+	(delete-region start (match-end 0))
+	(insert "\n")))
     ;; Remove any other useless things.
     (goto-char (point-min))
     (while (re-search-forward "[\t\n ]*\

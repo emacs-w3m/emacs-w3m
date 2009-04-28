@@ -1,3 +1,7 @@
+2009-04-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-clear-contents): Remove related topics.
+
 2009-04-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nytimes.el (shimbun-rss-build-message-id): New function that
