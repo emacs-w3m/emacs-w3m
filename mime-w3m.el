@@ -1,6 +1,6 @@
 ;;; mime-w3m.el --- mime-view content filter for text
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2009
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
