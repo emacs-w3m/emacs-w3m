@@ -1,6 +1,6 @@
 ;;; sb-yahoo.el --- shimbun backend for news.yahoo.co.jp -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007 Kazuyoshi KOREEDA
+;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2009 Kazuyoshi KOREEDA
 
 ;; Author: Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>,
 ;;         Katsumi Yamaoka <yamaoka@jpl.org>
@@ -57,22 +57,29 @@
 		    ;; 5. day
 		    "\\([0-3][0-9]\\)"
 		    "[^\"]*\\)\\)"
-		    "\"" s0 ">" s0
+		    "\"" s0 ">" s0 "\\(?:<strong>" s0 "\\)?"
 		    ;; 6. subject
 		    "\\([^<]+\\)"
-		    s0 "</a>\\(?:" s0 "<[^>]+>\\)+" s0 "（" s0
-		    "\\(?:<a" s1 "[^>]+>" s0 "\\)?"
+		    "\\(?:" s0 "</strong>\\)?"
+		    s0 "</a>\\(?:" s0 "<[^>]+>\\)+" s0
+		    "\\(?:（" s0 "\\(?:<a" s1 "[^>]+>" s0 "\\)?"
 		    ;; 7. source
 		    "\\([^<）]+\\)"
 		    s0 "\\(?:</a>" s0 "\\)?"
-		    s0 "）" s0 "-" s0 "\\(?:[^<]+)" s0 "\\)?"
+		    s0 "）"
+		    "\\(?:" s0 "\\|" s0 "-" s0 "\\(?:[^<]+\)" s0 "\\)?\\)"
+		    "\\|[01]?[0-9]月[0-3]?[0-9]日([日月火水木金土])\\)"
 		    ;; 8. hour
 		    "\\([012]?[0-9]\\)"
 		    s0 "時" s0
 		    ;; 9. minute
 		    "\\([0-5]?[0-9]\\)"
-		    s0 "分")
-		   1 2 3 4 5 6 7 8 9))
+		    s0 "分"
+		    "\\(?:[^<]+<a" s1 "href=\"[^\">]+\">" s0
+		    ;; 10. source
+		    "\\([^<）]+\\)"
+		    s0 "</a>\\)?")
+		   1 2 3 4 5 6 7 8 9 10))
 	 (topnews (list
 		   (concat
 		    "<a" s1 "href=\""
@@ -162,19 +169,20 @@
       ("okinawa" "沖縄" "oki" ,@default)))
   "Alist of group names, their Japanese translations, index pages,
 regexps and numbers.  Where numbers point to the search result in order
-of [0]a url, [1]a serial number, [2]a year, [3]a month, [4]a day,
-\[5]a subject, [6]a news source, [7]an hour and [8]a minute.")
+of [0]url, [1]serial number, [2]year, [3]month, [4]day, [5]subject,
+\[6]news source, [7]hour, [8]minute, and [9]news source (the last one
+may not be presented).")
 
 (defvar shimbun-yahoo-groups
   (mapcar 'car shimbun-yahoo-groups-table))
 
 (defvar shimbun-yahoo-from-address "nobody@example.com")
-(defvar shimbun-yahoo-content-start "<!---記事-->\
-\\(?:[\t\n ]*<h[0-9][^>]*>[^[<]+</h[0-9]>[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*\
-\[^<]+[0-9]分配信[^<]*<a[\t\n ]+href=[^>]+>[^<]+</a>\\)?\
-\\(?:[\t\n ]*<[^>i][^>]*>\\)*[\t\n ]*")
-(defvar shimbun-yahoo-content-end "[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*\
-\\(?:最終更新:[01]?[0-9]月\\|<!---コブランド-->\\|<!---/記事-->\\)")
+(defvar shimbun-yahoo-content-start ">[\t\n ]*[01]*[0-9]月[0-3]?[0-9]日\
+\[012]?[0-9]時[0-5]?[0-9]分配信[\t\n ]*\\(?:&nbsp\;[\t\n ]*\\)?<a[\t\n ]+\
+href=\"[^\">]+\">[^<]+</a>\\(?:[\t\n ]*</[^>]+>\\)*[\t\n ]*")
+
+(defvar shimbun-yahoo-content-end "[\t\n 　]*\\(?:【関連[^】]+】\
+\\|<!-+[\t\n ]*interest_match_relevant_zone_end[\t\n ]*-+>\\)")
 
 (defvar shimbun-yahoo-x-face-alist
   '(("default" . "X-Face: \"Qj}=TahP*`:b#4o_o63:I=\"~wbql=kpF1a>Sp62\
@@ -228,7 +236,9 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
 	  (push (shimbun-create-header
 		 0
 		 (match-string (nth 5 numbers))
-		 (concat from " (" jname "/" (match-string (nth 6 numbers))
+		 (concat from " (" jname "/"
+			 (or (match-string (nth 6 numbers))
+			     (match-string (nth 9 numbers)))
 			 ")")
 		 (shimbun-make-date-string
 		  (string-to-number (match-string (nth 2 numbers)))
