@@ -9,7 +9,7 @@
 	* nnshimbun.el (nnshimbun-group-prefixed-name)
 	(nnshimbun-group-ephemeral-p, nnshimbun-nov-buffer-name)
 	(nnshimbun-nov-directory, nnshimbun-nov-file-name)
-	(nnshimbun-insert-nov):	Don't use defsubst.
+	(nnshimbun-insert-nov): Don't use defsubst.
 
 2009-04-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
