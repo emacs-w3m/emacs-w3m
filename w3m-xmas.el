@@ -385,7 +385,7 @@ new glyph image.  See also the documentation for the variable
       ;; Use a cached glyph.
       (cdr cache))))
 
-(defsubst w3m-make-glyph (data type)
+(defun w3m-make-glyph (data type)
   (or (and (eq type 'xbm)
 	   (let (width height content)
 	     (with-temp-buffer

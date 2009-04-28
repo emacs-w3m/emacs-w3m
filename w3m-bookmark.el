@@ -555,7 +555,7 @@ Format as (list (\"Group name\" . (\"Entry URL\" . \"Entry name\")* )* )."
 (defvar w3m-bookmark-make-item-xmas
   (and (equal "Japanese" w3m-language) (featurep 'xemacs)))
 
-(defsubst w3m-bookmark-make-item (item)
+(defun w3m-bookmark-make-item (item)
   (if w3m-bookmark-make-item-xmas
       (concat item "%_ ")
     item))

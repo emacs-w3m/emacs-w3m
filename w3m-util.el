@@ -319,7 +319,7 @@ an integer, a boolean (t or nil), and a decoded string respectively."
 
 ;;; Working buffers:
 
-(defsubst w3m-get-buffer-create (name)
+(defun w3m-get-buffer-create (name)
   "Return the buffer named NAME, or create such a buffer and return it."
   (or (get-buffer name)
       (let ((buf (get-buffer-create name)))
@@ -327,7 +327,7 @@ an integer, a boolean (t or nil), and a decoded string respectively."
 	(buffer-disable-undo buf)
 	buf)))
 
-(defsubst w3m-kill-buffer (buffer)
+(defun w3m-kill-buffer (buffer)
   "Kill the buffer BUFFER and remove it from `w3m-work-buffer-list'.
 The argument may be a buffer or may be the name of a buffer.
 An argument of nil means kill the current buffer."
@@ -347,7 +347,7 @@ An argument of nil means kill the current buffer."
       (kill-buffer buf)))
   (setq w3m-work-buffer-list nil))
 
-(defsubst w3m-current-title ()
+(defun w3m-current-title ()
   "Return the title of the current buffer."
   (cond
    ((and (stringp w3m-current-title)
@@ -360,12 +360,12 @@ An argument of nil means kill the current buffer."
        w3m-current-url)))
    (t "<no-title>")))
 
-(defsubst w3m-buffer-title (buffer)
+(defun w3m-buffer-title (buffer)
   "Return the title of the buffer BUFFER."
   (with-current-buffer buffer
     (w3m-current-title)))
 
-(defsubst w3m-buffer-number (buffer)
+(defun w3m-buffer-number (buffer)
   (when (and (bufferp buffer)
 	     (string-match "\\*w3m\\*\\(<\\([0-9]+\\)>\\)?\\'"
 			   (buffer-name buffer)))
@@ -373,7 +373,7 @@ An argument of nil means kill the current buffer."
 	(string-to-number (match-string 2 (buffer-name buffer)))
       1))) ;; `1' should not be represented in the buffer name.
 
-(defsubst w3m-buffer-set-number (buffer number)
+(defun w3m-buffer-set-number (buffer number)
   (with-current-buffer buffer
     (let ((newname (if w3m-use-title-buffer-name
 		       (if (= number 1)
@@ -389,7 +389,7 @@ An argument of nil means kill the current buffer."
 	(unless (get-buffer newname)
 	  (rename-buffer newname))))))
 
-(defsubst w3m-buffer-name-add-title ()
+(defun w3m-buffer-name-add-title ()
   "Add current tile to buffer name."
   (when w3m-use-title-buffer-name
     (let ((number (w3m-buffer-number (current-buffer)))
@@ -399,7 +399,7 @@ An argument of nil means kill the current buffer."
 	(setq newname (format "%s *w3m*<%d>" (w3m-current-title) number)))
       (rename-buffer newname))))
 
-(defsubst w3m-generate-new-buffer (name)
+(defun w3m-generate-new-buffer (name)
   (if w3m-use-title-buffer-name
       (let* ((maxbuf (let ((w3m-fb-mode nil))
 		       (car (nreverse (w3m-list-buffers)))))
@@ -501,10 +501,10 @@ the tabs line."
 	(t
 	 'w3m-use-tab)))
 
-(defsubst w3m-lefttab-exist-p (&optional buffer)
+(defun w3m-lefttab-exist-p (&optional buffer)
   (not (eq (or buffer (current-buffer)) (car (w3m-list-buffers)))))
 
-(defsubst w3m-righttab-exist-p (&optional buffer)
+(defun w3m-righttab-exist-p (&optional buffer)
   (let ((bufs (w3m-list-buffers))
 	(cbuf (or buffer (current-buffer)))
 	buf)
@@ -714,7 +714,7 @@ objects will not be deleted:
 (defconst w3m-url-fallback-base "http:///")
 (defconst w3m-url-invalid-regexp "\\`http:///")
 
-(defsubst w3m-url-valid (url)
+(defun w3m-url-valid (url)
   (and url (not (string-match w3m-url-invalid-regexp url))
        url))
 
@@ -835,7 +835,7 @@ But this function should work even if STRING is considerably long."
        (error ;; Stack overflow in regexp matcher
 	(w3m-string-match-url-components-1 string)))))
 
-(defsubst w3m-time-newer-p (a b)
+(defun w3m-time-newer-p (a b)
   "Return t, if A is newer than B.  Otherwise return nil.
 A and B are lists which represent time in Emacs-style.  If value is
 nil, it is regarded as the oldest time."
@@ -845,7 +845,7 @@ nil, it is regarded as the oldest time."
 	       (and (= (car a) (car b))
 		    (> (nth 1 a) (nth 1 b)))))))
 
-(defsubst w3m-time-lapse-seconds (start end)
+(defun w3m-time-lapse-seconds (start end)
   "Return lapse seconds from START to END.
 START and END are lists which represent time in Emacs-style."
   (+ (* (- (car end) (car start)) 65536)
@@ -873,7 +873,7 @@ Do not use this function if precise time stamps are required."
 		 (t
 		  0)))))))
 
-(defsubst w3m-url-local-p (url)
+(defun w3m-url-local-p (url)
   "If URL points a file on the local system, return non-nil value.
 Otherwise return nil."
   (string-match "\\`file:" url))
@@ -882,13 +882,13 @@ Otherwise return nil."
   "\\`\\([^:/?#]+:\\)?//\\([^/?#:]+\\)\\(?::\\([^/?#@]+\\)\\)?@"
   "Regular expression for parsing the authentication part of a URI reference")
 
-(defsubst w3m-url-authinfo (url)
+(defun w3m-url-authinfo (url)
   "Return a user name and a password to authenticate URL."
   (when (string-match w3m-url-authinfo-regexp url)
     (cons (match-string 2 url)
 	  (match-string 3 url))))
 
-(defsubst w3m-url-strip-authinfo (url)
+(defun w3m-url-strip-authinfo (url)
   "Remove the authentication part from the URL."
   (if (string-match w3m-url-authinfo-regexp url)
       (concat (match-string 1 url)
@@ -896,13 +896,13 @@ Otherwise return nil."
 	      (substring url (match-end 0)))
     url))
 
-(defsubst w3m-url-strip-fragment (url)
+(defun w3m-url-strip-fragment (url)
   "Remove the fragment identifier from the URL."
   (if (string-match "\\`\\([^#]*\\)#" url)
       (match-string 1 url)
     url))
 
-(defsubst w3m-url-strip-query (url)
+(defun w3m-url-strip-query (url)
   "Remove the query part and the fragment identifier from the URL."
   (if (string-match "\\`\\([^?#]*\\)[?#]" url)
       (match-string 1 url)
@@ -917,7 +917,7 @@ Otherwise return nil."
       (downcase (match-string 1 url))
     url))
 
-(defsubst w3m-which-command (command)
+(defun w3m-which-command (command)
   (when (stringp command)
     (if (and (file-name-absolute-p command)
 	     (file-executable-p command))
@@ -963,7 +963,7 @@ Otherwise return nil."
       (t
        (defalias 'w3m-truncate-string 'truncate-string-to-width)))
 
-(defsubst w3m-assoc-ignore-case (name alist)
+(defun w3m-assoc-ignore-case (name alist)
   "Return the element of ALIST whose car equals NAME ignoring its case."
   (let ((dname (downcase name))
 	match)
@@ -1180,7 +1180,7 @@ The value of DEFAULT is inserted into PROMPT."
   (apply 'widget-convert (widget-type widget)
 	 (eval (car (widget-get widget :args)))))
 
-(defsubst w3m-unseen-buffer-p (buffer)
+(defun w3m-unseen-buffer-p (buffer)
   "Return t if buffer unseen."
   (save-excursion
     (set-buffer buffer)

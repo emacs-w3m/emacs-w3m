@@ -1,6 +1,6 @@
 ;;; w3m-cookie.el --- Functions for cookie processing
 
-;; Copyright (C) 2002, 2003, 2005, 2006, 2008
+;; Copyright (C) 2002, 2003, 2005, 2006, 2008, 2009
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Teranishi Yuuichi  <teranisi@gohome.org>
@@ -107,7 +107,7 @@ If ask, ask user whether accept bad cookies or not."
 (defmacro w3m-cookie-ignore (cookie)
   `(aref ,cookie 8))
 
-(defsubst w3m-cookie-create (&rest args)
+(defun w3m-cookie-create (&rest args)
   (let ((cookie (make-vector 9 nil)))
     (setf (w3m-cookie-url cookie)     (plist-get args :url))
     (setf (w3m-cookie-domain cookie)  (plist-get args :domain))

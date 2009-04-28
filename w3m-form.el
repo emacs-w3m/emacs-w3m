@@ -1,6 +1,6 @@
 ;;; w3m-form.el --- Stuffs to handle <form> tag
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -175,7 +175,7 @@ It is useful to bind this variable with `let', but do not set it globally.")
 
 ;;; w3m-form structure:
 
-(defsubst w3m-form-normalize-action (action url)
+(defun w3m-form-normalize-action (action url)
   "Normalize the ACTION using URL as a current URL."
   ;; "!CURRENT_URL!" is magic string of w3m.
   (if (and action (not (string= action "!CURRENT_URL!")))
@@ -196,13 +196,13 @@ It is useful to bind this variable with `let', but do not set it globally.")
 	  (or enctype 'application/x-www-form-urlencoded)
 	  nil))
 
-(defsubst w3m-form-p (obj)
+(defun w3m-form-p (obj)
   "Return t if OBJ is a form object."
   (and (vectorp obj)
        (symbolp (aref 0 obj))
        (eq (aref 0 obj) 'w3m-form-object)))
 
-(defsubst w3m-form-set-method (form method)
+(defun w3m-form-set-method (form method)
   (aset form 1 (if (stringp method)
 		   (intern method)
 		 method)))
@@ -218,7 +218,7 @@ It is useful to bind this variable with `let', but do not set it globally.")
   `(aref ,form 4))
 (defmacro w3m-form-plist (form)
   `(aref ,form 5))
-(defsubst w3m-form-put-property (form name property value)
+(defun w3m-form-put-property (form name property value)
   (aset form 5
 	(plist-put (w3m-form-plist form)
 		   (setq name (if (stringp name) (intern name) name))
@@ -997,7 +997,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
       (w3m-form-put form id name (cons value fvalue))
       (w3m-form-replace "*"))))
 
-(defsubst w3m-form-field-parse (fid)
+(defun w3m-form-field-parse (fid)
   (when (and fid
 	     (string-match
 	      "fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
@@ -1875,7 +1875,7 @@ selected rather than \(as usual\) some other window.  See
 			  (let (print-level print-length)
 			    (prin1-to-string (w3m-form-method form)))))))))
 
-(defsubst w3m-form-real-reset (form sexp)
+(defun w3m-form-real-reset (form sexp)
   (and (eq 'w3m-form-input (car sexp))
        (eq form (nth 1 sexp))
        (w3m-form-put form (nth 2 sexp) (nth 3 sexp) (nth 7 sexp))

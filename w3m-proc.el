@@ -136,7 +136,7 @@
 (put 'w3m-process-with-environment 'lisp-indent-function 1)
 (put 'w3m-process-with-environment 'edebug-form-spec '(form body))
 
-(defsubst w3m-process-p (object)
+(defun w3m-process-p (object)
   "Return t if OBJECT is a `w3m-process' object."
   (and (consp object)
        (vectorp (cdr object))
@@ -187,7 +187,7 @@ return it."
     (with-current-buffer (w3m-process-buffer x)
       (setq w3m-process-object x))))
 
-(defsubst w3m-process-kill-process (process)
+(defun w3m-process-kill-process (process)
   "Kill process PROCESS safely."
   (when (processp process)
     (set-process-filter process 'ignore)
@@ -327,7 +327,7 @@ handler."
 (put 'w3m-process-timeout 'error-conditions '(error w3m-process-timeout))
 (put 'w3m-process-timeout 'error-message "Time out")
 
-(defsubst w3m-process-error-handler (error-data process)
+(defun w3m-process-error-handler (error-data process)
   (setq w3m-process-queue (delq process w3m-process-queue))
   (w3m-process-kill-process (w3m-process-process process))
   (signal (car error-data) (cdr error-data)))
