@@ -1,6 +1,6 @@
 ;;; nnshimbun.el --- interfacing with web newspapers
 
-;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
+;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -311,12 +311,12 @@ default value for all the nnshimbun groups.  You can use the
 (defmacro nnshimbun-current-group ()
   '(shimbun-current-group nnshimbun-shimbun))
 
-(defsubst nnshimbun-group-prefixed-name (group &optional server)
+(defun nnshimbun-group-prefixed-name (group &optional server)
   (gnus-group-prefixed-name (or group (nnshimbun-current-group))
 			    (list 'nnshimbun
 				  (or server (nnshimbun-current-server)))))
 
-(defsubst nnshimbun-group-ephemeral-p (group)
+(defun nnshimbun-group-ephemeral-p (group)
   (gnus-ephemeral-group-p (nnshimbun-group-prefixed-name
 			   group (shimbun-server nnshimbun-shimbun))))
 
@@ -374,17 +374,17 @@ If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
       (mm-decode-coding-string group 'utf-8)
     group))
 
-(defsubst nnshimbun-nov-buffer-name (&optional group)
+(defun nnshimbun-nov-buffer-name (&optional group)
   (format " *nnshimbun overview %s %s*"
 	  (nnshimbun-current-server)
 	  (or group (nnshimbun-current-group))))
 
-(defsubst nnshimbun-nov-directory (group)
+(defun nnshimbun-nov-directory (group)
   (nnmail-group-pathname (or group (nnshimbun-current-group))
 			 (expand-file-name (nnshimbun-current-server)
 					   nnshimbun-directory)))
 
-(defsubst nnshimbun-nov-file-name (group)
+(defun nnshimbun-nov-file-name (group)
   (concat (nnshimbun-nov-directory group) nnshimbun-nov-file-name))
 
 
@@ -599,7 +599,7 @@ allowed for each string."
 				(cdr strings))))
 	    nnshimbun-tmp-string))))
 
-(defsubst nnshimbun-insert-nov (number header &optional id)
+(defun nnshimbun-insert-nov (number header &optional id)
   (insert "\n")
   (backward-char 1)
   (let ((header-id (nnshimbun-string-or (shimbun-header-id header)))
