@@ -299,16 +299,15 @@ slot of SHIMBUN to encode URL."
     (setq coding (or (shimbun-url-coding-system-internal shimbun) coding))
     (save-restriction
       (narrow-to-region (point) (point))
-      (or (inline (shimbun-retrieve-url url no-cache no-decode referer coding))
+      (or (shimbun-retrieve-url url no-cache no-decode referer coding)
 	  (and retry
 	       (let (retval)
 		 (shimbun-message
 		  shimbun "shimbun: Retrying to fetch contents...")
 		 (while (and (> retry 0) (not retval))
 		   (delete-region (point-min) (point-max))
-		   (setq retval (inline
-				  (shimbun-retrieve-url
-				   url no-cache no-decode referer coding))
+		   (setq retval (shimbun-retrieve-url
+				 url no-cache no-decode referer coding)
 			 retry (1- retry)))
 		 (shimbun-message shimbun
 				  "shimbun: Retrying to fetch contents...%s"
@@ -346,7 +345,7 @@ slot of SHIMBUN to encode URL."
     (shimbun-mime-encode-string
      (shimbun-header-subject-internal header))))
 
-(defsubst shimbun-header-normalize (string &optional keep-angle-brackets)
+(defun shimbun-header-normalize (string &optional keep-angle-brackets)
   (when string
     (save-match-data
       ;; This is a trick to keep backward compatibility for
@@ -456,16 +455,15 @@ following operations are unnecessary:
 If optional 11th argument ASIS is non-nil, normalization of header
 values is suppressed."
   (let ((new (luna-make-entity 'shimbun-header :number number)))
-    (inline
-      (shimbun-header-set-subject new subject asis)
-      (shimbun-header-set-from new from asis)
-      (shimbun-header-set-date new date asis)
-      (shimbun-header-set-id new id asis)
-      (shimbun-header-set-references new references asis)
-      (shimbun-header-set-chars new chars)
-      (shimbun-header-set-lines new lines)
-      (shimbun-header-set-xref new xref)
-      (shimbun-header-set-extra new extra))
+    (shimbun-header-set-subject new subject asis)
+    (shimbun-header-set-from new from asis)
+    (shimbun-header-set-date new date asis)
+    (shimbun-header-set-id new id asis)
+    (shimbun-header-set-references new references asis)
+    (shimbun-header-set-chars new chars)
+    (shimbun-header-set-lines new lines)
+    (shimbun-header-set-xref new xref)
+    (shimbun-header-set-extra new extra)
     new))
 
 (defun shimbun-make-header (&optional number subject from date id
@@ -479,8 +477,8 @@ instead of this function."
 			 (and from (eword-decode-string from))
 			 date id references chars lines xref extra t))
 
-;; Inline functions for the internal use.
-(defsubst shimbun-article-base-url (shimbun header)
+;; Functions for the internal use.
+(defun shimbun-article-base-url (shimbun header)
   "Return URL which points the original page specified by HEADER for SHIMBUN."
   (let ((xref (shimbun-header-xref header)))
     (if (and xref (eq (aref xref 0) ?/))
@@ -1035,7 +1033,7 @@ Bind it to nil per shimbun if the refresh brings unwanted page.")
 Return nil when articles are not expired."
   (shimbun-expiration-days-internal shimbun))
 
-(defsubst shimbun-content-start (shimbun)
+(defun shimbun-content-start (shimbun)
   "Return the `content-start' value according to SHIMBUN."
   (if (shimbun-prefer-text-plain-internal shimbun)
       (or (shimbun-text-content-start-internal shimbun)
@@ -1043,7 +1041,7 @@ Return nil when articles are not expired."
     (or (shimbun-content-start-internal shimbun)
 	(shimbun-text-content-start-internal shimbun))))
 
-(defsubst shimbun-content-end (shimbun)
+(defun shimbun-content-end (shimbun)
   "Return the `content-end' value according to SHIMBUN."
   (if (shimbun-prefer-text-plain-internal shimbun)
       (or (shimbun-text-content-end-internal shimbun)
@@ -1457,7 +1455,7 @@ ___<TAG ...>___
     (while (re-search-forward "<[^>]+>" nil t)
       (replace-match "" t t))))
 
-(defsubst shimbun-strip-cr ()
+(defun shimbun-strip-cr ()
   "Strip ^M from the end of all lines."
   (goto-char (point-max))
   (while (search-backward "\r\n" nil t)
