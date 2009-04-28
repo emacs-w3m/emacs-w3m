@@ -128,7 +128,7 @@ by way of `post-command-hook'."
 	   (set-alist 'mime-view-type-subtype-score-alist
 		      '(text . html) 3))))))
 
-(defsubst mime-w3m-setup ()
+(defun mime-w3m-setup ()
   "Setup `mime-w3m' module."
   (require 'w3m)
   (when (eq mime-w3m-display-inline-images 'default)

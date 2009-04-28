@@ -26,7 +26,8 @@
 	(w3m-url-transfer-encode-string, w3m-entity-value)
 	(w3m-decode-anchor-string, w3m-toggle-inline-images-internal)
 	(w3m-canonicalize-url, w3m-cache-header-delete-variable-part)
-	(w3m-w3m-canonicalize-url, w3m-view-this-url-1): Don't use defsubst.
+	(w3m-w3m-canonicalize-url, w3m-view-this-url-1)
+	* mime-w3m.el (mime-w3m-setup): Don't use defsubst.
 
 	* w3m-hist.el (w3m-history-plist-put, w3m-history-remove-properties):
 	Don't inline w3m-history-add-properties.
