@@ -1,6 +1,6 @@
 ;;; sb-impress.el --- shimbun backend for www.watch.impress.co.jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2008
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2008, 2009
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
@@ -97,7 +97,7 @@ JzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r\
   (concat "<" (md5 url) "%" (shimbun-current-group shimbun)
 	  "@www.watch.impress.co.jp>"))
 
-(defsubst shimbun-impress-get-headers (shimbun &optional range)
+(defun shimbun-impress-get-headers (shimbun &optional range)
   "Get headers without RSS."
   (let ((case-fold-search t)
 	(regexp (nth 1 (assoc (shimbun-current-group-internal shimbun)
