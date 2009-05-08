@@ -41,11 +41,11 @@
 (defvar shimbun-yahoo-url "http://headlines.yahoo.co.jp/")
 
 (defvar shimbun-yahoo-groups-table
-  (let* ((s0 "[\t\n\r ]*")
-	 (s1 "[\t\n\r ]+")
+  (let* ((s0 "[\t\n ]*")
+	 (s1 "[\t\n ]+")
 	 (default (list
 		   (concat
-		    "<a" s1 "href=\""
+		    "<a" s1 "href=\"\\(?:[^\"]+\\)?"
 		    ;; 1. url
 		    "\\(http://headlines\\.yahoo\\.co\\.jp/hl\\?a="
 		    ;; 2. serial number
@@ -61,23 +61,25 @@
 		    ;; 6. subject
 		    "\\([^<]+\\)"
 		    "\\(?:" s0 "</strong>\\)?"
-		    s0 "</a>\\(?:[^<（]*<[^>]+>\\)+" s0
+		    s0 "</a>\\(?:\\(?:[^\n<（]*\\|[\t\n ]*\\)<[^>]+>\\)*" s0
 		    "\\(?:（" s0 "\\(?:<a" s1 "[^>]+>" s0 "\\)?"
 		    ;; 7. source
 		    "\\([^<）]+\\)"
 		    s0 "\\(?:</a>" s0 "\\)?"
 		    s0 "）"
-		    "\\(?:" s0 "\\|" s0 "-" s0 "\\(?:[^<]+\)" s0 "\\)?"
-		    "\\|" s0 "\\(?:[01]?[0-9]月\\)?"
-		    "[0-3]?[0-9]日([日月火水木金土])\\)"
-		    "\\|[01]?[0-9]月[0-3]?[0-9]日([日月火水木金土])\\)"
+		    "\\(?:" s0 "-\\(?:[^<]+\)\\)?\
+\\|" s0 "\\(?:<[^>]+>" s0 "\\)?\
+\\(?:[01]?[0-9]月\\)?[0-3]?[0-9]日\\(?:([日月火水木金土])\\)?\\)?\
+\\|[01]?[0-9]月[0-3]?[0-9]日\\(?:([日月火水木金土])\\)?\\)"
+		    s0
 		    ;; 8. hour
 		    "\\([012]?[0-9]\\)"
 		    s0 "時" s0
 		    ;; 9. minute
 		    "\\([0-5]?[0-9]\\)"
 		    s0 "分"
-		    "\\(?:[^<]+<a" s1 "href=\"[^\">]+\">" s0
+		    "\\(?:\\(?:" s0 "</[^>]+>\\)?[^<]+<a" s1
+		    "href=\"[^\">]+\">" s0
 		    ;; 10. source
 		    "\\([^<）]+\\)"
 		    s0 "</a>\\)?")
@@ -110,6 +112,7 @@
 		    "\\([^<）]+\\)")
 		   1 2 3 4 5 6 9 7 8)))
     `(("topnews" "トップ" "topnews" ,@topnews)
+      ("news" "ニュース" news ,@default)
       ("politics" "政治" "pol" ,@default)
       ("society" "社会" "soci" ,@default)
       ("people" "人" "peo" ,@default)
@@ -199,10 +202,13 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
 ;;
 ;;(defun shimbun-yahoo-index-url (shimbun)
 ;;;</DEBUG>
-  (format "%shl?c=%s&t=l"
-	  (shimbun-url-internal shimbun)
-	  (nth 2 (assoc (shimbun-current-group-internal shimbun)
-			shimbun-yahoo-groups-table))))
+  (let ((group (shimbun-current-group-internal shimbun))
+	(url (shimbun-url-internal shimbun)))
+    (if (string-equal group "news")
+	(concat url "hl")
+      (format "%shl?c=%s&t=l"
+	      url
+	      (nth 2 (assoc group shimbun-yahoo-groups-table))))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-yahoo)
 					 &optional range)
@@ -220,11 +226,27 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
 	 (pages (shimbun-header-index-pages range))
 	 (count 0)
 	 (index (shimbun-index-url shimbun))
-	 id headers start)
+	 next id headers start)
     (catch 'stop
       (while t
-	(shimbun-remove-tags "<!-+[\t\n ]*アクセスランキング[\t\n ]*-+>"
-			     "<!-+[\t\n ]*/アクセスランキング[\t\n ]*-+>")
+	(if (string-equal group "news")
+	    (progn
+	      (when (and (re-search-forward
+			  "<!-+[\t\n ]*main[\t\n ]+start[\t\n ]*-+>" nil t)
+			 (progn
+			   (setq start (match-end 0))
+			   (re-search-forward
+			    "<!-+[\t\n ]*main[\t\n ]+end[\t\n ]*-+>" nil t)))
+		(delete-region (match-beginning 0) (point-max))
+		(delete-region (point-min) start)
+		(goto-char (point-min)))
+	      (when (and (re-search-forward ">[\t\n ]*写真ニュース[\t\n ]*</a>\
+\\(?:[\t\n ]*</[^>]+>\\)+[\y\n ]*\\(<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
+class=\"ymuiContainer\"\\)" nil t)
+			 (shimbun-end-of-tag "div"))
+		(delete-region (match-beginning 0) (match-end 0))))
+	  (shimbun-remove-tags "<!-+[\t\n ]*アクセスランキング[\t\n ]*-+>"
+			       "<!-+[\t\n ]*/アクセスランキング[\t\n ]*-+>"))
 	(goto-char (point-min))
 	(while (re-search-forward regexp nil t)
 	  (setq id (concat "<"
@@ -233,25 +255,32 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
 			      (match-string (nth 1 numbers))
 			      "-" "."))
 			   "%" group ".headlines.yahoo.co.jp>"))
-	  (if (shimbun-search-id shimbun id)
-	      (throw 'stop nil))
-	  (push (shimbun-create-header
-		 0
-		 (match-string (nth 5 numbers))
-		 (concat from " (" jname "/"
-			 (or (match-string (nth 6 numbers))
-			     (match-string (nth 9 numbers)))
-			 ")")
-		 (shimbun-make-date-string
-		  (string-to-number (match-string (nth 2 numbers)))
-		  (string-to-number (match-string (nth 3 numbers)))
-		  (string-to-number (match-string (nth 4 numbers)))
-		  (format "%02d:%02d"
-			  (string-to-number (match-string (nth 7 numbers)))
-			  (string-to-number (match-string (nth 8 numbers)))))
-		 id "" 0 0
-		 (match-string (nth 0 numbers)))
-		headers))
+	  (unless (and (shimbun-search-id shimbun id)
+		       (if next ;; We're in the next page.
+			   (throw 'stop nil)
+			 t))
+	    (if (save-match-data
+		  (string-match "記事全文[\t\n ]*\\'"
+				(match-string (nth 5 numbers))))
+		(goto-char (match-end (nth 5 numbers)))
+	      (push (shimbun-create-header
+		     0
+		     (match-string (nth 5 numbers))
+		     (concat from " (" jname "/"
+			     (or (match-string (nth 6 numbers))
+				 (match-string (nth 9 numbers)))
+			     ")")
+		     (shimbun-make-date-string
+		      (string-to-number (match-string (nth 2 numbers)))
+		      (string-to-number (match-string (nth 3 numbers)))
+		      (string-to-number (match-string (nth 4 numbers)))
+		      (format
+		       "%02d:%02d"
+		       (string-to-number (match-string (nth 7 numbers)))
+		       (string-to-number (match-string (nth 8 numbers)))))
+		     id "" 0 0
+		     (match-string (nth 0 numbers)))
+		    headers))))
 	(goto-char (point-min))
 	(if (re-search-forward "<a href=\"\\([^\"]+\\)\">次のページ</a>" nil t)
 	    (shimbun-retrieve-url (prog1
@@ -281,7 +310,8 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
 					(concat index "&d=" (match-string 1))
 				      (erase-buffer))
 				    t)
-	    (throw 'stop nil)))))
+	    (throw 'stop nil)))
+	(setq next t)))
     (shimbun-sort-headers headers)))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-yahoo)
