@@ -1,3 +1,12 @@
+2009-05-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-yahoo.el (shimbun-yahoo-groups-table): Fix default regexp; add
+	"news" group.
+	(shimbun-index-url): Add special treatment for "news" group.
+	(shimbun-get-headers): Ignore unwanted links in "news" group; don't
+	lose a link that the default regexp skips; don't stop fetching headers
+	in the first page.
+
 2009-05-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-yahoo.el (shimbun-yahoo-groups-table): Fix default regexp.
