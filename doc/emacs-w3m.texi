@@ -5535,7 +5535,7 @@ wired-jp.news wired-jp.business wired-jp.culture wired-jp.technology
 wired-jp.blog.ogura wired-jp.blog.sasaki wired-jp.blog.takahashi
 
 @item @uref{http://headlines.yahoo.co.jp/, Yahoo! Japan}
-yahoo.topnews yahoo.politics yahoo.society yahoo.people
+yahoo.topnews yahoo.news yahoo.politics yahoo.society yahoo.people
 yahoo.business-all yahoo.market yahoo.stock yahoo.industry
 yahoo.international yahoo.entertainment yahoo.sports yahoo.computer
 yahoo.zenkoku yahoo.hokkaido yahoo.aomori yahoo.iwate yahoo.miyagi
