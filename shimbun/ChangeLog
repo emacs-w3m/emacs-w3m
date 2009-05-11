@@ -1,5 +1,8 @@
 2009-05-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-yahoo.el (shimbun-yahoo-content-end): Update.
+	(shimbun-make-contents): Narrow to article body first.
+
 	* sb-m17n.el (shimbun-get-headers): Update archive url.
 
 2009-05-08  Katsumi Yamaoka  <yamaoka@jpl.org>

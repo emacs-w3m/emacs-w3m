@@ -186,7 +186,12 @@ may not be presented).")
 \[012]?[0-9]時[0-5]?[0-9]分配信[\t\n ]*\\(?:&nbsp\;[\t\n ]*\\)?<a[\t\n ]+\
 href=\"[^\">]+\">[^<]+</a>\\(?:[\t\n ]*</[^>]+>\\)*[\t\n ]*")
 
-(defvar shimbun-yahoo-content-end "[\t\n 　]*\\(?:【関連[^】]+】\
+(defvar shimbun-yahoo-content-end "[\t\n 　]*\
+\\(?:【関連\
+\\(?:キーワード\\|サイト\\|ニュース\\|・\\|作品\\|情報\\|記事\\|：\\)[^】]*\
+】\
+\\|【関連】\
+\\|\\(?:<br>[\t\n ]*\\)*■関連記事<br>\
 \\|<!-+[\t\n ]*interest_match_relevant_zone_end[\t\n ]*-+>\\)")
 
 (defvar shimbun-yahoo-x-face-alist
@@ -320,18 +325,18 @@ class=\"ymuiContainer\"\\)" nil t)
 ;;  (shimbun-yahoo-prepare-article shimbun header))
 ;;
 ;;(defun shimbun-yahoo-prepare-article (shimbun header)
-;;;</DEBUG>
-  ;; Remove headline.
-  (shimbun-remove-tags "<h[0-9][\t\n ]+class=\"yjXL\">" "</h[0-9]>")
-  (shimbun-remove-tags
-   "<p[\t\n ]+class=\"yjSt\">[^<]*[0-9]+時[0-9]+分配信" "</p>")
-  ;; Remove garbage.
-  (when (re-search-forward "\
-\[\t\n ]*<p[\t\n ]+class=\"yjSt\">[\t\n ]*拡大写真[\t\n ]*</p>[\t\n ]*"
-			   nil t)
-    (delete-region (match-beginning 0) (match-end 0)))
+  ;;;</DEBUG>
   (shimbun-with-narrowed-article
    shimbun
+   ;; Remove headline.
+   (shimbun-remove-tags "<h[0-9][\t\n ]+class=\"yjXL\">" "</h[0-9]>")
+   (shimbun-remove-tags
+    "<p[\t\n ]+class=\"yjSt\">[^<]*[0-9]+時[0-9]+分配信" "</p>")
+   ;; Remove garbage.
+   (when (re-search-forward "\
+\[\t\n ]*<p[\t\n ]+class=\"yjSt\">[\t\n ]*拡大写真[\t\n ]*</p>[\t\n ]*"
+			    nil t)
+     (delete-region (match-beginning 0) (match-end 0)))
    ;; Fix the picture tag.
    (cond ((re-search-forward "[\t\n ]*<center>[\t\n ]*<font[^>]+>\
 \[\t\n ]*拡大写真[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)+"
