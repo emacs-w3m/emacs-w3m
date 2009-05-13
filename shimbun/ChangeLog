@@ -1,3 +1,8 @@
+2009-05-13  David Engster  <dengste@eml.cc>
+
+	* sb-rss-hash.el (shimbun-rss-build-message-id): New override so that
+	URL is not stripped at question mark.
+
 2009-05-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-yahoo.el (shimbun-yahoo-content-end): Update.

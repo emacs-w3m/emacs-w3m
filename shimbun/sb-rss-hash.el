@@ -144,6 +144,16 @@
   (content-hash-shimbun-article (luna-slot-value shimbun 'content)
 				shimbun header outbuf))
 
+(luna-define-method shimbun-rss-build-message-id ((shimbun
+						   shimbun-rss-hash)
+						  url &optional date)
+  (let* ((group (shimbun-current-group-internal shimbun)))
+    (when (string-match "#" url)
+      (setq url (substring url 0 (match-beginning 0))))
+    (when (stringp date)
+      (setq url (concat url date)))
+    (concat "<" (md5 (concat url)) "." group "@rss-hash>")))
+
 (provide 'sb-rss-hash)
 
 ;;; sb-rss-hash.el ends here
