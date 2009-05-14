@@ -231,7 +231,7 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
 	 (pages (shimbun-header-index-pages range))
 	 (count 0)
 	 (index (shimbun-index-url shimbun))
-	 next id headers start)
+	 id headers start)
     (catch 'stop
       (while t
 	(if (string-equal group "news")
@@ -261,7 +261,9 @@ class=\"ymuiContainer\"\\)" nil t)
 			      "-" "."))
 			   "%" group ".headlines.yahoo.co.jp>"))
 	  (unless (and (shimbun-search-id shimbun id)
-		       (if next ;; We're in the next page.
+		       (if (and (>= count 1) ;; We're in the next page.
+				;; Stop fetching iff range is not specified.
+				(not pages))
 			   (throw 'stop nil)
 			 t))
 	    (if (save-match-data
@@ -287,36 +289,40 @@ class=\"ymuiContainer\"\\)" nil t)
 		     (match-string (nth 0 numbers)))
 		    headers))))
 	(goto-char (point-min))
-	(if (re-search-forward "<a href=\"\\([^\"]+\\)\">次のページ</a>" nil t)
-	    (shimbun-retrieve-url (prog1
-				      (match-string 1)
-				    (erase-buffer))
-				  t)
-	  (if (and (or (not pages)
-		       (< (setq count (1+ count)) pages))
-		   (re-search-forward "<!-+[\t\n ]*過去記事[\t\n ]*-+>" nil t)
-		   (progn
-		     (setq start (match-end 0))
-		     (re-search-forward "<!-+[\t\n ]*/過去記事[\t\n ]*-+>"
-					nil t))
-		   (progn
-		     (narrow-to-region start (match-beginning 0))
-		     (goto-char start)
-		     (or (re-search-forward "<option[\t\n ]+value=\"\
+	(if (or (not pages)
+		(< (setq count (1+ count)) pages))
+	    (if (re-search-forward "<a href=\"\\([^\"]+\\)\">次のページ</a>"
+				   nil t)
+		(shimbun-retrieve-url (prog1
+					  (match-string 1)
+					(erase-buffer))
+				      t)
+	      (if (and (re-search-forward "<!-+[\t\n ]*過去記事[\t\n ]*-+>"
+					  nil t)
+		       (progn
+			 (setq start (match-end 0))
+			 (re-search-forward "<!-+[\t\n ]*/過去記事[\t\n ]*-+>"
+					    nil t))
+		       (progn
+			 (narrow-to-region start (match-beginning 0))
+			 (goto-char start)
+			 (or (re-search-forward "<option[\t\n ]+value=\"\
 20[0-9][0-9][01][0-9][0-3][0-9]\"[\t\n ]+selected[\t\n ]*>"
-					    nil t)
-			 (re-search-forward "<option[\t\n ]+value=\"\
+						nil t)
+			     (re-search-forward "<option[\t\n ]+value=\"\
 20[0-9][0-9][01][0-9][0-3][0-9]\"[\t\n ]*>"
-					    nil t)))
-		   (re-search-forward "<option[\t\n ]+value=\"\
+						nil t)))
+		       (re-search-forward "<option[\t\n ]+value=\"\
 \\(20[0-9][0-9][01][0-9][0-3][0-9]\\)\"[\t\n ]*>"
-				      nil t))
-	      (shimbun-retrieve-url (prog1
-					(concat index "&d=" (match-string 1))
-				      (erase-buffer))
-				    t)
-	    (throw 'stop nil)))
-	(setq next t)))
+					  nil t))
+		  (shimbun-retrieve-url (prog1
+					    (concat index "&d="
+						    (match-string 1))
+					  (erase-buffer))
+					t)
+		(throw 'stop nil))
+	      (throw 'stop nil))
+	  (throw 'stop nil))))
     (shimbun-sort-headers headers)))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-yahoo)

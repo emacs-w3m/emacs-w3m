@@ -1,3 +1,10 @@
+2009-05-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-yahoo.el (shimbun-get-headers): Don't stop fetching headers in
+	the succeeding pages if index range is specified even if url having
+	been fetched is found, because Yahoo! updates indices very often;
+	make range control work properly.
+
 2009-05-13  David Engster  <dengste@eml.cc>
 
 	* sb-rss-hash.el (shimbun-rss-build-message-id): New override so that
