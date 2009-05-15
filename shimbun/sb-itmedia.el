@@ -115,10 +115,23 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 						 &optional range)
   (if (string-match "\\.xml\\'" (shimbun-index-url shimbun))
       (luna-call-next-method)
-    (let ((group (nth 2 (assoc (shimbun-current-group-internal shimbun)
+    (let ((case-fold-search t)
+	  (group (nth 2 (assoc (shimbun-current-group-internal shimbun)
 			       shimbun-itmedia-group-alist)))
 	  (from (shimbun-from-address shimbun))
 	  headers)
+      (goto-char (point-min))
+      (let (start)
+	(when (and (re-search-forward "\
+<!-+[\t\n ]*\\(cms[\t\n /]+index\\(?:[\t\n ]+[^\t\n ->]+\\)?\\)[\t\n ]*-+>"
+				      nil t)
+		   (progn
+		     (setq start (match-end 0))
+		     (re-search-forward (concat "<!-+[\t\n ]*" (match-string 1)
+						"[\t\n ]+end[\t\n ]*-+>")
+					nil t)))
+	  (delete-region (match-beginning 0) (point-max))
+	  (delete-region (point-min) start)))
       (goto-char (point-min))
       (while (re-search-forward "<a[\t\n ]+href=\"\
 \\(?:[^\"]+\\)?\\(/lifestyle/articles/\\([0-9][0-9]\\)\\([01][0-9]\\)/\
