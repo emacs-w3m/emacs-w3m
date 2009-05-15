@@ -1,3 +1,8 @@
+2009-05-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-itmedia.el (shimbun-get-headers): Ignore unwanted links in non-RSS
+	index pages.
+
 2009-05-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-yahoo.el (shimbun-get-headers): Don't stop fetching headers in
