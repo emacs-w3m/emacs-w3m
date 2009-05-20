@@ -1,5 +1,39 @@
 2009-04-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-bookmark.el (w3m-bookmark-make-item)
+	* w3m-cookie.el (w3m-cookie-create)
+	* w3m-dtree.el (w3m-dtree-expand-file-name, w3m-dtree-directory-name)
+	* w3m-form.el (w3m-form-normalize-action, w3m-form-p)
+	(w3m-form-set-method, w3m-form-put-property, w3m-form-field-parse)
+	(w3m-form-real-reset)
+	* w3m-hist.el (w3m-history-set-current)
+	* w3m-namazu.el (w3m-namazu-call-process)
+	* w3m-proc.el (w3m-process-p, w3m-process-kill-process)
+	(w3m-process-error-handler)
+	* w3m-session.el (w3m-session-history-to-save, w3m-session-make-item)
+	* w3m-tabmenu.el (w3m-tab-menubar-make-items-1)
+	* w3m-util.el (w3m-get-buffer-create, w3m-kill-buffer)
+	(w3m-current-title, w3m-buffer-title, w3m-buffer-number)
+	(w3m-buffer-set-number, w3m-buffer-name-add-title)
+	(w3m-generate-new-buffer, w3m-lefttab-exist-p, w3m-righttab-exist-p)
+	(w3m-url-valid, w3m-time-newer-p, w3m-time-lapse-seconds)
+	(w3m-url-local-p, w3m-url-authinfo, w3m-url-strip-authinfo)
+	(w3m-url-strip-fragment, w3m-url-strip-query, w3m-which-command)
+	(w3m-assoc-ignore-case, w3m-unseen-buffer-p)
+	* w3m-xmas.el (w3m-make-glyph)
+	* w3m.el (w3m-clear-local-variables, w3m-copy-local-variables)
+	(w3m-arrived-p, w3m-arrived-put, w3m-arrived-get)
+	(w3m-url-transfer-encode-string, w3m-entity-value)
+	(w3m-decode-anchor-string, w3m-toggle-inline-images-internal)
+	(w3m-canonicalize-url, w3m-cache-header-delete-variable-part)
+	(w3m-w3m-canonicalize-url, w3m-view-this-url-1)
+	* mime-w3m.el (mime-w3m-setup): Don't use defsubst.
+
+	* w3m-hist.el (w3m-history-plist-put, w3m-history-remove-properties):
+	Don't inline w3m-history-add-properties.
+
+2009-04-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-cache-available-p): Work around too large integer in
 	Cache-Control header.
 

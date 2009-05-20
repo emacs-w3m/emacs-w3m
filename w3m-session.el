@@ -161,7 +161,7 @@
 ;; backward-compatibility alias
 (put 'w3m-session-selected-face 'face-alias 'w3m-session-selected)
 
-(defsubst w3m-session-history-to-save ()
+(defun w3m-session-history-to-save ()
   "Return a copy of `w3m-history-flat' without current page data."
   (let ((pos (cadar w3m-history)))
     (apply
@@ -831,7 +831,7 @@ file exists, otherwise nil."
 (defvar w3m-session-make-item-xmas
   (and (equal "Japanese" w3m-language) (featurep 'xemacs)))
 
-(defsubst w3m-session-make-item (item)
+(defun w3m-session-make-item (item)
   (if w3m-session-make-item-xmas
       (concat item "%_ ")
     item))

@@ -1,8 +1,8 @@
 ;;; sb-fml.el --- shimbun backend class for fml archiver.
 
-;; Copyright (C) 2001, 2002, 2003, 2004
+;; Copyright (C) 2001, 2002, 2003, 2004, 2009
 ;; Akihiro Arisawa <ari@mbf.sphere.ne.jp>
-;; Copyright (C) 2001, 2002, 2003, 2004
+;; Copyright (C) 2001, 2002, 2003, 2004, 2009
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -41,7 +41,7 @@
 
 (luna-define-class shimbun-fml (shimbun) ())
 
-(defsubst shimbun-fml-parse-time (str)
+(defun shimbun-fml-parse-time (str)
   (save-match-data
     (if (string-match
 	 "\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\) \\([0-9]+:[0-9]+:[0-9]+\\)"

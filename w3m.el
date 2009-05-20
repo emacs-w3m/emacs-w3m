@@ -2354,7 +2354,7 @@ It is used for favicon data.  The type is often `ico'.")
 (make-variable-buffer-local 'w3m-current-ssl)
 (make-variable-buffer-local 'w3m-name-anchor-from-hist)
 
-(defsubst w3m-clear-local-variables ()
+(defun w3m-clear-local-variables ()
   (setq w3m-current-url nil
 	w3m-current-base-url nil
 	w3m-current-title nil
@@ -2370,7 +2370,7 @@ It is used for favicon data.  The type is often `ico'.")
 	w3m-current-ssl nil
 	w3m-name-anchor-from-hist nil))
 
-(defsubst w3m-copy-local-variables (from-buffer)
+(defun w3m-copy-local-variables (from-buffer)
   (let (url base title cs char icon next prev start toc hseq refresh ssl)
     (with-current-buffer from-buffer
       (setq url w3m-current-url
@@ -2846,7 +2846,7 @@ CONTENT-TYPE are also be added."
 	  (put ident 'content-type content-type)))
       (set ident arrival-time))))
 
-(defsubst w3m-arrived-p (url)
+(defun w3m-arrived-p (url)
   "Return non-nil if a page of URL has arrived."
   (or (string-match w3m-arrived-ignored-regexp url)
       (w3m-arrived-intern url t)))
@@ -2859,14 +2859,14 @@ Otherwise return nil."
 (defsetf w3m-arrived-time (url) (value)
   (list 'w3m-arrived-add url nil nil value))
 
-(defsubst w3m-arrived-put (url property value)
+(defun w3m-arrived-put (url property value)
   "Store VALUE in the arrived URLs database as the PROPERTY of URL.
 Return VALUE if a page of URL has arrived.  Otherwise, VALUE is
 ignored and return nil."
   (let ((symbol (w3m-arrived-intern url t)))
     (and symbol (put symbol property value))))
 
-(defsubst w3m-arrived-get (url property)
+(defun w3m-arrived-get (url property)
   "Return the value of URL's PROPERTY stored in the arrived URLs database.
 If a page of URL has not arrived, return nil."
   (let ((symbol (w3m-arrived-intern url t)))
@@ -3340,7 +3340,7 @@ decide a decoding scheme."
 				   rule))
 	url))))
 
-(defsubst w3m-url-transfer-encode-string (url &optional coding)
+(defun w3m-url-transfer-encode-string (url &optional coding)
   "Encode non-ascii characters in URL into the sequence of escaped octets.
 CODING which defaults to `w3m-current-coding-system' (which see) is a
 coding system used when encoding non-ascii characters.
@@ -3368,7 +3368,7 @@ use `w3m-url-encode-string' instead."
 
 
 ;;; HTML character entity handling:
-(defsubst w3m-entity-value (name)
+(defun w3m-entity-value (name)
   "Get a char corresponding to NAME from the html char entities database.
 The database is kept in `w3m-entity-table'."
   ;; Return a value of the specified entity, or nil if it is unknown.
@@ -3448,7 +3448,7 @@ The database is kept in `w3m-entity-table'."
 			      nil t)
       (w3m-add-face-property (match-beginning 0) (match-end 0) 'w3m-insert)))))
 
-(defsubst w3m-decode-anchor-string (str)
+(defun w3m-decode-anchor-string (str)
   ;; FIXME: This is a quite ad-hoc function to process encoded url string.
   ;; More discussion about timing &-sequence decode is required.  The
   ;; following article (written in Japanese) is the origin of this issue:
@@ -3759,10 +3759,10 @@ The database is kept in `w3m-entity-table'."
 				 'w3m-idle-images-show)))))
 
 (defvar w3m-image-no-idle-timer nil)
-(defsubst w3m-toggle-inline-images-internal (status
-					     &optional no-cache url
-					     begin-pos end-pos
-					     safe-regexp)
+(defun w3m-toggle-inline-images-internal (status
+					  &optional no-cache url
+					  begin-pos end-pos
+					  safe-regexp)
   "Toggle displaying of inline images on current buffer.
 STATUS is current image status.
 If NO-CACHE is non-nil, cache is not used.
@@ -4453,7 +4453,7 @@ non-nil, return the url of the current page by default."
 		 (substring w3m-current-url (match-end 0))
 	       w3m-current-url)))))
 
-(defsubst w3m-canonicalize-url (url &optional feeling-lucky)
+(defun w3m-canonicalize-url (url &optional feeling-lucky)
   "Add a scheme part to an URL or make an URL for \"I'm Feeling Lucky on Google\"
 if it has no scheme part."
   (w3m-string-match-url-components url)
@@ -4550,7 +4550,7 @@ if it has no scheme part."
   (setq w3m-cache-hashtb nil
 	w3m-cache-articles nil))
 
-(defsubst w3m-cache-header-delete-variable-part (header)
+(defun w3m-cache-header-delete-variable-part (header)
   (let (buf)
     (dolist (line (split-string header "\n+"))
       (unless (string-match "\\`\\(?:Date\\|Server\\|W3m-[^:]+\\):" line)
@@ -5163,7 +5163,7 @@ Return a list which includes:
 	(when success
 	  (buffer-string))))))
 
-(defsubst w3m-w3m-canonicalize-url (url)
+(defun w3m-w3m-canonicalize-url (url)
   "Add a slash to an URL, when its server part is not ended with a slash."
   ;; Because URLs encountered in WEB documents are no less reliable
   ;; than URLs given by users, a minimum canonicalization may be
@@ -6600,7 +6600,7 @@ compatibility which is described in Section 5.2 of RFC 2396.")
   (put-text-property (point) (point-max) 'w3m-progress-message t)
   (sit-for 0))
 
-(defsubst w3m-view-this-url-1 (url reload new-session)
+(defun w3m-view-this-url-1 (url reload new-session)
   (lexical-let ((url url)
 		pos buffer newbuffer wconfig)
     (if new-session

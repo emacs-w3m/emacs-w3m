@@ -190,14 +190,14 @@ buffer-local properties using the functions `w3m-history-plist-get',
   "Extract a history element associated with URL from `w3m-history-flat'."
   (assoc url w3m-history-flat))
 
-(defsubst w3m-history-set-current (position)
+;; Functions for internal use.
+(defun w3m-history-set-current (position)
   "Modify `w3m-history' so that POSITION might be the current position.
 What is called the current position is the `cadar' of `w3m-history'.
 The previous position and the next position will be computed
 automatically."
   (setcar w3m-history (w3m-history-regenerate-pointers position)))
 
-;; Functions for internal use.
 (defun w3m-history-element (position &optional flat)
   "Return a history element located in the POSITION of the history.
 If FLAT is nil, the value will be extracted from `w3m-history' and
@@ -598,7 +598,7 @@ Warning: the history database in this session seems corrupted.")
 Return new properties.  If NOT-BUFFER-LOCAL is nil, KEYWORD and VALUE
 will be put into the buffer-local properties.  Otherwise, KEYWORD and
 VALUE will be put into the global properties instead."
-  (inline (w3m-history-add-properties (list keyword value) not-buffer-local)))
+  (w3m-history-add-properties (list keyword value) not-buffer-local))
 
 (defun w3m-history-remove-properties (properties &optional not-buffer-local)
   "Remove PROPERTIES from the current history element.
@@ -610,7 +610,7 @@ Otherwise, the global properties will be modified instead."
     (while properties
       (setq rest (cons nil (cons (car properties) rest))
 	    properties (cddr properties)))
-    (inline (w3m-history-add-properties (nreverse rest) not-buffer-local))))
+    (w3m-history-add-properties (nreverse rest) not-buffer-local)))
 
 (defun w3m-history-store-position ()
   "Store the current cursor position into the current history element.

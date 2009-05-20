@@ -33,7 +33,30 @@
 
 2009-05-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-fml.el (shimbun-fml-parse-time)
+	* sb-impress.el (shimbun-impress-get-headers)
+	* sb-mhonarc.el (shimbun-mhonarc-header-value)
+	* sb-ruby.el (shimbun-ruby-parse-time)
+	* sb-text.el (shimbun-shallow-rendering)
+	* sb-tigris.el (shimbun-tigris-remove-amp)
+	* sb-vinelinux.el (shimbun-vinelinux-parse-time): Don't use defsubst.
+
+2009-05-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* sb-yahoo.el (shimbun-yahoo-groups-table): Fix default regexp.
+
+2009-04-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-header-normalize, shimbun-article-base-url)
+	(shimbun-content-start, shimbun-content-end, shimbun-strip-cr):
+	Don't use defsubst.
+	(shimbun-fetch-url): Don't inline shimbun-retrieve-url.
+	(shimbun-create-header): Don't inline shimbun-header-set-*.
+
+	* nnshimbun.el (nnshimbun-group-prefixed-name)
+	(nnshimbun-group-ephemeral-p, nnshimbun-nov-buffer-name)
+	(nnshimbun-nov-directory, nnshimbun-nov-file-name)
+	(nnshimbun-insert-nov): Don't use defsubst.
 
 2009-04-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
