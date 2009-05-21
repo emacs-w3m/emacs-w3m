@@ -5564,9 +5564,10 @@ yahoo.yamaguchi yahoo.tokushima yahoo.kagawa yahoo.ehime yahoo.kochi
 yahoo.fukuoka yahoo.saga yahoo.nagasaki yahoo.kumamoto yahoo.oita
 yahoo.miyazaki yahoo.kagoshima yahoo.okinawa
 
-これらのグループは、デフォルトで HTML の記事を作ります。それらにテキスト
-だけの記事を生成させたいならば、以下の行を @file{~/.emacs} ファイルに加
-えてください。
+yahoo.news グループは主要な記事と、さらに速報記事を検索します。これらの
+グループは、デフォルトで HTML の記事を作ります。それらにテキストだけの記
+事を生成させたいならば、以下の行を @file{~/.emacs} ファイルに加えてくだ
+さい。
 
 @lisp
 (setq shimbun-yahoo-prefer-text-plain t)

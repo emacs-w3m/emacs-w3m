@@ -5549,6 +5549,7 @@ yahoo.yamaguchi yahoo.tokushima yahoo.kagawa yahoo.ehime yahoo.kochi
 yahoo.fukuoka yahoo.saga yahoo.nagasaki yahoo.kumamoto yahoo.oita
 yahoo.miyazaki yahoo.kagoshima yahoo.okinawa
 
+The yahoo.news group retrieves the headline news and also the flash news.
 Those groups generate HTML articles by default.  If you would like to
 make them generate articles containing only text, add the following line
 to your @file{~/.emacs} file:
