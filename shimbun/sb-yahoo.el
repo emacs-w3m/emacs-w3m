@@ -288,41 +288,47 @@ class=\"ymuiContainer\"\\)" nil t)
 		     id "" 0 0
 		     (match-string (nth 0 numbers)))
 		    headers))))
+	(setq count (1+ count))
 	(goto-char (point-min))
-	(if (or (not pages)
-		(< (setq count (1+ count)) pages))
-	    (if (re-search-forward "<a href=\"\\([^\"]+\\)\">次のページ</a>"
-				   nil t)
-		(shimbun-retrieve-url (prog1
-					  (match-string 1)
-					(erase-buffer))
-				      t)
-	      (if (and (re-search-forward "<!-+[\t\n ]*過去記事[\t\n ]*-+>"
-					  nil t)
-		       (progn
-			 (setq start (match-end 0))
-			 (re-search-forward "<!-+[\t\n ]*/過去記事[\t\n ]*-+>"
-					    nil t))
-		       (progn
-			 (narrow-to-region start (match-beginning 0))
-			 (goto-char start)
-			 (or (re-search-forward "<option[\t\n ]+value=\"\
+	(cond ((and pages (>= count pages))
+	       (throw 'stop nil))
+	      ((string-equal group "news")
+	       (if (>= count 2)
+		   (throw 'stop nil)
+		 (erase-buffer)
+		 (shimbun-retrieve-url
+		  "http://headlines.yahoo.co.jp/hl?c=flash"
+		  t)))
+	      ((re-search-forward "<a href=\"\\([^\"]+\\)\">次のページ</a>"
+				  nil t)
+	       (shimbun-retrieve-url (prog1
+					 (match-string 1)
+				       (erase-buffer))
+				     t))
+	      ((and (re-search-forward "<!-+[\t\n ]*過去記事[\t\n ]*-+>"
+				       nil t)
+		    (progn
+		      (setq start (match-end 0))
+		      (re-search-forward "<!-+[\t\n ]*/過去記事[\t\n ]*-+>"
+					 nil t))
+		    (progn
+		      (narrow-to-region start (match-beginning 0))
+		      (goto-char start)
+		      (or (re-search-forward "<option[\t\n ]+value=\"\
 20[0-9][0-9][01][0-9][0-3][0-9]\"[\t\n ]+selected[\t\n ]*>"
-						nil t)
-			     (re-search-forward "<option[\t\n ]+value=\"\
+					     nil t)
+			  (re-search-forward "<option[\t\n ]+value=\"\
 20[0-9][0-9][01][0-9][0-3][0-9]\"[\t\n ]*>"
-						nil t)))
-		       (re-search-forward "<option[\t\n ]+value=\"\
+					     nil t)))
+		    (re-search-forward "<option[\t\n ]+value=\"\
 \\(20[0-9][0-9][01][0-9][0-3][0-9]\\)\"[\t\n ]*>"
-					  nil t))
-		  (shimbun-retrieve-url (prog1
-					    (concat index "&d="
-						    (match-string 1))
-					  (erase-buffer))
-					t)
-		(throw 'stop nil))
-	      (throw 'stop nil))
-	  (throw 'stop nil))))
+				       nil t))
+	       (shimbun-retrieve-url (prog1
+					 (concat index "&d=" (match-string 1))
+				       (erase-buffer))
+				     t))
+	      (t
+	       (throw 'stop nil)))))
     (shimbun-sort-headers headers)))
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-yahoo)
