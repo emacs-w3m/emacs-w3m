@@ -9206,7 +9206,7 @@ See `w3m-default-directory'."
 	  (w3m-cancel-refresh-timer buffer)
 	  (if (and w3m-current-url
 		   (string= url w3m-current-url))
-	      (w3m-reload-this-page t)
+	      (w3m-reload-this-page t t)
 	    (w3m-goto-url url nil
 			  nil nil nil nil nil t)))
 	(set-window-buffer cwin cbuf)))
@@ -9277,7 +9277,7 @@ session will start afresh."
     (error "You have to specify the value of `w3m-home-page'"))
   (w3m-goto-url w3m-home-page))
 
-(defun w3m-reload-this-page (&optional arg)
+(defun w3m-reload-this-page (&optional arg no-popup)
   "Reload the current page, disregarding the cached contents.
 If the prefix arg ARG is given, it also clears forms and post data."
   (interactive "P")
@@ -9296,7 +9296,8 @@ If the prefix arg ARG is given, it also clears forms and post data."
 	(w3m-goto-url w3m-current-url 'reload nil post-data
 		      (w3m-history-plist-get :referer)
 		      nil
-		      (w3m-history-element (cadar w3m-history) t)))
+		      (w3m-history-element (cadar w3m-history) t)
+		      no-popup))
     (w3m-message "Can't reload this page")))
 
 (defun w3m-reload-all-pages (&optional arg)

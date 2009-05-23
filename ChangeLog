@@ -1,3 +1,9 @@
+2009-05-23  Naohiro Aota  <naota@elisp.net>
+
+	* w3m.el (w3m-reload-this-page): Add new argument `no-popup'; Call
+	w3m-goto-url() with the argument.
+	(w3m-goto-url-with-timer): Use it.
+
 2009-04-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bookmark.el (w3m-bookmark-make-item)
