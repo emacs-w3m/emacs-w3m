@@ -1,3 +1,12 @@
+2009-05-25  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-cache-available-p): Analyze the cache-control header more
+	strictly.
+	(w3m-scroll-up-or-next-url): Bind w3m-prefer-cache to `t' when goto
+	the w3m-next-url.
+	(w3m-scroll-down-or-previous-url): Bind w3m-prefer-cache to `t' when
+	goto the w3m-previous-url.
+
 2009-05-23  Naohiro Aota  <naota@elisp.net>
 
 	* w3m.el (w3m-reload-this-page): Add new argument `no-popup'; Call

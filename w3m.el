@@ -4680,17 +4680,17 @@ BUFFER is nil, all contents will be inserted in the current buffer."
 		(head (and (boundp ident) (symbol-value ident)))
 		time expire)
 	    (cond
-	     ((and (string-match "^\\(?:Last-Modified\\|ETag\\):[ \t]" head)
-		   (or (string-match "^Pragma:[ \t]+no-cache\n" head)
+	     ((and (string-match "^\\(?:date\\|etag\\):[ \t]" head)
+		   (or (string-match "^pragma:[ \t]+no-cache\n" head)
 		       (string-match
-			"^Cache-control:[ \t]+\\(?:no-cache\\|max-age=0\\)\n"
+			"^cache-control:\\(?:[^\n]+\\)?[ \t,]\\(?:no-cache\\|max-age=0\\)[,\n]"
 			head)))
 	      nil)
 	     ((and
 	       (string-match "^date:[ \t]\\([^\n]+\\)\n" head)
 	       (setq time (match-string 1 head))
 	       (setq time (w3m-time-parse-string time))
-	       (string-match "^cache-control:[ \t]+max-age=\\([1-9][0-9]*\\)"
+	       (string-match "^cache-control:\\(?:[^\n]+\\)?[ \t,]max-age=\\([1-9][0-9]*\\)"
 			     head)
 	       (setq expire (string-to-number (match-string 1 head))))
 	      (setq time (decode-time time))
@@ -8304,7 +8304,8 @@ greater."
   (w3m-keep-region-active)
   (if (pos-visible-in-window-p (point-max))
       (if w3m-next-url
-	  (w3m-goto-url w3m-next-url)
+	  (let ((w3m-prefer-cache t))
+	    (w3m-goto-url w3m-next-url))
 	(signal 'end-of-buffer nil))
     (w3m-scroll-up-1 arg)))
 
@@ -8314,7 +8315,8 @@ greater."
   (w3m-keep-region-active)
   (if (pos-visible-in-window-p (point-min))
       (if w3m-previous-url
-	  (w3m-goto-url w3m-previous-url)
+	  (let ((w3m-prefer-cache t))
+	    (w3m-goto-url w3m-previous-url))
 	(signal 'beginning-of-buffer nil))
     (scroll-down arg)))
 
