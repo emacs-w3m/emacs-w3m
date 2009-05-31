@@ -1,3 +1,8 @@
+2009-05-30  David Engster  <dengste@eml.cc>
+
+	* sb-slashdot.el (shimbun-slashdot-regexp-section-id-subject)
+	(shimbun-slashdot-get-headers): Adapt to new URL scheme.
+
 2009-05-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-yahoo.el (shimbun-get-headers): Retrieve also "flash" index page
