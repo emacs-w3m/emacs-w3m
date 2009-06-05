@@ -331,102 +331,28 @@ class=\"ymuiContainer\"\\)" nil t)
 	       (throw 'stop nil)))))
     (shimbun-sort-headers headers)))
 
-(luna-define-method shimbun-make-contents :before ((shimbun shimbun-yahoo)
-						   header)
+(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-yahoo)
+						    header)
 ;;;<DEBUG>
-;;  (shimbun-yahoo-prepare-article shimbun header))
+;;  (shimbun-yahoo-clear-contents shimbun header))
 ;;
-;;(defun shimbun-yahoo-prepare-article (shimbun header)
-  ;;;</DEBUG>
-  (shimbun-with-narrowed-article
-   shimbun
-   ;; Remove headline.
-   (shimbun-remove-tags "<h[0-9][\t\n ]+class=\"yjXL\">" "</h[0-9]>")
-   (shimbun-remove-tags
-    "<p[\t\n ]+class=\"yjSt\">[^<]*[0-9]+時[0-9]+分配信" "</p>")
-   ;; Remove garbage.
-   (when (re-search-forward "\
-\[\t\n ]*<p[\t\n ]+class=\"yjSt\">[\t\n ]*拡大写真[\t\n ]*</p>[\t\n ]*"
-			    nil t)
-     (delete-region (match-beginning 0) (match-end 0)))
-   ;; Fix the picture tag.
-   (cond ((re-search-forward "[\t\n ]*<center>[\t\n ]*<font[^>]+>\
-\[\t\n ]*拡大写真[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)+"
+;;(defun shimbun-yahoo-clear-contents (shimbun header)
+;;;</DEBUG>
+  (when (luna-call-next-method)
+    ;; Remove garbage.
+    (when (re-search-forward "\
+\[\t\n ]*<tr>[\t\n ]*<td\\(?:[\t\n ]+[^>]+\\)*[\t\n ]+class=\
+\"[^\"]+[\t\n ]+yjSt\"[^>]*>[\t\n ]*<a[\t\n ]+[^>]+>\
+\[\t\n ]*拡大写真[\t\n ]*</a>[\t\n ]*</td>[\t\n ]*</tr>[\t\n ]*"
 			     nil t)
-	  (delete-region (match-beginning 0) (match-end 0))
-	  (when (and (shimbun-prefer-text-plain-internal shimbun)
-		     (looking-at "[^<>]+"))
-	    (replace-match "(写真: \\&)<br>"))
-	  (goto-char (point-min)))
-	 ((and (shimbun-prefer-text-plain-internal shimbun)
-	       (re-search-forward "<img[\t\n ]+[^>]+>\
-\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<font[\t\n ]+[^>]+>[\t\n 　]*\
-\\([^<>]+\\)[\t\n ]*</font>"
-				  nil t))
-	  (if (string-equal (match-string 1) "写真")
-	      (replace-match "(写真)<br>")
-	    (replace-match "(写真: \\1)<br>"))))
-   (if (shimbun-prefer-text-plain-internal shimbun)
-       (require 'sb-text) ;; `shimbun-fill-column'
-     ;; Open paragraphs.
-     (while (re-search-forward "。<br>[\t ]*\n　" nil t)
-       (replace-match "。<br><br>\n　"))
-     (goto-char (point-min)))
-   ;; Correct the Date header and the position of the footer.
-   (let (year footer)
-     (when (and
-	    (setq year (shimbun-header-date header))
-	    (string-match " \\(20[0-9][0-9]\\) " year)
-	    (progn
-	      (setq year (string-to-number (match-string 1 year)))
-	      (re-search-forward
-	       (eval-when-compile
-		 (let ((s0 "[\t\n ]*")
-		       (s1 "[\t\n ]+"))
-		   (concat
-		    "[\t\n 　]*<div" s1 "align=right>" s0
-		    ;; 1. footer
-		    "\\("
-		    "（[^）]+）" s1 "-" s1
-		    ;; 2. month
-		    "\\([01]?[0-9]\\)"
-		    s0 "月" s0
-		    ;; 3. day
-		    "\\([0-3]?[0-9]\\)"
-		    s0 "日" s0
-		    ;; 4. hour
-		    "\\([012]?[0-9]\\)"
-		    s0 "時" s0
-		    ;; 5. minute
-		    "\\([0-5]?[0-9]\\)"
-		    s0 "分" s0 "更新"
-		    "\\)"
-		    s0 "</div>\\(?:" s0 "<br>\\)*")))
-	       nil t)))
-       (shimbun-header-set-date
-	header
-	(shimbun-make-date-string
-	 year
-	 (string-to-number (match-string 2))
-	 (string-to-number (match-string 3))
-	 (format "%02d:%02d"
-		 (string-to-number (match-string 4))
-		 (string-to-number (match-string 5)))))
-       (setq footer (match-string 1))
-       (delete-region (match-beginning 0) (match-end 0))
-       (if (shimbun-prefer-text-plain-internal shimbun)
-	   (insert "<br><br>"
-		   (make-string (max (- (symbol-value 'shimbun-fill-column)
-					(string-width footer))
-				     0)
-				? )
-		   footer "<br>")
-	 (insert "<br><br><div align=right>" footer "</div>")
-	 ;; Break long Japanese lines.
-	 (goto-char (point-min))
-	 (while (re-search-forward "<p[^>]*>\\|</p>\\|[、。）」]+" nil t)
-	   (unless (eolp)
-	     (insert "\n"))))))))
+      (replace-match "\n")
+      (goto-char (point-min)))
+    (when (re-search-forward "\
+\[\t\n ]*<tr>[\t\n ]*<td\\(?:[\t\n ]+[^>]+\\)*[\t\n ]+class=\
+\"[^\"]*Caption[^\"]*[\t\n ]+yjSt\"[^>]*>[^<]+</td>[\t\n ]*</tr>[\t\n ]*"
+			     nil t)
+      (replace-match "\n"))
+    t))
 
 (provide 'sb-yahoo)
 
