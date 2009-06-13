@@ -1,3 +1,7 @@
+2009-06-13  Naohiro Aota  <naota@elisp.net>
+
+	* w3m.el (w3m-fontify-anchors): Decode entities of name anchor.
+
 2009-05-25  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-cache-available-p): Analyze the cache-control header more

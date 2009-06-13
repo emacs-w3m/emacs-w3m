@@ -3492,8 +3492,9 @@ The database is kept in `w3m-entity-table'."
 	(w3m-add-text-properties start (point-max)
 				 (list 'w3m-name-anchor
 				       (cons
-					(w3m-url-transfer-encode-string
-					 id)
+					(w3m-decode-entities-string
+					 (w3m-url-transfer-encode-string
+					  id))
 					prenames)))))
     (goto-char (point-min))
     (while (re-search-forward "<a[ \t\r\f\n]+" nil t)
@@ -3558,15 +3559,17 @@ The database is kept in `w3m-entity-table'."
 	      (w3m-add-text-properties start (point-max)
 				       (list 'w3m-name-anchor2
 					     (cons
-					      (w3m-url-transfer-encode-string
-					       name)
+					      (w3m-decode-entities-string
+					       (w3m-url-transfer-encode-string
+						name))
 					      prenames))))))
 	 (name
 	  (w3m-add-text-properties start (point-max)
 				   (list 'w3m-name-anchor2
 					 (cons
-					  (w3m-url-transfer-encode-string
-					   name)
+					  (w3m-decode-entities-string
+					   (w3m-url-transfer-encode-string
+					    name))
 					  prenames)))))))
     (when w3m-icon-data
       (setq w3m-icon-data (cons (and (car w3m-icon-data)
