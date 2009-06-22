@@ -193,93 +193,30 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAADFBMVEUAAAB/gP+ttr7///8
 
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-tech-on)
 						    header)
-  (shimbun-strip-cr)
-  (goto-char (point-min))
-  (let (start)
-    (when (and (re-search-forward "\\(?:\
-<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"byline\"\
-\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>\
-\\|\
-<!-+[\t\n ]*本文\\(?:とページナビ\\)?[\t\n ]*-+>\
-\\|\
-<!-+[\t\n ]*▼記事本文[\t\n ]*-+>\\(?:[\t\n ]*<div[\t\n ]+[^>]+>\\)?\
-\\|\
-\\(?:<!-+[\t\n ]*▼記事本文[\t\n ]*-+>[\t\n ]*\\)?\
-<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"articletxt\"\
-\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>\
-\\)[\t\n ]*"
-				  nil t)
-	       (progn
-		 (setq start (match-end 0))
-		 (re-search-forward "\\(?:</p>\\)?\\([\t\n ]*\
-\\(?:（[\t\n ]*\\)*<a[\t\n ]+[^>]+>[\t\n ]*次の?ページへ[\t\n ]*</a>\
-\\|\
-\\(?:<[^!>][^>]*>\\)*[\t\n ]*\
-<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"pagination\"\
-\\|\
-\\(?:</div>\\)*[\t\n ]*<!-+[\t\n ]*▼お問い合わせ[\t\n ]*-+>\\)"
-				    nil t)))
-      (delete-region (match-beginning 1) (point-max))
+  (let ((author (when (and (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"author\"" nil t)
+			   (shimbun-end-of-tag "div" t))
+		  (match-string 2))))
+    (goto-char (point-min))
+    (when (and (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"kiji\"" nil t)
+	       (shimbun-end-of-tag "div" t))
+      (delete-region (match-end 1) (point-max))
       (insert "\n")
-      (delete-region (goto-char (point-min)) start)
-
-      ;; Remove ads.
-      (when (and (re-search-forward "<!-+[\t\n ]*キーワード広告[\t\n ]*-+>"
-				    nil t)
-		 (re-search-forward "<!-+[\t\n ]*\
-▼?\\(?:記事\\)?本文\\(?:とページナビ\\)?[\t\n ]*-+>[\t\n ]*"
-				    nil t))
-	(delete-region (point-min) (match-end 0)))
-
-      ;; Remove useless buttons.
+      (delete-region (point-min) (match-beginning 1))
+      ;; Remove repeated <p>s.
       (goto-char (point-min))
-      (while (re-search-forward "\\(<a[\t\n ]+[^>]+>\\)\
-\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\\(</a>\\)\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
-\\(<span>[\t\n ]*<small>[\t\n ]*[(（]?画像のクリックで拡大[)）]?[\t\n ]*\
-</small>[\t\n ]*</span>\\)"
-				nil t)
-	(delete-region (match-beginning 3) (match-end 3))
-	(delete-region (match-beginning 2) (match-end 2))
-	(delete-region (match-beginning 1) (match-end 1)))
-
+      (while (re-search-forward "<p>\\([\t\n ]*<p>\\)+" nil t)
+	(delete-region (match-beginning 1) (match-end 0)))
       ;; Remove useless tags.
       (goto-char (point-min))
       (while (and (re-search-forward "\
-<div[\t\n ]*\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"freeimage\""
-				     nil t)
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"bpimage_click\"" nil t)
 		  (shimbun-end-of-tag "div" t))
-	(save-restriction
-	  (narrow-to-region (match-beginning 0) (match-end 0))
-	  (delete-region (match-end 3) (match-end 0))
-	  (delete-region (match-beginning 0) (goto-char (match-beginning 3)))
-	  (when (and (looking-at "\
-<div[\t\n ]*\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"[LS]\"")
-		     (shimbun-end-of-tag "div" t))
-	  (delete-region (match-end 3) (match-end 0))
-	  (delete-region (match-beginning 0) (match-beginning 3)))))
-      (goto-char (point-min))
-      (while (re-search-forward "[\t\n ]*\
-\\(?:\\(?:<div[\t\n ]+[^>]+>[\t\n ]*</div>\\|<![^>]+>\\)[\t\n ]*\\)+[\t\n ]*"
-				nil t)
 	(replace-match "\n"))
-
-      ;; Remove alignment spec from images.
-      (goto-char (point-min))
-      (while (re-search-forward "\
-\\(<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*align=\"\\)[^\"]+\\(\"[^>]*>[\t\n ]*\
-<img[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*src=\"\\)"
-				nil t)
-	(replace-match "\\1left\\2"))
-
-      ;; Insert line-break between text and image.
-      (goto-char (point-min))
-      (while (re-search-forward "\\(\\cj\\)[\t\n ]*\
-\\(<a[\t\n ]+[^>]+>[\t\n ]*<img[\t\n ]+[^>]+>[\t\n ]*</a>\
-\\|<img[\t\n ]+[^>]+>\\)[\t\n ]*"
-				nil t)
-	(replace-match (if (save-match-data (looking-at "<[\t\n ]*[^/]"))
-			   "\\1<br>\n\\2\n"
-			 "\\1<br>\n\\2<br>\n")))
+      (when author
+	(goto-char (point-min))
+	(insert "<p>" author "</p>\n"))
       t)))
 
 (luna-define-method shimbun-footer :around ((shimbun shimbun-tech-on)

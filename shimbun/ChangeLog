@@ -1,3 +1,7 @@
+2009-06-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-tech-on.el (shimbun-clear-contents): Rewrite.
+
 2009-06-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-yahoo.el (shimbun-clear-contents): New override.
