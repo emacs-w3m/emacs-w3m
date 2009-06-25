@@ -1,3 +1,8 @@
+2009-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nytimes.el (shimbun-nytimes-clear-contents): Fix regexp matching
+	content start.
+
 2009-06-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-tech-on.el (shimbun-clear-contents): Rewrite.

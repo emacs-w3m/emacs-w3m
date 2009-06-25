@@ -255,7 +255,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
   (let ((start "\
 \\(?:\
 \\(?:<p[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"post-author\"\
-\\|\\(<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"post-content\"\\)\\)\
+\\|\\(<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\
+\"\\(?:entry\\|post\\)-content\"\\)\\)\
 \\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>\
 \\|\
 <NYT_\\(?:BYLINE\\|TEXT\\)\\(?:[\t\n ]*\\|[\t\n ]+[^>]+\\)>\
