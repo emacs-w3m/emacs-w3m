@@ -350,6 +350,8 @@ An argument of nil means kill the current buffer."
 (defun w3m-current-title ()
   "Return the title of the current buffer."
   (cond
+   (w3m-current-process
+     "<retrieving>")
    ((and (stringp w3m-current-title)
 	 (not (string= w3m-current-title "<no-title>")))
     w3m-current-title)
