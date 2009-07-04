@@ -266,6 +266,9 @@ as an initial string."
 (defvar w3m-search-engine-history nil
   "History variable used by `w3m-search' for prompting a search engine.")
 
+(defvar w3m-search-thing-at-point-arg 'word
+  "Argument for `thing-at-point' used in `w3m-search-read-query'")
+
 (defun w3m-search-escape-query-string (str &optional coding)
   (mapconcat
    (lambda (s)
@@ -284,7 +287,7 @@ PROMPT-WITH-DEFAULT instead of string PROMPT."
 			 (listp (get-text-property (point-at-bol) 'face))
 			 (memq 'w3m-header-line-location-title
 			       (get-text-property (point-at-bol) 'face)))
-	      (thing-at-point 'word))))
+	      (thing-at-point w3m-search-thing-at-point-arg))))
 	initial)
     (when default
       (set-text-properties 0 (length default) nil default)

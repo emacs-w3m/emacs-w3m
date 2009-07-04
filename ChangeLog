@@ -1,5 +1,8 @@
 2009-07-04  Naohiro Aota  <naota@elisp.net>
 
+	* w3m-search.el (w3m-search-thing-at-point-arg): New variable.
+	(w3m-search-read-query): Use it.
+
 	* w3m-util.el (w3m-current-title): Set title to "<retrieving>>" when
 	w3m is retrieving a page.
 
