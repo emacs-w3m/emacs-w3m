@@ -6,6 +6,21 @@
 	* w3m-util.el (w3m-current-title): Set title to "<retrieving>>" when
 	w3m is retrieving a page.
 
+2009-06-13  Kevin Ryde  <user42@zip.com.au>
+
+	* w3m.el (w3m-view-recenter): Only nil,t,integer, not a cons.
+	(w3m-search-name-anchor, w3m-view-this-url-1): No arg to w3m-recenter.
+	(w3m-next-anchor, w3m-previous-anchor, w3m-next-form,
+	w3m-previous-form, w3m-next-image, w3m-previous-image): Don't
+	recenter, leave recentering just for following a link, not Tab etc
+	within the buffer.
+	(w3m-recenter): Remove NAME arg, believe don't need to differentiate
+	URLs with an anchor or not since with no anchor `point' is at the
+	start of the buffer and can't be recentered anyway.
+	Use C-u style "(recenter '(4))" for the `t' middle-of-screen case.
+	No need for code to avoid redisplay, `recenter' doesn't redisplay in
+	the integer or C-u cases.
+
 2009-06-13  Naohiro Aota  <naota@elisp.net>
 
 	* w3m.el (w3m-fontify-anchors): Decode entities of name anchor.
