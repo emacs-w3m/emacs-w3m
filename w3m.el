@@ -2991,6 +2991,7 @@ is specified by `w3m-arrived-file'."
 (add-hook 'kill-emacs-hook 'w3m-cookie-shutdown)
 (add-hook 'w3m-arrived-shutdown-functions 'w3m-session-automatic-save)
 (add-hook 'w3m-arrived-shutdown-functions 'w3m-session-crash-recovery-remove)
+(add-hook 'w3m-arrived-shutdown-functions 'w3m-cleanup-temp-files)
 
 ;;; Generic macros and inline functions:
 (defun w3m-attributes (url &optional no-cache handler)
@@ -10517,6 +10518,16 @@ FROM-COMMAND is defined in `w3m-minor-mode-map' with the same key in
 		(not w3m-minor-mode)))
     (run-hooks 'w3m-minor-mode-hook)))
 
+(defcustom w3m-do-cleanup-temp-files nil
+  "*Whether to clean up temporary files when emacs-w3m shutdown."
+  :group 'w3m
+  :type 'boolean)
+  
+(defun w3m-cleanup-temp-files ()
+  (when w3m-do-cleanup-temp-files
+    (dolist (f (directory-files w3m-profile-directory))
+      (when (string-match "^w3m\\(el\\|src\\)" f)
+	(delete-file (expand-file-name f w3m-profile-directory))))))
 
 (provide 'w3m)
 
