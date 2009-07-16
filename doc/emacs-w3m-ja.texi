@@ -3275,6 +3275,11 @@ String used for the User-Agent field.  See also
 @vindex w3m-new-session-in-background
 Say whether not to focus on a new tab or a new session in target.
 It influences only when a new emacs-w3m buffer is created.
+
+@item w3m-do-cleanup-temp-files
+@vindex w3m-do-cleanup-temp-files
+非@code{nil} ならば、 emacs-w3m は自動的に削除しそこなった一時ファイルを
+削除します。 デフォルトは @code{nil} です。
 @end table
 
 @node Image Variables
@@ -3519,6 +3524,11 @@ it defaults to @code{w3m-default-coding-system}.
 Non-@code{nil} means that the word at point is used as an initial
 string.  If @code{transient-mark-mode}, this option is ignored and the
 region is used as an initial string.  The default is @code{t}.
+
+@item w3m-search-thing-at-point-arg
+@vindex w3m-search-thing-at-point-arg
+`w3m-search-read-query' で使われる `thing-at-point' への引数。デフォルト
+は @code{word}.
 @end table
 
 @node Weather Variables
