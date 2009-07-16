@@ -1,3 +1,9 @@
+2009-07-17  Naohiro Aota  <naota@elisp.net>
+
+	* w3m.el (w3m-about-retrieve): When type is `nil', decode cached
+	contents to display source of 404 page.  Reported by Dan Jacobson
+	<jidanni@jidanni.org>.
+
 2009-07-04  Naohiro Aota  <naota@elisp.net>
 
 	* w3m-search.el (w3m-search-thing-at-point-arg): New variable.
