@@ -2915,9 +2915,6 @@ those file names to the second element of this variable.  For example:
       '(nil . "\\.\\(?:[sx]?html?\\|dvi\\|ps\\|pdf\\)\\'"))
 @end lisp
 
-See also @code{w3m-use-doc-view-mode}, which you will need to modify for
-such a case.
-
 It is effective only when the @code{w3m-local-find-file-function}
 variable is set properly.
 

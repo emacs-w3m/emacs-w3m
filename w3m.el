@@ -1782,9 +1782,6 @@ variable.  For example:
 \(setq w3m-local-find-file-regexps
       '(nil . \"\\\\.\\\\(?:[sx]?html?\\\\|dvi\\\\|ps\\\\|pdf\\\\)\\\\'\"))
 
-See also `w3m-use-doc-view-mode', which you will need to modify for
-such a case.
-
 It is effective only when the `w3m-local-find-file-function' variable
 is set properly."
   :group 'w3m
