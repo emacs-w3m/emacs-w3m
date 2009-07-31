@@ -57,7 +57,7 @@ Can be 'flat', 'thread', or 'nested'.")
 (defvar shimbun-slashdot-regexp-section-id-subject
   "<\\s-*h3\\s-+class=\"story\"[^\0]*?<a [^>]*?href=\"\
 /*\\([a-zA-Z]+\\)?\\.?slashdot.org/\\([a-z]+?\\)/\\(.+\\)/\\(.+?\\)\
-\".*?>\\(.*?\\)</a>")
+\"[^>]*class=.datitle.[^>]*>\\(.*?\\)</a>")
 
 (defvar shimbun-slashdot-regexp-author-time
   "Posted[\t \n]+by[^a-zA-Z]*\\(.*\\)[^\0]*?on\\s-+[a-zA-Z]+\\s-+\
