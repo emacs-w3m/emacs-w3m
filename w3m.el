@@ -3457,8 +3457,9 @@ The database is kept in `w3m-entity-table'."
   ;; is replaced from "&" and embedded in the w3m's halfdump should be
   ;; restored into "&" some time.
   (let ((start 0) (buf))
-    (while (string-match "&amp;" str start)
-      (setq buf (cons "&" (cons (substring str start (match-beginning 0)) buf))
+    (while (string-match "\\(&amp;\\)\\|\\([\t\r\f\n]+\\)" str start)
+      (setq buf (cons (if (match-beginning 1) "&" " ")
+		      (cons (substring str start (match-beginning 0)) buf))
 	    start (match-end 0)))
     (apply (function concat)
 	   (nreverse (cons (substring str start) buf)))))
