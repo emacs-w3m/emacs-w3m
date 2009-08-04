@@ -130,9 +130,11 @@
 			  (setq content (shimbun-rss-node-text
 					 atom-ns contentsym entry))
 			;; non-escaped, but  "<>& to &xxx;
-			(setq content (shimbun-decode-entities-string
-				       (shimbun-rss-node-text
-					    atom-ns contentsym entry))))))))
+			(let ((text (shimbun-rss-node-text
+				     atom-ns contentsym entry)))
+			  (when text
+			    (setq content (shimbun-decode-entities-string
+					   text)))))))))
 		(when (and id content)
 		  (content-hash-set-item content-hash id content))))))))))
 

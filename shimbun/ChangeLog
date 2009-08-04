@@ -1,3 +1,8 @@
+2009-08-04  David Engster  <dengste@eml.cc>
+
+	* sb-atom-hash.el (content-hash-update-items-impl): Deal with missing
+	content.
+
 2009-07-31  David Engster  <dengste@eml.cc>
 
 	* sb-slashdot.el (shimbun-slashdot-regexp-section-id-subject): Adapt to
