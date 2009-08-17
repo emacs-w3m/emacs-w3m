@@ -30,15 +30,15 @@
 (defvar shimbun-debugmagazin-de-group-url-regexp
   '(("frontpage" "http://feeds.feedburner.com/DebugAllInOne"
      ".*/\\(.*\\)\\.html")
-    ("musik" "http://www.de-bug.de/musik/news.xml"
+    ("musik" "http://feeds.feedburner.com/DebugMusik"
      "musik/\\(.*\\)\\.html")
-    ("reviews" "http://www.de-bug.de/reviews/reviews.xml"
+    ("reviews" "http://feeds.feedburner.com/DebugReviews"
      "reviews/\\(.*\\)\\.html")
-    ("magazin" "http://www.de-bug.de/mag/texte.xml"
-     "mag/\\(.*\\)\\.html")
+    ("magazin" "http://feeds.feedburner.com/DebugMagazin"
+     ".*/\\(.*\\)\\.html")
     ("medien" "http://feeds.feedburner.com/DebugMedien"
      ".*/\\(.*\\)\\.html")
-    ("podcast" "http://feeds.feedburner.com/DebugPod"
+    ("podcast" "http://de-bug.de/pod/feed"
      ".*/\\(.*\\)\\.html")
     ("musiktechnik" "http://feeds.feedburner.com/de-bug/SSgQ"
      ".*/\\(.*\\)\\.html")
@@ -59,7 +59,7 @@
   "<div class=\"post\"\\( id=\"post-[0-9]+\"\\)?>")
 
 (defvar shimbun-debugmagazin-de-content-end
-  "\\(?:You can start editing here\\|<h3 id=\"comments\">\\|DIE MASSE MEINT\\)")
+  "\\(?:<!-- Comment Loop -->\\|<!-- Comment Form -->\\|<div id=\"respond\">\\)")
 
 (defvar shimbun-debugmagazin-de-x-face-alist
   '(("default" . "\

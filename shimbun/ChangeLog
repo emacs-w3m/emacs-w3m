@@ -1,3 +1,9 @@
+2009-08-14  David Engster  <dengste@eml.cc>
+
+	* sb-debugmagazin-de.el (shimbun-debugmagazin-de-group-url-regexp):
+	Updated feeds.
+	(shimbun-debugmagazin-de-content-end): Updated to new style.
+
 2009-08-04  David Engster  <dengste@eml.cc>
 
 	* sb-atom-hash.el (content-hash-update-items-impl): Deal with missing
