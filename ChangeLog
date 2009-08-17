@@ -1,3 +1,21 @@
+2009-08-17  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-puny-utf-16be): New variable.
+	(w3m-url-readable-string): Call `w3m-puny-decode-url'.
+	(w3m-url-transfer-encode-string): Call `w3m-puny-encode-url'.
+	(w3m-header-line-insert): Call `w3m-puny-decode-url'.
+
+	* w3m-util.el (top): Add the variable definition of `w3m-puny-utf-16be'
+	to avoid byte-compile warnings.
+	(w3m-puny-code-regex, w3m-puny-code-nonascii, w3m-puny-base)
+	(w3m-puny-tmin, w3m-puny-tmax, w3m-puny-damp, w3m-puny-skew)
+	(w3m-puny-initial-bias, w3m-puny-initial-n, w3m-puny-delimiter): New
+	constants.
+	(w3m-puny-adapt, w3m-puny-decode-digit, w3m-puny-encode-digit)
+	(w3m-puny-decode1, w3m-puny-decode, w3m-puny-decode-url)
+	(w3m-puny-encode1, w3m-puny-encode, w3m-puny-encode-url): New
+	functions.
+
 2009-08-04  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-decode-anchor-string): Convert contol-characters to

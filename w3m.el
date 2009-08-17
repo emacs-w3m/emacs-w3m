@@ -1890,6 +1890,18 @@ timestamp with the `-t' option."
   :group 'w3m
   :type '(string :size 0))
 
+(defcustom w3m-puny-utf-16be
+  (cond
+   ((w3m-find-coding-system 'utf-16-be-no-signature)
+    'utf-16-be-no-signature)
+   ((w3m-find-coding-system 'utf-16be)
+    'utf-16be)
+   (t nil))
+  "*Coding system for PUNY coding. if nil, don't use PUNY code."
+  :group 'w3m
+  :type '(radio (coding-system :tag "UTF-16BE without BOM")
+		(const "Don't use" nil)))
+
 (defcustom w3m-uri-replace-alist
   '(("\\`gg:" w3m-search-uri-replace "google")
     ("\\`ggg:" w3m-search-uri-replace "google groups")
@@ -3315,6 +3327,7 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 If `w3m-show-decoded-url' has a non-nil value, it is referred to to
 decide a decoding scheme."
   (when (stringp url)
+    (setq url (w3m-puny-decode-url url))
     (let ((rule
 	   (cond ((string-match "[^\000-\177]" url)
 		  ;; It looks not to have been encoded.
@@ -3347,6 +3360,7 @@ This function is designed for conversion for safe transmission of URL,
 i.e., it handles only non-ASCII characters that can not be transmitted
 safely through the network.  For the other general purpose, you should
 use `w3m-url-encode-string' instead."
+  (setq url (w3m-puny-encode-url url))
   (let ((start 0)
 	(buf))
     (while (string-match "[^\x21-\x7e]+" url start)
@@ -10359,10 +10373,10 @@ This variable is effective only when `w3m-use-tab' is nil."
 					   (t "")))))
     (w3m-add-face-property (point-min) (point) 'w3m-header-line-location-title)
     (let ((start (point)))
-      (insert (if (string-match "[^\000-\177]" w3m-current-url)
-		  w3m-current-url
-		(w3m-url-decode-string w3m-current-url
-				       w3m-current-coding-system)))
+      (insert (w3m-puny-decode-url
+	       (if (string-match "[^\000-\177]" w3m-current-url)
+		   w3m-current-url
+		 (w3m-url-decode-string w3m-current-url w3m-current-coding-system))))
       (w3m-add-face-property start (point) 'w3m-header-line-location-content)
       (w3m-add-text-properties start (point)
 			       `(mouse-face highlight
