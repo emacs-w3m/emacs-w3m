@@ -1304,12 +1304,13 @@ get to be the alias to `visited-file-modtime'."
     (error input)))
 
 (defun w3m-puny-decode-url (url)
-  (if (and w3m-puny-utf-16be
-	   (string-match w3m-puny-code-regex url))
-      (concat (substring url 0 (match-beginning 0))
-	      (w3m-puny-decode (substring url (match-beginning 0) (match-end 0)))
-	      (substring url (match-end 0)))
-    url))
+  (when w3m-puny-utf-16be
+    (while (string-match w3m-puny-code-regex url)
+      (setq url
+	    (concat (substring url 0 (match-beginning 0))
+		    (w3m-puny-decode (substring url (match-beginning 0) (match-end 0)))
+		    (substring url (match-end 0))))))
+  url)
 
 (defun w3m-puny-encode1 (input)
   (let* ((len (length input))
