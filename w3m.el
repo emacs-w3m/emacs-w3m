@@ -4499,6 +4499,8 @@ if it has no scheme part."
 		(not (setq initial (w3m-active-region-or-url-at-point t)))
 		(string-match "[^\000-\177]" initial))
       (setq initial (w3m-url-decode-string initial w3m-current-coding-system)))
+    (when initial
+      (setq initial (w3m-puny-decode-url initial)))
     (if (and quick-start
 	     default
 	     (not initial))

@@ -4,6 +4,7 @@
 	(w3m-url-readable-string): Call `w3m-puny-decode-url'.
 	(w3m-url-transfer-encode-string): Call `w3m-puny-encode-url'.
 	(w3m-header-line-insert): Call `w3m-puny-decode-url'.
+	(w3m-input-url): Call `w3m-puny-decode-url' for initial URL.
 
 	* w3m-util.el (top): Add the variable definition of `w3m-puny-utf-16be'
 	to avoid byte-compile warnings.
