@@ -1,3 +1,9 @@
+2009-08-18  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-util.el (w3m-puny-decode-url): Decode the part of hostname only.
+	Add doc-strings.
+	(w3m-puny-encode-url): Add doc-strings.
+
 2009-08-17  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-puny-utf-16be): New variable.

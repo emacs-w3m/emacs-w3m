@@ -1304,13 +1304,23 @@ get to be the alias to `visited-file-modtime'."
     (error input)))
 
 (defun w3m-puny-decode-url (url)
-  (when w3m-puny-utf-16be
-    (while (string-match w3m-puny-code-regex url)
-      (setq url
-	    (concat (substring url 0 (match-beginning 0))
-		    (w3m-puny-decode (substring url (match-beginning 0) (match-end 0)))
-		    (substring url (match-end 0))))))
-  url)
+  "Decode URL from punycode."
+  (let ((case-fold-search t)
+	prot host after)
+    (when (and w3m-puny-utf-16be
+	       (string-match w3m-puny-code-regex url))
+      (when (string-match "\\`[^:/]+://\\([^/]+\\)" url)
+	(setq prot (substring url 0 (match-beginning 1)))
+	(setq host (substring url (match-beginning 1) (match-end 1)))
+	(setq after (substring url (match-end 0)))
+	(while (string-match w3m-puny-code-regex host)
+	  (setq host
+		(concat (substring host 0 (match-beginning 0))
+			(w3m-puny-decode
+			 (substring host (match-beginning 0) (match-end 0)))
+			(substring host (match-end 0)))))
+	(setq url (concat prot host after))))
+    url))
 
 (defun w3m-puny-encode1 (input)
   (let* ((len (length input))
@@ -1379,6 +1389,7 @@ get to be the alias to `visited-file-modtime'."
     (error input)))
 
 (defun w3m-puny-encode-url (url)
+  "Encode URL to punycode."
   (if (and w3m-puny-utf-16be
 	   (not (w3m-url-local-p url))
 	   (string-match w3m-puny-code-nonascii url))
