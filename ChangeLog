@@ -1,3 +1,8 @@
+2009-08-19  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-use-symbol): Set nil with emacs-23 or later.
+	cf. [emacs-w3m:11002].
+
 2009-08-18  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-util.el (w3m-puny-decode-url): Decode the part of hostname only.

@@ -1359,7 +1359,10 @@ See also `w3m-filter-rules'."
   (when (and (featurep 'mule)
 	     (eq w3m-type 'w3m-m17n))
     (if (eq w3m-output-coding-system 'utf-8)
-	(and (w3m-mule-unicode-p) 'w3m-device-on-window-system-p)
+	(and (w3m-mule-unicode-p)
+	     (or (featurep 'xemacs)
+		 (< emacs-major-version 23))
+	     'w3m-device-on-window-system-p)
       t))
   "*Non-nil means replace symbols that the <_SYMBOL> tags lead into.
 It is meaningful only when the w3m-m17n command is used and (X)Emacs
