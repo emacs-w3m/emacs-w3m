@@ -532,18 +532,12 @@ terminal.)"
    ((not (featurep 'mule)) 'iso-8859-1)
    ((eq w3m-type 'w3mmee) 'ctext)
    ((eq w3m-type 'w3m-m17n)
-    (cond
-     ((and (equal "Japanese" w3m-language)
-	   (featurep 'w3m-ems)
-	   (not (featurep 'un-define))
-	   (fboundp 'utf-translate-cjk-mode))
-      'utf-8)
-     ((equal "Japanese" w3m-language)
-      'iso-2022-7bit-ss2)
-     ((w3m-find-coding-system 'utf-8)
-      'utf-8)
-     (t
-      'iso-2022-7bit-ss2)))
+    (if (and (w3m-find-coding-system 'utf-8)
+	     (not (and (equal "Japanese" w3m-language)
+		       (featurep 'w3m-ems)
+		       (= emacs-major-version 21))))
+	'utf-8
+      'iso-2022-7bit-ss2))
    (w3m-accept-japanese-characters 'w3m-euc-japan)
    (t 'w3m-iso-latin-1))
   "*Coding system used when reading from w3m processes."
