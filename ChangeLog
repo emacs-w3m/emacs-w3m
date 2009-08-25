@@ -1,3 +1,8 @@
+2009-08-25  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-toggle-inline-images-internal): Do not display image, if
+	its url is local and current url is not local.
+
 2009-08-24  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
 
 	* w3m.el (w3m-output-coding-system): Use `utf-8' except for emacs-21

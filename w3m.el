@@ -3824,6 +3824,8 @@ If URL is specified, only the image with URL is toggled."
 		(when (and (w3m-url-valid iurl)
 			   (or (null safe-regexp)
 			       (string-match safe-regexp iurl))
+			   (not (and (not (w3m-url-local-p w3m-current-url))
+				     (w3m-url-local-p iurl)))
 			   (or (not w3m-current-ssl)
 			       (string-match "\\`\\(?:ht\\|f\\)tps://" iurl)
 			       allow-non-secure-images
