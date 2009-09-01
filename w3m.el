@@ -1098,6 +1098,12 @@ when we implement the mailcap parser to set `w3m-content-type-alist'.")
 			  (eq 'w3m-browse-url
 			      (symbol-value 'browse-url-browser-function)))
 		      (cond
+		       ((and (memq system-type '(windows-nt ms-dos cygwin))
+			     (fboundp 'browse-url-default-windows-browser))
+			'browse-url-default-windows-browser)
+		       ((and (memq system-type '(darwin))
+			     (fboundp 'browse-url-default-macosx-browser))
+			'browse-url-default-macosx-browser)
 		       ((fboundp 'browse-url-default-browser)
 			'browse-url-default-browser)
 		       ((fboundp 'browse-url-netscape)

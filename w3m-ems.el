@@ -366,7 +366,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 
 ;;; Form buttons
 (defface w3m-form-button
-  '((((type x w32 mac) (class color))
+  '((((type x w32 mac ns) (class color))
      :background "lightgrey" :foreground "black"
      :box (:line-width 2 :style released-button))
     (((class color) (background light)) (:foreground "cyan" :underline t))
@@ -378,7 +378,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 (put 'w3m-form-button-face 'face-alias 'w3m-form-button)
 
 (defface w3m-form-button-mouse
-  '((((type x w32 mac) (class color))
+  '((((type x w32 mac ns) (class color))
      :background "DarkSeaGreen1" :foreground "black"
      :box (:line-width 2 :style released-button))
     (((class color) (background light)) (:foreground "cyan" :underline t))
@@ -390,7 +390,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 (put 'w3m-form-button-mouse-face 'face-alias 'w3m-form-button-mouse)
 
 (defface w3m-form-button-pressed
-  '((((type x w32 mac) (class color))
+  '((((type x w32 mac ns) (class color))
      :background "lightgrey" :foreground "black"
      :box (:line-width 2 :style pressed-button))
     (((class color) (background light)) (:foreground "cyan" :underline t))
@@ -671,7 +671,7 @@ otherwise works in all the emacs-w3m buffers."
   :type '(integer :size 0))
 
 (defface w3m-tab-unselected
-  '((((type x w32 mac) (class color))
+  '((((type x w32 mac ns) (class color))
      :background "Gray70" :foreground "Gray20"
      :box (:line-width -1 :style released-button))
     (((class color))
@@ -682,7 +682,7 @@ otherwise works in all the emacs-w3m buffers."
 (put 'w3m-tab-unselected-face 'face-alias 'w3m-tab-unselected)
 
 (defface w3m-tab-unselected-retrieving
-  '((((type x w32 mac) (class color))
+  '((((type x w32 mac ns) (class color))
      :background "Gray70" :foreground "OrangeRed"
      :box (:line-width -1 :style released-button))
     (((class color))
@@ -694,7 +694,7 @@ otherwise works in all the emacs-w3m buffers."
      'face-alias 'w3m-tab-unselected-retrieving)
 
 (defface w3m-tab-unselected-unseen
-  '((((type x w32 mac) (class color))
+  '((((type x w32 mac ns) (class color))
      :background "Gray70" :foreground "Gray20"
      :box (:line-width -1 :style released-button))
     (((class color))
@@ -705,7 +705,7 @@ otherwise works in all the emacs-w3m buffers."
 (put 'w3m-tab-unselected-unseen-face 'face-alias 'w3m-tab-unselected-unseen)
 
 (defface w3m-tab-selected
-  '((((type x w32 mac) (class color))
+  '((((type x w32 mac ns) (class color))
      :background "Gray90" :foreground "black"
      :box (:line-width -1 :style released-button))
     (((class color))
@@ -717,7 +717,7 @@ otherwise works in all the emacs-w3m buffers."
 (put 'w3m-tab-selected-face 'face-alias 'w3m-tab-selected)
 
 (defface w3m-tab-selected-retrieving
-  '((((type x w32 mac) (class color))
+  '((((type x w32 mac ns) (class color))
      :background "Gray90" :foreground "red"
      :box (:line-width -1 :style released-button))
     (((class color))
@@ -730,7 +730,7 @@ otherwise works in all the emacs-w3m buffers."
      'face-alias 'w3m-tab-selected-retrieving)
 
 (defface w3m-tab-background
-  '((((type x w32 mac) (class color))
+  '((((type x w32 mac ns) (class color))
      :background "LightSteelBlue" :foreground "black")
     (((class color))
      (:background "white" :foreground "black")))
@@ -740,7 +740,7 @@ otherwise works in all the emacs-w3m buffers."
 (put 'w3m-tab-background-face 'face-alias 'w3m-tab-background)
 
 (defface w3m-tab-selected-background
-  '((((type x w32 mac) (class color))
+  '((((type x w32 mac ns) (class color))
      :background "LightSteelBlue" :foreground "black")
     (((class color))
      (:background "white" :foreground "black")))
@@ -751,7 +751,7 @@ otherwise works in all the emacs-w3m buffers."
      'face-alias 'w3m-tab-selected-background)
 
 (defface w3m-tab-mouse
-  '((((type x w32 mac) (class color))
+  '((((type x w32 mac ns) (class color))
      :background "Gray75" :foreground "white"
      :box (:line-width -1 :style released-button)))
   "*Face used to highlight tabs under the mouse."

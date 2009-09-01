@@ -1,3 +1,16 @@
+2009-09-01  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-content-type-alist): Support
+	`browse-url-default-windows|macosx-browser'. Thanks to Leo.
+	Cf. [emacs-w3m:11035].
+
+	* w3m-ems.el (w3m-form-button, w3m-form-button-mouse)
+	(w3m-form-button-pressed, w3m-tab-unselected)
+	(w3m-tab-unselected-retrieving, w3m-tab-unselected-unseen)
+	(w3m-tab-selected, w3m-tab-selected-retrieving, w3m-tab-background)
+	(w3m-tab-selected-background, w3m-tab-mouse): Add type ns. Thanks to
+	Leo. Cf. [emacs-w3m:11034].
+
 2009-08-25  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-toggle-inline-images-internal): Do not display image, if
