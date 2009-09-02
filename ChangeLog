@@ -1,3 +1,9 @@
+2009-09-02  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-image.el (w3m-imagick-convert-program-available-p): If someone
+	set `w3m-imagick-convert-program' to nil before load emacs-w3m, do not
+	show warning message for ImageMagick's `convert'.
+
 2009-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-mail.el (w3m-mail-embed-base-url, w3m-mail-compose-with-mml)
