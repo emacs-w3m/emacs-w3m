@@ -24,6 +24,7 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'static))
 (require 'sb-rss)
 (require 'sb-multi)
 
@@ -140,21 +141,22 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAADFBMVEUAAAB/gP+ttr7///8
 					 (read-passwd "[Tech-On!] Password: "))
 				     (quit nil)))))
 		 (not (string-match "\\`[\t ]*\\'" pass)))
-	(let ((default-enable-multibyte-characters t))
-	  (with-temp-buffer
-	    (shimbun-retrieve-url
-	     (concat "https://techon.nikkeibp.co.jp/login/login.jsp"
-		     "?MODE=LOGIN_EXEC"
-		     "&USERID=" user
-		     "&PASSWORD=" pass)
-	     t)
-	    (goto-char (point-min))
-	    (setq shimbun-tech-on-logged-in
-		  (not (re-search-forward "\
+	(with-temp-buffer
+	  (static-unless (featurep 'xemacs)
+	    (set-buffer-multibyte t))
+	  (shimbun-retrieve-url
+	   (concat "https://techon.nikkeibp.co.jp/login/login.jsp"
+		   "?MODE=LOGIN_EXEC"
+		   "&USERID=" user
+		   "&PASSWORD=" pass)
+	   t)
+	  (goto-char (point-min))
+	  (setq shimbun-tech-on-logged-in
+		(not (re-search-forward "\
 \\(?:ユーザー名\\|パスワード\\).*に誤りがあります。\
 \\|会員登録が行われていません。\
 \\|ACTION=\"/login/login\\.jsp\\?MODE=LOGIN_EXEC\""
-					  nil t)))))
+					nil t))))
 	(if shimbun-tech-on-logged-in
 	    (when (interactive-p)
 	      (message "[Tech-On!] Logged in"))

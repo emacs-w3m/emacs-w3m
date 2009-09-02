@@ -41,6 +41,7 @@
 ;;; Code:
 
 (eval-when-compile (require 'cl))
+(eval-when-compile (require 'static))
 
 (require 'nnoo)
 (require 'nnheader)
@@ -906,13 +907,13 @@ shimbun group."
 	 server groups group)
      (unless (eq major-mode 'gnus-group-mode)
        (error "Command invoked outside of a Gnus group buffer"))
-     (setq server
-	   (let ((default-enable-multibyte-characters nil))
-	     (completing-read
-	      "Shimbun server address [Hit TAB to see candidates]: "
-	      alist nil t
-	      (car (delete "" nnshimbun-server-history))
-	      'nnshimbun-server-history)))
+     (setq server (completing-read
+		   "Shimbun server address [Hit TAB to see candidates]: "
+		   alist nil t
+		   (car (delete "" nnshimbun-server-history))
+		   'nnshimbun-server-history))
+     (static-unless (featurep 'xemacs)
+       (setq server (string-as-unibyte server)))
      (if (assoc server alist)
 	 (let ((shimbun (shimbun-open server)))
 	   (setq group (completing-read

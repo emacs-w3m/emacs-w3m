@@ -1,3 +1,11 @@
+2009-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnshimbun.el (gnus-group-make-shimbun-group): Don't use
+	default-enable-multibyte-characters that is obsolete in Emacs 23.2.
+	* sb-tech-on.el (shimbun-tech-on-login): Ditto.
+	* shimbun.el (shimbun-header-insert, shimbun-mime-encode-string)
+	(shimbun-message): Ditto.
+
 2009-08-14  David Engster  <dengste@eml.cc>
 
 	* sb-debugmagazin-de.el (shimbun-debugmagazin-de-group-url-regexp):

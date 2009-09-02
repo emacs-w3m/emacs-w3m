@@ -760,13 +760,14 @@ you want to use no database."
   (let ((from (shimbun-header-from header))
 	(refs (shimbun-header-references header))
 	(reply-to (shimbun-reply-to shimbun))
-	x-face
-	;; Make sure the temp buffer's multibyteness is true.  It is
-	;; needed to make `encode-mime-charset-string' (which is
-	;; employed by `eword-encode-string') encode non-ascii text.
-	(default-enable-multibyte-characters t))
+	x-face)
     (insert
      (with-temp-buffer
+       ;; Make sure the temp buffer's multibyteness is true.  It is
+       ;; needed to make `encode-mime-charset-string' (which is
+       ;; employed by `eword-encode-string') encode non-ascii text.
+       (static-unless (featurep 'xemacs)
+	 (set-buffer-multibyte t))
        (insert "Subject: " (or (eword-encode-string
 				(shimbun-header-subject header t))
 			       "(none)")
@@ -1259,16 +1260,17 @@ that the content type is text/html, otherwise text/plain."
 (defun shimbun-mime-encode-string (string)
   (condition-case nil
       (save-match-data
-	;; Make sure the temp buffer's multibyteness is true.  It is
-	;; needed to make `encode-mime-charset-string' (which is
-	;; employed by `eword-encode-string') encode non-ascii text.
-	(let ((default-enable-multibyte-characters t))
-	  (with-temp-buffer
-	    (mapconcat
-	     #'identity
-	     (split-string (or (eword-encode-string
-				(shimbun-decode-entities-string string)) ""))
-	     " "))))
+	(with-temp-buffer
+	  ;; Make sure the temp buffer's multibyteness is true.  It is
+	  ;; needed to make `encode-mime-charset-string' (which is
+	  ;; employed by `eword-encode-string') encode non-ascii text.
+	  (static-unless (featurep 'xemacs)
+	    (set-buffer-multibyte t))
+	  (mapconcat
+	   #'identity
+	   (split-string (or (eword-encode-string
+			      (shimbun-decode-entities-string string)) ""))
+	   " ")))
     (error string)))
 
 (defun shimbun-make-date-string (year month day &optional time timezone)
@@ -1491,9 +1493,10 @@ Use ## to put a single # into the output.  If `shimbun-verbose' is nil,
 it will run silently.  The `shimbun-message-enable-logging' variable
 controls whether this function should preserve a message in the
 *Messages* buffer."
-  (let ((default-enable-multibyte-characters t)
-	specifier)
+  (let (specifier)
     (with-temp-buffer
+      (static-unless (featurep 'xemacs)
+	(set-buffer-multibyte t))
       (insert fmt)
       (goto-char (point-min))
       (while (search-forward "#" nil t)
