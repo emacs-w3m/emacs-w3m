@@ -1,3 +1,9 @@
+2009-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-mail.el (w3m-mail-embed-base-url, w3m-mail-compose-with-mml)
+	(w3m-mail-compose-with-vm): Don't use
+	default-enable-multibyte-characters that is obsolete in Emacs 23.2.
+
 2009-09-01  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-content-type-alist): Support
