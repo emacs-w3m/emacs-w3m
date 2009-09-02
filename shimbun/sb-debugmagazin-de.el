@@ -1,6 +1,6 @@
 ;;; sb-debugmagazin-de.el --- de-bug.de shimbun backend
 
-;; Copyright (C) 2008 David Engster
+;; Copyright (C) 2008, 2009 David Engster
 
 ;; Author: David Engster <dengste@eml.cc>
 ;; Keywords: news
