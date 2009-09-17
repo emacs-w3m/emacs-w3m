@@ -1,6 +1,6 @@
 ;;; sb-multi.el --- Virtual shimbun class to retrieve multiple pages.
 
-;; Copyright (C) 2006, 2007, 2008 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2006, 2007, 2008, 2009 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: news
@@ -27,7 +27,13 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'cl))
+  (require 'cl)
+  ;; `multiple-value-bind' requires the 2nd argument to be multiple-value,
+  ;; not a list, in particular for XEmacs 21.5.  `values-list' does it,
+  ;; but is a run-time cl function in XEmacs 21.4 and Emacs 21.
+  (when (eq 'identity (symbol-function 'values-list))
+    (define-compiler-macro values-list (arg)
+      arg)))
 
 (require 'shimbun)
 
@@ -100,9 +106,10 @@ Return nil, unless a content is cleared successfully.")
       (error "Cannot extract base CID from %s for %s"
 	     base-cid (shimbun-article-url shimbun header)))
     (multiple-value-bind (texts images)
-	(shimbun-multi-retrieve-next-pages shimbun header base-cid
-					   (shimbun-article-url shimbun
-								header))
+	(values-list
+	 (shimbun-multi-retrieve-next-pages shimbun header base-cid
+					    (shimbun-article-url shimbun
+								 header)))
       (if (= (length texts) 1)
 	  (setq body (car texts))
 	(setq body (shimbun-make-multipart-entity))
