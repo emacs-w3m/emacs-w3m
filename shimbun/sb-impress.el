@@ -74,6 +74,9 @@
     ("kaden" rss
      "<!-- 本文開始 -->" "<!-- 本文終了 -->"
      "http://kaden.watch.impress.co.jp/cda/rss/kaden.rdf")
+    ("car" rss
+     "<!-- 本文開始 -->" "<!-- 本文終了 -->"
+     "http://car.watch.impress.co.jp/docs/car.rdf")
     ))
 
 (defvar shimbun-impress-groups (mapcar 'car shimbun-impress-groups-alist))
