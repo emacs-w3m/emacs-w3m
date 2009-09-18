@@ -1,3 +1,10 @@
+2009-09-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-multi.el: Autoload shimbun-shallow-rendering.
+
+	* sb-impress.el (shimbun-impress-groups-alist): Add car group by
+	request.
+
 2009-09-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-cgi-board.el (shimbun-cgi-board-make-date-string):

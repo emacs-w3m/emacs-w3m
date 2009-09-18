@@ -37,8 +37,7 @@
 
 (require 'shimbun)
 
-(eval-when-compile (require 'sb-text)) ;; `shimbun-shallow-rendering'
-(autoload 'shimbun-fill-line "sb-text")
+(autoload 'shimbun-shallow-rendering "sb-text")
 
 (luna-define-class shimbun-multi () ())
 
