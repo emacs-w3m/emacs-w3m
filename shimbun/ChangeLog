@@ -1,3 +1,7 @@
+2008-09-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kantei.el: Support Hatoyama Cabinet E-mail Magazine.
+
 2009-09-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-multi.el: Autoload shimbun-shallow-rendering.
