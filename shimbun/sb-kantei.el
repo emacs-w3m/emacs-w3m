@@ -229,16 +229,24 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 	    (insert "\n")
 	    (delete-region (point-min) start)))
       (goto-char (point-min))
-      (if (and (re-search-forward "<!--総理原稿-->[\t\n ]*" nil t)
+      (if (and (re-search-forward "\
+<!--\\(?:総理原稿\\|編集長からの挨拶\\)-->[\t\n ]*"
+				  nil t)
 	       (progn
 		 (setq start (match-end 0))
-		 (re-search-forward "[\t\n ]*<!--/総理原稿-->" nil t)))
+		 (re-search-forward "\
+\[\t\n ]*<!--/\\(?:総理原稿\\|編集長からの挨拶\\)-->"
+				    nil t)))
 	  (progn
 	    (setq end (match-beginning 0))
-	    (while (when (re-search-forward "<!--総理原稿-->[\t\n ]*" nil t)
+	    (while (when (re-search-forward "\
+<!--\\(?:総理原稿\\|編集長からの挨拶\\)-->[\t\n ]*"
+					    nil t)
 		     (delete-region end (match-end 0))
 		     (insert "\n&#012;\n")
-		     (and (re-search-forward "[\t\n ]*<!--/総理原稿-->" nil t)
+		     (and (re-search-forward "\
+\[\t\n ]*<!--/\\(?:総理原稿\\|編集長からの挨拶\\)-->"
+					     nil t)
 			  (setq end (match-beginning 0)))))
 	    (delete-region end (point-max))
 	    (insert "\n")

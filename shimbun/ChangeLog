@@ -1,3 +1,7 @@
+2008-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kantei.el (shimbun-clear-contents): Fix regexps.
+
 2008-09-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el: Support Hatoyama Cabinet E-mail Magazine.
