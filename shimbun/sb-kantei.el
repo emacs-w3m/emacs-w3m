@@ -78,7 +78,7 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
   (let ((group (shimbun-current-group-internal shimbun)))
     (concat (shimbun-url-internal shimbun)
 	    (cond ((string-equal group "m-magazine-en")
-		   "foreign/m-magazine/backnumber/")
+		   "foreign/m-magazine/backnumber/hatoyama.html")
 		  ((string-equal group "m-magazine-en.aso")
 		   "foreign/m-magazine/backnumber/aso.html")
 		  ((string-equal group "m-magazine-ja.aso")
