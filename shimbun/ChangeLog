@@ -1,3 +1,11 @@
+2009-10-05  David Engster  <dengste@eml.cc>
+
+	* sb-heise.el (shimbun-heise-get-newsticker-headers)
+	(shimbun-heise-wash-newsticker-article): Updated regular expressions.
+	Use shimbun-remove-tags instead of delete-region.
+	* sb-perlentaucher-de.el (shimbun-clear-contents): RSS does not point
+	to teaser anymore, so loading of new URL removed.
+
 2008-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-index-url): Update url for m-magazine-en.
