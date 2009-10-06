@@ -1,3 +1,7 @@
+2009-10-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-clear-contents): Remove blogs link.
+
 2009-10-05  David Engster  <dengste@eml.cc>
 
 	* sb-heise.el (shimbun-heise-get-newsticker-headers)

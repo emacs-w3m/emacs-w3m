@@ -1601,6 +1601,12 @@ that day if it failed."
 		    (shimbun-end-of-tag "div" t)))
 	(delete-region start (match-end 0))
 	(insert "\n")))
+    ;; Remove blogs link.
+    (goto-char (point-min))
+    (while (re-search-forward "[\t\n ]*\\(?:<[^/][^>]+>[\t\n ]*\\)+\
+この記事を利用したブログ一覧\\(?:[\t\n ]*<[!/][^>]+>\\)+[\t\n ]*"
+			      nil t)
+      (delete-region (match-beginning 0) (match-end 0)))
     ;; Remove any other useless things.
     (goto-char (point-min))
     (while (re-search-forward "[\t\n ]*\
