@@ -3,8 +3,8 @@
 	* nnshimbun.el (nnshimbun-marks-is-evil, nnshimbun-marks-file-name)
 	(nnshimbun-marks, nnshimbun-marks-modtime): New variables.
 	(nnshimbun-group-pathname): New function that replaces
-	nnshimbun-nov-director and nnshimbun-nov-file-name.
-	(nnshimbun-nov-director, nnshimbun-nov-file-name): Abolish.
+	nnshimbun-nov-directory and nnshimbun-nov-file-name.
+	(nnshimbun-nov-directory, nnshimbun-nov-file-name): Abolish.
 	(nnshimbun-open-nov): Use nnshimbun-group-pathname instead of
 	nnshimbun-nov-file-name.
 	(nnshimbun-write-nov): Use nnshimbun-group-pathname instead of
