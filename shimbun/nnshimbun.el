@@ -271,13 +271,28 @@ shimbun articles.
 (nnoo-declare nnshimbun)
 
 (defvoo nnshimbun-directory (nnheader-concat gnus-directory "shimbun/")
-  "*Directory where nnshimbun will store NOV files.
-Actually, you can find the NOV file in the SERVER/GROUP/ subdirectory.")
+  "*Directory where nnshimbun will store NOV and marks files.
+Actually, you can find those files in the SERVER/GROUP/ subdirectory.")
 
 (defvoo nnshimbun-nov-is-evil nil
   "*If non-nil, nnshimbun won't use the NOV databases to retrieve headers.")
 
 (defvoo nnshimbun-nov-file-name ".overview")
+
+(defvoo nnshimbun-marks-is-evil nil
+  "If non-nil, Gnus will never generate and use marks file for shimbun spools.
+Using marks files makes it possible to backup and restore shimbun groups
+separately from `.newsrc.eld'.  If you have, for some reason, set this
+to t, and want to set it to nil again, you should always remove the
+corresponding marks file (usually named `.marks' in the shimbun group
+directory, but see `nnshimbun-marks-file-name') for the group.  Then the
+marks file will be regenerated properly by Gnus.")
+
+(defvoo nnshimbun-marks-file-name ".marks")
+
+(defvoo nnshimbun-marks nil)
+
+(defvar nnshimbun-marks-modtime (gnus-make-hashtable))
 
 (defvoo nnshimbun-pre-fetch-article 'off
   "*If it is neither `off' nor nil, nnshimbun will pre-fetch articles.
@@ -380,13 +395,12 @@ If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
 	  (nnshimbun-current-server)
 	  (or group (nnshimbun-current-group))))
 
-(defun nnshimbun-nov-directory (group)
+(defun nnshimbun-group-pathname (&optional group file)
+  "Return an absolute file name of FILE for GROUP."
   (nnmail-group-pathname (or group (nnshimbun-current-group))
 			 (expand-file-name (nnshimbun-current-server)
-					   nnshimbun-directory)))
-
-(defun nnshimbun-nov-file-name (group)
-  (concat (nnshimbun-nov-directory group) nnshimbun-nov-file-name))
+					   nnshimbun-directory)
+			 file))
 
 
 ;; Interface functions:
@@ -730,7 +744,7 @@ allowed for each string."
       (with-current-buffer (gnus-get-buffer-create buffer)
 	(erase-buffer)
 	(let ((file-name-coding-system nnmail-pathname-coding-system)
-	      (nov (nnshimbun-nov-file-name group)))
+	      (nov (nnshimbun-group-pathname group nnshimbun-nov-file-name)))
 	  (when (file-exists-p nov)
 	    (nnheader-insert-file-contents nov)))
 	(set-buffer-modified-p nil)))
@@ -741,12 +755,13 @@ allowed for each string."
     (prog1 (or (nnshimbun-group-ephemeral-p group)
 	       (not (gnus-buffer-live-p buffer))
 	       (let ((file-name-coding-system nnmail-pathname-coding-system))
-		 (when (let ((dir (nnshimbun-nov-directory group)))
+		 (when (let ((dir (nnshimbun-group-pathname group)))
 			 (or (file-directory-p dir)
 			     (ignore-errors
 			      (make-directory dir t)
 			      (file-directory-p dir))))
-		   (let ((nov (nnshimbun-nov-file-name group)))
+		   (let ((nov (nnshimbun-group-pathname
+			       group nnshimbun-nov-file-name)))
 		     (with-current-buffer buffer
 		       (when (and (buffer-modified-p)
 				  (or (> (buffer-size) 0)
@@ -811,11 +826,11 @@ article to be expired.  The optional fourth argument FORCE is ignored."
       articles)))
 
 (deffoo nnshimbun-request-delete-group (group &optional force server)
-  "Delete the NOV file used for GROUP and the parent directories.
+  "Delete NOV and marks files used for GROUP and the parent directories.
 Other files in the directory are also deleted."
   (setq group (nnshimbun-decode-group-name group))
   (when (nnshimbun-possibly-change-group group server)
-    (let ((dir (nnshimbun-nov-directory group))
+    (let ((dir (nnshimbun-group-pathname group))
 	  (nov (nnshimbun-nov-buffer-name group))
 	  files file subdir)
       (when (file-directory-p dir)
@@ -838,6 +853,122 @@ Other files in the directory are also deleted."
       (when (gnus-buffer-live-p nov)
 	(kill-buffer nov)))
     t))
+
+(deffoo nnshimbun-request-set-mark (group actions &optional server)
+  (setq group (nnshimbun-decode-group-name group))
+  (when (and (not nnshimbun-marks-is-evil)
+	     (nnshimbun-possibly-change-group group server))
+    (nnshimbun-open-marks group server)
+    (dolist (action actions)
+      (let ((range (nth 0 action))
+	    (what  (nth 1 action))
+	    (marks (nth 2 action)))
+	(assert (or (eq what 'add) (eq what 'del)) nil
+		"Unknown request-set-mark action: %s" what)
+	(dolist (mark marks)
+	  (setq nnshimbun-marks
+		(gnus-update-alist-soft
+		 mark
+		 (funcall (if (eq what 'add) 'gnus-range-add
+			    'gnus-remove-from-range)
+			  (cdr (assoc mark nnshimbun-marks)) range)
+		 nnshimbun-marks)))))
+    (nnshimbun-save-marks group))
+  nil)
+
+(defun nnshimbun-marks-changed-p (group)
+  (let ((file (nnshimbun-group-pathname group nnshimbun-marks-file-name)))
+    (if (null (gnus-gethash file nnshimbun-marks-modtime))
+	t ;; never looked at marks file, assume it has changed
+      (not (equal (gnus-gethash file nnshimbun-marks-modtime)
+		  (nth 5 (file-attributes file)))))))
+
+(deffoo nnshimbun-request-update-info (group info &optional server)
+  (setq group (nnshimbun-decode-group-name group))
+  (when (and (not nnshimbun-marks-is-evil)
+	     (nnshimbun-possibly-change-group group server)
+	     (nnshimbun-marks-changed-p group))
+    (nnheader-message 8 "Updating marks for %s..." group)
+    (nnshimbun-open-marks group server)
+    ;; Update info using `nnshimbun-marks'.
+    (mapc (lambda (pred)
+	    (unless (memq (cdr pred) gnus-article-unpropagated-mark-lists)
+	      (gnus-info-set-marks
+	       info
+	       (gnus-update-alist-soft
+		(cdr pred)
+		(cdr (assq (cdr pred) nnshimbun-marks))
+		(gnus-info-marks info))
+	       t)))
+	  gnus-article-mark-lists)
+    (let ((seen (cdr (assq 'read nnshimbun-marks))))
+      (gnus-info-set-read info
+			  (if (and (integerp (car seen))
+				   (null (cdr seen)))
+			      (list (cons (car seen) (car seen)))
+			    seen)))
+    (nnheader-message 8 "Updating marks for %s...done" group))
+  info)
+
+(defun nnshimbun-possibly-create-directory (group)
+  (let ((dir (nnshimbun-group-pathname group))
+	(file-name-coding-system nnmail-pathname-coding-system))
+    (unless (file-exists-p dir)
+      (make-directory (directory-file-name dir) t)
+      (nnheader-message 5 "Creating shimbun directory %s" dir))))
+
+(defun nnshimbun-save-marks (group)
+  (let ((file-name-coding-system nnmail-pathname-coding-system)
+	(file (nnshimbun-group-pathname group nnshimbun-marks-file-name)))
+    (condition-case err
+	(progn
+	  (nnshimbun-possibly-create-directory group)
+	  (with-temp-file file
+	    (erase-buffer)
+	    (gnus-prin1 nnshimbun-marks)
+	    (insert "\n"))
+	  (gnus-sethash file
+			(nth 5 (file-attributes file))
+			nnshimbun-marks-modtime))
+      (error (or (gnus-yes-or-no-p
+		  (format "Could not write to %s (%s).  Continue? " file err))
+		 (error "Cannot write to %s (%s)" file err))))))
+
+(defun nnshimbun-open-marks (group server)
+  (let* ((decoded (nnshimbun-decode-group-name group))
+	 (file (nnshimbun-group-pathname decoded nnshimbun-marks-file-name))
+	 (file-name-coding-system nnmail-pathname-coding-system))
+    (if (file-exists-p file)
+	(condition-case err
+	    (with-temp-buffer
+	      (gnus-sethash file (nth 5 (file-attributes file))
+			    nnshimbun-marks-modtime)
+	      (nnheader-insert-file-contents file)
+	      (setq nnshimbun-marks (read (current-buffer)))
+	      (dolist (el gnus-article-unpropagated-mark-lists)
+		(setq nnshimbun-marks (gnus-remassoc el nnshimbun-marks))))
+	  (error (or (gnus-yes-or-no-p
+		      (format "Error reading nnshimbun marks file %s (%s).\
+  Continuing will use marks from .newsrc.eld.  Continue? " file err))
+		     (error "Cannot read nnshimbun marks file %s (%s)"
+			    file err))))
+      ;; User didn't have a .marks file.  Probably first time
+      ;; user of the .marks stuff.  Bootstrap it from .newsrc.eld.
+      (let ((info (gnus-get-info
+		   (gnus-group-prefixed-name
+		    group
+		    (gnus-server-to-method
+		     (format "nnshimbun:%s" (or server "")))))))
+	(setq decoded (if (member server '(nil ""))
+			  (concat "nnshimbun:" decoded)
+			(format "nnshimbun+%s:%s" server decoded)))
+	(nnheader-message 7 "Bootstrapping marks for %s..." decoded)
+	(setq nnshimbun-marks (gnus-info-marks info))
+	(push (cons 'read (gnus-info-read info)) nnshimbun-marks)
+	(dolist (el gnus-article-unpropagated-mark-lists)
+	  (setq nnshimbun-marks (gnus-remassoc el nnshimbun-marks)))
+	(nnshimbun-save-marks group)
+	(nnheader-message 7 "Bootstrapping marks for %s...done" decoded)))))
 
 
 ;; Defining the `shimbun-gnus-mua':

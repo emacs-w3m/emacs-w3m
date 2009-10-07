@@ -1,3 +1,20 @@
+2009-10-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnshimbun.el (nnshimbun-marks-is-evil, nnshimbun-marks-file-name)
+	(nnshimbun-marks, nnshimbun-marks-modtime): New variables.
+	(nnshimbun-group-pathname): New function that replaces
+	nnshimbun-nov-director and nnshimbun-nov-file-name.
+	(nnshimbun-nov-director, nnshimbun-nov-file-name): Abolish.
+	(nnshimbun-open-nov): Use nnshimbun-group-pathname instead of
+	nnshimbun-nov-file-name.
+	(nnshimbun-write-nov): Use nnshimbun-group-pathname instead of
+	nnshimbun-nov-directory and nnshimbun-nov-file-name.
+	(nnshimbun-request-delete-group): Use nnshimbun-group-pathname instead
+	of nnshimbun-nov-directory.
+	(nnshimbun-request-set-mark, nnshimbun-marks-changed-p)
+	(nnshimbun-request-update-info, nnshimbun-possibly-create-directory)
+	(nnshimbun-save-marks, nnshimbun-open-marks): New functions.
+
 2009-10-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-clear-contents): Remove blogs link.
