@@ -4618,13 +4618,28 @@ prefetched articles.
 @item nnshimbun-directory
 @vindex nnshimbun-directory
 Directory where @samp{nnshimbun} saves @acronym{NOV} files.  The default
-value is @samp{~/News/shimbun/}.
+value is @samp{~/News/shimbun/}.  This is a server variable
+(@pxref{Server Variables, ,Server Variables, gnus, The Gnus Manual}).
 
 @item nnshimbun-default-group-level
 @vindex nnshimbun-default-group-level
 The default group level overriding @code{gnus-level-default-subscribed}.
 It will be applied to newly created @samp{nnshimbun} groups.  The
-default value is @code{nil}.
+default value is @code{nil}.  This is a server variable (@pxref{Server
+Variables, ,Server Variables, gnus, The Gnus Manual}).
+
+@item nnshimbun-marks-is-evil
+@vindex nnshimbun-marks-is-evil
+If non-@code{nil}, Gnus will never generate and use marks file for
+@samp{shimbun} spools.  Using marks files makes it possible to backup
+and restore @samp{shimbun} groups separately from @file{.newsrc.eld}.
+If you have, for some reason, set this to @code{t}, and want to set it
+to @code{nil} again, you should always remove the corresponding marks
+file (usually named @samp{.marks} in the @samp{shimbun} group directory,
+but see @code{nnshimbun-marks-file-name}) for the group.  Then the marks
+file will be regenerated properly by Gnus.  The default value is
+@code{nil}.  This is a server variable (@pxref{Server Variables, ,Server
+Variables, gnus, The Gnus Manual}).
 @end table
 
 @cindex group parameters
