@@ -202,7 +202,7 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-kantei)
 						    header)
   (let ((case-fold-search t)
-	start end)
+	start end section)
     (if (and (search-forward "<pre>" nil t)
 	     (progn
 	       (setq start (match-beginning 0))
@@ -229,23 +229,20 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 	    (insert "\n")
 	    (delete-region (point-min) start)))
       (goto-char (point-min))
-      (if (and (re-search-forward "\
-<!--\\(?:総理原稿\\|編集長からの挨拶\\)-->[\t\n ]*"
-				  nil t)
+      (if (and (re-search-forward "<!--\\(\\cj+\\)-->[\t\n ]*" nil t)
 	       (progn
-		 (setq start (match-end 0))
-		 (re-search-forward "\
-\[\t\n ]*<!--/\\(?:総理原稿\\|編集長からの挨拶\\)-->"
+		 (setq section (regexp-quote (match-string 1))
+		       start (match-end 0))
+		 (re-search-forward (concat "\[\t\n ]*<!--/" section "-->")
 				    nil t)))
 	  (progn
 	    (setq end (match-beginning 0))
-	    (while (when (re-search-forward "\
-<!--\\(?:総理原稿\\|編集長からの挨拶\\)-->[\t\n ]*"
-					    nil t)
+	    (while (when (re-search-forward "<!--\\(\\cj+\\)-->[\t\n ]*" nil t)
+		     (setq section (regexp-quote (match-string 1)))
 		     (delete-region end (match-end 0))
 		     (insert "\n&#012;\n")
-		     (and (re-search-forward "\
-\[\t\n ]*<!--/\\(?:総理原稿\\|編集長からの挨拶\\)-->"
+		     (and (re-search-forward (concat "\[\t\n ]*<!--/" section
+						     "-->")
 					     nil t)
 			  (setq end (match-beginning 0)))))
 	    (delete-region end (point-max))

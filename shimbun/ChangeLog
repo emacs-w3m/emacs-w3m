@@ -1,3 +1,8 @@
+2008-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kantei.el (shimbun-clear-contents): Gather all significant
+	contents.
+
 2009-10-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnshimbun.el (nnshimbun-marks-is-evil, nnshimbun-marks-file-name)
