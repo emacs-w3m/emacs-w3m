@@ -260,12 +260,38 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 				      nil t)
 		   (shimbun-end-of-tag (match-string 1) t))
 	  (replace-match "\n")))
-      ;; Remove table tags.
+      ;; Remove useless tags.
+      (goto-char (point-min))
+      (while (re-search-forward "[\t\n ]*</tr>[\t\n ]*" nil t)
+	(replace-match "<br>\n"))
       (goto-char (point-min))
       (while (re-search-forward "\
-\[\t\n ]*</?table\\(?:[\t\n ]+[^>]+\\)?>[\t\n ]*"
+\[\t\n ]*</?\\(?:hr\\|span\\|table\\|td\\|tr\\)\\(?:[\t\n ]+[^>]+\\)?>[\t\n ]*"
 				nil t)
 	(replace-match "\n"))
+      (goto-char (point-min))
+      (while (re-search-forward "[\t\n ]*<p[\t\n ]+[^>]+>[\t\n ]*" nil t)
+	(replace-match "\n<p>"))
+      (goto-char (point-min))
+      (while (re-search-forward "[\t\n ]*<![^>]+>[\t\n ]*" nil t)
+	(replace-match "\n"))
+      (goto-char (point-min))
+      (while (re-search-forward "^[\t 　]+\n" nil t)
+	(delete-region (match-beginning 0) (match-end 0)))
+      (goto-char (point-min))
+      (while (re-search-forward "\\([\t\n ]*<br\\(?:[\t\n ]+[^>]*\\)?>\\)\
+\\(?:[\t\n ]*<br\\(?:[\t\n ]+[^>]*\\)?>\\)+[\t\n ]*\\(<br[\t\n >]\\)" nil t)
+	(replace-match "\\1\\2"))
+      (goto-char (point-min))
+      (skip-chars-forward "\t\n ")
+      (delete-region (point-min) (point))
+      (while (re-search-forward "[\t\n ]+\n" nil t)
+	(replace-match "\n"))
+      ;; Insert newlines around images.
+      (goto-char (point-min))
+      (while (re-search-forward "[\t\n ]*\\(\\(?:<[^/][>]+>[\t\n ]*\\)*\
+<img[\t\n ]+[^>]+>\\(?:[\t\n ]*<[^/][>]+>\\)*\\)[\t\n ]*" nil t)
+	(replace-match "<br>\n\\1<br>\n"))
       ;; Shrink boundary lines.
       (let ((limit (w3m-static-if (featurep 'xemacs)
 		       (when (device-on-window-system-p)
