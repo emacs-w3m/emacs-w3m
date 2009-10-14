@@ -1,6 +1,6 @@
 ;;; sb-zeit-de.el --- shimbun backend for <http://www.zeit.de>
 
-;; Copyright (C) 2004, 2005, 2006, 2008
+;; Copyright (C) 2004, 2005, 2006, 2008, 2009
 ;; Andreas Seltenreich <seltenreich@gmx.de>
 
 ;; Author: Andreas Seltenreich <seltenreich@gmx.de>
@@ -36,9 +36,9 @@
 (luna-define-class shimbun-zeit-de (shimbun-rss) ())
 
 (defvar shimbun-zeit-de-groups
-  '("auto" "computer" "deutschland" "feuilleton" "gesundheit"
-    "international" "leben" "literatur" "musik" "news" "reisen"
-    "schule" "sport" "studium" "wirtschaft" "wissen" "zuender"))
+  '("politik" "wirtschaft" "meinung" "gesellschaft" "kultur"
+    "wissen" "digital" "studium" "karriere" "lebensart" "reisen"
+    "auto" "sport" "blogs" "news"))
 
 (defvar shimbun-zeit-de-x-face-alist
   '(("default" . "X-Face: +@u:6eD3Nq>u{P_Ev&\"A6eW=EA{5H[OqH;|oz7H>atafNFsUS-&7\
@@ -51,7 +51,8 @@
   (concat
    "</body>\\|</html>\\|navigation[^><]*>[^A]\\|"
    "<script language=\"JavaScript1\.2\" type=\"text/javascript\">\\|"
-   "<div[^>]+\\(class\\|id\\)=\"comments"))
+   "<div[^>]+\\(class\\|id\\)=\"comments\\|<li class=\"bookmarks\\\|"
+   "class=\"com\"\\|class=\"toolad\""))
 
 (defvar shimbun-zeit-de-from-address "DieZeit@zeit.de")
 
@@ -79,6 +80,10 @@
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-zeit-de)
 						   header)
+  (when (re-search-forward "<script.*window.location='\\(.+?\\)';" nil t)
+    (let ((url (match-string 1)))
+      (erase-buffer)
+      (shimbun-retrieve-url (concat url "?page=all"))))
   (let* ((case-fold-search t)
 	 (start (re-search-forward (shimbun-content-start shimbun) nil t))
 	 (end (and start
@@ -116,6 +121,7 @@
   (shimbun-remove-tags "<img[^>]*doubleclick.net[^>]*>")
   (shimbun-remove-tags "<img[^>]*\\(width\\|height\\)=\"1px\"[^>]*>")
   (shimbun-remove-tags "<tr><td[^>]*>Anzeige</td></tr>")
+  (shimbun-remove-tags "<span class=\"anzeige\">.+?</span>")
   t)
 
 (provide 'sb-zeit-de)

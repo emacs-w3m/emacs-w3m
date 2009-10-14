@@ -1,3 +1,10 @@
+2009-10-13  David Engster  <dengste@eml.cc>
+
+	* sb-zeit-de.el (shimbun-zeit-de-groups): Updated group list.
+	(shimbun-zeit-de-content-end): Updated regexp.
+	(shimbun-make-contents): Follow window.location URL.
+	(shimbun-clear-contents): Added new tag for removal.
+
 2008-10-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-clear-contents): Remove useless tags.
