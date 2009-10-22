@@ -1,3 +1,8 @@
+2008-10-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kantei.el (shimbun-clear-contents): Allow irregularly formatted
+	tags that separate sub contents.
+
 2009-10-13  David Engster  <dengste@eml.cc>
 
 	* sb-zeit-de.el (shimbun-zeit-de-groups): Updated group list.

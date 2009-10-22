@@ -233,7 +233,8 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 	       (progn
 		 (setq section (regexp-quote (match-string 1))
 		       start (match-end 0))
-		 (re-search-forward (concat "\[\t\n ]*<!--/" section "-->")
+		 (re-search-forward (concat "\[\t\n ]*<!--/" section
+					    "\\(?:から\\)?-->")
 				    nil t)))
 	  (progn
 	    (setq end (match-beginning 0))
@@ -242,7 +243,7 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 		     (delete-region end (match-end 0))
 		     (insert "\n&#012;\n")
 		     (and (re-search-forward (concat "\[\t\n ]*<!--/" section
-						     "-->")
+						     "\\(?:から\\)?-->")
 					     nil t)
 			  (setq end (match-beginning 0)))))
 	    (delete-region end (point-max))
