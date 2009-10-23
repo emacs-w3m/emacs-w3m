@@ -246,8 +246,17 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 						     "\\(?:から\\)?-->")
 					     nil t)
 			  (setq end (match-beginning 0)))))
-	    (delete-region end (point-max))
-	    (insert "\n")
+	    (if (and (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*align=\"center\"" nil t)
+		     (shimbun-end-of-tag "div" t))
+		(progn
+		  (delete-region (match-end 1) (point-max))
+		  (insert "\n")
+		  (goto-char end)
+		  (delete-region end (match-beginning 3))
+		  (insert "\n<div align=\"left\">\n--&nbsp;<br>\n"))
+	      (delete-region end (point-max))
+	      (insert "\n"))
 	    (delete-region (point-min) start))
 	;; Remove style sheet.
 	(goto-char (point-min))
