@@ -1579,7 +1579,8 @@ that day if it failed."
 	    "\\(<img[\t\n ]+[^>]+>\\(?:[\t\n ]*</[^>]+>\\)*\\)[\t\n ]*"
 	    nil t)
       (when (or (save-match-data
-		  (looking-at "\\(?:<[^\t\n >]+>[\t\n ]*\\)*<img[\t\n ]"))
+		  (looking-at "\\(?:<[^\t\n >]+>[\t\n ]*\\)*<img[\t\n ]\
+\\|<small>[^<]+</small>"))
 		(not (eq (char-after) ?<)))
 	(replace-match "\\1<br>\n")))
     ;; Add line breaks before images that follow captions.
