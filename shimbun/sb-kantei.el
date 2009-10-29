@@ -35,6 +35,8 @@
 
 (defvar shimbun-kantei-groups '("m-magazine-en"
 				"m-magazine-ja"
+				"m-magazine-cn"
+				"m-magazine-kr"
 				"m-magazine-en.aso"
 				"m-magazine-ja.aso"
 				"m-magazine-en.fukuda"
@@ -79,6 +81,10 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
     (concat (shimbun-url-internal shimbun)
 	    (cond ((string-equal group "m-magazine-en")
 		   "foreign/m-magazine/backnumber/hatoyama.html")
+		  ((string-equal group "m-magazine-cn")
+		   "foreign/m-magazine/backnumber_ch/hatoyama_index.html")
+		  ((string-equal group "m-magazine-kr")
+		   "foreign/m-magazine/backnumber_ko/hatoyama_index.html")
 		  ((string-equal group "m-magazine-en.aso")
 		   "foreign/m-magazine/backnumber/aso.html")
 		  ((string-equal group "m-magazine-ja.aso")
@@ -104,6 +110,10 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
   (let ((group (shimbun-current-group-internal shimbun)))
     (cond ((string-equal group "m-magazine-en")
 	   "Yukio Hatoyama")
+	  ((string-equal group "m-magazine-cn")
+	   "鸠山由纪夫")
+	  ((string-equal group "m-magazine-kr")
+	   "하토야마 유키오")
 	  ((string-equal group "m-magazine-en.aso")
 	   "Taro Aso")
 	  ((string-equal group "m-magazine-ja.aso")
@@ -129,39 +139,76 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 					 &optional range)
   (let* ((group (shimbun-current-group-internal shimbun))
 	 (enp (string-match "\\`m-magazine-en" group))
-	 (regexp (if enp
-		     (eval-when-compile
-		       (concat "<A[\t\n ]+HREF=\""
-			       ;; 1. url
-			       "\\(\\(?:[a-z]+/\\)?"
-			       ;; 2. year
-			       "\\(20[0-9][0-9]\\)"
-			       "/"
-			       ;; 3. month
-			       "\\([01][0-9]\\)"
-			       ;; 4. day of month
-			       "\\([0-3][0-9]\\)"
-			       "\\.html\\)\"[^>]*>[\t\n ]*"
-			       ;; 5. subject
-			       "\\(\\(?:[^\t\n <]+[\t\n ]+\\)*[^\t\n <]+\\)"
-			       "[\t\n ]*</A>[\t\n ]*</TD>[\t\n ]*</TR>"))
-		   (eval-when-compile
-		     (concat "<A[\t\n ]+HREF=\""
-			     ;; 1. url
-			     "\\(\\(?:/jp/m-magazine/backnumber/\\)?"
-			     ;; 2. year
-			     "\\(20[0-9][0-9]\\)"
-			     "/"
-			     ;; 3. month
-			     "\\([01][0-9]\\)"
-			     ;; 4. day of month
-			     "\\([0-3][0-9]\\)"
-			     ;; 5. revision e.g., 2005/0602b.html
-			     "\\([^.]+\\)?"
-			     "\\.html\\)"
-			     "\"[^>]*>[\t\n ]*【[^】]+】[\t\n ]*"
-			     ;; 6. subject
-			     "\\([^<]+\\)"))))
+	 (cnp (string-match "\\`m-magazine-cn" group))
+	 (krp (string-match "\\`m-magazine-kr" group))
+	 (regexp
+	  (cond
+	   (enp
+	    (eval-when-compile
+	      (concat "<A[\t\n ]+HREF=\""
+		      ;; 1. url
+		      "\\(\\(?:[a-z]+/\\)?"
+		      ;; 2. year
+		      "\\(20[0-9][0-9]\\)"
+		      "/"
+		      ;; 3. month
+		      "\\([01][0-9]\\)"
+		      ;; 4. day of month
+		      "\\([0-3][0-9]\\)"
+		      "\\.html\\)\"[^>]*>[\t\n ]*"
+		      ;; 5. subject
+		      "\\(\\(?:[^\t\n <]+[\t\n ]+\\)*[^\t\n <]+\\)"
+		      "[\t\n ]*</A>[\t\n ]*</TD>[\t\n ]*</TR>")))
+	   (cnp
+	    (eval-when-compile
+	      (concat "<a[\t\n ]+href=\""
+		      ;; 1. url
+		      "\\(\\(?:/foreign/m-magazine/backnumber_ch/\\)?"
+		      ;; 2. year
+		      "\\(20[0-9][0-9]\\)"
+		      "/"
+		      ;; 3. month
+		      "\\([01][0-9]\\)"
+		      ;; 4. day of month
+		      "\\([0-3][0-9]\\)"
+		      "\\.html\\)\"[^>]*>[\t\n ]*"
+		      ;; 5. subject
+		      "\\(\\(?:[^\t\n <]+[\t\n ]+\\)*[^\t\n <]+\\)"
+		      "[\t\n ]*</a>[\t\n ]*</td>[\t\n ]*</tr>")))
+	   (krp
+	    (eval-when-compile
+	      (concat "<a[\t\n ]+href=\""
+		      ;; 1. url
+		      "\\(\\(?:/foreign/m-magazine/backnumber_ko/\\)?"
+		      ;; 2. year
+		      "\\(20[0-9][0-9]\\)"
+		      "/"
+		      ;; 3. month
+		      "\\([01][0-9]\\)"
+		      ;; 4. day of month
+		      "\\([0-3][0-9]\\)"
+		      "\\.html\\)\"[^>]*>[\t\n ]*"
+		      ;; 5. subject
+		      "\\(\\(?:[^\t\n <]+[\t\n ]+\\)*[^\t\n <]+\\)"
+		      "[\t\n ]*</a>[\t\n ]*</td>[\t\n ]*</tr>")))
+	   (t
+	    (eval-when-compile
+	      (concat "<A[\t\n ]+HREF=\""
+		      ;; 1. url
+		      "\\(\\(?:/jp/m-magazine/backnumber/\\)?"
+		      ;; 2. year
+		      "\\(20[0-9][0-9]\\)"
+		      "/"
+		      ;; 3. month
+		      "\\([01][0-9]\\)"
+		      ;; 4. day of month
+		      "\\([0-3][0-9]\\)"
+		      ;; 5. revision e.g., 2005/0602b.html
+		      "\\([^.]+\\)?"
+		      "\\.html\\)"
+		      "\"[^>]*>[\t\n ]*【[^】]+】[\t\n ]*"
+		      ;; 6. subject
+		      "\\([^<]+\\)")))))
 	 (parent (shimbun-index-url shimbun))
 	 (from (shimbun-from-address shimbun))
 	 year month mday url subject id headers)
@@ -171,7 +218,7 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 	(replace-match "\n")))
     (goto-char (point-min))
     (while (re-search-forward regexp nil t)
-      (if enp
+      (if (or enp cnp krp)
 	  (setq year (string-to-number (match-string 2))
 		month (string-to-number (match-string 3))
 		mday (string-to-number (match-string 4))

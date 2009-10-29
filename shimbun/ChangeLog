@@ -1,3 +1,9 @@
+2008-10-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kantei.el (shimbun-kantei-groups, shimbun-index-url)
+	(shimbun-from-address, shimbun-get-headers): Support m-magazine-cn and
+	m-magazine-kr groups.
+
 2008-10-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-clear-contents): Fix regexp matching
