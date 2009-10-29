@@ -6119,8 +6119,8 @@ vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
 vinelinux.errata.1x
 
 @item @uref{http://www.mmz.kantei.go.jp/, 鳩山内閣メールマガジン}
-kantei.m-magazine-en kantei.m-magazine-ja
-kantei.m-magazine-en.aso kantei.m-magazine-ja.aso
+kantei.m-magazine-en kantei.m-magazine-ja kantei.m-magazine-cn
+kantei.m-magazine-kr kantei.m-magazine-en.aso kantei.m-magazine-ja.aso
 kantei.m-magazine-en.fukuda kantei.m-magazine-ja.fukuda
 kantei.m-magazine-en.abe kantei.m-magazine-ja.abe
 kantei.m-magazine-en.koizumi kantei.m-magazine-ja.koizumi
