@@ -253,11 +253,10 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
     (if (and (search-forward "<pre>" nil t)
 	     (progn
 	       (setq start (match-beginning 0))
-	       (re-search-forward "\\(</pre>\\)\
-\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*</html>"
-				  nil t)))
+	       (goto-char (point-max))
+	       (search-backward "</pre>" nil t)))
 	(progn
-	  (delete-region (match-end 1) (point-max))
+	  (delete-region (match-end 0) (point-max))
 	  (insert "\n")
 	  (delete-region (point-min) start)
 	  t)

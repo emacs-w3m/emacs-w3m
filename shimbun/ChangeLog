@@ -1,3 +1,8 @@
+2008-10-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kantei.el (shimbun-clear-contents): Fix the way to extract pre-
+	formatted contents.
+
 2008-10-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-kantei-groups, shimbun-index-url)
