@@ -1,3 +1,9 @@
+2009-11-02  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* mew-w3m.el (mew-w3m-region-cite-mark): New option.
+	(mew-w3m-region): New function.
+	(mew-mime-text/html-w3m): Use `mew-w3m-region' instead of `w3m-region'.
+
 2009-09-02  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-image.el (w3m-imagick-convert-program-available-p): If someone
