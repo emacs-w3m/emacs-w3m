@@ -107,7 +107,7 @@ This variable is effective only in XEmacs, Emacs 21 and Emacs 22."
   :group 'mew-w3m
   :type 'hook)
 
-(defcustom mew-w3m-region-cite-mark nil
+(defcustom mew-w3m-region-cite-mark "&gt;&nbsp;"
   "*Method of converting `blockquote'."
   :group 'mew-w3m
   :type '(choice (const :tag "Use Indent" nil)
@@ -179,22 +179,37 @@ This variable is effective only in XEmacs, Emacs 21 and Emacs 22."
 	    (setq tagend1 (match-end 0))
 	    (setq lines (buffer-substring tagend0 tagbeg1))
 	    (delete-region tagbeg0 tagend1)
-	    (insert "<br>\n")
-	    (setq pos (point))
-	    (insert "\n<br>\n")
-	    (goto-char pos)
 	    (insert (with-temp-buffer
 		      (insert lines)
+		      (goto-char (point-min))
+		      (if (and (w3m-search-tag "pre")
+			       (setq tagbeg0 (match-beginning 0))
+			       (setq tagend0 (match-end 0))
+			       (w3m-search-tag "/pre")
+			       (setq tagbeg1 (match-beginning 0))
+			       (setq tagend1 (match-end 0)))
+			  (progn
+			    (delete-region tagbeg1 tagend1)
+			    (delete-region tagbeg0 tagend0))
+			;; delete <br>
+			(goto-char (point-min))
+			(while (w3m-search-tag "br")
+			  (delete-region (match-beginning 0) (match-end 0))
+			  (unless (looking-at "[\n\r]") (insert "\n"))))
 		      (goto-char (point-max))
 		      (skip-chars-backward " \t\n\f\r")
 		      (delete-region (point) (point-max))
 		      (goto-char (point-min))
 		      (skip-chars-forward " \t\n\f\r")
-		      (insert mew-w3m-region-cite-mark)
-		      (while (and (w3m-search-tag "br")
-				  (not (eobp)))
-			(skip-chars-forward " \t\n\f\r")
-			(insert mew-w3m-region-cite-mark))
+		      (delete-region (point-min) (point))
+		      (goto-char (point-min))
+		      (while (not (eobp))
+			(insert mew-w3m-region-cite-mark)
+			(forward-line 1))
+		      (goto-char (point-min))
+		      (insert "<pre>\n")
+		      (goto-char (point-max))
+		      (insert "\n</pre>\n")
 		      (buffer-substring (point-min) (point-max)))))))
       (w3m-region (point-min) (point-max) url charset))))
 
