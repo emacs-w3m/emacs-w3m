@@ -107,11 +107,12 @@ This variable is effective only in XEmacs, Emacs 21 and Emacs 22."
   :group 'mew-w3m
   :type 'hook)
 
-(defcustom mew-w3m-region-cite-mark "&gt;&nbsp;"
-  "*If non-nil, replace `blockquote' to the cite mark."
+(defcustom mew-w3m-region-cite-mark nil
+  "*Method of converting `blockquote'."
   :group 'mew-w3m
-  :type '(choice (const :tag "No Cite Mark" nil)
-		 (string :tag "Cite Mark")))
+  :type '(choice (const :tag "Use Indent" nil)
+		 (const :tag "Use Cite Mark \"> \"" "&gt;&nbsp;")
+		 (string :tag "Use Other Mark")))
 
 (defconst mew-w3m-safe-url-regexp "\\`cid:")
 
