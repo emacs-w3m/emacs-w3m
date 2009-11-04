@@ -58,29 +58,29 @@ But clarify need ignored URL return nil.")
 			 (shimbun-index-url shimbun)
 			 (error-message-string err))
 		nil)))
-	dc-ns atom-ns author author-node headers)
+	headers)
     (when xml
-      (setq atom-ns (shimbun-rss-get-namespace-prefix
-		     xml "http://www.w3.org/2005/Atom")
-	    dc-ns (shimbun-rss-get-namespace-prefix
-		   xml "http://purl.org/dc/elements/1.1/")
-	    author-node (shimbun-rss-find-el
-			 (intern (concat atom-ns "author")) xml)
-	    author (when (and author-node (listp author-node))
-		     (mapconcat '(lambda (item)
-				   (shimbun-rss-node-text atom-ns 'name item))
-				author-node ",")))
-      (dolist (entry (shimbun-rss-find-el
-		      (intern (concat atom-ns "entry")) xml))
-	(let ((url
-	       (catch 'url
-		 (dolist (link (shimbun-rss-find-el
-				(intern (concat atom-ns "link")) entry))
-		   (when (string= (shimbun-atom-attribute-value
-				   (intern (concat atom-ns "rel")) link)
-				  "alternate")
-		     (throw 'url (shimbun-atom-attribute-value
-				  (intern (concat atom-ns "href")) link)))))))
+      (let* ((atom-ns (shimbun-rss-get-namespace-prefix
+		       xml "http://www.w3.org/2005/Atom"))
+	     (dc-ns (shimbun-rss-get-namespace-prefix
+		     xml "http://purl.org/dc/elements/1.1/"))
+	     (author-node (shimbun-rss-find-el
+			   (intern (concat atom-ns "author")) xml))
+	     (fn `(lambda (item) (shimbun-rss-node-text ,atom-ns 'name item)))
+	     (author (when (consp author-node)
+		       (mapconcat fn author-node ",")))
+	     url)
+	(dolist (entry (shimbun-rss-find-el
+			(intern (concat atom-ns "entry")) xml))
+	  (setq url
+		(catch 'url
+		  (dolist (link (shimbun-rss-find-el
+				 (intern (concat atom-ns "link")) entry))
+		    (when (string= (shimbun-atom-attribute-value
+				    (intern (concat atom-ns "rel")) link)
+				   "alternate")
+		      (throw 'url (shimbun-atom-attribute-value
+				   (intern (concat atom-ns "href")) link))))))
 	  (unless url
 	    (setq url (shimbun-atom-attribute-value
 		       (intern (concat atom-ns "href"))
@@ -96,10 +96,8 @@ But clarify need ignored URL return nil.")
 			     (shimbun-rss-node-text dc-ns 'date entry)))
 		   (author-node (shimbun-rss-find-el
 				 (intern (concat atom-ns "author")) entry))
-		   (author (or (when (and author-node (listp author-node))
-				 (mapconcat '(lambda (item)
-					       (shimbun-rss-node-text atom-ns 'name item))
-					    author-node ","))
+		   (author (or (and (consp author-node)
+				    (mapconcat fn author-node ","))
 			       (shimbun-rss-node-text dc-ns 'creator entry)
 			       (shimbun-rss-node-text dc-ns 'contributor entry)
 			       author))

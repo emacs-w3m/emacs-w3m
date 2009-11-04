@@ -210,9 +210,9 @@
 	      (symbol-name tag)
 	      (if attributes
 		  (concat " "
-			  (mapconcat '(lambda (attr)
-					(concat (symbol-name (car attr))
-						"=\"" (cdr attr) "\""))
+			  (mapconcat (lambda (attr)
+				       (concat (symbol-name (car attr))
+					       "=\"" (cdr attr) "\""))
 				     attributes " "))
 		"")
 	      (if children

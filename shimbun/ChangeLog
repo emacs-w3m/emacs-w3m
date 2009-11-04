@@ -1,3 +1,9 @@
+2008-11-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-atom.el (shimbun-atom-get-headers): Silence XEmacs' byte compiler.
+
+	* sb-atom-hash.el (shimbun-atom-compose-tag): Don't quote lambda form.
+
 2008-10-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-clear-contents): Fix the way to extract pre-
