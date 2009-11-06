@@ -1,3 +1,8 @@
+2009-11-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m-antenna.el (w3m-antenna-check-rss): Ignore future entries to
+	display site announcements.
+
 2009-11-03  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* mew-w3m.el (mew-w3m-region-cite-mark): Add new selection.
