@@ -431,12 +431,14 @@ Skip[\t\n ]+to[\t\n ]+next[\t\n ]+paragraph[\t\n ]*</a>[\t\n ]*"
 	(apostrophe (condition-case nil
 			(make-char 'japanese-jisx0208 33 71)
 		      (error nil)))
-	(headers (luna-call-next-method)))
+	(headers (luna-call-next-method))
+	from)
     (dolist (header headers headers)
       ;; Show the group name in the From header.
-      (shimbun-header-set-from header
-			       (concat (shimbun-header-from header)
-				       " <" name ">"))
+      (when (and (setq from (shimbun-header-from header))
+		 (string-match "\\`By [A-Z][A-Z]+" from))
+	(setq from (substring from 3)))
+      (shimbun-header-set-from header (concat from " <" name ">"))
       ;; Replace wide apostrophe with the normal one in the subject.
       (when apostrophe
 	(shimbun-header-set-subject

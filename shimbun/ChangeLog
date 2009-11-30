@@ -1,30 +1,34 @@
-2008-11-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+2009-11-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nytimes.el (shimbun-get-headers): Remove "By " from From header.
+
+2009-11-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-atom.el (shimbun-atom-get-headers): Silence XEmacs' byte compiler.
 
 	* sb-atom-hash.el (shimbun-atom-compose-tag): Don't quote lambda form.
 
-2008-10-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+2009-10-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-clear-contents): Fix the way to extract pre-
 	formatted contents.
 
-2008-10-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+2009-10-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-kantei-groups, shimbun-index-url)
 	(shimbun-from-address, shimbun-get-headers): Support m-magazine-cn and
 	m-magazine-kr groups.
 
-2008-10-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+2009-10-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-clear-contents): Fix regexp matching
 	captions after images.
 
-2008-10-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+2009-10-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-clear-contents): Don't remove footer.
 
-2008-10-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+2009-10-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-clear-contents): Allow irregularly formatted
 	tags that separate sub contents.
@@ -36,11 +40,11 @@
 	(shimbun-make-contents): Follow window.location URL.
 	(shimbun-clear-contents): Added new tag for removal.
 
-2008-10-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+2009-10-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-clear-contents): Remove useless tags.
 
-2008-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+2009-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-clear-contents): Gather all significant
 	contents.
@@ -74,12 +78,12 @@
 	* sb-perlentaucher-de.el (shimbun-clear-contents): RSS does not point
 	to teaser anymore, so loading of new URL removed.
 
-2008-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+2009-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-index-url): Update url for m-magazine-en.
 	(shimbun-clear-contents): Fix regexps.
 
-2008-09-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+2009-09-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el: Support Hatoyama Cabinet E-mail Magazine.
 
