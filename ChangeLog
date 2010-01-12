@@ -1,5 +1,7 @@
 2010-01-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-print-this-url): Exclude empty image-alt string.
+
 	* w3m-form.el (w3m-form-parse-and-fontify): Strip text props from
 	string elements contained in w3m-current-forms so as to enable XEmacs
 	to read ~/.w3m/.sessions file.

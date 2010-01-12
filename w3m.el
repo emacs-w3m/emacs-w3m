@@ -6952,15 +6952,15 @@ of the url currently displayed.  The browser is defined in
 	(url (if interactive-p
 		 (or (w3m-anchor) (w3m-image))
 	       (or (w3m-anchor (point)) (w3m-image (point)))))
-	(alt (or (if interactive-p
-		     (w3m-image-alt)
-		   (w3m-image-alt (point))))))
+	(alt (if interactive-p
+		 (w3m-image-alt)
+	       (w3m-image-alt (point)))))
     (when (or url interactive-p)
       (and url interactive-p (kill-new url))
       (w3m-message "%s%s"
-		   (if alt
-		       (format "%s: " alt)
-		     "")
+		   (if (zerop (length alt))
+		       ""
+		     (concat alt ": "))
 		   (or (w3m-url-readable-string url)
 		       (and (w3m-action) "There is a form")
 		       "There is no url")))))
