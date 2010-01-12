@@ -1,6 +1,6 @@
 ;;; w3m-hist.el --- the history management system for emacs-w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2008, 2009
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2008, 2009, 2010
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
@@ -619,7 +619,8 @@ position.  Naturally, those should be treated as buffer-local."
   (interactive)
   (when (cadar w3m-history)
     (w3m-history-add-properties (list :window-start (window-start)
-				      :position (point)))
+				      :position (point)
+				      :window-hscroll (window-hscroll)))
     (when (interactive-p)
       (message "The current cursor position saved"))))
 
@@ -636,7 +637,9 @@ it works although it may not be perfect."
 	     (when (<= start (point-max))
 	       (setq window (get-buffer-window (current-buffer) 'all-frames))
 	       (when window
-		 (set-window-start window start))
+		 (set-window-start window start)
+		 (set-window-hscroll
+		  window (or (w3m-history-plist-get :window-hscroll) 0)))
 	       (goto-char (min position (point-max)))
 	       (let ((deactivate-mark nil))
 		 (run-hooks 'w3m-after-cursor-move-hook))))

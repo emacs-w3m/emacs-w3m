@@ -1,6 +1,6 @@
 ;;; w3m-util.el --- Utility macros and functions for emacs-w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -590,7 +590,8 @@ according to `w3m-pop-up-windows' and `w3m-pop-up-frames' (which see)."
       (if (w3m-popup-window-p)
 	  (let ((pop-up-windows t))
 	    (pop-to-buffer buffer))
-	(switch-to-buffer buffer)))))
+	(switch-to-buffer buffer))))
+  (w3m-history-restore-position))
 
 (eval-when-compile
   (when (and (fboundp 'select-frame-set-input-focus)

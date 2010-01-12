@@ -1,3 +1,13 @@
+2010-01-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-next-buffer): Save and restore positions.
+	(w3m-close-window): Save positions.
+
+	* w3m-hist.el (w3m-history-store-position)
+	(w3m-history-restore-position): Save and restore hscroll.
+
+	* w3m-util.el (w3m-popup-buffer): Restore positions.
+
 2009-11-06  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-antenna.el (w3m-antenna-check-rss): Ignore future entries to

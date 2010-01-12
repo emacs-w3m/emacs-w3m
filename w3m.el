@@ -1,7 +1,7 @@
 ;;; w3m.el --- an Emacs interface to w3m -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
-;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
+;; 2010 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -7392,12 +7392,14 @@ a page in a new buffer with the correct width."
   (interactive "p")
   (unless arg (setq arg 1))
   (when (and (/= arg 0) (eq major-mode 'w3m-mode))
+    (w3m-history-store-position)
     (let* ((buffers (w3m-list-buffers))
 	   (len (length buffers)))
       (switch-to-buffer
        (nth (mod (+ arg (- len (length (memq (current-buffer) buffers))))
 		 len)
 	    buffers)))
+    (w3m-history-restore-position)
     (run-hooks 'w3m-select-buffer-hook)
     (w3m-select-buffer-update)))
 
@@ -7902,6 +7904,7 @@ This command closes all emacs-w3m windows, but all the emacs-w3m
 buffers remain.  Frames created for emacs-w3m sessions will also be
 closed.  See also `w3m-quit'."
   (interactive)
+  (w3m-history-store-position)
   ;; `w3m-list-buffers' won't return all the emacs-w3m buffers if
   ;; `w3m-fb-mode' is turned on.
   (let* ((buffers (w3m-list-buffers t))
