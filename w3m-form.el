@@ -1,6 +1,6 @@
 ;;; w3m-form.el --- Stuffs to handle <form> tag
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -913,17 +913,15 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	      (when textareainfo
 		(setq start (point))
 		(skip-chars-forward "^<")
-		(setq end (point))
-		(with-temp-buffer
-		  (insert-buffer-substring buffer start end)
-		  (w3m-decode-entities)
-		  (goto-char (point-min))
-		  (while (search-forward "\r\n" nil t) (replace-match "\n"))
-		  (setq text (buffer-string)))
-		(w3m-form-put (nth 0 textareainfo)
-			      (nth 1 textareainfo)
-			      (nth 2 textareainfo)
-			      text)))))))
+		(setq text (buffer-substring-no-properties start (point)))
+		(w3m-form-put
+		 (nth 0 textareainfo) (nth 1 textareainfo) (nth 2 textareainfo)
+		 (with-temp-buffer
+		   (insert text)
+		   (w3m-decode-entities)
+		   (goto-char (point-min))
+		   (while (search-forward "\r\n" nil t) (replace-match "\n"))
+		   (buffer-string)))))))))
       (when (search-forward "</internal>" nil t)
 	(delete-region internal-start (match-end 0))))
     (setq w3m-current-forms (if (eq w3m-type 'w3mmee)

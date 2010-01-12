@@ -1,5 +1,11 @@
 2010-01-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-form.el (w3m-form-parse-and-fontify): Strip text props from
+	string elements contained in w3m-current-forms so as to enable XEmacs
+	to read ~/.w3m/.sessions file.
+
+2010-01-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-refontify-anchor, w3m-cache-setup)
 	(w3m-cache-remove-oldest, w3m-cache-remove, w3m-cache-contents)
 	(w3m-cache-request-contents, w3m-view-this-url-1)
