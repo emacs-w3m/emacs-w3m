@@ -1,6 +1,6 @@
 ;;; w3m-session.el --- Functions to operate session of w3m -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2008, 2009
+;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2008, 2009, 2010
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Hideyuki SHIRAI <shirai@meadowy.org>
@@ -211,8 +211,7 @@ Sorry, an error found in \"%s\"; may we remove it? "
 	     (setq titles (cons (cons (car x) (car x)) titles)))
 	   sessions)
      (setq title (or w3m-current-title
-		     (save-excursion
-		       (set-buffer (car bufs))
+		     (with-current-buffer (car bufs)
 		       w3m-current-title)))
      (setq titles (cons (cons title title) titles))
      (catch 'loop

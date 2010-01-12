@@ -73,9 +73,9 @@
     (require 'poem)))
 
 ;;; Things should be defined in advance:
-
-(eval-and-compile
-  (autoload 'w3m-fb-frame-parameter "w3m-fb"))
+(eval-when-compile
+  (autoload 'w3m-fb-frame-parameter "w3m-fb")
+  (autoload 'w3m-history-restore-position "w3m-hist" nil t))
 
 ;;; Control structures:
 
@@ -1186,8 +1186,7 @@ The value of DEFAULT is inserted into PROMPT."
 
 (defun w3m-unseen-buffer-p (buffer)
   "Return t if buffer unseen."
-  (save-excursion
-    (set-buffer buffer)
+  (with-current-buffer buffer
     w3m-buffer-unseen))
 
 (defun w3m-visited-file-modtime ()

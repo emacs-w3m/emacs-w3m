@@ -1,5 +1,23 @@
 2010-01-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-refontify-anchor, w3m-cache-setup)
+	(w3m-cache-remove-oldest, w3m-cache-remove, w3m-cache-contents)
+	(w3m-cache-request-contents, w3m-view-this-url-1)
+	(w3m-download-this-url, w3m-goto-url)
+	* w3m-session.el (w3m-session-save)
+	* w3m-bookmark.el (w3m-bookmark-sections, w3m-bookmark-write-file)
+	(w3m-bookmark-kill-entries, w3m-bookmark-undo, w3m-bookmark-iterator)
+	* w3m-util.el (w3m-unseen-buffer-p): Use with-current-buffer rather
+	than save-excursion + set-buffer.
+
+	* w3m.el (toplevel, w3m-highlight-current-anchor-1): Use point-at-eol
+	rather than `(save-excursion (end-of-line) (point))'.
+
+	* w3m-util.el: Autoload w3m-history-restore-position when compiling;
+	autoload w3m-fb-frame-parameter only when compiling.
+
+2010-01-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-next-buffer): Save and restore positions.
 	(w3m-close-window): Save positions.
 

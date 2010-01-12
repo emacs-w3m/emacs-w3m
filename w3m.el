@@ -260,10 +260,8 @@ The valid values include `w3m', `w3mmee', and `w3m-m17n'.")
 		   (t 'other))))
 	  (when (re-search-forward "options +" nil t)
 	    (setq w3m-compile-options
-		  (or (split-string (buffer-substring
-				     (match-end 0)
-				     (save-excursion (end-of-line)
-						     (point)))
+		  (or (split-string (buffer-substring (match-end 0)
+						      (point-at-eol))
 				    ",")
 		      (list nil)))
 	    (when (member "m17n" w3m-compile-options)
@@ -4283,8 +4281,7 @@ If optional KEEP-PROPERTIES is non-nil, text property is reserved."
   "Refontify anchors as they have already arrived.
 It replaces the faces on the arrived anchors from `w3m-anchor' to
 `w3m-arrived-anchor'."
-  (save-excursion
-    (and buff (set-buffer buff))
+  (with-current-buffer (or buff (current-buffer))
     (let (prop)
       (when (and (eq major-mode 'w3m-mode)
 		 (get-text-property (point) 'w3m-anchor-sequence)
@@ -4558,8 +4555,7 @@ if it has no scheme part."
   "Initialize the variables for managing the cache."
   (unless (and (bufferp w3m-cache-buffer)
 	       (buffer-live-p w3m-cache-buffer))
-    (save-excursion
-      (set-buffer (w3m-get-buffer-create " *w3m cache*"))
+    (with-current-buffer (w3m-get-buffer-create " *w3m cache*")
       (buffer-disable-undo)
       (set-buffer-multibyte nil)
       (setq buffer-read-only t
@@ -4605,8 +4601,7 @@ already been the data corresponding to URL in the cache."
 	 (symbol-value ident))))
 
 (defun w3m-cache-remove-oldest ()
-  (save-excursion
-    (set-buffer w3m-cache-buffer)
+  (with-current-buffer w3m-cache-buffer
     (goto-char (point-min))
     (unless (zerop (buffer-size))
       (let ((ident (get-text-property (point) 'w3m-cache))
@@ -4626,8 +4621,7 @@ already been the data corresponding to URL in the cache."
 	beg end)
     (when (memq ident w3m-cache-articles)
       ;; It was in the cache.
-      (save-excursion
-	(set-buffer w3m-cache-buffer)
+      (with-current-buffer w3m-cache-buffer
 	(let (buffer-read-only)
 	  (when (setq beg (text-property-any
 			   (point-min) (point-max) 'w3m-cache ident))
@@ -4649,8 +4643,7 @@ identifies the data in the cache."
 	 (>= (length w3m-cache-articles) w3m-keep-cache-size)
 	 (w3m-cache-remove-oldest))
     ;; Insert the new article.
-    (save-excursion
-      (set-buffer w3m-cache-buffer)
+    (with-current-buffer w3m-cache-buffer
       (let (buffer-read-only)
 	(goto-char (point-max))
 	(let ((b (point)))
@@ -4670,8 +4663,7 @@ BUFFER is nil, all contents will be inserted in the current buffer."
     (when (memq ident w3m-cache-articles)
       ;; It was in the cache.
       (let (beg end)
-	(save-excursion
-	  (set-buffer w3m-cache-buffer)
+	(with-current-buffer w3m-cache-buffer
 	  (if (setq beg (text-property-any
 			 (point-min) (point-max) 'w3m-cache ident))
 	      ;; Find the end (i.e., the beginning of the next article).
@@ -4681,9 +4673,7 @@ BUFFER is nil, all contents will be inserted in the current buffer."
 	    (setq w3m-cache-articles (delq ident w3m-cache-articles))))
 	(and beg
 	     end
-	     (save-excursion
-	       (when buffer
-		 (set-buffer buffer))
+	     (with-current-buffer (or buffer (current-buffer))
 	       (let (buffer-read-only)
 		 (insert-buffer-substring w3m-cache-buffer beg end))
 	       t))))))
@@ -6678,8 +6668,7 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	  ;; FIXME: what we should actually do is to modify the `w3m-goto-url'
 	  ;; function so that it may return a proper value, and checking it.
 	  (when (and (marker-buffer pos) (buffer-name (marker-buffer pos)))
-	    (save-excursion
-	      (set-buffer (marker-buffer pos))
+	    (with-current-buffer (marker-buffer pos)
 	      (save-excursion
 		(goto-char pos)
 		(w3m-refontify-anchor)))))
@@ -6938,8 +6927,7 @@ of the url currently displayed.  The browser is defined in
 	      (success (w3m-download url nil nil handler))
 	    (and success
 		 (buffer-name (marker-buffer pos))
-		 (save-excursion
-		   (set-buffer (marker-buffer pos))
+		 (with-current-buffer (marker-buffer pos)
 		   (when (equal curl w3m-current-url)
 		     (goto-char pos)
 		     (w3m-refontify-anchor))))))))
@@ -6986,8 +6974,7 @@ of the url currently displayed.  The browser is defined in
 (defun w3m-highlight-current-anchor-1 (seq)
   "Highlight an anchor in the line if the anchor sequence is the same as SEQ.
 Return t if highlighting is successful."
-  (let ((limit (save-excursion (end-of-line)
-			       (point)))
+  (let ((limit (point-at-eol))
 	ov beg pos pseq)
     (save-excursion
       (beginning-of-line)
@@ -8988,8 +8975,8 @@ Cannot run two w3m processes simultaneously \
 	      (type (prog1
 			(w3m-goto-url (car urls))
 		      (dolist (url (cdr urls))
-			(save-excursion
-			  (set-buffer (w3m-copy-buffer nil nil nil 'empty))
+			(with-current-buffer (w3m-copy-buffer nil nil nil
+							      'empty)
 			  (save-window-excursion
 			    (w3m-goto-url url))))))
 	    type))
