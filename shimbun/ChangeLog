@@ -1,3 +1,13 @@
+2010-01-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mew-shimbun.el (mew-kill-buffer): Use with-current-buffer rather than
+	save-excursion + set-buffer.
+	(mew-mark-clean-up): Use save-current-buffer instead of save-excursion.
+
+	* sb-fml.el (shimbun-make-contents): Use point-at-eol rather than
+	`(save-excursion (end-of-line) (point))'; use point-at-bol rather than
+	beginning-of-line + point.
+
 2009-11-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nytimes.el (shimbun-get-headers): Remove "By " from From header.
