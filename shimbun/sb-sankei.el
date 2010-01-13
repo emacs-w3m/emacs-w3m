@@ -1,6 +1,6 @@
 ;;; sb-sankei.el --- shimbun backend for the MSN Sankei News -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009 Katsumi Yamaoka
+;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -224,6 +224,7 @@ title[\t\n ]+end[\t\n ]+-+>"
 	       (re-search-forward "\
 \\(<div[\t\n ]\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"newslistNumber\"\\)\
 \\|\\(<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"RelatedImg\"\\)\
+\\|\\(?:[\t\n ]*<div[^>]*>[\t\n ]*<h[0-9]>[\t\n ]*PR[\t\n ]*</h[0-9]>\\)\
 \\|\\(?:[\t\n 　]*<\\(?:/div\\|/?p\\)>\\)*[\t\n 　]*<script[\t\n ]"
 				  nil t)))
 	(progn

@@ -1,3 +1,8 @@
+2010-01-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-clear-contents): Fix regexp matching the
+	end of contents.
+
 2010-01-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mew-shimbun.el (mew-kill-buffer): Use with-current-buffer rather than
