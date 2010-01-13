@@ -4094,8 +4094,7 @@ Wanderlust:
   "Toggle displaying of all images in the message buffer.
 If the prefix arg is given, all images are considered to be safe."
   (interactive "P")
-  (save-excursion
-    (set-buffer wl-message-buffer)
+  (with-current-buffer wl-message-buffer
     (w3m-toggle-inline-images arg)))
 
 (eval-after-load "wl-summary"
