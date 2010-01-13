@@ -1,6 +1,6 @@
 ;; mew-w3m.el --- View Text/Html content with w3m in Mew
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2008, 2009
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2008, 2009, 2010
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Shun-ichi GOTO  <gotoh@taiyo.co.jp>,
@@ -151,8 +151,7 @@ This variable is effective only in XEmacs, Emacs 21 and Emacs 22."
 	     (mew-w3m-auto-insert-image t)
 	     (mew-w3m-use-safe-url-regexp nil))
 	 (mew-summary-display 'force))
-     (save-excursion
-       (set-buffer (mew-buffer-message))
+     (with-current-buffer (mew-buffer-message)
        (let* ((image (get-text-property (point-min) 'w3m-images))
 	      (w3m-display-inline-images image)
 	      (w3m-safe-url-regexp (when mew-w3m-use-safe-url-regexp
@@ -275,8 +274,7 @@ This variable is effective only in XEmacs, Emacs 21 and Emacs 22."
 	 (mew-w3m-region begin end xref (mew-charset-guess-region begin end)))
 	(t		;; Old Mew
 	 (setq charset (or (mew-syntax-get-param params "charset")
-			   (save-excursion
-			     (set-buffer cache)
+			   (with-current-buffer cache
 			     (mew-charset-guess-region begin end))))
 	 (if charset
 	     (setq wcs (mew-charset-to-cs charset))

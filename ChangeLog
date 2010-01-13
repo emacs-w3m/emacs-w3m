@@ -1,3 +1,20 @@
+2010-01-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-bug.el (report-emacs-w3m-bug)
+	* w3m-session.el (w3m-session-save, w3m-session-automatic-save)
+	(w3m-session-deleted-save, w3m-session-crash-recovery-save)
+	* w3m.el (w3m-key-binding): Use save-current-buffer instead of
+	save-excursion.
+
+	* mew-w3m.el (mew-w3m-view-inline-image, mew-mime-text/html-w3m)
+	* w3m-xmas.el (w3m-window-hscroll)
+	* w3mhack.el (toplevel, w3mhack-generate-load-file): Use
+	with-current-buffer rather than save-excursion + set-buffer.
+
+	* w3m-cookie.el (w3m-cookie-parse-args): Use with-current-buffer rather
+	than save-excursion + set-buffer; no need to use save-restriction and
+	narrow-to-region; remove duplicate set-syntax-table.
+
 2010-01-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-print-this-url): Exclude empty image-alt string.

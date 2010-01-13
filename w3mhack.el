@@ -1,6 +1,6 @@
 ;;; w3mhack.el --- a hack to setup the environment for building w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
@@ -76,8 +76,7 @@ but do not execute them.")
 (let ((test (lambda (shell)
 	      (let ((buffer (generate-new-buffer " *temp*"))
 		    (msg "Hello World"))
-		(save-excursion
-		  (set-buffer buffer)
+		(with-current-buffer buffer
 		  (condition-case nil
 		      (call-process shell nil t nil "-c"
 				    (concat "MESSAGE=\"" msg "\"&&"
@@ -930,8 +929,7 @@ NOTE: This function must be called from the top directory."
 	(message " `%s' is up to date" w3mhack-load-file)
       (when (fboundp 'autoload-ensure-default-file)
 	(autoload-ensure-default-file generated-autoload-file))
-      (save-excursion
-	(set-buffer (find-file-noselect generated-autoload-file))
+      (with-current-buffer (find-file-noselect generated-autoload-file)
 	(if (fboundp 'autoload-ensure-default-file)
 	    (let ((case-fold-search t))
 	      (goto-char (point-min))

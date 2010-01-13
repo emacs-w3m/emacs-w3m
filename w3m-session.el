@@ -224,7 +224,7 @@ Sorry, an error found in \"%s\"; may we remove it? "
 	     (setq prompt "Again New session title: ")
 	   (throw 'loop t))))
      (setq cbuf (current-buffer))
-     (save-excursion
+     (save-current-buffer
        (while (setq buf (car bufs))
 	 (setq bufs (cdr bufs))
 	 (set-buffer buf)
@@ -265,7 +265,7 @@ Sorry, an error found in \"%s\"; may we remove it? "
 	   tmp tmptitle tmptime tmpurls)
        (when bufs
 	 (setq cbuf (current-buffer))
-	 (save-excursion
+	 (save-current-buffer
 	   (while (setq buf (car bufs))
 	     (setq bufs (cdr bufs))
 	     (set-buffer buf)
@@ -312,7 +312,7 @@ Sorry, an error found in \"%s\"; may we remove it? "
 	   tmp tmptitle tmptime tmpurls)
        (when bufs
 	 (setq bufs (sort bufs 'w3m-buffer-name-lessp))
-	 (save-excursion
+	 (save-current-buffer
 	   (while (setq buf (car bufs))
 	     (setq bufs (cdr bufs))
 	     (set-buffer buf)
@@ -348,7 +348,7 @@ Sorry, an error found in \"%s\"; may we remove it? "
 	   (title w3m-session-crash-recovery-title)
 	   urls buf tmp)
        (when bufs
-	 (save-excursion
+	 (save-current-buffer
 	   (while (setq buf (car bufs))
 	     (setq bufs (cdr bufs))
 	     (set-buffer buf)

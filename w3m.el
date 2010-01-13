@@ -624,7 +624,7 @@ nil which provides Lynx-like keys."
 					w3m-lynx-like-map)
 			 w3m-minor-mode-map (w3m-make-minor-mode-keymap))))
 	     (let ((buffers (buffer-list)))
-	       (save-excursion
+	       (save-current-buffer
 		 (while buffers
 		   (set-buffer (car buffers))
 		   (if (eq major-mode 'w3m-mode)
