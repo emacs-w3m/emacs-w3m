@@ -169,12 +169,14 @@
 (eval-when-compile
   (autoload 'doc-view-mode "doc-view" nil t)
   (autoload 'doc-view-mode-p "doc-view")
+  (autoload 'quit-window "window" nil t)
   (autoload 'rfc2368-parse-mailto-url "rfc2368")
   (autoload 'widget-convert-button "wid-edit")
   (autoload 'widget-forward "wid-edit" nil t)
   (autoload 'widget-get "wid-edit")
   (unless (fboundp 'char-to-int)
     (defalias 'char-to-int 'identity))
+  (defvar doc-view-mode-map)
   (defvar w3m-bookmark-mode)
   (defvar w3m-bookmark-menu-items)
   (defvar w3m-bookmark-menu-items-pre)
@@ -2730,6 +2732,9 @@ db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?\\'\
 
 (defvar w3m-mode-map nil "Keymap for emacs-w3m buffers.")
 (defvar w3m-link-map nil "Keymap used on links.")
+(defvar w3m-doc-view-map nil
+  "Keymap used in `doc-view-mode' that emacs-w3m launches.
+`doc-view-mode-map' gets to be its parent keymap.")
 
 (defvar w3m-mode-setup-functions nil
   "Hook functions run after setting up the `w3m-mode'.")
@@ -6621,7 +6626,9 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 
 (defun w3m-view-this-url-1 (url reload new-session)
   (lexical-let ((url url)
-		pos buffer newbuffer wconfig)
+		(obuffer (current-buffer))
+		(wconfig (current-window-configuration))
+		pos buffer)
     (if new-session
 	(let ((empty
 	       ;; If a new url has the #name portion, we simply copy
@@ -6643,28 +6650,12 @@ compatibility which is described in Section 5.2 of RFC 2396.")
       (setq buffer (current-buffer)))
     (let (handler)
       (w3m-process-do
-	  (success
-	   (save-window-excursion
-	     (prog1
-		 (w3m-goto-url url reload nil nil w3m-current-url handler)
-	       (setq newbuffer (current-buffer)
-		     wconfig (current-window-configuration)))))
-	;; When the buffer's major mode has changed from the w3m-mode
-	;; to another by visiting the new url (possibly a local file,
-	;; a mailto url, etc.), we need to make the new buffer visible.
-	(when (and (eq (with-current-buffer buffer major-mode)
-		       'w3m-mode)
-		   (not (eq (with-current-buffer newbuffer major-mode)
-			    'w3m-mode)))
-	  ;; Empty buffer must delete before restore window configuration.
-	  (when pos
-	    (w3m-delete-buffer-if-empty buffer))
-	  (set-window-configuration wconfig))
-	;; The new session is created.
-	(when pos
-	  ;; Already empty buffer killed if the new url is not the w3m-mode.
-	  (when (buffer-name buffer)
-	    (w3m-delete-buffer-if-empty buffer))
+	  (success (w3m-goto-url url reload nil nil w3m-current-url handler))
+	;; Delete the newly created buffer if it's been made empty.
+	(when (and pos
+		   (buffer-name buffer))
+	  (w3m-delete-buffer-if-empty buffer))
+	(when pos ;; the new session is created.
 	  ;; FIXME: what we should actually do is to modify the `w3m-goto-url'
 	  ;; function so that it may return a proper value, and checking it.
 	  (when (and (marker-buffer pos) (buffer-name (marker-buffer pos)))
@@ -6672,7 +6663,21 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	      (save-excursion
 		(goto-char pos)
 		(w3m-refontify-anchor)))))
-	(w3m-recenter)))))
+	;; We need to restore the window configuration to the former
+	;; one if `w3m-new-session-in-background' is non-nil unless
+	;; the buffer's major mode has changed from the w3m-mode to
+	;; another by visiting the new url (possibly a local file,
+	;; a mailto url, doc-view-mode, etc.).
+	(if (and w3m-new-session-in-background
+		 (not (eq obuffer (current-buffer)))
+		 (or (buffer-name buffer)
+		     ;; Clear "...has been retrieved in..." message.
+		     (progn (w3m-message "") nil))
+		 (or (eq major-mode 'w3m-mode)
+		     (not (eq (with-current-buffer buffer major-mode)
+			      'w3m-mode))))
+	    (set-window-configuration wconfig)
+	  (w3m-recenter))))))
 
 (defun w3m-view-this-url (&optional arg new-session)
   "Display the page pointed to by the link under point.
@@ -8691,6 +8696,10 @@ this function will prompt user for it."
 	(copy-file ftp filename)
 	(message "Wrote %s" filename)))))
 
+(unless w3m-doc-view-map
+  (setq w3m-doc-view-map (make-sparse-keymap))
+  (define-key w3m-doc-view-map "q" 'w3m-doc-view-quit))
+
 (defun w3m-doc-view (url)
   "View PDF/PostScript/DVI files using `doc-view-mode'.
 `w3m-pop-up-windows' and `w3m-pop-up-frames' control how the document
@@ -8722,7 +8731,27 @@ window turns up."
       (set-buffer-modified-p nil)
       (setq buffer-file-name url)
       (doc-view-mode)
+      (use-local-map w3m-doc-view-map)
+      (set-keymap-parent w3m-doc-view-map doc-view-mode-map)
       'internal-view)))
+
+(defun w3m-doc-view-quit (&optional kill)
+  "Quit the `doc-view-mode' window that emacs-w3m launches.
+With the prefix argument KILL, kill the buffer."
+  (interactive "P")
+  (cond (w3m-pop-up-frames
+	 (when (prog1 (one-window-p t) (quit-window kill))
+	   (delete-frame (selected-frame))))
+	(w3m-pop-up-windows
+	 (if (fboundp 'quit-window)
+	     (quit-window kill)
+	   (if kill
+	       (progn
+		 (set-buffer-modified-p nil)
+		 (kill-buffer (current-buffer)))
+	     (bury-buffer)))
+	 (unless (eq (next-window nil 'no-mini) (selected-window))
+	   (delete-window)))))
 
 (eval-and-compile
   (unless (fboundp 'w3m-add-local-hook)

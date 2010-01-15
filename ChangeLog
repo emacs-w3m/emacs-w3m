@@ -1,3 +1,11 @@
+2010-01-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-doc-view-map): New variable.
+	(w3m-view-this-url-1): Improve the way to keep the window configuration
+	for the case where w3m-new-session-in-background is non-nil.
+	(w3m-doc-view): Use w3m-doc-view-map.
+	(w3m-doc-view-quit): New function.
+
 2010-01-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bug.el (report-emacs-w3m-bug)
