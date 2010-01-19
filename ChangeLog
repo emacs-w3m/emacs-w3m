@@ -1,3 +1,7 @@
+2010-01-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-url): Make it work as before for group: urls.
+
 2010-01-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-doc-view-map): New variable.

@@ -9004,9 +9004,9 @@ Cannot run two w3m processes simultaneously \
 	      (type (prog1
 			(w3m-goto-url (car urls))
 		      (dolist (url (cdr urls))
-			(with-current-buffer (w3m-copy-buffer nil nil nil
-							      'empty)
-			  (save-window-excursion
+			(save-window-excursion
+			  (with-current-buffer (w3m-copy-buffer nil nil nil
+								'empty)
 			    (w3m-goto-url url))))))
 	    type))
       ;; Retrieve the page.
