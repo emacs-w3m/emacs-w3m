@@ -1,5 +1,11 @@
 2010-01-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-next-anchor, w3m-previous-anchor, w3m-next-form)
+	(w3m-previous-form, w3m-next-image, w3m-previous-image): Remove unused
+	var `st'.
+
+2010-01-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-goto-url): Make it work as before for group: urls.
 
 2010-01-15  Katsumi Yamaoka  <yamaoka@jpl.org>
