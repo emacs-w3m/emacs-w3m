@@ -1,3 +1,15 @@
+2010-01-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-view-previous-page): Restore positions as well when
+	jumping within a page.
+	(w3m-view-this-url-1): Reset hscroll after retrieving a new page.
+	(w3m-view-this-url): Save positions first.
+	(w3m-delete-buffer): Restore positions in a page being left.
+	(w3m-goto-url): Don't save positions here.
+
+	* w3m-util.el (w3m-popup-buffer): Restore positions only when buffer to
+	be displayed is hidden, not always.
+
 2010-01-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-next-anchor, w3m-previous-anchor, w3m-next-form)

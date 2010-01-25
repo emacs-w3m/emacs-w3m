@@ -6466,7 +6466,9 @@ COUNT is treated as 1 by default if it is omitted."
 		     (nth (1+ index) w3m-name-anchor-from-hist))
 	    (setq index (1+ index)))
 	  (goto-char (nth index w3m-name-anchor-from-hist))
-	  (setcar w3m-name-anchor-from-hist index))
+	  (setcar w3m-name-anchor-from-hist index)
+	  ;; Restore last position.
+	  (w3m-history-restore-position))
       (let ((hist ;; Cons of a new history element and position pointers.
 	     (if (integerp count)
 		 (w3m-history-backward count)
@@ -6651,6 +6653,7 @@ compatibility which is described in Section 5.2 of RFC 2396.")
     (let (handler)
       (w3m-process-do
 	  (success (w3m-goto-url url reload nil nil w3m-current-url handler))
+	(set-window-hscroll (selected-window) 0)
 	;; Delete the newly created buffer if it's been made empty.
 	(when (and pos
 		   (buffer-name buffer))
@@ -6689,6 +6692,8 @@ point."
   (interactive (if (member current-prefix-arg '(2 (16)))
 		   (list nil t)
 		 (list current-prefix-arg nil)))
+  ;; Store the current position in the history structure.
+  (w3m-history-store-position)
   (let ((w3m-prefer-cache
 	 (or w3m-prefer-cache
 	     (and (stringp w3m-current-url)
@@ -7465,6 +7470,7 @@ passed to the `w3m-quit' function (which see)."
       (kill-buffer cur)
       (when w3m-use-form
 	(w3m-form-kill-buffer cur))
+      (w3m-history-restore-position)
       (run-hooks 'w3m-delete-buffer-hook)
       (w3m-session-crash-recovery-save)))
   (w3m-select-buffer-update)
@@ -8986,8 +8992,6 @@ Cannot run two w3m processes simultaneously \
 \(Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)")))
     (w3m-process-stop (current-buffer))	; Stop all processes retrieving images.
     (w3m-idle-images-show-unqueue (current-buffer))
-    ;; Store the current position in the history structure.
-    (w3m-history-store-position)
     ;; Access url group
     (if (string-match "\\`group:" url)
 	(let ((urls (mapcar 'w3m-url-decode-string
