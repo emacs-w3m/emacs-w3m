@@ -9316,11 +9316,13 @@ If the prefix arg ARG is given, it also clears forms and post data."
 	  (when (and (setq post-data (w3m-history-plist-get :post-data))
 		     (not (y-or-n-p "Repost form data? ")))
 	    (setq post-data nil)))
+	(w3m-history-store-position)
 	(w3m-goto-url w3m-current-url 'reload nil post-data
 		      (w3m-history-plist-get :referer)
 		      nil
 		      (w3m-history-element (cadar w3m-history) t)
-		      no-popup))
+		      no-popup)
+	(w3m-history-restore-position))
     (w3m-message "Can't reload this page")))
 
 (defun w3m-reload-all-pages (&optional arg)

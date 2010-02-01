@@ -618,9 +618,11 @@ Data consist of the position where the window starts and the cursor
 position.  Naturally, those should be treated as buffer-local."
   (interactive)
   (when (cadar w3m-history)
-    (w3m-history-add-properties (list :window-start (window-start)
-				      :position (point)
-				      :window-hscroll (window-hscroll)))
+    (w3m-history-add-properties
+     (list :window-start (window-start)
+	   :position (cons (count-lines (point-min) (point-at-bol))
+			   (current-column))
+	   :window-hscroll (window-hscroll)))
     (when (interactive-p)
       (message "The current cursor position saved"))))
 
@@ -640,7 +642,9 @@ it works although it may not be perfect."
 		 (set-window-start window start)
 		 (set-window-hscroll
 		  window (or (w3m-history-plist-get :window-hscroll) 0)))
-	       (goto-char (min position (point-max)))
+	       (goto-char (point-min))
+	       (forward-line (car position))
+	       (move-to-column (cdr position))
 	       (let ((deactivate-mark nil))
 		 (run-hooks 'w3m-after-cursor-move-hook))))
 	    ((interactive-p)
