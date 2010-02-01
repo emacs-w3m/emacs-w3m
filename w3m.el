@@ -9351,7 +9351,9 @@ If the prefix arg ARG is given, it toggles the visibility of images."
 	  (w3m-history-reuse-history-elements
 	   ;; Don't move the history position.
 	   'reload))
-      (w3m-goto-url w3m-current-url 'redisplay))))
+      (w3m-history-store-position)
+      (w3m-goto-url w3m-current-url 'redisplay)
+      (w3m-history-restore-position))))
 
 (defun w3m-redisplay-and-reset (&optional arg)
   "Redisplay the current page and reset the user-specified values.
