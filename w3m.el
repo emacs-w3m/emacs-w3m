@@ -4999,20 +4999,25 @@ retrieval is successful."
 			  (format "%s.%d." (user-login-name) (emacs-pid))))
 		(cfile (make-temp-name
 			(expand-file-name "w3melck" w3m-profile-directory)))
+		(env (copy-sequence w3m-command-environment))
 		file)
 	    (with-temp-buffer
 	      (insert lcookie)
 	      (write-region (point-min) (point-max) cfile 'nomsg))
 	    (w3m-process-with-environment
-		(list
-		 (cons "LOCAL_COOKIE" lcookie)
-		 (cons "LOCAL_COOKIE_FILE" cfile)
-		 (cons "QUERY_STRING"
-		       (format
-			"dir=%s&cookie=%s"
-			(encode-coding-string (w3m-url-to-file-name url)
-					      w3m-file-name-coding-system)
-			lcookie)))
+		(append
+		 (list
+		  (cons "LOCAL_COOKIE" lcookie)
+		  (cons "LOCAL_COOKIE_FILE" cfile)
+		  (cons "QUERY_STRING"
+			(format
+			 "dir=%s&cookie=%s"
+			 (encode-coding-string (w3m-url-to-file-name url)
+					       w3m-file-name-coding-system)
+			 lcookie)))
+		 (delq (assoc "LOCAL_COOKIE" env)
+		       (delq (assoc "LOCAL_COOKIE_FILE" env)
+			     (delq (assoc "QUERY_STRING" env) env))))
 	      (call-process w3m-dirlist-cgi-program nil t nil))
 	    ;; delete local cookie file
 	    (when (and (file-exists-p cfile) (file-writable-p cfile))
@@ -5918,9 +5923,11 @@ be displayed especially in shimbun articles."
 					w3m-input-coding-system))
 	     (default-process-coding-system
 	       (cons coding-system-for-read coding-system-for-write))
+	     (env (copy-sequence w3m-command-environment))
 	     type)
 	(setq w3m-display-ins-del nil)
-	(w3m-process-with-environment '(("LANG" . "C"))
+	(w3m-process-with-environment (cons '("LANG" . "C")
+					    (delq (assoc "LANG" env) env))
 	  (call-process (or w3m-halfdump-command w3m-command) nil t nil "-o")
 	  (goto-char (point-min))
 	  (when (re-search-forward "display_ins_del=<\\([^>]+\\)>" nil t)

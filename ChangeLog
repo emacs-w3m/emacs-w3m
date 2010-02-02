@@ -1,3 +1,9 @@
+2010-02-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-local-dirlist-cgi, w3m-set-display-ins-del):
+	Honor w3m-command-environment.
+	Suggested by Toru TSUNEYOSHI <t_tuneyosi@hotmail.com>.
+
 2010-02-01  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-redisplay-this-page): Save positions.
