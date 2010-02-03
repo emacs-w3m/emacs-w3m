@@ -10,8 +10,7 @@
 
 2010-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-reload-this-page, w3m-redisplay-this-page): Save
-	positions.
+	* w3m.el (w3m-reload-this-page): Save positions.
 
 	* w3m-hist.el (w3m-history-store-position)
 	(w3m-history-restore-position): Use line number and column number to
