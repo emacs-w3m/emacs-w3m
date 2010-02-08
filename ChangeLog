@@ -1,3 +1,10 @@
+2010-02-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-cache-available-p): Now, pages with neither Last-Modified
+	header and ETag header are treated as dynamically-generated pages.
+	(w3m-cache-header-delete-variable-part): Contination lines are also
+	removed.
+
 2010-02-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-local-dirlist-cgi, w3m-set-display-ins-del):

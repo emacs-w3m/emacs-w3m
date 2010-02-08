@@ -4575,10 +4575,13 @@ if it has no scheme part."
 	w3m-cache-articles nil))
 
 (defun w3m-cache-header-delete-variable-part (header)
-  (let (buf)
+  (let (buf flag)
     (dolist (line (split-string header "\n+"))
-      (unless (string-match "\\`\\(?:Date\\|Server\\|W3m-[^:]+\\):" line)
-	(push line buf)))
+      (if (string-match "\\`\\(?:Date\\|Server\\|W3m-[^:]+\\):" line)
+	  (setq flag t)
+	(unless (and flag (string-match "\\`[ \t]" line))
+	  (setq flag nil)
+	  (push line buf))))
     (mapconcat (function identity) (nreverse buf) "\n")))
 
 (defun w3m-cache-header (url header &optional overwrite)
@@ -4723,7 +4726,11 @@ BUFFER is nil, all contents will be inserted in the current buffer."
 	       (setq expire (match-string 1 head))
 	       (setq expire (w3m-time-parse-string expire)))
 	      (w3m-time-newer-p expire (current-time)))
-	     (t t)))))
+	     (t
+	      ;; Adhoc heuristic rule: pages with neither
+	      ;; Last-Modified header and ETag header are treated as
+	      ;; dynamically-generated pages.
+	      (string-match "^\\(?:last-modified\\|etag\\):" head))))))
        ident))))
 
 (defun w3m-read-file-name (&optional prompt dir default existing)
