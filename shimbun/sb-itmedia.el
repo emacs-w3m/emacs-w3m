@@ -57,14 +57,20 @@
 	 "vodafone" "shopping"))
     ,@(mapcar
        (lambda (def)
-	 (list (concat "+D.lifestyle.column." (car def))
-	       nil (car def) (cdr def)))
-       '(("asakura" . "麻倉怜士")
-	 ("takemura" . "竹村譲")
-	 ("kodera" . "小寺信良")
-	 ("honda" . "本田雅一")
-	 ("nishi" . "西正")
-	 ("kobayashi" . "こばやしゆたか")))))
+	 (nconc (list (concat "+D.lifestyle.column." (car def)) nil) def))
+       '(("asakura" "麻倉怜士"
+	  "http://www.itmedia.co.jp/keywords/emma.html")
+	 ("honda" "本田雅一")
+	 ("kobayashi" "こばやしゆたか")
+	 ("kodera" "小寺信良")
+	 ("nishi" "西正")
+	 ("ogikubo" "荻窪圭"
+	  "http://plusd.itmedia.co.jp/lifestyle/features/satuei/")
+	 ("tachibana" "橘十徳"
+	  "http://plusd.itmedia.co.jp/lifestyle/features/jibara/")
+	 ("takemura" "竹村譲")
+	 ("unakami" "海上忍"
+	  "http://plusd.itmedia.co.jp/lifestyle/features/keyword/")))))
 
 (defvar shimbun-itmedia-x-face-alist
   '(("\\+D" . "X-Face: #Ur~tK`JhZFFHPEVGKEi`MS{55^~&^0KUuZ;]-@WQ[8\
@@ -94,12 +100,13 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 	    (or (nth 3 (assoc group shimbun-itmedia-group-alist)) group))))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-itmedia))
-  (let* ((group (shimbun-current-group-internal shimbun))
-	 (name (nth 1 (assoc group shimbun-itmedia-group-alist))))
-    (if name
-	(format "http://rss.itmedia.co.jp/rss/2.0/%s.xml" name)
-      (format "http://plusd.itmedia.co.jp/lifestyle/column/%s.html"
-	      (nth 2 (assoc group shimbun-itmedia-group-alist))))))
+  (let ((def (assoc (shimbun-current-group-internal shimbun)
+		    shimbun-itmedia-group-alist)))
+    (or (nth 4 def)
+	(if (nth 1 def)
+	    (format "http://rss.itmedia.co.jp/rss/2.0/%s.xml" (nth 1 def))
+	  (format "http://plusd.itmedia.co.jp/lifestyle/column/%s.html"
+		  (nth 2 def))))))
 
 (luna-define-method shimbun-headers :around ((shimbun shimbun-itmedia)
 					     &optional range)
@@ -121,21 +128,18 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 	  (from (shimbun-from-address shimbun))
 	  headers)
       (goto-char (point-min))
-      (let (start)
-	(when (and (re-search-forward "\
-<!-+[\t\n ]*\\(cms[\t\n /]+index\\(?:[\t\n ]+[^\t\n >-]+\\)?\\)[\t\n ]*-+>"
-				      nil t)
-		   (progn
-		     (setq start (match-end 0))
-		     (re-search-forward (concat "<!-+[\t\n ]*" (match-string 1)
-						"[\t\n ]+end[\t\n ]*-+>")
-					nil t)))
-	  (delete-region (match-beginning 0) (point-max))
-	  (delete-region (point-min) start)))
+      (let ((regexp "\
+<!-+[\t\n ]*cms[\t\n /]+index\\(?:[\t\n ]+[^\t\n >-]+\\)?[\t\n ]*-+>[\t\n ]*"))
+	(when (re-search-forward regexp nil t)
+	  (delete-region (point-min) (match-end 0)))
+	(goto-char (point-max))
+	(when (re-search-backward regexp nil t)
+	  (delete-region (match-beginning 0) (point-max))))
       (goto-char (point-min))
       (while (re-search-forward "<a[\t\n ]+href=\"\
-\\(?:[^\"]+\\)?\\(/lifestyle/articles/\\([0-9][0-9]\\)\\([01][0-9]\\)/\
-\\([0-3][0-9]\\)/news\\([0-9]+\\)\\.html\\)\"[\t\n ]*>[\t\n ]*\\([^<]+\\)"
+\\(?:[^\"]+\\)?\\(/\\(?:lifestyle\\|pcupdate\\)/articles/\
+\\([0-9][0-9]\\)\\([01][0-9]\\)/\\([0-3][0-9]\\)/news\\([0-9]+\\)\\.html\\)\
+\"[\t\n ]*>\\(?:[\t\n ]*\\|[\t\n ]*<strong>[\t\n ]*\\)\\([^<]+\\)"
 				nil t)
 	(push (shimbun-create-header
 	       0 (match-string 6) from

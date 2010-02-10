@@ -1,7 +1,8 @@
 2010-02-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* sb-itmedia.el (shimbun-get-headers): Fix regexp used to ignore
-	unwanted links in non-RSS index pages.
+	* sb-itmedia.el (shimbun-itmedia-group-alist): Add ogikubo, tachibana,
+	and unakami groups in the +D.lifestyle.column hierarchy.
+	(shimbun-index-url, shimbun-get-headers): Work for newly added groups.
 
 2010-01-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
