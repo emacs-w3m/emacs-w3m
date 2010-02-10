@@ -1,6 +1,6 @@
 ;;; sb-itmedia.el --- shimbun backend for ITmedia -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009
+;; Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -123,7 +123,7 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
       (goto-char (point-min))
       (let (start)
 	(when (and (re-search-forward "\
-<!-+[\t\n ]*\\(cms[\t\n /]+index\\(?:[\t\n ]+[^\t\n ->]+\\)?\\)[\t\n ]*-+>"
+<!-+[\t\n ]*\\(cms[\t\n /]+index\\(?:[\t\n ]+[^\t\n >-]+\\)?\\)[\t\n ]*-+>"
 				      nil t)
 		   (progn
 		     (setq start (match-end 0))

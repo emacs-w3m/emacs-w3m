@@ -1,3 +1,8 @@
+2010-02-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-itmedia.el (shimbun-get-headers): Fix regexp used to ignore
+	unwanted links in non-RSS index pages.
+
 2010-01-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-clear-contents): Fix regexp matching the
