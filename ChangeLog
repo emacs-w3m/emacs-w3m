@@ -1,3 +1,7 @@
+2010-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-xmas.el (w3m-window-hscroll): Revert 2010-01-13 change.
+
 2010-02-09  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-cache-available-p): Now, pages with neither Last-Modified

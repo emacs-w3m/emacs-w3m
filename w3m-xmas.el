@@ -964,7 +964,8 @@ necessarily solve the problem completely."
 	  (epos (point-at-eol))
 	  (buf (window-buffer window)))
       (save-selected-window
-	(with-current-buffer buf
+	(save-excursion ;; Don't replace it with:
+	  (set-buffer buf) ;; (with-current-buffer buf
 	  (beginning-of-line)
 	  (condition-case nil
 	      (forward-char hs)
