@@ -61,7 +61,7 @@ WordPress, and TypePad.")
   "\\(<a id=\"comments\">\\|<!-- technorati tags -->\
 \\|<!-- post footer links -->\\|<!-- sidebar -->\\)")
 
-(defvar shimbun-rss-blogs-groups
+(luna-define-method shimbun-groups ((shimbun shimbun-rss-blogs))
   (mapcar 'car shimbun-rss-blogs-group-url-regexp))
 
 (defvar shimbun-rss-blogs-from-address "invalid@nomail.invalid")

@@ -1,3 +1,8 @@
+2010-02-18  David Engster  <dengste@eml.cc>
+
+	* sb-rss-blogs.el (shimbun-rss-blogs-groups): Removed.
+	(shimbun-groups): New override.
+
 2010-02-17  David Engster  <dengste@eml.cc>
 
 	* sb-atom.el (shimbun-atom-get-headers): When encountering an already
