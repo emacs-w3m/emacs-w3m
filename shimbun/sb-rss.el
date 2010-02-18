@@ -1,8 +1,8 @@
 ;;; sb-rss.el --- shimbun backend for RSS (Rich Site Summary).
 
-;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009
+;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
 ;; Koichiro Ohba <koichiro@meadowy.org>
-;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009
+;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
 ;; NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
@@ -202,47 +202,50 @@ but you can identify it from the URL, define this method in a backend.")
 				  '(body nil))
 		      (generate-new-buffer " *temp*")))
       (unwind-protect
-	  (dolist (item (shimbun-rss-find-el (intern (concat rss-ns "item"))
-					     xml)
-			headers)
-	    (let ((url (and (listp item)
-			    (eq (intern (concat rss-ns "item")) (car item))
-			    (shimbun-rss-node-text rss-ns 'link (cddr item)))))
-	      (when url
-		(let* ((date (or (shimbun-rss-get-date shimbun url)
-				 (shimbun-rss-node-text dc-ns 'date item)
-				 (shimbun-rss-node-text rss-ns 'pubDate item)))
-		       (id (shimbun-rss-build-message-id shimbun url date))
-		       (subject (shimbun-rss-node-text rss-ns 'title item)))
-		  (when (and id
-			     (or need-all-items
-				 (not (shimbun-search-id shimbun id)))
-			     (if (and ignored-subject subject)
-				 (not (string-match ignored-subject subject))
-			       t))
-		    (push
-		     (shimbun-create-header
-		      0
-		      (if hankaku
-			  (with-current-buffer hankaku
-			    (insert (or subject ""))
-			    (shimbun-japanese-hankaku-region (point-min)
-							     (point-max))
-			    (prog1 (buffer-string) (erase-buffer)))
-			subject)
-		      (or (shimbun-rss-node-text rss-ns 'author item)
-			  (shimbun-rss-node-text dc-ns 'creator item)
-			  (shimbun-rss-node-text dc-ns 'contributor item)
-			  author
-			  (shimbun-from-address shimbun))
-		      (shimbun-rss-process-date shimbun date)
-		      id "" 0 0 url
-		      (when need-descriptions
-			(let ((description (shimbun-rss-node-text
-					    rss-ns 'description item)))
-			  (when description
-			    (list (cons 'description description))))))
-		     headers))))))
+	  (catch 'done
+	    (dolist (item (shimbun-rss-find-el (intern (concat rss-ns "item"))
+					       xml)
+			  headers)
+	      (let ((url (and (listp item)
+			      (eq (intern (concat rss-ns "item")) (car item))
+			      (shimbun-rss-node-text rss-ns 'link (cddr item)))))
+		(when url
+		  (let* ((date (or (shimbun-rss-get-date shimbun url)
+				   (shimbun-rss-node-text dc-ns 'date item)
+				   (shimbun-rss-node-text rss-ns 'pubDate item)))
+			 (id (shimbun-rss-build-message-id shimbun url date))
+			 (subject (shimbun-rss-node-text rss-ns 'title item)))
+		    (when (and id
+			       (shimbun-search-id shimbun id)
+			       (not need-all-items))
+		      (throw 'done nil))
+		    (when (and id
+			       (if (and ignored-subject subject)
+				   (not (string-match ignored-subject subject))
+				 t))
+		      (push
+		       (shimbun-create-header
+			0
+			(if hankaku
+			    (with-current-buffer hankaku
+			      (insert (or subject ""))
+			      (shimbun-japanese-hankaku-region (point-min)
+							       (point-max))
+			      (prog1 (buffer-string) (erase-buffer)))
+			  subject)
+			(or (shimbun-rss-node-text rss-ns 'author item)
+			    (shimbun-rss-node-text dc-ns 'creator item)
+			    (shimbun-rss-node-text dc-ns 'contributor item)
+			    author
+			    (shimbun-from-address shimbun))
+			(shimbun-rss-process-date shimbun date)
+			id "" 0 0 url
+			(when need-descriptions
+			  (let ((description (shimbun-rss-node-text
+					      rss-ns 'description item)))
+			    (when description
+			      (list (cons 'description description))))))
+		       headers)))))))
 	(when (buffer-live-p hankaku)
 	  (kill-buffer hankaku))))))
 

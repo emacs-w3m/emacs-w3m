@@ -1,6 +1,6 @@
 ;;; sb-atom.el --- shimbun backend for ATOM (Rich Site Summary).
 
-;; Copyright (C) 2006, 2008, 2009 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2006, 2008, 2009, 2010 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: news
@@ -70,53 +70,57 @@ But clarify need ignored URL return nil.")
 	     (author (when (consp author-node)
 		       (mapconcat fn author-node ",")))
 	     url)
-	(dolist (entry (shimbun-rss-find-el
-			(intern (concat atom-ns "entry")) xml))
-	  (setq url
-		(catch 'url
-		  (dolist (link (shimbun-rss-find-el
-				 (intern (concat atom-ns "link")) entry))
-		    (when (string= (shimbun-atom-attribute-value
-				    (intern (concat atom-ns "rel")) link)
-				   "alternate")
-		      (throw 'url (shimbun-atom-attribute-value
-				   (intern (concat atom-ns "href")) link))))))
-	  (unless url
-	    (setq url (shimbun-atom-attribute-value
-		       (intern (concat atom-ns "href"))
-		       (car (shimbun-rss-find-el
-			     (intern (concat atom-ns "link")) entry)))))
-	  (when url
-	    (let* ((date (or (shimbun-rss-get-date shimbun url)
-			     (shimbun-rss-node-text atom-ns 'updated entry)
-			     (shimbun-rss-node-text atom-ns 'published entry)
-			     (shimbun-rss-node-text atom-ns 'modified entry)
-			     (shimbun-rss-node-text atom-ns 'created entry)
-			     (shimbun-rss-node-text atom-ns 'issued entry)
-			     (shimbun-rss-node-text dc-ns 'date entry)))
-		   (author-node (shimbun-rss-find-el
-				 (intern (concat atom-ns "author")) entry))
-		   (author (or (and (consp author-node)
-				    (mapconcat fn author-node ","))
-			       (shimbun-rss-node-text dc-ns 'creator entry)
-			       (shimbun-rss-node-text dc-ns 'contributor entry)
-			       author))
-		   (id (shimbun-rss-build-message-id shimbun url date)))
-	      (when (and id (or need-all-entries
-				(not (shimbun-search-id shimbun id))))
-		(push (shimbun-create-header
-		       0
-		       (or (shimbun-rss-node-text atom-ns 'title entry)
-			   (shimbun-rss-node-text dc-ns 'subject entry))
-		       (or author (shimbun-from-address shimbun))
-		       (shimbun-rss-process-date shimbun date)
-		       id "" 0 0 url
-		       (when need-summaries
-			 (let ((summary (shimbun-rss-node-text
-					 atom-ns 'summary entry)))
-			   (when summary
-			     (list (cons 'summary summary))))))
-		      headers))))))
+	(catch 'done
+	  (dolist (entry (shimbun-rss-find-el
+			  (intern (concat atom-ns "entry")) xml))
+	    (setq url
+		  (catch 'url
+		    (dolist (link (shimbun-rss-find-el
+				   (intern (concat atom-ns "link")) entry))
+		      (when (string= (shimbun-atom-attribute-value
+				      (intern (concat atom-ns "rel")) link)
+				     "alternate")
+			(throw 'url (shimbun-atom-attribute-value
+				     (intern (concat atom-ns "href")) link))))))
+	    (unless url
+	      (setq url (shimbun-atom-attribute-value
+			 (intern (concat atom-ns "href"))
+			 (car (shimbun-rss-find-el
+			       (intern (concat atom-ns "link")) entry)))))
+	    (when url
+	      (let* ((date (or (shimbun-rss-get-date shimbun url)
+			       (shimbun-rss-node-text atom-ns 'updated entry)
+			       (shimbun-rss-node-text atom-ns 'published entry)
+			       (shimbun-rss-node-text atom-ns 'modified entry)
+			       (shimbun-rss-node-text atom-ns 'created entry)
+			       (shimbun-rss-node-text atom-ns 'issued entry)
+			       (shimbun-rss-node-text dc-ns 'date entry)))
+		     (author-node (shimbun-rss-find-el
+				   (intern (concat atom-ns "author")) entry))
+		     (author (or (and (consp author-node)
+				      (mapconcat fn author-node ","))
+				 (shimbun-rss-node-text dc-ns 'creator entry)
+				 (shimbun-rss-node-text dc-ns 'contributor entry)
+				 author))
+		     (id (shimbun-rss-build-message-id shimbun url date)))
+		(when (and id
+			   (not need-all-entries)
+			   (shimbun-search-id shimbun id))
+		  (throw 'done nil))
+		(when id
+		  (push (shimbun-create-header
+			 0
+			 (or (shimbun-rss-node-text atom-ns 'title entry)
+			     (shimbun-rss-node-text dc-ns 'subject entry))
+			 (or author (shimbun-from-address shimbun))
+			 (shimbun-rss-process-date shimbun date)
+			 id "" 0 0 url
+			 (when need-summaries
+			   (let ((summary (shimbun-rss-node-text
+					   atom-ns 'summary entry)))
+			     (when summary
+			       (list (cons 'summary summary))))))
+			headers)))))))
       headers)))
 
 (defun shimbun-atom-attribute-value (attribute node)

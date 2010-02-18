@@ -1,3 +1,9 @@
+2010-02-17  David Engster  <dengste@eml.cc>
+
+	* sb-atom.el (shimbun-atom-get-headers): When encountering an already
+	present article, stop fetching further entries.
+	* sb-rss.el (shimbun-rss-get-headers): Same change as in sb-atom.
+
 2010-02-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-itmedia.el (shimbun-itmedia-group-alist): Add ogikubo, tachibana,
