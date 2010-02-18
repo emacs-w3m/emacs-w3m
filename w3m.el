@@ -3665,7 +3665,8 @@ The database is kept in `w3m-entity-table'."
 					 'w3m-balloon-help help
 					 'w3m-image-usemap usemap
 					 'w3m-image-status 'off
-					 'w3m-image-redundant upper))
+					 'w3m-image-redundant upper
+					 'keymap w3m-link-map))
 	   (unless (w3m-action start)
 	     ;; No need to use `w3m-add-text-properties' here.
 	     (w3m-add-face-property start end
@@ -6961,6 +6962,29 @@ of the url currently displayed.  The browser is defined in
      (t
       (w3m-message "No URL at point")))))
 
+(defun w3m-download-this-image ()
+  "Download the image under point."
+  (interactive)
+  (let ((url (w3m-image)) act)
+    (cond
+     ((w3m-url-valid url)
+      (lexical-let ((pos (point-marker))
+		    (curl w3m-current-url))
+	(w3m-process-with-null-handler
+	  (w3m-process-do
+	      (success (w3m-download url nil nil handler))
+	    (and success
+		 (buffer-name (marker-buffer pos))
+		 (with-current-buffer (marker-buffer pos)
+		   (when (equal curl w3m-current-url)
+		     (goto-char pos)
+		     (w3m-refontify-anchor))))))))
+     ((setq act (w3m-action))
+      (let ((w3m-form-download t))
+	(eval act)))
+     (t
+      (w3m-message "No image at point")))))
+
 (defun w3m-print-current-url ()
   "Display the current url in the echo area and put it into `kill-ring'."
   (interactive)
@@ -6988,6 +7012,26 @@ of the url currently displayed.  The browser is defined in
 		   (or (w3m-url-readable-string url)
 		       (and (w3m-action) "There is a form")
 		       "There is no url")))))
+
+(defun w3m-print-this-image-url (&optional interactive-p)
+  "Display image url under point in echo area and put it into `kill-ring'."
+  (interactive (list t))
+  (let ((deactivate-mark nil)
+	(url (if interactive-p
+		 (w3m-image)
+	       (w3m-image (point))))
+	(alt (if interactive-p
+		 (w3m-image-alt)
+	       (w3m-image-alt (point)))))
+    (when (or url interactive-p)
+      (and url interactive-p (kill-new url))
+      (w3m-message "%s%s"
+		   (if (zerop (length alt))
+		       ""
+		     (concat alt ": "))
+		   (or (w3m-url-readable-string url)
+		       (and (w3m-action) "There is a form")
+		       "There is no image url")))))
 
 (defmacro w3m-delete-all-overlays ()
   "Delete all momentary overlays."
@@ -8090,23 +8134,29 @@ or a list which consists of the following elements:
   `("Link" ;; This cannot be omitted for at least MacOS.
     [,(w3m-make-menu-item "リンクをこのセッションで開く"
 			  "Open Link in This Session")
-     w3m-view-this-url]
+     w3m-view-this-url (w3m-anchor (point))]
     [,(w3m-make-menu-item "リンクを新しいセッションで開く"
 			  "Open Link in New Session")
-     w3m-view-this-url-new-session]
+     w3m-view-this-url-new-session (w3m-anchor (point))]
     [,(w3m-make-menu-item "リンクを外部ブラウザで開く"
 			  "Open Link in an External Browser")
-     w3m-external-view-this-url]
+     w3m-external-view-this-url (w3m-anchor (point))]
     "-"
     [,(w3m-make-menu-item "このリンクをブックマーク..."
 			  "Bookmark This Link...")
-     w3m-bookmark-add-this-url]
+     w3m-bookmark-add-this-url (w3m-anchor (point))]
     [,(w3m-make-menu-item "名前を付けてリンク先を保存..."
 			  "Save Link As...")
-     w3m-download-this-url]
+     w3m-download-this-url (w3m-anchor (point))]
+    [,(w3m-make-menu-item "名前を付けて画像を保存..."
+			  "Save Image As...")
+     w3m-download-this-image (w3m-image (point))]
     [,(w3m-make-menu-item "リンクの URL をコピー"
 			  "Copy Link Location")
-     w3m-print-this-url]))
+     w3m-print-this-url (w3m-anchor (point))]
+    [,(w3m-make-menu-item "画像の URL をコピー"
+			  "Copy Image Location")
+     w3m-print-this-image-url (w3m-image (point))]))
 
 (defun w3m-link-menu (event)
   "Pop up a link menu."

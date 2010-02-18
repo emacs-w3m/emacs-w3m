@@ -1,3 +1,9 @@
+2010-02-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-fontify-images): Add menu to images.
+	(w3m-download-this-image, w3m-print-this-image-url): New functions.
+	(w3m-link-menu): Add them; enable menu only when url or image is there.
+
 2010-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-xmas.el (w3m-window-hscroll): Revert 2010-01-13 change.
