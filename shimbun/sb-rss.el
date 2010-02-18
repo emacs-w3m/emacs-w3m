@@ -218,7 +218,7 @@ but you can identify it from the URL, define this method in a backend.")
 		    (when (and id
 			       (shimbun-search-id shimbun id)
 			       (not need-all-items))
-		      (throw 'done nil))
+		      (throw 'done headers))
 		    (when (and id
 			       (if (and ignored-subject subject)
 				   (not (string-match ignored-subject subject))

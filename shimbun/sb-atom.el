@@ -106,7 +106,7 @@ But clarify need ignored URL return nil.")
 		(when (and id
 			   (not need-all-entries)
 			   (shimbun-search-id shimbun id))
-		  (throw 'done nil))
+		  (throw 'done headers))
 		(when id
 		  (push (shimbun-create-header
 			 0
