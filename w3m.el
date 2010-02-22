@@ -9211,12 +9211,15 @@ Cannot run two w3m processes simultaneously \
 		(run-hook-with-args 'w3m-display-functions real-url)
 		(run-hook-with-args 'w3m-display-hook real-url))
 	      (w3m-session-crash-recovery-save)
-	      ;; restore position must call after hooks for localcgi.
 	      (when (and w3m-current-url
 			 (stringp w3m-current-url)
-			 (string-match "\\`about://\\(?:header\\|source\\)/"
-				       w3m-current-url))
+			 (or (string-match
+			      "\\`about://\\(?:header\\|source\\)/"
+			      w3m-current-url)
+			     (equal (w3m-content-type w3m-current-url)
+				    "text/plain")))
 		(setq truncate-lines nil))
+	      ;; restore position must call after hooks for localcgi.
 	      (when (or reload redisplay)
 		(w3m-history-restore-position))
 	      (w3m-set-buffer-unseen)

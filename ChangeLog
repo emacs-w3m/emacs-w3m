@@ -1,3 +1,7 @@
+2010-02-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-url): Turn truncate-lines off for text/plain pages.
+
 2010-02-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-fontify-images): Add menu to images.
