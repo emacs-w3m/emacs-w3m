@@ -173,7 +173,8 @@ but you can identify it from the URL, define this method in a backend.")
   (shimbun-rss-get-headers shimbun range t))
 
 (defun shimbun-rss-get-headers (shimbun &optional range
-					need-descriptions need-all-items)
+					need-descriptions need-all-items
+					quit-immediately)
   (let ((xml (condition-case err
 		 (xml-parse-region (point-min) (point-max))
 	       (error
@@ -216,10 +217,12 @@ but you can identify it from the URL, define this method in a backend.")
 			 (id (shimbun-rss-build-message-id shimbun url date))
 			 (subject (shimbun-rss-node-text rss-ns 'title item)))
 		    (when (and id
-			       (shimbun-search-id shimbun id)
-			       (not need-all-items))
-		      (throw 'done headers))
-		    (when (and id
+			       (or need-all-items
+				   (if (shimbun-search-id shimbun id)
+				       (if quit-immediately
+					   (throw 'done headers)
+					 nil)
+				     t))
 			       (if (and ignored-subject subject)
 				   (not (string-match ignored-subject subject))
 				 t))

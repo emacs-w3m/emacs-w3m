@@ -1,3 +1,11 @@
+2010-02-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-rss.el (shimbun-rss-get-headers): Add 5th arg `quit-immediately'
+	that tells this function to quit when an article that has ever been
+	fetched is found.
+
+	* sb-rss-blogs.el (shimbun-get-headers): Set 5th arg passed to it.
+
 2010-02-18  David Engster  <dengste@eml.cc>
 
 	* sb-rss-blogs.el (shimbun-rss-blogs-groups): Removed.

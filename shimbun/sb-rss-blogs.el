@@ -80,7 +80,7 @@ WordPress, and TypePad.")
 						  shimbun-rss-blogs)
 						 &optional range)
   (let ((group (shimbun-current-group-internal shimbun))
-	(headers (luna-call-next-method))
+	(headers (shimbun-rss-get-headers shimbun range t nil t))
 	(type (sb-rss-blogs-guess-type-from-rss))
 	from)
     (cond
