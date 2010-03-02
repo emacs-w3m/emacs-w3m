@@ -170,6 +170,13 @@
 (eval-when-compile
   (autoload 'doc-view-mode "doc-view" nil t)
   (autoload 'doc-view-mode-p "doc-view")
+  (autoload 'image-backward-hscroll "image-mode" nil t)
+  (autoload 'image-bol "image-mode" nil t)
+  (autoload 'image-eol "image-mode" nil t)
+  (autoload 'image-forward-hscroll "image-mode" nil t)
+  (autoload 'image-mode-setup-winprops "image-mode")
+  (autoload 'image-scroll-down "image-mode" nil t)
+  (autoload 'image-scroll-up "image-mode" nil t)
   (autoload 'quit-window "window" nil t)
   (autoload 'rfc2368-parse-mailto-url "rfc2368")
   (autoload 'widget-convert-button "wid-edit")
