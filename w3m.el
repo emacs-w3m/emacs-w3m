@@ -99,6 +99,7 @@
 (require 'w3m-fb)
 (require 'w3m-hist)
 (require 'timezone)
+(require 'image-mode nil t)
 
 ;; Add-on programs:
 (eval-and-compile
@@ -6194,6 +6195,11 @@ If so return \"text/html\", otherwise \"text/plain\"."
 	(when (string= "text/html" type) (w3m-fontify))
 	'text-page))))
 
+(defsubst w3m-image-page-displayed-p ()
+  (and (fboundp 'image-mode-setup-winprops)
+       (string-match "\\`image/" (w3m-content-type w3m-current-url))
+       (eq (get-text-property (point-min) 'w3m-image-status) 'on)))
+
 (defun w3m-create-image-page (url type charset page-buffer)
   (when (w3m-image-type-available-p (w3m-image-type type))
     (with-current-buffer page-buffer
@@ -6208,6 +6214,8 @@ If so return \"text/html\", otherwise \"text/plain\"."
 	(w3m-add-text-properties (point-min) (point-max)
 				 (list 'w3m-image url
 				       'mouse-face 'highlight))
+	(when (fboundp 'image-mode-setup-winprops)
+	  (image-mode-setup-winprops))
 	'image-page))))
 
 (defun w3m-create-page (url type charset page-buffer)
@@ -8377,24 +8385,28 @@ greater."
 (defun w3m-scroll-up-or-next-url (arg)
   "Scroll the current window up ARG lines, or go to the next page."
   (interactive "P")
-  (w3m-keep-region-active)
-  (if (pos-visible-in-window-p (point-max))
-      (if w3m-next-url
-	  (let ((w3m-prefer-cache t))
-	    (w3m-goto-url w3m-next-url))
-	(signal 'end-of-buffer nil))
-    (w3m-scroll-up-1 arg)))
+  (if (w3m-image-page-displayed-p)
+      (image-scroll-up arg)
+    (w3m-keep-region-active)
+    (if (pos-visible-in-window-p (point-max))
+	(if w3m-next-url
+	    (let ((w3m-prefer-cache t))
+	      (w3m-goto-url w3m-next-url))
+	  (signal 'end-of-buffer nil))
+      (w3m-scroll-up-1 arg))))
 
 (defun w3m-scroll-down-or-previous-url (arg)
   "Scroll the current window down ARG lines, or go to the previous page."
   (interactive "P")
-  (w3m-keep-region-active)
-  (if (pos-visible-in-window-p (point-min))
-      (if w3m-previous-url
-	  (let ((w3m-prefer-cache t))
-	    (w3m-goto-url w3m-previous-url))
-	(signal 'beginning-of-buffer nil))
-    (scroll-down arg)))
+  (if (w3m-image-page-displayed-p)
+      (image-scroll-down arg)
+    (w3m-keep-region-active)
+    (if (pos-visible-in-window-p (point-min))
+	(if w3m-previous-url
+	    (let ((w3m-prefer-cache t))
+	      (w3m-goto-url w3m-previous-url))
+	  (signal 'beginning-of-buffer nil))
+      (scroll-down arg))))
 
 (defvar w3m-current-longest-line nil
   "The length of the longest line in the window.")
@@ -8446,26 +8458,30 @@ Otherwise, it defaults to `w3m-horizontal-scroll-columns'."
 If ARG (the prefix) is a number, scroll the window ARG columns.
 Otherwise, it defaults to `w3m-horizontal-shift-columns'."
   (interactive "P")
-  (when (if (memq last-command '(w3m-scroll-left w3m-shift-left))
-	    (or (< (window-hscroll) w3m-current-longest-line)
-		(progn (ding) nil))
-	  (w3m-set-current-longest-line)
-	  (< (window-hscroll) w3m-current-longest-line))
-    (w3m-horizontal-scroll 'left (if arg
-				     (prefix-numeric-value arg)
-				   w3m-horizontal-shift-columns))))
+  (if (w3m-image-page-displayed-p)
+      (image-forward-hscroll (or arg 1))
+    (when (if (memq last-command '(w3m-scroll-left w3m-shift-left))
+	      (or (< (window-hscroll) w3m-current-longest-line)
+		  (progn (ding) nil))
+	    (w3m-set-current-longest-line)
+	    (< (window-hscroll) w3m-current-longest-line))
+      (w3m-horizontal-scroll 'left (if arg
+				       (prefix-numeric-value arg)
+				     w3m-horizontal-shift-columns)))))
 
 (defun w3m-shift-right (arg)
   "Shift to the right.  Shift means a fine level horizontal scrolling.
 If ARG (the prefix) is a number, scroll the window ARG columns.
 Otherwise, it defaults to `w3m-horizontal-shift-columns'."
   (interactive "P")
-  (if (zerop (window-hscroll))
-      (when (memq last-command '(w3m-scroll-right w3m-shift-right))
-	(ding))
-    (w3m-horizontal-scroll 'right (if arg
-				      (prefix-numeric-value arg)
-				    w3m-horizontal-shift-columns))))
+  (if (w3m-image-page-displayed-p)
+      (image-backward-hscroll (or arg 1))
+    (if (zerop (window-hscroll))
+	(when (memq last-command '(w3m-scroll-right w3m-shift-right))
+	  (ding))
+      (w3m-horizontal-scroll 'right (if arg
+					(prefix-numeric-value arg)
+				      w3m-horizontal-shift-columns)))))
 
 (defvar w3m-horizontal-scroll-done nil)
 (make-variable-buffer-local 'w3m-horizontal-scroll-done)
@@ -8590,39 +8606,43 @@ window's hscroll."
 (defun w3m-beginning-of-line (&optional arg)
   "Make the beginning of the line visible and move the point to there."
   (interactive "P")
-  (w3m-keep-region-active)
-  (when (listp arg)
-    (setq arg (car arg)))
-  (set-window-hscroll (selected-window) 0)
-  (beginning-of-line arg))
+  (if (w3m-image-page-displayed-p)
+      (image-bol (or arg 1))
+    (w3m-keep-region-active)
+    (when (listp arg)
+      (setq arg (car arg)))
+    (set-window-hscroll (selected-window) 0)
+    (beginning-of-line arg)))
 
 (defun w3m-end-of-line (&optional arg)
   "Move the point to the end of the line and scroll the window left.
 It makes the ends of upper and lower three lines visible.  If
 `truncate-lines' is nil, it works identically as `end-of-line'."
   (interactive "P")
-  (w3m-keep-region-active)
-  (if truncate-lines
-      (progn
-	(when (listp arg)
-	  (setq arg (car arg)))
-	(forward-line (1- (or arg 1)))
-	(let ((inhibit-point-motion-hooks t)
-	      home)
-	  (end-of-line)
-	  (setq home (point)
-		arg (current-column))
-	  (dolist (n '(-3 -2 -1 1 2 3))
-	    (forward-line n)
+  (if (w3m-image-page-displayed-p)
+      (image-eol (or arg 1))
+    (w3m-keep-region-active)
+    (if truncate-lines
+	(progn
+	  (when (listp arg)
+	    (setq arg (car arg)))
+	  (forward-line (1- (or arg 1)))
+	  (let ((inhibit-point-motion-hooks t)
+		home)
 	    (end-of-line)
-	    (setq arg (max (current-column) arg))
-	    (goto-char home)))
-	(setq temporary-goal-column arg
-	      this-command 'next-line)
-	(w3m-set-window-hscroll (selected-window)
-				(max (- arg (window-width) -2) 0)))
-    (set-window-hscroll (selected-window) 0)
-    (end-of-line arg)))
+	    (setq home (point)
+		  arg (current-column))
+	    (dolist (n '(-3 -2 -1 1 2 3))
+	      (forward-line n)
+	      (end-of-line)
+	      (setq arg (max (current-column) arg))
+	      (goto-char home)))
+	  (setq temporary-goal-column arg
+		this-command 'next-line)
+	  (w3m-set-window-hscroll (selected-window)
+				  (max (- arg (window-width) -2) 0)))
+      (set-window-hscroll (selected-window) 0)
+      (end-of-line arg))))
 
 (defun w3m-pattern-uri-replace (uri format)
   "Create a new uri from URI matched by last search according to FORMAT."

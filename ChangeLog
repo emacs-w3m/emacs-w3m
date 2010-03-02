@@ -1,3 +1,12 @@
+2010-03-02  Naohiro Aota  <naota@elisp.net>
+
+	* w3m.el (top): Require image-mode if available.
+	(w3m-image-page-displayed-p): New function.
+	(w3m-create-image-page): Setup image-mode's variable if possible.
+	(w3m-scroll-up-or-next-url, w3m-scroll-down-or-previous-url)
+	(w3m-shift-left, w3m-shift-right, w3m-beginning-of-line)
+	(w3m-end-of-line): Call image-mode functions if possible and needed.
+
 2010-02-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-url): Turn truncate-lines off for text/plain pages.
