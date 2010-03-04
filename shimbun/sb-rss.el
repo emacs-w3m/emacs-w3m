@@ -173,23 +173,69 @@ but you can identify it from the URL, define this method in a backend.")
   (shimbun-rss-get-headers shimbun range t))
 
 (defun shimbun-rss-get-headers (shimbun &optional range
-					need-descriptions need-all-items
-					quit-immediately)
-  (let ((xml (condition-case err
-		 (xml-parse-region (point-min) (point-max))
-	       (error
-		(message "Error while parsing %s: %s"
-			 (shimbun-index-url shimbun)
-			 (error-message-string err))
-		nil)))
-	(ignored-subject (luna-slot-value shimbun 'ignored-subject))
-	dc-ns rss-ns author hankaku headers)
-    (when xml
-      (setq dc-ns (shimbun-rss-get-namespace-prefix
-		   xml "http://purl.org/dc/elements/1.1/")
-	    rss-ns (shimbun-rss-get-namespace-prefix
-		    xml "http://purl.org/rss/1.0/")
-	    author
+					need-descriptions need-all-items)
+  "Get headers from rss feed described by SHIMBUN.
+RANGE is currently ignored.  If NEED-DESCRIPTIONS, include node
+text as description.  By default, only existing and new items
+from the feed are returned, i.e., those items which are newer
+than the oldest one in the shimbun.  If NEED-ALL-ITEMS is
+non-nil, all items from the feed are returned.  If the entries
+from the feed have date information, the result is sorted by
+ascending date."
+  (let* ((xml (condition-case err
+		  (xml-parse-region (point-min) (point-max))
+		(error
+		 (message "Error while parsing %s: %s"
+			  (shimbun-index-url shimbun)
+			  (error-message-string err))
+		 nil)))
+	 header headers oldheaders newheaders oldest)
+    (dolist (tmp (shimbun-rss-get-headers-1 xml shimbun need-descriptions))
+      (let* ((date (shimbun-header-date tmp))
+	     (ftime
+	      (when (and (stringp date)
+			 (> (length date) 1))
+		(w3m-float-time (date-to-time date)))))
+	(push (list tmp ftime) headers)))
+    (when headers
+      (if (or need-all-items
+	      ;; If there's a header without date information, we
+	      ;; return everything, just to be safe.
+	      (memq nil (mapcar 'cadr headers)))
+	  (mapcar 'car headers)
+	;; Otherwise, sort according to date.
+	(setq headers
+	      (sort headers (lambda (a b)
+			      (> (cadr a) (cadr b)))))
+	(while headers
+	  (setq header (pop headers))
+	  (if (shimbun-search-id shimbun (shimbun-header-id (car header)))
+	      (push header oldheaders)
+	    (push header newheaders)))
+	(if (null oldheaders)
+	    ;; All items are new
+	    (mapcar 'car newheaders)
+	  ;; Delete all items which are older than the ones we already
+	  ;; have
+	  (setq oldest (cadr (car oldheaders)))
+	  (while (and newheaders
+		      (> oldest (cadr (car newheaders))))
+	    (setq newheaders (cdr newheaders)))
+	  (append
+	   (mapcar 'car newheaders)
+	   (mapcar 'car oldheaders)))))))
+
+(defun shimbun-rss-get-headers-1 (xml shimbun need-descriptions)
+  "Retrieve all items found in XML for SHIMBUN and return headers.
+If NEED-DESCRIPTIONS, include node text as description."
+  (when xml
+    (let  ((dc-ns (shimbun-rss-get-namespace-prefix
+		   xml "http://purl.org/dc/elements/1.1/"))
+	   (rss-ns (shimbun-rss-get-namespace-prefix
+		    xml "http://purl.org/rss/1.0/"))
+	   (ignored-subject (luna-slot-value shimbun 'ignored-subject))
+	   author hankaku headers)
+      (setq author
 	    (catch 'found-author
 	      (dolist (channel
 		       (shimbun-rss-find-el (intern (concat rss-ns "channel"))
@@ -203,29 +249,21 @@ but you can identify it from the URL, define this method in a backend.")
 				  '(body nil))
 		      (generate-new-buffer " *temp*")))
       (unwind-protect
-	  (catch 'done
-	    (dolist (item (shimbun-rss-find-el (intern (concat rss-ns "item"))
-					       xml)
-			  headers)
-	      (let ((url (and (listp item)
-			      (eq (intern (concat rss-ns "item")) (car item))
-			      (shimbun-rss-node-text rss-ns 'link (cddr item)))))
-		(when url
-		  (let* ((date (or (shimbun-rss-get-date shimbun url)
-				   (shimbun-rss-node-text dc-ns 'date item)
-				   (shimbun-rss-node-text rss-ns 'pubDate item)))
-			 (id (shimbun-rss-build-message-id shimbun url date))
-			 (subject (shimbun-rss-node-text rss-ns 'title item)))
-		    (when (and id
-			       (or need-all-items
-				   (if (shimbun-search-id shimbun id)
-				       (if quit-immediately
-					   (throw 'done headers)
-					 nil)
-				     t))
-			       (if (and ignored-subject subject)
-				   (not (string-match ignored-subject subject))
-				 t))
+	  (dolist (item (shimbun-rss-find-el (intern (concat rss-ns "item"))
+					     xml)
+			headers)
+	    (let ((url (and (listp item)
+			    (eq (intern (concat rss-ns "item")) (car item))
+			    (shimbun-rss-node-text rss-ns 'link (cddr item)))))
+	      (when url
+		(let* ((date (or (shimbun-rss-get-date shimbun url)
+				 (shimbun-rss-node-text dc-ns 'date item)
+				 (shimbun-rss-node-text rss-ns 'pubDate item)))
+		       (id (shimbun-rss-build-message-id shimbun url date))
+		       (subject (shimbun-rss-node-text rss-ns 'title item)))
+		  (when id
+		    (unless (and ignored-subject subject
+				 (string-match ignored-subject subject))
 		      (push
 		       (shimbun-create-header
 			0

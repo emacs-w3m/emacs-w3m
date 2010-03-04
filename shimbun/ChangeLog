@@ -1,3 +1,17 @@
+2010-03-03  David Engster  <dengste@eml.cc>
+
+	* sb-rss-blogs.el (shimbun-get-headers): Replace call to
+	shimbun-rss-get-headers with luna-call-next-method.
+
+	* sb-rss.el (shimbun-get-headers): Revert 5th arg `quit-immediately'.
+	(shimbun-rss-get-headers): Delete those headers which only appear to
+	be new but are actualy older than the ones we already have.  Sort the
+	headers by date if possible.  Added doc-string.
+	(shimbun-rss-get-headers-1): New helper function to fetch all items.
+
+	* sb-atom.el (shimbun-atom-get-headers, shimbun-atom-get-headers-1):
+	Same changes as for sb-rss.el.
+
 2010-02-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-rss.el (shimbun-rss-get-headers): Add 5th arg `quit-immediately'

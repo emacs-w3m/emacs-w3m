@@ -1,6 +1,6 @@
 ;;; sb-rss-blogs.el --- Back end for RSS feeds with unpublished content
 
-;; Copyright (C) 2008 David Engster
+;; Copyright (C) 2008, 2010 David Engster
 
 ;; Author: David Engster <dengste@eml.cc>
 ;; Keywords: news
@@ -80,7 +80,7 @@ WordPress, and TypePad.")
 						  shimbun-rss-blogs)
 						 &optional range)
   (let ((group (shimbun-current-group-internal shimbun))
-	(headers (shimbun-rss-get-headers shimbun range t nil t))
+	(headers (luna-call-next-method))
 	(type (sb-rss-blogs-guess-type-from-rss))
 	from)
     (cond
