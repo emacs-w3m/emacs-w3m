@@ -608,7 +608,8 @@ Generated article have a multipart/related content-type."
 <meta\\s-+http-equiv=[\"']?content-type[\"']?\\s-+content=[\"']\
 text/\\sw+\\(?:\;\\s-*charset=\\(.+?\\)\\)?[\"'][^>]*>" end t)
 				  (match-string 1)))))
-	      (when (w3m-find-coding-system (intern (downcase charset)))
+	      (when (and charset
+			 (w3m-find-coding-system (intern (downcase charset))))
 		(shimbun-text-entity-set-charset-internal entity
 							  (upcase charset))))
 	    (shimbun-text-entity-charset-internal entity)
