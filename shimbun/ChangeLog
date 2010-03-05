@@ -1,3 +1,8 @@
+2010-03-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-text-entity-charset): Prefer meta charset rather
+	than the one shimbun decides.
+
 2010-03-03  David Engster  <dengste@eml.cc>
 
 	* sb-rss-blogs.el (shimbun-get-headers): Replace call to

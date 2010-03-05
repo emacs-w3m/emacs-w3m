@@ -1,6 +1,6 @@
 ;;; shimbun.el --- interfacing with web newspapers -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -592,16 +592,32 @@ Generated article have a multipart/related content-type."
   "Return MIME charset of ENTITY.")
 (luna-define-method shimbun-text-entity-charset ((entity shimbun-text-entity)
 						 &optional begin end)
-  (or (shimbun-text-entity-charset-internal entity)
-      (shimbun-text-entity-set-charset-internal
-       entity
-       (upcase
-	(symbol-name
-	 (if (and begin end)
-	     (detect-mime-charset-region begin end)
-	   (with-temp-buffer
-	     (insert (shimbun-entity-data-internal entity))
-	     (detect-mime-charset-region (point-min) (point-max)))))))))
+  (let (cur tmp)
+    (unless (and begin end)
+      (setq cur (current-buffer))
+      (set-buffer (generate-new-buffer " *temp*"))
+      (insert (shimbun-entity-data-internal entity))
+      (setq begin (point-min)
+	    end (point-max)
+	    tmp (current-buffer)))
+    (prog1
+	;; Prefer meta charset.
+	(or (let ((charset (progn
+			     (goto-char begin)
+			     (and (re-search-forward "\
+<meta\\s-+http-equiv=[\"']?content-type[\"']?\\s-+content=[\"']\
+text/\\sw+\\(?:\;\\s-*charset=\\(.+?\\)\\)?[\"'][^>]*>" end t)
+				  (match-string 1)))))
+	      (when (w3m-find-coding-system (intern (downcase charset)))
+		(shimbun-text-entity-set-charset-internal entity
+							  (upcase charset))))
+	    (shimbun-text-entity-charset-internal entity)
+	    (shimbun-text-entity-set-charset-internal
+	     entity (upcase (symbol-name
+			     (detect-mime-charset-region begin end)))))
+      (when cur
+	(set-buffer cur)
+	(kill-buffer tmp)))))
 
 (luna-define-method shimbun-entity-type ((entity shimbun-text-entity))
   (concat (shimbun-entity-type-internal entity)
