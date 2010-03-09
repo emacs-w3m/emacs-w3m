@@ -1,3 +1,8 @@
+2010-03-09  David Engster  <dengste@eml.cc>
+
+	* shimbun.el (shimbun-mime-replace-image-tags): Pay attention to
+	w3m-ignored-image-url-regexp.
+
 2010-03-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-text-entity-charset): Prefer meta charset rather

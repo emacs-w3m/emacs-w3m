@@ -701,7 +701,9 @@ image parts, and returns an alist of URLs and image entities."
 		      (substring url 0 (match-beginning 0))
 		    url))
 		 base-url))
-      (unless (setq img (assoc url images))
+      (unless (or (setq img (assoc url images))
+		  (and w3m-ignored-image-url-regexp
+		       (string-match w3m-ignored-image-url-regexp url)))
 	(with-temp-buffer
 	  (set-buffer-multibyte nil)
 	  (setq case-fold-search nil
