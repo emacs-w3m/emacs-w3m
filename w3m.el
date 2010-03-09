@@ -2272,7 +2272,8 @@ For instance, the value \"^http://www\\.google\\.com/\" conceals
 Google's logo and navigation images, but display YouTube's
 thumbnail."
   :group 'w3m
-  :type '(regexp :format "URL: %v\n" :size 0))
+  :type '(radio (const :format "Accept any image\n" nil)
+		(regexp :format "URL regexp: %v\n" :size 0)))
 
 (defcustom w3m-refresh-minimum-interval 60
   "*Minimum seconds to wait for refresh, when visiting a page by
