@@ -6657,7 +6657,8 @@ compatibility which is described in Section 5.2 of RFC 2396.")
   (sit-for 0))
 
 (defun w3m-view-this-url-1 (url reload new-session)
-  (lexical-let ((url url)
+  (lexical-let ((cur w3m-current-url)
+		(url url)
 		(obuffer (current-buffer))
 		(wconfig (current-window-configuration))
 		pos buffer)
@@ -6710,7 +6711,8 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 		     (not (eq (with-current-buffer buffer major-mode)
 			      'w3m-mode))))
 	    (set-window-configuration wconfig)
-	  (w3m-recenter))))))
+	  (unless (eq cur w3m-current-url)
+	    (w3m-recenter)))))))
 
 (defun w3m-view-this-url (&optional arg new-session)
   "Display the page pointed to by the link under point.
@@ -9018,9 +9020,10 @@ the current page."
   (unless (or (w3m-url-local-p url)
 	      (string-match "\\`about:" url))
     (w3m-string-match-url-components url)
-    (setq url (concat (w3m-url-transfer-encode-string (substring url 0 (match-beginning 8))
-						      (or w3m-current-coding-system
-							  w3m-default-coding-system))
+    (setq url (concat (w3m-url-transfer-encode-string
+		       (substring url 0 (match-beginning 8))
+		       (or w3m-current-coding-system
+			   w3m-default-coding-system))
 		      (if (match-beginning 8)
 			  (concat "#" (match-string 9 url))
 			""))))
@@ -9179,18 +9182,18 @@ Cannot run two w3m processes simultaneously \
 				      (list :title (or w3m-current-title
 						       "<no-title>")))
 		    (goto-char (point-min)))
-		(if (and name
-			 (progn
-			   ;; Redisplay to search an anchor sure.
-			   (sit-for 0)
-			   (w3m-search-name-anchor
-			    (w3m-url-transfer-encode-string name
-							    (or w3m-current-coding-system
-								w3m-default-coding-system))
-			    nil (not (eq action 'cursor-moved)))))
-		    (setf (w3m-arrived-time (w3m-url-strip-authinfo orig))
-			  (w3m-arrived-time url))
-		  (goto-char (point-min)))
+		(when (and name
+			   (progn
+			     ;; Redisplay to search an anchor sure.
+			     (sit-for 0)
+			     (w3m-search-name-anchor
+			      (w3m-url-transfer-encode-string
+			       name
+			       (or w3m-current-coding-system
+				   w3m-default-coding-system))
+			      nil (not (eq action 'cursor-moved)))))
+		  (setf (w3m-arrived-time (w3m-url-strip-authinfo orig))
+			(w3m-arrived-time url)))
 		(unless (eq action 'cursor-moved)
 		  (if (equal referer "about://history/")
 		      ;; Don't sprout a new branch for the existing history

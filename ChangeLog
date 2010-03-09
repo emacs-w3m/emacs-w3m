@@ -1,3 +1,8 @@
+2010-03-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-view-this-url-1): Don't recenter if page is not changed.
+	(w3m-goto-url): Don't move point to the top unless redisplaying page.
+
 2010-03-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el: Suppress compiler warnings that Emacs<22.2 and XEmacs issue
