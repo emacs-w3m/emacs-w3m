@@ -34,7 +34,7 @@
 ;;    http://emacs-w3m.namazu.org/
 ;;
 ;; We can use w3m-static- switches to make the byte code differ between
-;; Emacs 2[12] and 23, if anything, it is impossible to share the byte
+;; Emacs 2[12] and 2[34], if anything, it is impossible to share the byte
 ;; code with those versions of Emacsen.
 
 ;;; Code:
