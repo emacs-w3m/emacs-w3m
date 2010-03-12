@@ -116,7 +116,7 @@ AC_DEFUN(AC_PATH_EMACS,
   case "${flavor}" in
   XEmacs)
     EMACS_FLAVOR=xemacs;;
-  Emacs\ 2[[123]]\.*)
+  Emacs\ 2[[1234]]\.*)
     EMACS_FLAVOR=emacs;;
   *)
     EMACS_FLAVOR=unsupported;;

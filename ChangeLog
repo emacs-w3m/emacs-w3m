@@ -1,3 +1,7 @@
+2010-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_PATH_EMACS): Support Emacs 24.
+
 2010-03-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-ignored-image-url-regexp): Fix custom type.
