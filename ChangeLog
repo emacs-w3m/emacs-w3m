@@ -4,7 +4,7 @@
 	create-animated-image or create-image.
 	(w3m-create-image): Use it.
 
-	* w3m.el (w3m-emacs-w3m-icon): Replace it with data optimized.
+	* w3m.el (w3m-emacs-w3m-icon): Replace it with data not optimized.
 
 2010-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
