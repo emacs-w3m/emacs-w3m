@@ -1,6 +1,6 @@
 ;;; w3m-ems.el --- GNU Emacs stuff for emacs-w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -239,6 +239,11 @@ This function is an interface to `make-coding-system'."
 circumstances."
   (and w3m-display-inline-images (display-images-p)))
 
+(eval-and-compile
+  (defalias 'w3m-ems-create-image (if (fboundp 'create-animated-image)
+				      'create-animated-image
+				    'create-image)))
+
 (defun w3m-create-image (url &optional no-cache referer size handler)
   "Retrieve data from URL and create an image object.
 If optional argument NO-CACHE is non-nil, cache is not used.
@@ -265,9 +270,10 @@ and its cdr element is used as height."
 				    ((match-beginning 2) 'jpeg)
 				    (t 'png)))
 			 (w3m-image-type type))))
-	  (setq image (create-image (buffer-string) type t
-				    :ascent 'center
-				    :background w3m-image-default-background))
+	  (setq image (w3m-ems-create-image
+		       (buffer-string) type t
+		       :ascent 'center
+		       :background w3m-image-default-background))
 	  (if (and w3m-resize-images set-size)
 	      (progn
 		(set-buffer-multibyte t)

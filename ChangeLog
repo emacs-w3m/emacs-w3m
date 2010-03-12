@@ -1,5 +1,13 @@
 2010-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-ems.el (w3m-ems-create-image): New function that's an alias to
+	create-animated-image or create-image.
+	(w3m-create-image): Use it.
+
+	* w3m.el (w3m-emacs-w3m-icon): Replace it with data optimized.
+
+2010-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* aclocal.m4 (AC_PATH_EMACS): Support Emacs 24.
 	(AC_ADD_LOAD_PATH): Pipe stderr to /dev/null when running
 	w3mhack-print-status.
