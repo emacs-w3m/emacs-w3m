@@ -1,6 +1,8 @@
 2010-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* aclocal.m4 (AC_PATH_EMACS): Support Emacs 24.
+	(AC_ADD_LOAD_PATH): Pipe stderr to /dev/null when running
+	w3mhack-print-status.
 
 2010-03-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
