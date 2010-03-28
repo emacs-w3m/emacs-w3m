@@ -6216,6 +6216,7 @@ If so return \"text/html\", otherwise \"text/plain\"."
 
 (defsubst w3m-image-page-displayed-p ()
   (and (fboundp 'image-mode-setup-winprops)
+       w3m-current-url
        (string-match "\\`image/" (w3m-content-type w3m-current-url))
        (eq (get-text-property (point-min) 'w3m-image-status) 'on)))
 
