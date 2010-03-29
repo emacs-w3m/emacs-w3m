@@ -3651,7 +3651,7 @@ The database is kept in `w3m-entity-table'."
   (goto-char (point-min))
   (let ((help (w3m-make-help-echo w3m-balloon-help))
 	(balloon (w3m-make-balloon-help w3m-balloon-help))
-	upper start end help)
+	upper start end help src1)
     (while (re-search-forward "<\\(img_alt\\)[^>]+>" nil t)
       (setq upper (string= (match-string 1) "IMG_ALT")
 	    start (match-beginning 0)
@@ -3664,6 +3664,13 @@ The database is kept in `w3m-entity-table'."
 			     usemap)
 	(delete-region start end)
 	(setq src (w3m-expand-url (w3m-decode-anchor-string src)))
+	;; Use the identical Lisp object for a string used as the value of
+	;; the `w3m-image' property.  A long title string will be chopped in
+	;; w3m's halfdump; since it makes `next-single-property-change' not
+	;; work properly, XEmacs didn't display images in shimbun articles.
+	(if (equal src src1)
+	    (setq src src1)
+	  (setq src1 src))
 	(when (search-forward "</img_alt>" nil t)
 	  (delete-region (setq end (match-beginning 0)) (match-end 0))
 	  (setq help (get-text-property start 'w3m-balloon-help))

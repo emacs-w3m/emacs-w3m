@@ -1,3 +1,9 @@
+2010-03-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-fontify-images): Use the identical Lisp object for a
+	string used as w3m-image's property in order to enable XEmacs to
+	display images in shimbun articles properly.
+
 2010-03-29  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-active-region-or-url-at-point): Check availability of
