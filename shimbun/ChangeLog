@@ -1,3 +1,8 @@
+2010-03-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-text-entity-charset): Fix regexp matching meta
+	tag.
+
 2010-03-09  David Engster  <dengste@eml.cc>
 
 	* shimbun.el (shimbun-mime-replace-image-tags): Pay attention to

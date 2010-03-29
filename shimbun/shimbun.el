@@ -606,7 +606,7 @@ Generated article have a multipart/related content-type."
 			     (goto-char begin)
 			     (and (re-search-forward "\
 <meta\\s-+http-equiv=[\"']?content-type[\"']?\\s-+content=[\"']\
-text/\\sw+\\(?:\;\\s-*charset=\\(.+?\\)\\)?[\"'][^>]*>" end t)
+text/\\sw+\\(?:\;\\s-*charset=\\(.+\\)\\)?[\"'][^>]*>" end t)
 				  (match-string 1)))))
 	      (when (and charset
 			 (w3m-find-coding-system (intern (downcase charset))))
