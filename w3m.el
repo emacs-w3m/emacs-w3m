@@ -6528,6 +6528,8 @@ COUNT is treated as 1 by default if it is omitted."
 	    (w3m-use-refresh 'wait-minimum))
 	(if hist
 	    (let ((w3m-prefer-cache t))
+	      ;; Save last position.
+	      (w3m-history-store-position)
 	      (w3m-goto-url (caar hist) nil nil
 			    (w3m-history-plist-get :post-data)
 			    (w3m-history-plist-get :referer)
