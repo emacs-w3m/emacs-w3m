@@ -2002,10 +2002,10 @@ Here are some predefined functions which can be used for those ways:
 \\.google\\.[^/]+/\\(?:\\(?:blog\\|code\\)?search\\|groups\\|news\\|images\
 \\|cse\\?cx=\\|custom\\?\\(?:q\\|hl\\)=\\)"
      ,(concat "<a[^>]+?href=" w3m-html-string-regexp
-	      ">\\(?:\\(?:<img src=[^>]*nav_next\\.gif\\)"
+	      "[^>]*>\\(?:\\(?:<img src=[^>]*nav_next\\.gif\\)"
 	      "\\|\\(?:<span>Next</span>\\)\\)")
      ,(concat "<a[^>]+?href=" w3m-html-string-regexp
-	      ">\\(?:\\(?:<img src=[^>]*nav_previous\\.gif\\)"
+	      "[^>]*>\\(?:\\(?:<img src=[^>]*nav_previous\\.gif\\)"
 	      "\\|\\(?:<span>Previous</span>\\)\\)")
      nil nil)
     (w3m-relationship-simple-estimate
