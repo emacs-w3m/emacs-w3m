@@ -1,3 +1,8 @@
+2010-05-24  Fedor Khod'kov  <fedor76@istra.ru>
+
+	* w3m-cookie.el (w3m-cookie-trusted-host-p): Don't bother to add
+	excessive "$" to a regexp that w3m-cookie-reject-domains specifies.
+
 2010-05-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-relationship-estimate-rules): Update regexps for Google.

@@ -291,7 +291,7 @@ If ask, ask user whether accept bad cookies or not."
        ((eq (string-to-char (car reject)) ?.)
 	(setq regexp (concat (regexp-quote (car reject)) "$")))
        (t (setq regexp (concat "^" (regexp-quote (car reject)) "$"))))
-      (when (string-match (concat regexp "$") host)
+      (when (string-match regexp host)
 	(setq rlen (length (car reject))
 	      reject nil))
       (pop reject))
