@@ -1,3 +1,8 @@
+2010-06-03  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* octet.el (octet-w3m-region): Set to unibyte string for base64
+	encoding.
+
 2010-05-24  Fedor Khod'kov  <fedor76@istra.ru>
 
 	* w3m-cookie.el (w3m-cookie-trusted-host-p): Don't bother to add

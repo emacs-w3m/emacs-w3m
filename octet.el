@@ -194,7 +194,8 @@ nil in NEW-TYPE means filtering is completed.")
     (funcall (symbol-function 'w3m-region)
 	     beg end (concat "about://octet-attachments/"
 			     (base64-encode-string
-			      (buffer-name (current-buffer))) "/"))
+			      (string-as-unibyte
+			       (buffer-name (current-buffer))) "/")))
     (setq octet-attachments nil))
   0)
 
