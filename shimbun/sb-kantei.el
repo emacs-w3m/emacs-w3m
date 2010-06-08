@@ -1,6 +1,6 @@
 ;;; sb-kantei.el --- shimbun backend for kantei mail magazine backnumber -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
@@ -53,6 +53,14 @@ is for the backward compatibility.")
 (defvar shimbun-kantei-x-face-alist
   ;; Don't change the order of the faces.  See the method function that
   ;; is applied to `shimbun-make-contents'.
+;;;  '(("default" . "X-Face: %irfZ0Z2=ufp].[Z8oJn?QOR6(SRBRW6:IDVMSO25/v\
+;;;SE]crv)dR/UBKa,6}+f9+2X$<v(+\n g&&t<oIo8|TUGOzHIQ!LzA@y7g)@)Fv,3Q'KXs\
+;;;n:a\"{Y(S#41h+0B\"w}n?QdR}5-@[q5exee!SQ'Fj\n HD@V`O1~7H$b%)F`_9{|rqKa\
+;;;F4(\\M2EW?")
+;;;    ("\\.hatoyama\\'" . "X-Face: Bhu:2dJ9#&[pX@hMRh=$pF|<M}p@,Fe{2SAS\
+;;;)tupW4jk^RavhwxRqDm>O>-,*d\"V+@u\"gB5\n ]}Yxh$n#S1BM<uz\\n|sXtBh\"1TH\
+;;;|g@:n,M4A7Cr8,MO$L-KmDmX&~)G+W:6gN0?c:5&o=JAJF6b7%_\n A{A`1-=;*q;RtW>\
+;;;o,8|XYsIrL4grl\\|6JV<A.,@%,RI\"v^EIY_[<>6fq3!B`28KP2,M/.Tsh")
   '(("default" . "X-Face: Bhu:2dJ9#&[pX@hMRh=$pF|<M}p@,Fe{2SAS)tupW4j\
 k^RavhwxRqDm>O>-,*d\"V+@u\"gB5\n ]}Yxh$n#S1BM<uz\\n|sXtBh\"1TH|g@:n,M\
 4A7Cr8,MO$L-KmDmX&~)G+W:6gN0?c:5&o=JAJF6b7%_\n A{A`1-=;*q;RtW>o,8|XYs\
