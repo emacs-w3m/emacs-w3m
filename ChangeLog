@@ -1,3 +1,8 @@
+2010-06-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-update-files-autoloads): Strip subdirectory name
+	that Emacs 24 doesn't strip from load-name.
+
 2010-06-03  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* octet.el (octet-w3m-region): Set to unibyte string for base64

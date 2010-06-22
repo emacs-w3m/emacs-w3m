@@ -881,23 +881,29 @@ NOTE: This function must be called from the top directory."
 
 (defun w3mhack-update-files-autoloads (files)
   "Run `update-file-autoloads' with FILES, silently in XEmacs."
-  (if (featurep 'xemacs)
-      (let ((si:message (symbol-function 'message)))
-	(defun message (fmt &rest args)
-	  "Ignore useless messages while generating autoloads."
-	  (cond ((and (string-equal "Generating autoloads for %s..." fmt)
-		      (file-exists-p (file-name-nondirectory (car args))))
-		 (funcall si:message
-			  fmt (file-name-nondirectory (car args))))
-		((string-equal "No autoloads found in %s" fmt))
-		((string-equal "Generating autoloads for %s...done" fmt))
-		(t (apply si:message fmt args))))
-	(unwind-protect
-	    (dolist (file files)
-	      (update-file-autoloads file))
-	  (fset 'message si:message)))
-    (dolist (file files)
-      (update-file-autoloads file))))
+  (cond ((featurep 'xemacs)
+	 (let ((si:message (symbol-function 'message)))
+	   (defun message (fmt &rest args)
+	     "Ignore useless messages while generating autoloads."
+	     (cond ((and (string-equal "Generating autoloads for %s..." fmt)
+			 (file-exists-p (file-name-nondirectory (car args))))
+		    (funcall si:message
+			     fmt (file-name-nondirectory (car args))))
+		   ((string-equal "No autoloads found in %s" fmt))
+		   ((string-equal "Generating autoloads for %s...done" fmt))
+		   (t (apply si:message fmt args))))
+	   (unwind-protect
+	       (dolist (file files)
+		 (update-file-autoloads file))
+	     (fset 'message si:message))))
+	((boundp 'generated-autoload-load-name)
+	 (dolist (file files)
+	   (let ((generated-autoload-load-name
+		  (file-name-sans-extension (file-name-nondirectory file))))
+	     (update-file-autoloads file))))
+	(t
+	 (dolist (file files)
+	   (update-file-autoloads file)))))
 
 (defun w3mhack-generate-load-file ()
   "Generate a file including all autoload stubs."
