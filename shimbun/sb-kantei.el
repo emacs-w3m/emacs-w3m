@@ -35,8 +35,10 @@
 
 (defvar shimbun-kantei-groups '("m-magazine-en"
 				"m-magazine-ja"
-				"m-magazine-cn"
-				"m-magazine-kr"
+				"m-magazine-cn.hatoyama"
+				"m-magazine-kr.hatoyama"
+				"m-magazine-en.hatoyama"
+				"m-magazine-ja.hatoyama"
 				"m-magazine-en.aso"
 				"m-magazine-ja.aso"
 				"m-magazine-en.fukuda"
@@ -45,26 +47,26 @@
 				"m-magazine-ja.abe"
 				"m-magazine-en.koizumi"
 				"m-magazine-ja.koizumi"
-				"m-magazine")
+				;; Backward compatibility.
+				"m-magazine"
+				"m-magazine-cn"
+				"m-magazine-kr")
   "List of the groups subscribing to the email magazin of Japan's Cabinet.
-Note that the `m-magazine-ja.koizumi' is the same as `m-magazine' which
-is for the backward compatibility.")
+Note that the `m-magazine-ja.koizumi' is the same as `m-magazine'
+which is for the backward compatibility; so are `m-magazine-cn' and
+`m-magazine-kr' for those of Hatoyama.")
 
 (defvar shimbun-kantei-x-face-alist
   ;; Don't change the order of the faces.  See the method function that
   ;; is applied to `shimbun-make-contents'.
-;;;  '(("default" . "X-Face: %irfZ0Z2=ufp].[Z8oJn?QOR6(SRBRW6:IDVMSO25/v\
-;;;SE]crv)dR/UBKa,6}+f9+2X$<v(+\n g&&t<oIo8|TUGOzHIQ!LzA@y7g)@)Fv,3Q'KXs\
-;;;n:a\"{Y(S#41h+0B\"w}n?QdR}5-@[q5exee!SQ'Fj\n HD@V`O1~7H$b%)F`_9{|rqKa\
-;;;F4(\\M2EW?")
-;;;    ("\\.hatoyama\\'" . "X-Face: Bhu:2dJ9#&[pX@hMRh=$pF|<M}p@,Fe{2SAS\
-;;;)tupW4jk^RavhwxRqDm>O>-,*d\"V+@u\"gB5\n ]}Yxh$n#S1BM<uz\\n|sXtBh\"1TH\
-;;;|g@:n,M4A7Cr8,MO$L-KmDmX&~)G+W:6gN0?c:5&o=JAJF6b7%_\n A{A`1-=;*q;RtW>\
-;;;o,8|XYsIrL4grl\\|6JV<A.,@%,RI\"v^EIY_[<>6fq3!B`28KP2,M/.Tsh")
-  '(("default" . "X-Face: Bhu:2dJ9#&[pX@hMRh=$pF|<M}p@,Fe{2SAS)tupW4j\
-k^RavhwxRqDm>O>-,*d\"V+@u\"gB5\n ]}Yxh$n#S1BM<uz\\n|sXtBh\"1TH|g@:n,M\
-4A7Cr8,MO$L-KmDmX&~)G+W:6gN0?c:5&o=JAJF6b7%_\n A{A`1-=;*q;RtW>o,8|XYs\
-IrL4grl\\|6JV<A.,@%,RI\"v^EIY_[<>6fq3!B`28KP2,M/.Tsh")
+  '(("default" . "X-Face: %irfZ0Z2=ufp].[Z8oJn?QOR6(SRBRW6:IDVMSO25/v\
+SE]crv)dR/UBKa,6}+f9+2X$<v(+\n g&&t<oIo8|TUGOzHIQ!LzA@y7g)@)Fv,3Q'KXs\
+n:a\"{Y(S#41h+0B\"w}n?QdR}5-@[q5exee!SQ'Fj\n HD@V`O1~7H$b%)F`_9{|rqKa\
+F4(\\M2EW?")
+    ("\\.hatoyama\\'" . "X-Face: Bhu:2dJ9#&[pX@hMRh=$pF|<M}p@,Fe{2SAS\
+)tupW4jk^RavhwxRqDm>O>-,*d\"V+@u\"gB5\n ]}Yxh$n#S1BM<uz\\n|sXtBh\"1TH\
+|g@:n,M4A7Cr8,MO$L-KmDmX&~)G+W:6gN0?c:5&o=JAJF6b7%_\n A{A`1-=;*q;RtW>\
+o,8|XYsIrL4grl\\|6JV<A.,@%,RI\"v^EIY_[<>6fq3!B`28KP2,M/.Tsh")
     ("\\.aso\\'" . "X-Face: #(b'i|jCr9M1k*o`B1YbD.C*%\\T3~.mUK@q?}o4.\
 TC*~*~fPaHg\\]V+Q2$3wu$=:[<k^Y<s\n X{VB1rZN[(X$(Cej@QV?FaoslWKi,fxp\"\
 m\\<Cb#4vo!!hDZI@9I8gAMMp6>HZ'C/&9e15i*4e>OV4`\n pdAVvpz`w<$QCu9'~:}|\
@@ -89,10 +91,14 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
     (concat (shimbun-url-internal shimbun)
 	    (cond ((string-equal group "m-magazine-en")
 		   "foreign/m-magazine/backnumber/hatoyama.html")
-		  ((string-equal group "m-magazine-cn")
+		  ((string-equal group "m-magazine-cn.hatoyama")
 		   "foreign/m-magazine/backnumber_ch/hatoyama_index.html")
-		  ((string-equal group "m-magazine-kr")
+		  ((string-equal group "m-magazine-kr.hatoyama")
 		   "foreign/m-magazine/backnumber_ko/hatoyama_index.html")
+		  ((string-equal group "m-magazine-en.hatoyama")
+		   "foreign/m-magazine/backnumber/hatoyama.html")
+		  ((string-equal group "m-magazine-ja.hatoyama")
+		   "jp/m-magazine/backnumber/hatoyama.html")
 		  ((string-equal group "m-magazine-en.aso")
 		   "foreign/m-magazine/backnumber/aso.html")
 		  ((string-equal group "m-magazine-ja.aso")
@@ -109,19 +115,29 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 		   "foreign/m-magazine/backnumber/koizumi.html")
 		  ((string-equal group "m-magazine-ja.koizumi")
 		   "jp/m-magazine/backnumber/koizumi.html")
-		  ((string-equal group "m-magazine") ;; Backward compatibility.
+		  ;; Backward compatibility.
+		  ((string-equal group "m-magazine")
 		   "jp/m-magazine/backnumber/koizumi.html")
+		  ((string-equal group "m-magazine-cn")
+		   "foreign/m-magazine/backnumber_ch/hatoyama_index.html")
+		  ((string-equal group "m-magazine-kr")
+		   "foreign/m-magazine/backnumber_ko/hatoyama_index.html")
+		  ;; Default.
 		  (t
 		   "jp/m-magazine/backnumber/")))))
 
 (luna-define-method shimbun-from-address ((shimbun shimbun-kantei))
   (let ((group (shimbun-current-group-internal shimbun)))
     (cond ((string-equal group "m-magazine-en")
-	   "Yukio Hatoyama")
-	  ((string-equal group "m-magazine-cn")
+	   "Naoto Kan")
+	  ((string-equal group "m-magazine-cn.hatoyama")
 	   "鸠山由纪夫")
-	  ((string-equal group "m-magazine-kr")
+	  ((string-equal group "m-magazine-kr.hatoyama")
 	   "하토야마 유키오")
+	  ((string-equal group "m-magazine-en.hatoyama")
+	   "Yukio Hatoyama")
+	  ((string-equal group "m-magazine-ja.hatoyama")
+	   "鳩山由紀夫")
 	  ((string-equal group "m-magazine-en.aso")
 	   "Taro Aso")
 	  ((string-equal group "m-magazine-ja.aso")
@@ -141,7 +157,7 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 	  ((string-equal group "m-magazine") ;; Backward compatibility.
 	   "小泉純一郎")
 	  (t
-	   "鳩山由紀夫"))))
+	   "菅直人"))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-kantei)
 					 &optional range)
@@ -381,7 +397,7 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 
 (luna-define-method shimbun-make-contents :around ((shimbun shimbun-kantei)
 						   header)
-  (if (string-match "\\`m-magazine-\\(?:en\\|ja\\)\\'"
+  (if (string-match "\\`m-magazine-\\(?:cn\\|en\\|ja\\|kr\\)\\'"
 		    (shimbun-current-group-internal shimbun))
       ;; Choose a face according to the author.
       (let ((shimbun-x-face-database-function
@@ -389,18 +405,23 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 		 (let ((from (shimbun-header-from header t)))
 		   `(lambda (ignore)
 		      ,(cdr (nth
-			     (cond ((member from '("Taro Aso"
-						   "麻生太郎"))
+			     (cond ((member from '("Yukio Hatoyama"
+						   "鳩山由紀夫"
+						   "鸠山由纪夫"
+						   "하토야마 유키오"))
 				    1)
+				   ((member from '("Taro Aso"
+						   "麻生太郎"))
+				    2)
 				   ((member from '("Yasuo Fukuda"
 						   "福田康夫"))
-				    2)
+				    3)
 				   ((member from '("Shinzo Abe"
 						   "安倍晋三"))
-				    3)
+				    4)
 				   ((member from '("Junichiro Koizumi"
 						   "小泉純一郎"))
-				    4)
+				    5)
 				   (t
 				    0))
 			     shimbun-kantei-x-face-alist)))))))
