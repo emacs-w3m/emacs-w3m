@@ -6119,14 +6119,18 @@ vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
 vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
 vinelinux.errata.1x
 
-@item @uref{http://www.mmz.kantei.go.jp/, 鳩山内閣メールマガジン}
-kantei.m-magazine-en kantei.m-magazine-ja kantei.m-magazine-cn
-kantei.m-magazine-kr kantei.m-magazine-en.aso kantei.m-magazine-ja.aso
-kantei.m-magazine-en.fukuda kantei.m-magazine-ja.fukuda
-kantei.m-magazine-en.abe kantei.m-magazine-ja.abe
-kantei.m-magazine-en.koizumi kantei.m-magazine-ja.koizumi
+@item @uref{http://www.mmz.kantei.go.jp/, 内閣メールマガジン}
+kantei.m-magazine-en kantei.m-magazine-ja kantei.m-magazine-cn.hatoyama
+kantei.m-magazine-kr.hatoyama kantei.m-magazine-en.hatoyama
+kantei.m-magazine-ja.hatoyama kantei.m-magazine-en.aso
+kantei.m-magazine-ja.aso kantei.m-magazine-en.fukuda
+kantei.m-magazine-ja.fukuda kantei.m-magazine-en.abe
+kantei.m-magazine-ja.abe kantei.m-magazine-en.koizumi
+kantei.m-magazine-ja.koizumi
 
-後方互換性のため、@samp{kantei.m-magazine} も利用可能になっています。
+後方互換性のため @samp{kantei.m-magazine}、
+@samp{kantei.m-magazine-cn} および @samp{kantei.m-magazine-kr} も利用可
+能になっています。
 
 @item @uref{http://www.jpo.go.jp/, 特許庁}
 jpo.news jpo.revision jpo.lawguide jpo.details
