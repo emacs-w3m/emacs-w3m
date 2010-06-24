@@ -1877,6 +1877,12 @@ web page as currently displayed in
 emacs-w3m(@code{w3m-view-url-with-external-browser}).  The external
 browser to be used is defined by the variable
 @code{w3m-content-type-alist}, depending on the kind of URL.
+
+@item @kbd{|}
+@kindex |
+@findex w3m-pipe-source
+Pipe the source of the web page to a command.  You will be prompted for
+the command (@code{w3m-pipe-source}).
 @end table
 
 The (@pxref{Tips}) section gives more examples on how to integrate
