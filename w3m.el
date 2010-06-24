@@ -2565,6 +2565,9 @@ nil value means it has not been initialized.")
       [,(w3m-make-menu-item "この URL を外部ブラウザで開く"
 	  "Open This URL in an External Browser")
        w3m-external-view-this-url (or (w3m-anchor) (w3m-image))]
+      [,(w3m-make-menu-item "このページのソースをコマンドに送る..."
+	  "Pipe Page Source to Command...")
+       w3m-pipe-source  w3m-current-url]
       "----" ;; separator
       (,(w3m-make-menu-item "再表示" "Redisplay")
        [,(w3m-make-menu-item "このページを再取得する" "Reload This Page")
@@ -7780,6 +7783,7 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "s" 'w3m-history)
     (define-key map "E" 'w3m-edit-current-url)
     (define-key map "e" 'w3m-edit-this-url)
+    (define-key map "|" 'w3m-pipe-source)
     (define-key map "C" (make-sparse-keymap))
     (define-key map "Ct" 'w3m-redisplay-with-content-type)
     (define-key map "Cc" 'w3m-redisplay-with-charset)
@@ -7919,6 +7923,7 @@ as if the folder command of MH performs with the -pack option."
     (define-key map "[" 'w3m-previous-form)
     (define-key map "}" 'w3m-next-image)
     (define-key map "{" 'w3m-previous-image)
+    (define-key map "|" 'w3m-pipe-source)
     (define-key map "C" (make-sparse-keymap))
     (define-key map "Ct" 'w3m-redisplay-with-content-type)
     (define-key map "Cc" 'w3m-redisplay-with-charset)
@@ -10131,6 +10136,51 @@ If it is called with the prefix argument, display the arrived URLs."
 			       url))))
     (set-process-filter proc 'ignore)
     (set-process-sentinel proc 'ignore)))
+
+(defun w3m-pipe-source (&optional url command)
+  "Pipe the page source of url URL in binary to a shell command COMMAND.
+For the interactive use, URL defaults to that of a link at the point;
+if there are both a link to a page and a link to an image at the point,
+the link to a page is preferred unless the prefix argument is given."
+  (interactive
+   (let ((url (or (if current-prefix-arg
+		      (or (w3m-image) (w3m-anchor))
+		    (or (w3m-anchor) (w3m-image)))
+		  (and w3m-current-url
+		       (prog1
+			   (y-or-n-p (format "Pipe <%s> ? " w3m-current-url))
+			 (message nil))
+		       w3m-current-url)))
+	 command)
+     (if (and (w3m-url-valid url)
+	      (progn
+		(setq command (read-string "Command: "))
+		(not (string-match "\\`[\000-\040]*\\'" command))))
+	 (list url command)
+       (list 'none nil))))
+  (cond ((eq url 'none) nil)
+	((and (stringp url)
+	      (w3m-url-valid url)
+	      (stringp command)
+	      (not (string-match "\\`[\000-\040]*\\'" command)))
+	 (w3m-message "Pipe <%s> to \"| %s\"..." url command)
+	 (with-temp-buffer
+	   (set-buffer-multibyte nil)
+	   (w3m-process-with-wait-handler
+	     (w3m-retrieve (cond ((string-match "\\`about://source/" url)
+				  url)
+				 ((string-match "\\`about://header/" url)
+				  (concat "about://source/"
+					  (substring url (match-end 0))))
+				 (t
+				  (concat "about://source/" url)))))
+	   (shell-command-on-region (point-min) (point-max) command nil)
+	   (w3m-message "Pipe <%s> to \"| %s\"...done" url command)
+	   (let ((buffer (get-buffer "*Shell Command Output*")))
+	     (when (and buffer
+			(not (zerop (buffer-size buffer))))
+	       (display-buffer buffer)))))
+	(t (error "Can't pipe page source"))))
 
 ;;; Interactive select buffer.
 (defcustom w3m-select-buffer-horizontal-window t

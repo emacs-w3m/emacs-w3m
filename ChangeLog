@@ -1,3 +1,9 @@
+2010-06-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-menubar): Add w3m-pipe-source.
+	(w3m-lynx-like-map, w3m-info-like-map): Bind "|" to w3m-pipe-source.
+	(w3m-pipe-source): New command.
+
 2010-06-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-update-files-autoloads): Strip subdirectory name
