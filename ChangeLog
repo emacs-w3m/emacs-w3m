@@ -1,3 +1,8 @@
+2010-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-toggle-inline-image)
+	(w3m-toggle-inline-images): Fix query logic about safe url.
+
 2010-06-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-menubar): Add w3m-pipe-source.

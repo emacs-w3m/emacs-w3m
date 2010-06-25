@@ -3994,12 +3994,9 @@ non-nil, cached data will not be used."
 			 (or end (point-max))))
 		    (setq safe-regexp
 			  (get-text-property (point) 'w3m-safe-url-regexp))
-		    (if (or (not safe-regexp)
-			    (string-match safe-regexp url)
-			    (and force
-				 (or (not (interactive-p))
-				     (yes-or-no-p "\
-Are you sure you really want to show this image (maybe insecure)? "))))
+		    (if (or force
+			    (not safe-regexp)
+			    (string-match safe-regexp url))
 			(w3m-toggle-inline-images-internal
 			 status no-cache url
 			 (or begin (point-min))
@@ -4061,13 +4058,10 @@ variable is non-nil (default=t)."
 	     (setq pos (next-single-property-change pos 'w3m-image
 						    nil end)))
 	   t))))
-    (if (or status
+    (if (or force
+	    status
 	    (not safe-regexp)
-	    safe-p
-	    (and force
-		 (or (not (interactive-p))
-		     (yes-or-no-p "\
-Are you sure you really want to show all images (maybe insecure)? "))))
+	    safe-p)
 	(progn
 	  (unwind-protect
 	      (w3m-toggle-inline-images-internal (if status 'on 'off)
