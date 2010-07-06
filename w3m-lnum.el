@@ -1,6 +1,6 @@
 ;;; w3m-lnum.el --- Operations using link numbers
 
-;; Copyright (C) 2004, 2005, 2006, 2007, 2009
+;; Copyright (C) 2004, 2005, 2006, 2007, 2009, 2010
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -33,8 +33,9 @@
 ;; Install this file to an appropriate directory, and add these
 ;; expressions to your ~/.emacs-w3m.
 
-;;      (autoload 'w3m-link-numbering-mode "w3m-lnum" nil t)
-;;	(add-hook 'w3m-mode-hook 'w3m-link-numbering-mode)
+;; (autoload 'w3m-link-numbering-mode "w3m-lnum" nil t)
+;; (autoload 'w3m-linknum-follow "w3m-lnum" nil t)
+;; (add-hook 'w3m-mode-hook 'w3m-link-numbering-mode)
 
 ;;; Code:
 
@@ -71,35 +72,54 @@
   (push (cons 'w3m-link-numbering-mode w3m-link-numbering-mode-map)
 	minor-mode-map-alist))
 
+(defun w3m-linknum-remove-overlays (&optional arg)
+  "Remove numbering and match overlays.
+With ARG remove only temporary match"
+  (if arg
+      (dolist (overlay (overlays-in (point-min) (point-max)))
+	(if (overlay-get overlay 'w3m-linknum-match)
+	    (delete-overlay overlay)))
+    (dolist (overlay (overlays-in (point-min) (point-max)))
+      (if (or (overlay-get overlay 'w3m-link-numbering-overlay)
+	      (overlay-get overlay 'w3m-linknum-match))
+	  (delete-overlay overlay)))))
+
 ;;;###autoload
 (defun w3m-link-numbering-mode (&optional arg)
-  "Minor mode to enable operations using link numbers."
+  "Minor mode to enable operations using link numbers.
+With prefix ARG 0 disable mode, with prefix ARG 4 index forms as well."
   (interactive "P")
   (add-hook 'w3m-display-functions 'w3m-link-numbering)
-  (if (setq w3m-link-numbering-mode
-	    (if arg
-		(> (prefix-numeric-value arg) 0)
-	      (not w3m-link-numbering-mode)))
-      (progn
-	(w3m-link-numbering)
-	(run-hooks 'w3m-link-numbering-mode-hook))
-    (dolist (overlay (overlays-in (point-min) (point-max)))
-      (when (overlay-get overlay 'w3m-link-numbering-overlay)
-	(delete-overlay overlay)))))
+  (let (diff)
+    (setq w3m-link-numbering-mode
+	  (if arg
+	      (when (not (= (setq arg (prefix-numeric-value arg)) 0))
+		(setq diff (not (eq arg w3m-link-numbering-mode)))
+		arg)
+	    (if (not w3m-link-numbering-mode) 1)))
+    (if w3m-link-numbering-mode
+	(progn
+	  (if diff (w3m-linknum-remove-overlays))
+	  (if (= w3m-link-numbering-mode 4)
+	      (w3m-link-numbering t)
+	    (w3m-link-numbering))
+	  (run-hooks 'w3m-link-numbering-mode-hook))
+      (w3m-linknum-remove-overlays))))
 
 (defun w3m-link-numbering (&rest args)
-  "Make overlays that display link numbers."
+  "Make overlays that display link numbers.
+With ARGS index forms as well."
   (when w3m-link-numbering-mode
     (save-excursion
       (goto-char (point-min))
       (let ((i 0)
-	    overlay num)
+	    pos overlay num)
 	(catch 'already-numbered
-	  (while (w3m-goto-next-anchor)
-	    (when (w3m-anchor)
-	      (when (get-char-property (point) 'w3m-link-numbering-overlay)
+	  (while (setq pos (w3m-goto-next-anchor))
+	    (when (or args (get-char-property pos 'w3m-href-anchor))
+	      (when (get-char-property pos 'w3m-link-numbering-overlay)
 		(throw 'already-numbered nil))
-	      (setq overlay (make-overlay (point) (1+ (point)))
+	      (setq overlay (make-overlay pos (1+ pos))
 		    num (format "[%d]" (incf i)))
 	      (w3m-static-if (featurep 'xemacs)
 		  (progn
@@ -125,19 +145,158 @@ of moving cursor."
 	    (push (w3m-anchor-sequence) w3m-goto-anchor-hist)
 	    (w3m-horizontal-on-screen)
 	    (throw 'found (w3m-print-this-url))))
-	(error "Cannot found your specified link: %d" arg))
+	(error "Cannot find specified link: %d" arg))
     (w3m-view-this-url)))
 
-(defun w3m-go-to-linknum ()
-  "Turn on link numbers and ask for one to go to."
-  (interactive)
-  (let ((active w3m-link-numbering-mode))
-    (unless active
-      (w3m-link-numbering-mode 1))
-    (unwind-protect
-	(w3m-move-numbered-anchor (w3m-read-number "Anchor number: "))
-      (unless active
-	(w3m-link-numbering-mode 0)))))
+(defun w3m-read-int-interactive (prompt fun &optional default)
+  "Interactively read a valid integer from minubuffer with PROMPT.
+Execute a one argument function FUN with every current valid integer.
+Initial value is DEFAULT if specified or 0.
+Use <return> to submit current value and <backspace> for correction."
+  (let ((prompt (propertize prompt 'face 'minibuffer-prompt))
+	(num (or default 0))
+	(min-len (length prompt))
+	ch)
+    (let ((temp-prompt (format "%s%d" prompt num)))
+      (while (not (eq (setq ch (read-event temp-prompt)) 'return))
+	(cond ((and (eq ch 'backspace)
+		    (> (length temp-prompt) min-len))
+	       (setq num (/ num 10)
+		     temp-prompt (format "%s%d" prompt num))
+	       (funcall fun num))
+	      ((and (numberp ch) (> ch 47) (< ch 58))
+	       (setq num (+ (* num 10) (- ch 48))
+		     temp-prompt (format "%s%d" prompt num))
+	       (funcall fun num))))
+      num)))
+
+(defmacro w3m-with-linknum (type &rest body)
+  "Within TYPE anchor numbering execute BODY.
+Then restore previous numbering condition."
+  `(let ((ty ,type)
+	 (active (or w3m-link-numbering-mode 0)))
+     (let ((diff (not (= active ty))))
+       (when diff
+	 (or (= ty 0) (w3m-link-numbering-mode 0))
+	 (w3m-link-numbering-mode ty))
+       (unwind-protect
+	   (progn ,@body)
+	 (if diff
+	     (progn
+	       (or (= active 0) (w3m-link-numbering-mode 0))
+	       (w3m-link-numbering-mode active))
+	   (w3m-linknum-remove-overlays t))))))
+
+(defun w3m-highlight-numbered-anchor (arg)
+  "Highlight specified by ARG number anchor."
+  (catch 'done
+    (let (found-prev marked-new)
+      (dolist (overlay (overlays-in (point-min) (point-max)))
+	(cond
+	 ((and found-prev marked-new)
+	  (throw 'done nil))
+	 ((overlay-get overlay 'w3m-linknum-match)
+	  (delete-overlay overlay)
+	  (setq found-prev t))
+	 ((eq arg (overlay-get overlay 'w3m-link-numbering-overlay))
+	  (let* ((start (overlay-start overlay))
+		 (end (1+ start)))
+	    (let ((prop 'w3m-href-anchor)
+		  (anchor (get-text-property start 'w3m-href-anchor))
+		  (comparator 'equal))
+	      (or anchor
+		  (setq prop 'w3m-action
+			anchor (get-text-property start 'w3m-action)
+			comparator 'eq))
+	      (while (funcall comparator anchor
+			      (get-text-property end prop))
+		(setq end (1+ end))))
+	    (let ((match-overlay (make-overlay start end)))
+	      (overlay-put match-overlay 'w3m-linknum-match t)
+	      (overlay-put match-overlay 'face 'match)))
+	  (setq marked-new t)))))))
+
+(defun w3m-get-numbered-url (&optional num)
+  "Get url of anchor numbered as NUM.
+If NUM is not specified, find currently highlighted anchor."
+  (catch 'found
+    (if num
+	(dolist (overlay (overlays-in (point-min) (point-max)))
+	  (if (eq num (overlay-get overlay
+				   'w3m-link-numbering-overlay))
+	      (let ((result (get-text-property (overlay-start overlay)
+					       'w3m-href-anchor)))
+		(throw
+		 'found
+		 (let ((pos (overlay-start overlay)))
+		   (cons (or result
+			     (get-text-property pos 'w3m-action))
+			 pos))))))
+      (dolist (overlay (overlays-in (point-min) (point-max)))
+	(if (overlay-get overlay 'w3m-linknum-match)
+	    (let ((result (get-text-property (overlay-start overlay)
+					     'w3m-href-anchor)))
+	      (throw
+	       'found
+	       (let ((pos (overlay-start overlay)))
+		 (cons (or result
+			   (get-text-property pos 'w3m-action))
+		       pos)))))))))
+
+;;;###autoload
+(defun w3m-go-to-linknum (arg)
+  "Turn on link and form numbers and ask for one to go to.
+With prefix ARG don't highlight current link."
+  (interactive "P")
+  (w3m-with-linknum
+   4
+   (w3m-move-numbered-anchor
+    (if arg
+	(w3m-read-number "Anchor number: ")
+      (w3m-read-int-interactive "Anchor number: "
+				'w3m-highlight-numbered-anchor)))))
+
+(defun w3m-linknum-get-action (&optional prompt)
+  "Turn on link numbers and return cons of url or action and position
+of  PROMPT selected anchor.
+Highlight every intermediate result anchor."
+  (w3m-with-linknum
+   4 (w3m-read-int-interactive (or prompt "Anchor number: ")
+			       'w3m-highlight-numbered-anchor)
+   (w3m-get-numbered-url)))
+
+;;;###autoload
+(defun w3m-linknum-follow (arg)
+  "Turn on link numbers, ask for one and execute appropriate action on it.
+When link - visit it, when button - press, when input - activate it.
+With prefix ARG visit link in new session."
+  (interactive "P")
+  (let ((link (w3m-linknum-get-action
+	       (concat "Follow " (if arg "in new session ")
+		       "(select link): "))))
+    (if (consp link)
+	(cond ((stringp (car link))
+	       (if arg (w3m-goto-url-new-session (car link))
+		 (goto-char (cdr link))
+		 (w3m-goto-url (car link))))
+	      ((eq (caar link) 'w3m-form-submit)
+	       (widget-button-press (cdr link) (car link)))
+	      (t (goto-char (cdr link))
+		 (let ((w3m-form-new-session arg)
+		       (w3m-form-download nil))
+		   (eval (car link)))))
+      (error "No valid link selected"))))
+
+;;;###autoload
+(defun w3m-linknum-read-url (&optional prompt)
+  "Turn on link numbers and return PROMPT selected url.
+Highlight each intermediate result anchor."
+  (w3m-with-linknum
+   1 (w3m-read-int-interactive (or prompt "Anchor number: ")
+			       'w3m-highlight-numbered-anchor)
+   (let ((link (w3m-get-numbered-url)))
+     (and (consp link) (stringp (car link))
+	  (car link)))))
 
 (provide 'w3m-lnum)
 

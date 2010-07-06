@@ -1,3 +1,19 @@
+2010-07-06  Andrey Kotlarski  <m00naticus@gmail.com>
+
+	* w3m-lnum.el: Update usage comment.
+	(w3m-linknum-remove-overlays): New function.
+	(w3m-link-numbering-mode): Turn mode off if prefix arg is 0;
+	index forms as well as url links if prefix arg is 4.
+	(w3m-link-numbering): Index forms as well if prefix arg is given.
+	(w3m-move-numbered-anchor): Fix grammar in error message.
+	(w3m-read-int-interactive): New function.
+	(w3m-with-linknum): New macro.
+	(w3m-highlight-numbered-anchor, w3m-get-numbered-url): New functions.
+	(w3m-go-to-linknum): Add autoload cookie; turn on form numbers as well;
+	don't highlight current link if prefix arg is given.
+	(w3m-linknum-get-action, w3m-linknum-follow, w3m-linknum-read-url): New
+	functions.
+
 2010-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-toggle-inline-image)
