@@ -1,3 +1,28 @@
+2010-07-08  Andrey Kotlarski  <m00naticus@gmail.com>
+
+	* w3m-lnum.el: Update usage comment.
+	(w3m-linknum-minibuffer-prompt): New face.
+	(w3m-linknum-remove-overlays): Quit immediately when it finds and
+	deletes temporary match overlay.
+	(w3m-link-numbering-mode): Pass prefix arg, which makes this function
+	index only images if it is 2, to w3m-link-numbering. Remove
+	interactive declaration and autoload cookie.
+	(w3m-link-numbering, w3m-with-linknum): Vary function according to arg;
+	index only images if it is 2.
+	(w3m-read-int-interactive): Change prompt face to
+	w3m-linknum-minibuffer-prompt.
+	(w3m-highlight-numbered-anchor): Use next-single-property-change.
+	(w3m-get-anchor-info): New function. Renamed from
+	w3m-get-numbered-url. Using macrolet for less clutter.
+	(w3m-go-to-linknum): Rewrote it more in style with the other
+	user commands.
+	(w3m-linknum-get-action): Added optional type argument to
+	determine numbering scheme.
+	(w3m-linknum-follow): Rewrite to use the new
+	w3m-linknum-get-action return format.
+	(w3m-linknum-read-url): Rewrite using w3m-linknum-get-action.
+	(w3m-linknum-toggle-image): New function.
+
 2010-07-06  Andrey Kotlarski  <m00naticus@gmail.com>
 
 	* w3m-lnum.el: Update usage comment.
