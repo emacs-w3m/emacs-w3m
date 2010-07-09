@@ -1,3 +1,8 @@
+2010-07-09  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-lnum.el (w3m-read-int-interactive): Add keys to exit event loop,
+	C-m & C-j.
+
 2010-07-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-ctl-c-map, w3m-redisplay-map)
