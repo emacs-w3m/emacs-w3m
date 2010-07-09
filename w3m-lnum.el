@@ -34,14 +34,6 @@
 ;; Install this file to an appropriate directory, and add these
 ;; expressions to your ~/.emacs-w3m.
 
-;; (autoload 'w3m-linknum-follow "w3m-lnum"
-;;   "Turn on link numbers, ask for one and execute appropriate action on it." t)
-;; (autoload 'w3m-go-to-linknum "w3m-lnum"
-;;   "Turn on link and form numbers and ask for one to go to." t)
-;; (autoload 'w3m-linknum-toggle-image "w3m-lnum"
-;;   "Turn on link numbers and toggle an image." t)
-;; (autoload 'w3m-linknum-read-url "w3m-lnum"
-;;   "Turn on link numbers and return PROMPT selected url.")
 ;; (add-hook 'w3m-mode-hook 'w3m-link-numbering-mode)
 
 ;;; Code:
@@ -112,7 +104,7 @@ With prefix ARG 2 index only images."
 	      (unless (= (setq arg (prefix-numeric-value arg)) 0)
 		(setq diff (not (eq arg w3m-link-numbering-mode)))
 		arg)
-	    (if (not w3m-link-numbering-mode) 1)))
+	    (unless w3m-link-numbering-mode 1)))
     (if w3m-link-numbering-mode
 	(progn
 	  (if diff (w3m-linknum-remove-overlays))
@@ -242,7 +234,7 @@ Then restore previous numbering condition."
 	(and found-prev marked-new (throw 'done nil))))))
 
 (defun w3m-get-anchor-info (&optional num)
-  "Get info (url/action position [image]) of anchor numbered as NUM.
+  "Get info (url/action position [image image-alt]) of anchor numbered as NUM.
 If NUM is not specified, use currently highlighted anchor."
   (macrolet
       ((get-match-info
@@ -254,7 +246,8 @@ If NUM is not specified, use currently highlighted anchor."
 		 (throw
 		  'found
 		  (if href (list href pos
-				 (get-text-property pos 'w3m-image))
+				 (get-text-property pos 'w3m-image)
+				 (get-text-property pos 'w3m-image-alt))
 		    (list (get-text-property pos 'w3m-action)
 			  pos))))))))
     (catch 'found
@@ -266,31 +259,40 @@ If NUM is not specified, use currently highlighted anchor."
 ;;;###autoload
 (defun w3m-go-to-linknum (arg)
   "Turn on link and form numbers and ask for one to go to.
-With prefix ARG don't highlight current link."
+With prefix ARG don't highlight current link.
+0 corresponds to location url."
   (interactive "P")
   (w3m-with-linknum
    4
-   (let (info)
-     (if arg
-	 (setq info (w3m-get-anchor-info
-		     (w3m-read-number "Anchor number: ")))
-       (w3m-read-int-interactive "Anchor number: "
-				 'w3m-highlight-numbered-anchor)
-       (setq info (w3m-get-anchor-info)))
+   (let ((info (if arg
+		   (let ((num (w3m-read-number "Anchor number: ")))
+		     (if (= 0 num)
+			 (list nil 16)
+		       (w3m-get-anchor-info num)))
+		 (if (= 0 (w3m-read-int-interactive
+			   "Anchor number: "
+			   'w3m-highlight-numbered-anchor))
+		     (list nil 16)
+		   (w3m-get-anchor-info)))))
      (if info
 	 (goto-char (cadr info))
-       (error "No valid anchor selected")))))
+       (w3m-message "No valid anchor selected")))))
 
 (defun w3m-linknum-get-action (&optional prompt type)
   "Turn on link numbers and return list of url or action, position
 and image url if such of  PROMPT selected anchor.
 TYPE sets types of anchors to be numbered, if nil or 4, number urls,
 form fields and buttons. 1 - only links, 2 - only images.
-Highlight every intermediate result anchor."
+Highlight every intermediate result anchor.
+Input 0 corresponds to current page url."
   (w3m-with-linknum
-   (or type 4) (w3m-read-int-interactive (or prompt "Anchor number: ")
-					 'w3m-highlight-numbered-anchor)
-   (w3m-get-anchor-info)))
+   (or type 4)
+   (if (and (= 0 (w3m-read-int-interactive
+		  (or prompt "Anchor number: ")
+		  'w3m-highlight-numbered-anchor))
+	    (not (eq type 2)))
+       (list w3m-current-url 16 nil nil)
+     (w3m-get-anchor-info))))
 
 ;;;###autoload
 (defun w3m-linknum-follow (arg)
@@ -301,7 +303,7 @@ before activate/press."
   (interactive "P")
   (let ((info (w3m-linknum-get-action
 	       (concat "Follow " (if arg "in new session ")
-		       "(select link): "))))
+		       "(select anchor): "))))
     (if info
 	(let ((action (car info)))
 	  (cond ((stringp action)	; url
@@ -322,7 +324,7 @@ before activate/press."
 		       (let ((w3m-form-new-session nil)
 			     (w3m-form-download nil))
 			 (eval action)))))))
-      (error "No valid link selected"))))
+      (w3m-message "No valid link selected"))))
 
 ;;;###autoload
 (defun w3m-linknum-read-url (&optional prompt)
@@ -332,22 +334,119 @@ Highlight each intermediate result anchor."
     (and link (stringp (setq link (car link)))
 	 link)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; linknum alternatives to w3m user commands on point
+
 ;;;###autoload
-(defun w3m-linknum-toggle-image (&optional arg)
-  "Turn on link numbers and toggle an image.
+(defun w3m-linknum-toggle-inline-image (&optional arg)
+  "If image at point, toggle it.
+Otherwise turn on link numbers and toggle selected image.
 With prefix ARG open in new session url behind image if such."
   (interactive "P")
-  (let ((im (w3m-linknum-get-action
-	     (if arg
-		 "Open image url in new session: "
-	       "Toggle image: ")
-	     2)))
-    (if im
-	(if (and arg (car im))
-	    (w3m-goto-url-new-session (car im))
-	  (save-excursion (goto-char (cadr im))
-			  (w3m-toggle-inline-image)))
-      (error "No image selected"))))
+  (if (w3m-image)
+      (let ((url (get-char-property (point) 'w3m-href-anchor)))
+	(if (and arg url)
+	    (w3m-goto-url-new-session url)
+	  (w3m-toggle-inline-image)))
+    (let ((im (w3m-linknum-get-action
+	       (if arg
+		   "Open image url in new session: "
+		 "Toggle image: ")
+	       2)))
+      (if im
+	  (if (and arg (car im))
+	      (w3m-goto-url-new-session (car im))
+	    (save-excursion (goto-char (cadr im))
+			    (w3m-toggle-inline-image)))
+	(w3m-message "No image selected")))))
+
+;;;###autoload
+(defun w3m-linknum-view-image ()
+  "Display the image under point in the external viewer.
+If no image at poing, turn on image numbers and display selected.
+The viewer is defined in `w3m-content-type-alist' for every type of an
+image."
+  (interactive)
+  (let ((url (w3m-url-valid (w3m-image))))
+    (if url
+	(w3m-external-view url)
+      (let ((im (w3m-linknum-get-action
+		 "Open image url in external viewer: " 2)))
+	(if im
+	    (w3m-external-view (caddr im))
+	  (w3m-message "No image selected"))))))
+
+;;;###autoload
+(defun w3m-linknum-save-image ()
+  "Save the image under point to a file.
+If no image at poing, turn on image numbers and save selected.
+The default name will be the original name of the image."
+  (interactive)
+  (let ((url (w3m-url-valid (w3m-image))))
+    (if url
+	(w3m-download url)
+      (let ((im (w3m-linknum-get-action "Save image: " 2)))
+	(if im
+	    (w3m-download (caddr im))
+	  (w3m-message "No image selected"))))))
+
+;;;###autoload
+(defun w3m-linknum-external-view-this-url ()
+  "Launch the external browser and display the link at point.
+If no link at point, turn on link numbers and open selected externally."
+  (interactive)
+  (let ((url (w3m-url-valid (or (w3m-anchor) (w3m-image)
+				(w3m-linknum-read-url
+				 "Open in external browser: ")))))
+    (if url
+	(w3m-external-view url)
+      (w3m-message "No URL selected"))))
+
+;;;###autoload
+(defun w3m-linknum-edit-this-url ()
+  "Edit the page linked from the anchor under the cursor.
+If no such, turn on link numbers and edit selected."
+  (interactive)
+  (let ((url (w3m-url-valid (w3m-anchor))))
+    (if url
+	(w3m-edit-url url)
+      (let ((link (w3m-linknum-read-url "Select link to edit: ")))
+	(if link
+	    (w3m-edit-url link)
+	  (w3m-message "No URL selected"))))))
+
+;;;###autoload
+(defun w3m-linknum-print-this-url ()
+  "Display the url under point in the echo area and put it into `kill-ring'.
+If no url under point, activate numbering and select one."
+  (interactive)
+  (if (or (w3m-anchor) (w3m-image))
+      (w3m-print-this-url t)
+    (let ((link (w3m-linknum-get-action "Select URL to copy: " 1)))
+      (if link
+	  (let ((url (car link)))
+	    (kill-new url)
+	    (w3m-message "%s%s" (let ((im-alt (cadddr link)))
+				  (if (zerop (length im-alt))
+				      ""
+				    (concat im-alt ": ")))
+			 url))
+	(w3m-message "No URL selected")))))
+
+;;;###autoload
+(defun w3m-linknum-download-this-url ()
+  "Download the file or the page pointed to by the link under point.
+If no point, activate numbering and select andchor to download."
+  (interactive)
+  (if (or (w3m-anchor) (w3m-image) (w3m-action))
+      (w3m-download-this-url)
+    (let ((info (w3m-linknum-get-action
+		 "Select anchor to download: ")))
+      (if info
+	  (save-excursion
+	    (goto-char (cadr info))
+	    (w3m-download-this-url))
+	(w3m-message "No anchor selected")))))
 
 (provide 'w3m-lnum)
 

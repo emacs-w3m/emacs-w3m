@@ -1,3 +1,33 @@
+2010-07-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-ctl-c-map, w3m-redisplay-map)
+	(w3m-linknum-map): New sub-keymaps.
+	(w3m-lynx-like-map, w3m-info-like-map): Move `C-c' prefixed commands
+	and `C' prefixed commands to w3m-ctl-c-map and w3m-redisplay-map
+	respectively.
+
+2010-07-09  Andrey Kotlarski  <m00naticus@gmail.com>
+
+	* w3m.el: Autoload w3m-linknum-follow, w3m-linknum-read-url,
+	w3m-linknum-toggle-inline-image, w3m-linknum-view-image,
+	w3m-linknum-external-view-this-url, w3m-linknum-edit-this-url,
+	w3m-linknum-print-this-url, w3m-linknum-download-this-url.
+
+	* w3m-lnum.el: Update usage comment.
+	(w3m-link-numbering-mode): Cosmetic change.
+	(w3m-get-anchor-info): Added w3m-image-alt char property to return
+	list.
+	(w3m-go-to-linknum, w3m-linknum-get-action): On 0 input select
+	location url.
+	(w3m-linknum-follow): Changed prompt and using w3m-message.
+	(w3m-linknum-toggle-inline-image): Renamed from
+	w3m-linknum-toggle-image and using w3m-message.  When image on
+	point, toggle it.
+	(w3m-linknum-view-image, w3m-linknum-save-image)
+	(w3m-linknum-external-view-this-url)
+	(w3m-linknum-edit-this-url, w3m-linknum-print-this-url)
+	(w3m-linknum-download-this-url): New commands.
+
 2010-07-08  Andrey Kotlarski  <m00naticus@gmail.com>
 
 	* w3m-lnum.el: Update usage comment.
