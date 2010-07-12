@@ -26,15 +26,23 @@
 
 ;;; Commentary:
 
-;; This file provides a minor mode to enable operations using link
-;; numbers.
+;; This file provides a minor mode to enable Conkeror style operations
+;; using link numbers.  Mostly point operations are extended beyond
+;; current point but there are also new features like
+;; `w3m-go-to-linknum' for quickly navigating to links, form fields
+;; or buttons and `w3m-linknum-follow' for visiting links, activating
+;; form fields or pushing buttons.
 
 ;;; Usage:
 
-;; Install this file to an appropriate directory, and add these
-;; expressions to your ~/.emacs-w3m.
-
+;; Install this file to an appropriate directory, and add this
+;; expression to your ~/.emacs-w3m if you want automatically
+;; activating this minor mode
+;; (w3m-link-numbering-mode 1)
+;; or alternatively this to your .emacs file before loading w3m
 ;; (add-hook 'w3m-mode-hook 'w3m-link-numbering-mode)
+;; or just use interactive command `w3m-link-numbering-mode' to toggle
+;; mode.
 
 ;;; Code:
 
@@ -64,17 +72,42 @@
   :group 'w3m
   :type 'hook)
 
-(defvar w3m-link-numbering-mode-map
-  (let ((keymap (make-sparse-keymap)))
-    (substitute-key-definition 'w3m-view-this-url
-			       'w3m-move-numbered-anchor
-			       keymap w3m-mode-map)
-    keymap)
+(defmacro w3m-substitute-key-definitions (new-map old-map &rest keys)
+  "In NEW-MAP substitute cascade of OLD-MAP KEYS.
+KEYS is alternating list of key-value."
+  (let ((n-map new-map)
+	(o-map old-map))
+    `(progn
+       ,@(let ((res nil))
+	   (while keys
+	     (push `(substitute-key-definition
+		     ,(car keys) ,(cadr keys) ,n-map ,o-map)
+		   res)
+	     (setq keys (cddr keys)))
+	   (nreverse res)))))
+
+(defvar w3m-link-numbering-mode-map nil
   "Keymap used when `w3m-link-numbering-mode' is active.")
+(unless w3m-link-numbering-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "f" 'w3m-linknum-follow)
+    (define-key map "F" 'w3m-go-to-linknum)
+    (w3m-substitute-key-definitions
+     map w3m-mode-map
+     'w3m-view-image 'w3m-linknum-view-image
+     'w3m-save-image 'w3m-linknum-save-image
+     'w3m-download-this-url 'w3m-linknum-download-this-url
+     'w3m-edit-this-url 'w3m-linknum-edit-this-url
+     'w3m-toggle-inline-image 'w3m-linknum-toggle-inline-image
+     'w3m-print-this-url 'w3m-linknum-print-this-url
+     'w3m-external-view-this-url 'w3m-linknum-external-view-this-url)
+    (setq w3m-link-numbering-mode-map map)))
 
 (defvar w3m-link-numbering-mode nil
   "Non-nil if w3m operations using link numbers are enabled.")
 (make-variable-buffer-local 'w3m-link-numbering-mode)
+(unless (assq 'w3m-link-numbering-mode minor-mode-alist)
+  (push (list 'w3m-link-numbering-mode "[ln]") minor-mode-alist))
 (unless (assq 'w3m-link-numbering-mode minor-mode-map-alist)
   (push (cons 'w3m-link-numbering-mode w3m-link-numbering-mode-map)
 	minor-mode-map-alist))
@@ -93,24 +126,37 @@ With ARG remove only temporary match"
 	      (overlay-get overlay 'w3m-linknum-match))
 	  (delete-overlay overlay)))))
 
+;;;###autoload
 (defun w3m-link-numbering-mode (&optional arg)
-  "Minor mode to enable operations using link numbers.
-With prefix ARG 0 disable mode, with prefix ARG 4 index forms as well.
-With prefix ARG 2 index only images."
-  (add-hook 'w3m-display-functions 'w3m-link-numbering)
-  (let (diff)
-    (setq w3m-link-numbering-mode
-	  (if arg
-	      (unless (= (setq arg (prefix-numeric-value arg)) 0)
-		(setq diff (not (eq arg w3m-link-numbering-mode)))
-		arg)
-	    (unless w3m-link-numbering-mode 1)))
-    (if w3m-link-numbering-mode
-	(progn
-	  (if diff (w3m-linknum-remove-overlays))
-	  (w3m-link-numbering w3m-link-numbering-mode)
-	  (run-hooks 'w3m-link-numbering-mode-hook))
-      (w3m-linknum-remove-overlays))))
+  "Minor mode to extend point commands by using Conkeror style number selection.
+With prefix ARG 0 disable battery included point functions, otherwise
+enable them.  With no prefix ARG - toggle."
+  (interactive "P")
+  (let ((w3m-linknum-status w3m-link-numbering-mode))
+    ;; find current numbering status of w3m buffers
+    (unless (eq major-mode 'w3m-mode)
+      (save-current-buffer
+	(setq w3m-linknum-status
+	      (catch 'found-w3m
+		(dolist (buf (buffer-list))
+		  (set-buffer buf)
+		  (if (eq major-mode 'w3m-mode)
+		      (throw 'found-w3m w3m-link-numbering-mode)))))))
+    (setq arg (not (if arg
+		       (eq arg 0)
+		     w3m-linknum-status)))
+    (unless (eq arg w3m-linknum-status)	; if change of mode status
+      (if arg
+	  (progn (add-hook 'w3m-mode-hook 'w3m-link-numbering-mode)
+		 (run-hooks 'w3m-link-numbering-mode-hook)
+		 (w3m-message "Link numbering keys on"))
+	(remove-hook 'w3m-mode-hook 'w3m-link-numbering-mode)
+	(w3m-message "Link numbering keys off"))
+      ;; change numbering status of all w3m buffers
+      (save-current-buffer
+	(dolist (w3m-b (w3m-list-buffers t))
+	  (set-buffer w3m-b)
+	  (setq w3m-link-numbering-mode arg))))))
 
 (defun w3m-link-numbering (&rest args)
   "Make overlays that display link numbers.
@@ -150,23 +196,6 @@ With 4 as first ARGS argument index form fields and buttons along links."
 		(overlay-put overlay
 			     'w3m-link-numbering-overlay i)))))))))
 
-(defun w3m-move-numbered-anchor (&optional arg)
-  "Move the point to the specified anchor.
-When no prefix argument is specified, call `w3m-view-this-url' instead
-of moving cursor."
-  (interactive "P")
-  (if (and arg
-	   (> (setq arg (prefix-numeric-value arg)) 0))
-      (catch 'found
-	(dolist (overlay (overlays-in (point-min) (point-max)))
-	  (when (eq arg (overlay-get overlay 'w3m-link-numbering-overlay))
-	    (goto-char (overlay-start overlay))
-	    (push (w3m-anchor-sequence) w3m-goto-anchor-hist)
-	    (w3m-horizontal-on-screen)
-	    (throw 'found (w3m-print-this-url))))
-	(error "Cannot find specified link: %d" arg))
-    (w3m-view-this-url)))
-
 (defun w3m-read-int-interactive (prompt fun &optional default)
   "Interactively read a valid integer from minubuffer with PROMPT.
 Execute a one argument function FUN with every current valid integer.
@@ -196,17 +225,9 @@ Use <return> to submit current value and <backspace> for correction."
 Types are: 0 no numbering, 1 links, 2 images,
 4 links, form fields and buttons.
 Then restore previous numbering condition."
-  `(let ((ty ,type)
-	 (active (or w3m-link-numbering-mode 0)))
-     (let ((diff (not (= active ty))))
-       (when diff
-	 (or (= ty 0) (w3m-linknum-remove-overlays))
-	 (w3m-link-numbering ty))
-       (unwind-protect (progn ,@body)
-	 (if diff
-	     (progn (or (= active 0) (w3m-linknum-remove-overlays))
-		    (w3m-link-numbering active))
-	   (w3m-linknum-remove-overlays t))))))
+  `(progn (w3m-link-numbering ,type)
+	  (unwind-protect (progn ,@body)
+	    (w3m-linknum-remove-overlays))))
 
 (defun w3m-highlight-numbered-anchor (arg)
   "Highlight specified by ARG number anchor."
@@ -276,7 +297,9 @@ With prefix ARG don't highlight current link.
 		     (list nil 16)
 		   (w3m-get-anchor-info)))))
      (if info
-	 (goto-char (cadr info))
+	 (progn
+	   (push-mark (point))
+	   (goto-char (cadr info)))
        (w3m-message "No valid anchor selected")))))
 
 (defun w3m-linknum-get-action (&optional prompt type)
@@ -309,17 +332,20 @@ before activate/press."
 	(let ((action (car info)))
 	  (cond ((stringp action)	; url
 		 (if arg (w3m-goto-url-new-session action)
+		   (push-mark (point))
 		   (goto-char (cadr info))
 		   (w3m-goto-url action)))
 		((eq (car action) 'w3m-form-submit) ; button
-		 (if arg (goto-char (cadr info)))
+		 (when arg
+		   (push-mark (point))
+		   (goto-char (cadr info)))
 		 (widget-button-press (cadr info) action))
 		(t (if arg		; form field
-		       (progn
-			 (goto-char (cadr info))
-			 (let ((w3m-form-new-session t)
-			       (w3m-form-download nil))
-			   (eval action)))
+		       (progn (push-mark (point))
+			      (goto-char (cadr info))
+			      (let ((w3m-form-new-session t)
+				    (w3m-form-download nil))
+				(eval action)))
 		     (save-excursion
 		       (goto-char (cadr info))
 		       (let ((w3m-form-new-session nil)

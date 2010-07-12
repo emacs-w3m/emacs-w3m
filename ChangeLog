@@ -1,3 +1,17 @@
+2010-07-12  Andrey Kotlarski  <m00naticus@gmail.com>
+
+	* w3m-lnum.el: Updated commentary and usage sections.
+	(w3m-substitute-key-definitions): New macro.
+	(w3m-link-numbering-mode-map): Changed keybindings.
+	(w3m-link-numbering-mode): Added mode-line indicator. Don't
+	activate numbering overlays. Changing status mode causes all other
+	w3m buffers to change status as well.
+	(w3m-move-numbered-anchor): Removed.
+	(w3m-with-linknum): Numbering overlays should never be active
+	before invoking linknum functions thus less bookkeeping.
+	(w3m-go-to-linknum, w3m-linknum-follow): Add mark for previous
+	position.
+
 2010-07-09  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-lnum.el (w3m-read-int-interactive): Add keys to exit event loop,
