@@ -56,16 +56,26 @@
     (((class color) (background dark)) (:foreground "gray50")))
   "Face used to highlight link numbers."
   :group 'w3m-face)
+;; backward-compatibility alias
+(put 'w3m-link-numbering-face 'face-alias 'w3m-link-numbering)
 
 (defface w3m-linknum-minibuffer-prompt
-  '((((background dark)) :foreground "cyan")
-    (((type pc)) :foreground "magenta")
-    (t :foreground "medium blue"))
+  '((((class color) (background light) (type tty)) (:foreground "blue"))
+    (((class color) (background dark)) (:foreground "cyan"))
+    (t (:foreground "medium blue")))
   "Face for w3m linknum minibuffer prompt."
   :group 'w3m-face)
 
-;; backward-compatibility alias
-(put 'w3m-link-numbering-face 'face-alias 'w3m-link-numbering)
+(defface w3m-linknum-match
+  '((((class color) (background light) (type tty))
+     (:background "yellow" :foreground "black"))
+    (((class color) (background dark) (type tty))
+     (:background "blue" :foreground "white"))
+    (((class color) (background light)) (:background "yellow1"))
+    (((class color) (background dark)) (:background "RoyalBlue3"))
+    (t (:background "gray")))
+  "Face used to highlight matches in `w3m-link-numbering-mode'."
+  :group 'w3m-face)
 
 (defcustom w3m-link-numbering-mode-hook nil
   "*Hook run after `w3m-link-numbering-mode' initialization."
@@ -207,17 +217,31 @@ Use <return> to submit current value and <backspace> for correction."
 	(min-len (length prompt))
 	ch)
     (let ((temp-prompt (format "%s%d" prompt num)))
-      (while (not (memq (setq ch (read-event temp-prompt))
-			'(return 10 13)))
-	(cond ((and (eq ch 'backspace)
+      (while (not (memq
+		   (setq ch (w3m-static-if (featurep 'xemacs)
+				(let (message-log-max event key)
+				  (message temp-prompt)
+				  (setq event (next-command-event))
+				  (or (event-to-character event)
+				      (unless (characterp
+					       (setq key (event-key event)))
+					key)))
+			      (read-event temp-prompt)))
+		   '(return 10 13 ?\n ?\r ?\C-g)))
+	(cond ((and (memq ch '(backspace 8 ?\C-h))
 		    (> (length temp-prompt) min-len))
 	       (setq num (/ num 10)
 		     temp-prompt (format "%s%d" prompt num))
 	       (funcall fun num))
-	      ((and (numberp ch) (> ch 47) (< ch 58))
+	      ((and (w3m-static-if (featurep 'xemacs)
+			(characterp ch)
+		      (numberp ch))
+		    (> ch 47) (< ch 58))
 	       (setq num (+ (* num 10) (- ch 48))
 		     temp-prompt (format "%s%d" prompt num))
 	       (funcall fun num))))
+      (when (eq ch ?\C-g)
+	(call-interactively 'keyboard-quit))
       num)))
 
 (defmacro w3m-with-linknum (type &rest body)
@@ -251,7 +275,7 @@ Then restore previous numbering condition."
 			   'w3m-image)
 			  (t 'w3m-action))))))
 	    (overlay-put match-overlay 'w3m-linknum-match t)
-	    (overlay-put match-overlay 'face 'match))
+	    (overlay-put match-overlay 'face 'w3m-linknum-match))
 	  (setq marked-new t)))
 	(and found-prev marked-new (throw 'done nil))))))
 

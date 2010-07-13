@@ -1,3 +1,11 @@
+2010-07-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-lnum.el (w3m-linknum-minibuffer-prompt): Make face config valid
+	for XEmacs as well.
+	(w3m-linknum-match): New face.
+	(w3m-read-int-interactive): Make it work for XEmacs as well.
+	(w3m-highlight-numbered-anchor): Use w3m-linknum-match face.
+
 2010-07-12  Andrey Kotlarski  <m00naticus@gmail.com>
 
 	* w3m-lnum.el: Updated commentary and usage sections.
