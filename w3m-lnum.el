@@ -219,8 +219,8 @@ Use <return> to submit current value and <backspace> for correction."
     (let ((temp-prompt (format "%s%d" prompt num)))
       (while (not (memq
 		   (setq ch (w3m-static-if (featurep 'xemacs)
-				(let (message-log-max event key)
-				  (message temp-prompt)
+				(let (event key)
+				  (display-message 'no-log temp-prompt)
 				  (setq event (next-command-event))
 				  (or (event-to-character event)
 				      (unless (characterp
