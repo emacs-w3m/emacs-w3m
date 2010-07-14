@@ -1,3 +1,17 @@
+2010-07-13  Andrey Kotlarski  <m00naticus@gmail.com>
+
+	* w3m-lnum.el (w3m-link-numbering-mode): Using `buffer-list' instead of
+	`w3m-list-buffers' as the latter does unnecessary stuff.
+	(w3m-linknum-read-url): Removed. It's now equivalent to:
+	(car (w3m-linknum-get-action prompt 1))
+	(w3m-linknum-toggle-inline-image): If no url under selected image,
+	move over it and toggle it.
+	(w3m-linknum-external-view-this-url, w3m-linknum-edit-this-url):
+	Using `w3m-linknum-get-action' instead of `w3m-linknum-read-url'.
+
+	* w3m.el (autoload): Added `w3m-link-numbering-mode', removed
+	`w3m-linknum-read-url'.
+
 2010-07-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-lnum.el (w3m-linknum-minibuffer-prompt): Make face config valid

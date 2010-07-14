@@ -164,9 +164,10 @@ enable them.  With no prefix ARG - toggle."
 	(w3m-message "Link numbering keys off"))
       ;; change numbering status of all w3m buffers
       (save-current-buffer
-	(dolist (w3m-b (w3m-list-buffers t))
-	  (set-buffer w3m-b)
-	  (setq w3m-link-numbering-mode arg))))))
+	(dolist (buf (buffer-list))
+	  (set-buffer buf)
+	  (if (eq major-mode 'w3m-mode)
+	      (setq w3m-link-numbering-mode arg)))))))
 
 (defun w3m-link-numbering (&rest args)
   "Make overlays that display link numbers.
@@ -377,14 +378,6 @@ before activate/press."
 			 (eval action)))))))
       (w3m-message "No valid link selected"))))
 
-;;;###autoload
-(defun w3m-linknum-read-url (&optional prompt)
-  "Turn on link numbers and return PROMPT selected url.
-Highlight each intermediate result anchor."
-  (let ((link (w3m-linknum-get-action (or prompt "Link number: ") 1)))
-    (and link (stringp (setq link (car link)))
-	 link)))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; linknum alternatives to w3m user commands on point
 
@@ -392,7 +385,8 @@ Highlight each intermediate result anchor."
 (defun w3m-linknum-toggle-inline-image (&optional arg)
   "If image at point, toggle it.
 Otherwise turn on link numbers and toggle selected image.
-With prefix ARG open in new session url behind image if such."
+With prefix ARG open url under image in new session.
+If no such url, move over image and toggle it."
   (interactive "P")
   (if (w3m-image)
       (let ((url (get-char-property (point) 'w3m-href-anchor)))
@@ -405,8 +399,12 @@ With prefix ARG open in new session url behind image if such."
 		 "Toggle image: ")
 	       2)))
       (if im
-	  (if (and arg (car im))
-	      (w3m-goto-url-new-session (car im))
+	  (if arg
+	      (if (car im)
+		  (w3m-goto-url-new-session (car im))
+		(push-mark (point))
+		(goto-char (cadr im))
+		(w3m-toggle-inline-image))
 	    (save-excursion (goto-char (cadr im))
 			    (w3m-toggle-inline-image)))
 	(w3m-message "No image selected")))))
@@ -447,8 +445,9 @@ The default name will be the original name of the image."
 If no link at point, turn on link numbers and open selected externally."
   (interactive)
   (let ((url (w3m-url-valid (or (w3m-anchor) (w3m-image)
-				(w3m-linknum-read-url
-				 "Open in external browser: ")))))
+				(car
+				 (w3m-linknum-get-action
+				  "Open in external browser: " 1))))))
     (if url
 	(w3m-external-view url)
       (w3m-message "No URL selected"))))
@@ -458,13 +457,12 @@ If no link at point, turn on link numbers and open selected externally."
   "Edit the page linked from the anchor under the cursor.
 If no such, turn on link numbers and edit selected."
   (interactive)
-  (let ((url (w3m-url-valid (w3m-anchor))))
+  (let ((url (or (w3m-url-valid (w3m-anchor))
+		 (car (w3m-linknum-get-action
+		       "Select link to edit: " 1)))))
     (if url
 	(w3m-edit-url url)
-      (let ((link (w3m-linknum-read-url "Select link to edit: ")))
-	(if link
-	    (w3m-edit-url link)
-	  (w3m-message "No URL selected"))))))
+      (w3m-message "No URL selected"))))
 
 ;;;###autoload
 (defun w3m-linknum-print-this-url ()
