@@ -363,7 +363,10 @@ With prefix, ask for a new url instead of the present one."
   "Display the bookmark."
   (interactive "P")
   (if (file-exists-p w3m-bookmark-file)
-      (w3m-goto-url "about://bookmark/" reload)
+      (progn
+	;; Store the current position in the history structure.
+	(w3m-history-store-position)
+	(w3m-goto-url "about://bookmark/" reload))
     (message "No bookmark file is available")))
 
 ;;;###autoload

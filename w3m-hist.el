@@ -523,12 +523,12 @@ are replaced with NEWPROPS."
 This function keeps corresponding elements identical Lisp objects
 between buffers while copying the frameworks of `w3m-history' and
 `w3m-history-flat'.  Exceptionally, buffer-local properties contained
-in `w3m-history-flat' will not be copied.  If
+in `w3m-history-flat' will not be copied except for the positions.  If
 `w3m-history-minimize-in-new-session' is non-nil, the copied history
 structure will be shrunk so that it may contain only the current
 history element."
   (let ((current (current-buffer))
-	position flat element rest)
+	position flat element props window-start rest)
     (set-buffer buffer)
     (when w3m-history
       (setq position (copy-sequence (cadar w3m-history))
@@ -542,11 +542,19 @@ history element."
 	    (setcdr (cdr element) nil)
 	    (setq w3m-history (list (list nil (list 0) nil) element)
 		  w3m-history-flat (list (append element (list (list 0))))))
-	;; Remove buffer-local properties from the new `w3m-history-flat'.
+	;; Remove buffer-local properties, except for the positions,
+	;; from the new `w3m-history-flat'.
 	(while flat
 	  (setq element (copy-sequence (car flat))
-		flat (cdr flat))
-	  (setcdr (cddr element) nil)
+		flat (cdr flat)
+		props (cdddr element)
+		window-start (plist-get props :window-start))
+	  (if window-start
+	      (setcdr (cddr element)
+		      (list :window-start window-start
+			    :position (plist-get props :position)
+			    :window-hscroll (plist-get props :window-hscroll)))
+	    (setcdr (cddr element) nil))
 	  (push element rest))
 	(setq w3m-history-flat (nreverse rest))
 	(w3m-history-tree position)))))

@@ -9123,6 +9123,11 @@ Cannot run two w3m processes simultaneously \
 \(Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)")))
     (w3m-process-stop (current-buffer))	; Stop all processes retrieving images.
     (w3m-idle-images-show-unqueue (current-buffer))
+    ;; Store the current position in the history structure if and only
+    ;; if this command is called interactively.  The other user commands
+    ;; that calls this function want to store the position by themselves.
+    (when (interactive-p)
+      (w3m-history-store-position))
     ;; Access url group
     (if (string-match "\\`group:" url)
 	(let ((urls (mapcar 'w3m-url-decode-string
@@ -9399,6 +9404,8 @@ session will start afresh."
 		   (w3m-popup-buffer buffer)
 		   t)))
 	(progn
+	  ;; Store the current position in the history structure.
+	  (w3m-history-store-position)
 	  (switch-to-buffer (setq buffer
 				  (w3m-copy-buffer nil nil
 						   w3m-new-session-in-background

@@ -1,3 +1,12 @@
+2010-07-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-url): Save positions iff called interactively.
+	(w3m-goto-url-new-session): Save positions.
+
+	* w3m-bookmark.el (w3m-bookmark-view): Save positions.
+
+	* w3m-hist.el (w3m-history-copy): Copy positions.
+
 2010-07-13  Andrey Kotlarski  <m00naticus@gmail.com>
 
 	* w3m-lnum.el (w3m-link-numbering-mode): Using `buffer-list' instead of
