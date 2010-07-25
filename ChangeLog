@@ -1,7 +1,7 @@
 2010-07-25  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-auto-show): Guard error if this-command is not a symbol.
-	Thanks to IRIE Shinsuke san. cf. [emacs-w3m:10048]
+	Thanks to IRIE Shinsuke san. cf. [emacs-w3m:11282]
 
 2010-07-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
