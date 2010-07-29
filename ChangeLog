@@ -1,3 +1,25 @@
+2010-07-29  Andrey Kotlarski  <m00naticus@gmail.com>
+
+	* w3m.el (autoload, w3m-linknum-map):
+	`w3m-linknum-bookmark-add-this-url', `w3m-linknum-zoom-in-image'
+	and `w3m-linknum-zoom-out-image' added.
+
+	* w3m-lnum.el (w3m-link-numbering-mode-map):
+	`w3m-linknum-bookmark-add-this-url', `w3m-linknum-zoom-in-image'
+	and `w3m-linknum-zoom-out-image' added.
+	(w3m-link-numbering-mode, w3m-with-linknum)
+	(w3m-linknum-get-action): Use `zerop'.
+	(w3m-link-numbering): Simplify argument list and checks assosiated
+	with it.
+	(w3m-read-int-interactive): Add <escape> for quit.
+	(w3m-linknum-follow): Add position to history when visiting url in
+	curent page.  Change message when no valid anchor is selected.
+	(w3m-linknum-view-image, w3m-linknum-save-image): Rewrite using
+	`cond'.
+	(w3m-linknum-zoom-image): New macro.
+	(w3m-linknum-zoom-in-image, w3m-linknum-zoom-out-image)
+	(w3m-linknum-bookmark-add-this-url): New functions.
+
 2010-07-25  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-auto-show): Guard error if this-command is not a symbol.

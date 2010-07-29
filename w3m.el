@@ -162,6 +162,9 @@
   (autoload 'w3m-linknum-edit-this-url "w3m-lnum" nil t)
   (autoload 'w3m-linknum-print-this-url "w3m-lnum" nil t)
   (autoload 'w3m-linknum-download-this-url "w3m-lnum" nil t)
+  (autoload 'w3m-linknum-bookmark-add-this-url "w3m-lnum" nil t)
+  (autoload 'w3m-linknum-zoom-in-image "w3m-lnum" nil t)
+  (autoload 'w3m-linknum-zoom-out-image "w3m-lnum" nil t)
   (autoload 'w3m-session-select "w3m-session"
     "Select session from session list." t)
   (autoload 'w3m-session-save "w3m-session"
@@ -7712,6 +7715,9 @@ for users.  See Info node `(elisp)Key Binding Conventions'.")
     (define-key map "f" 'w3m-linknum-follow)
     (define-key map "t" 'w3m-linknum-toggle-inline-image)
     (define-key map "u" 'w3m-linknum-print-this-url)
+    (define-key map "b" 'w3m-linknum-bookmark-add-this-url)
+    (define-key map "]" 'w3m-linknum-zoom-in-image)
+    (define-key map "[" 'w3m-linknum-zoom-out-image)
     (setq w3m-linknum-map map)))
 
 (defvar w3m-lynx-like-map nil

@@ -110,7 +110,10 @@ KEYS is alternating list of key-value."
      'w3m-edit-this-url 'w3m-linknum-edit-this-url
      'w3m-toggle-inline-image 'w3m-linknum-toggle-inline-image
      'w3m-print-this-url 'w3m-linknum-print-this-url
-     'w3m-external-view-this-url 'w3m-linknum-external-view-this-url)
+     'w3m-external-view-this-url 'w3m-linknum-external-view-this-url
+     'w3m-bookmark-add-this-url 'w3m-linknum-bookmark-add-this-url
+     'w3m-zoom-in-image 'w3m-linknum-zoom-in-image
+     'w3m-zoom-out-image 'w3m-linknum-zoom-out-image)
     (setq w3m-link-numbering-mode-map map)))
 
 (defvar w3m-link-numbering-mode nil
@@ -153,7 +156,7 @@ enable them.  With no prefix ARG - toggle."
 		  (if (eq major-mode 'w3m-mode)
 		      (throw 'found-w3m w3m-link-numbering-mode)))))))
     (setq arg (not (if arg
-		       (eq arg 0)
+		       (zerop arg)
 		     w3m-linknum-status)))
     (unless (eq arg w3m-linknum-status)	; if change of mode status
       (if arg
@@ -169,49 +172,45 @@ enable them.  With no prefix ARG - toggle."
 	  (if (eq major-mode 'w3m-mode)
 	      (setq w3m-link-numbering-mode arg)))))))
 
-(defun w3m-link-numbering (&rest args)
+(defun w3m-link-numbering (arg)
   "Make overlays that display link numbers.
-With 2 as first ARGS argument index only images.
-With 4 as first ARGS argument index form fields and buttons along links."
-  (let ((arg (cond ((not args) 1)
-		   ((numberp (car args)) (car args))
-		   (t 1))))
-    (if (= arg 0)
-	(w3m-linknum-remove-overlays)
-      (save-excursion
-	(goto-char (point-min))
-	(let ((i 0)
-	      (next-func 'w3m-goto-next-anchor)
-	      pos overlay num)
-	  (if (eq arg 2)
-	      (setq next-func (lambda () (if (w3m-goto-next-image)
-					(point)))))
-	  (catch 'already-numbered
-	    (while (setq pos (funcall next-func))
-	      (when (or (> arg 1)
-			(get-char-property pos 'w3m-href-anchor))
-		(when (get-char-property pos
-					 'w3m-link-numbering-overlay)
+With ARG 0 clear numbering overlay.  With ARG 2 index only images.
+With ARG 4 index form fields and buttons along links."
+  (if (zerop arg)
+      (w3m-linknum-remove-overlays)
+    (save-excursion
+      (goto-char (point-min))
+      (let ((i 0)
+	    (next-func 'w3m-goto-next-anchor)
+	    pos overlay num)
+	(if (= arg 2)
+	    (setq next-func (lambda () (if (w3m-goto-next-image)
+				      (point)))))
+	(catch 'already-numbered
+	  (while (setq pos (funcall next-func))
+	    (when (or (> arg 1)
+		      (get-char-property pos 'w3m-href-anchor))
+	      (if (get-char-property pos
+				     'w3m-link-numbering-overlay)
 		  (throw 'already-numbered nil))
-		(setq overlay (make-overlay pos (1+ pos))
-		      num (format "[%d]" (incf i)))
-		(w3m-static-if (featurep 'xemacs)
-		    (progn
-		      (overlay-put overlay 'before-string num)
-		      (set-glyph-face (extent-begin-glyph overlay)
-				      'w3m-link-numbering))
-		  (w3m-add-face-property 0 (length num)
-					 'w3m-link-numbering num)
-		  (overlay-put overlay 'before-string num)
-		  (overlay-put overlay 'evaporate t))
-		(overlay-put overlay
-			     'w3m-link-numbering-overlay i)))))))))
+	      (setq overlay (make-overlay pos (1+ pos))
+		    num (format "[%d]" (incf i)))
+	      (overlay-put overlay 'before-string num)
+	      (w3m-static-if (featurep 'xemacs)
+		  (set-glyph-face (extent-begin-glyph overlay)
+				  'w3m-link-numbering)
+		(w3m-add-face-property 0 (length num)
+				       'w3m-link-numbering num)
+		(overlay-put overlay 'evaporate t))
+	      (overlay-put overlay
+			   'w3m-link-numbering-overlay i))))))))
 
 (defun w3m-read-int-interactive (prompt fun &optional default)
   "Interactively read a valid integer from minubuffer with PROMPT.
 Execute a one argument function FUN with every current valid integer.
 Initial value is DEFAULT if specified or 0.
-Use <return> to submit current value and <backspace> for correction."
+Use <return> to submit current value, <backspace> for correction
+and <C-g> or <escape> to quit action."
   (let ((prompt (propertize prompt 'face
 			    'w3m-linknum-minibuffer-prompt))
 	(num (or default 0))
@@ -224,11 +223,11 @@ Use <return> to submit current value and <backspace> for correction."
 				  (display-message 'no-log temp-prompt)
 				  (setq event (next-command-event))
 				  (or (event-to-character event)
-				      (unless (characterp
-					       (setq key (event-key event)))
-					key)))
+				      (characterp
+				       (setq key (event-key event)))
+				      key))
 			      (read-event temp-prompt)))
-		   '(return 10 13 ?\n ?\r ?\C-g)))
+		   '(return 10 13 ?\n ?\r ?\C-g escape 27 ?\e)))
 	(cond ((and (memq ch '(backspace 8 ?\C-h))
 		    (> (length temp-prompt) min-len))
 	       (setq num (/ num 10)
@@ -241,8 +240,8 @@ Use <return> to submit current value and <backspace> for correction."
 	       (setq num (+ (* num 10) (- ch 48))
 		     temp-prompt (format "%s%d" prompt num))
 	       (funcall fun num))))
-      (when (eq ch ?\C-g)
-	(call-interactively 'keyboard-quit))
+      (if (memq ch '(?\C-g escape 27 ?\e))
+	  (keyboard-quit))
       num)))
 
 (defmacro w3m-with-linknum (type &rest body)
@@ -313,12 +312,12 @@ With prefix ARG don't highlight current link.
    4
    (let ((info (if arg
 		   (let ((num (w3m-read-number "Anchor number: ")))
-		     (if (= 0 num)
+		     (if (zerop num)
 			 (list nil 16)
 		       (w3m-get-anchor-info num)))
-		 (if (= 0 (w3m-read-int-interactive
-			   "Anchor number: "
-			   'w3m-highlight-numbered-anchor))
+		 (if (zerop (w3m-read-int-interactive
+			     "Anchor number: "
+			     'w3m-highlight-numbered-anchor))
 		     (list nil 16)
 		   (w3m-get-anchor-info)))))
      (if info
@@ -336,9 +335,9 @@ Highlight every intermediate result anchor.
 Input 0 corresponds to current page url."
   (w3m-with-linknum
    (or type 4)
-   (if (and (= 0 (w3m-read-int-interactive
-		  (or prompt "Anchor number: ")
-		  'w3m-highlight-numbered-anchor))
+   (if (and (zerop (w3m-read-int-interactive
+		    (or prompt "Anchor number: ")
+		    'w3m-highlight-numbered-anchor))
 	    (not (eq type 2)))
        (list w3m-current-url 16 nil nil)
      (w3m-get-anchor-info))))
@@ -359,6 +358,7 @@ before activate/press."
 		 (if arg (w3m-goto-url-new-session action)
 		   (push-mark (point))
 		   (goto-char (cadr info))
+		   (w3m-history-store-position)
 		   (w3m-goto-url action)))
 		((eq (car action) 'w3m-form-submit) ; button
 		 (when arg
@@ -376,7 +376,7 @@ before activate/press."
 		       (let ((w3m-form-new-session nil)
 			     (w3m-form-download nil))
 			 (eval action)))))))
-      (w3m-message "No valid link selected"))))
+      (w3m-message "No valid anchor selected"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; linknum alternatives to w3m user commands on point
@@ -416,14 +416,12 @@ If no image at poing, turn on image numbers and display selected.
 The viewer is defined in `w3m-content-type-alist' for every type of an
 image."
   (interactive)
-  (let ((url (w3m-url-valid (w3m-image))))
-    (if url
-	(w3m-external-view url)
-      (let ((im (w3m-linknum-get-action
-		 "Open image url in external viewer: " 2)))
-	(if im
-	    (w3m-external-view (caddr im))
-	  (w3m-message "No image selected"))))))
+  (let ((im (w3m-url-valid (w3m-image))))
+    (cond (im (w3m-external-view im))
+	  ((setq im (w3m-linknum-get-action
+		     "Open image url in external viewer: " 2))
+	   (w3m-external-view (caddr im)))
+	  (t (w3m-message "No image selected")))))
 
 ;;;###autoload
 (defun w3m-linknum-save-image ()
@@ -431,13 +429,54 @@ image."
 If no image at poing, turn on image numbers and save selected.
 The default name will be the original name of the image."
   (interactive)
-  (let ((url (w3m-url-valid (w3m-image))))
-    (if url
-	(w3m-download url)
-      (let ((im (w3m-linknum-get-action "Save image: " 2)))
-	(if im
-	    (w3m-download (caddr im))
-	  (w3m-message "No image selected"))))))
+  (let ((im (w3m-url-valid (w3m-image))))
+    (cond (im (w3m-download im))
+	  ((setq im (w3m-linknum-get-action "Save image: " 2))
+	   (w3m-download (caddr im)))
+	  (t (w3m-message "No image selected")))))
+
+(defmacro w3m-linknum-zoom-image (rate &optional in)
+  "Zoom image under the point.
+Numeric prefix RATE specifies how many percent the image is
+changed by.  Default is the value of the `w3m-resize-image-scale'
+variable.  If no image under point, activate numbering and ask
+for one.  When IN zoom in, otherwise zoom out."
+  `(progn
+     (or (w3m-display-graphic-p)
+	 (error "Can't display images in this environment"))
+     (or (w3m-imagick-convert-program-available-p)
+	 (error "ImageMagick's `convert' program is required"))
+     (let ((im (w3m-image)))
+       (cond
+	(im (w3m-resize-inline-image-internal
+	     im
+	     (,(if in '+ '-) 100 (or ,rate w3m-resize-image-scale))))
+	((setq im (w3m-linknum-get-action
+		   ,(concat "Zoom " (if in "in" "out") " image: ") 2))
+	 (save-excursion
+	   (goto-char (cadr im))
+	   (w3m-resize-inline-image-internal
+	    (car im)
+	    (,(if in '+ '-) 100 (or ,rate w3m-resize-image-scale)))))
+	(t (w3m-message "No image at point"))))))
+
+(defun w3m-linknum-zoom-in-image (&optional rate)
+  "Zoom in an image on the point.
+Numeric prefix RATE specifies how many percent the image is
+enlarged by \(30 means enlarging the image by 130%).  The default
+is the value of the `w3m-resize-image-scale' variable.  If no
+image under point, activate numbering and ask for one."
+  (interactive "P")
+  (w3m-linknum-zoom-image rate t))
+
+(defun w3m-linknum-zoom-out-image (&optional rate)
+  "Zoom out an image on the point.
+Numeric prefix RATE specifies how many percent the image is shrunk by
+\(30 means shrinking the image by 70%).  The default is the value of
+the `w3m-resize-image-scale' variable.
+If no image under point, activate numbering and ask for one."
+  (interactive "P")
+  (w3m-linknum-zoom-image rate))
 
 ;;;###autoload
 (defun w3m-linknum-external-view-this-url ()
@@ -496,6 +535,30 @@ If no point, activate numbering and select andchor to download."
 	    (goto-char (cadr info))
 	    (w3m-download-this-url))
 	(w3m-message "No anchor selected")))))
+
+;;;###autoload
+(defun w3m-linknum-bookmark-add-this-url ()
+  "Add link under cursor to bookmark.
+If no link under point, activate numbering and ask for one."
+  (interactive)
+  (let ((url (w3m-anchor)))
+    (cond
+     (url (w3m-bookmark-add
+	   url
+	   (buffer-substring-no-properties
+	    (previous-single-property-change (+ 1 (point))
+					     'w3m-href-anchor)
+	    (next-single-property-change (point) 'w3m-href-anchor)))
+	  (message "Added"))
+     ((setq url (w3m-linknum-get-action "Select URL to bookmark: " 1))
+      (w3m-bookmark-add
+       (car url)
+       (buffer-substring-no-properties
+	(previous-single-property-change (+ 1 (cadr url))
+					 'w3m-href-anchor)
+	(next-single-property-change (cadr url) 'w3m-href-anchor)))
+      (w3m-message "added"))
+     (t (w3m-message "No url selected")))))
 
 (provide 'w3m-lnum)
 
