@@ -113,6 +113,7 @@
     "Add a url of the current page to the bookmark." t)
   (autoload 'w3m-bookmark-add-all-urls "w3m-bookmark"
     "Add urls of all pages being visited to the bookmark." t)
+  (autoload 'w3m-bookmark-add "w3m-bookmark" "Add URL to bookmark.")
   (autoload 'w3m-search "w3m-search"
     "Search a word using search engines." t)
   (autoload 'w3m-search-new-session "w3m-search"
