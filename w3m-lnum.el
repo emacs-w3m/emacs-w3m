@@ -222,10 +222,11 @@ and <C-g> or <escape> to quit action."
 				(let (event key)
 				  (display-message 'no-log temp-prompt)
 				  (setq event (next-command-event))
-				  (or (event-to-character event)
-				      (characterp
-				       (setq key (event-key event)))
-				      key))
+				  (and (key-press-event-p event)
+				       (or (event-to-character event)
+					   (characterp
+					    (setq key (event-key event)))
+					   key)))
 			      (read-event temp-prompt)))
 		   '(return 10 13 ?\n ?\r ?\C-g escape 27 ?\e)))
 	(cond ((and (memq ch '(backspace 8 ?\C-h))

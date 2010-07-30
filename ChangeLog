@@ -1,3 +1,7 @@
+2010-07-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-lnum.el (w3m-read-int-interactive): Ignore mouse event in XEmacs.
+
 2010-07-29  Andrey Kotlarski  <m00naticus@gmail.com>
 
 	* w3m.el (autoload, w3m-linknum-map):
