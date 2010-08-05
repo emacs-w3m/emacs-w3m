@@ -2013,12 +2013,14 @@ Here are some predefined functions which can be used for those ways:
      "\\`http://\\(?:www\\|blogsearch\\|groups\\|news\\|images\\)\
 \\.google\\.[^/]+/\\(?:\\(?:blog\\|code\\)?search\\|groups\\|news\\|images\
 \\|cse\\?cx=\\|custom\\?\\(?:q\\|hl\\)=\\)"
-     ,(concat "<a[^>]+?href=" w3m-html-string-regexp
-	      "[^>]*>\\(?:\\(?:<img src=[^>]*nav_next\\.gif\\)"
-	      "\\|\\(?:<span>Next</span>\\)\\)")
-     ,(concat "<a[^>]+?href=" w3m-html-string-regexp
-	      "[^>]*>\\(?:\\(?:<img src=[^>]*nav_previous\\.gif\\)"
-	      "\\|\\(?:<span>Previous</span>\\)\\)")
+     ,(concat "<a[^>]+?href=" w3m-html-string-regexp "[^>]*>[\t\n ]*"
+	      "\\(?:\\(?:</?span[^>]*>[\t\n ]*\\)*<span[^>]+>Next</span>"
+	      "\\|\\(?:</?span[^>]*>[\t\n ]*\\)*"
+	      "<b>\\(?:下一頁\\|次へ\\|다음\\)</b>\\)")
+     ,(concat "<a[^>]+?href=" w3m-html-string-regexp "[^>]*>[\t\n ]*"
+	      "\\(?:\\(?:</?span[^>]*>[\t\n ]*\\)*<span[^>]+>Previous</span>"
+	      "\\|\\(?:</?span[^>]*>[\t\n ]*\\)*"
+	      "<b>\\(?:上一頁\\|前へ\\|이전\\)</b>\\)")
      nil nil)
     (w3m-relationship-simple-estimate
      "\\`http://www\\.google\\.[^/]+/gwt/n\\?u="
