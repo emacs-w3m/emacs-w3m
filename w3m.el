@@ -6227,6 +6227,7 @@ If so return \"text/html\", otherwise \"text/plain\"."
 	(widen)
 	(delete-region (point-min) (point-max))
 	(insert-buffer-substring result-buffer)
+	(goto-char (point-min))
 	(w3m-copy-local-variables result-buffer)
 	(set-buffer-file-coding-system w3m-current-coding-system)
 	(when (string= "text/html" type) (w3m-fontify))
