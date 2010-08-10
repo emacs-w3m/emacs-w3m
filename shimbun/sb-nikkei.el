@@ -500,7 +500,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAWAgMAAAD7mfc/AAAABGdBTUEAALGPC/xhBQAAAAx
 	       (string-match "[^/]/[^/]\\|[^/]/\\'" folder))
       (setq folder (substring folder 0 (+ (match-beginning 0) 2))))
     (while (search-forward "\r" nil t)
-      (delete-backward-char 1))
+      (delete-char -1))
     (goto-char (point-min))
     (when (fboundp fn)
       (shimbun-sort-headers (funcall fn group folder shimbun range)))))
@@ -1496,7 +1496,7 @@ http://markets.nikkei.co.jp/kokunai/bunkatsu3.aspx" (match-string 1)) folder))
 			  shimbun-nikkei-group-table)))
 	(case-fold-search t))
     (while (search-forward "\r" nil t)
-      (delete-backward-char 1))
+      (delete-char -1))
     (goto-char (point-min))
     (while (re-search-forward "[\t\n ]*\\(?:\
 <ul\\(?:[\t\n ]+[^>]+\\)?>\

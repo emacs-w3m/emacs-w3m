@@ -1,3 +1,8 @@
+2010-08-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nikkei.el (shimbun-get-headers, shimbun-make-contents): Replace
+	Lisp calls to delete-backward-char by calls to delete-char.
+
 2010-06-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el: Add groups for ex-prime minister.
