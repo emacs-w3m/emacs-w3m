@@ -10661,10 +10661,7 @@ the `w3m-mode', otherwise use an existing emacs-w3m buffer."
       (if (or (not safe-regexp)
 	      (w3m-buffer-local-url-p url)
 	      (string-match safe-regexp url)
-	      (and force
-		   (or (not (interactive-p))
-		       (yes-or-no-p "\
-Are you sure you really want to follow this link (maybe insecure)? "))))
+	      force)
 	  (unless (and (functionp w3m-goto-article-function)
 		       (not (eq 'w3m-goto-url
 				(funcall w3m-goto-article-function url))))

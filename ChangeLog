@@ -1,3 +1,8 @@
+2010-08-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-safe-view-this-url): Never query "Are you sure..." if
+	prefix arg is given.
+
 2010-08-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-create-text-page): Make point and window start be the
