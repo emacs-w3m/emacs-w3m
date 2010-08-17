@@ -62,7 +62,8 @@
 	  "http://www.itmedia.co.jp/keywords/emma.html")
 	 ("honda" "本田雅一")
 	 ("kobayashi" "こばやしゆたか")
-	 ("kodera" "小寺信良")
+	 ("kodera" "小寺信良"
+	  "http://www.itmedia.co.jp/keywords/kodera_nobuyoshi.html")
 	 ("nishi" "西正")
 	 ("ogikubo" "荻窪圭"
 	  "http://plusd.itmedia.co.jp/lifestyle/features/satuei/")
@@ -134,26 +135,31 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 	  (delete-region (point-min) (match-end 0)))
 	(goto-char (point-max))
 	(when (re-search-backward regexp nil t)
-	  (delete-region (match-beginning 0) (point-max))))
-      (goto-char (point-min))
-      (while (re-search-forward "<a[\t\n ]+href=\"\
-\\(?:[^\"]+\\)?\\(/\\(?:lifestyle\\|pcupdate\\)/articles/\
+	  (delete-region (match-beginning 0) (point-max)))
+	(goto-char (point-min))
+	(setq regexp (if (string-equal group "kodera")
+			 "<a[\t\n ]+href=\"\
+\\(http://plusd\\.itmedia\\.co\\.jp/[^\"]+/articles/\
 \\([0-9][0-9]\\)\\([01][0-9]\\)/\\([0-3][0-9]\\)/news\\([0-9]+\\)\\.html\\)\
 \"[\t\n ]*>\\(?:[\t\n ]*\\|[\t\n ]*<strong>[\t\n ]*\\)\\([^<]+\\)"
-				nil t)
-	(push (shimbun-create-header
-	       0 (match-string 6) from
-	       (shimbun-make-date-string
-		(+ (string-to-number (match-string 2)) 2000)
-		(string-to-number (match-string 3))
-		(string-to-number (match-string 4)))
-	       (concat
-		"<20" (match-string 2) (match-string 3) (match-string 4)
-		"." (match-string 5) "." group
-		".column.lifestyle@itmedia.shimbun.namazu.org>")
-	       "" 0 0
-	       (concat "http://plusd.itmedia.co.jp" (match-string 1)))
-	      headers))
+		       "<a[\t\n ]+href=\"\
+\\(\\(?:[^\"]+\\)?/\\(?:lifestyle\\|pcupdate\\)/articles/\
+\\([0-9][0-9]\\)\\([01][0-9]\\)/\\([0-3][0-9]\\)/news\\([0-9]+\\)\\.html\\)\
+\"[\t\n ]*>\\(?:[\t\n ]*\\|[\t\n ]*<strong>[\t\n ]*\\)\\([^<]+\\)"))
+	(while (re-search-forward regexp nil t)
+	  (push (shimbun-create-header
+		 0 (match-string 6) from
+		 (shimbun-make-date-string
+		  (+ (string-to-number (match-string 2)) 2000)
+		  (string-to-number (match-string 3))
+		  (string-to-number (match-string 4)))
+		 (concat
+		  "<20" (match-string 2) (match-string 3) (match-string 4)
+		  "." (match-string 5) "." group
+		  ".column.lifestyle@itmedia.shimbun.namazu.org>")
+		 "" 0 0
+		 (match-string 1))
+		headers)))
       headers)))
 
 (luna-define-method shimbun-multi-next-url ((shimbun shimbun-itmedia)

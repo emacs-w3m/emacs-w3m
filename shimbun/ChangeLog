@@ -1,3 +1,8 @@
+2010-08-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-itmedia.el (shimbun-itmedia-group-alist): Update url for kodera.
+	(shimbun-get-headers): Add regexp to look for kodera's articles.
+
 2010-08-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nikkei.el (shimbun-get-headers, shimbun-make-contents): Replace
