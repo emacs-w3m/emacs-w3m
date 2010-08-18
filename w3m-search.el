@@ -1,6 +1,6 @@
 ;;; w3m-search.el --- functions convenient to access web search engines
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Keisuke Nishida    <kxn30@po.cwru.edu>,
@@ -128,10 +128,10 @@
 	     "http://news.google.com/news?hl=en&q=%s")))
 	 (utf-8
 	  '(("google news"
-	     "http://news.google.co.jp/news?hl=ja&ie=utf-8&q=%s&oe=utf-8"
+	     "http://news.google.com/news?ie=utf-8&q=%s&oe=utf-8"
 	     utf-8)
 	    ("google news-en"
-	     "http://news.google.com/news?hl=en&q=%s")))
+	     "http://news.google.com/news?hl=en&ie=utf-8&q=%s&oe=utf-8")))
 	 (t
 	  '(("google news"
 	     "http://news.google.com/news?q=%s")
