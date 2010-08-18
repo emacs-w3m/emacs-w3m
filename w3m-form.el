@@ -540,8 +540,9 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
   (when w3m-form-treat-textarea-size
     (save-excursion
       (goto-char (point-min))
-      (let (form fid start end type name rows start-column end-column
-		 hseq abs-hseq buffer-read-only text id filename readonly)
+      (let ((inhibit-read-only t)
+	    form fid start end type name rows start-column end-column
+	    hseq abs-hseq text id filename readonly)
 	(while (w3m-form-goto-next-field)
 	  (setq fid (get-text-property (point) 'w3m-form-field-id))
 	  (setq filename (get-text-property (point) 'w3m-form-file-name))
@@ -940,7 +941,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		  (next-single-property-change start 'w3m-action))))
 	 (prop (text-properties-at start))
 	 (p (point))
-	 (buffer-read-only))
+	 (inhibit-read-only t))
     (goto-char start)
     (insert (setq string
 		  (if invisible

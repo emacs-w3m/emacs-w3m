@@ -3763,7 +3763,7 @@ The database is kept in `w3m-entity-table'."
 	    (with-current-buffer (marker-buffer start)
 	      (save-restriction
 		(widen)
-		(let (buffer-read-only)
+		(let ((inhibit-read-only t))
 		  (remove-text-properties start end '(w3m-idle-image-item))
 		  (set-buffer-modified-p nil))
 		(w3m-process-with-null-handler
@@ -3784,12 +3784,12 @@ The database is kept in `w3m-entity-table'."
 			    (widen)
 			    (if image
 				(when (equal url w3m-current-url)
-				  (let (buffer-read-only)
+				  (let ((inhibit-read-only t))
 				    (w3m-insert-image start end image iurl))
 				  ;; Redisplay
 				  (when w3m-force-redisplay
 				    (sit-for 0)))
-			      (let (buffer-read-only)
+			      (let ((inhibit-read-only t))
 				(w3m-add-text-properties
 				 start end '(w3m-image-status off))))
 			    (set-buffer-modified-p nil))
@@ -3835,7 +3835,7 @@ STATUS is current image status.
 If NO-CACHE is non-nil, cache is not used.
 If URL is specified, only the image with URL is toggled."
   (let ((cur-point (point))
-	(buffer-read-only)
+	(inhibit-read-only t)
 	(end (or begin-pos (point-min)))
 	(allow-non-secure-images (not w3m-confirm-leaving-secure-page))
 	start iurl image size)
@@ -3908,12 +3908,12 @@ You are retrieving non-secure image(s).  Continue? ")
 			      (with-current-buffer (marker-buffer start)
 				(if image
 				    (when (equal url w3m-current-url)
-				      (let (buffer-read-only)
+				      (let ((inhibit-read-only t))
 					(w3m-insert-image start end image iurl))
 				      ;; Redisplay
 				      (when w3m-force-redisplay
 					(sit-for 0)))
-				  (let (buffer-read-only)
+				  (let ((inhibit-read-only t))
 				    (w3m-add-text-properties
 				     start end '(w3m-image-status off))))
 				(set-buffer-modified-p nil)))
@@ -4094,7 +4094,7 @@ variable is non-nil (default=t)."
   "Resize an inline image on the cursor position.
 URL is a url of an image.  RATE is a number of percent used when
 resizing an image."
-  (let* ((buffer-read-only)
+  (let* ((inhibit-read-only t)
 	 (start (point))
 	 (end (or (next-single-property-change start 'w3m-image)
 		  (point-max)))
@@ -4143,14 +4143,14 @@ You are retrieving non-secure image(s).  Continue? ")
 		(with-current-buffer (marker-buffer start)
 		  (if image
 		      (when (equal url w3m-current-url)
-			(let (buffer-read-only)
+			(let ((inhibit-read-only t))
 			  (w3m-static-when (featurep 'xemacs)
 			    (w3m-remove-image start end))
 			  (w3m-insert-image start end image iurl))
 			;; Redisplay
 			(when w3m-force-redisplay
 			  (sit-for 0)))
-		    (let (buffer-read-only)
+		    (let ((inhibit-read-only t))
 		      (w3m-add-text-properties
 		       start end '(w3m-image-status off))))
 		  (set-buffer-modified-p nil))
@@ -4256,7 +4256,7 @@ If optional KEEP-PROPERTIES is non-nil, text property is reserved."
 (defun w3m-fontify ()
   "Fontify the current buffer."
   (let ((case-fold-search t)
-	(buffer-read-only))
+	(inhibit-read-only t))
     (w3m-message "Fontifying...")
     (run-hooks 'w3m-fontify-before-hook)
     ;; Remove hidden anchors like "<a href=url> </a>".
@@ -4332,9 +4332,9 @@ It replaces the faces on the arrived anchors from `w3m-anchor' to
 		 (setq prop (get-text-property (point) 'face))
 		 (listp prop)
 		 (member 'w3m-anchor prop))
-	(let* ((start)
-	       (end (next-single-property-change (point) 'w3m-anchor-sequence))
-	       (buffer-read-only))
+	(let ((start)
+	      (end (next-single-property-change (point) 'w3m-anchor-sequence))
+	      (inhibit-read-only t))
 	  (when (and end
 		     (setq start (previous-single-property-change
 				  end 'w3m-anchor-sequence))
@@ -4652,7 +4652,7 @@ already been the data corresponding to URL in the cache."
     (goto-char (point-min))
     (unless (zerop (buffer-size))
       (let ((ident (get-text-property (point) 'w3m-cache))
-	    buffer-read-only)
+	    (inhibit-read-only t))
 	;; Remove the ident from the list of articles.
 	(when ident
 	  (setq w3m-cache-articles (delq ident w3m-cache-articles)))
@@ -4669,7 +4669,7 @@ already been the data corresponding to URL in the cache."
     (when (memq ident w3m-cache-articles)
       ;; It was in the cache.
       (with-current-buffer w3m-cache-buffer
-	(let (buffer-read-only)
+	(let ((inhibit-read-only t))
 	  (when (setq beg (text-property-any
 			   (point-min) (point-max) 'w3m-cache ident))
 	    ;; Find the end (i. e., the beginning of the next article).
@@ -4691,7 +4691,7 @@ identifies the data in the cache."
 	 (w3m-cache-remove-oldest))
     ;; Insert the new article.
     (with-current-buffer w3m-cache-buffer
-      (let (buffer-read-only)
+      (let ((inhibit-read-only t))
 	(goto-char (point-max))
 	(let ((b (point)))
 	  (insert-buffer-substring buffer)
@@ -4721,7 +4721,7 @@ BUFFER is nil, all contents will be inserted in the current buffer."
 	(and beg
 	     end
 	     (with-current-buffer (or buffer (current-buffer))
-	       (let (buffer-read-only)
+	       (let ((inhibit-read-only t))
 		 (insert-buffer-substring w3m-cache-buffer beg end))
 	       t))))))
 
@@ -6223,7 +6223,7 @@ If so return \"text/html\", otherwise \"text/plain\"."
 					url)))))
   (let ((result-buffer (current-buffer)))
     (with-current-buffer page-buffer
-      (let (buffer-read-only)
+      (let ((inhibit-read-only t))
 	(widen)
 	(delete-region (point-min) (point-max))
 	(insert-buffer-substring result-buffer)
@@ -6242,7 +6242,7 @@ If so return \"text/html\", otherwise \"text/plain\"."
 (defun w3m-create-image-page (url type charset page-buffer)
   (when (w3m-image-type-available-p (w3m-image-type type))
     (with-current-buffer page-buffer
-      (let (buffer-read-only)
+      (let ((inhibit-read-only t))
 	(w3m-clear-local-variables)
 	(setq w3m-current-url (w3m-real-url url)
 	      w3m-current-title (file-name-nondirectory url))
@@ -10283,7 +10283,7 @@ buffer list.  The following command keys are available:
 
 (defun w3m-select-buffer-generate-contents (current-buffer)
   (let ((i 0)
-	(buffer-read-only))
+	(inhibit-read-only t))
     (delete-region (point-min) (point-max))
     (dolist (buffer (w3m-list-buffers))
       (put-text-property (point)
@@ -10387,7 +10387,7 @@ buffer list.  The following command keys are available:
 (defun w3m-select-buffer-recheck ()
   "Do the roll call to all emacs-w3m buffers and regenerate the menu."
   (interactive)
-  (let ((buffer-read-only nil))
+  (let ((inhibit-read-only t))
     (erase-buffer))
   (w3m-select-buffer-generate-contents
    (window-buffer w3m-select-buffer-window))

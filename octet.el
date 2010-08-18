@@ -1,6 +1,6 @@
 ;;; octet.el --- An octet stream viewer.
 
-;; Copyright (C) 2000, 2002, 2003, 2004, 2005
+;; Copyright (C) 2000, 2002, 2003, 2004, 2005, 2010
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
@@ -415,7 +415,7 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
   (interactive "fFilename: ")
   (as-binary-input-file	(find-file file))
   (unwind-protect
-      (let (buffer-read-only)
+      (let ((inhibit-read-only t))
 	(octet-buffer))
     (goto-char (point-min))
     (set-buffer-modified-p nil)

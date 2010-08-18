@@ -434,11 +434,11 @@ Sorry, an error found in \"%s\"; may we remove it? "
 
 (defun w3m-session-select-list-all-sessions ()
   "List up all saved sessions."
-  (let* ((sessions w3m-session-select-sessions)
-	 (num 0)
-	 (max 0)
-	 (buffer-read-only nil)
-	 title titles time times url urls wid pos)
+  (let ((sessions w3m-session-select-sessions)
+	(num 0)
+	(max 0)
+	(inhibit-read-only t)
+	title titles time times url urls wid pos)
     (if (not sessions)
 	(progn
 	  (message "No saved session")
@@ -493,7 +493,7 @@ Sorry, an error found in \"%s\"; may we remove it? "
   (let ((session (nth 2 (nth arg w3m-session-select-sessions)))
 	(num 0)
 	(max 0)
-	(buffer-read-only nil)
+	(inhibit-read-only t)
 	title url wid
 	titles urls pos)
     (when session
@@ -540,7 +540,7 @@ Sorry, an error found in \"%s\"; may we remove it? "
   (interactive "p")
   (unless arg (setq arg 1))
   (let ((positive (< 0 arg))
-	(buffer-read-only nil))
+	(inhibit-read-only t))
     (beginning-of-line)
     (put-text-property (point)
 		       (next-single-property-change

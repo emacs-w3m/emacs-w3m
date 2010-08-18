@@ -1,6 +1,6 @@
 ;;; w3m-proc.el --- Functions and macros to control sub-processes
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2008, 2009
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2008, 2009, 2010
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -583,7 +583,7 @@ evaluated in a temporary buffer."
 (defun w3m-process-filter (process string)
   (when (buffer-name (process-buffer process))
     (with-current-buffer (process-buffer process)
-      (let ((buffer-read-only nil)
+      (let ((inhibit-read-only t)
 	    (case-fold-search nil))
 	(goto-char (process-mark process))
 	(insert string)

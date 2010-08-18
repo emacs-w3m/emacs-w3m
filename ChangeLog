@@ -1,5 +1,20 @@
 2010-08-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* octet.el (octet-find-file)
+	* w3m-form.el (w3m-fontify-textareas, w3m-form-replace)
+	* w3m-proc.el (w3m-process-filter)
+	* w3m-session.el (w3m-session-select-list-all-sessions)
+	(w3m-session-select-list-session-group, w3m-session-select-next)
+	* w3m.el (w3m-idle-images-show, w3m-toggle-inline-images-internal)
+	(w3m-resize-inline-image-internal, w3m-fontify, w3m-refontify-anchor)
+	(w3m-cache-remove-oldest, w3m-cache-remove, w3m-cache-contents)
+	(w3m-cache-request-contents, w3m-create-text-page)
+	(w3m-create-image-page, w3m-select-buffer-generate-contents)
+	(w3m-select-buffer-recheck): Replace let-bindings of buffer-read-only
+	to nil with inhibit-read-only to t.
+
+2010-08-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-search.el (w3m-search-engine-alist): Fix `google news' url forms
 	used to non-Japanese utf-8 environments.
 
