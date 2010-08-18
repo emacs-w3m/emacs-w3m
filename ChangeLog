@@ -1,3 +1,9 @@
+2010-08-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-entity-table): Add table for "&#149;".
+	(w3m-entity-value): Prefer "&#NUM;" type entities specified in
+	w3m-entity-table.
+
 2010-08-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-safe-view-this-url): Never query "Are you sure..." if

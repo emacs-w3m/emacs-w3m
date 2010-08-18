@@ -2167,7 +2167,8 @@ In that case, emacs-w3m uses Google to search for the words."
 		    (("dagger" . 32) ("Dagger" . 33) ("permil" . 48)
 		     ("lsaquo" . 57) ("rsaquo" . 58)
 		     ("bull" . 34) ("hellip" . 38) ("prime" . 50) ("Prime" . 51)
-		     ("oline" . 62) ("frasl" . 68)))
+		     ("oline" . 62) ("frasl" . 68)
+		     ("#149" . 34)))
 	       (116 .
 		    (("euro" . 76)))))
 	    (greek '((39 . (("thetasym" . 81) ("upsih" . 82) ("piv" . 86)))))
@@ -3427,13 +3428,12 @@ use `w3m-url-encode-string' instead."
   "Get a char corresponding to NAME from the html char entities database.
 The database is kept in `w3m-entity-table'."
   ;; Return a value of the specified entity, or nil if it is unknown.
-  (if (eq (aref name 0) ?#)
-      (char-to-string (w3m-ucs-to-char
-		       (if (or (eq (aref name 1) ?x)
-			       (eq (aref name 1) ?X))
-			   (string-to-number (substring name 2) 16)
-			 (string-to-number (substring name 1)))))
-    (gethash name w3m-entity-table)))
+  (or (gethash name w3m-entity-table)
+      (and (eq (aref name 0) ?#)
+	   (char-to-string (w3m-ucs-to-char
+			    (if (memq (aref name 1) '(?X ?x))
+				(string-to-number (substring name 2) 16)
+			      (string-to-number (substring name 1))))))))
 
 (defun w3m-fontify-bold ()
   "Fontify bold text in the buffer containing halfdump."
