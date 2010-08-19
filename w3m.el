@@ -487,10 +487,9 @@ to set this variable properly."
 
 (defcustom w3m-image-default-background nil
   "Color name used as transparent color of image.
-Nil means to use the background color of the Emacs frame.  The
-null string \"\" is special, that will be replaced with the
-background color of the buffer. Note that this value is effective
-only with Emacs 22 and greater."
+Nil means to use the background color of the Emacs frame.  Note that
+this value is effective only to xbm and monochrome pbm images in Emacs
+22 and greater."
   :group 'w3m
   :type '(radio (string :format "Color: %v\n" :size 0
 			:match (lambda (widget value)
