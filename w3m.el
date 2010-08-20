@@ -2166,8 +2166,7 @@ In that case, emacs-w3m uses Google to search for the words."
 		    (("dagger" . 32) ("Dagger" . 33) ("permil" . 48)
 		     ("lsaquo" . 57) ("rsaquo" . 58)
 		     ("bull" . 34) ("hellip" . 38) ("prime" . 50) ("Prime" . 51)
-		     ("oline" . 62) ("frasl" . 68)
-		     ("#149" . 34)))
+		     ("oline" . 62) ("frasl" . 68)))
 	       (116 .
 		    (("euro" . 76)))))
 	    (greek '((39 . (("thetasym" . 81) ("upsih" . 82) ("piv" . 86)))))
@@ -2225,6 +2224,20 @@ In that case, emacs-w3m uses Google to search for the words."
 		   table))))
     table)
   "Table of html character entities and values.")
+
+(defvar w3m-extra-numeric-character-reference
+  "*Alist of (numeric . string) pairs for numeric character reference 
+other than ISO 10646."
+  (mapcar 
+   (lambda (item) 
+     (cons (car item) (string (w3m-ucs-to-char (cdr item)))))
+   '((#x80 . #x20AC) (#x82 . #x201A) (#x83 . #x0192) (#x84 . #x201E)
+     (#x85 . #x2026) (#x86 . #x2020) (#x87 . #x2021) (#x88 . #x02C6)
+     (#x89 . #x2030) (#x8A . #x0160) (#x8B . #x2039) (#x8C . #x0152)
+     (#x8E . #x017D) (#x91 . #x2018) (#x92 . #x2019) (#x93 . #x201C)
+     (#x94 . #x201D) (#x95 . #x2022) (#x96 . #x2013) (#x97 . #x2014)
+     (#x98 . #x02DC) (#x99 . #x2122) (#x9A . #x0161) (#x9B . #x203A)
+     (#x9C . #x0153) (#x9E . #x017E) (#x9F . #x0178))))
 
 (defconst w3m-entity-reverse-table
   (let ((table (make-hash-table :test 'equal)))
@@ -3429,10 +3442,11 @@ The database is kept in `w3m-entity-table'."
   ;; Return a value of the specified entity, or nil if it is unknown.
   (or (gethash name w3m-entity-table)
       (and (eq (aref name 0) ?#)
-	   (char-to-string (w3m-ucs-to-char
-			    (if (memq (aref name 1) '(?X ?x))
-				(string-to-number (substring name 2) 16)
-			      (string-to-number (substring name 1))))))))
+	   (let ((num (if (memq (aref name 1) '(?X ?x))
+			  (string-to-number (substring name 2) 16)
+			(string-to-number (substring name 1)))))
+	     (or (cdr (assq num w3m-extra-numeric-character-reference))
+		 (string (w3m-ucs-to-char num)))))))
 
 (defun w3m-fontify-bold ()
   "Fontify bold text in the buffer containing halfdump."

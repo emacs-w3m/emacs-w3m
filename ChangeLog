@@ -1,3 +1,9 @@
+2010-08-20  ARISAWA Akihiro  <ari@mbf.sphere.ne.jp>
+
+	* w3m.el (w3m-entity-table): Reverte last change.
+	(w3m-extra-numeric-character-reference): New variable.
+	(w3m-entity-value): Use it.
+
 2010-08-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* octet.el (octet-find-file)
