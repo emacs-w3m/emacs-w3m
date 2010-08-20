@@ -2226,10 +2226,8 @@ In that case, emacs-w3m uses Google to search for the words."
   "Table of html character entities and values.")
 
 (defvar w3m-extra-numeric-character-reference
-  "*Alist of (numeric . string) pairs for numeric character reference 
-other than ISO 10646."
-  (mapcar 
-   (lambda (item) 
+  (mapcar
+   (lambda (item)
      (cons (car item) (string (w3m-ucs-to-char (cdr item)))))
    '((#x80 . #x20AC) (#x82 . #x201A) (#x83 . #x0192) (#x84 . #x201E)
      (#x85 . #x2026) (#x86 . #x2020) (#x87 . #x2021) (#x88 . #x02C6)
@@ -2237,7 +2235,9 @@ other than ISO 10646."
      (#x8E . #x017D) (#x91 . #x2018) (#x92 . #x2019) (#x93 . #x201C)
      (#x94 . #x201D) (#x95 . #x2022) (#x96 . #x2013) (#x97 . #x2014)
      (#x98 . #x02DC) (#x99 . #x2122) (#x9A . #x0161) (#x9B . #x203A)
-     (#x9C . #x0153) (#x9E . #x017E) (#x9F . #x0178))))
+     (#x9C . #x0153) (#x9E . #x017E) (#x9F . #x0178)))
+  "*Alist of (numeric . string) pairs for numeric character reference
+other than ISO 10646.")
 
 (defconst w3m-entity-reverse-table
   (let ((table (make-hash-table :test 'equal)))
