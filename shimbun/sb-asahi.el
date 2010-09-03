@@ -1621,6 +1621,15 @@ that day if it failed."
 \\(?:\\(?:[\t\n ]*<[!/][^>]+>\\)+[\t\n ]*\\|[\t\n ]*\\'\\)"
 			      nil t)
       (replace-match "\n"))
+    ;; Remove orphaned tag strips (not all though).
+    (goto-char (point-min))
+    (while (re-search-forward "[\t ]*</\\([^>]+\\)>[\t ]*" nil t)
+      (if (save-match-data
+	    (re-search-backward (concat "<" (regexp-quote (match-string 1))
+					"\\(?:[\t\n ][^>]+\\)?>") nil t))
+	  (goto-char (match-end 0))
+	(delete-region (match-beginning 0) (match-end 0))))
+
     (unless (shimbun-prefer-text-plain-internal shimbun)
       (shimbun-break-long-japanese-lines))
     t))

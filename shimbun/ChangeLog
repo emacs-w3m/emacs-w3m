@@ -1,3 +1,8 @@
+2010-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-clear-contents): Remove orphaned tag
+	strips.
+
 2010-08-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-itmedia.el (shimbun-itmedia-group-alist): Update url for kodera.
