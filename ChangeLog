@@ -1,5 +1,17 @@
 2010-09-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-lnum.el (w3m-read-int-interactive): Make it work for XEmacs
+	(note: `?<' is not `eq' to `60' in XEmacs, for example).
+
+2010-09-06  Andrey Kotlarski  <m00naticus@gmail.com>
+
+	* w3m-lnum.el (w3m-linknum-remove-overlays): Simplified.
+	(w3m-link-numbering-mode): Using `or' instead of `unless'.
+	(w3m-read-int-interactive): Added ability to scroll page while
+	selecting number.
+
+2010-09-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-input-url): Move cursor to place where a user likely
 	begins to edit.
 

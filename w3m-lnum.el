@@ -125,19 +125,12 @@ KEYS is alternating list of key-value."
   (push (cons 'w3m-link-numbering-mode w3m-link-numbering-mode-map)
 	minor-mode-map-alist))
 
-(defun w3m-linknum-remove-overlays (&optional arg)
-  "Remove numbering and match overlays.
-With ARG remove only temporary match"
-  (if arg
-      (catch 'done
-	(dolist (overlay (overlays-in (point-min) (point-max)))
-	  (when (overlay-get overlay 'w3m-linknum-match)
-	    (delete-overlay overlay)
-	    (throw 'done nil))))
-    (dolist (overlay (overlays-in (point-min) (point-max)))
-      (if (or (overlay-get overlay 'w3m-link-numbering-overlay)
-	      (overlay-get overlay 'w3m-linknum-match))
-	  (delete-overlay overlay)))))
+(defun w3m-linknum-remove-overlays ()
+  "Remove numbering and match overlays."
+  (dolist (overlay (overlays-in (point-min) (point-max)))
+    (if (or (overlay-get overlay 'w3m-link-numbering-overlay)
+	    (overlay-get overlay 'w3m-linknum-match))
+	(delete-overlay overlay))))
 
 ;;;###autoload
 (defun w3m-link-numbering-mode (&optional arg)
@@ -147,16 +140,16 @@ enable them.  With no prefix ARG - toggle."
   (interactive "P")
   (let ((w3m-linknum-status w3m-link-numbering-mode))
     ;; find current numbering status of w3m buffers
-    (unless (eq major-mode 'w3m-mode)
-      (save-current-buffer
-	(setq w3m-linknum-status
-	      (catch 'found-w3m
-		(dolist (buf (buffer-list))
-		  (set-buffer buf)
-		  (if (eq major-mode 'w3m-mode)
-		      (throw 'found-w3m w3m-link-numbering-mode)))))))
-    (setq arg (not (if arg
-		       (zerop arg)
+    (or (eq major-mode 'w3m-mode)
+	(save-current-buffer
+	  (setq w3m-linknum-status
+		(catch 'found-w3m
+		  (dolist (buf (buffer-list))
+		    (set-buffer buf)
+		    (if (eq major-mode 'w3m-mode)
+			(throw 'found-w3m
+			       w3m-link-numbering-mode)))))))
+    (setq arg (not (if arg (zerop arg)
 		     w3m-linknum-status)))
     (unless (eq arg w3m-linknum-status)	; if change of mode status
       (if arg
@@ -234,6 +227,11 @@ and <C-g> or <escape> to quit action."
 	       (setq num (/ num 10)
 		     temp-prompt (format "%s%d" prompt num))
 	       (funcall fun num))
+	      ((memq ch '(32 ?\ )) (w3m-scroll-up-or-next-url nil))
+	      ((eq ch 'delete)
+	       (w3m-scroll-down-or-previous-url nil))
+	      ((memq ch '(60 ?<)) (w3m-scroll-right nil))
+	      ((memq ch '(62 ?>)) (w3m-scroll-left nil))
 	      ((and (w3m-static-if (featurep 'xemacs)
 			(characterp ch)
 		      (numberp ch))
