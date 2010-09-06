@@ -1,3 +1,8 @@
+2010-09-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-input-url): Move cursor to place where a user likely
+	begins to edit.
+
 2010-09-02  TAKAHASHI Kaoru  <kaoru@kaisei.org>
 
 	* doc/ptexinfmt.el (texinfo-multitable-widths): Use `make-char'

@@ -4567,7 +4567,11 @@ if it has no scheme part."
       (unless w3m-enable-google-feeling-lucky
 	(setq feeling-lucky nil))
       (setq url (let ((minibuffer-setup-hook
-		       (append minibuffer-setup-hook '(beginning-of-line)))
+		       (append minibuffer-setup-hook
+			       (list (lambda ()
+				       (beginning-of-line)
+				       (if (looking-at "[a-z]+:\\(?:/+\\)?")
+					   (goto-char (match-end 0)))))))
 		      (ofunc (lookup-key minibuffer-local-completion-map " ")))
 		  (when feeling-lucky
 		    (define-key minibuffer-local-completion-map " "
