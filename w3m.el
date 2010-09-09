@@ -4615,10 +4615,8 @@ if it has no scheme part."
 				       (prin1-to-string default)))
 			   (if feeling-lucky "URL or Keyword: " "URL: ")))
 		       'w3m-url-completion nil nil initial
-		       'w3m-input-url-history)
+		       'w3m-input-url-history default)
 		    (define-key minibuffer-local-completion-map " " ofunc))))
-      (when (string= "" url)
-	(setq url default))
       (if (stringp url)
 	  (progn
 	    ;; remove duplication

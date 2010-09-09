@@ -1,3 +1,8 @@
+2010-09-09  Leo  <sdl.web@gmail.com>
+
+	* w3m.el (w3m-input-url): Pass DEFAULT argument to completing-read,
+	instead of replacing its return value, to enable a user to edit.
+
 2010-09-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-active-region-or-url-at-point): Remove only newlines and
