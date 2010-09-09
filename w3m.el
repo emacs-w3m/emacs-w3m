@@ -4513,9 +4513,19 @@ In Transient Mark mode, deactivate the mark.  If DEFAULT=CURRENT is
 non-nil, return the url of the current page by default."
   (if (w3m-region-active-p)
       (prog1
-	  (w3m-replace-in-string (buffer-substring-no-properties
-				  (region-beginning) (region-end))
-				 "[\t\r\f\n 　]+" "")
+	  (let ((string (buffer-substring-no-properties
+			 (region-beginning) (region-end))))
+	    (with-temp-buffer
+	      (insert string)
+	      (skip-chars-backward "\t\n\f\r 　")
+	      (delete-region (point) (point-max))
+	      (goto-char (point-min))
+	      (skip-chars-forward "\t\n\f\r 　")
+	      (delete-region (point-min) (point))
+	      (while (re-search-forward "\
+\\(?:[\t\f\r 　]+\n[\t\f\r 　]*\\|[\t\f\r 　]*\n[\t\f\r 　]+\\)+" nil t)
+		(delete-region (match-beginning 0) (match-end 0)))
+	      (buffer-string)))
 	(w3m-deactivate-region))
     (or (w3m-url-at-point)
 	(w3m-anchor)
@@ -4552,14 +4562,19 @@ if it has no scheme part."
   "Read a url from the minibuffer, prompting with string PROMPT."
   (let (url)
     (w3m-arrived-setup)
-    (unless default
-      (setq default w3m-home-page))
-    (unless (or initial
-		(not (setq initial (w3m-active-region-or-url-at-point t)))
-		(string-match "[^\000-\177]" initial))
-      (setq initial (w3m-url-decode-string initial w3m-current-coding-system)))
+    (cond ((null initial)
+	   (when (and (setq initial (w3m-active-region-or-url-at-point t))
+		      (not (string-match "[^\000-\177]" initial)))
+	     (setq initial (w3m-url-decode-string initial
+						  w3m-current-coding-system))))
+	  ((string= initial "")
+	   (setq initial nil)))
     (when initial
       (setq initial (w3m-puny-decode-url initial)))
+    (cond ((null default)
+	   (setq default w3m-home-page))
+	  ((string= default "")
+	   (setq default nil)))
     (if (and quick-start
 	     default
 	     (not initial))
@@ -4579,24 +4594,26 @@ if it has no scheme part."
 		  (unwind-protect
 		      (completing-read
 		       (if prompt
-			   (if (or initial (not default))
-			       prompt
-			     (when (string-match " *: *\\'" prompt)
-			       (setq prompt (substring prompt 0
-						       (match-beginning 0))))
-			     (concat prompt " (default "
-				     (if (equal default w3m-home-page)
-					 "HOME"
-				       default)
-				     "): "))
-			 (if (or initial (not default))
-			     (if feeling-lucky "URL or Keyword: " "URL: ")
-			   (format "URL %s(default %s): "
-				   (if feeling-lucky "or Keyword " "")
-				   (if (stringp default)
-				       (if (eq default w3m-home-page)
-					   "HOME" default)
-				     (prin1-to-string default)))))
+			   (if default
+			       (progn
+				 (when (string-match " *: *\\'" prompt)
+				   (setq prompt
+					 (substring prompt 0
+						    (match-beginning 0))))
+				 (concat prompt " (default "
+					 (if (equal default w3m-home-page)
+					     "HOME"
+					   default)
+					 "): "))
+			     prompt)
+			 (if default
+			     (format "URL %s(default %s): "
+				     (if feeling-lucky "or Keyword " "")
+				     (if (stringp default)
+					 (if (eq default w3m-home-page)
+					     "HOME" default)
+				       (prin1-to-string default)))
+			   (if feeling-lucky "URL or Keyword: " "URL: ")))
 		       'w3m-url-completion nil nil initial
 		       'w3m-input-url-history)
 		    (define-key minibuffer-local-completion-map " " ofunc))))

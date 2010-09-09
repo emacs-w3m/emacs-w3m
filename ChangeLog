@@ -1,3 +1,12 @@
+2010-09-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-active-region-or-url-at-point): Remove only newlines and
+	leading and trailing whitespace.
+	(w3m-input-url): Treat INITIAL if it is "" as nil but don't mind region
+	even if it is active; treat DEFAULT if it is "" as nil but don't regard
+	to w3m-home-page; always show DEFAULT if any within prompt string.
+	Suggested by Leo <sdl.web@gmail.com>.
+
 2010-09-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-lnum.el (w3m-read-int-interactive): Make it work for XEmacs
