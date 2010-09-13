@@ -3910,6 +3910,7 @@ effect if your XEmacs does not support the gutter items.
 @node Gnus
 @section Gnus で HTML メールを読む
 @cindex Reading HTML mails in Gnus
+@findex gnus-article-html
 @vindex mm-inline-text-html-with-images
 @vindex mm-inline-text-html-with-w3m-keymap
 @vindex mm-text-html-renderer
@@ -3943,9 +3944,17 @@ emacs-w3m のと同じ主要なキーを使うことができます。例え
 @item
 何をしなければいけないの?
 
-Gnus のマニュアルを読んでください (@pxref{Display Customization,
-,Display Customization, emacs-mime, The Emacs MIME Manual})。最も簡単な
-方法は、以下の行を @file{~/.gnus.el} ファイルに入れることです:
+もし、関数 @code{gnus-article-html} が利用できるのであれば (言い換えると、
+ユーザオプション @code{mm-text-html-renderer} がデフォルト
+で @code{gnus-article-html} になっているのであれば)、何もする必要は無い
+でしょう。それは Gnus に組み込まれている @acronym{HTML} 描画器です。
+@xref{Display Customization, ,表示のカスタマイズ, emacs-mime-ja, The
+Emacs MIME Manual}.  さらに @xref{HTML, ,HTML, gnus-ja, The Gnus
+Manual}.
+
+しかし、もしお使いの Gnus が少し古くてそれが使えないか、また
+は @acronym{HTML} 記事の描画のために emacs-w3m を試してみたいのであれば、
+以下の行を @file{~/.gnus.el} ファイルに追加してください。
 
 @lisp
 (setq mm-text-html-renderer 'w3m)

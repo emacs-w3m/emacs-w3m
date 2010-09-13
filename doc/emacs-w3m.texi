@@ -3856,6 +3856,7 @@ message is called an @samp{article} by Gnus users.
 @node Gnus
 @section Reading HTML mails in Gnus
 @cindex Reading HTML mails in Gnus
+@findex gnus-article-html
 @vindex mm-inline-text-html-with-images
 @vindex mm-inline-text-html-with-w3m-keymap
 @vindex mm-text-html-renderer
@@ -3889,9 +3890,16 @@ commands are replaced by others similar to them, for security reasons
 @item
 What do you have to do?
 
-Read the Gnus manual (@pxref{Display Customization, ,Display
-Customization, emacs-mime, The Emacs MIME Manual}).  The easiest way is
-to put the following line in your @file{~/.gnus.el} file:
+If the function @code{gnus-article-html} is available (i.e., if the user
+option @code{mm-text-html-renderer} defaults to @code{gnus-article-html}),
+you may not want to do anything.  That is Gnus' built-in @acronym{HTML}
+renderer.  @xref{Display Customization, ,Display Customization,
+emacs-mime, The Emacs MIME Manual}.  Also @xref{HTML, ,HTML, gnus, The
+Gnus Manual}.
+
+But if Gnus you use is a bit old and it is not available, or if you'd
+like to try emacs-w3m to render @acronym{HTML} articles, put the
+following line in your @file{~/.gnus.el} file:
 
 @lisp
 (setq mm-text-html-renderer 'w3m)
