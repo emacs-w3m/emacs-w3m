@@ -294,6 +294,8 @@ title[\t\n ]+end[\t\n ]+-+>"
 		(delete-region start end)
 		(insert "\n"))))
 
+	  (shimbun-remove-orphaned-tag-strips "span")
+
 	  (cond ((string-equal group "usatoday.ja")
 		 ;; Insert a newline after the headline.
 		 (goto-char (point-min))

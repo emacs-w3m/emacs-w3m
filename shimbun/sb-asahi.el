@@ -1,6 +1,6 @@
 ;;; sb-asahi.el --- shimbun backend for asahi.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -1621,14 +1621,8 @@ that day if it failed."
 \\(?:\\(?:[\t\n ]*<[!/][^>]+>\\)+[\t\n ]*\\|[\t\n ]*\\'\\)"
 			      nil t)
       (replace-match "\n"))
-    ;; Remove orphaned tag strips (not all though).
-    (goto-char (point-min))
-    (while (re-search-forward "[\t ]*</\\([^>]+\\)>[\t ]*" nil t)
-      (if (save-match-data
-	    (re-search-backward (concat "<" (regexp-quote (match-string 1))
-					"\\(?:[\t\n ][^>]+\\)?>") nil t))
-	  (goto-char (match-end 0))
-	(delete-region (match-beginning 0) (match-end 0))))
+
+    (shimbun-remove-orphaned-tag-strips "span")
 
     (unless (shimbun-prefer-text-plain-internal shimbun)
       (shimbun-break-long-japanese-lines))

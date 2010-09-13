@@ -1,3 +1,13 @@
+2010-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-end-of-tag): Improve regexp.
+	(shimbun-beginning-of-tag, shimbun-remove-orphaned-tag-strips):
+	New functions.
+
+	* sb-asahi.el (shimbun-asahi-clear-contents)
+	* sb-sankei.el (shimbun-sankei-clear-contents):
+	Use shimbun-remove-orphaned-tag-strips.
+
 2010-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-clear-contents): Remove orphaned tag
