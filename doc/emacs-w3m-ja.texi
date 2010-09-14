@@ -3917,13 +3917,17 @@ effect if your XEmacs does not support the gutter items.
 @vindex w3m-minor-mode
 @vindex w3m-minor-mode-command-alist
 
-Gnus (Emacs のニューズリーダー) が emacs-w3m をサポートしているって、知っ
-ていましたか?  実は、バージョン 22.1 以上の Emacs に同梱されてい
-る Gnus は emacs-w3m をサポートするんです。もしあなたの Emacs がいくらか
-古いのならば、最新版の Gnus を使うのが良いでしょう。それは以下の場所で手
-に入ります:
+第一に、もし関数 @code{gnus-article-html} が利用できるのであれば (つまり
+ユーザオプション @code{mm-text-html-renderer} がデフォルト
+で @code{gnus-article-html} になっているのであれば)、そして Gnus の内蔵
+の @acronym{HTML} 描画器であるその関数に満足しているのであれば、何もする
+必要は無いでしょう。@xref{Display Customization, ,表示のカスタマイズ,
+emacs-mime-ja, The Emacs MIME Manual}.  さらに @xref{HTML, ,HTML,
+gnus-ja, The Gnus Manual}.
 
-@uref{ftp://ftp.gnus.org/pub/gnus/gnus.tar.gz}
+しかし、もしお使いの Gnus が少し古くて @code{gnus-article-html} 関数が使
+えないか、または @acronym{HTML} 記事の描画のために emacs-w3m を試してみ
+たいのであれば、この章はまさにあなたのためのものです。
 
 @itemize @bullet
 @item
@@ -3944,17 +3948,7 @@ emacs-w3m のと同じ主要なキーを使うことができます。例え
 @item
 何をしなければいけないの?
 
-もし、関数 @code{gnus-article-html} が利用できるのであれば (言い換えると、
-ユーザオプション @code{mm-text-html-renderer} がデフォルト
-で @code{gnus-article-html} になっているのであれば)、何もする必要は無い
-でしょう。それは Gnus に組み込まれている @acronym{HTML} 描画器です。
-@xref{Display Customization, ,表示のカスタマイズ, emacs-mime-ja, The
-Emacs MIME Manual}.  さらに @xref{HTML, ,HTML, gnus-ja, The Gnus
-Manual}.
-
-しかし、もしお使いの Gnus が少し古くてそれが使えないか、また
-は @acronym{HTML} 記事の描画のために emacs-w3m を試してみたいのであれば、
-以下の行を @file{~/.gnus.el} ファイルに追加してください。
+この行を @file{~/.gnus.el} ファイルに追加してください。
 
 @lisp
 (setq mm-text-html-renderer 'w3m)

@@ -3863,12 +3863,17 @@ message is called an @samp{article} by Gnus users.
 @vindex w3m-minor-mode
 @vindex w3m-minor-mode-command-alist
 
-Did you know that Gnus, the Emacs newsreader, supports emacs-w3m?
-Actually, Gnus bundled with Emacs of which the version is 22.1 or
-greater supports emacs-w3m.  If your Emacs is somewhat old, you'd better
-use the latest version of Gnus.  It is available at:
+First of all, if the function @code{gnus-article-html} is available
+(i.e., if the user option @code{mm-text-html-renderer} defaults to
+@code{gnus-article-html}) and you are satisfied with that function that
+is Gnus' built-in @acronym{HTML} renderer, you may not want to do
+anything.  @xref{Display Customization, ,Display Customization,
+emacs-mime, The Emacs MIME Manual}.  Also @xref{HTML, ,HTML, gnus, The
+Gnus Manual}.
 
-@uref{ftp://ftp.gnus.org/pub/gnus/gnus.tar.gz}
+But if Gnus you use is a bit old and the @code{gnus-article-html}
+function is not available, or if you'd like to try emacs-w3m to render
+@acronym{HTML} articles, this section is just for you.
 
 @itemize @bullet
 @item
@@ -3890,16 +3895,7 @@ commands are replaced by others similar to them, for security reasons
 @item
 What do you have to do?
 
-If the function @code{gnus-article-html} is available (i.e., if the user
-option @code{mm-text-html-renderer} defaults to @code{gnus-article-html}),
-you may not want to do anything.  That is Gnus' built-in @acronym{HTML}
-renderer.  @xref{Display Customization, ,Display Customization,
-emacs-mime, The Emacs MIME Manual}.  Also @xref{HTML, ,HTML, gnus, The
-Gnus Manual}.
-
-But if Gnus you use is a bit old and it is not available, or if you'd
-like to try emacs-w3m to render @acronym{HTML} articles, put the
-following line in your @file{~/.gnus.el} file:
+Add this line to your @file{~/.gnus.el} file:
 
 @lisp
 (setq mm-text-html-renderer 'w3m)
