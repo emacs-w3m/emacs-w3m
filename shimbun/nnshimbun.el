@@ -1,7 +1,7 @@
 ;;; nnshimbun.el --- interfacing with web newspapers
 
-;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
-;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
+;; 2010 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          ARISAWA Akihiro    <ari@mbf.sphere.ne.jp>,
@@ -502,7 +502,7 @@ If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
       (nnheader-report 'nnshimbun "Couldn't retrieve article: %s"
 		       (prin1-to-string article)))))
 
-(deffoo nnshimbun-request-group (group &optional server dont-check)
+(deffoo nnshimbun-request-group (group &optional server dont-check info)
   (setq group (nnshimbun-decode-group-name group))
   (if (not (nnshimbun-possibly-change-group group server))
       (nnheader-report 'nnshimbun "Invalid group")
