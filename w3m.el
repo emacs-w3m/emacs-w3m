@@ -676,13 +676,13 @@ nil which provides Lynx-like keys."
 (defcustom w3m-init-file "~/.emacs-w3m"
   "*Your emacs-w3m startup file name.
 If a file with the `.el' or `.elc' suffixes exists, it will be read
-instead.
+instead.  Nil means no init file will be loaded.
 
 Note: This file is used as the startup configuration *NOT* for the w3m
 command but for emacs-w3m.  In order to modify configurations for the
 w3m command, edit the file named \"~/.w3m/config\" normally."
   :group 'w3m
-  :type '(file :size 0))
+  :type '(radio file (const :format "None " nil)))
 
 (defcustom w3m-default-save-directory
   (concat "~/." (file-name-sans-extension
@@ -10788,7 +10788,7 @@ FROM-COMMAND is defined in `w3m-minor-mode-map' with the same key in
   "*Whether to clean up temporary files when emacs-w3m shutdown."
   :group 'w3m
   :type 'boolean)
-  
+
 (defun w3m-cleanup-temp-files ()
   (when w3m-do-cleanup-temp-files
     (dolist (f (directory-files w3m-profile-directory))
@@ -10798,10 +10798,12 @@ FROM-COMMAND is defined in `w3m-minor-mode-map' with the same key in
 (provide 'w3m)
 
 (unless noninteractive
-  (if (string-match "\\.el\\'" w3m-init-file)
-      (or (load (concat w3m-init-file "c") t t t)
-	  (load w3m-init-file t t t))
-    (load w3m-init-file t t))
-  (run-hooks 'w3m-load-hook))
+  (when w3m-init-file
+    (if (string-match "\\.el\\'" w3m-init-file)
+	(or (load (concat w3m-init-file "c") t t t)
+	    (load w3m-init-file t t t))
+      (load w3m-init-file t t))))
+
+(run-hooks 'w3m-load-hook)
 
 ;;; w3m.el ends here
