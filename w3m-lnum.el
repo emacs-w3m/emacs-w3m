@@ -165,68 +165,147 @@ enable them.  With no prefix ARG - toggle."
 	  (if (eq major-mode 'w3m-mode)
 	      (setq w3m-link-numbering-mode arg)))))))
 
+(defmacro w3m-link-set-overlay (pos index)
+  "Set numbering overlay at POS with INDEX."
+  `(let ((overlay (make-overlay ,pos (1+ ,pos)))
+	 (num (format "[%d]" (incf ,index))))
+     (overlay-put overlay 'before-string num)
+     (w3m-static-if (featurep 'xemacs)
+	 (set-glyph-face (extent-begin-glyph overlay)
+			 'w3m-link-numbering)
+       (w3m-add-face-property 0 (length num)
+			      'w3m-link-numbering num)
+       (overlay-put overlay 'evaporate t))
+     (overlay-put overlay 'w3m-link-numbering-overlay ,index)
+     (let ((hseq (get-char-property ,pos 'w3m-anchor-sequence)))
+       (if hseq				; multiline anchors
+	   (save-excursion
+	     (setq ,pos (next-single-property-change
+			 ,pos 'w3m-anchor-sequence))
+	     (when ,pos
+	       (goto-char ,pos)
+	       (let ((pmax (point-max)))
+		 (while (setq ,pos (text-property-any
+				    ,pos pmax
+				    'w3m-anchor-sequence hseq))
+		   (setq overlay (make-overlay ,pos (1+ ,pos)))
+		   (overlay-put overlay 'w3m-link-numbering-overlay
+				,index)
+		   (setq ,pos (next-single-property-change
+			       ,pos 'w3m-anchor-sequence))
+		   (if ,pos (goto-char ,pos))))))))))
+
+(defun w3m-link-set-numbering (&optional next-func links index)
+  "Make overlays that display link numbers.  Return last used index.
+NEXT-FUNC is function to iterate numbered elements, if not given,
+use `w3m-goto-next-anchor'.  If LINKS enumerate only links.
+INDEX is initial number to start from, if not given, start from 0.
+Return index of last enumerated element."
+  (goto-char (point-min))
+  (let ((i (or index 0))
+	(next (or next-func 'w3m-goto-next-anchor))
+	pos)
+    (if links
+	(if (zerop i)
+	    (while (setq pos (funcall next))
+	      (if (get-char-property pos 'w3m-href-anchor)
+		  (w3m-link-set-overlay pos i)))
+	  (while (setq pos (funcall next))
+	    (and (not (get-char-property
+		       pos 'w3m-link-numbering-overlay))
+		 (get-char-property pos 'w3m-href-anchor)
+		 (w3m-link-set-overlay pos i))))
+      (if (zerop i)
+	  (while (setq pos (funcall next))
+	    (w3m-link-set-overlay pos i))
+	(while (setq pos (funcall next))
+	  (or (get-char-property pos 'w3m-link-numbering-overlay)
+	      (w3m-link-set-overlay pos i)))))
+    i))
+
+(defun w3m-goto-next-anchor-or-image ()
+  "Move point to next anchor or image and return new point position."
+  (let ((pos (point)))
+    (cond				; currently on anchor or image
+     ((w3m-anchor-sequence pos)
+      (setq pos (next-single-property-change pos
+					     'w3m-anchor-sequence))
+      (if pos (goto-char pos)))
+     ((w3m-image pos)
+      (setq pos (next-single-property-change pos 'w3m-image))
+      (if pos (goto-char pos))))
+    (or (w3m-anchor-sequence pos)
+	(w3m-image pos)
+	(let ((image-pos (next-single-property-change pos
+						      'w3m-image)))
+	  (setq pos (next-single-property-change
+		     pos 'w3m-anchor-sequence))
+	  (and image-pos (or (not pos)
+			     (> pos image-pos))
+	       (setq pos image-pos))))
+    (when pos
+      (goto-char pos)
+      (let ((hseq (w3m-anchor-sequence pos)))
+	(if (and hseq (text-property-any ; multiline anchors
+		       (point-min) pos 'w3m-anchor-sequence hseq))
+	    (w3m-goto-next-anchor-or-image)
+	  pos)))))
+
 (defun w3m-link-numbering (arg)
   "Make overlays that display link numbers.
-With ARG 0 clear numbering overlay.  With ARG 2 index only images.
-With ARG 4 index form fields and buttons along links."
-  (if (zerop arg)
-      (w3m-linknum-remove-overlays)
+With ARG 0 clear numbering overlay.  With ARG 1 index only links.
+With ARG 2 index only images.  With ARG 3 index form fields and
+buttons along links.  With ARG 4 index all anchors."
+  (if (zerop arg) (w3m-linknum-remove-overlays)
     (save-excursion
-      (goto-char (point-min))
-      (let ((i 0)
-	    (next-func 'w3m-goto-next-anchor)
-	    pos overlay num)
-	(if (= arg 2)
-	    (setq next-func (lambda () (if (w3m-goto-next-image)
-				      (point)))))
-	(catch 'already-numbered
-	  (while (setq pos (funcall next-func))
-	    (when (or (> arg 1)
-		      (get-char-property pos 'w3m-href-anchor))
-	      (if (get-char-property pos
-				     'w3m-link-numbering-overlay)
-		  (throw 'already-numbered nil))
-	      (setq overlay (make-overlay pos (1+ pos))
-		    num (format "[%d]" (incf i)))
-	      (overlay-put overlay 'before-string num)
-	      (w3m-static-if (featurep 'xemacs)
-		  (set-glyph-face (extent-begin-glyph overlay)
-				  'w3m-link-numbering)
-		(w3m-add-face-property 0 (length num)
-				       'w3m-link-numbering num)
-		(overlay-put overlay 'evaporate t))
-	      (overlay-put overlay
-			   'w3m-link-numbering-overlay i))))))))
+      (cond
+       ((= arg 1) (w3m-link-set-numbering nil t))
+       ((= arg 2)
+	(w3m-link-set-numbering (lambda () (if (w3m-goto-next-image)
+					  (point)))))
+       ((= arg 4)
+	(w3m-link-set-numbering 'w3m-goto-next-anchor-or-image))
+       (t (w3m-link-set-numbering))))))
 
-(defun w3m-read-int-interactive (prompt fun &optional default)
+(defun w3m-read-int-interactive (prompt fun &optional anchor default)
   "Interactively read a valid integer from minubuffer with PROMPT.
 Execute a one argument function FUN with every current valid integer.
+ANCHOR is initial element to print.
 Initial value is DEFAULT if specified or 0.
-Use <return> to submit current value, <backspace> for correction
-and <C-g> or <escape> to quit action."
+Use <return> to submit current value; <backspace> for correction;
+<C-g> or <escape> to quit action;
+`<', `>', <space> and <delete> for scrolling page."
   (let ((prompt (propertize prompt 'face
 			    'w3m-linknum-minibuffer-prompt))
 	(num (or default 0))
 	(min-len (length prompt))
 	ch)
-    (let ((temp-prompt (format "%s%d" prompt num)))
+    (let ((temp-prompt
+	   (format "%s%d%s" prompt num
+		   (if anchor (concat " [" anchor "]")
+		     ""))))
       (while (not (memq
-		   (setq ch (w3m-static-if (featurep 'xemacs)
-				(let (event key)
-				  (display-message 'no-log temp-prompt)
-				  (setq event (next-command-event))
-				  (and (key-press-event-p event)
+		   (setq ch
+			 (w3m-static-if (featurep 'xemacs)
+			     (progn
+			       (display-message 'no-log temp-prompt)
+			       (let ((event (next-command-event)))
+				 (if (key-press-event-p event)
+				     (let (key)
 				       (or (event-to-character event)
 					   (characterp
 					    (setq key (event-key event)))
-					   key)))
-			      (read-event temp-prompt)))
+					   key)))))
+			   (read-event temp-prompt)))
 		   '(return 10 13 ?\n ?\r ?\C-g escape 27 ?\e)))
 	(cond ((and (memq ch '(backspace 8 ?\C-h))
 		    (> (length temp-prompt) min-len))
 	       (setq num (/ num 10)
-		     temp-prompt (format "%s%d" prompt num))
-	       (funcall fun num))
+		     temp-prompt
+		     (format "%s%d%s" prompt num
+			     (let ((anchor (funcall fun num)))
+			       (if anchor (concat " [" anchor "]")
+				 "")))))
 	      ((memq ch '(32 ?\ )) (w3m-scroll-up-or-next-url nil))
 	      ((eq ch 'delete)
 	       (w3m-scroll-down-or-previous-url nil))
@@ -237,8 +316,11 @@ and <C-g> or <escape> to quit action."
 		      (numberp ch))
 		    (> ch 47) (< ch 58))
 	       (setq num (+ (* num 10) (- ch 48))
-		     temp-prompt (format "%s%d" prompt num))
-	       (funcall fun num))))
+		     temp-prompt
+		     (format "%s%d%s" prompt num
+			     (let ((anchor (funcall fun num)))
+			       (if anchor (concat " [" anchor "]")
+				 "")))))))
       (if (memq ch '(?\C-g escape 27 ?\e))
 	  (keyboard-quit))
       num)))
@@ -246,40 +328,40 @@ and <C-g> or <escape> to quit action."
 (defmacro w3m-with-linknum (type &rest body)
   "Within TYPE anchor numbering execute BODY.
 Types are: 0 no numbering, 1 links, 2 images,
-4 links, form fields and buttons.
-Then restore previous numbering condition."
+3 links, form fields and buttons, 4 all anchors.
+Then clear numbering overlays."
   `(progn (w3m-link-numbering ,type)
 	  (unwind-protect (progn ,@body)
 	    (w3m-linknum-remove-overlays))))
 
 (defun w3m-highlight-numbered-anchor (arg)
-  "Highlight specified by ARG number anchor."
-  (catch 'done
-    (let (found-prev marked-new)
-      (dolist (overlay (overlays-in (point-min) (point-max)))
-	(cond
-	 ((overlay-get overlay 'w3m-linknum-match)
-	  (delete-overlay overlay)
-	  (setq found-prev t))
-	 ((eq arg (overlay-get overlay 'w3m-link-numbering-overlay))
-	  (let* ((start (overlay-start overlay))
-		 (match-overlay
-		  (make-overlay
-		   start
-		   (next-single-property-change
-		    start
-		    (cond ((get-text-property start 'w3m-href-anchor)
-			   'w3m-href-anchor)
-			  ((get-text-property start 'w3m-image)
-			   'w3m-image)
-			  (t 'w3m-action))))))
-	    (overlay-put match-overlay 'w3m-linknum-match t)
-	    (overlay-put match-overlay 'face 'w3m-linknum-match))
-	  (setq marked-new t)))
-	(and found-prev marked-new (throw 'done nil))))))
+  "Highlight specified by ARG number anchor.
+Return selected anchor."
+  (let (newly-marked)
+    (dolist (overlay (overlays-in (point-min) (point-max)))
+      (cond
+       ((overlay-get overlay 'w3m-linknum-match)
+	(delete-overlay overlay))
+       ((eq arg (overlay-get overlay 'w3m-link-numbering-overlay))
+	(let* ((start (overlay-start overlay))
+	       (match-overlay
+		(make-overlay
+		 start
+		 (next-single-property-change
+		  start
+		  (cond ((w3m-anchor-sequence start)
+			 'w3m-anchor-sequence)
+			((w3m-image start) 'w3m-image)
+			(t 'w3m-action))))))
+	  (overlay-put match-overlay 'w3m-linknum-match t)
+	  (overlay-put match-overlay 'face 'w3m-linknum-match)
+	  (or newly-marked
+	      (setq newly-marked (or (w3m-anchor start)
+				     (w3m-image start))))))))
+    newly-marked))
 
 (defun w3m-get-anchor-info (&optional num)
-  "Get info (url/action position [image image-alt]) of anchor numbered as NUM.
+  "Get info (url/action position image image-alt) of anchor numbered as NUM.
 If NUM is not specified, use currently highlighted anchor."
   (macrolet
       ((get-match-info
@@ -287,14 +369,12 @@ If NUM is not specified, use currently highlighted anchor."
 	`(dolist (overlay (overlays-in (point-min) (point-max)))
 	   (if ,condition
 	       (let* ((pos (overlay-start overlay))
-		      (href (get-text-property pos 'w3m-href-anchor)))
-		 (throw
-		  'found
-		  (if href (list href pos
-				 (get-text-property pos 'w3m-image)
-				 (get-text-property pos 'w3m-image-alt))
-		    (list (get-text-property pos 'w3m-action)
-			  pos))))))))
+		      (href (w3m-anchor pos)))
+		 (throw 'found
+			(if href (list href pos (w3m-image pos)
+				       (w3m-image-alt pos))
+			  (list (w3m-action pos) pos (w3m-image pos)
+				(w3m-image-alt pos)))))))))
     (catch 'found
       (if num (get-match-info
 	       (eq num (overlay-get
@@ -303,7 +383,7 @@ If NUM is not specified, use currently highlighted anchor."
 
 ;;;###autoload
 (defun w3m-go-to-linknum (arg)
-  "Turn on link and form numbers and ask for one to go to.
+  "Turn on link, image and form numbers and ask for one to go to.
 With prefix ARG don't highlight current link.
 0 corresponds to location url."
   (interactive "P")
@@ -316,27 +396,28 @@ With prefix ARG don't highlight current link.
 		       (w3m-get-anchor-info num)))
 		 (if (zerop (w3m-read-int-interactive
 			     "Anchor number: "
-			     'w3m-highlight-numbered-anchor))
+			     'w3m-highlight-numbered-anchor
+			     w3m-current-url))
 		     (list nil 16)
 		   (w3m-get-anchor-info)))))
-     (if info
-	 (progn
-	   (push-mark (point))
-	   (goto-char (cadr info)))
+     (if info (progn (push-mark (point))
+		     (goto-char (cadr info)))
        (w3m-message "No valid anchor selected")))))
 
 (defun w3m-linknum-get-action (&optional prompt type)
   "Turn on link numbers and return list of url or action, position
-and image url if such of  PROMPT selected anchor.
-TYPE sets types of anchors to be numbered, if nil or 4, number urls,
-form fields and buttons. 1 - only links, 2 - only images.
+and image url if such of PROMPT selected anchor.
+TYPE sets types of anchors to be numbered, if nil or 4 - all anchors,
+1 - only links, 2 - only images, 3 - links, form fields and buttons.
 Highlight every intermediate result anchor.
-Input 0 corresponds to current page url."
+Input 0 corresponds to location url."
   (w3m-with-linknum
    (or type 4)
    (if (and (zerop (w3m-read-int-interactive
 		    (or prompt "Anchor number: ")
-		    'w3m-highlight-numbered-anchor))
+		    'w3m-highlight-numbered-anchor
+		    (unless (eq type 2)
+		      w3m-current-url)))
 	    (not (eq type 2)))
        (list w3m-current-url 16 nil nil)
      (w3m-get-anchor-info))))
@@ -344,37 +425,43 @@ Input 0 corresponds to current page url."
 ;;;###autoload
 (defun w3m-linknum-follow (arg)
   "Turn on link numbers, ask for one and execute appropriate action on it.
-When link - visit it, when button - press, when input - activate it.
-With prefix ARG visit link in new session or move over field/button
-before activate/press."
+When link - visit it, when button - press, when input - activate it,
+when image - toggle it.
+With prefix ARG visit link in new session or don't move over
+field/button/image on activation/push/toggle."
   (interactive "P")
   (let ((info (w3m-linknum-get-action
 	       (concat "Follow " (if arg "in new session ")
 		       "(select anchor): "))))
     (if info
 	(let ((action (car info)))
-	  (cond ((stringp action)	; url
+	  (cond ((null action)		; image
+		 (if arg (save-excursion
+			   (goto-char (cadr info))
+			   (w3m-toggle-inline-image))
+		   (goto-char (cadr info))
+		   (w3m-toggle-inline-image)))
+		((stringp action)	; url
 		 (if arg (w3m-goto-url-new-session action)
 		   (push-mark (point))
 		   (goto-char (cadr info))
 		   (w3m-history-store-position)
 		   (w3m-goto-url action)))
 		((eq (car action) 'w3m-form-submit) ; button
-		 (when arg
+		 (unless arg
 		   (push-mark (point))
 		   (goto-char (cadr info)))
 		 (widget-button-press (cadr info) action))
-		(t (if arg		; form field
-		       (progn (push-mark (point))
-			      (goto-char (cadr info))
-			      (let ((w3m-form-new-session t)
-				    (w3m-form-download nil))
-				(eval action)))
-		     (save-excursion
-		       (goto-char (cadr info))
-		       (let ((w3m-form-new-session nil)
-			     (w3m-form-download nil))
-			 (eval action)))))))
+		(t (if arg (save-excursion ; form field
+			     (goto-char (cadr info))
+			     (let ((w3m-form-new-session nil)
+				   (w3m-form-download nil))
+			       (eval action)))
+		     (push-mark (point))
+		     (goto-char (cadr info))
+		     (let ((w3m-form-new-session t)
+			   (w3m-form-download nil))
+		       (eval action))))))
       (w3m-message "No valid anchor selected"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -393,14 +480,12 @@ If no such url, move over image and toggle it."
 	    (w3m-goto-url-new-session url)
 	  (w3m-toggle-inline-image)))
     (let ((im (w3m-linknum-get-action
-	       (if arg
-		   "Open image url in new session: "
+	       (if arg "Open image url in new session: "
 		 "Toggle image: ")
 	       2)))
       (if im
 	  (if arg
-	      (if (car im)
-		  (w3m-goto-url-new-session (car im))
+	      (if (car im) (w3m-goto-url-new-session (car im))
 		(push-mark (point))
 		(goto-char (cadr im))
 		(w3m-toggle-inline-image))
@@ -486,8 +571,7 @@ If no link at point, turn on link numbers and open selected externally."
 				(car
 				 (w3m-linknum-get-action
 				  "Open in external browser: " 1))))))
-    (if url
-	(w3m-external-view url)
+    (if url (w3m-external-view url)
       (w3m-message "No URL selected"))))
 
 ;;;###autoload
@@ -498,8 +582,7 @@ If no such, turn on link numbers and edit selected."
   (let ((url (or (w3m-url-valid (w3m-anchor))
 		 (car (w3m-linknum-get-action
 		       "Select link to edit: " 1)))))
-    (if url
-	(w3m-edit-url url)
+    (if url (w3m-edit-url url)
       (w3m-message "No URL selected"))))
 
 ;;;###autoload
@@ -514,8 +597,7 @@ If no url under point, activate numbering and select one."
 	  (let ((url (car link)))
 	    (kill-new url)
 	    (w3m-message "%s%s" (let ((im-alt (cadddr link)))
-				  (if (zerop (length im-alt))
-				      ""
+				  (if (zerop (length im-alt)) ""
 				    (concat im-alt ": ")))
 			 url))
 	(w3m-message "No URL selected")))))

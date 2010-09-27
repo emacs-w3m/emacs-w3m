@@ -1,3 +1,21 @@
+2010-09-25  Andrey Kotlarski  <m00naticus@gmail.com>
+
+	* w3m-lnum.el: Update Commentary section.
+	(w3m-link-set-overlay): New macro.
+	(w3m-link-set-numbering, w3m-goto-next-anchor-or-image): New
+	functions.
+	(w3m-link-numbering): Refactor, use `w3m-link-set-numbering'.
+	(w3m-read-int-interactive): Echo currently to be selected element.
+	(w3m-with-linknum): Update docstring.
+	(w3m-highlight-numbered-anchor): Properly highlight and
+	unhighlight multiline elements and return selection info.
+	(w3m-get-anchor-info): Always return 4 element list.
+	(w3m-go-to-linknum): Echo `w3m-current-url' for default selection.
+	(w3m-linknum-follow): Add support for toggling non link images.
+	Inverse prefix argument behaviour for some elements.
+	(w3m-linknum-toggle-inline-image, w3m-linknum-edit-this-url)
+	(w3m-linknum-print-this-url): Cosmetic indentation changes.
+
 2010-09-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-init-file): Allow nil.  Suggested by Leo.
