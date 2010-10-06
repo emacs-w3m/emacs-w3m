@@ -1,3 +1,8 @@
+2010-10-01  Matt Lundin  <mdl@imapmail.org>
+
+	* nnshimbun.el (nnshimbun-retrieve-groups): Work properly for groups
+	newly subscribed to.
+
 2010-09-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnshimbun.el (nnshimbun-request-scan): Do nothing unless a group to

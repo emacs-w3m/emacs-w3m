@@ -531,8 +531,10 @@ If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
 (deffoo nnshimbun-retrieve-groups (groups &optional server)
   (when (nnshimbun-possibly-change-group nil server)
     (dolist (group groups)
+      (nnshimbun-request-scan group server)
       (nnshimbun-request-group group server))
-    t))
+    (nnshimbun-request-list server)
+    'active))
 
 (deffoo nnshimbun-close-group (group &optional server)
   (setq group (nnshimbun-decode-group-name group))
