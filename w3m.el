@@ -8265,11 +8265,11 @@ or a list which consists of the following elements:
 
 (defun w3m-set-buffer-unseen (&optional url)
   (setq w3m-buffer-unseen t)
-  (w3m-add-local-hook 'pre-command-hook 'w3m-set-buffer-seen))
+  (add-hook 'pre-command-hook 'w3m-set-buffer-seen nil t))
 
 (defun w3m-set-buffer-seen ()
   (setq w3m-buffer-unseen nil)
-  (w3m-remove-local-hook 'pre-command-hook 'w3m-set-buffer-seen))
+  (remove-hook 'pre-command-hook 'w3m-set-buffer-seen t))
 
 (defun w3m-move-unseen-buffer ()
   "Move to the next unseen buffer."
@@ -8926,24 +8926,6 @@ With the prefix argument KILL, kill the buffer."
 	 (unless (eq (next-window nil 'no-mini) (selected-window))
 	   (delete-window)))))
 
-(eval-and-compile
-  (unless (fboundp 'w3m-add-local-hook)
-    ;; Silence the byte compiler; `w3m-add-local-hook' will be defined
-    ;; in w3m-ems.el for GNU Emacs.
-    (eval-when-compile
-      (when (eq 'byte-compile-obsolete (get 'make-local-hook 'byte-compile))
-	(put 'make-local-hook 'byte-compile nil)
-	(put 'make-local-hook 'byte-obsolete-info nil)))
-    (defun w3m-add-local-hook (hook function &optional append)
-      "Add to the buffer-local value of HOOK the function FUNCTION.
-This function is designed for XEmacs."
-      (make-local-hook hook)
-      (add-hook hook function append t))
-    (defun w3m-remove-local-hook (hook function)
-      "Remove to the buffer-local value of HOOK the function FUNCTION.
-This function is designed for XEmacs."
-      (remove-hook hook function t))))
-
 (defun w3m-store-current-position ()
   "Memorize the current positions whenever every command starts.
 The value will be held in the `w3m-current-position' variable.  This
@@ -8976,8 +8958,8 @@ generate a new buffer."
 	(w3m-mode))))
   ;; It may have been set to nil for viewing a page source or a header.
   (setq truncate-lines t)
-  (w3m-add-local-hook 'pre-command-hook 'w3m-store-current-position)
-  (w3m-add-local-hook 'post-command-hook 'w3m-check-current-position)
+  (add-hook 'pre-command-hook 'w3m-store-current-position nil t)
+  (add-hook 'post-command-hook 'w3m-check-current-position nil t)
   (w3m-initialize-graphic-icons)
   (setq mode-line-buffer-identification
 	`(,@(w3m-static-if (featurep 'xemacs)

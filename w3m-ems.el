@@ -222,14 +222,6 @@ This function is an interface to `make-coding-system'."
 (defun w3m-ucs-to-char (codepoint)
   (or (decode-char 'ucs codepoint) ?~))
 
-(defun w3m-add-local-hook (hook function &optional append)
-  "Add to the buffer-local value of HOOK the function FUNCTION."
-  (add-hook hook function append t))
-
-(defun w3m-remove-local-hook (hook function)
-  "Remove to the buffer-local value of HOOK the function FUNCTION."
-  (remove-hook hook function t))
-
 ;; Function which returns non-nil when the current display device can
 ;; show images inline.
 (defalias 'w3m-display-graphic-p 'display-images-p)

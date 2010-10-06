@@ -1,6 +1,6 @@
 ;;; mime-w3m.el --- mime-view content filter for text
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2009
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2009, 2010
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -181,14 +181,12 @@ by way of `post-command-hook'."
 
 (let (current-load-list)
   (defadvice mime-display-message
-    (after mime-w3m-add-local-hook activate compile)
+    (after add-emacs-w3m-functions-to-pre/post-command-hook activate compile)
     "Advised by emacs-w3m.
-Set hooks run arround each command is executed."
+Add some emacs-w3m utility functions to pre/post-command-hook."
     (when (featurep 'w3m)
-      (w3m-add-local-hook 'pre-command-hook
-			  'w3m-store-current-position)
-      (w3m-add-local-hook 'post-command-hook
-			  'mime-w3m-check-current-position))))
+      (add-hook 'pre-command-hook 'w3m-store-current-position nil t)
+      (add-hook 'post-command-hook 'mime-w3m-check-current-position nil t))))
 
 (defun mime-w3m-check-current-position ()
   "Run `mime-w3m-after-cursor-move-hook' if the cursor has been moved."
