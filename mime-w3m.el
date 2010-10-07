@@ -185,6 +185,8 @@ by way of `post-command-hook'."
     "Advised by emacs-w3m.
 Add some emacs-w3m utility functions to pre/post-command-hook."
     (when (featurep 'w3m)
+      (w3m-make-local-hook 'pre-command-hook)
+      (w3m-make-local-hook 'post-command-hook)
       (add-hook 'pre-command-hook 'w3m-store-current-position nil t)
       (add-hook 'post-command-hook 'mime-w3m-check-current-position nil t))))
 

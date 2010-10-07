@@ -243,6 +243,7 @@ the one such as \"text/html\", and the rest are the same as those of
     (require 'vm-startup)
     (compose-mail to subject other-headers)
     (add-to-list 'mail-send-actions `(kill-buffer ,buffer))
+    (w3m-make-local-hook 'kill-buffer-hook)
     (add-hook 'kill-buffer-hook `(lambda nil (kill-buffer ,buffer)) nil t)
     (w3m-mail-goto-body-and-clear-body)
     (w3m-mail-position-point

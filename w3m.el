@@ -8265,6 +8265,7 @@ or a list which consists of the following elements:
 
 (defun w3m-set-buffer-unseen (&optional url)
   (setq w3m-buffer-unseen t)
+  (w3m-make-local-hook 'pre-command-hook)
   (add-hook 'pre-command-hook 'w3m-set-buffer-seen nil t))
 
 (defun w3m-set-buffer-seen ()
@@ -8958,6 +8959,8 @@ generate a new buffer."
 	(w3m-mode))))
   ;; It may have been set to nil for viewing a page source or a header.
   (setq truncate-lines t)
+  (w3m-make-local-hook 'pre-command-hook)
+  (w3m-make-local-hook 'post-command-hook)
   (add-hook 'pre-command-hook 'w3m-store-current-position nil t)
   (add-hook 'post-command-hook 'w3m-check-current-position nil t)
   (w3m-initialize-graphic-icons)

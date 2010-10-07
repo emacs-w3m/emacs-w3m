@@ -77,6 +77,11 @@
   (autoload 'w3m-fb-frame-parameter "w3m-fb")
   (autoload 'w3m-history-restore-position "w3m-hist" nil t))
 
+;; XEmacs 21.4 wants this.
+(defalias 'w3m-make-local-hook (if (featurep 'xemacs)
+				   'make-local-hook
+				 'ignore))
+
 ;;; Control structures:
 
 (defmacro w3m-static-if (cond then &rest else)
