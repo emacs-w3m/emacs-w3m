@@ -342,6 +342,9 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
     (unless (featurep 'mule)
       (push "w3m-weather.el" ignores)
       (push "w3m-symbol.el" ignores))
+    (when (or (featurep 'xemacs)
+	      (< emacs-major-version 23))
+      (push "bookmark-w3m.el" ignores))
     ;; List shimbun modules which cannot be byte-compiled with this system.
     (let (list)
       ;; To byte-compile w3m-util.el and a version specific module first.

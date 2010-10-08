@@ -1,3 +1,17 @@
+2010-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el: Load bookmark-w3m for Emacs >=23.
+
+	* w3mhack.el (w3mhack-module-list): Exclude bookmark-w3m.el from
+	compilation under Emacs <23 and XEmacs.
+
+	* bookmark-w3m.el: Provide the feature; add comment.
+	(bookmark-w3m-bookmark-jump): Add autoload cookie.
+
+2010-10-08  Masatake YAMATO  <yamato@redhat.com>
+
+	* bookmark-w3m.el: New file.
+
 2010-10-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-make-local-hook): New function.
