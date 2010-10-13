@@ -985,7 +985,7 @@ is non-nil means not to respond to too fast operation of mouse wheel."
   "Turn N pages of emacs-w3m buffers behind."
   (interactive (list (prefix-numeric-value current-prefix-arg)
 		     last-command-event))
-  (w3m-tab-next-buffer (- n) event))
+  (w3m-tab-next-buffer (- (or n 1)) event))
 
 (defun w3m-tab-move-right (&optional n event)
   "Move this tab N times to the right (to the left if N is negative)."
