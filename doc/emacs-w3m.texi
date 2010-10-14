@@ -3856,6 +3856,7 @@ message is called an @samp{article} by Gnus users.
 @node Gnus
 @section Reading HTML mails in Gnus
 @cindex Reading HTML mails in Gnus
+@findex mm-shr
 @findex gnus-article-html
 @vindex mm-inline-text-html-with-images
 @vindex mm-inline-text-html-with-w3m-keymap
@@ -3863,17 +3864,17 @@ message is called an @samp{article} by Gnus users.
 @vindex w3m-minor-mode
 @vindex w3m-minor-mode-command-alist
 
-First of all, if the function @code{gnus-article-html} is available
-(i.e., if the user option @code{mm-text-html-renderer} defaults to
-@code{gnus-article-html}) and you are satisfied with that function that
-is Gnus' built-in @acronym{HTML} renderer, you may not want to do
-anything.  @xref{Display Customization, ,Display Customization,
-emacs-mime, The Emacs MIME Manual}.  Also @xref{HTML, ,HTML, gnus, The
-Gnus Manual}.
+First of all, if the function @code{mm-shr} or @code{gnus-article-html}
+is available (i.e., if the user option @code{mm-text-html-renderer}
+defaults to either one) and you are satisfied with that function that is
+Gnus' built-in @acronym{HTML} renderer, you may not want to do anything.
+@xref{Display Customization, ,Display Customization, emacs-mime, The
+Emacs MIME Manual}.  Also @xref{HTML, ,HTML, gnus, The Gnus Manual}.
 
-But if Gnus you use is a bit old and the @code{gnus-article-html}
-function is not available, or if you'd like to try emacs-w3m to render
-@acronym{HTML} articles, this section is just for you.
+But if Gnus you use is a bit old and neither the @code{mm-shr} function
+nor the @code{gnus-article-html} function is available, or if you'd like
+to try emacs-w3m to render @acronym{HTML} articles, this section is just
+for you.
 
 @itemize @bullet
 @item

@@ -3910,6 +3910,7 @@ effect if your XEmacs does not support the gutter items.
 @node Gnus
 @section Gnus で HTML メールを読む
 @cindex Reading HTML mails in Gnus
+@findex mm-shr
 @findex gnus-article-html
 @vindex mm-inline-text-html-with-images
 @vindex mm-inline-text-html-with-w3m-keymap
@@ -3917,9 +3918,9 @@ effect if your XEmacs does not support the gutter items.
 @vindex w3m-minor-mode
 @vindex w3m-minor-mode-command-alist
 
-第一に、もし関数 @code{gnus-article-html} が利用できるのであれば (つまり
-ユーザオプション @code{mm-text-html-renderer} がデフォルト
-で @code{gnus-article-html} になっているのであれば)、そして Gnus の内蔵
+第一に、もし関数 @code{mm-shr} または @code{gnus-article-html} が利用で
+きるのであれば (つまりユーザオプション @code{mm-text-html-renderer} がデ
+フォルトでどちらかになっているのであれば)、そして Gnus の内蔵
 の @acronym{HTML} 描画器であるその関数に満足しているのであれば、何もする
 必要は無いでしょう。@xref{Display Customization, ,表示のカスタマイズ,
 emacs-mime-ja, The Emacs MIME Manual}.  さらに @xref{HTML, ,HTML,
