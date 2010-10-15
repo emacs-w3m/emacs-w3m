@@ -3926,6 +3926,12 @@ effect if your XEmacs does not support the gutter items.
 emacs-mime-ja, The Emacs MIME Manual}.  さらに @xref{HTML, ,HTML,
 gnus-ja, The Gnus Manual}.
 
+@quotation
+XEmacs で @code{gnus-article-html} を使うためのヒント
+が @uref{http://article.gmane.org/gmane.emacs.gnus.general/72704} にあり
+ます。
+@end quotation
+
 しかし、もしお使いの Gnus が少し古くて @code{mm-shr} 関数
 や @code{gnus-article-html} 関数が使えないか、または @acronym{HTML} 記事
 の描画のために emacs-w3m を試してみたいのであれば、この章はまさにあなた

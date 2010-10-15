@@ -3871,6 +3871,11 @@ Gnus' built-in @acronym{HTML} renderer, you may not want to do anything.
 @xref{Display Customization, ,Display Customization, emacs-mime, The
 Emacs MIME Manual}.  Also @xref{HTML, ,HTML, gnus, The Gnus Manual}.
 
+@quotation
+There's a tip on using @code{gnus-article-html} under XEmacs in:
+@uref{http://article.gmane.org/gmane.emacs.gnus.general/72704}
+@end quotation
+
 But if Gnus you use is a bit old and neither the @code{mm-shr} function
 nor the @code{gnus-article-html} function is available, or if you'd like
 to try emacs-w3m to render @acronym{HTML} articles, this section is just
