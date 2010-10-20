@@ -3864,12 +3864,13 @@ message is called an @samp{article} by Gnus users.
 @vindex w3m-minor-mode
 @vindex w3m-minor-mode-command-alist
 
-First of all, if the function @code{mm-shr} or @code{gnus-article-html}
-is available (i.e., if the user option @code{mm-text-html-renderer}
-defaults to either one) and you are satisfied with that function that is
-Gnus' built-in @acronym{HTML} renderer, you may not want to do anything.
-@xref{Display Customization, ,Display Customization, emacs-mime, The
-Emacs MIME Manual}.  Also @xref{HTML, ,HTML, gnus, The Gnus Manual}.
+First of all, if the user option @code{mm-text-html-renderer} defaults
+to @code{shr} or @code{gnus-w3m} (i.e., if the function @code{mm-shr} or
+@code{gnus-article-html} is available) and you are satisfied with that
+function that is Gnus' built-in @acronym{HTML} renderer, you may not
+want to do anything.  @xref{Display Customization, ,Display
+Customization, emacs-mime, The Emacs MIME Manual}.  Also @xref{HTML,
+,HTML, gnus, The Gnus Manual}.
 
 @quotation
 There's a tip on using @code{gnus-article-html} under XEmacs in:
