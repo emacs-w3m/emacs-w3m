@@ -1,3 +1,8 @@
+2010-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* bookmark-w3m.el (bookmark-make-record-function): Don't bind it to any
+	value.  Suggested by David Engster ([emacs-w3m:11395]).
+
 2010-10-13  IRIE Shinsuke  <irieshinsuke@yahoo.co.jp>
 
 	* w3m-ems.el (w3m-tab-previous-buffer): Work when called interactively
