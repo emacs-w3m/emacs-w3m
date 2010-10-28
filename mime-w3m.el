@@ -24,15 +24,12 @@
 ;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 ;; Boston, MA 02110-1301, USA.
 
+;;; Commentary:
 
-;;; Install:
-
-;; (1) Install SEMI.
-;; (2) Put this file to appropriate directory.
-;; (3) Write these following code to your ~/.emacs or ~/.gnus.
+;; To use this module along with a SEMI-based mail client (e.g.
+;; Wanderlust), add this one to your ~/.emacs file or ~/.wl.el file:
 ;;
-;;        (require 'mime-w3m)
-
+;; (require 'mime-w3m)
 
 ;;; Code:
 
