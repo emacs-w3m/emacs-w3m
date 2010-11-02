@@ -1128,9 +1128,15 @@ HEADER is a header structure obtained via `shimbun-headers'.")
 
 (defun shimbun-insert-footer (shimbun header &optional html &rest args)
   "Insert the footer and ARGS."
+  ;; Remove <p> and </p> from the last paragraph in order to prevent
+  ;; an empty line from being inserted at the end.
+  (goto-char (point-min))
+  (when (re-search-forward "[\t\n ]*<p>[\t\n ]*\\([^<]+\\)</p>[\t\n ]*\
+\\(?:<\\(?:![^>]+\\|/?div\\|/?p\\)>[\t\n ]*\\)*\\'" nil t)
+    (replace-match "\n\\1"))
   (goto-char (point-min))
   (when (re-search-forward
-	 "[\t\n ]*\\(?:<\\(?:![^>]+\\|br\\|/?div\\|/?p\\)>[\t\n ]*\\)*\\'"
+	 "[\t\n ]*\\(?:<\\(?:![^>]+\\|br\\|div\\)>[\t\n ]*\\)*\\'"
 	 nil 'move)
     (delete-region (match-beginning 0) (point-max)))
   (apply 'insert "\n" (shimbun-footer shimbun header html) args))
@@ -1570,15 +1576,13 @@ ___<TAG ...>___
        (goto-char init)
        nil))))
 
-(defun shimbun-remove-orphaned-tag-strips (&optional regexp)
-  "Remove orphaned tag strips that match REGEXP.
-If REGEXP is omitted, all tags will be processed (it may take time)."
-  (goto-char (point-max))
-  (setq regexp (if regexp
-		   (concat "<[\t\n\r ]*/[\t\n\r ]*\\(" regexp
-			   "\\)\\(?:[\t\n\r ][^>]+\\)?[\t\n\r ]*>[\t ]*")
-		 "<[\t\n\r ]*/[\t\n\r ]*\\([^\t\n\r >]+\\)[^>]*>[\t ]*" nil t))
-  (let (st nd)
+(defun shimbun-remove-orphaned-tag-strips (string)
+  "Remove orphaned tag strips that match STRING.
+STRING is like the inside of a \"\\\\(...\\\\)\" in a regular expression."
+  (let (regexp st nd)
+    (setq regexp (concat "<[\t\n\r ]*/[\t\n\r ]*\\(" string
+			 "\\)\\(?:[\t\n\r ][^>]+\\)?[\t\n\r ]*>[\t ]*"))
+    (goto-char (point-max))
     (while (re-search-backward regexp nil t)
       (setq st (match-beginning 0)
 	    nd (goto-char (match-end 0)))
@@ -1586,7 +1590,17 @@ If REGEXP is omitted, all tags will be processed (it may take time)."
 		  (shimbun-beginning-of-tag (match-string 1))
 		(goto-char st))
 	(skip-chars-backward "\t\n\r ")
-	(delete-region (point) nd)))))
+	(delete-region (point) nd)))
+    (setq regexp (concat "[\t\n\r ]*<[\t\n\r ]*\\(" string
+			 "\\)\\(?:[\t\n\r ][^>]+\\)?[\t\n\r ]*>[\t ]*"))
+    (goto-char (point-min))
+    (while (re-search-forward regexp nil t)
+      (setq st (goto-char (match-beginning 0))
+	    nd (match-end 0))
+      (unless (prog1
+		  (shimbun-end-of-tag (match-string 1))
+		(goto-char nd))
+	(delete-region st nd)))))
 
 (defun shimbun-remove-markup ()
   "Remove all HTML markup, leaving just plain text."

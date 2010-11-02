@@ -1591,8 +1591,8 @@ that day if it failed."
       (unless (memq (char-before (match-beginning 0)) '(nil ?>))
 	(replace-match "<br>\n\\1")))
     ;; Remove related topics.
-    (goto-char (point-min))
     (let (start)
+      (goto-char (point-min))
       (while (and (re-search-forward "\\(\\(?:[\t\n ]*</div>\\)*[\t\n ]*\\)\
 <div[\t\n ]+[^>]+>\\(?:[\t\n ]*<h[0-9]+>\\)?[\t\n ]*関連トピックス[\t\n ]*<"
 				     nil t)
@@ -1601,13 +1601,42 @@ that day if it failed."
 		    (goto-char (match-end 1))
 		    (shimbun-end-of-tag "div" t)))
 	(delete-region start (match-end 0))
-	(insert "\n")))
+	(insert "\n"))
+      (goto-char (point-min))
+      (while (re-search-forward
+	      "[\t\n ]*<h2>[\t ]*こんな記事も[\t ]*</h2>[\t\n ]*" nil t)
+	(setq start (match-beginning 0))
+	(while (and (looking-at "\
+\\(</div>[\t\n ]*\\)?<ul[\t\n ]+class=\"\\(?:Follow\\)*Lnk\"")
+		    (progn
+		      (when (match-end 1) (goto-char (match-end 1)))
+		      (shimbun-end-of-tag "ul" t))))
+	(delete-region start (point))))
+
     ;; Remove blogs link.
     (goto-char (point-min))
     (while (re-search-forward "[\t\n ]*\\(?:<[^/][^>]+>[\t\n ]*\\)+\
 この記事を利用したブログ一覧\\(?:[\t\n ]*<[!/][^>]+>\\)+[\t\n ]*"
 			      nil t)
       (delete-region (match-beginning 0) (match-end 0)))
+    ;; Remove empty tables.
+    (goto-char (point-min))
+    (let (start end limit found)
+      (while (and (re-search-forward "<table[\t\n >]" nil t)
+		  (shimbun-end-of-tag "table" t))
+	(setq start (match-beginning 0)
+	      end (match-end 0)
+	      limit (match-end 3))
+	(goto-char (match-beginning 3))
+	(while (and (not found)
+		    (re-search-forward "<[\t\n ]*\\([^\t\n >]+\\)" limit t))
+	  (unless (string-match "\\`\\(?:!\\|/?t[dr]\\'\\)" (match-string 1))
+	    (setq found t)))
+	(if found
+	    (goto-char end)
+	  (delete-region start end)
+	  (insert "\n"))))
+
     ;; Remove any other useless things.
     (goto-char (point-min))
     (while (re-search-forward "[\t\n ]*\
@@ -1616,13 +1645,14 @@ that day if it failed."
 			      nil t)
       (delete-region (match-beginning 0) (match-end 0)))
     (goto-char (point-min))
-    (while (re-search-forward "[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)+\
+    (while (re-search-forward "[\t\n ]*\\(?:<[^/][^>]*>[\t\n ]*\\)+\
 \\(?:アサヒ・コム\\|ニュース\\)トップ[へヘ]\
 \\(?:\\(?:[\t\n ]*<[!/][^>]+>\\)+[\t\n ]*\\|[\t\n ]*\\'\\)"
 			      nil t)
-      (replace-match "\n"))
+      (replace-match "\n")
+      (backward-char 1))
 
-    (shimbun-remove-orphaned-tag-strips "span")
+    (shimbun-remove-orphaned-tag-strips "span\\|p")
 
     (unless (shimbun-prefer-text-plain-internal shimbun)
       (shimbun-break-long-japanese-lines))

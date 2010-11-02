@@ -1,3 +1,14 @@
+2010-11-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-insert-footer): Remove <p> and </p> from the last
+	paragraph in order to prevent an empty line from being inserted at the
+	end.
+	(shimbun-remove-orphaned-tag-strips): Require arg always; find orphans
+	forward in addition to backward.
+
+	* sb-asahi.el (shimbun-asahi-clear-contents): Remove related topics
+	more; don't remove last </p>; remove orphaned <p>s.
+
 2010-10-01  Matt Lundin  <mdl@imapmail.org>
 
 	* nnshimbun.el (nnshimbun-retrieve-groups): Work properly for groups
