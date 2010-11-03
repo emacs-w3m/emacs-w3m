@@ -111,7 +111,7 @@ compile-time."
   (if clauses
       (cons 'progn (cdr (car clauses)))))
 
-(put 'w3m-condition-case lisp-indent-function 2)
+(put 'w3m-condition-case 'lisp-indent-function 2)
 (defmacro w3m-condition-case (var bodyform &rest handlers)
   "Like `condition-case', except that signal an error if `debug-on-error'
 or `debug-on-quit' is non-nil."

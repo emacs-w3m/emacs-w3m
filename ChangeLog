@@ -1,3 +1,8 @@
+2010-11-03  Kevin Ryde  <user42@zip.com.au>
+
+	* w3m-util.el (w3m-condition-case): Add a missing quote
+	([emacs-w3m:11405]).
+
 2010-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* bookmark-w3m.el (bookmark-make-record-function): Don't bind it to any
