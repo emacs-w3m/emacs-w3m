@@ -1365,17 +1365,40 @@ the following form returns the present time of Japan, wherever you are.
 		   (< (cadr a) (cadr b)))))))
 
 (defun shimbun-remove-tags (begin-tag &optional end-tag)
-  "Remove all occurrences of regions surrounded by BEGIN-TAG and END-TAG."
+  "Remove all occurrences of regions surrounded by BEGIN-TAG and END-TAG.
+
+If END-TAG is neither nil nor a string, it works strictly for open and
+close tags (i.e. <tag>...</tag>).  In that case, BEGIN-TAG should be a
+regexp matching text within an open tag \"<...>\", and buffer's text that
+matches the first non-shy sub-expression surrounded by parens \"\\\\(...\\\\)\"
+in BEGIN-TAG is regarded as a name of an open tag; if there is no paren
+in BEGIN-TAG, the whole text that matches BEGIN-TAG is regarded as a tag
+name."
   (let ((case-fold-search t))
     (goto-char (point-min))
-    (if end-tag
-	(let (pos)
-	  (while (and (re-search-forward begin-tag nil t)
-		      (setq pos (match-beginning 0))
-		      (re-search-forward end-tag nil t))
-	    (delete-region pos (point))))
-      (while (re-search-forward begin-tag nil t)
-	(delete-region (match-beginning 0) (match-end 0))))))
+    (cond ((stringp end-tag)
+	   (let (pos)
+	     (while (and (re-search-forward begin-tag nil t)
+			 (setq pos (match-beginning 0))
+			 (re-search-forward end-tag nil t))
+	       (delete-region pos (point)))))
+	  ((null end-tag)
+	   (while (re-search-forward begin-tag nil t)
+	     (delete-region (match-beginning 0) (match-end 0))))
+	  (t
+	   (setq begin-tag
+		 (if (string-match "\\\\([^?]" begin-tag)
+		     (concat "<[\t\n\r ]*" begin-tag)
+		   (concat "<[\t\n\r ]*\\(" begin-tag "\\)[\t\n\r >]")))
+	   (while (and (re-search-forward begin-tag nil t)
+		       (if (eq (match-end 0) (match-end 1))
+			   (memq (char-after (match-end 0))
+				 '(?\t ?\n ?\r ?  ?>))
+			 t))
+	     (goto-char (match-beginning 0))
+	     (if (shimbun-end-of-tag (match-string 1) t)
+		 (replace-match "\n")
+	       (goto-char (match-end 0))))))))
 
 (defun shimbun-end-of-tag (&optional tag include-whitespace)
   "Move point to the end of tag.  Inner nested tags are skipped.

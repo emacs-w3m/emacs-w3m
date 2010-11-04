@@ -1,6 +1,6 @@
 ;;; sb-nytimes.el --- shimbun backend for The New York Times
 
-;; Copyright (C) 2007, 2008, 2009 Katsumi Yamaoka
+;; Copyright (C) 2007, 2008, 2009, 2010 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -367,20 +367,12 @@ Skip[\t\n ]+to[\t\n ]+next[\t\n ]+paragraph[\t\n ]*</a>[\t\n ]*"
 	  (delete-region (goto-char start) end)
 	  (insert "\n")))
       ;; Remove Next/Previous buttons.
-      (goto-char (point-min))
-      (when (and (re-search-forward "\
-<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"pageLinks\""
-				    nil t)
-		 (shimbun-end-of-tag "div" t))
-	(replace-match "\n"))
+      (shimbun-remove-tags
+       "\\(div\\)[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"pageLinks\"" t)
       ;; Remove `Enlarge This Image', `Multimedia', and `Video'.
-      (goto-char (point-min))
-      (while (and (re-search-forward "<div[\t\n ]+\
+      (shimbun-remove-tags "\\(div\\)[\t\n ]+\
 \\(?:class=\"enlargeThis\\|id=\"inlineMultimedia\
-\\|class=\"inlineVideo\\(?:[\t\n ]+[^\"]+\\)?\\)\""
-				     nil t)
-		  (shimbun-end-of-tag "div" t))
-	(replace-match "\n"))
+\\|class=\"inlineVideo\\(?:[\t\n ]+[^\"]+\\)?\\)\"" t)
       ;; Remove javascripts.
       (goto-char (point-min))
       (while (and (re-search-forward "[\t\n ]*\

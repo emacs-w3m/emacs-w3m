@@ -1,6 +1,6 @@
 ;;; sb-perlentaucher-de.el --- perlentaucher.de shimbun backend
 
-;; Copyright (C) 2008, 2009 David Engster
+;; Copyright (C) 2008, 2009, 2010 David Engster
 
 ;; Author: David Engster <dengste@eml.cc>
 ;; Keywords: news
@@ -48,8 +48,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPAgMAAABGuH3ZAAAADFBMVEUAern/+/D///8aGhp
 						     shimbun-perlentaucher-de)
 						    header)
   (shimbun-remove-tags "<div class=\"tools\">" "Merkzettel</a></li></ul>")
-  (shimbun-remove-tags "<div class=\"box2 jumper\">" "</div>")
-  (shimbun-remove-tags "<a href=\"#top\">" "</a>"))
+  (shimbun-remove-tags "\\(div\\) class=\"box2 jumper\">" t)
+  (shimbun-remove-tags "\\(a\\) href=\"#top\">" t))
 
 
 

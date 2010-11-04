@@ -1,6 +1,6 @@
 ;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009, 2010
 ;; Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>
 
 ;; Author: Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>,
@@ -1833,7 +1833,7 @@ Please visit <a href=\""
 
 (defun shimbun-nikkei-prepare-article-release (&rest args)
   "Function used to prepare contents of an article for the release group."
-  (shimbun-remove-tags "<p[\t\n ]+class=\"re_print\"" "</p>")
+  (shimbun-remove-tags "\\(p\\)[\t\n ]+class=\"re_print\"" t)
   (goto-char (point-min))
   (when (re-search-forward "<[\t\n ]*TD[\t\n ]+colspan=\"3\">" nil t)
     (insert shimbun-nikkei-content-start)

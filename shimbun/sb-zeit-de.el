@@ -1,6 +1,6 @@
 ;;; sb-zeit-de.el --- shimbun backend for <http://www.zeit.de>
 
-;; Copyright (C) 2004, 2005, 2006, 2008, 2009
+;; Copyright (C) 2004, 2005, 2006, 2008, 2009, 2010
 ;; Andreas Seltenreich <seltenreich@gmx.de>
 
 ;; Author: Andreas Seltenreich <seltenreich@gmx.de>
@@ -26,7 +26,7 @@
 
 ;; Macro used to extract groups from the overview-page
 ;; (fset 'sb-zeit-de-macro [?\C-s ?d ?e ?/ ?\C-m ?\C-  ?\C-a ?\C-w ?\"
-;; 			       ?\M-f ?\" ?\C-k ?\C-k ?\C-k return ?\C-k])
+;;			       ?\M-f ?\" ?\C-k ?\C-k ?\C-k return ?\C-k])
 
 ;;; Code:
 
@@ -111,17 +111,18 @@
       (concat "http://newsfeed.zeit.de/" group "/index"))))
 
 (luna-define-method shimbun-clear-contents :after ((shimbun shimbun-zeit-de)
-						    header)
+						   header)
 
   ;;  remove advertisements and 1-pixel-images aka webbugs
   (shimbun-remove-tags "<!--START: LESERMEINUNG-->" "<!--ENDE: LESERMEINUNG-->")
-  (shimbun-remove-tags "<div[^>]*class=\"?\\(?:ad\\|most_read\\)" "</div>")
-  (shimbun-remove-tags "<a[^>]*doubleclick.net" "</a>")
+  (shimbun-remove-tags "\\(div\\)\\(?:[\t\n\r ]+\\[^\t\n\r >]+\\)*[\t\n\r ]+\
+class=\"?\\(?:ad\\|most_read\\)" t)
+  (shimbun-remove-tags "\\(a\\)[\t\n\r ][^>]*doubleclick\\.net" t)
   (shimbun-remove-tags "<IFRAME[^>]*doubleclick.net[^>]*>")
   (shimbun-remove-tags "<img[^>]*doubleclick.net[^>]*>")
   (shimbun-remove-tags "<img[^>]*\\(width\\|height\\)=\"1px\"[^>]*>")
   (shimbun-remove-tags "<tr><td[^>]*>Anzeige</td></tr>")
-  (shimbun-remove-tags "<span class=\"anzeige\">.+?</span>")
+  (shimbun-remove-tags "\\(span\\) class=\"anzeige\"" t)
   t)
 
 (provide 'sb-zeit-de)

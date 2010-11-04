@@ -1,6 +1,6 @@
 ;;; sb-sueddeutsche-de.el --- sueddeutsche.de shimbun backend
 
-;; Copyright (C) 2008, 2009 David Engster
+;; Copyright (C) 2008, 2009, 2010 David Engster
 
 ;; Author: David Engster <dengste@eml.cc>
 ;; Keywords: news
@@ -97,10 +97,10 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEXLyspMSkr///9+fX1
 						     shimbun-sueddeutsche-de)
 						    header)
   (shimbun-remove-tags "<!-- Stoerer //-->" "<!-- END Stoerer //-->")
-  (shimbun-remove-tags "<span class=\"hidePrint\">" "</span>")
-  (shimbun-remove-tags "<table.*?class=\"stoerBS\".*?>" "</table>")
-  (shimbun-remove-tags "<\\(?:a\\|span\\) .*?bildstrecke.*?>"
-		       "</\\(?:a\\|span\\)>")
+  (shimbun-remove-tags "\\(span\\) class=\"hidePrint\">" t)
+  (shimbun-remove-tags
+   "\\(table\\)\\(?:[\t\n\r ]+[^\t\n\r >]+\\)[\t\n\r ]+class=\"stoerBS\"" t)
+  (shimbun-remove-tags "\\(:a\\|span\\)[\t\n\r ][^>]*bildstrecke" t)
   (shimbun-remove-tags "<td class=\"artikelDruckenRight\" align=\"right\">"
 		       "class=\"artikelDachzeile\"")
   (shimbun-remove-tags "<div class=\"bannerOben\">" "<div class=\"bannerUnten\">"))

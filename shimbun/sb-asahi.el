@@ -1502,10 +1502,6 @@ that day if it failed."
 広告終わり\\(?:[\t\n ]*</p>[\t\n ]*\\|\\'\\)"
 				  nil t)
 	   (delete-region start (match-end 0)))))
-     ;; Remove any other useless things.
-     (shimbun-remove-tags "[\t\n ]*<form[\t\n ]+" "</form>[\t\n ]*")
-     (shimbun-remove-tags "[\t\n ]*<noscript>" "</noscript>[\t\n ]*")
-     (shimbun-remove-tags "[\t\n ]*<script[\t\n ]" "</script>[\t\n ]*")
      ;; Remove trailing garbage.
      (goto-char (point-min))
      (when (and (not (string-match "ゆるゆるフェミニン" from))
@@ -1619,6 +1615,8 @@ that day if it failed."
 この記事を利用したブログ一覧\\(?:[\t\n ]*<[!/][^>]+>\\)+[\t\n ]*"
 			      nil t)
       (delete-region (match-beginning 0) (match-end 0)))
+    ;; Remove form, noscript, and script tags.
+    (shimbun-remove-tags "form\\|noscript\\|script" t)
     ;; Remove empty tables.
     (goto-char (point-min))
     (let (start end limit found)

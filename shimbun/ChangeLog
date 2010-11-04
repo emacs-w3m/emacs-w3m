@@ -1,3 +1,34 @@
+2010-11-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-remove-tags): Work strictly if optional 2nd arg
+	is neither nil nor a string.
+
+	* sb-asahi.el (shimbun-asahi-prepare-article): Move removing of form,
+	noscript, and script tags to shimbun-asahi-clear-contents.
+	(shimbun-asahi-clear-contents): Make shimbun-remove-tags work strictly.
+
+	* sb-kantei.el (shimbun-clear-contents)
+	* sb-nytimes.el (shimbun-nytimes-clear-contents)
+	* sb-tech-on.el (shimbun-clear-contents): Use shimbun-remove-tags.
+
+	* sb-atmarkit.el (shimbun-clear-contents)
+	* sb-cnet-jp.el (shimbun-clear-contents)
+	* sb-cnet.el (shimbun-cnet-remove-useless-tags)
+	* sb-excite.el (shimbun-clear-contents)
+	* sb-ibm-dev.el (shimbun-clear-contents)
+	* sb-laut-de.el (shimbun-clear-contents)
+	* sb-nikkei.el (shimbun-nikkei-prepare-article-release)
+	* sb-opentechpress-jp.el (shimbun-multi-clear-contents)
+	(shimbun-clear-contents)
+	* sb-perlentaucher-de.el (shimbun-clear-contents)
+	* sb-rediff.el (shimbun-clear-contents)
+	* sb-slashdot-jp.el (shimbun-clear-contents)
+	* sb-sueddeutsche-de.el (shimbun-clear-contents)
+	* sb-welt-de.el (shimbun-clear-contents)
+	* sb-x51.el (shimbun-clear-contents)
+	* sb-zeit-de.el (shimbun-clear-contents):
+	Make shimbun-remove-tags work strictly.
+
 2010-11-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-insert-footer): Remove <p> and </p> from the last

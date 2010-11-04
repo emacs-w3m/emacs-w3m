@@ -1,6 +1,7 @@
 ;;; sb-cnet.el --- shimbun backend for CNET
 
-;; Copyright (C) 2004, 2006, 2009 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2004, 2006, 2009, 2010
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -124,13 +125,12 @@ following part."
       (insert "</div>\n"))))
 
 (defun shimbun-cnet-remove-useless-tags ()
-  (shimbun-remove-tags "<script" "</script>")
-  (shimbun-remove-tags "<noscript" "</noscript>")
-  (shimbun-remove-tags "<a href=\"[^\"]+\\?tag=st_util_print\">" "</a>")
-  (shimbun-remove-tags "<a href=\"[^\"]+\\?tag=st_util_email\">" "</a>")
-  (shimbun-remove-tags "<a onclick" "</a>")
-  (shimbun-remove-tags "<a href=\"javascript" "</a>")
-  (shimbun-remove-tags "<newselement type=\"table\">" "</newselement>"))
+  (shimbun-remove-tags "script\\|noscript" t)
+  (shimbun-remove-tags "\\(a\\) \\(?:\
+\\(?:href=\"\\(?:[^\"]+\\?tag=st_util_print\"\\|[^\"]+\\?tag=st_util_email\"\
+javascript\\)\\)\
+\\|onclick\\)" t)
+  (shimbun-remove-tags "\\(newselement\\) type=\"table\"" t))
 
 (luna-define-method shimbun-clear-contents ((shimbun shimbun-cnet) header)
   (shimbun-strip-cr)
