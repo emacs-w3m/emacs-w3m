@@ -1,6 +1,7 @@
 ;;; sb-yahoo.el --- shimbun backend for news.yahoo.co.jp -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2009 Kazuyoshi KOREEDA
+;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2009, 2010
+;; Kazuyoshi KOREEDA
 
 ;; Author: Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>,
 ;;         Katsumi Yamaoka <yamaoka@jpl.org>
@@ -101,16 +102,17 @@
 		    "\"" s0 ">" s0
 		    ;; 6. subject
 		    "\\([^<]+\\)"
-		    s0 "</a>\\(?:" s0 "<[^>]+>\\)*[^<]*)" s0
-		    ;; 7. hour
+		    s0 "</a>\\(?:" s0 "<[^>]+>\\)+" s0
+		    ;; 7. source
+		    "\\([^<]+\\)"
+		    ".+)" s0
+		    ;; 8. hour
 		    "\\([012]?[0-9]\\)"
 		    s0 "時" s0
-		    ;; 8. minute
+		    ;; 9. minute
 		    "\\([0-5]?[0-9]\\)"
-		    s0 "分" "[^<]*\\(?:<a" s1 "[^>]+>" s0 "\\)?"
-		    ;; 9. source
-		    "\\([^<）]+\\)")
-		   1 2 3 4 5 6 9 7 8)))
+		    s0 "分配信")
+		   1 2 3 4 5 6 7 8 9)))
     `(("topnews" "トップ" "topnews" ,@topnews)
       ("news" "ニュース" news ,@default)
       ("politics" "政治" "pol" ,@default)
@@ -182,17 +184,11 @@ may not be presented).")
   (mapcar 'car shimbun-yahoo-groups-table))
 
 (defvar shimbun-yahoo-from-address "nobody@example.com")
-(defvar shimbun-yahoo-content-start ">[\t\n ]*[01]*[0-9]月[0-3]?[0-9]日\
-\[012]?[0-9]時[0-5]?[0-9]分配信[\t\n ]*\\(?:&nbsp\;[\t\n ]*\\)?<a[\t\n ]+\
-href=\"[^\">]+\">[^<]+</a>\\(?:[\t\n ]*</[^>]+>\\)*[\t\n ]*")
+(defvar shimbun-yahoo-content-start
+  "[012]?[0-9]時[0-5]?[0-9]分配信[\t\n\r ]*\\(?:</[^>]+>[\t\n\r ]*\\)*")
 
-(defvar shimbun-yahoo-content-end "[\t\n 　]*\
-\\(?:【関連\
-\\(?:キーワード\\|サイト\\|ニュース\\|・\\|作品\\|情報\\|記事\\|：\\)[^】]*\
-】\
-\\|【関連】\
-\\|\\(?:<br>[\t\n ]*\\)*■関連記事<br>\
-\\|<!-+[\t\n ]*interest_match_relevant_zone_end[\t\n ]*-+>\\)")
+(defvar shimbun-yahoo-content-end "[\t\n\r ]*\\(<br>[\t\n\r ]*\\)*\
+<!-+[\t\n\r ]*interest_match_relevant_zone_end[\t\n\r ]*-+>")
 
 (defvar shimbun-yahoo-x-face-alist
   '(("default" . "X-Face: \"Qj}=TahP*`:b#4o_o63:I=\"~wbql=kpF1a>Sp62\
@@ -330,29 +326,6 @@ class=\"ymuiContainer\"\\)" nil t)
 	      (t
 	       (throw 'stop nil)))))
     (shimbun-sort-headers headers)))
-
-(luna-define-method shimbun-clear-contents :around ((shimbun shimbun-yahoo)
-						    header)
-;;;<DEBUG>
-;;  (shimbun-yahoo-clear-contents shimbun header))
-;;
-;;(defun shimbun-yahoo-clear-contents (shimbun header)
-;;;</DEBUG>
-  (when (luna-call-next-method)
-    ;; Remove garbage.
-    (when (re-search-forward "\
-\[\t\n ]*<tr>[\t\n ]*<td\\(?:[\t\n ]+[^>]+\\)*[\t\n ]+class=\
-\"[^\"]+[\t\n ]+yjSt\"[^>]*>[\t\n ]*<a[\t\n ]+[^>]+>\
-\[\t\n ]*拡大写真[\t\n ]*</a>[\t\n ]*</td>[\t\n ]*</tr>[\t\n ]*"
-			     nil t)
-      (replace-match "\n")
-      (goto-char (point-min)))
-    (when (re-search-forward "\
-\[\t\n ]*<tr>[\t\n ]*<td\\(?:[\t\n ]+[^>]+\\)*[\t\n ]+class=\
-\"[^\"]*Caption[^\"]*[\t\n ]+yjSt\"[^>]*>[^<]+</td>[\t\n ]*</tr>[\t\n ]*"
-			     nil t)
-      (replace-match "\n"))
-    t))
 
 (provide 'sb-yahoo)
 

@@ -1,3 +1,9 @@
+2010-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-yahoo.el (shimbun-yahoo-groups-table): Update regexp for topnews.
+	(shimbun-yahoo-content-start, shimbun-yahoo-content-end): Update.
+	(shimbun-clear-contents): Remove override.
+
 2010-11-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-remove-tags): Work strictly if optional 2nd arg
