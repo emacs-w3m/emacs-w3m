@@ -4620,14 +4620,15 @@ if it has no scheme part."
 		       'w3m-url-completion nil nil initial
 		       'w3m-input-url-history default)
 		    (define-key minibuffer-local-completion-map " " ofunc))))
-      (if (stringp url)
-	  (progn
-	    ;; remove duplication
-	    (setq w3m-input-url-history
-		  (cons url (delete url w3m-input-url-history)))
-	    (w3m-canonicalize-url url feeling-lucky))
-	;; It may be `popup'.
-	url))))
+      (unless (string-equal url "")
+	(if (stringp url)
+	    (progn
+	      ;; remove duplication
+	      (setq w3m-input-url-history
+		    (cons url (delete url w3m-input-url-history)))
+	      (w3m-canonicalize-url url feeling-lucky))
+	  ;; It may be `popup'.
+	  url)))))
 
 ;;; Cache:
 (defun w3m-cache-setup ()
@@ -7011,19 +7012,15 @@ The default name will be the original name of the image."
 If the cursor points to a link, it visits the url of the link instead
 of the url currently displayed.  The browser is defined in
 `w3m-content-type-alist' for every type of a url."
-  (interactive)
-  (unless url
-    (setq url (or url
-		  (w3m-anchor)
-		  (unless w3m-display-inline-images
-		    (w3m-image))
-		  (when (y-or-n-p (format "Browse <%s> ? " w3m-current-url))
-		    w3m-current-url))))
-  (if (w3m-url-valid url)
-      (progn
-	(message "Browsing <%s>..." url)
-	(w3m-external-view url))
-    (w3m-message "No URL at point")))
+  (interactive (list (w3m-input-url nil
+				    (or (w3m-anchor)
+					(unless w3m-display-inline-images
+					  (w3m-image))
+					w3m-current-url)
+				    "")))
+  (when (w3m-url-valid url)
+    (message "Browsing <%s>..." url)
+    (w3m-external-view url)))
 
 (defun w3m-download-this-url ()
   "Download the file or the page pointed to by the link under point."

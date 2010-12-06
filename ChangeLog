@@ -1,3 +1,9 @@
+2010-12-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-input-url): Return nil for empty url.
+	(w3m-view-url-with-external-browser): Prompt user to edit url, not to
+	answer y/n.  Suggested by Dan Jacobson <jidanni@jidanni.org>.
+
 2010-11-03  Kevin Ryde  <user42@zip.com.au>
 
 	* w3m-util.el (w3m-condition-case): Add a missing quote
