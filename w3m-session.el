@@ -365,6 +365,7 @@ Sorry, an error found in \"%s\"; may we remove it? "
 	   (setq sessions (cons (list title (current-time) urls nil) sessions))
 	   (w3m-save-list w3m-session-file sessions)))))))
 
+;;;###autoload
 (defun w3m-session-crash-recovery-remove ()
   "Remove crash recovery session set."
   (when w3m-session-crash-recovery

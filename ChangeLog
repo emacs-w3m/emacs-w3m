@@ -1,3 +1,8 @@
+2010-12-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-session.el (w3m-session-crash-recovery-remove):
+	Add autoload cookie.
+
 2010-12-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-input-url): Return nil for empty url.
