@@ -861,25 +861,34 @@ Other files in the directory are also deleted."
 	(kill-buffer nov)))
     t))
 
+(eval-when-compile
+  (unless (fboundp 'nnheader-update-marks-actions)
+    (defalias 'nnheader-update-marks-actions 'ignore)))
+
 (deffoo nnshimbun-request-set-mark (group actions &optional server)
   (setq group (nnshimbun-decode-group-name group))
   (when (and (not nnshimbun-marks-is-evil)
 	     (nnshimbun-possibly-change-group group server))
     (nnshimbun-open-marks group server)
-    (dolist (action actions)
-      (let ((range (nth 0 action))
-	    (what  (nth 1 action))
-	    (marks (nth 2 action)))
-	(assert (or (eq what 'add) (eq what 'del)) nil
-		"Unknown request-set-mark action: %s" what)
-	(dolist (mark marks)
-	  (setq nnshimbun-marks
-		(gnus-update-alist-soft
-		 mark
-		 (funcall (if (eq what 'add) 'gnus-range-add
-			    'gnus-remove-from-range)
-			  (cdr (assoc mark nnshimbun-marks)) range)
-		 nnshimbun-marks)))))
+    (if (and (fboundp 'nnheader-update-marks-actions)
+	     (not (eq (symbol-function 'nnheader-update-marks-actions)
+		      'ignore)))
+	(setq nnshimbun-marks
+	      (nnheader-update-marks-actions nnshimbun-marks actions))
+      (dolist (action actions)
+	(let ((range (nth 0 action))
+	      (what  (nth 1 action))
+	      (marks (nth 2 action)))
+	  (assert (or (eq what 'add) (eq what 'del)) nil
+		  "Unknown request-set-mark action: %s" what)
+	  (dolist (mark marks)
+	    (setq nnshimbun-marks
+		  (gnus-update-alist-soft
+		   mark
+		   (funcall (if (eq what 'add) 'gnus-range-add
+			      'gnus-remove-from-range)
+			    (cdr (assoc mark nnshimbun-marks)) range)
+		   nnshimbun-marks))))))
     (nnshimbun-save-marks group))
   nil)
 

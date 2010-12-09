@@ -1,3 +1,8 @@
+2010-12-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnshimbun.el (nnshimbun-request-set-mark):
+	Use nnheader-update-marks-actions if available.
+
 2010-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-yahoo.el (shimbun-yahoo-groups-table): Update regexp for topnews.
