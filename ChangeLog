@@ -1,3 +1,8 @@
+2010-12-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-print-this-url, w3m-print-this-image-url):
+	Fix "no url" message.  Suggested by Dan Jacobson <jidanni@jidanni.org>.
+
 2010-12-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-session.el (w3m-session-crash-recovery-remove):

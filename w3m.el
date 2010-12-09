@@ -7094,7 +7094,7 @@ of the url currently displayed.  The browser is defined in
 		     (concat alt ": "))
 		   (or (w3m-url-readable-string url)
 		       (and (w3m-action) "There is a form")
-		       "There is no url")))))
+		       "There is no url under point")))))
 
 (defun w3m-print-this-image-url (&optional interactive-p)
   "Display image url under point in echo area and put it into `kill-ring'."
@@ -7114,7 +7114,7 @@ of the url currently displayed.  The browser is defined in
 		     (concat alt ": "))
 		   (or (w3m-url-readable-string url)
 		       (and (w3m-action) "There is a form")
-		       "There is no image url")))))
+		       "There is no image url under point")))))
 
 (defmacro w3m-delete-all-overlays ()
   "Delete all momentary overlays."
