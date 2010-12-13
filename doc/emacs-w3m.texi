@@ -3977,8 +3977,11 @@ If the prefix arg is given, force displaying of images."
 
 (eval-after-load "gnus-sum"
   '(define-key gnus-summary-mode-map
-     "\C-i" 'gnus-summary-w3m-safe-toggle-inline-images))
+     "vv" 'gnus-summary-w3m-safe-toggle-inline-images))
 @end lisp
+
+You can change the key @kbd{vv} into something another.  Also
+@pxref{Summary Buffer, ,Summary Buffer, gnus, The Gnus Manual}.
 @end itemize
 
 @noindent

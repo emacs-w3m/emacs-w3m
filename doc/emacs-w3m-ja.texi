@@ -4032,8 +4032,11 @@ If the prefix arg is given, force displaying of images."
 
 (eval-after-load "gnus-sum"
   '(define-key gnus-summary-mode-map
-     "\C-i" 'gnus-summary-w3m-safe-toggle-inline-images))
+     "vv" 'gnus-summary-w3m-safe-toggle-inline-images))
 @end lisp
+
+キー @kbd{vv} は他の何かに変更することができます。さら
+に @xref{Summary Buffer, ,概略バッファー, gnus-ja, The Gnus Manual}.
 @end itemize
 
 @noindent
@@ -4652,9 +4655,9 @@ Lisp プログラムを書くことができる必要があります)。
 
 @samp{Nnshimbun} は単にウェブサーバから HTML コンテンツを取り寄せて、そ
 れを記事として表示しますが、永続記
-事 (@pxref{Persistent Articles, ,Persistent Articles, gnus, The Gnus
-Manual}) を作る場合を除いて、ローカルファイルに記事をセーブすることはあ
-りません。@samp{Nnshimbun} は @acronym{NOV} ファイルを、それぞれ
+事 (@pxref{Persistent Articles, ,永続記事, gnus-ja, The Gnus Manual}) を
+作る場合を除いて、ローカルファイルに記事をセーブすることはありません。
+@samp{Nnshimbun} は @acronym{NOV} ファイルを、それぞれ
 の @samp{nnshimbun} グループで使います。そのバックエンド
 は @samp{nnml} とほぼ同じです。
 
@@ -4665,12 +4668,12 @@ Manual}) を作る場合を除いて、ローカルファイルに記事をセーブすることはあ
 @vindex nnshimbun-keep-backlog
 @vindex gnus-keep-backlog
 この変数は @samp{nnshimbun} グループで @code{gnus-keep-backlog} 変
-数 (@pxref{Article Backlog, ,Article Backlog, gnus, The Gnus Manual}) を
-上書きします。もし @code{nnshimbun-keep-backlog} を数字 @var{n} に設定す
-ると、@samp{nnshimbun} は最大で @var{n} の古い記事を後の再取得のためにバッ
-ファに溜めておきます。この変数が @code{nil} ではなく、数字でもない場合、
-@samp{nnshimbun} は @emph{すべて} の既読記事を蓄えます (これは良い考えで
-はありません)。デフォルト値は 300 です。
+数 (@pxref{Article Backlog, ,記事のバックログ, gnus-ja, The Gnus
+Manual}) を上書きします。もし @code{nnshimbun-keep-backlog} を数
+字 @var{n} に設定すると、@samp{nnshimbun} は最大で @var{n} の古い記事を
+後の再取得のためにバッファに溜めておきます。この変数が @code{nil} ではな
+く、数字でもない場合、@samp{nnshimbun} は @emph{すべて} の既読記事を蓄え
+ます (これは良い考えではありません)。デフォルト値は 300 です。
 
 @samp{Nnshimbun} はあらかじめ取得した (prefetched) 記事の保存
 に backlog を使うので、小さすぎる値は @code{prefetch-articles} 機能 (下
@@ -4680,15 +4683,15 @@ Manual}) を作る場合を除いて、ローカルファイルに記事をセーブすることはあ
 @vindex nnshimbun-directory
 @samp{Nnshimbun} が @acronym{NOV} ファイルと印ファイルを保存するディレク
 トリです。デフォルト値は @samp{~/News/shimbun/} です。これはサーバー変
-数 (@pxref{Server Variables, ,Server Variables, gnus, The Gnus Manual}) で
-す。
+数 (@pxref{Server Variables, ,サーバー変数, gnus-ja, The Gnus
+Manual}) です。
 
 @item nnshimbun-default-group-level
 @vindex nnshimbun-default-group-level
 @code{gnus-level-default-subscribed} を上書きする、デフォルトのグループ
 レベルです。新たに作られた @samp{nnshimbun} グループに適用されます。デフォ
 ルト値は @code{nil} です。これはサーバー変数 (@pxref{Server Variables,
-,Server Variables, gnus, The Gnus Manual}) です。
+,サーバー変数, gnus-ja, The Gnus Manual}) です。
 
 @item nnshimbun-marks-is-evil
 @vindex nnshimbun-marks-is-evil
@@ -4701,20 +4704,20 @@ Manual}) を作る場合を除いて、ローカルファイルに記事をセーブすることはあ
 る @samp{.marks} という名前のファイルですが、正確に
 は @code{nnshimbun-marks-file-name} の値を参照してください)。そうすれ
 ば Gnus によって印ファイルが再生成されるでしょう。デフォルト値
-は @code{nil} です。これはサーバー変数 (@pxref{Server Variables, ,Server
-Variables, gnus, The Gnus Manual}) です。
+は @code{nil} です。これはサーバー変数 (@pxref{Server Variables, ,サーバー
+変数, gnus-ja, The Gnus Manual}) です。
 @end table
 
 @cindex group parameters
 @samp{Nnshimbun} は Gnus が提供する標準のグループパラメー
 タ@footnote{グループパラメータを設定するための最も手軽な方法は、グルー
 プバッファで、設定したいグループの場所に移動してから @w{@kbd{G c}} をタ
-イプすることです (@pxref{Group Parameters, ,Group Parameters, gnus, The
-Gnus Manual})。} に加えて、@samp{nnshimbun} 専用に設けられたグループパラ
-メータを利用することができます。複数の @samp{nnshimbun} 用のパラメータ
-が @code{nnshimbun-group-parameters} という単一のグループパラメータ (す
-べてのグループで違う値を持つことができる) にまとめられています。それはプ
-ロパティリストで、例えば次のような値です:
+イプすることです (@pxref{Group Parameters, ,グループパラメーター,
+gnus-ja, The Gnus Manual})。} に加えて、@samp{nnshimbun} 専用に設けられ
+たグループパラメータを利用することができます。複数の @samp{nnshimbun} 用
+のパラメータが @code{nnshimbun-group-parameters} という単一のグループパ
+ラメータ (すべてのグループで違う値を持つことができる) にまとめられていま
+す。それはプロパティリストで、例えば次のような値です:
 
 @lisp
 '(index-range all prefetch-articles off encapsulate-images on
@@ -6811,7 +6814,7 @@ emacs-w3m を使って HTML ファイルを閲覧することができます。
 (setq gnus-treat-strip-banner '(or t (typep "text/html")))
 @end lisp
 
-詳しいことは @xref{Customizing Articles, ,Customizing Articles, gnus,
+詳しいことは @xref{Customizing Articles, ,記事のカスタマイズ, gnus-ja,
 The Gnus Manual}, を見てください。
 
 加えて、以下の実験的なコードは @samp{multipart/related} な絵を見るための
