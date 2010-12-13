@@ -4032,10 +4032,10 @@ If the prefix arg is given, force displaying of images."
 
 (eval-after-load "gnus-sum"
   '(define-key gnus-summary-mode-map
-     "vv" 'gnus-summary-w3m-safe-toggle-inline-images))
+     "vi" 'gnus-summary-w3m-safe-toggle-inline-images))
 @end lisp
 
-キー @kbd{vv} は他の何かに変更することができます。さら
+キー @kbd{vi} は他の何かに変更することができます。さら
 に @xref{Summary Buffer, ,概略バッファー, gnus-ja, The Gnus Manual}.
 @end itemize
 
