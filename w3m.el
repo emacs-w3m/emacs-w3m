@@ -6906,7 +6906,11 @@ command instead."
 	  (lexical-let ((method
 			 (or (nth 2 (assoc type w3m-content-type-alist))
 			     (nth 2 (assoc (w3m-prepare-content url type nil)
-					   w3m-content-type-alist)))))
+					   w3m-content-type-alist))))
+			(default
+			  (nth 2 (assoc "text/html" w3m-content-type-alist))))
+	    (when (and (not method) default)
+	      (setq method default))
 	    (cond
 	     ((not method)
 	      (if (w3m-url-local-p url)

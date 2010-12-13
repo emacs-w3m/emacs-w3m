@@ -1,3 +1,8 @@
+2010-12-13  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-external-view): Execute default web browser insted of
+	download if content-type is not supported.
+
 2010-12-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-print-this-url, w3m-print-this-image-url):
