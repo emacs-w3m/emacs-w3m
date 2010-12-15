@@ -142,7 +142,7 @@ Every `.' in NAME will be replaced with `/'."
 	       (concat
 		"<item" s1 "rdf:about=\""
 		;; 1. url
-		"\\(http://\\(?:book\\|www\\)\\.asahi\\.com/"
+		"\\(http://\\(?:book\\|www\\)\\.asahi\\.com//?"
 		;; 2. extra keyword (en)
 		"\\([^/]+\\)"
 		"\\(?:/update/"

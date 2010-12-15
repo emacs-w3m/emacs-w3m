@@ -1,3 +1,7 @@
+2010-12-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-group-table): Update regexp for rss groups.
+
 2010-12-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnshimbun.el (nnshimbun-request-set-mark):
