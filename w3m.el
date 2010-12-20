@@ -5994,11 +5994,11 @@ w3m regards it as an incomplete <a> tag that is not closed."
       (goto-char (point-min))
       (while (re-search-forward "<div[\t\n >]" nil t)
 	(when (w3m-end-of-tag "div")
-	  (goto-char (match-beginning 1))
 	  (replace-match (concat "<span" (substring (buffer-substring
 						     (match-beginning 0)
 						     (match-end 1)) 4)
-				 "<br></span>"))))
+				 "<br></span>"))
+	  (goto-char (match-beginning 0))))
       (goto-char (point-max))
       (widen))))
 
