@@ -207,7 +207,12 @@ Add some emacs-w3m utility functions to pre/post-command-hook."
       (w3m-insert-string (mime-entity-content entity))
       (mime-entity-type/subtype entity))))
 
-(let (current-load-list)
+(dont-compile
+  ;; Arglist varies according to Emacs version.
+  ;; Emacs 21.1~21.4, 23.3, 24, XEmacs, SXEmacs:
+  ;; (kill-new string &optional replace)
+  ;; Emacs 22.1~23.2:
+  ;; (kill-new string &optional replace yank-handler)
   (defadvice kill-new (before strip-keymap-properties-from-kill activate)
     "Advised by emacs-w3m.
 Strip `keymap' or `local-map' properties from a killed string."

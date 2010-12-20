@@ -1,5 +1,8 @@
 2010-12-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* mime-w3m.el (kill-new): Don't compile defadvice form when building
+	emacs-w3m.
+
 	* w3m.el (w3m-fix-illegal-blocks): New function.
 	(w3m-rendering-buffer): Use it.
 
