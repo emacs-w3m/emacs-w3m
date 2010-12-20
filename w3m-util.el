@@ -785,6 +785,205 @@ Note: this macro allows only strings for NAMES, that is, a form
 something like `(if foo \"bar\" \"baz\")' cannot be used."
   `(w3m-search-tag-1 ,(concat "<" (regexp-opt names t))))
 
+(defun w3m-beginning-of-tag (&optional tag include-whitespace)
+  "Move point to the beginning of tag.  Inner nested tags are skipped.
+If TAG, which is a name of the tag, is given, this function moves point
+backward from the closing-tag </TAG> (point has to exist after or within
+it initially) to the beginning point of the open-tag <TAG ...>.  For
+example, in the following two situations, point moves backward from the
+rightmost tag to the beginning point of the leftmost tag:
+
+<TAG ...>...<TAG ...>...<TAG ...>...</TAG>...</TAG>...</TAG>
+<TAG ...>...<TAG ...>...</TAG>...<TAG ...>...</TAG>...</TAG>
+
+If TAG is omitted or nil, this function moves point backward to the
+beginning point of the tag in which point exists.  In this case, point
+has to initially exist between the end position of the closing-tag and
+the previous tag as follows:
+
+<!-- foo <bar ...<baz ...>...> -->
+                              ^^^
+If INCLUDE-WHITESPACE is non-nil, include leading and trailing
+whitespace.  Return the end-point and set the match-data #0, #1, #2,
+and #3 as follows (\"___\" shows whitespace):
+
+The case where TAG is spefified:
+___<TAG ...>___...___</TAG>___
+   0        1  2  2  1     0     INCLUDE-WHITESPACE=nil
+0  1        2  3  3  2     1  0  INCLUDE-WHITESPACE=non-nil
+
+The case where TAG is nil:
+___<TAG ...>___
+   0        0     INCLUDE-WHITESPACE=nil
+0  1        1  0  INCLUDE-WHITESPACE=non-nil"
+  (let ((init (point))
+	(num 1)
+	(md (match-data))
+	(case-fold-search t)
+	end regexp nd1 nd2 nd3 st1 st2 st3 st0 nd0)
+    (condition-case nil
+	(progn
+	  (if tag
+	      (progn
+		(setq end (point)
+		      tag (regexp-quote tag))
+		(if (and (re-search-backward (concat "\
+\\(<[\t\n\r ]*/[\t\n\r ]*" tag "\
+\\(?:[\t\n\r ]*\\|[\t\n\r ]+[^>]+\\)>\\)[\t\n\r ]*") nil t)
+			 (eq end (match-end 0)))
+		    (progn
+		      (setq nd1 (nth 3 (match-data)) ;; (match-end 1)
+			    nd2 (nth 2 (match-data))) ;; (match-beginning 1)
+		      (skip-chars-backward "\t\n\r ")
+		      (setq nd3 (point-marker))
+		      (goto-char end))
+		  (goto-char end)
+		  (search-forward ">")
+		  (setq end (point))
+		  (if (and (re-search-backward (concat "\
+<[\t\n\r ]*/[\t\n\r ]*" tag "\\(?:[\t\n\r ]*\\|[\t\n\r ]+[^>]+\\)>"))
+			   (eq end (match-end 0)))
+		      (progn
+			(setq nd1 (nth 1 (match-data)) ;; (match-end 0)
+			      nd2 (car (match-data))) ;; (match-beginning 0)
+			(skip-chars-backward "\t\n\r ")
+			(setq nd3 (point-marker)))
+		    (error "")))
+		(goto-char (1- nd2))
+		(setq regexp (concat "\\(<\\([\t\n\r ]*/\\)?[\t\n\r ]*" tag "\
+\\(?:[\t\n\r ]*\\|[\t\n\r ]+[^>]+\\)>\\)[\t\n\r ]*"))
+		(while (and (> num 0)
+			    (re-search-backward regexp))
+		  (setq num (if (match-beginning 2)
+				(1+ num)
+			      (1- num))))
+		(setq st1 (car (match-data)) ;; (match-beginning 0)
+		      st2 (nth 3 (match-data)) ;; (match-end 1)
+		      st3 (nth 1 (match-data)))) ;; (match-end 0)
+	    (search-forward ">")
+	    (setq nd1 (nth 1 (match-data))) ;; (match-end 0)
+	    (goto-char init)
+	    (while (and (> num 0)
+			(re-search-backward "\\(<\\)\\|>"))
+	      (setq num (if (match-beginning 1)
+			    (1- num)
+			  (1+ num))))
+	    (setq st1 (nth 2 (match-data)))) ;; (match-beginning 1)
+	  (if include-whitespace
+	      (progn
+		(skip-chars-backward "\t\n\r ")
+		(setq st0 (point-marker))
+		(goto-char nd1)
+		(skip-chars-forward "\t\n\r ")
+		(setq nd0 (point-marker))
+		(goto-char st0)
+		(set-match-data (if tag
+				    (list st0 nd0 st1 nd1 st2 nd2 st3 nd3)
+				  (list st0 nd0 st1 nd1))))
+	    (set-match-data (if tag
+				(list st1 nd1 st2 nd2 st3 nd3)
+			      (list st1 nd1))))
+	  (point))
+      (error
+       (set-match-data md)
+       (goto-char init)
+       nil))))
+
+(defun w3m-end-of-tag (&optional tag include-whitespace)
+  "Move point to the end of tag.  Inner nested tags are skipped.
+If TAG, which is a name of the tag, is given, this function moves point
+from the open-tag <TAG ...> (point has to exist in front of or within
+it initially) to the end point of the closing-tag </TAG>.  For example,
+in the following two situations, point moves from the leftmost tag to
+the end point of the rightmost tag:
+
+<TAG ...>...<TAG ...>...<TAG ...>...</TAG>...</TAG>...</TAG>
+<TAG ...>...<TAG ...>...</TAG>...<TAG ...>...</TAG>...</TAG>
+
+If TAG is omitted or nil, this function moves point to the end point of
+the tag in which point exists.  In this case, point has to initially
+exist between the beginning position of the tag and the next tag as
+follows:
+
+<!-- foo <bar ...<baz ...>...> -->
+ ^^^^^^^^
+If INCLUDE-WHITESPACE is non-nil, include leading and trailing
+whitespace.  Return the end-point and set the match-data #0, #1, #2,
+and #3 as follows (\"___\" shows whitespace):
+
+The case where TAG is spefified:
+___<TAG ...>___...___</TAG>___
+   0        1  2  2  1     0     INCLUDE-WHITESPACE=nil
+0  1        2  3  3  2     1  0  INCLUDE-WHITESPACE=non-nil
+
+The case where TAG is nil:
+___<TAG ...>___
+   0        0     INCLUDE-WHITESPACE=nil
+0  1        1  0  INCLUDE-WHITESPACE=non-nil"
+  (let ((init (point))
+	(num 1)
+	(md (match-data))
+	(case-fold-search t)
+	regexp st1 st2 st3 nd1 nd2 nd3 nd0 st0)
+    (condition-case nil
+	(progn
+	  (if tag
+	      (progn
+		(setq tag (regexp-quote tag))
+		(if (looking-at (concat "\
+\[\t\n\r ]*\\(<[\t\n\r ]*" tag "\\(?:[\t\n\r ]*\\|[\t\n\r ]+[^>]+\\)>\\)\
+\[\t\n\r ]*"))
+		    (setq st1 (nth 2 (match-data)) ;; (match-beginning 1)
+			  st2 (nth 3 (match-data)) ;; (match-end 1)
+			  st3 (nth 1 (match-data))) ;; (match-end 0)
+		  (search-backward "<")
+		  (if (looking-at (concat "\
+\\(<[\t\n\r ]*" tag "\\(?:[\t\n\r ]*\\|[\t\n\r ]+[^>]+\\)>\\)[\t\n\r ]*"))
+		      (setq st1 (car (match-data)) ;; (match-beginning 0)
+			    st2 (nth 3 (match-data)) ;; (match-end 1))
+			    st3 (nth 1 (match-data))) ;; (match-end 0)
+		    (error "")))
+		(goto-char (1+ st1))
+		(setq regexp (concat "\
+\[\t\n\r ]*\\(<\\([\t\n\r ]*/\\)?[\t\n\r ]*" tag "\
+\\(?:[\t\n\r ]*\\|[\t\n\r ]+[^>]+\\)>\\)"))
+		(while (and (> num 0)
+			    (re-search-forward regexp))
+		  (setq num (if (match-beginning 2)
+				(1- num)
+			      (1+ num))))
+		(setq nd1 (nth 3 (match-data)) ;; (match-end 1)
+		      nd2 (nth 2 (match-data)) ;; (match-beginning 1)
+		      nd3 (car (match-data)))) ;; (match-beginning 0)
+	    (search-backward "<")
+	    (setq st1 (car (match-data))) ;; (match-beginning 0)
+	    (goto-char init)
+	    (while (and (> num 0)
+			(re-search-forward "\\(>\\)\\|<"))
+	      (setq num (if (match-beginning 1)
+			    (1- num)
+			  (1+ num))))
+	    (setq nd1 (nth 3 (match-data)))) ;; (match-end 1)
+	  (if include-whitespace
+	      (progn
+		(skip-chars-forward "\t\n\r ")
+		(setq nd0 (point-marker))
+		(goto-char st1)
+		(skip-chars-backward "\t\n\r ")
+		(setq st0 (point-marker))
+		(goto-char nd0)
+		(set-match-data (if tag
+				    (list st0 nd0 st1 nd1 st2 nd2 st3 nd3)
+				  (list st0 nd0 st1 nd1))))
+	    (set-match-data (if tag
+				(list st1 nd1 st2 nd2 st3 nd3)
+			      (list st1 nd1))))
+	  (point))
+      (error
+       (set-match-data md)
+       (goto-char init)
+       nil))))
+
 (defun w3m-string-match-url-components-1 (string)
   "Subroutine used by `w3m-string-match-url-components'."
 

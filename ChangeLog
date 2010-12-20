@@ -1,3 +1,11 @@
+2010-12-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-fix-illegal-blocks): New function.
+	(w3m-rendering-buffer): Use it.
+
+	* w3m-util.el (w3m-beginning-of-tag, w3m-end-of-tag): Move from
+	shimbun/shimbun.el.
+
 2010-12-13  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-external-view): Execute default web browser insted of

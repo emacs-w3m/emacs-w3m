@@ -5981,6 +5981,27 @@ be displayed especially in shimbun articles."
 	      (delete-region start (point))
 	      (throw 'found nil))))))))
 
+(defun w3m-fix-illegal-blocks ()
+  "Replace <div>...</div> within <a>...</a> with <span>...<br></span>.
+<div> is a block element that should not appear within inline elements
+like <a>, however some web sites, e.g., news.google.com.tw, do so and
+w3m regards it as an incomplete <a> tag that is not closed."
+  (let ((case-fold-search t))
+    (goto-char (point-min))
+    (while (re-search-forward "<a[\t\n ]" nil t)
+      (narrow-to-region (match-beginning 0)
+			(or (w3m-end-of-tag "a") (point-max)))
+      (goto-char (point-min))
+      (while (re-search-forward "<div[\t\n >]" nil t)
+	(when (w3m-end-of-tag "div")
+	  (goto-char (match-beginning 1))
+	  (replace-match (concat "<span" (substring (buffer-substring
+						     (match-beginning 0)
+						     (match-end 1)) 4)
+				 "<br></span>"))))
+      (goto-char (point-max))
+      (widen))))
+
 (defun w3m-rendering-extract-title ()
   "Extract the title from the halfdump and put it into the current buffer."
   (goto-char (point-min))
@@ -6071,6 +6092,7 @@ be displayed especially in shimbun articles."
   (w3m-check-refresh-attribute)
   (unless (eq w3m-type 'w3m-m17n)
     (w3m-remove-meta-charset-tags))
+  (w3m-fix-illegal-blocks)
   (w3m-rendering-half-dump charset)
   (w3m-message "Rendering...done")
   (w3m-rendering-extract-title))
