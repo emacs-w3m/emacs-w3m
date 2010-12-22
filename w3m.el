@@ -5989,18 +5989,18 @@ w3m regards it as an incomplete <a> tag that is not closed."
   (let ((case-fold-search t))
     (goto-char (point-min))
     (while (re-search-forward "<a[\t\n ]" nil t)
-      (narrow-to-region (match-beginning 0)
-			(or (w3m-end-of-tag "a") (point-max)))
-      (goto-char (point-min))
-      (while (re-search-forward "<div[\t\n >]" nil t)
-	(when (w3m-end-of-tag "div")
-	  (replace-match (concat "<span" (substring (buffer-substring
-						     (match-beginning 0)
-						     (match-end 1)) 4)
-				 "<br></span>"))
-	  (goto-char (match-beginning 0))))
-      (goto-char (point-max))
-      (widen))))
+      (save-restriction
+	(narrow-to-region (match-beginning 0)
+			  (or (w3m-end-of-tag "a") (point-max)))
+	(goto-char (point-min))
+	(while (re-search-forward "<div[\t\n >]" nil t)
+	  (when (w3m-end-of-tag "div")
+	    (replace-match (concat "<span" (substring (buffer-substring
+						       (match-beginning 0)
+						       (match-end 1)) 4)
+				   "<br></span>"))
+	    (goto-char (match-beginning 0))))
+	(goto-char (point-max))))))
 
 (defun w3m-rendering-extract-title ()
   "Extract the title from the halfdump and put it into the current buffer."
