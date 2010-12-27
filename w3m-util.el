@@ -1280,6 +1280,36 @@ the region active."
    (t
     (defalias 'w3m-replace-in-string 'replace-in-string))))
 
+(defun w3m-replace-regexps-in-string (string &rest regexps)
+  "In STRING replace an alist of REGEXPS."
+  (if (cadr regexps)
+      (w3m-replace-in-string
+       (apply #'w3m-replace-regexps-in-string string (cddr regexps))
+       (car regexps) (cadr regexps))
+    string))
+
+(if (fboundp 'string-match-p)
+    (defalias 'w3m-string-match-p 'string-match-p)
+  (defun w3m-string-match-p (regexp string &optional start)
+    "\
+Same as `string-match' except this function does not change the match data."
+    (save-match-data
+      (string-match regexp string start))))
+
+(if (fboundp 'substring-no-properties)
+    (defalias 'w3m-substring-no-properties 'substring-no-properties)
+  (defun w3m-substring-no-properties (string &optional from to)
+    "Return a substring of STRING, without text properties.
+It starts at index FROM and ending before TO.
+TO may be nil or omitted; then the substring runs to the end of STRING.
+If FROM is nil or omitted, the substring starts at the beginning of STRING.
+If FROM or TO is negative, it counts from the end.
+
+With one argument, just copy STRING without its properties."
+    (setq string (substring string (or from 0) to))
+    (set-text-properties 0 (length string) nil string)
+    string))
+
 (if (fboundp 'compare-strings)
     (defalias 'w3m-compare-strings 'compare-strings)
   (defun w3m-compare-strings (string1 start1 end1 string2 start2 end2)

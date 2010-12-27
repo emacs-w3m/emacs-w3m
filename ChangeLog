@@ -1,3 +1,48 @@
+2010-12-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-replace-regexps-in-string): Move from w3m-lnum.el;
+	use w3m-replace-in-string instead of replace-regexp-in-string that is
+	not available in XEmacs 21.4; make it a Lisp function.
+	(w3m-string-match-p, w3m-substring-no-properties): New functions.
+
+	* w3m-lnum.el (w3m-link-set-numbering): Use w3m-string-match-p instead
+	of string-match-p that is not available in Emacs 21~22 and XEmacs.
+	(w3m-read-int-interactive): Use w3m-substring-no-properties instead of
+	substring-no-properties that is not available in Emacs 21, XEmacs 21.4,
+	and SXEmacs.
+	(w3m-linknum-follow): Remove the 5th arg passed to read-string.  It is
+	not available in XEmacs.
+
+2010-12-26  Andrey Kotlarski  <m00naticus@gmail.com>
+
+	* w3m-lnum.el: Updated comments section.
+	(w3m-link-numbering-mode-hook, w3m-link-numbering-mode-map):
+	Updated doc string.
+	(w3m-link-set-overlay): No more need for save-excursion.
+	(w3m-replace-regexps-in-string, w3m-linknum-prompt-str): New
+	macros.
+	(w3m-link-set-numbering): Refactored, does filtering as well.
+	Does numbering only within the visible window part.
+	(w3m-goto-next-link, w3m-goto-next-image2): New functions.
+	(w3m-goto-next-anchor-or-image): Take optional argument for
+	position.  No need to use goto-char.
+	(w3m-link-numbering): Take additional argument for filtering
+	string.  Use `w3m-goto-next-link', `w3m-goto-next-image2'.  No
+	more need for `save-excursion'.
+	(w3m-read-int-interactive): I-search functionality added.  Offer
+	to select firstly numbered option when possible.
+	(w3m-with-linknum): Put the call to `w3m-link-numbering' inside
+	the `unwind-protect'.
+	(w3m-highlight-numbered-anchor): Highlight only within the visible
+	window part.  Return text for the form fields or buttons as well.
+	(w3m-get-anchor-info): Operate only within the visible window
+	part.
+	(w3m-go-to-linknum, w3m-linknum-get-action): Updated for the
+	changed `w3m-link-numbering' argument codes.
+	(w3m-linknum-follow): According to prefix arguments may toggle
+	instead of visit image links.  Also options to edit link before
+	visiting.
+
 2010-12-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-fix-illegal-blocks): Save restriction.
