@@ -6044,6 +6044,28 @@ w3m regards it as an incomplete <a> tag that is not closed."
 (defun w3m-rendering-half-dump (charset)
   ;; `charset' is used by `w3m-w3m-expand-arguments' to generate
   ;; arguments for w3mmee and w3m-m17n from `w3m-halfdump-command-arguments'.
+
+  ;; Add name anchors that w3m can handle.  Cf. [emacs-w3m:11153]
+  ;; This section replaces
+  ;; <TAG ... id="FOO_BAR" ...>FOO BAR</TAG>
+  ;; with
+  ;; <a name="FOO_BAR"><TAG ... id="FOO_BAR" ...>FOO BAR</TAG></a>
+  ;; in the current buffer.
+  (goto-char (point-min))
+  (let (start tag name)
+    (while (re-search-forward "<\\([^\t\n\r >]+\\)\
+\[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*id=\\(\"[^\"]+\"\\)"
+			      nil t)
+      (setq start (match-beginning 0)
+	    tag (match-string 1)
+	    name (match-string 2))
+      (when (looking-at (concat "[^>]*>[^<]+</" tag ">"))
+	(save-restriction
+	  (narrow-to-region (goto-char start) (match-end 0))
+	  (insert "<a name=" name ">")
+	  (goto-char (point-max))
+	  (insert "</a>")))))
+
   (w3m-set-display-ins-del)
   (let* ((coding-system-for-read w3m-output-coding-system)
 	 (coding-system-for-write (if (eq 'binary w3m-input-coding-system)

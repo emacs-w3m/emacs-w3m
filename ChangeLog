@@ -1,3 +1,8 @@
+2010-12-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-rendering-half-dump): Add name anchors that w3m can
+	handle ([emacs-w3m:11153]).
+
 2010-12-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-replace-regexps-in-string): Move from w3m-lnum.el;
