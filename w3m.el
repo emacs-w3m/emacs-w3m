@@ -5998,7 +5998,8 @@ w3m regards it as an incomplete <a> tag that is not closed."
 	    (replace-match (concat "<span" (substring (buffer-substring
 						       (match-beginning 0)
 						       (match-end 1)) 4)
-				   "<br></span>"))
+				   "<br></span>")
+			   t t)
 	    (goto-char (match-beginning 0))))
 	(goto-char (point-max))))))
 
