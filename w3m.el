@@ -3553,7 +3553,7 @@ The database is kept in `w3m-entity-table'."
   "Fontify anchor tags in the buffer which contains halfdump."
   (let ((help (w3m-make-help-echo w3m-balloon-help))
 	(balloon (w3m-make-balloon-help w3m-balloon-help))
-	prenames start end)
+	prenames start end bhhref)
     (goto-char (point-min))
     (setq w3m-max-anchor-sequence 0)	;; reset max-hseq
     (while (re-search-forward "<_id[ \t\r\f\n]+" nil t)
@@ -3572,7 +3572,7 @@ The database is kept in `w3m-entity-table'."
     (while (re-search-forward "<a[ \t\r\f\n]+" nil t)
       (setq start (match-beginning 0))
       (setq prenames (get-text-property start 'w3m-name-anchor2))
-      (w3m-parse-attributes (href name id charset
+      (w3m-parse-attributes (href name id charset title
 				  (rel :case-ignore) (hseq :integer))
 	(unless name
 	  (setq name id))
@@ -3605,11 +3605,17 @@ The database is kept in `w3m-entity-table'."
 	    (setq hseq (or (and (null hseq) 0) (abs hseq)))
 	    (setq w3m-max-anchor-sequence (max hseq w3m-max-anchor-sequence))
 	    (w3m-add-face-property start end (if (w3m-arrived-p href)
-						     'w3m-arrived-anchor
-						   'w3m-anchor))
+						 'w3m-arrived-anchor
+					       'w3m-anchor))
+	    (if title
+		(setq bhhref (concat (w3m-decode-anchor-string title)
+				    "\n"
+				    (w3m-url-readable-string href)))
+	      (setq bhhref (w3m-url-readable-string href)))
 	    (w3m-add-text-properties start end
 				     (list 'w3m-href-anchor href
-					   'w3m-balloon-help href
+					   'w3m-balloon-help bhhref
+					   'w3m-anchor-title title
 					   'mouse-face 'highlight
 					   'w3m-anchor-sequence hseq
 					   'help-echo help
@@ -4099,7 +4105,7 @@ variable is non-nil (default=t)."
 						 (unless (interactive-p)
 						   safe-regexp))
 	    (setq w3m-display-inline-images (not status))
-	    (when status 
+	    (when status
 	      (w3m-process-stop (current-buffer))
 	      (w3m-idle-images-show-unqueue (current-buffer)))
 	    (force-mode-line-update)))
@@ -7134,16 +7140,22 @@ of the url currently displayed.  The browser is defined in
 	       (or (w3m-anchor (point)) (w3m-image (point)))))
 	(alt (if interactive-p
 		 (w3m-image-alt)
-	       (w3m-image-alt (point)))))
+	       (w3m-image-alt (point))))
+	(title (if interactive-p
+		   (w3m-anchor-title)
+		 (w3m-anchor-title (point)))))
     (when (or url interactive-p)
       (and url interactive-p (kill-new url))
-      (w3m-message "%s%s"
-		   (if (zerop (length alt))
-		       ""
-		     (concat alt ": "))
-		   (or (w3m-url-readable-string url)
-		       (and (w3m-action) "There is a form")
-		       "There is no url under point")))))
+      (setq url (or (w3m-url-readable-string url)
+		    (and (w3m-action) "There is a form")
+		    "There is no url under point"))
+      (w3m-message "%s" (cond
+			 ((> (length alt) 0)
+			  (concat alt ": " url))
+			 ((> (length title) 0)
+			  (concat title " (" url ")"))
+			 (t
+			  url))))))
 
 (defun w3m-print-this-image-url (&optional interactive-p)
   "Display image url under point in echo area and put it into `kill-ring'."

@@ -226,6 +226,15 @@ to the position where the property exists."
       `(get-text-property ,position 'w3m-image-alt)
     `(w3m-get-text-property-around 'w3m-image-alt)))
 
+(defmacro w3m-anchor-title (&optional position)
+  "Return the value of the `w3m-anchor-title' property at the given POSITION.
+NOTE: If POSITION is omitted, it searches for the property in one
+character before and behind the current position, and point will move
+to the position where the property exists."
+  (if position
+      `(get-text-property ,position 'w3m-anchor-title)
+    `(w3m-get-text-property-around 'w3m-anchor-title)))
+
 (defmacro w3m-submit (&optional position)
   "Return the value of the `w3m-submit' property at the given POSITION.
 NOTE: If POSITION is omitted, it searches for the property in one

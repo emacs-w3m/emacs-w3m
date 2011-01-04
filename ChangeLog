@@ -1,3 +1,11 @@
+2011-01-04  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-fontify-anchors): If exist `title' in anchor, it adds to
+	w3m-balloon-help property and puts it to w3m-anchor-title property.
+	(w3m-print-this-url): Treat w3m-anchor-title property.
+
+	* w3m-util.el (w3m-anchor-title): New macro.
+
 2011-01-03  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-fix-illegal-blocks): Fix FIXEDCASE and LITERAL options of
