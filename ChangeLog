@@ -1,3 +1,9 @@
+2011-01-11  Kevin Ryde  <user42@zip.com.au>
+
+	* w3m.el (w3m-print-this-url): If anchor-title plus url is wider than
+	the frame then use two lines "Title\nURL".
+	(w3m-about-header): Show anchor-title of link at point.
+
 2011-01-04  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-fontify-anchors): If exist `title' in anchor, it adds to

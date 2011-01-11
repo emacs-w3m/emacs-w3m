@@ -1351,8 +1351,8 @@ nil means don't recenter, let the display follow point in the
   ;; radio items in the same order as in the docstring, and `integer' first
   ;; because it's the default
   :type '(radio (integer :format "%{%t%}: %v\n" :value 1 :size 1)
-                (const :format "%t\n" t)
-                (const :format "%t\n" nil)))
+		(const :format "%t\n" t)
+		(const :format "%t\n" nil)))
 
 (defcustom w3m-use-form t
   "*Non-nil means make it possible to use form extensions. (EXPERIMENTAL)"
@@ -7131,6 +7131,8 @@ of the url currently displayed.  The browser is defined in
       (kill-new w3m-current-url)
       (w3m-message "%s" (w3m-url-readable-string w3m-current-url)))))
 
+(defvar message-truncate-lines)
+
 (defun w3m-print-this-url (&optional interactive-p)
   "Display the url under point in the echo area and put it into `kill-ring'."
   (interactive (list t))
@@ -7153,7 +7155,15 @@ of the url currently displayed.  The browser is defined in
 			 ((> (length alt) 0)
 			  (concat alt ": " url))
 			 ((> (length title) 0)
-			  (concat title " (" url ")"))
+			  ;; XEmacs doesn't have `message-truncate-lines'
+			  ;; and always truncates messages, so one line in
+			  ;; that case.
+			  (if (or (not (boundp 'message-truncate-lines))
+				  message-truncate-lines
+				  (< (+ (length url) (length title) 5)
+				     (frame-width)))
+			      (concat title " (" url ")") ;; one line if fits
+			    (concat title "\n" url)))     ;; two lines if big
 			 (t
 			  url))))))
 
@@ -8749,10 +8759,10 @@ window's hscroll."
 (defun w3m-recenter ()
   "Recenter according to `w3m-view-recenter'."
   (when (and w3m-view-recenter
-             (eq (window-buffer) (current-buffer)))
+	     (eq (window-buffer) (current-buffer)))
     (recenter (if (eq t w3m-view-recenter)
-                  '(4)  ;; per "C-u C-l" to recenter in middle
-                w3m-view-recenter)))) ;; otherwise an integer
+		  '(4)  ;; per "C-u C-l" to recenter in middle
+		w3m-view-recenter)))) ;; otherwise an integer
 
 (defun w3m-beginning-of-line (&optional arg)
   "Make the beginning of the line visible and move the point to there."
@@ -9927,12 +9937,18 @@ non-ASCII characters."
 	    "\nDocument Type:  " (or (w3m-content-type url) "")
 	    "\nLast Modified:  "
 	    (let ((time (w3m-last-modified url)))
-	      (if time (current-time-string time) ""))
-	    (let ((anchor (with-current-buffer w3m-current-buffer
-			    (and (equal url w3m-current-url) (w3m-anchor)))))
-	      (if anchor
-		  (concat "\nCurrent Anchor: " anchor)
-		"")))
+	      (if time (current-time-string time) "")))
+
+    (let (anchor anchor-title)
+      (with-current-buffer w3m-current-buffer
+	(when (equal url w3m-current-url)
+	  (setq anchor (w3m-anchor))
+	  (setq anchor-title (w3m-anchor-title))))
+      (if anchor
+	  (insert "\nCurrent Anchor: " anchor))
+      (if anchor-title
+	  (insert "\nAnchor Title:   " anchor-title)))
+
     (let ((ct (w3m-arrived-content-type url))
 	  (charset (w3m-arrived-content-charset url))
 	  (separator (w3m-make-separator))
@@ -9947,7 +9963,7 @@ non-ASCII characters."
 				  (or (unless no-cache
 					(w3m-cache-request-header url))
 				      (w3m-process-with-wait-handler
-					(w3m-w3m-dump-head url handler)))
+				       (w3m-w3m-dump-head url handler)))
 				(w3m-process-timeout nil))))
 	(insert "\n\n" separator "\n\nHeader Information\n\n" header)
 	(goto-char (point-min))
