@@ -1,3 +1,7 @@
+2011-01-13  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-goto-mailto-url): Decode entities in URL.
+
 2011-01-11  Kevin Ryde  <user42@zip.com.au>
 
 	* w3m.el (w3m-print-this-url): If anchor-title plus url is wider than
