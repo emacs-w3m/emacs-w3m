@@ -1,3 +1,10 @@
+2011-01-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-group-table): Update index urls for
+	column groups.
+	(shimbun-sankei-multi-next-url, shimbun-sankei-clear-contents): Adapt
+	to new html layout.
+
 2010-12-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-beginning-of-tag, shimbun-end-of-tag): Move

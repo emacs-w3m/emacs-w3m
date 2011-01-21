@@ -1,6 +1,7 @@
 ;;; sb-sankei.el --- shimbun backend for the MSN Sankei News -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010 Katsumi Yamaoka
+;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011
+;;   Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -67,11 +68,11 @@
      "http://sankei.jp.msn.com/rss/news/usatoday.xml")
     ;; Non-RSS groups.
     ("column.sankeisho" "産経抄"
-     "http://sankei.jp.msn.com/column/11272/clm11272-t.htm")
+     "http://sankei.jp.msn.com/column/topics/column-14576-t1.htm")
     ("column.shucho" "主張"
-     "http://sankei.jp.msn.com/column/1521/clm1521-t.htm")
+     "http://sankei.jp.msn.com/column/topics/column-14593-t1.htm")
     ("column.seiron" "正論"
-     "http://sankei.jp.msn.com/column/1522/clm1522-t.htm")))
+     "http://sankei.jp.msn.com/column/topics/column-14594-t1.htm")))
 
 (defvar shimbun-sankei-x-face-alist
   '(("default" . "\
@@ -166,12 +167,10 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAGFBMVEX///8An/8Vb38CnwB
   (unless (string-equal (shimbun-current-group-internal shimbun)
 			"usatoday.ja")
     (goto-char (point-min))
-    (when (and (re-search-forward "\
-<div[\t\n ]\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"newslistNumber\""
-				  nil t)
+    (when (and (re-search-forward "<div[\t\n ]+class=\"pager\"" nil t)
 	       (shimbun-end-of-tag "div")
 	       (re-search-backward "\
-<a[\t\n ]+href=\"\\([^\"]+\\)\"[^>]*>[\t\n ]*次のページ[\t\n ]*</a>"
+<a[\t\n ]+href=\"\\([^\"]+\\)\"[^>]*>[\t\n ]*次のページ"
 				   (match-beginning 0) t))
       (shimbun-expand-url (match-string 1) url))))
 
@@ -184,7 +183,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAGFBMVEX///8An/8Vb38CnwB
   (let ((group (shimbun-current-group-internal shimbun))
 	(hankaku (shimbun-japanese-hankaku shimbun))
 	(case-fold-search t)
-	no-footer start end related)
+	no-footer start end)
 
     (cond ((string-equal group "usatoday")
 	   (setq no-footer t))
@@ -214,7 +213,7 @@ title[\t\n ]+end[\t\n ]+-+>"
 				    nil t))
 	     (progn
 	       (setq start (match-end 0))
-	       (re-search-forward "<div[\t\n ]+class=\"_LSUCS\">[\t\n ]*"
+	       (re-search-forward "<div[\t\n ]+class=\"newstextfull\">[\t\n ]*"
 				  nil t))
 	     (progn
 	       (setq start (if (re-search-backward "<img[\t\n ]+src=\""
@@ -222,7 +221,7 @@ title[\t\n ]+end[\t\n ]+-+>"
 			       (match-beginning 0)
 			     (match-end 0))) ;; Previous search result
 	       (re-search-forward "\
-\\(<div[\t\n ]\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"newslistNumber\"\\)\
+\\(<div[\t\n ]\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"pager\"\\)\
 \\|\\(<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"RelatedImg\"\\)\
 \\|\\(?:[\t\n ]*<div[^>]*>[\t\n ]*<h[0-9]>[\t\n ]*PR[\t\n ]*</h[0-9]>\\)\
 \\|\\(?:[\t\n 　]*<\\(?:/div\\|/?p\\)>\\)*[\t\n 　]*<script[\t\n ]"
@@ -236,25 +235,12 @@ title[\t\n ]+end[\t\n ]+-+>"
 	  (when (prog1
 		    (and (match-beginning 1)
 			 (shimbun-end-of-tag "div")
-			 (re-search-backward "\
-<a[\t\n ]*\\(?:[^\t\n >]+[\t\n ]+\\)*title=\"前のページ\""
+			 (re-search-backward "<a[\t\n ]+[^>]+>[^<]*前のページ"
 					     end t))
 		  (delete-region end (point-max)))
 	    (goto-char start)
 	    (insert "&#012;\n")) ;; Page delimiter.
 	  (delete-region (point-min) start)
-
-	  ;; Preserve links to related news or topics.
-	  (goto-char (point-min))
-	  (while (and (re-search-forward "\\(<\\)div[\t\n ]+[^>]+>\
-\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\\(?:<h[0-9]+>[\t\n ]*\\)*\
-関連\\(?:ニュース\\|トピックス\\)[\t\n ]*<"
-					 nil t)
-		      (progn
-			(goto-char (match-end 1))
-			(shimbun-end-of-tag "div" t)))
-	    (push (match-string 1) related)
-	    (replace-match "\n"))
 
 	  ;; Insert a new line after every image.
 	  (goto-char (point-min))
@@ -293,8 +279,16 @@ title[\t\n ]+end[\t\n ]+-+>"
 	      (when (eobp)
 		(delete-region start end)
 		(insert "\n"))))
+	  (goto-char (point-min))
+	  (while (search-forward "<p class=\"zoom\"" nil t)
+	    (when (shimbun-end-of-tag "p" t)
+	      (delete-region (match-beginning 0) (match-end 0))))
+	  (goto-char (point-min))
+	  (when (re-search-forward "[\t\n ]*<div id=\"ad2line\"><ul><li>\\'"
+				   nil t)
+	    (delete-region (match-beginning 0) (match-end 0)))
 
-	  (shimbun-remove-orphaned-tag-strips "span")
+	  (shimbun-remove-orphaned-tag-strips "div\\|span")
 
 	  (cond ((string-equal group "usatoday.ja")
 		 ;; Insert a newline after the headline.
@@ -309,14 +303,6 @@ title[\t\n ]+end[\t\n ]+-+>"
 \(c)[\t\n ]+2007,[\t\n ]+USA[\t\n ]+TODAY[\t\n ]+International\\."
 					  nil t)
 		   (setq no-footer t))))
-
-	  ;; Restore preserved related links.
-	  (when related
-	    (goto-char (point-max))
-	    (unless (bolp)
-	      (insert "\n"))
-	    (dolist (link (nreverse related))
-	      (insert link "\n")))
 
 	  ;; Convert Japanese zenkaku ASCII chars into hankaku.
 	  (when (and hankaku (not (memq hankaku '(header subject))))
