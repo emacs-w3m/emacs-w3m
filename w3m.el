@@ -3608,9 +3608,11 @@ The database is kept in `w3m-entity-table'."
 						 'w3m-arrived-anchor
 					       'w3m-anchor))
 	    (if title
-		(setq bhhref (concat (w3m-decode-anchor-string title)
-				    "\n"
-				    (w3m-url-readable-string href)))
+		(progn
+		  (setq title (w3m-decode-entities-string title))
+		  (setq bhhref (concat (w3m-decode-anchor-string title)
+				       "\n"
+				       (w3m-url-readable-string href))))
 	      (setq bhhref (w3m-url-readable-string href)))
 	    (w3m-add-text-properties start end
 				     (list 'w3m-href-anchor href

@@ -1,3 +1,7 @@
+2011-01-23  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-fontify-anchors): Decode entities in title of anchor.
+
 2011-01-23  Kevin Ryde  <user42@zip.com.au>
 
 	* w3m.el (w3m-print-this-url): Correction to my last, use string-width
