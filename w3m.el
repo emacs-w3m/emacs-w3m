@@ -7155,15 +7155,17 @@ of the url currently displayed.  The browser is defined in
 			 ((> (length alt) 0)
 			  (concat alt ": " url))
 			 ((> (length title) 0)
-			  ;; XEmacs doesn't have `message-truncate-lines'
+			  ;; XEmacs21 doesn't have `message-truncate-lines'
 			  ;; and always truncates messages, so one line in
 			  ;; that case.
-			  (if (or (not (boundp 'message-truncate-lines))
-				  message-truncate-lines
-				  (< (+ (length url) (length title) 5)
-				     (frame-width)))
-			      (concat title " (" url ")") ;; one line if fits
-			    (concat title "\n" url)))     ;; two lines if big
+			  (let ((str (concat title " (" url ")")))
+			    (if (or (not (boundp 'message-truncate-lines))
+				    message-truncate-lines
+				    (< (string-width str) (- (frame-width) 2)))
+				;; one line if fits or truncating
+				str
+			      ;; or two lines if bigger than frame-width
+			      (concat title "\n" url))))
 			 (t
 			  url))))))
 

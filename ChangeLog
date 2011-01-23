@@ -1,3 +1,8 @@
+2011-01-23  Kevin Ryde  <user42@zip.com.au>
+
+	* w3m.el (w3m-print-this-url): Correction to my last, use string-width
+	not length.
+
 2011-01-13  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-goto-mailto-url): Decode entities in URL.
