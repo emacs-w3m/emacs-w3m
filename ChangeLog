@@ -1,3 +1,9 @@
+2011-01-31  Johan Claesson  <johanclaesson@bredband.net>
+
+	* w3m.el (w3m-content-type-alist): When selecting which external html
+	browser to use, handle the case where browse-url-browser-function is
+	an alist.
+
 2011-01-26  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-rendering-half-dump): Protect against things that look
