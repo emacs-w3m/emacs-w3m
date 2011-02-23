@@ -9162,7 +9162,11 @@ already been registered in the `w3m-history-flat' variable.  It is
 corresponding to URL to be retrieved at this time, not for the url of
 the current page."
   (interactive
-   (list (w3m-input-url nil nil nil nil 'feeling-lucky)
+   (list (if w3m-current-process
+	     (error "%s"
+		    (substitute-command-keys "Cannot run two w3m processes simultaneously \
+\(Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)"))
+	   (w3m-input-url nil nil nil nil 'feeling-lucky))
 	 current-prefix-arg
 	 (w3m-static-if (fboundp 'universal-coding-system-argument)
 	     coding-system-for-read)))

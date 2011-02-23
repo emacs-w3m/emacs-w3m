@@ -1,3 +1,8 @@
+2011-02-23  Naohiro Aota  <naota@elisp.net>
+
+	* w3m.el (w3m-goto-url): Invoke error if you try to invoke another w3m
+	process when one loading.
+
 2011-02-09  Naohiro Aota  <naota@elisp.net>
 
 	* w3m.el (w3m-show-form-hint): New function to display submitting form
