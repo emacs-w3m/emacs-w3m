@@ -1038,6 +1038,7 @@ is evaluated by the `w3m-goto-url' function."
 
 (defcustom w3m-after-cursor-move-hook
   '(w3m-highlight-current-anchor
+    w3m-show-form-hint
     w3m-print-this-url
     w3m-auto-show)
   "*Hook run each time after the cursor moves in emacs-w3m buffers.
@@ -10873,6 +10874,13 @@ FROM-COMMAND is defined in `w3m-minor-mode-map' with the same key in
     (dolist (f (directory-files w3m-profile-directory))
       (when (string-match "^w3m\\(el\\|src\\)" f)
 	(delete-file (expand-file-name f w3m-profile-directory))))))
+
+(defun w3m-show-form-hint ()
+  "Show sending form hint when the cursor is in a form."
+  (let ((keys (where-is-internal 'w3m-submit-form)))
+    (when (and (w3m-submit) keys)
+      (w3m-message "Press %s to send the current form."
+		   (key-description (car keys))))))
 
 (provide 'w3m)
 

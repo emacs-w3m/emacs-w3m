@@ -1,3 +1,9 @@
+2011-02-09  Naohiro Aota  <naota@elisp.net>
+
+	* w3m.el (w3m-show-form-hint): New function to display submitting form
+	hint.
+	(w3m-after-cursor-move-hook): Use it.
+
 2011-01-31  Johan Claesson  <johanclaesson@bredband.net>
 
 	* w3m.el (w3m-content-type-alist): When selecting which external html
