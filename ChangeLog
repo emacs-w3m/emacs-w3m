@@ -1,3 +1,8 @@
+2011-02-28  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-active-region-or-url-at-point): Move w3m-url-at-point()
+	after to check the properties of w3m-URL.
+
 2011-02-23  Naohiro Aota  <naota@elisp.net>
 
 	* w3m.el (w3m-goto-url): Invoke error if you try to invoke another w3m

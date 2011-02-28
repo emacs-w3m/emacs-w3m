@@ -4551,10 +4551,10 @@ non-nil, return the url of the current page by default."
 		(delete-region (match-beginning 0) (match-end 0)))
 	      (buffer-string)))
 	(w3m-deactivate-region))
-    (or (w3m-url-at-point)
-	(w3m-anchor)
+    (or (w3m-anchor)
 	(unless w3m-display-inline-images
 	  (w3m-image))
+	(w3m-url-at-point)
 	(and default=current
 	     (stringp w3m-current-url)
 	     (if (string-match "\\`about://\\(?:header\\|source\\)/"
