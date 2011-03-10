@@ -1,3 +1,9 @@
+2011-03-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-content-type-alist): Use functionp instead of symbolp for
+	the users who set their own private function to
+	browse-url-browser-function.
+
 2011-02-28  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m.el (w3m-active-region-or-url-at-point): Move w3m-url-at-point()

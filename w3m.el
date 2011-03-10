@@ -1133,7 +1133,7 @@ when we implement the mailcap parser to set `w3m-content-type-alist'.")
 			    (eq 'w3m-browse-url
 				(symbol-value 'browse-url-browser-function)))
 			default
-		      (if (symbolp browse-url-browser-function)
+		      (if (functionp browse-url-browser-function)
 			  (symbol-value 'browse-url-browser-function)
 			(catch 'browser
 			  (let ((alist browse-url-browser-function))
