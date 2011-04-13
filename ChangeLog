@@ -1,3 +1,10 @@
+2011-04-13  TAKAHASHI Kaoru  <kaoru@kaisei.org>
+
+	* doc/ptexinfmt.el: Use lexical binding.
+	(ptexinfmt-broken-facility): Rename _dummy argument.
+	(texinfo-enclosure-list, texinfo-alias-list): Add defvar stub for
+	lexical binding.
+
 2011-03-10  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el (w3m-content-type-alist): Use functionp instead of symbolp for
