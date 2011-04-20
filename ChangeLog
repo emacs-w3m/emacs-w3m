@@ -1,3 +1,7 @@
+2011-04-20  TAKAHASHI Kaoru  <kaoru@kaisei.org>
+
+	* doc/ptexinfmt.el: Fix description comment style.
+
 2011-04-13  TAKAHASHI Kaoru  <kaoru@kaisei.org>
 
 	* doc/ptexinfmt.el: Use lexical binding.
