@@ -1,3 +1,10 @@
+2011-04-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-make-html-contents)
+	(shimbun-header-insert-and-buffer-string):
+	* sb-multi.el (shimbun-multi-retrieve-next-pages):
+	Make base url a directory name.
+ 
 2011-04-06  David Engster  <dengste@eml.cc>
 
 	* nnshimbun.el: Add 'server-marks when declaring nnshimbun backend.

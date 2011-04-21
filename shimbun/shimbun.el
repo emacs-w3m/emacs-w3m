@@ -1,7 +1,6 @@
 ;;; shimbun.el --- interfacing with web newspapers -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
-;; Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2011 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
@@ -1158,7 +1157,8 @@ HEADER is a header structure obtained via `shimbun-headers'.")
 
 (defun shimbun-make-html-contents (shimbun header)
   (let ((base-url (or (shimbun-current-base-url)
-		      (shimbun-article-url shimbun header))))
+		      (file-name-directory
+		       (shimbun-article-url shimbun header)))))
     (when (shimbun-clear-contents shimbun header)
       (goto-char (point-min))
       (insert "<html>\n<head>\n<base href=\""
@@ -1278,7 +1278,7 @@ that the content type is text/html, otherwise text/plain."
   (if html
       (progn
 	(insert "<html>\n<head>\n<base href=\""
-		(shimbun-article-url shimbun header)
+		(file-name-directory (shimbun-article-url shimbun header))
 		"\">\n</head>\n<body>\n")
 	(shimbun-insert-footer shimbun header t "</body>\n</html>\n"))
     (shimbun-insert-footer shimbun header))
