@@ -78,6 +78,7 @@
 (require 'luna)
 (require 'std11)
 (require 'w3m)
+(require 'xml)
 
 (eval-and-compile
   (luna-define-class shimbun ()
@@ -1813,6 +1814,40 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
       (setq start (point)))
     (unless (eobp)
       (shimbun-japanese-hankaku-region start (point-max) quote))))
+
+(defun shimbun-xml-parse-buffer ()
+  "Calls (lib)xml-parse-region on the whole buffer.
+This is a wrapper for xml-parse-region, which will resort to
+using libxml-parse-xml-region if available, since it is much
+faster."
+  (if (fboundp 'libxml-parse-xml-region)
+      (save-excursion
+	(goto-char (point-min))
+	(let ((xml (libxml-parse-xml-region
+		    (1- (search-forward "<" nil t)) (point-max)))
+	      (start 0)
+	      (stylestring
+	       (progn (goto-char (point-min))
+		      (when (re-search-forward "<\\(rss\\|feed\\)\\(.*?\\)>" nil t)
+			(match-string 2))))
+	      stylesheet)
+	  ;; Parse the stylesheet
+	  (when stylestring
+	    (while (string-match "\\(xmlns:?.*?\\)=\"\\(.*?\\)\"" stylestring start)
+	      (setq start (match-end 0))
+	      (push (cons (intern (match-string 1 stylestring))
+			  (match-string 2 stylestring))
+		    stylesheet)))
+	  ;; Add stylesheet into XML structure
+	  (when stylesheet
+	    (if (nth 1 xml)
+		(nconc (nth 1 xml) stylesheet)
+	      (setcar (cdr xml) stylesheet)))
+	  (list xml)))
+    ;; We don't have libxml, so just use the slow one.
+    (xml-parse-region (point-min) (point-max))))
+
+
 
 (provide 'shimbun)
 

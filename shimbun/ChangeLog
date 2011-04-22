@@ -1,10 +1,23 @@
+2011-04-21  David Engster  <dengste@eml.cc>
+
+	* shimbun.el (shimbun-xml-parse-buffer): New function for XML parsing
+	of whole buffer, using libxml if available.
+
+	* sb-atom.el (shimbun-atom-get-headers): Use it.
+
+	* sb-atom-hash.el (content-hash-update-items-impl): Use it.
+
+	* sb-rss.el (shimbun-rss-get-headers): Use it.
+
+	* sb-rss-hash.el (content-hash-update-items-impl): Use it.
+
 2011-04-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-make-html-contents)
 	(shimbun-header-insert-and-buffer-string):
 	* sb-multi.el (shimbun-multi-retrieve-next-pages):
 	Make base url a directory name.
- 
+
 2011-04-06  David Engster  <dengste@eml.cc>
 
 	* nnshimbun.el: Add 'server-marks when declaring nnshimbun backend.

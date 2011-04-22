@@ -1,6 +1,6 @@
 ;;; sb-atom.el --- shimbun backend for ATOM (Rich Site Summary).
 
-;; Copyright (C) 2006, 2008, 2009, 2010 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2006, 2008-2011 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: news
@@ -59,7 +59,7 @@ oldest one in the shimbun.  If NEED-ALL-ENTRIES is non-nil, all
 items from the feed are returned.  If the entries from the feed
 have date information, the result is sorted by ascending date."
   (let* ((xml (condition-case err
-		  (xml-parse-region (point-min) (point-max))
+		  (shimbun-xml-parse-buffer)
 		(error
 		 (message "Error while parsing %s: %s"
 			  (shimbun-index-url shimbun)

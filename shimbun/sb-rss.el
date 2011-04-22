@@ -1,9 +1,7 @@
 ;;; sb-rss.el --- shimbun backend for RSS (Rich Site Summary).
 
-;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
-;; Koichiro Ohba <koichiro@meadowy.org>
-;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
-;; NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+;; Copyright (C) 2003-2011 Koichiro Ohba <koichiro@meadowy.org>
+;; Copyright (C) 2003-2011 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
 ;;         NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
@@ -183,7 +181,7 @@ non-nil, all items from the feed are returned.  If the entries
 from the feed have date information, the result is sorted by
 ascending date."
   (let* ((xml (condition-case err
-		  (xml-parse-region (point-min) (point-max))
+		  (shimbun-xml-parse-buffer)
 		(error
 		 (message "Error while parsing %s: %s"
 			  (shimbun-index-url shimbun)
