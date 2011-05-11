@@ -1,3 +1,8 @@
+2011-05-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-show-form-hint): Give point as arg to w3m-submit to
+	prevent cursor from being caught in form area.
+
 2011-04-20  TAKAHASHI Kaoru  <kaoru@kaisei.org>
 
 	* doc/ptexinfmt.el: Fix description comment style.

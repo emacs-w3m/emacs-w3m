@@ -10882,7 +10882,7 @@ FROM-COMMAND is defined in `w3m-minor-mode-map' with the same key in
 (defun w3m-show-form-hint ()
   "Show sending form hint when the cursor is in a form."
   (let ((keys (where-is-internal 'w3m-submit-form)))
-    (when (and (w3m-submit) keys)
+    (when (and (w3m-submit (point)) keys)
       (w3m-message "Press %s to send the current form."
 		   (key-description (car keys))))))
 
