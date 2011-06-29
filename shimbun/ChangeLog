@@ -1,3 +1,7 @@
+2011-06-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-group-table): Update regexp for rss groups.
+
 2011-04-21  David Engster  <dengste@eml.cc>
 
 	* shimbun.el (shimbun-xml-parse-buffer): New function for XML parsing

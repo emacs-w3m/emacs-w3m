@@ -1,7 +1,6 @@
 ;;; sb-asahi.el --- shimbun backend for asahi.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
-;; Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2011 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -153,7 +152,8 @@ Every `.' in NAME will be replaced with `/'."
 		;; 5. subject
 		"\\([^<]+\\)"
 		s0 "</title>\\(?:"
-		s0 "\\(?:<[^>]+/>\\|<[^>]+>[^<]+</[^>]+>\\)\\)*"
+		s0 "\\(?:<[^>]+/>"
+		"\\|<[^>]+>\\(?:<[^]]+\\]+>\\|[^<]+\\)</[^>]+>\\)\\)*"
 		s0 "<dc:subject>" s0
 		;; 6. extra keyword (ja)
 		"\\([^<]+\\)"
