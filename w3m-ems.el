@@ -1,7 +1,6 @@
 ;;; w3m-ems.el --- GNU Emacs stuff for emacs-w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
-;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2011 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -529,22 +528,25 @@ variable or both the value of this variable and the global value of
 	   (when (and (not noninteractive) (featurep 'w3m))
 	     (w3m-toolbar-set-configurations)))))
 
+;; FIXME: this function should be rewritten in a proper way.
 (defun w3m-toolbar-define-keys (keymap defs)
   ;; Invalidate the default bindings.
   (let ((keys (cdr (key-binding [tool-bar] t)))
 	item)
     (while (setq item (pop keys))
       (when (setq item (car-safe item))
-	(define-key keymap (vector 'tool-bar item) 'undefined))))
+	(ignore-errors ;; workaround
+	  (define-key keymap (vector 'tool-bar item) 'undefined)))))
   (let ((n (length defs))
 	def)
     (while (>= n 0)
       (setq n (1- n)
 	    def (nth n defs))
-      (define-key keymap (vector 'tool-bar (aref def 1))
-	(list 'menu-item (aref def 3) (aref def 1)
-	      :enable (aref def 2)
-	      :image (symbol-value (aref def 0)))))))
+      (ignore-errors ;; workaround
+	(define-key keymap (vector 'tool-bar (aref def 1))
+	  (list 'menu-item (aref def 3) (aref def 1)
+		:enable (aref def 2)
+		:image (symbol-value (aref def 0))))))))
 
 (defun w3m-find-image (name &optional directory)
   "Find image file for NAME and return cons of file name and type.
