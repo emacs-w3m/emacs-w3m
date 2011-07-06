@@ -1,7 +1,6 @@
 ;;; w3m.el --- an Emacs interface to w3m -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
-;; 2010, 2011 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000-2011 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -4052,7 +4051,7 @@ non-nil, cached data will not be used."
 			 status no-cache url
 			 (or begin (point-min))
 			 (or end (point-max)))
-		      (when (interactive-p)
+		      (when (w3m-interactive-p)
 			(w3m-message "This image is considered to be unsafe;\
  use the prefix arg to force display"))))))))
       (if begin
@@ -4117,7 +4116,7 @@ variable is non-nil (default=t)."
 	  (unwind-protect
 	      (w3m-toggle-inline-images-internal (if status 'on 'off)
 						 no-cache nil beg end
-						 (unless (interactive-p)
+						 (unless (w3m-interactive-p)
 						   safe-regexp))
 	    (setq w3m-display-inline-images (not status))
 	    (when status
@@ -9171,7 +9170,7 @@ the current page."
 	 (w3m-static-if (fboundp 'universal-coding-system-argument)
 	     coding-system-for-read)))
   (when (and (stringp url)
-	     (not (interactive-p)))
+	     (not (w3m-interactive-p)))
     (setq url (w3m-canonicalize-url url)))
   (set-text-properties 0 (length url) nil url)
   (setq url (w3m-uri-replace url))
@@ -9247,7 +9246,7 @@ Cannot run two w3m processes simultaneously \
     ;; Store the current position in the history structure if and only
     ;; if this command is called interactively.  The other user commands
     ;; that calls this function want to store the position by themselves.
-    (when (interactive-p)
+    (when (w3m-interactive-p)
       (w3m-history-store-position))
     ;; Access url group
     (if (string-match "\\`group:" url)
@@ -10785,12 +10784,12 @@ the `w3m-mode', otherwise use an existing emacs-w3m buffer."
 		     (not (eq major-mode 'w3m-mode)))
 		(w3m-goto-url-new-session url)
 	      (w3m-goto-url url)))
-	(when (interactive-p)
+	(when (w3m-interactive-p)
 	  (w3m-message "\
 This link is considered to be unsafe; use the prefix arg to view anyway"))))
      ((w3m-url-valid (w3m-image))
       (if (w3m-display-graphic-p)
-	  (if (interactive-p)
+	  (if (w3m-interactive-p)
 	      (call-interactively 'w3m-toggle-inline-image)
 	    (w3m-toggle-inline-image force))
 	(w3m-view-image)))

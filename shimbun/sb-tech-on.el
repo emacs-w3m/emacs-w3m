@@ -1,6 +1,6 @@
 ;;; sb-tech-on.el --- shimbun backend for Tech-On! -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2007, 2009, 2010 Katsumi Yamaoka
+;; Copyright (C) 2007-2011 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -117,7 +117,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAADFBMVEUAAAB/gP+ttr7///8
 (defun shimbun-tech-on-login ()
   "Log in on Tech-On! with."
   (interactive)
-  (when (or (interactive-p)
+  (when (or (shimbun-interactive-p)
 	    (not shimbun-tech-on-logged-in))
     (let ((user (cond ((stringp shimbun-tech-on-user-name)
 		       shimbun-tech-on-user-name)
@@ -158,7 +158,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAADFBMVEUAAAB/gP+ttr7///8
 \\|ACTION=\"/login/login\\.jsp\\?MODE=LOGIN_EXEC\""
 					nil t))))
 	(if shimbun-tech-on-logged-in
-	    (when (interactive-p)
+	    (when (shimbun-interactive-p)
 	      (message "[Tech-On!] Logged in"))
 	  (when (prog2
 		    (message nil)

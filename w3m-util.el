@@ -1,7 +1,6 @@
 ;;; w3m-util.el --- Utility macros and functions for emacs-w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,
-;; 2011  TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2011 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -1451,6 +1450,17 @@ get to be the alias to `visited-file-modtime'."
 	     (list (car modtime) (cdr modtime))))
 	  (t
 	   modtime))))
+
+(defmacro w3m-interactive-p ()
+  (condition-case nil
+      (progn
+	(eval '(called-interactively-p 'any))
+	;; Emacs >=23.2
+	'(called-interactively-p 'any))
+    ;; Emacs <23.2
+    (wrong-number-of-arguments '(called-interactively-p))
+    ;; Old ones
+    (void-function '(interactive-p))))
 
 ;;; Punycode RFC 3492:
 

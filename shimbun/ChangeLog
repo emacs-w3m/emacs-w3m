@@ -1,3 +1,9 @@
+2011-07-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-interactive-p): Alias to w3m-interactive-p.
+
+	* sb-tech-on.el (shimbun-tech-on-login): Use it.
+
 2011-06-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-group-table): Update regexp for rss groups.

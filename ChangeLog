@@ -1,5 +1,12 @@
 2011-07-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-util.el (w3m-interactive-p): New macro.
+
+	* w3m.el (w3m-toggle-inline-image, w3m-toggle-inline-images)
+	(w3m-goto-url, w3m-safe-view-this-url):
+	* w3m-hist.el (w3m-history-store-position)
+	(w3m-history-restore-position): Use it.
+
 	* w3m-ems.el (w3m-toolbar-define-keys): Work around the Emacs 24 error
 	"`keymap' is reserved for embedded parent maps".
 

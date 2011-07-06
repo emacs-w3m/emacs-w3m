@@ -1,7 +1,6 @@
 ;;; w3m-hist.el --- the history management system for emacs-w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2008, 2009, 2010
-;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2011 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -631,7 +630,7 @@ position.  Naturally, those should be treated as buffer-local."
 	   :position (cons (count-lines (point-min) (point-at-bol))
 			   (current-column))
 	   :window-hscroll (window-hscroll)))
-    (when (interactive-p)
+    (when (w3m-interactive-p)
       (message "The current cursor position saved"))))
 
 (defun w3m-history-restore-position ()
@@ -655,7 +654,7 @@ it works although it may not be perfect."
 	       (move-to-column (cdr position))
 	       (let ((deactivate-mark nil))
 		 (run-hooks 'w3m-after-cursor-move-hook))))
-	    ((interactive-p)
+	    ((w3m-interactive-p)
 	     (message "No cursor position saved"))))))
 
 (defun w3m-history-minimize ()
