@@ -1,7 +1,6 @@
 ;;; w3m-tabmenu.el --- Functions for TAB menu browsing
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009
-;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2007, 2009, 2011 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Hideyuki SHIRAI    <shirai@meadowy.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -84,13 +83,13 @@
 	   (car (nth (1- default) comp))))
     (setq buf (cdr (assoc buf comp)))
     (when (get-buffer buf)
-      (switch-to-buffer buf))))
+      (w3m-switch-to-buffer buf))))
 
 (defun w3m-tab-menubar-open-item (buf)
   "Open w3m buffer from tab menubar."
   (interactive)
   (when (get-buffer buf)
-    (switch-to-buffer buf)))
+    (w3m-switch-to-buffer buf)))
 
 (defun w3m-tab-menubar-update ()
   "Update w3m tab menubar."

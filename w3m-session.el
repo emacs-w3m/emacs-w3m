@@ -1,7 +1,6 @@
 ;;; w3m-session.el --- Functions to operate session of w3m -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2008, 2009, 2010
-;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2003, 2005-2011 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Hideyuki SHIRAI <shirai@meadowy.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -676,7 +675,7 @@ Sorry, an error found in \"%s\"; may we remove it? "
      (condition-case nil
 	 (shrink-window (- (window-height) wheight))
        (error nil))
-     (switch-to-buffer showbuf)
+     (w3m-switch-to-buffer showbuf)
      (setq w3m-session-select-wincfg wincfg)
      (w3m-session-select-mode sessions))))
 

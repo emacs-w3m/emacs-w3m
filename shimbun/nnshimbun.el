@@ -1,7 +1,6 @@
 ;;; nnshimbun.el --- interfacing with web newspapers
 
-;; Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
-;; 2010, 2011 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000-2011 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          ARISAWA Akihiro    <ari@mbf.sphere.ne.jp>,
@@ -1147,7 +1146,7 @@ Are you sure you want to make %d groups for nnshimbun+%s:? "
 Output will be put in a new buffer.  If called with a prefix,
 puts a '&' after each w3m command."
   (interactive "P")
-  (switch-to-buffer
+  (shimbun-switch-to-buffer
    (get-buffer-create "*shimbun download script*"))
   (erase-buffer)
   (insert

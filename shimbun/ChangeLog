@@ -1,3 +1,9 @@
+2011-07-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-switch-to-buffer): Alias to w3m-switch-to-buffer.
+
+	* nnshimbun.el (nnshimbun-generate-download-script): Use it.
+
 2011-07-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-interactive-p): Alias to w3m-interactive-p.

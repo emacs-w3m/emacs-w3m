@@ -7614,7 +7614,7 @@ a page in a new buffer with the correct width."
     (w3m-history-store-position)
     (let* ((buffers (w3m-list-buffers))
 	   (len (length buffers)))
-      (switch-to-buffer
+      (w3m-switch-to-buffer
        (nth (mod (+ arg (- len (length (memq (current-buffer) buffers))))
 		 len)
 	    buffers)))
@@ -8373,7 +8373,7 @@ or a list which consists of the following elements:
 		  (throw 'unseen buf)))))
       (if (not unseen)
 	  (message "No unseen buffer.")
-	(switch-to-buffer unseen)
+	(w3m-switch-to-buffer unseen)
 	(run-hooks 'w3m-select-buffer-hook)
 	(w3m-select-buffer-update)))))
 
@@ -9531,10 +9531,10 @@ session will start afresh."
 	(progn
 	  ;; Store the current position in the history structure.
 	  (w3m-history-store-position)
-	  (switch-to-buffer (setq buffer
-				  (w3m-copy-buffer nil nil
-						   w3m-new-session-in-background
-						   'empty)))
+	  (w3m-switch-to-buffer
+	   (setq buffer (w3m-copy-buffer nil nil
+					 w3m-new-session-in-background
+					 'empty)))
 	  (w3m-display-progress-message url)
 	  (w3m-goto-url url
 			(or reload
@@ -9598,11 +9598,11 @@ If the prefix arg ARG is given, it also clears forms and post data."
   (if arg
       (save-window-excursion
 	(dolist (buffer (w3m-list-buffers))
-	  (switch-to-buffer buffer)
+	  (w3m-switch-to-buffer buffer)
 	  (w3m-reload-this-page)))
     (dolist (buffer (w3m-list-buffers))
       (save-window-excursion
-	(switch-to-buffer buffer)
+	(w3m-switch-to-buffer buffer)
 	(w3m-reload-this-page)))))
 
 (defun w3m-redisplay-this-page (&optional arg)

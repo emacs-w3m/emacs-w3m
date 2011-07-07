@@ -1,7 +1,6 @@
 ;;; w3m-bookmark.el --- Functions to operate bookmark file of w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2008, 2009, 2010
-;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2003, 2005-2011 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -335,7 +334,7 @@ With prefix, ask for a new url instead of the present one."
     (if (and w3m-use-tab
 	     (>= (length buffers) 2))
 	(while buffers
-	  (switch-to-buffer (pop buffers))
+	  (w3m-switch-to-buffer (pop buffers))
 	  (condition-case nil
 	      (w3m-bookmark-add-current-url)
 	    (quit)))

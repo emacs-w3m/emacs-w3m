@@ -327,6 +327,7 @@ slot of SHIMBUN to encode URL."
 (defalias 'shimbun-find-coding-system 'w3m-find-coding-system)
 (defalias 'shimbun-interactive-p 'w3m-interactive-p)
 (defalias 'shimbun-replace-in-string 'w3m-replace-in-string)
+(defalias 'shimbun-switch-to-buffer 'w3m-switch-to-buffer)
 (defalias 'shimbun-url-encode-string 'w3m-url-encode-string)
 
 ;;; Implementation of Header API.
