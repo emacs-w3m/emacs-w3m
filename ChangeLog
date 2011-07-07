@@ -1,3 +1,8 @@
+2011-07-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-mailto-url): Pass other headers to the agent.
+	Suggested by Dan Jacobson <jidanni@jidanni.org>.
+
 2011-07-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-interactive-p): New macro.

@@ -8869,17 +8869,22 @@ It makes the ends of upper and lower three lines visible.  If
 	    (progn
 	      (setq info (rfc2368-parse-mailto-url url))
 	      (apply comp
-		     (append (mapcar (lambda (x)
-				       (cdr (assoc x info)))
-				     '("To" "Subject"))
+		     (append (mapcar
+			      (lambda (x)
+				(prog1
+				    (cdr (assoc x info))
+				  (setq info (delq (assoc x info) info))))
+			      '("To" "Subject"))
 			     (if post-data
-				 (list
+				 (nconc
+				  info
 				  (list (cons
 					 "body"
 					 (or (and
 					      (consp post-data)
 					      (concat (car post-data) "\n"))
-					     (concat post-data "\n")))))))))
+					     (concat post-data "\n")))))
+			       (list info)))))
 	  ;; without rfc2368.el.
 	  (string-match ":\\([^?]+\\)" url)
 	  (funcall comp (match-string 1 url)))))
