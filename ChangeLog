@@ -1,5 +1,7 @@
 2011-07-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-ccl.el (charset-id): Silence the byte compiler.
+
 	* w3m-ems.el (w3m-detect-coding-region): Use with-coding-priority.
 	(w3m-make-ccl-coding-system): Silence the byte compiler.
 
