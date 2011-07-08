@@ -105,12 +105,15 @@
 Return the first possible coding system.
 
 PRIORITY-LIST is a list of coding systems ordered by priority."
-  (let (category categories)
-    (dolist (codesys priority-list)
-      (setq category (coding-system-category codesys))
-      (unless (or (null category) (assq category categories))
-	(push (cons category codesys) categories)))
-    (car (detect-coding-with-priority start end (nreverse categories)))))
+  (w3m-static-if (fboundp 'with-coding-priority)
+      (with-coding-priority priority-list
+	(car (detect-coding-region start end)))
+    (let (category categories)
+      (dolist (codesys priority-list)
+	(setq category (coding-system-category codesys))
+	(unless (or (null category) (assq category categories))
+	  (push (cons category codesys) categories)))
+      (car (detect-coding-with-priority start end (nreverse categories))))))
 
 (defun w3m-mule-unicode-p ()
   "Check the existence as charsets of mule-unicode."
@@ -133,27 +136,29 @@ This function is an interface to `define-coding-system'."
 		      :mnemonic mnemonic :coding-type 'ccl
 		      :ccl-decoder decoder :ccl-encoder encoder))))
     (eval-when-compile
-      (funcall (if (featurep 'bytecomp)
-		   (lambda (form)
-		     (let ((byte-compile-warnings
-			    (if (eq (get 'make-coding-system 'byte-compile)
-				    'byte-compile-obsolete)
-				(delq 'obsolete
-				      (copy-sequence
-				       (cond ((consp byte-compile-warnings)
-					      byte-compile-warnings)
-					     (byte-compile-warnings
-					      byte-compile-warning-types)
-					     (t nil))))
-			      byte-compile-warnings)))
-		       (byte-compile form)))
-		 'identity)
-	       '(lambda (coding-system mnemonic docstring decoder encoder) "\
+      (funcall
+       (if (featurep 'bytecomp)
+	   (lambda (form)
+	     (let ((byte-compile-warnings
+		    (if (or (get 'make-coding-system 'byte-obsolete-info)
+			    (eq (get 'make-coding-system 'byte-compile)
+				'byte-compile-obsolete))
+			(delq 'obsolete
+			      (copy-sequence
+			       (cond ((consp byte-compile-warnings)
+				      byte-compile-warnings)
+				     (byte-compile-warnings
+				      byte-compile-warning-types)
+				     (t nil))))
+		      byte-compile-warnings)))
+	       (byte-compile form)))
+	 'identity)
+       '(lambda (coding-system mnemonic docstring decoder encoder) "\
 Define a new CODING-SYSTEM by CCL programs DECODER and ENCODER.
 CODING-SYSTEM, DECODER and ENCODER must be symbols.
 This function is an interface to `make-coding-system'."
-		  (make-coding-system coding-system 4 mnemonic docstring
-				      (cons decoder encoder)))))))
+	  (make-coding-system coding-system 4 mnemonic docstring
+			      (cons decoder encoder)))))))
 
 ;; For Emacsen of which the `mule-version' is 5.x, redefine the ccl
 ;; programs that been defined in w3m-ccl.el.
