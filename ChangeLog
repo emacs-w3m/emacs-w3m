@@ -1,3 +1,11 @@
+2011-07-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-delete-buffer): Switch to the previous emacs-w3m buffer
+	explicitly; bind frame-auto-delete and ignore-window-parameters while
+	killing the buffer.
+	(w3m-goto-url): Change the order of retrieving group:* urls so as to
+	arrange the buffer list in turn.
+
 2011-07-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-ccl.el (charset-id): Silence the byte compiler.

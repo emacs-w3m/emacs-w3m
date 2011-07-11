@@ -7644,7 +7644,7 @@ passed to the `w3m-quit' function (which see)."
 	(w3m-quit force)
       (setq cur (current-buffer))
       (if (w3m-use-tab-p)
-	  (save-window-excursion
+	  (progn
 	    (select-window (or (get-buffer-window cur t) (selected-window)))
 	    (w3m-next-buffer -1))
 	;; List buffers being shown in the other windows of the current frame.
@@ -7695,7 +7695,9 @@ passed to the `w3m-quit' function (which see)."
       (w3m-session-deleted-save (list cur))
       (w3m-process-stop cur)
       (w3m-idle-images-show-unqueue cur)
-      (kill-buffer cur)
+      (let ((frame-auto-delete nil)
+	    (ignore-window-parameters t))
+	(kill-buffer cur))
       (when w3m-use-form
 	(w3m-form-kill-buffer cur))
       (w3m-history-restore-position)
@@ -9258,14 +9260,16 @@ Cannot run two w3m processes simultaneously \
 	(let ((urls (mapcar 'w3m-url-decode-string
 			    (split-string (substring url (match-end 0)) "&")))
 	      (w3m-async-exec (and w3m-async-exec-with-many-urls
-				   w3m-async-exec)))
+				   w3m-async-exec))
+	      buffers)
 	  (w3m-process-do
-	      (type (prog1
-			(w3m-goto-url (car urls))
-		      (dolist (url (cdr urls))
-			(save-window-excursion
-			  (with-current-buffer (w3m-copy-buffer nil nil nil
-								'empty)
+	      (type (save-window-excursion
+		      (prog1
+			  (w3m-goto-url (pop urls))
+			(dotimes (i (length urls))
+			  (push (w3m-copy-buffer nil nil nil 'empty) buffers))
+			(dolist (url (nreverse urls))
+			  (with-current-buffer (pop buffers)
 			    (w3m-goto-url url))))))
 	    type))
       ;; Retrieve the page.
