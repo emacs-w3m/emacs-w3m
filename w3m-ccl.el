@@ -51,7 +51,7 @@
       (if (or (get 'charset-id 'byte-obsolete-info)
 	      (eq (get 'charset-id 'byte-compile) 'byte-compile-obsolete))
 	  (defmacro w3m-charset-id (charset) 0)
-	(defalias 'w3m-charset-id 'charset-id))
+	(defmacro w3m-charset-id (charset) `(charset-id ,charset)))
     (if (fboundp 'charset-id-internal)
 	(defmacro w3m-charset-id (charset)
 	  `(charset-id-internal ,charset))

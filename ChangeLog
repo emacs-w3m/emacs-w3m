@@ -1,3 +1,7 @@
+2011-07-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-ccl.el (charset-id): Work for old Emacsen.
+
 2011-07-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-delete-buffer): Switch to the previous emacs-w3m buffer
