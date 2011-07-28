@@ -1,3 +1,9 @@
+2011-07-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-itmedia.el (shimbun-get-headers): Update regexp matching articles
+	in kodera group.
+	(shimbun-clear-contents): Work for contents fetched from atmarkit.
+
 2011-07-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-xml-parse-buffer): Use xml-parse-region if
