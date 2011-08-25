@@ -92,21 +92,29 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 		 ((string-equal group "blog-ja")
 		  "http://kanfullblog.kantei.go.jp/archives.html")
 		 ((string-equal group "m-magazine-cn.hatoyama")
-		  "foreign/m-magazine/backnumber_ch/hatoyama_index.html")
+		  "http://www.mmz.kantei.go.jp/\
+foreign/m-magazine/backnumber_ch/hatoyama_index.html")
 		 ((string-equal group "m-magazine-kr.hatoyama")
-		  "foreign/m-magazine/backnumber_ko/hatoyama_index.html")
+		  "http://www.mmz.kantei.go.jp/\
+foreign/m-magazine/backnumber_ko/hatoyama_index.html")
 		 ((string-equal group "m-magazine-en.hatoyama")
-		  "foreign/m-magazine/backnumber/hatoyama.html")
+		  "http://www.mmz.kantei.go.jp/\
+foreign/m-magazine/backnumber/hatoyama.html")
 		 ((string-equal group "m-magazine-ja.hatoyama")
-		  "jp/m-magazine/backnumber/hatoyama.html")
+		  "http://www.mmz.kantei.go.jp/\
+jp/m-magazine/backnumber/hatoyama.html")
 		 ((string-equal group "m-magazine-en.aso")
-		  "foreign/m-magazine/backnumber/aso.html")
+		  "http://www.mmz.kantei.go.jp/\
+foreign/m-magazine/backnumber/aso.html")
 		 ((string-equal group "m-magazine-ja.aso")
-		  "jp/m-magazine/backnumber/aso.html")
+		  "http://www.mmz.kantei.go.jp/\
+jp/m-magazine/backnumber/aso.html")
 		 ((string-equal group "m-magazine-en.fukuda")
-		  "foreign/m-magazine/backnumber/fukuda.html")
+		  "http://www.mmz.kantei.go.jp/\
+foreign/m-magazine/backnumber/fukuda.html")
 		 ((string-equal group "m-magazine-ja.fukuda")
-		  "jp/m-magazine/backnumber/hukuda.html")
+		  "http://www.mmz.kantei.go.jp/\
+jp/m-magazine/backnumber/hukuda.html")
 		 ((string-equal group "m-magazine-en.abe")
 		  "foreign/m-magazine/backnumber/abe.html")
 		 ((string-equal group "m-magazine-ja.abe")
