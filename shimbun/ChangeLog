@@ -1,3 +1,12 @@
+2011-08-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kantei.el: Support KAN-FULL blog.
+	(shimbun-kantei-groups): Add blog-en and blog-ja groups; remove
+	m-magazine-(cn,en,ja,kr) groups.
+	(shimbun-kantei-url, shimbun-kantei-x-face-alist, shimbun-index-url)
+	(shimbun-from-address, shimbun-get-headers, shimbun-clear-contents):
+	Update.
+
 2011-07-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-itmedia.el (shimbun-get-headers): Update regexp matching articles
