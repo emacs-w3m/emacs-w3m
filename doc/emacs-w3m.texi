@@ -8,8 +8,7 @@
 @synindex pg cp
 
 @copying
-Copyright @copyright{} 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
-2008, 2009 @w{TSUCHIYA Masatoshi}
+Copyright @copyright{} 2000-2011 @w{TSUCHIYA Masatoshi}
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -6116,7 +6115,7 @@ vinelinux.errata.2x.i386 vinelinux.errata.2x.ppc
 vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
 vinelinux.errata.1x
 
-@item @uref{http://www.mmz.kantei.go.jp/, Japan's Cabinet Mail Magazine}
+@item @uref{http://www.kantei.go.jp/, Japan's Cabinet Blog/Mail Magazine}
 kantei.m-magazine-en kantei.m-magazine-ja kantei.m-magazine-cn.hatoyama
 kantei.m-magazine-kr.hatoyama kantei.m-magazine-en.hatoyama
 kantei.m-magazine-ja.hatoyama kantei.m-magazine-en.aso
@@ -6125,8 +6124,7 @@ kantei.m-magazine-ja.fukuda kantei.m-magazine-en.abe
 kantei.m-magazine-ja.abe kantei.m-magazine-en.koizumi
 kantei.m-magazine-ja.koizumi
 
-@samp{kantei.m-magazine}, @samp{kantei.m-magazine-cn} and
-@samp{kantei.m-magazine-kr} are also available for the backward
+@samp{kantei.m-magazine} is also available for the backward
 compatibility.
 
 @item @uref{http://www.jpo.go.jp/, Patent Office in Japan}
