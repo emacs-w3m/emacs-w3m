@@ -57,6 +57,10 @@ which is for the backward compatibility; so are `m-magazine-cn' and
 (defvar shimbun-kantei-x-face-alist
   ;; Don't change the order of the faces.  See the method function that
   ;; is applied to `shimbun-make-contents'.
+;;   '(("default" . "X-Face: wD_bt+H/9gXK?KM0Kj=bIS>%Hl$\\J)a,XK.#;Ip2'i\
+;; xUI/?mwNvn^Il1:Fm)dv&KR{`K:m>\n [tDi]wLMKeUJ=k@BP}(A/*3:{zgM37D(}%X'V\
+;; ]{(eu=@=3.4m<f!N79jGQs(9*Eneu,)s3/qr|zHCf\n ~lq)}TTeX>n::o&|P#A:,BkIm\
+;; vm4%~")
   '(("default" . "X-Face: #Mk`n~UfLBs/5u+Pl'tnaO~4.\";)nt-Ip-+H&X}Du!\
 TN~u*]-#PJ(Xo'uKzpq-l]6pac=~T\n hm-vH$Bh88Kq<[!1tY7\\wVW{fV=9ad4!`|xn\
 Rw$tl:?a{01+wd:6ysB*[Mms:Gv%\\Dj-a<{MY{vKJK\n /*t91Ighysyc8}Z2NG#X]W9\

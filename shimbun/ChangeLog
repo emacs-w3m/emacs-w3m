@@ -1,3 +1,7 @@
+2011-08-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kantei.el (shimbun-kantei-x-face-alist): Add new face (commented).
+
 2011-08-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el: Support KAN-FULL blog.
