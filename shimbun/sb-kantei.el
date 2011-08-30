@@ -51,8 +51,7 @@
   "List of the groups subscribing to the blog of Japan's Cabinet.
 Old e-mail magazines' archive are also supported.
 Note that the `m-magazine-ja.koizumi' is the same as `m-magazine'
-which is for the backward compatibility; so are `m-magazine-cn' and
-`m-magazine-kr' for those of Hatoyama.")
+which is for the backward compatibility.")
 
 (defvar shimbun-kantei-x-face-alist
   ;; Don't change the order of the faces.  See the method function that
