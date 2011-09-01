@@ -5385,10 +5385,10 @@ nikkei.release.const.house nikkei.release.const.etc nikkei.shasetsu
 
 @item @uref{http://sankei.jp.msn.com/, MSN 産経ニュース}
 @itemx (2007年10月から MSN に移行)
-sankei.points sankei.affairs sankei.politics sankei.economy sankei.world
-sankei.sports sankei.entertainments sankei.life sankei.culture
-sankei.release sankei.region sankei.usatoday sankei.usatoday.ja
-sankei.column.sankeisho sankei.column.shucho sankei.column.seiron
+sankei.points sankei.flash sankei.affairs sankei.politics sankei.economy
+sankei.world sankei.sports sankei.entertainments sankei.life
+sankei.science sankei.region sankei.column.sankeisho
+sankei.column.shucho sankei.column.seiron
 
 @item @uref{http://www.spiegel.de/, Spiegel Online}
 spiegel.news

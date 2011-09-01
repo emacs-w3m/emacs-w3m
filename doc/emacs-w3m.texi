@@ -5358,13 +5358,10 @@ nikkei.release.const.house nikkei.release.const.etc nikkei.shasetsu
 
 @item @uref{http://sankei.jp.msn.com/, MSN Sankei News}
 @itemx (This site has been shifted to MSN in October, 2007)
-sankei.news.shakai sankei.news.kokusai sankei.news.seiji
-sankei.news.keizai sankei.news.seikatsu sankei.news.kyouiku
-sankei.news.sports sankei.news.cutlure sankei.news.chiho
-sankei.special.komori sankei.special.kuroda sankei.special.ito
-sankei.special.tamura sankei.special.jieitai sankei.special.kenpo
-sankei.special.kyouiku sankei.special.kiko sankei.ronsetsu.shucho
-sankei.ronsetsu.sankeisho sankei.ronsetsu.seiron
+sankei.points sankei.flash sankei.affairs sankei.politics sankei.economy
+sankei.world sankei.sports sankei.entertainments sankei.life
+sankei.science sankei.region sankei.column.sankeisho
+sankei.column.shucho sankei.column.seiron
 
 @item @uref{http://www.spiegel.de/, Spiegel Online}
 spiegel.news
