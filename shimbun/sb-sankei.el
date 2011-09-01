@@ -1,7 +1,6 @@
 ;;; sb-sankei.el --- shimbun backend for the MSN Sankei News -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011
-;;   Katsumi Yamaoka
+;; Copyright (C) 2003-2011 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -42,6 +41,8 @@
 (defvar shimbun-sankei-group-table
   '(("points" "注目ニュース"
      "http://sankei.jp.msn.com/rss/news/points.xml")
+    ("flash" "速報"
+     "http://sankei.jp.msn.com/rss/news/flash.xml")
     ("affairs" "事件"
      "http://sankei.jp.msn.com/rss/news/affairs.xml")
     ("politics" "政治"
@@ -56,16 +57,10 @@
      "http://sankei.jp.msn.com/rss/news/entertainments.xml")
     ("life" "生活"
      "http://sankei.jp.msn.com/rss/news/life.xml")
-    ("culture" "文化"
-     "http://sankei.jp.msn.com/rss/news/culture.xml")
-    ("release" "新商品"
-     "http://sankei.jp.msn.com/rss/news/release.xml")
+    ("science" "科学"
+     "http://sankei.jp.msn.com/rss/news/science.xml")
     ("region" "地方"
      "http://sankei.jp.msn.com/rss/news/region.xml")
-    ("usatoday" "USA TODAY"
-     "http://sankei.jp.msn.com/rss/news/usatoday.xml")
-    ("usatoday.ja" "USA TODAY 和訳"
-     "http://sankei.jp.msn.com/rss/news/usatoday.xml")
     ;; Non-RSS groups.
     ("column.sankeisho" "産経抄"
      "http://sankei.jp.msn.com/column/topics/column-14576-t1.htm")
@@ -164,15 +159,13 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAGFBMVEX///8An/8Vb38CnwB
   (shimbun-sankei-multi-next-url shimbun header url))
 
 (defun shimbun-sankei-multi-next-url (shimbun header url)
-  (unless (string-equal (shimbun-current-group-internal shimbun)
-			"usatoday.ja")
-    (goto-char (point-min))
-    (when (and (re-search-forward "<div[\t\n ]+class=\"pager\"" nil t)
-	       (shimbun-end-of-tag "div")
-	       (re-search-backward "\
+  (goto-char (point-min))
+  (when (and (re-search-forward "<div[\t\n ]+class=\"pager\"" nil t)
+	     (shimbun-end-of-tag "div")
+	     (re-search-backward "\
 <a[\t\n ]+href=\"\\([^\"]+\\)\"[^>]*>[\t\n ]*次のページ"
-				   (match-beginning 0) t))
-      (shimbun-expand-url (match-string 1) url))))
+				 (match-beginning 0) t))
+    (shimbun-expand-url (match-string 1) url)))
 
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-sankei)
 						    header)
@@ -183,30 +176,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAGFBMVEX///8An/8Vb38CnwB
   (let ((group (shimbun-current-group-internal shimbun))
 	(hankaku (shimbun-japanese-hankaku shimbun))
 	(case-fold-search t)
-	no-footer start end)
-
-    (cond ((string-equal group "usatoday")
-	   (setq no-footer t))
-	  ((string-equal group "usatoday.ja")
-	   (when (and (re-search-forward "<div[\t\n ]+[^>]+>[\t\n ]*\
-\\(?:<h[0-9]+>[\t\n ]*\\)?このニュースの和訳\\(?:[\t\n ]*</h[0-9]+>\\)?\
-\[\t\n ]*<div[\t\n ]"
-					 nil t)
-		      (progn
-			(goto-char (match-beginning 0))
-			(shimbun-end-of-tag "div"))
-		      (re-search-backward "\
-<a[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*href=\"\\([^\"]+\\)\"[^>]*>[\t\n ]*\
-\\([^<]+\\)</a>"
-					  nil t))
-	     (let ((url (shimbun-header-xref header)))
-	       (shimbun-header-set-subject header (match-string 2))
-	       (setq url (shimbun-expand-url (match-string 1) url))
-	       (shimbun-header-set-xref header url)
-	       (erase-buffer)
-	       (shimbun-fetch-url shimbun url)))
-	   (goto-char (point-min))))
-
+	start end)
     (if (and (or (re-search-forward "<span[\t\n ]+class=\"timestamp\"" nil t)
 		 (re-search-forward "<!-+[\t\n ]+grok[\t\n ]+target[\t\n ]+\
 title[\t\n ]+end[\t\n ]+-+>"
@@ -290,20 +260,6 @@ title[\t\n ]+end[\t\n ]+-+>"
 
 	  (shimbun-remove-orphaned-tag-strips "div\\|span")
 
-	  (cond ((string-equal group "usatoday.ja")
-		 ;; Insert a newline after the headline.
-		 (goto-char (point-min))
-		 (when (re-search-forward "\
-\\(<p\\(?:[\t\n ]*\\|[\t\n ]+[^>]+\\)>\\)[\t\n ]*\
-　\\(【[^<】]+】\\)[\t\n 　]*"
-					  nil t)
-		   (replace-match "\\1\\2</p>\n<p>　"))
-		 ;; Don't insert a footer if it originally exists.
-		 (when (re-search-forward "\
-\(c)[\t\n ]+2007,[\t\n ]+USA[\t\n ]+TODAY[\t\n ]+International\\."
-					  nil t)
-		   (setq no-footer t))))
-
 	  ;; Convert Japanese zenkaku ASCII chars into hankaku.
 	  (when (and hankaku (not (memq hankaku '(header subject))))
 	    (shimbun-japanese-hankaku-buffer t))
@@ -311,8 +267,7 @@ title[\t\n ]+end[\t\n ]+-+>"
 	  ;; Break long lines.
 	  (unless (shimbun-prefer-text-plain-internal shimbun)
 	    (shimbun-break-long-japanese-lines))
-	  (not no-footer))
-
+	  t)
       (erase-buffer)
       (insert "<html><body>\
 この記事 (またはこの次のページ) はもうありません。<br>\n\
