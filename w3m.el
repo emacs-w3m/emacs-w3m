@@ -1614,7 +1614,7 @@ text.  See also `w3m-use-tab'."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-new-session-url "about://bookmark/"
+(defcustom w3m-new-session-url "about:blank"
   "*Default url to be opened in a tab or a session which is created newly."
   :group 'w3m
   :type '(radio
@@ -4586,10 +4586,12 @@ if it has no scheme part."
   (let (url)
     (w3m-arrived-setup)
     (cond ((null initial)
-	   (when (and (setq initial (w3m-active-region-or-url-at-point t))
-		      (not (string-match "[^\000-\177]" initial)))
-	     (setq initial (w3m-url-decode-string initial
-						  w3m-current-coding-system))))
+	   (when (setq initial (w3m-active-region-or-url-at-point t))
+	     (if (string-match "\\`about:" initial)
+		 (setq initial nil)
+	       (unless (string-match "[^\000-\177]" initial)
+		 (setq initial (w3m-url-decode-string
+				initial w3m-current-coding-system))))))
 	  ((string= initial "")
 	   (setq initial nil)))
     (when initial
@@ -4624,17 +4626,22 @@ if it has no scheme part."
 					 (substring prompt 0
 						    (match-beginning 0))))
 				 (concat prompt " (default "
-					 (if (equal default w3m-home-page)
-					     "HOME"
-					   default)
+					 (cond ((equal default "about:blank")
+						"BLANK")
+					       ((equal default w3m-home-page)
+						"HOME")
+					       (t default))
 					 "): "))
 			     prompt)
 			 (if default
 			     (format "URL %s(default %s): "
 				     (if feeling-lucky "or Keyword " "")
 				     (if (stringp default)
-					 (if (eq default w3m-home-page)
-					     "HOME" default)
+					 (cond ((string= default "about:blank")
+						"BLANK")
+					       ((string= default w3m-home-page)
+						"HOME")
+					       (t default))
 				       (prin1-to-string default)))
 			   (if feeling-lucky "URL or Keyword: " "URL: ")))
 		       'w3m-url-completion nil nil initial
@@ -9520,7 +9527,7 @@ If you invoke this command in the emacs-w3m buffer, the new session
 will be created by copying the current session.  Otherwise, the new
 session will start afresh."
   (interactive
-   (list (w3m-input-url nil nil	nil nil 'feeling-lucky)
+   (list (w3m-input-url nil nil w3m-new-session-url nil 'feeling-lucky)
 	 current-prefix-arg
 	 (w3m-static-if (fboundp 'universal-coding-system-argument)
 	     coding-system-for-read)
