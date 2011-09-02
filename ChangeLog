@@ -1,6 +1,7 @@
 2011-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-new-session-url): Default to about:blank.
+	* w3m.el (w3m-create-empty-session): New user command.
+	(w3m-new-session-url): Default to about:blank.
 	(w3m-input-url): Don't use about:* as initial value.
 	(w3m-goto-url-new-session): Use w3m-new-session-url as the default.
 

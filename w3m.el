@@ -9577,6 +9577,12 @@ session will start afresh."
     (error "You have to specify the value of `w3m-home-page'"))
   (w3m-goto-url w3m-home-page))
 
+;;;###autoload
+(defun w3m-create-empty-session ()
+  "Create an empty page as a new session and visit it."
+  (interactive)
+  (w3m-goto-url-new-session "about:blank"))
+
 (defun w3m-reload-this-page (&optional arg no-popup)
   "Reload the current page, disregarding the cached contents.
 If the prefix arg ARG is given, it also clears forms and post data."
