@@ -1,3 +1,8 @@
+2011-09-03  Dan Jacobson  <jidanni@jidanni.org>
+
+	* w3m.el (w3m-lynx-like-map, w3m-info-like-map): Bind the `C-t t' key
+	to w3m-create-empty-session.
+
 2011-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-create-empty-session): New user command.
