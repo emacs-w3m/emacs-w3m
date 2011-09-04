@@ -1,3 +1,45 @@
+2011-09-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-lnum.el (w3m-link-numbering, w3m-linknum-minibuffer-prompt)
+	(w3m-linknum-match): Use old defface style for XEmacs.
+	(w3m-link-set-numbering): Replace w3m-string-match-p w/ string-match-p.
+	(w3m-highlight-numbered-anchor, w3m-get-match-info): Fix range passed
+	to overlays-in to make it work for XEmacs.
+
+2011-09-04  Andrey Kotlarski  <m00naticus@gmail.com>
+
+	* w3m-lnum.el: Update copyright years. Don't require `cl'.
+	(w3m-linknum-match): Make numbering face visible for some
+	consoles.
+	(w3m-link-numbering-quick-browsing)
+	(w3m-link-numbering-context-alist): New custom variables.
+	(w3m-linknum-remove-overlays): Delete overlays only within the
+	visible window part.
+	(w3m-link-set-overlay): Don't use `incf'.
+	(w3m-link-set-numbering): Number additional context items as
+	specified by `w3m-link-numbering-context-alist'. Return index of
+	the last matched item.
+	(w3m-goto-next-image2): Fix doc typo.
+	(w3m-goto-next-anchor-or-image, w3m-link-numbering): Cosmetic
+	indent.
+	(w3m-linknum-prompt-str): Don't show 0 when this is being current
+	default for selection.
+	(w3m-read-int-interactive): Up and down scrolling preserves text
+	filter and cleans previous numbering. Allow <enter> shortcutting
+	options as specified by `w3m-link-numbering-quick-browsing'. Don't
+	let the text filter grow when no items match.
+	(w3m-with-linknum): Make `last-index' variable visible within body
+	and set as the last index currently used for numbering.
+	(w3m-get-match-info): New macro.
+	(w3m-get-anchor-info): Use `w3m-get-match-info'.
+	(w3m-go-to-linknum, w3m-linknum-get-action): Call
+	`w3m-get-anchor-info' with a selection number.
+	(w3m-linknum-follow, w3m-linknum-view-image)
+	(w3m-linknum-save-image, w3m-linknum-print-this-url): Don't use cl
+	functions.
+	(w3m-linknum-zoom-image): Cosmetic doc string change.
+	(w3m-linknum-bookmark-add-this-url): Use 1+.
+
 2011-09-03  Dan Jacobson  <jidanni@jidanni.org>
 
 	* w3m.el (w3m-lynx-like-map, w3m-info-like-map): Bind the `C-t t' key
