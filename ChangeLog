@@ -2,7 +2,7 @@
 
 	* w3m-lnum.el (w3m-link-numbering, w3m-linknum-minibuffer-prompt)
 	(w3m-linknum-match): Use old defface style for XEmacs.
-	(w3m-link-set-numbering): Replace w3m-string-match-p w/ string-match-p.
+	(w3m-link-set-numbering): Replace string-match-p w/ w3m-string-match-p.
 	(w3m-highlight-numbered-anchor, w3m-get-match-info): Fix range passed
 	to overlays-in to make it work for XEmacs.
 
