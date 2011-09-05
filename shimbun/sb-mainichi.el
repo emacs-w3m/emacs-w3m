@@ -1,7 +1,6 @@
 ;;; sb-mainichi.el --- shimbun backend for Mainichi jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
-;; Koichiro Ohba <koichiro@meadowy.org>
+;; Copyright (C) 2001-2009, 2011 Koichiro Ohba <koichiro@meadowy.org>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
 ;;         Katsumi Yamaoka <yamaoka@jpl.org>
@@ -82,7 +81,9 @@
     ("opinion.newsup" "ニュースＵＰ"
      "http://mainichi.jp/select/opinion/newsup/")
     ("entertainment.art" "芸術・文化"
-     "http://mainichi.jp/enta/art/archive/")))
+     "http://mainichi.jp/enta/art/archive/")
+    ("fuchisou" "風知草"
+     "http://mainichi.jp/select/seiji/fuchisou/")))
 
 (defvar shimbun-mainichi-x-face-alist
   '(("default" . "\

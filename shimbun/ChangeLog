@@ -1,5 +1,9 @@
 2011-09-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-mainichi.el (shimbun-mainichi-group-table): Add fuchisou group.
+
+2011-09-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* sb-sankei.el (shimbun-sankei-group-table): Add flash and science
 	groups; remove culture, release, usatoday, and usatoday.ja groups.
 	(shimbun-sankei-multi-next-url, shimbun-clear-contents): Remove
