@@ -745,10 +745,68 @@ objects will not be deleted:
 		(delete-window window)))))))))
 
 
+;;; Navigation:
+
+(defmacro w3m-goto-next-defun (name property)
+  "Create function w3m-goto-next- NAME.
+Return position of the first occurence of PROPERTY.
+If currently over such PROPERTY, find next such occurence."
+  `(defun ,(intern (concat "w3m-goto-next-" (symbol-name name)))
+     (&optional pos)
+     ,(concat "Return position of next " (symbol-name name)
+	      " starting from POS or point.")
+     (setq pos (or pos (point)))
+     (if (get-char-property pos ',property) ; currently over such element
+	 (setq pos (next-single-property-change pos ',property)))
+     (if (or (get-char-property pos ',property)
+	     (setq pos (next-single-property-change pos ',property)))
+	 pos)))
+
+(w3m-goto-next-defun link w3m-href-anchor)
+(w3m-goto-next-defun image2 w3m-image)
+
+(defun w3m-goto-next-anchor-or-image (&optional pos)
+  "Return position of next anchor or image starting from POS or point."
+  (setq pos (or pos (point)))
+  (cond				; currently on anchor or image
+   ((w3m-anchor-sequence pos)
+    (setq pos (next-single-property-change pos 'w3m-anchor-sequence)))
+   ((w3m-image pos)
+    (setq pos (next-single-property-change pos 'w3m-image))))
+  (or (w3m-anchor-sequence pos)
+      (w3m-image pos)
+      (let ((image-pos (next-single-property-change pos 'w3m-image)))
+	(setq pos (next-single-property-change pos
+					       'w3m-anchor-sequence))
+	(and image-pos
+	     (or (not pos) (> pos image-pos))
+	     (setq pos image-pos))))
+  (if pos
+      (let ((hseq (w3m-anchor-sequence pos)))
+	(if (and hseq (text-property-any ; multiline anchors
+		       (point-min) pos 'w3m-anchor-sequence hseq))
+	    (w3m-goto-next-anchor-or-image pos)
+	  pos))))
+
+
 ;;; Miscellaneous:
 
 (defconst w3m-url-fallback-base "http:///")
 (defconst w3m-url-invalid-regexp "\\`http:///")
+
+(defmacro w3m-substitute-key-definitions (new-map old-map &rest keys)
+  "In NEW-MAP substitute cascade of OLD-MAP KEYS.
+KEYS is alternating list of key-value."
+  (let ((n-map new-map)
+	(o-map old-map))
+    `(progn
+       ,@(let ((res nil))
+	   (while keys
+	     (push `(substitute-key-definition
+		     ,(car keys) ,(cadr keys) ,n-map ,o-map)
+		   res)
+	     (setq keys (cddr keys)))
+	   (nreverse res)))))
 
 (defun w3m-url-valid (url)
   (and url (not (string-match w3m-url-invalid-regexp url))

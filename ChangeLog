@@ -1,3 +1,31 @@
+2011-09-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-lnum.el (w3m-lnum-face): Remove face alias.
+	(w3m-lnum-quick-browsing): Add custom type.
+	(w3m-lnum-remove-overlays, w3m-lnum-set-numbering)
+	(w3m-lnum-highlight-anchor, w3m-lnum-get-match-info): Fix overlay end
+	range, too.
+
+2011-09-07  Andrey Kotlarski  <m00naticus@gmail.com>
+
+	* w3m.el: Use `w3m-lnum' as naming prefix for commands and
+	maps from `w3m-lnum.el'.
+
+	* w3m-lnum.el: Use `w3m-lnum' as naming prefix everywhere instead of
+	`w3m-linknum' or `w3m-link-numbering'.
+	(w3m-lnum-set-numbering, w3m-lnum): Optionally don't clean previous
+	numbering.
+	(w3m-lnum-read-interactive): Don't clean previous numbering with
+	`w3m-lnum' in cases when there is no such.
+	(w3m-lnum-remove-overlays, w3m-lnum-set-numbering): Fix overlay start
+	range to make it work for XEmacs.
+	(w3m-lnum-get-action): Don't invoke `w3m-lnum-read-interactive' with 0
+	numbered items.
+
+	* w3m-util.el (w3m-goto-next-defun): New macro.
+	(w3m-goto-next-anchor-or-image, w3m-substitute-key-definitions): Move
+	from w3m-lnum.el
+
 2011-09-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-lnum.el (w3m-link-numbering, w3m-linknum-minibuffer-prompt)
