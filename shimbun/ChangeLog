@@ -1,4 +1,10 @@
-2011-09-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+2011-09-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kantei.el: Add Noda's blog.
+	(shimbun-kantei-groups, shimbun-kantei-x-face-alist, shimbun-index-url)
+	(shimbun-from-address, shimbun-make-contents): Update.
+
+(2011-09-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-mainichi.el (shimbun-mainichi-group-table): Add fuchisou group.
 
