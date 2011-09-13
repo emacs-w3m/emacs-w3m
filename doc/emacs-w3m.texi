@@ -6114,13 +6114,14 @@ vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
 vinelinux.errata.1x
 
 @item @uref{http://www.kantei.go.jp/, Japan's Cabinet Blog/Mail Magazine}
-kantei.m-magazine-en kantei.m-magazine-ja kantei.m-magazine-cn.hatoyama
-kantei.m-magazine-kr.hatoyama kantei.m-magazine-en.hatoyama
-kantei.m-magazine-ja.hatoyama kantei.m-magazine-en.aso
-kantei.m-magazine-ja.aso kantei.m-magazine-en.fukuda
-kantei.m-magazine-ja.fukuda kantei.m-magazine-en.abe
-kantei.m-magazine-ja.abe kantei.m-magazine-en.koizumi
-kantei.m-magazine-ja.koizumi
+kantei.blog-ja kantei.blog-en.kan kantei.blog-ja.kan
+kantei.m-magazine-cn.hatoyama kantei.m-magazine-kr.hatoyama
+kantei.m-magazine-en.hatoyama kantei.m-magazine-ja.hatoyama
+kantei.m-magazine-en.aso kantei.m-magazine-ja.aso
+kantei.m-magazine-en.fukuda kantei.m-magazine-ja.fukuda
+kantei.m-magazine-en.abe kantei.m-magazine-ja.abe
+kantei.m-magazine-en.koizumi kantei.m-magazine-ja.koizumi
+kantei.m-magazine
 
 @samp{kantei.m-magazine} is also available for the backward
 compatibility.
