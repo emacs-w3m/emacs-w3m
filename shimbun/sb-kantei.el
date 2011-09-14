@@ -32,7 +32,7 @@
 
 (defvar shimbun-kantei-url "http://www.kantei.go.jp/")
 
-(defvar shimbun-kantei-groups '(;;"blog-en"
+(defvar shimbun-kantei-groups '("blog-en"
 				"blog-ja"
 				"blog-en.kan"
 				"blog-ja.kan"
@@ -92,8 +92,8 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 (luna-define-method shimbun-index-url ((shimbun shimbun-kantei))
   (let ((url
 	 (let ((group (shimbun-current-group-internal shimbun)))
-	   (cond ;;((string-equal group "blog-en")
-		 ;; "")
+	   (cond ((string-equal group "blog-en")
+		  "http://nodasblog.kantei.go.jp/archives.html")
 		 ((string-equal group "blog-ja")
 		  "http://kawaraban.kantei.go.jp/archives.html")
 		 ((string-equal group "blog-en.kan")
