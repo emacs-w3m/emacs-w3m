@@ -6114,7 +6114,7 @@ vinelinux.errata.2x.sparc vinelinux.errata.2x.alpha
 vinelinux.errata.1x
 
 @item @uref{http://www.kantei.go.jp/, Japan's Cabinet Blog/Mail Magazine}
-kantei.blog-ja kantei.blog-en.kan kantei.blog-ja.kan
+kantei.blog-en kantei.blog-ja kantei.blog-en.kan kantei.blog-ja.kan
 kantei.m-magazine-cn.hatoyama kantei.m-magazine-kr.hatoyama
 kantei.m-magazine-en.hatoyama kantei.m-magazine-ja.hatoyama
 kantei.m-magazine-en.aso kantei.m-magazine-ja.aso
