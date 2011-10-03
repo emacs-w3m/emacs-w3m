@@ -61,6 +61,19 @@
      "http://sankei.jp.msn.com/rss/news/science.xml")
     ("region" "地方"
      "http://sankei.jp.msn.com/rss/news/region.xml")
+    ;; 産経ニュース west
+    ("west.flash" "最新ニュース"
+     "http://sankei.jp.msn.com/rss/news/west_flash.xml")
+    ("west.points" "注目ニュース"
+     "http://sankei.jp.msn.com/rss/news/west_points.xml")
+    ("west.affairs" "できごと"
+     "http://sankei.jp.msn.com/rss/news/west_affairs.xml")
+    ("west.sports" "スポーツ"
+     "http://sankei.jp.msn.com/rss/news/west_sports.xml")
+    ("west.life" "ライフ"
+     "http://sankei.jp.msn.com/rss/news/west_life.xml")
+    ("west.economy" "経済"
+     "http://sankei.jp.msn.com/rss/news/west_economy.xml")
     ;; Non-RSS groups.
     ("column.sankeisho" "産経抄"
      "http://sankei.jp.msn.com/column/topics/column-14576-t1.htm")
@@ -101,6 +114,11 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAGFBMVEX///8An/8Vb38CnwB
 		     (luna-class-obarray (luna-find-class 'shimbun)))
 	     shimbun range)))
 
+(luna-define-method shimbun-server-name :around ((shimbun shimbun-sankei))
+  (if (string-match "\\`west\\." (shimbun-current-group-internal shimbun))
+      "産経ニュース west"
+    (luna-call-next-method)))
+
 (luna-define-method shimbun-get-headers :around ((shimbun shimbun-sankei)
 						 &optional range)
   (if (string-match "\\.xml\\'" (shimbun-index-url shimbun))
@@ -135,7 +153,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAGFBMVEX///8An/8Vb38CnwB
 \\(?:\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
 \\(?:20[0-9][0-9]\\.\\)?[01]?[0-9]\\.[0-3]?[0-9][\t\n ]+\
 \\([012][0-9]:[0-5][0-9]\\)[\t\n ]*<\\)?"))
-	 (from (concat shimbun-sankei-server-name " (" name ")"))
+	 (from (concat (shimbun-server-name shimbun) " (" name ")"))
 	 (rgrp (mapconcat 'identity (nreverse (split-string group "\\.")) "."))
 	 (index (shimbun-index-url shimbun))
 	 headers)

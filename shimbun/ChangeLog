@@ -1,3 +1,9 @@
+2011-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-group-table): Add west groups.
+	(shimbun-server-name): New wrapper.
+	(shimbun-sankei-get-headers): Use it.
+
 2011-09-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el: Add the English version of Noda's blog.
