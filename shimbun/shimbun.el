@@ -1618,7 +1618,7 @@ it considers the buffer has already been narrowed to an article."
 	(error))
       (goto-char start)
       (while (re-search-forward
-	      "[^　、。，．＿ー―‐〜‘’“”（）［］｛｝〈〉＝′″￥]+"
+	      "[^　、。，．＿ー―‐〜~‘’“”（）［］｛｝〈〉＝′″￥]+"
 	      nil t)
 	(japanese-hankaku-region (match-beginning 0) (match-end 0) t))
       (goto-char start)

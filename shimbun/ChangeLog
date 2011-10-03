@@ -1,5 +1,7 @@
 2011-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* shimbun.el (shimbun-japanese-hankaku-region-1): Fix regexp.
+
 	* sb-sankei.el (shimbun-sankei-group-table): Add west groups.
 	(shimbun-server-name): New wrapper.
 	(shimbun-sankei-get-headers): Use it.
