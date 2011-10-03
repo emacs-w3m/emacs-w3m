@@ -5388,8 +5388,10 @@ nikkei.release.const.house nikkei.release.const.etc nikkei.shasetsu
 @itemx (2007年10月から MSN に移行)
 sankei.points sankei.flash sankei.affairs sankei.politics sankei.economy
 sankei.world sankei.sports sankei.entertainments sankei.life
-sankei.science sankei.region sankei.column.sankeisho
-sankei.column.shucho sankei.column.seiron
+sankei.science sankei.region sankei.west.flash sankei.west.points
+sankei.west.affairs sankei.west.sports sankei.west.life
+sankei.west.economy sankei.column.sankeisho sankei.column.shucho
+sankei.column.seiron
 
 @item @uref{http://www.spiegel.de/, Spiegel Online}
 spiegel.news
