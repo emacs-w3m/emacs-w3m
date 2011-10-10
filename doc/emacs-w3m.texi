@@ -5257,7 +5257,8 @@ mainichi.opinion.yoroku mainichi.opinion.hasshinbako
 mainichi.opinion.eye mainichi.opinion.hito mainichi.opinion.kinji
 mainichi.opinion.yuraku mainichi.opinion.closeup
 mainichi.opinion.kaisetsu mainichi.opinion.newsup
-mainichi.entertainment.art mainichi.fuchisou
+mainichi.opinion.jidainokaze mainichi.entertainment.art
+mainichi.fuchisou
 
 Those groups generate HTML articles containing photographs by default.
 If you would like to make them generate articles that contain only text,
