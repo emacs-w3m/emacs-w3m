@@ -80,6 +80,8 @@
      "http://mainichi.jp/select/opinion/kaisetsu/")
     ("opinion.newsup" "ニュースＵＰ"
      "http://mainichi.jp/select/opinion/newsup/")
+    ("opinion.jidainokaze" "時代の風"
+     "http://mainichi.jp/select/opinion/jidainokaze/")
     ("entertainment.art" "芸術・文化"
      "http://mainichi.jp/enta/art/archive/")
     ("fuchisou" "風知草"
