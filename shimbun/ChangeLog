@@ -1,3 +1,7 @@
+2011-10-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-itmedia.el (shimbun-clear-contents): Improve way to extract body.
+
 2011-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-mainichi.el (shimbun-mainichi-group-table): Add jidainokaze group.
