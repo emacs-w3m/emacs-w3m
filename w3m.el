@@ -632,7 +632,7 @@ url for example, you can add it to this variable as follows:
 
 \(add-to-list
  'w3m-url-coding-system-alist
- \"\\\\`https?://\\\\(?:[^./?#]+\\\\.\\\\)*example\\\\.com/\" . shift_jis)"
+ '(\"\\\\`https?://\\\\(?:[^./?#]+\\\\.\\\\)*example\\\\.com/\" . shift_jis))"
   :group 'w3m
   :type '(repeat (cons :format "%v" :indent 2
 		       (radio :format "%v"
