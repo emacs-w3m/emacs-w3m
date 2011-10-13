@@ -1,7 +1,6 @@
 ;;; w3m-search.el --- functions convenient to access web search engines
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
-;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2011 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Keisuke Nishida    <kxn30@po.cwru.edu>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -269,12 +268,10 @@ as an initial string."
 (defvar w3m-search-thing-at-point-arg 'word
   "Argument for `thing-at-point' used in `w3m-search-read-query'")
 
-(defun w3m-search-escape-query-string (str &optional coding)
-  (mapconcat
-   (lambda (s)
-     (w3m-url-encode-string s (or coding w3m-default-coding-system)))
-   (split-string str)
-   "+"))
+(defun w3m-search-escape-query-string (str)
+  (mapconcat (lambda (s) (w3m-url-encode-string s))
+	     (split-string str)
+	     "+"))
 
 (defun w3m-search-read-query (prompt prompt-with-default &optional history)
   "Read a query from the minibuffer, prompting with string PROMPT.
@@ -324,8 +321,7 @@ PROMPT-WITH-DEFAULT instead of string PROMPT."
   (unless (string= query "")
     (let ((info (assoc search-engine w3m-search-engine-alist)))
       (if info
-	  (let ((query-string (w3m-search-escape-query-string query
-							      (caddr info)))
+	  (let ((query-string (w3m-search-escape-query-string query))
 		(post-data (cadddr info)))
 	    (funcall w3m-goto-function
 		     (format (cadr info) query-string)
@@ -358,7 +354,7 @@ and deactivate the mark."
 	(info (assoc engine w3m-search-engine-alist)))
     (when info
       (format (cadr info)
-	      (w3m-search-escape-query-string query (caddr info))))))
+	      (w3m-search-escape-query-string query)))))
 
 (provide 'w3m-search)
 

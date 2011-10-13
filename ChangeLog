@@ -1,3 +1,17 @@
+2011-10-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-url-coding-system-alist): New user option.
+	(w3m-show-decoded-url, w3m-google-feeling-lucky-charset): Abolish.
+	(w3m-url-coding-system): New function.
+	(w3m-url-encode-string, w3m-url-readable-string)
+	(w3m-url-transfer-encode-string): Use it.
+
+	* w3m.el (w3m-fontify-anchors, w3m-gmane-url-at-point)
+	(w3m-canonicalize-url, w3m-goto-url):
+	* w3m-form.el (w3m-form-make-form-data, w3m-form-parse-and-fontify):
+	* w3m-search.el (w3m-search-escape-query-string, w3m-search-do-search)
+	(w3m-search-uri-replace): Don't specify coding system for encoding url.
+
 2011-10-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-favicon.el (w3m-favicon-type): Prefer gif.

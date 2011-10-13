@@ -619,6 +619,29 @@ is no particular reason.  The value will be referred to by the
   :group 'w3m
   :type '(repeat (coding-system :format "%t: %v\n" :size 0)))
 
+(defcustom w3m-url-coding-system-alist
+  '((nil . utf-8))
+  "Alist of url regexps and coding systems used to encode url to retrieve.
+Regexp nil means any url; element of which the car is nil, that is the
+default, has to be the last item of this alist.  Coding system nil
+means using the coding system corresponding to a charset that is used
+to encode the current page.
+
+If the example.com site requires a browser to use `shift_jis' to encode
+url for example, you can add it to this variable as follows:
+
+\(add-to-list
+ 'w3m-url-coding-system-alist
+ \"\\\\`https?://\\\\(?:[^./?#]+\\\\.\\\\)*example\\\\.com/\" . shift_jis)"
+  :group 'w3m
+  :type '(repeat (cons :format "%v" :indent 2
+		       (radio :format "%v"
+			      (const :format "Any " nil)
+			      regexp)
+		       (radio :format "%v"
+			      (const :format "Page's coding system " nil)
+			      coding-system))))
+
 (defcustom w3m-key-binding nil
   "*Type of key binding set used in emacs-w3m sessions.
 The valid values include `info' which provides Info-like keys, and
@@ -1476,91 +1499,6 @@ See the balloon-help.el file for more information."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-show-decoded-url
-  '(("\\`http://\\(?:[^./?#]+\\.\\)*wikipedia\\.org/" . utf-8)
-    ("\\`http://\\(?:[^./?#]+\\.\\)*nikkei\\.co\\.jp/" . nil)
-    ("\\`http://\\(?:[^./?#]+\\.\\)*hatena\\.ne\\.jp/" . euc-jp)
-    ("\\`http://\\(?:[^./?#]+\\.\\)*ohmynews\\.co\\.jp/" . utf-8)
-    (t . t))
-  "*Non-nil means show decoded URIs in the echo area, the balloon, etc.
-This variable can take one of the following five kinds of forms:
-
-1. t
-  Decode URIs using the encoding guessed from the value of
-  `w3m-coding-system-priority-list'.
-
-2. Coding system
-  Decode URIs using this value.
-
-3. List of coding systems:
-  Decode URIs using the encoding assumed based on this list.
-
-4. Alist of predicates and forms described below:
-  Each element looks like the `(PREDICATE . ENCODING)' form.  PREDICATE
-  should be a regexp, a function or a Lisp form, and ENCODING should be
-  one of the forms described here excluding this form.  If PREDICATE is
-  a regexp, it will be tested whether it matches to the target url.
-  If it is a function, it will be called with the target url.  If it
-  is a Lisp form, it will be simply evaluated.  Elements are tested in
-  turn until the result of the test of the predicate is true and the
-  encoding which is associated to the predicate is used for decoding
-  URIs.
-
-5. nil
-  Don't decode URIs."
-  :group 'w3m
-  :type
-  '(choice
-    :format "%{%t%}: %[Value Menu%]\n  %v"
-    (coding-system :tag "Specify encoding" :format "Use this encoding: %v"
-		   :match (lambda (widget value)
-			    (w3m-find-coding-system value)))
-    (const :tag "Prefer the encoding of the current page"
-	   :format "%t: %{t%}\n" :sample-face widget-field-face
-	   t)
-    (group :tag "List of prefered encodings"
-	   :match (lambda (widget value)
-		    (and (car-safe value)
-			 (symbolp (car-safe value))))
-	   (repeat :format "List of prefered encodings:\n%v%i\n"
-		   :inline t
-		   (coding-system :tag "Encoding")))
-    (group :tag "Rules to select an encoding of URIs on the current page"
-	   :match (lambda (widget value) value)
-	   (repeat
-	    :format
-	    "Rules to select an encoding of URIs on the current page:\n%v%i\n"
-	    :inline t
-	    (cons
-	     :format "%v" :indent 2
-	     (choice
-	      :format "\n  %[Value Menu for the car%]\n    %v"
-	      (regexp :tag "Regexp matches the current page")
-	      (function :tag "Predicate checks for the current page")
-	      (sexp :tag "Expression checks for the current page"))
-	     (choice
-	      :format "%[Value Menu for the cdr%]\n    %v"
-	      (coding-system :tag "Specify encoding"
-			     :format "Use this encoding: %v"
-			     :match (lambda (widget value)
-				      (if (featurep 'xemacs)
-					  nil ;; ??
-					(w3m-find-coding-system value))))
-	      (const :tag "Prefer the encoding of the current page"
-		     :format "%t: %{t%}\n" :sample-face widget-field-face
-		     t)
-	      (group :tag "List of prefered encodings"
-		     (repeat :tag "List of prefered encodings"
-			     :inline t
-			     :extra-offset 4
-			     (coding-system :tag "Encoding")))
-	      (const :tag "Don't decode URIs"
-		     :format "%t: %{nil%}\n" :sample-face widget-field-face
-		     nil)))))
-    (const :tag "Don't decode URIs"
-	   :format "%t: %{nil%}\n" :sample-face widget-field-face
-	   nil)))
-
 (defcustom w3m-use-title-buffer-name nil
   "Non-nil means use name of buffer included current title."
   :group 'w3m
@@ -2090,19 +2028,6 @@ Here are some predefined functions which can be used for those ways:
 In that case, emacs-w3m uses Google to search for the words."
   :group 'w3m
   :type 'boolean)
-
-(defcustom w3m-google-feeling-lucky-charset
-  (cond
-   ((or (featurep 'un-define) (fboundp 'utf-translate-cjk-mode))
-    "UTF-8")
-   ((equal "Japanese" w3m-language)
-    "SHIFT_JIS")
-   ((w3m-find-coding-system 'utf-8)
-    "UTF-8")
-   (t "US-ASCII"))
-  "*Character set for \"I'm Feeling Lucky on Google\"."
-  :group 'w3m
-  :type '(string :size 0))
 
 (defconst w3m-entity-table
   (let ((table (make-hash-table :test 'equal)))
@@ -3357,7 +3282,23 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 	  (write-region (point-min) (point-max) file nil 'nomsg)
 	  (when mode (set-file-modes file mode)))))))
 
-(defun w3m-url-encode-string (str &optional coding encode-space)
+(defun w3m-url-coding-system (url)
+  "Return coding system suitable to URL to retrieve."
+  (let ((alist w3m-url-coding-system-alist)
+	(case-fold-search t)
+	elt coding)
+    (while alist
+      (setq elt (pop alist))
+      (if (or (not (car elt))
+	      (and (stringp (car elt)) (string-match (car elt) url)))
+	  (setq coding (cdr elt)
+		alist nil)))
+    (or coding
+	w3m-current-coding-system
+	(cdr (assq nil w3m-url-coding-system-alist))
+	w3m-default-coding-system)))
+
+(defun w3m-url-encode-string (url &optional encode-space)
   (apply (function concat)
 	 (mapcar
 	  (lambda (ch)
@@ -3371,13 +3312,7 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 	      "+")
 	     (t
 	      (format "%%%02X" ch))))	; escape
-	  ;; Coerce a string into a list of chars.
-	  (append (encode-coding-string (or str "")
-					(or coding
-					    w3m-default-coding-system
-					    w3m-coding-system
-					    'iso-2022-7bit))
-		  nil))))
+	  (encode-coding-string (or url "") (w3m-url-coding-system url)))))
 
 (defun w3m-url-decode-string (str &optional coding)
   (let ((start 0)
@@ -3394,38 +3329,17 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
     (w3m-decode-coding-string-with-priority str coding)))
 
 (defun w3m-url-readable-string (url)
-  "Return a readable string for a given encoded URL.
-If `w3m-show-decoded-url' has a non-nil value, it is referred to to
-decide a decoding scheme."
+  "Return a readable string for a given encoded URL."
   (when (stringp url)
     (setq url (w3m-puny-decode-url url))
-    (let ((rule
-	   (cond ((string-match "[^\000-\177]" url)
-		  ;; It looks not to have been encoded.
-		  nil)
-		 ((and (listp w3m-show-decoded-url)
-		       (consp (car w3m-show-decoded-url)))
-		  (catch 'found-rule
-		    (save-match-data
-		      (dolist (elem w3m-show-decoded-url)
-			(when (if (stringp (car elem))
-				  (string-match (car elem) url)
-				(if (functionp (car elem))
-				    (funcall (car elem) url)
-				  (eval (car elem))))
-			  (throw 'found-rule (cdr elem)))))))
-		 (t w3m-show-decoded-url))))
-      (if rule
-	  (w3m-url-decode-string url
-				 (if (eq t rule)
-				     w3m-coding-system-priority-list
-				   rule))
-	url))))
+    (if (string-match "[^\000-\177]" url)
+	url
+      (w3m-url-decode-string url (w3m-url-coding-system url)))))
 
-(defun w3m-url-transfer-encode-string (url &optional coding)
+(defun w3m-url-transfer-encode-string (url)
   "Encode non-ascii characters in URL into the sequence of escaped octets.
-CODING which defaults to `w3m-current-coding-system' (which see) is a
-coding system used when encoding non-ascii characters.
+Coding system used to encode url is determined according to url and
+`w3m-url-coding-system-alist'.
 
 This function is designed for conversion for safe transmission of URL,
 i.e., it handles only non-ASCII characters that can not be transmitted
@@ -3433,22 +3347,19 @@ safely through the network.  For the other general purpose, you should
 use `w3m-url-encode-string' instead."
   (setq url (w3m-puny-encode-url url))
   (let ((start 0)
-	(buf))
+	(coding (w3m-url-coding-system url))
+	buf)
     (while (string-match "[^\x21-\x7e]+" url start)
       (setq buf
 	    (cons (apply 'concat
 			 (mapcar
 			  (lambda (c) (format "%%%02X" c))
-			  (append (encode-coding-string
-				   (match-string 0 url)
-				   (or coding
-				       w3m-current-coding-system)))))
+			  (encode-coding-string (match-string 0 url) coding)))
 		  (cons (substring url start (match-beginning 0))
 			buf))
 	    start (match-end 0)))
     (apply 'concat
 	   (nreverse (cons (substring url start) buf)))))
-
 
 ;;; HTML character entity handling:
 (defun w3m-entity-value (name)
@@ -3577,8 +3488,7 @@ The database is kept in `w3m-entity-table'."
 				 (list 'w3m-name-anchor
 				       (cons
 					(w3m-decode-entities-string
-					 (w3m-url-transfer-encode-string
-					  id))
+					 (w3m-url-transfer-encode-string id))
 					prenames)))))
     (goto-char (point-min))
     (while (re-search-forward "<a[ \t\r\f\n]+" nil t)
@@ -3608,12 +3518,9 @@ The database is kept in `w3m-entity-table'."
 	      (setq href (if (match-beginning 8)
 			     (let ((tmp (match-string 9 href)))
 			       (concat (w3m-url-transfer-encode-string
-					(substring href 0 (match-beginning 8))
-					(w3m-charset-to-coding-system charset))
+					(substring href 0 (match-beginning 8)))
 				       "#" tmp))
-			 (w3m-url-transfer-encode-string
-			  href
-			  (w3m-charset-to-coding-system charset)))))
+			 (w3m-url-transfer-encode-string href))))
 	    (setq hseq (or (and (null hseq) 0) (abs hseq)))
 	    (setq w3m-max-anchor-sequence (max hseq w3m-max-anchor-sequence))
 	    (w3m-add-face-property start end (if (w3m-arrived-p href)
@@ -4456,8 +4363,7 @@ not being archived in Gmane cannot be helped."
 		 "\\(?:Message-ID\\|References\\):[\t\n ]*<\\([^\t\n <>]+\\)>")
 	    (format
 	     fmt
-	     (w3m-url-encode-string (match-string-no-properties 1)
-				    nil t))))))))
+	     (w3m-url-encode-string (match-string-no-properties 1) t))))))))
 
 (defun w3m-header-line-url ()
   "Return w3m-current-url if point on header line."
@@ -4571,12 +4477,9 @@ if it has no scheme part."
    ((and (file-name-absolute-p url) (file-exists-p url))
     (concat "file://" url))
    (feeling-lucky
-    (let* ((charset w3m-google-feeling-lucky-charset)
-	   (cs (w3m-charset-to-coding-system charset))
-	   (str (w3m-url-encode-string url cs t)))
-      (format (concat "http://www.google.com/search"
-		      "?btnI=I%%27m+Feeling+Lucky&ie=%s&oe=%s&q=%s")
-	      charset charset str)))
+    (concat "\
+http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
+	    (w3m-url-encode-string url t)))
    (t
     (concat "http://" url))))
 
@@ -9192,9 +9095,7 @@ the current page."
 	      (string-match "\\`about:" url))
     (w3m-string-match-url-components url)
     (setq url (concat (w3m-url-transfer-encode-string
-		       (substring url 0 (match-beginning 8))
-		       (or w3m-current-coding-system
-			   w3m-default-coding-system))
+		       (substring url 0 (match-beginning 8)))
 		      (if (match-beginning 8)
 			  (concat "#" (match-string 9 url))
 			""))))
@@ -9365,10 +9266,7 @@ Cannot run two w3m processes simultaneously \
 			     ;; Redisplay to search an anchor sure.
 			     (sit-for 0)
 			     (w3m-search-name-anchor
-			      (w3m-url-transfer-encode-string
-			       name
-			       (or w3m-current-coding-system
-				   w3m-default-coding-system))
+			      (w3m-url-transfer-encode-string name)
 			      nil (not (eq action 'cursor-moved)))))
 		  (setf (w3m-arrived-time (w3m-url-strip-authinfo orig))
 			(w3m-arrived-time url)))

@@ -347,11 +347,10 @@ If no field in forward, return nil without moving."
 	(mapconcat (lambda (elem)
 		     (setq elem (cdr elem))
 		     (format "%s=%s"
-			     (w3m-url-encode-string (car elem) coding t)
+			     (w3m-url-encode-string (car elem) t)
 			     (w3m-url-encode-string (if (stringp (cdr elem))
 							(cdr elem)
 						      "")
-						    coding
 						    t)))
 		   bufs "&")))))
 
@@ -623,14 +622,10 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	  (w3m-parse-attributes (action (method :case-ignore)
 					(fid :integer)
 					(accept-charset :case-ignore)
-					(enctype :case-ignore)
-					(charset :case-ignore))
+					(enctype :case-ignore))
 	    (when action
 	      (setq action (w3m-url-transfer-encode-string
-			    (w3m-decode-anchor-string action)
-			    (if charset
-				(w3m-charset-to-coding-system charset)
-			      w3m-current-coding-system))))
+			    (w3m-decode-anchor-string action))))
 	    (if (setq form (cdr (assq fid forms)))
 		(progn
 		  (setf (w3m-form-method form) (or method "get"))
