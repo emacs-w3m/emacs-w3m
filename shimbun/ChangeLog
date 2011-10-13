@@ -1,3 +1,15 @@
+2011-10-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nikkei.el (shimbun-nikkei-url-coding-system): Abolish.
+
+	* sb-yahoo-auctions.el (shimbun-index-url): Don't specify coding system
+	for encoding url.
+
+	* shimbun.el (url-coding-system): Abolish shimbun class.
+	(shimbun-retrieve-url): Remove url-coding-system argument.
+	(shimbun-fetch-url): Don't specify coding system for url to retrieve.
+	(shimbun-attributes): Remove url-coding-system shimbun class.
+
 2011-10-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-itmedia.el (shimbun-clear-contents): Improve way to extract body.

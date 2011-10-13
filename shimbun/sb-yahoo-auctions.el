@@ -1,6 +1,6 @@
 ;;; sb-yahoo-auctions.el --- shimbun backend for Yahoo! AUCTIONS
 
-;; Copyright (C) 2005, 2006, 2008 ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2005, 2006, 2008, 2011 ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
 
 ;; Author: ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
 ;; Keywords: news
@@ -57,7 +57,7 @@ URL is the URL for category or search result."
     (if elem
 	(cdr elem)
       (concat "http://search.auctions.yahoo.co.jp/search_rss?p="
-	      (shimbun-url-encode-string group 'euc-japan)))))
+	      (shimbun-url-encode-string group)))))
 
 (luna-define-method shimbun-rss-build-message-id
   ((shimbun shimbun-yahoo-auctions) url date)

@@ -1,6 +1,6 @@
 ;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009, 2010
+;; Copyright (C) 2001-2007, 2009-2011
 ;; Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>
 
 ;; Author: Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>,
@@ -43,9 +43,6 @@
 (defvar shimbun-nikkei-url
   (concat "http://www." shimbun-nikkei-top-level-domain "/")
   "Name of the parent url.")
-
-(defvar shimbun-nikkei-url-coding-system 'shift_jis
-  "Coding system used to encode URLs containing non-ASCII letters.")
 
 (defvar shimbun-nikkei-group-table
   `(("top" "トップ" ,shimbun-nikkei-url
