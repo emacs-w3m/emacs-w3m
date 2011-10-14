@@ -1,3 +1,7 @@
+2011-10-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-yahoo-auctions.el (shimbun-index-url): Revert last change.
+
 2011-10-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nikkei.el (shimbun-nikkei-url-coding-system): Abolish.
