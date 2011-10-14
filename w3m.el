@@ -620,12 +620,22 @@ is no particular reason.  The value will be referred to by the
   :type '(repeat (coding-system :format "%t: %v\n" :size 0)))
 
 (defcustom w3m-url-coding-system-alist
-  '((nil . utf-8))
+  '(("\\`https?://\\(?:[^./?#]+\\.\\)+google\\(?:\\.[^./?#]+\\)+/"
+     . (lambda (url)
+	 (if (string-match "&ie=\\([^&]+\\)" url)
+	     (w3m-charset-to-coding-system (match-string 1 url)))))
+    (nil . utf-8))
   "Alist of url regexps and coding systems used to encode url to retrieve.
-Regexp nil means any url; element of which the car is nil, that is the
-default, has to be the last item of this alist.  Coding system nil
-means using the coding system corresponding to a charset that is used
-to encode the current page.
+The form looks like:
+  ((\"REGEXP\" . CODING) (\"REGEXP\" . CODING)...(nil . CODING))
+
+Where REGEXP is a regular expression that matches a url.  REGEXP nil
+means any url; element of which the car is nil, that is the default,
+has to be the last item of this alist.
+CODING is a coding system used to encode a url that REGEXP matches.
+CODING nil means using the coding system corresponding to a charset
+used to encode the current page.  CODING may also be a function that
+takes one argument URL and returns a coding system.
 
 If the example.com site requires a browser to use `shift_jis' to encode
 url for example, you can add it to this variable as follows:
@@ -3293,6 +3303,8 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 	      (and (stringp (car elt)) (string-match (car elt) url)))
 	  (setq coding (cdr elt)
 		alist nil)))
+    (when (functionp coding)
+      (setq coding (funcall coding url)))
     (or coding
 	w3m-current-coding-system
 	(cdr (assq nil w3m-url-coding-system-alist))

@@ -1,5 +1,10 @@
 2011-10-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-url-coding-system-alist): Add a rule for Google.
+	(w3m-url-coding-system): Allow function to determine coding system.
+
+2011-10-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-url-encode-string, w3m-url-transfer-encode-string):
 	Restore optional coding argument.
 	(w3m-gmane-url-at-point, w3m-canonicalize-url): Do.
