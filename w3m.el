@@ -3298,7 +3298,7 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 	(cdr (assq nil w3m-url-coding-system-alist))
 	w3m-default-coding-system)))
 
-(defun w3m-url-encode-string (url &optional encode-space)
+(defun w3m-url-encode-string (str &optional coding encode-space)
   (apply (function concat)
 	 (mapcar
 	  (lambda (ch)
@@ -3312,7 +3312,8 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 	      "+")
 	     (t
 	      (format "%%%02X" ch))))	; escape
-	  (encode-coding-string (or url "") (w3m-url-coding-system url)))))
+	  (encode-coding-string (or str "")
+				(or coding (w3m-url-coding-system str))))))
 
 (defun w3m-url-decode-string (str &optional coding)
   (let ((start 0)
@@ -3336,18 +3337,19 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 	url
       (w3m-url-decode-string url (w3m-url-coding-system url)))))
 
-(defun w3m-url-transfer-encode-string (url)
+(defun w3m-url-transfer-encode-string (url &optional coding)
   "Encode non-ascii characters in URL into the sequence of escaped octets.
-Coding system used to encode url is determined according to url and
-`w3m-url-coding-system-alist'.
+Optional CODING is a coding system, that defaults to the one determined
+according to URL and `w3m-url-coding-system-alist', used to encode URL.
 
 This function is designed for conversion for safe transmission of URL,
 i.e., it handles only non-ASCII characters that can not be transmitted
 safely through the network.  For the other general purpose, you should
 use `w3m-url-encode-string' instead."
   (setq url (w3m-puny-encode-url url))
+  (unless coding
+    (setq coding (w3m-url-coding-system url)))
   (let ((start 0)
-	(coding (w3m-url-coding-system url))
 	buf)
     (while (string-match "[^\x21-\x7e]+" url start)
       (setq buf
@@ -4363,7 +4365,8 @@ not being archived in Gmane cannot be helped."
 		 "\\(?:Message-ID\\|References\\):[\t\n ]*<\\([^\t\n <>]+\\)>")
 	    (format
 	     fmt
-	     (w3m-url-encode-string (match-string-no-properties 1) t))))))))
+	     (w3m-url-encode-string (match-string-no-properties 1)
+				    nil t))))))))
 
 (defun w3m-header-line-url ()
   "Return w3m-current-url if point on header line."
@@ -4479,7 +4482,7 @@ if it has no scheme part."
    (feeling-lucky
     (concat "\
 http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
-	    (w3m-url-encode-string url t)))
+	    (w3m-url-encode-string url nil t)))
    (t
     (concat "http://" url))))
 
@@ -5768,7 +5771,9 @@ specifies not using the cached data."
   (if (and w3m-use-ange-ftp (string-match "\\`ftp://" url))
       (w3m-goto-ftp-url url filename)
     (lexical-let ((url url)
-		  (filename (or filename (w3m-read-file-name nil nil url))))
+		  (filename (or filename
+				(w3m-read-file-name
+				 nil nil (w3m-url-readable-string url)))))
       (w3m-process-do-with-temp-buffer
 	  (type (progn
 		  (w3m-clear-local-variables)

@@ -268,8 +268,8 @@ as an initial string."
 (defvar w3m-search-thing-at-point-arg 'word
   "Argument for `thing-at-point' used in `w3m-search-read-query'")
 
-(defun w3m-search-escape-query-string (str)
-  (mapconcat (lambda (s) (w3m-url-encode-string s))
+(defun w3m-search-escape-query-string (str &optional coding)
+  (mapconcat (lambda (s) (w3m-url-encode-string s coding))
 	     (split-string str)
 	     "+"))
 
@@ -321,7 +321,8 @@ PROMPT-WITH-DEFAULT instead of string PROMPT."
   (unless (string= query "")
     (let ((info (assoc search-engine w3m-search-engine-alist)))
       (if info
-	  (let ((query-string (w3m-search-escape-query-string query))
+	  (let ((query-string (w3m-search-escape-query-string query
+							      (caddr info)))
 		(post-data (cadddr info)))
 	    (funcall w3m-goto-function
 		     (format (cadr info) query-string)
@@ -354,7 +355,7 @@ and deactivate the mark."
 	(info (assoc engine w3m-search-engine-alist)))
     (when info
       (format (cadr info)
-	      (w3m-search-escape-query-string query)))))
+	      (w3m-search-escape-query-string query (caddr info))))))
 
 (provide 'w3m-search)
 
