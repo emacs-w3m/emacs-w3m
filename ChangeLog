@@ -1,3 +1,9 @@
+2011-10-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-canonicalize-url): Fix url that fails to have put
+	a separator following a domain name.
+	Suggested by Dan Jacobson <jidanni@jidanni.org>.
+
 2011-10-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-url-coding-system-alist): Add a rule for Google.

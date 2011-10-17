@@ -4483,20 +4483,24 @@ non-nil, return the url of the current page by default."
 	       w3m-current-url)))))
 
 (defun w3m-canonicalize-url (url &optional feeling-lucky)
-  "Add a scheme part to an URL or make an URL for \"I'm Feeling Lucky on Google\"
-if it has no scheme part."
-  (w3m-string-match-url-components url)
-  (cond
-   ((match-beginning 1)
-    url)
-   ((and (file-name-absolute-p url) (file-exists-p url))
-    (concat "file://" url))
-   (feeling-lucky
-    (concat "\
+  "Fix URL that does not look like a valid url.
+For URL having no scheme part, return a url that leaves it to chance if
+FEELING-LUCKY is non-nil (what is called \"I'm Feeling Lucky\" on Google).
+Also fix URL that fails to have put a separator following a domain name."
+  (if (string-match "\\`\\(https?://[-.0-9a-z]+\\)\\([#?].*\\)" url)
+      (concat (match-string 1 url) "/" (match-string 2 url))
+    (w3m-string-match-url-components url)
+    (cond
+     ((match-beginning 1)
+      url)
+     ((and (file-name-absolute-p url) (file-exists-p url))
+      (concat "file://" url))
+     (feeling-lucky
+      (concat "\
 http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
-	    (w3m-url-encode-string url nil t)))
-   (t
-    (concat "http://" url))))
+	      (w3m-url-encode-string url nil t)))
+     (t
+      (concat "http://" url)))))
 
 (defun w3m-input-url (&optional prompt initial default quick-start
 				feeling-lucky)
