@@ -640,18 +640,22 @@ it works although it may not be perfect."
   (interactive)
   (when (cadar w3m-history)
     (let ((start (w3m-history-plist-get :window-start))
-	  position window)
+	  position window image)
       (cond ((and start
 		  (setq position (w3m-history-plist-get :position)))
 	     (when (<= start (point-max))
-	       (setq window (get-buffer-window (current-buffer) 'all-frames))
-	       (when window
-		 (set-window-start window start)
-		 (set-window-hscroll
-		  window (or (w3m-history-plist-get :window-hscroll) 0)))
 	       (goto-char (point-min))
 	       (forward-line (car position))
-	       (move-to-column (cdr position))
+	       (setq window (get-buffer-window (current-buffer) 'all-frames)
+		     image (text-property-not-all (point) (point-at-eol)
+						  'w3m-image nil))
+	       (when window
+		 (set-window-start window start)
+		 (unless image
+		   (set-window-hscroll
+		    window (or (w3m-history-plist-get :window-hscroll) 0))))
+	       (unless image
+		 (move-to-column (cdr position)))
 	       (let ((deactivate-mark nil))
 		 (run-hooks 'w3m-after-cursor-move-hook))))
 	    ((w3m-interactive-p)

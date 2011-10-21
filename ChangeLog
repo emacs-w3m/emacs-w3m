@@ -1,3 +1,8 @@
+2011-10-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-hist.el (w3m-history-restore-position): Don't hscroll if there
+	are images ([emacs-w3m:11658]).
+
 2011-10-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-canonicalize-url): Fix url that fails to have put
