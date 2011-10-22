@@ -9282,6 +9282,9 @@ Cannot run two w3m processes simultaneously \
 				      (list :title (or w3m-current-title
 						       "<no-title>")))
 		    (goto-char (point-min)))
+		(w3m-string-match-url-components w3m-current-url)
+		(and (match-beginning 8)
+		     (setq name (match-string 9 w3m-current-url)))
 		(when (and name
 			   (progn
 			     ;; Redisplay to search an anchor sure.
