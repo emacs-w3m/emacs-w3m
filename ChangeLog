@@ -1,3 +1,7 @@
+2011-10-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-hist.el: Require w3m-util.
+
 2011-10-22  Naohiro Aota  <naota@elisp.net>
 
 	* w3m.el (w3m-goto-url): Check name anchor after redirect resolution.

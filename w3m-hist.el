@@ -34,6 +34,7 @@
 
 (eval-when-compile
   (require 'cl))
+(require 'w3m-util)
 
 (defcustom w3m-history-reuse-history-elements nil
   "Non-nil means reuse the history element when re-visiting the page.
