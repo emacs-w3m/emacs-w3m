@@ -6682,24 +6682,26 @@ compatibility which is described in Section 5.2 of RFC 2396.")
       (w3m-string-match-url-components base)
       (concat (substring base 0 (match-end 1)) url))
      ((> (match-end 5) (match-beginning 5))
-      (let ((path-end (match-end 5))
-	    expanded-path
-	    ;; See the following thread about a problem related to
-	    ;; the use of file-name-* functions for url string:
-	    ;; http://news.gmane.org/group/gmane.emacs.w3m/thread=4210
-	    file-name-handler-alist)
-	(w3m-string-match-url-components base)
-	(setq expanded-path
-	      (w3m-expand-path-name
-	       (substring url 0 path-end)
-	       (or (file-name-directory (match-string 5 base))
-		   "/")))
-	(concat
-	 (substring base 0 (match-beginning 5))
-	 (if (member (match-string 2 base) w3m-url-hierarchical-schemes)
-	     expanded-path
-	   (substring url 0 path-end))
-	 (substring url path-end))))
+      (let ((path-end (match-end 5)))
+	(if (string-equal base w3m-buffer-local-url)
+	    (if (eq (aref url 0) ?#)
+		(concat base url)
+	      ;; Assume url omits the scheme, that is http.
+	      (concat "http://" url))
+	  (w3m-string-match-url-components base)
+	  (concat
+	   (substring base 0 (match-beginning 5))
+	   (if (member (match-string 2 base) w3m-url-hierarchical-schemes)
+	       (w3m-expand-path-name
+		(substring url 0 path-end)
+		(or
+		 ;; Avoid file name handlers; cf.
+		 ;; http://news.gmane.org/group/gmane.emacs.w3m/thread=4210
+		 (let (file-name-handler-alist)
+		   (file-name-directory (match-string 5 base)))
+		 "/"))
+	     (substring url 0 path-end))
+	   (substring url path-end)))))
      ((match-beginning 6)
       ;; URL has a query part.
       (w3m-string-match-url-components base)
