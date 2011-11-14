@@ -6626,6 +6626,11 @@ COUNT is treated as 1 by default if it is omitted."
 This list is refered to by `w3m-expand-url' to keep backward
 compatibility which is described in Section 5.2 of RFC 2396.")
 
+(defconst w3m-buffer-local-url "buffer://")
+(defun w3m-buffer-local-url-p (url)
+  (save-match-data
+    (string-match (concat "^" w3m-buffer-local-url) url)))
+
 (defun w3m-expand-url (url &optional base)
   "Convert URL to the absolute address, and canonicalize it."
   (save-match-data
@@ -9069,11 +9074,6 @@ It currently works only with Emacs 22 and newer."
 			     (with-current-buffer buffer
 			       (setq w3m-modeline-title-timer nil))))
 			 (current-buffer)))))))
-
-(defconst w3m-buffer-local-url "buffer://")
-(defun w3m-buffer-local-url-p (url)
-  (save-match-data
-    (string-match (concat "^" w3m-buffer-local-url) url)))
 
 ;;;###autoload
 (defun w3m-goto-url (url &optional reload charset post-data referer handler
