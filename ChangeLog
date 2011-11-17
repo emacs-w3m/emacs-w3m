@@ -1,3 +1,40 @@
+2011-11-16  Andrey Kotlarski  <m00naticus@gmail.com>
+
+	Add alternative selection->action method.
+
+	* w3m-lnum.el: Update comment section.
+	(w3m-lnum-quick-browsing): Change default value.
+	(w3m-lnum-actions-general, w3m-lnum-actions-image-alist)
+	(w3m-lnum-actions-link-alist, w3m-lnum-actions-button-alist)
+	(w3m-lnum-actions-form-alist): New custom options.
+	(w3m-lnum-remove-overlays): Add optional parameters for start and end.
+	(w3m-lnum, w3m-lnum-prompt-str, w3m-lnum-highlight-anchor): Sanitize
+	variable naming.
+	(w3m-read-event, w3m-lnum-visit, w3m-lnum-make-action): New macros.
+	(w3m-lnum-read-interactive): Add optional parameters for previous filter
+	and selected number.  Return last applied filter along selected value.
+	Use `w3m-read-event'.  Remove lnum overlays within all buffer on
+	scroll.
+	(w3m-with-lnum): Add parameter for initial filter.  Change mode-line
+	during selection.
+	(w3m-lnum-get-action): If single image during image selection -
+	immediately select it.  Accommodate to new return format of
+	`w3m-lnum-read-interactive'.
+	(w3m-lnum-follow): Use `w3m-lnum-visit'.
+	(w3m-lnum-universal-dispatch): New function.
+	(w3m-lnum-universal): New command.
+	(w3m-lnum-view-image, w3m-lnum-save-image, w3m-lnum-print-this-url):
+	Use nth.
+	(w3m-lnum-zoom-image): Use `w3m-resize-image-interactive'.
+	(w3m-lnum-zoom-in-image, w3m-lnum-zoom-out-image): Update doc string.
+	(w3m-lnum-bookmark-add-this-url): Fix bookmarking of current url.
+	(w3m-lnum-actions-link-alist): Add actions for generic browser and Curl
+	if present.
+
+	* w3m.el (autoload): Autoload `w3m-lnum-universal'.
+	(w3m-resize-image-interactive): New function.
+	(w3m-lnum-map): Add key for `w3m-lnum-universal'.
+
 2011-11-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-expand-url): Assume only a name anchor, that has no

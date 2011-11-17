@@ -159,6 +159,7 @@
   (autoload 'w3m-lnum-mode "w3m-lnum" nil t)
   (autoload 'w3m-lnum-follow "w3m-lnum" nil t)
   (autoload 'w3m-lnum-goto "w3m-lnum" nil t)
+  (autoload 'w3m-lnum-universal "w3m-lnum" nil t)
   (autoload 'w3m-lnum-toggle-inline-image "w3m-lnum" nil t)
   (autoload 'w3m-lnum-view-image "w3m-lnum" nil t)
   (autoload 'w3m-lnum-external-view-this-url "w3m-lnum" nil t)
@@ -4114,6 +4115,44 @@ You are retrieving non-secure image(s).  Continue? ")
 		(set-marker start nil)
 		(set-marker end nil)))))))))
 
+(defun w3m-resize-image-interactive (image &optional rate changed-rate)
+  "Interactively resize IMAGE.
+If RATE is not given, use `w3m-resize-image-scale'.
+CHANGED-RATE is currently changed rate / 100."
+  (let ((char (read-char-exclusive
+	       (propertize
+		"Resize: [+ =] enlarge [-] shrink [0] original [q] quit"
+		'face 'w3m-lnum-minibuffer-prompt)))
+	(changed-rate (or changed-rate 1)))
+    (w3m-static-if (featurep 'xemacs)
+	(setq char (char-octet char)))
+    (while (memq char '(?+ ?- ?= ?0))
+      (cond ((memq char '(?+ ?=))
+	     (let ((percent (+ 100 (or rate
+				       w3m-resize-image-scale))))
+	       (w3m-resize-inline-image-internal image percent)
+	       (setq changed-rate (* changed-rate
+				     (/ percent 100.0)))))
+	    ((eq char ?-)
+	     (let ((percent (- 100 (if rate
+				       (if (> rate 99) 99
+					 rate)
+				     w3m-resize-image-scale))))
+	       (w3m-resize-inline-image-internal image percent)
+	       (setq changed-rate (* changed-rate
+				     (/ percent 100.0)))))
+	    ((eq char ?0)
+	     (w3m-resize-inline-image-internal image
+					       (/ 100.0 changed-rate))
+	     (setq changed-rate 1)))
+      (setq char
+	    (read-char-exclusive
+	     (propertize
+	      "Resize: [+ =] enlarge [-] shrink [0] original [q] quit"
+	      'face 'w3m-lnum-minibuffer-prompt)))
+      (w3m-static-if (featurep 'xemacs)
+	  (setq char (char-octet char))))))
+
 (defun w3m-zoom-in-image (&optional rate)
   "Zoom in an image on the point.
 Numeric prefix specifies how many percent the image is enlarged by
@@ -7769,12 +7808,13 @@ for users.  See Info node `(elisp)Key Binding Conventions'.")
   "Sub-keymap used for the `L'-prefixed link numbering commands.")
 (unless w3m-lnum-map
   (let ((map (make-sparse-keymap)))
+    (define-key map "f" 'w3m-lnum-follow)
     (define-key map "F" 'w3m-lnum-goto)
+    (define-key map "w" 'w3m-lnum-universal)
     (define-key map "I" 'w3m-lnum-view-image)
     (define-key map "\M-i" 'w3m-lnum-save-image)
     (define-key map "d" 'w3m-lnum-download-this-url)
     (define-key map "e" 'w3m-lnum-edit-this-url)
-    (define-key map "f" 'w3m-lnum-follow)
     (define-key map "t" 'w3m-lnum-toggle-inline-image)
     (define-key map "u" 'w3m-lnum-print-this-url)
     (define-key map "b" 'w3m-lnum-bookmark-add-this-url)
