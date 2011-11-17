@@ -104,7 +104,7 @@ filtering over an url being matched by the car."
 		   (string :tag "Information line")
 		   (group :tag "Keycode and Action" :indent 2
 			  (character :format "Key: %v\n")
-			  (function :format "%t: %v")
+			  function
 			  (string :format "Prompt: %v")))))
 
 (defcustom w3m-lnum-actions-general
