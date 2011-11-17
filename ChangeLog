@@ -1,3 +1,10 @@
+2011-11-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-lnum.el (w3m-lnum-actions-custom-type): New variable.
+	(w3m-lnum-actions-general, w3m-lnum-actions-image-alist)
+	(w3m-lnum-actions-link-alist w3m-lnum-actions-button-alist)
+	(w3m-lnum-actions-form-alist): Use it to improve custom type.
+
 2011-11-16  Andrey Kotlarski  <m00naticus@gmail.com>
 
 	Add alternative selection->action method.

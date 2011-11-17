@@ -99,13 +99,21 @@ filtering over an url being matched by the car."
   :group 'w3m
   :type 'alist)
 
+(defvar w3m-lnum-actions-custom-type
+  '(repeat (choice :format "%[Value Menu%] %v"
+		   (string :tag "Information line")
+		   (group :tag "Keycode and Action" :indent 2
+			  (character :format "Key: %v\n")
+			  (function :format "%t: %v")
+			  (string :format "Prompt: %v")))))
+
 (defcustom w3m-lnum-actions-general
   '("----  Default   ----"
     (?F (lambda (info) (push-mark (point))
 	  (goto-char (cadr info))) "Move to anchor"))
   "Alist specifying keycodes and available actions over selected anchor."
   :group 'w3m
-  :type 'alist)
+  :type w3m-lnum-actions-custom-type)
 
 (defcustom w3m-lnum-actions-image-alist
   '("----  Image  ----"
@@ -121,7 +129,7 @@ filtering over an url being matched by the car."
 	  (w3m-resize-image-interactive (car info))) "Resize"))
   "Alist specifying keycodes and available actions over a selected image."
   :group 'w3m
-  :type 'alist)
+  :type w3m-lnum-actions-custom-type)
 
 (defcustom w3m-lnum-actions-link-alist
   '("----  Link   ----"
@@ -162,7 +170,7 @@ filtering over an url being matched by the car."
 	"Open in external browser"))
   "Alist specifying keycodes and available actions over a selected link."
   :group 'w3m
-  :type 'alist)
+  :type w3m-lnum-actions-custom-type)
 
 (defcustom w3m-lnum-actions-button-alist
   '("---- Button  ----"
@@ -174,7 +182,7 @@ filtering over an url being matched by the car."
 	"Push"))
   "Alist specifying keycodes and available actions over a selected button."
   :group 'w3m
-  :type 'alist)
+  :type w3m-lnum-actions-custom-type)
 
 (defcustom w3m-lnum-actions-form-alist
   '("----  Form   ----"
@@ -193,7 +201,7 @@ filtering over an url being matched by the car."
 	      (eval action)))) "Activate"))
   "Alist specifying keycodes and available actions over a selected form field."
   :group 'w3m
-  :type 'alist)
+  :type w3m-lnum-actions-custom-type)
 
 (defvar w3m-lnum-mode-map nil
   "Keymap used when command `w3m-lnum-mode' is active.")
