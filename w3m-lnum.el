@@ -103,9 +103,9 @@ filtering over an url being matched by the car."
   '(repeat (choice :format "%[Value Menu%] %v"
 		   (string :tag "Information line")
 		   (group :tag "Keycode and Action" :indent 2
-			  (character :format "Key: %v\n")
+			  (character :tag "Key")
 			  function
-			  (string :format "Prompt: %v")))))
+			  (string :tag "Prompt")))))
 
 (defcustom w3m-lnum-actions-general
   '("----  Default   ----"
