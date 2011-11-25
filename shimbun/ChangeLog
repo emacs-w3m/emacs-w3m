@@ -3,6 +3,7 @@
 	* sb-kantei.el (shimbun-index-url): Update url for blog-ja.
 	(shimbun-get-headers): Retrieve indices, going back to past months, for
 	blog-ja group.
+	(shimbun-clear-contents): Add a filter for blog-ja group.
 
 2011-11-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 

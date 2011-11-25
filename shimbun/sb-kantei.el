@@ -452,19 +452,32 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 		    (replace-match (concat "width=\"" (number-to-string limit)
 					   "\"")))
 		(goto-char (match-end 0)))))))
-      (when (string-match "\\`blog-" (shimbun-current-group-internal shimbun))
-	(goto-char (point-min))
-	(when (and (re-search-forward "\
+      (cond ((string-equal "blog-ja" (shimbun-current-group-internal shimbun))
+	     (goto-char (point-min))
+	     (when (and (or (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"block article\"" nil t)
+			    (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"block header\"" nil t))
+			(shimbun-end-of-tag "div"))
+	       (goto-char (setq start (match-beginning 2)))
+	       (when (re-search-forward "[\t\n ]*\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"footer\"" nil t)
+		 (delete-region (match-beginning 0) (point-max))
+		 (insert "\n")
+		 (delete-region (point-min) start))))
+	    ((string-match "\\`blog-" (shimbun-current-group-internal shimbun))
+	     (goto-char (point-min))
+	     (when (and (re-search-forward "\
 <div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"entry-body\"" nil t)
-		   (shimbun-end-of-tag "div" t))
-	  (delete-region (match-end 2) (point-max))
-	  (insert "\n")
-	  (delete-region (point-min) (match-beginning 2))
-	  (goto-char (point-min))
-	  (while (re-search-forward "\
+			(shimbun-end-of-tag "div" t))
+	       (delete-region (match-end 2) (point-max))
+	       (insert "\n")
+	       (delete-region (point-min) (match-beginning 2))
+	       (goto-char (point-min))
+	       (while (re-search-forward "\
 \[\t\n 　]*<p>\\(?:[\t\n 　]*\\|[\t\n ]*&nbsp;[\t\n ]*\\)</p>[\t\n 　]*"
-				    nil t)
-	    (replace-match ""))))
+					 nil t)
+		 (replace-match "")))))
       ;; Zenkaku ASCII -> Hankaku
       (unless (memq (shimbun-japanese-hankaku shimbun) '(header subject nil))
 	(shimbun-japanese-hankaku-buffer t)))))
