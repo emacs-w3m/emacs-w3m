@@ -281,7 +281,7 @@ jp/m-magazine/backnumber/hukuda.html")
 	 (parent (shimbun-index-url shimbun))
 	 (murl parent)
 	 (from (shimbun-from-address shimbun))
-	 year month mday url subject id header headers)
+	 year month mday url subject id headers)
     (catch 'stop
       (while t
 	;; Remove commented areas.
@@ -308,17 +308,17 @@ jp/m-magazine/backnumber/hukuda.html")
 			     year month mday
 			     (or (match-string 5) "")
 			     group)))
-	  (setq header (shimbun-create-header
-			0 subject from
-			(shimbun-make-date-string year month mday)
-			id "" 0 0
-			(if (string-match "\\`http:" url)
-			    url
-			  (shimbun-expand-url url parent))))
 	  (when (and (string-equal group "blog-ja")
-		     (shimbun-search-id shimbun header))
+		     (shimbun-search-id shimbun id))
 	    (throw 'stop nil))
-	  (push header headers))
+	  (push (shimbun-create-header
+		 0 subject from
+		 (shimbun-make-date-string year month mday)
+		 id "" 0 0
+		 (if (string-match "\\`http:" url)
+		     url
+		   (shimbun-expand-url url parent)))
+		headers))
 	(if (string-equal group "blog-ja")
 	    (if (string-match "/\\(20[1-9][0-9]\\)/\\([01][0-9]\\)/\\'" murl)
 		(progn
