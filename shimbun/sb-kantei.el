@@ -95,7 +95,7 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
 	   (cond ((string-equal group "blog-en")
 		  "http://nodasblog.kantei.go.jp/archives.html")
 		 ((string-equal group "blog-ja")
-		  "http://kawaraban.kantei.go.jp/archives.html")
+		  "http://kawaraban.kantei.go.jp/")
 		 ((string-equal group "blog-en.kan")
 		  "http://kansblog.kantei.go.jp/archives.html")
 		 ((string-equal group "blog-ja.kan")
@@ -138,9 +138,12 @@ jp/m-magazine/backnumber/hukuda.html")
 		 ;; Default.
 		 (t
 		  "jp/m-magazine/backnumber/")))))
-    (if (string-match "\\`http:" url)
-	url
-      (concat (shimbun-url-internal shimbun) url))))
+    (cond ((string-equal "http://kawaraban.kantei.go.jp/" url)
+	   (concat url (format-time-string "%Y/%02m/")))
+	  ((string-match "\\`http:" url)
+	   url)
+	  (t
+	   (concat (shimbun-url-internal shimbun) url)))))
 
 (luna-define-method shimbun-from-address ((shimbun shimbun-kantei))
   (let ((group (shimbun-current-group-internal shimbun)))
@@ -276,40 +279,63 @@ jp/m-magazine/backnumber/hukuda.html")
 		      ;; 6. subject
 		      "\\([^<]+\\)")))))
 	 (parent (shimbun-index-url shimbun))
+	 (murl parent)
 	 (from (shimbun-from-address shimbun))
-	 year month mday url subject id headers)
-    ;; Remove commented areas.
-    (while (re-search-forward "<!-+" nil t)
-      (when (shimbun-end-of-tag nil t)
-	(replace-match "\n")))
-    (goto-char (point-min))
-    (while (re-search-forward regexp nil t)
-      (if (or enp cnp krp)
-	  (setq year (string-to-number (match-string 2))
-		month (string-to-number (match-string 3))
-		mday (string-to-number (match-string 4))
-		url (match-string 1)
-		subject (match-string 5)
-		id (format "<%d%02d%02d.%s%%kantei.go.jp>"
-			   year month mday group))
-	(setq year (string-to-number (match-string 2))
-	      month (string-to-number (match-string 3))
-	      mday (string-to-number (match-string 4))
-	      url (match-string 1)
-	      subject (shimbun-replace-in-string (match-string 6)
-						 "[\t\n 　]+" " ")
-	      id (format "<%d%02d%02d%s.%s%%kantei.go.jp>"
-			 year month mday
-			 (or (match-string 5) "")
-			 group)))
-      (push (shimbun-create-header
-	     0 subject from
-	     (shimbun-make-date-string year month mday)
-	     id "" 0 0
-	     (if (string-match "\\`http:" url)
-		 url
-	       (shimbun-expand-url url parent)))
-	    headers))
+	 year month mday url subject id header headers)
+    (catch 'stop
+      (while t
+	;; Remove commented areas.
+	(while (re-search-forward "<!-+" nil t)
+	  (when (shimbun-end-of-tag nil t)
+	    (replace-match "\n")))
+	(goto-char (point-min))
+	(while (re-search-forward regexp nil t)
+	  (if (or enp cnp krp)
+	      (setq year (string-to-number (match-string 2))
+		    month (string-to-number (match-string 3))
+		    mday (string-to-number (match-string 4))
+		    url (match-string 1)
+		    subject (match-string 5)
+		    id (format "<%d%02d%02d.%s%%kantei.go.jp>"
+			       year month mday group))
+	    (setq year (string-to-number (match-string 2))
+		  month (string-to-number (match-string 3))
+		  mday (string-to-number (match-string 4))
+		  url (match-string 1)
+		  subject (shimbun-replace-in-string (match-string 6)
+						     "[\t\n 　]+" " ")
+		  id (format "<%d%02d%02d%s.%s%%kantei.go.jp>"
+			     year month mday
+			     (or (match-string 5) "")
+			     group)))
+	  (setq header (shimbun-create-header
+			0 subject from
+			(shimbun-make-date-string year month mday)
+			id "" 0 0
+			(if (string-match "\\`http:" url)
+			    url
+			  (shimbun-expand-url url parent))))
+	  (when (and (string-equal group "blog-ja")
+		     (shimbun-search-id shimbun header))
+	    (throw 'stop nil))
+	  (push header headers))
+	(if (string-equal group "blog-ja")
+	    (if (string-match "/\\(20[1-9][0-9]\\)/\\([01][0-9]\\)/\\'" murl)
+		(progn
+		  (setq year (string-to-number (match-string 1 murl))
+			month (1- (string-to-number (match-string 2 murl))))
+		  (when (<= month 0)
+		    (setq month 12
+			  year (1- year)))
+		  (if (and (= year 2011) (< month 9))
+		      (throw 'stop nil)
+		    (setq murl (format "%s/%d/%02d/"
+				       (substring murl 0 (match-beginning 0))
+				       year month))
+		    (erase-buffer)
+		    (shimbun-retrieve-url murl)))
+	      (throw 'stop nil))
+	  (throw 'stop nil))))
     (shimbun-sort-headers headers)))
 
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-kantei)
