@@ -1,3 +1,9 @@
+2011-11-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-popup-buffer): Restore history position always.
+
+	* w3m.el (w3m-copy-buffer): Save history position.
+
 2011-11-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-lnum.el (w3m-lnum-actions-custom-type): New variable.

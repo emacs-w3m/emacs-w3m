@@ -7547,6 +7547,7 @@ a page in a new buffer with the correct width."
       (unless url
 	(setq empty t))
       ;;
+      (w3m-history-store-position)
       (set-buffer (setq new (w3m-generate-new-buffer newname)))
       (w3m-mode)
       ;; Make copies of `w3m-history' and `w3m-history-flat'.

@@ -614,16 +614,13 @@ according to `w3m-pop-up-windows' and `w3m-pop-up-frames' (which see)."
 	    (raise-frame frame)
 	    (select-frame frame)
 	    (w3m-static-when (featurep 'xemacs)
-	      (focus-frame frame)))
-	  (w3m-history-restore-position))
-      (unless (prog1
-		  (eq buffer (current-buffer))
-		;; Simply switch to BUFFER in the current frame.
-		(if (w3m-popup-window-p)
-		    (let ((pop-up-windows t))
-		      (pop-to-buffer buffer))
-		  (w3m-switch-to-buffer buffer)))
-	(w3m-history-restore-position)))))
+	      (focus-frame frame))))
+      ;; Simply switch to BUFFER in the current frame.
+      (if (w3m-popup-window-p)
+	  (let ((pop-up-windows t))
+	    (pop-to-buffer buffer))
+	(w3m-switch-to-buffer buffer)))
+    (w3m-history-restore-position)))
 
 (eval-when-compile
   (when (and (fboundp 'select-frame-set-input-focus)
