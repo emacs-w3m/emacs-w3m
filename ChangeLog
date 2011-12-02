@@ -1,3 +1,8 @@
+2011-12-02  Dan Jacobson  <jidanni@jidanni.org>
+
+	* w3m-search.el (w3m-search-engine-alist): Put search string first in
+	query form.
+
 2011-11-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-popup-buffer): Restore history position always.

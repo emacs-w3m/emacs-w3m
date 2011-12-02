@@ -115,41 +115,40 @@
       ,@(cond
 	 ((and ja utf-8)
 	  '(("google news"
-	     "http://news.google.co.jp/news?hl=ja&ie=utf-8&q=%s&oe=utf-8"
+	     "http://news.google.co.jp/news?q=%s&hl=ja&ie=utf-8&oe=utf-8"
 	     utf-8)
 	    ("google news-en"
-	     "http://news.google.com/news?hl=en&q=%s")))
+	     "http://news.google.com/news?q=%s&hl=en")))
 	 (ja
 	  '(("google news"
-	     "http://news.google.co.jp/news?hl=ja&ie=Shift_JIS&q=%s&oe=Shift_JIS"
+	     "http://news.google.co.jp/news?q=%s&hl=ja&ie=Shift_JIS&oe=Shift_JIS"
 	     shift_jis)
 	    ("google news-en"
-	     "http://news.google.com/news?hl=en&q=%s")))
+	     "http://news.google.com/news?q=%s&hl=en")))
 	 (utf-8
 	  '(("google news"
-	     "http://news.google.com/news?ie=utf-8&q=%s&oe=utf-8"
+	     "http://news.google.com/news?q=%s&ie=utf-8&oe=utf-8"
 	     utf-8)
 	    ("google news-en"
-	     "http://news.google.com/news?hl=en&ie=utf-8&q=%s&oe=utf-8")))
+	     "http://news.google.com/news?q=%s&hl=en&ie=utf-8&oe=utf-8")))
 	 (t
 	  '(("google news"
 	     "http://news.google.com/news?q=%s")
 	    ("google news-ja"
-	     "http://news.google.co.jp/news?hl=ja&ie=Shift_JIS&q=%s&oe=Shift_JIS"
+	     "http://news.google.co.jp/news?q=%s&hl=ja&ie=Shift_JIS&oe=Shift_JIS"
 	     shift_jis))))
       ("google groups"
        "http://groups.google.com/groups?q=%s")
       ,@(if ja
 	    '(("All the Web"
-	       "http://www.alltheweb.com/search?web&_sb_lang=ja&cs=euc-jp\
-&q=%s"
+	       "http://www.alltheweb.com/search?q=%s&web&_sb_lang=ja&cs=euc-jp"
 	       euc-japan)
 	      ("All the Web-en"
-	       "http://www.alltheweb.com/search?web&_sb_lang=en&q=%s"))
+	       "http://www.alltheweb.com/search?q=%s&web&_sb_lang=en"))
 	  '(("All the Web"
-	     "http://www.alltheweb.com/search?web&_sb_lang=en&q=%s")
+	     "http://www.alltheweb.com/search?q=%s&web&_sb_lang=en")
 	    ("All the Web-ja"
-	     "http://www.alltheweb.com/search?web&_sb_lang=ja&cs=euc-jp&q=%s"
+	     "http://www.alltheweb.com/search?q=%s&web&_sb_lang=ja&cs=euc-jp"
 	     euc-japan)))
       ,@(if ja
 	    '(("technorati"
