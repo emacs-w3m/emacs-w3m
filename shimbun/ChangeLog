@@ -1,5 +1,9 @@
 2011-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-kantei.el (shimbun-get-headers): Improve regexp for blog-ja.
+
+2011-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* sb-kantei.el (shimbun-index-url): Update url for blog-ja.
 	(shimbun-get-headers): Retrieve indices, going back to past months, for
 	blog-ja group.

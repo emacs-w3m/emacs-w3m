@@ -197,7 +197,7 @@ jp/m-magazine/backnumber/hukuda.html")
 	    (eval-when-compile
 	      (concat "<a[\t\n ]+href=\""
 		      ;; 1. url
-		      "\\(.+/"
+		      "\\(https?://[^/]*kantei\\.go\\.jp/\\(?:[^/]+/\\)*"
 		      ;; 2. year
 		      "\\(20[1-9][0-9]\\)"
 		      "/"
@@ -281,7 +281,7 @@ jp/m-magazine/backnumber/hukuda.html")
 	 (parent (shimbun-index-url shimbun))
 	 (murl parent)
 	 (from (shimbun-from-address shimbun))
-	 year month mday url subject id headers)
+	 time year month mday url subject rev id prev headers)
     (catch 'stop
       (while t
 	;; Remove commented areas.
@@ -290,6 +290,7 @@ jp/m-magazine/backnumber/hukuda.html")
 	    (replace-match "\n")))
 	(goto-char (point-min))
 	(while (re-search-forward regexp nil t)
+	  (setq time nil)
 	  (if (or enp cnp krp)
 	      (setq year (string-to-number (match-string 2))
 		    month (string-to-number (match-string 3))
@@ -304,16 +305,28 @@ jp/m-magazine/backnumber/hukuda.html")
 		  url (match-string 1)
 		  subject (shimbun-replace-in-string (match-string 6)
 						     "[\t\n 　]+" " ")
-		  id (format "<%d%02d%02d%s.%s%%kantei.go.jp>"
-			     year month mday
-			     (or (match-string 5) "")
-			     group)))
+		  rev (match-string 5))
+	    (if (and (string-equal group "blog-ja")
+		     (prog2
+			 (setq prev (match-end 0))
+			 (re-search-forward "\
+<span[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)?class=\"time\"[^>]*>\
+\\(\\([012]?[0-9]\\):\\([0-5]?[0-9]\\)\\)" nil t)
+		       (goto-char prev)))
+		(setq time (match-string 1)
+		      id (format "<%d%02d%02d%02d%02d%s.%s%%kantei.go.jp>"
+				 year month mday
+				 (string-to-number (match-string 2))
+				 (string-to-number (match-string 3))
+				 (or rev "") group))
+	      (setq id (format "<%d%02d%02d%s.%s%%kantei.go.jp>"
+			       year month mday (or rev "") group))))
 	  (when (and (string-equal group "blog-ja")
 		     (shimbun-search-id shimbun id))
 	    (throw 'stop nil))
 	  (push (shimbun-create-header
 		 0 subject from
-		 (shimbun-make-date-string year month mday)
+		 (shimbun-make-date-string year month mday time)
 		 id "" 0 0
 		 (if (string-match "\\`http:" url)
 		     url
