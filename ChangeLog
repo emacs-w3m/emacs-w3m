@@ -1,3 +1,9 @@
+2011-12-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-lnum.el (w3m-lnum-universal-dispatch): Add argument passed to
+	kill-buffer, Emacs 22 requires it; use beginning-of-line rather than
+	move-beginning-of-line that XEmacs doesn't provide.
+
 2011-12-02  Dan Jacobson  <jidanni@jidanni.org>
 
 	* w3m-search.el (w3m-search-engine-alist): Put search string first in

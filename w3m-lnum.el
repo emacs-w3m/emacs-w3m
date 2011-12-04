@@ -801,7 +801,7 @@ Function has to take one argument that is selection info."
 		  (cond ((memq char '(up backtab)) ; move to previous action
 			 (when (/= (forward-line -1) 0)
 			   (goto-char (point-max)) ; ...or start from bottom
-			   (move-beginning-of-line nil))
+			   (beginning-of-line))
 			 (while (and (not (get-text-property (point) 'action))
 				     (= (forward-line -1) 0))))
 			((memq char '(down tab)) ; move to next action
@@ -823,7 +823,7 @@ Function has to take one argument that is selection info."
 				      "[" label "]")
 			      key)))))
 	  (setq mode-line-format original-mode-line-format)
-	  (kill-buffer))))
+	  (kill-buffer (current-buffer)))))
     (unless (memq char '(?\C-g escape 27 ?\e))
       (cond (selection-made (funcall selection-made info))
 	    ((memq char '(backspace 8 ?\C-h)) ; require new selection
