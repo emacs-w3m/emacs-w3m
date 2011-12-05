@@ -4797,8 +4797,6 @@ BUFFER is nil, all contents will be inserted in the current buffer."
        ident))))
 
 (defun w3m-read-file-name (&optional prompt dir default existing)
-  (when default
-    (setq default (file-name-nondirectory (w3m-url-strip-query default))))
   (unless prompt
     (setq prompt (if (and default (not (string-equal default "")))
 		     (format "Save to (%s): " default)
@@ -5807,28 +5805,26 @@ POST-DATA and REFERER will be sent to the web server with a request."
 				  file)))))))
 
 ;;;###autoload
-(defun w3m-download (url &optional filename no-cache handler post-data)
+(defun w3m-download (&optional url filename no-cache handler post-data)
   "Download contents of URL to a file named FILENAME.
 NO-CHACHE (which the prefix argument gives when called interactively)
 specifies not using the cached data."
-  (interactive
-   (let* ((url (w3m-input-url "Download URL: "))
-	  (basename (file-name-nondirectory (w3m-url-strip-query url))))
-     (if (string-match "^[\t ]*$" basename)
-	 (list url
-	       (w3m-read-file-name (format "Download %s to: " url)
-				   w3m-default-save-directory "index.html")
-	       current-prefix-arg)
-       (list url
-	     (w3m-read-file-name (format "Download %s to: " basename)
-				 w3m-default-save-directory basename)
-	     current-prefix-arg))))
+  (interactive (list nil nil current-prefix-arg))
+  (unless url
+    (setq url (w3m-input-url "Download URL: ")))
+  (unless filename
+    (let ((basename (file-name-nondirectory (w3m-url-strip-query url))))
+      (when (string-match "^[\t ]*$" basename)
+	(when (string-match "^[\t ]*$"
+			    (setq basename (file-name-nondirectory url)))
+	  (setq basename "index.html")))
+      (setq filename
+	    (w3m-read-file-name (format "Download %s to: " url)
+				w3m-default-save-directory basename))))
   (if (and w3m-use-ange-ftp (string-match "\\`ftp://" url))
       (w3m-goto-ftp-url url filename)
     (lexical-let ((url url)
-		  (filename (or filename
-				(w3m-read-file-name
-				 nil nil (w3m-url-readable-string url)))))
+		  (filename filename))
       (w3m-process-do-with-temp-buffer
 	  (type (progn
 		  (w3m-clear-local-variables)

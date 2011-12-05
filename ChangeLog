@@ -1,3 +1,9 @@
+2011-12-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-read-file-name): Don't strip query part from given url.
+	(w3m-download): Always prompt for file name; don't strip query part.
+	Suggested by Dan Jacobson <jidanni@jidanni.org>.
+
 2011-12-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-lnum.el (w3m-lnum-universal-dispatch): Add argument passed to
