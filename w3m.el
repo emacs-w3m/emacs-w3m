@@ -4119,10 +4119,15 @@ You are retrieving non-secure image(s).  Continue? ")
   "Interactively resize IMAGE.
 If RATE is not given, use `w3m-resize-image-scale'.
 CHANGED-RATE is currently changed rate / 100."
-  (let ((char (read-char-exclusive
-	       (propertize
-		"Resize: [+ =] enlarge [-] shrink [0] original [q] quit"
-		'face 'w3m-lnum-minibuffer-prompt)))
+  (let ((char (w3m-static-if (featurep 'xemacs)
+		  (progn
+		    (message
+		     "Resize: [+ =] enlarge [-] shrink [0] original [q] quit")
+		    (read-char-exclusive))
+		(read-char-exclusive
+		 (propertize
+		  "Resize: [+ =] enlarge [-] shrink [0] original [q] quit"
+		  'face 'w3m-lnum-minibuffer-prompt))))
 	(changed-rate (or changed-rate 1)))
     (w3m-static-if (featurep 'xemacs)
 	(setq char (char-octet char)))
@@ -4146,10 +4151,15 @@ CHANGED-RATE is currently changed rate / 100."
 					       (/ 100.0 changed-rate))
 	     (setq changed-rate 1)))
       (setq char
-	    (read-char-exclusive
-	     (propertize
-	      "Resize: [+ =] enlarge [-] shrink [0] original [q] quit"
-	      'face 'w3m-lnum-minibuffer-prompt)))
+	    (w3m-static-if (featurep 'xemacs)
+		(progn
+		  (message
+		   "Resize: [+ =] enlarge [-] shrink [0] original [q] quit")
+		  (read-char-exclusive))
+	      (read-char-exclusive
+	       (propertize
+		"Resize: [+ =] enlarge [-] shrink [0] original [q] quit"
+		'face 'w3m-lnum-minibuffer-prompt))))
       (w3m-static-if (featurep 'xemacs)
 	  (setq char (char-octet char))))))
 

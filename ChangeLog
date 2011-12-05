@@ -1,5 +1,20 @@
 2011-12-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* aclocal.m4 (AC_EMACS_LISP): Simplify.
+	(AC_PATH_EMACS): Simplify Lisp code so as to make it work for recent
+	XEmacsen.
+
+	* w3m-favicon.el (w3m-favicon-type): Silence SXEmacs 22.1.14's byte
+	compiler.
+
+	* w3m-lnum.el (w3m-lnum-read-interactive): Use (sit-for 0) instead of
+	redisplay for XEmacs.
+
+	* w3m.el (w3m-resize-image-interactive): Use read-char-exclusive with
+	no arg for XEmacs.
+
+2011-12-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-read-file-name): Don't strip query part from given url.
 	(w3m-download): Always prompt for file name; don't strip query part.
 	Suggested by Dan Jacobson <jidanni@jidanni.org>.

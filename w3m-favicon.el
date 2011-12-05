@@ -96,7 +96,8 @@ If this variable is nil, never expired."
 	      types (cdr types))
 	(if (if (featurep 'xemacs)
 		(featurep type)
-	      (image-type-available-p type))
+	      ;; Silence SXEmacs 22.1.14's byte compiler.
+	      (eval (list 'image-type-available-p (list 'quote type))))
 	    (throw 'det type)))))
   "*Image type of display favicon."
   :group 'w3m

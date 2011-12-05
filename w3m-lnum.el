@@ -463,7 +463,10 @@ Return list of selected number and last applied filter."
 	      (w3m-lnum-remove-overlays (point-min) (point-max))
 	      (ignore-errors
 		(w3m-scroll-up-1)
-		(redisplay)) ; scroll-up sets wrongly window-start/end
+		;; scroll-up sets wrongly window-start/end
+		(w3m-static-if (featurep 'xemacs)
+		    (sit-for 0)
+		  (redisplay)))
 	      #1=
 	      (setq last-index (w3m-lnum type filter t)
 		    num (if (zerop last-index) 0 1)
