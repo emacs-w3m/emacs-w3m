@@ -1,3 +1,7 @@
+2011-12-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-xml-parse-buffer): Silence XEmacs' byte compiler.
+
 2011-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-get-headers): Improve regexp for blog-ja.

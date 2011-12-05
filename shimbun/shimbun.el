@@ -1801,12 +1801,18 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
     (unless (eobp)
       (shimbun-japanese-hankaku-region start (point-max) quote))))
 
+;; Silence XEmacs' byte compiler.
+(eval-when-compile
+  (if (fboundp 'libxml-parse-xml-region) nil
+    (defalias 'libxml-parse-xml-region 'ignore)))
+
 (defun shimbun-xml-parse-buffer ()
   "Calls (lib)xml-parse-region on the whole buffer.
 This is a wrapper for `xml-parse-region', which will resort to
 using `libxml-parse-xml-region' if available, since it is much
 faster."
-  (if (fboundp 'libxml-parse-xml-region)
+  (if (and (fboundp 'libxml-parse-xml-region)
+	   (not (eq (symbol-function 'libxml-parse-xml-region) 'ignore)))
       (save-excursion
 	(goto-char (point-min))
 	(let ((xml (libxml-parse-xml-region
