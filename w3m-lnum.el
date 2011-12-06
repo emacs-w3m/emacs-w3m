@@ -406,6 +406,10 @@ KEY is what XEmacs gives for event-key."
 		   ,key))))
     `(read-event ,prompt t)))
 
+(eval-when-compile
+  (if (fboundp 'redisplay) nil
+    (defalias 'redisplay 'ignore)))
+
 (defun w3m-lnum-read-interactive (prompt fun type last-index &optional
 					 def-anchor filter def-num)
   "Interactively read a valid integer from minubuffer with PROMPT.
@@ -464,9 +468,10 @@ Return list of selected number and last applied filter."
 	      (ignore-errors
 		(w3m-scroll-up-1)
 		;; scroll-up sets wrongly window-start/end
-		(w3m-static-if (featurep 'xemacs)
-		    (sit-for 0)
-		  (redisplay)))
+		(if (and (fboundp 'redisplay)
+			 (not (eq (symbol-function 'redisplay) 'ignore)))
+		    (redisplay)
+		  (sit-for 0)))
 	      #1=
 	      (setq last-index (w3m-lnum type filter t)
 		    num (if (zerop last-index) 0 1)

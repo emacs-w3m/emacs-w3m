@@ -202,7 +202,7 @@ distclean: clean
 .SUFFIXES: .elc .el
 
 .el.elc:
-	echo "$(XEMACSDEBUG)$(EMACS) $(FLAGS) -f batch-byte-compile $*.el";\
+	@echo "$(XEMACSDEBUG)$(EMACS) $(FLAGS) -f batch-byte-compile $*.el";\
 	$(XEMACSDEBUG)$(EMACS) $(FLAGS) -f batch-byte-compile $*.el
 
 slow: Makefile

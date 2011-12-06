@@ -1,3 +1,10 @@
+2011-12-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (.el.elc): Shut up.
+
+	* w3m-lnum.el (w3m-lnum-read-interactive): Use (sit-for 0) instead of
+	redisplay for Emacs 21.1, too.
+
 2011-12-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* aclocal.m4 (AC_EMACS_LISP): Simplify.
