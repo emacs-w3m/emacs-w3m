@@ -1,3 +1,8 @@
+2011-12-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-mode): Force paragraph direction to be left-to-right.
+	Suggested by Naohiro Aota <naota@elisp.net>.
+
 2011-12-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (.el.elc): Shut up.

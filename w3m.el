@@ -199,6 +199,7 @@
   (autoload 'widget-get "wid-edit")
   (unless (fboundp 'char-to-int)
     (defalias 'char-to-int 'identity))
+  (defvar bidi-paragraph-direction)
   (defvar doc-view-mode-map)
   (defvar w3m-bookmark-mode)
   (defvar w3m-bookmark-menu-items)
@@ -8509,7 +8510,8 @@ or a list which consists of the following elements:
   (setq major-mode 'w3m-mode)
   (setq mode-name "w3m")
   (use-local-map w3m-mode-map)
-  (setq truncate-lines t
+  (setq bidi-paragraph-direction 'left-to-right
+	truncate-lines t
 	w3m-display-inline-images w3m-default-display-inline-images)
   (when w3m-auto-show
     (when (boundp 'auto-hscroll-mode)
