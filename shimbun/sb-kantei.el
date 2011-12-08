@@ -207,7 +207,7 @@ jp/m-magazine/backnumber/hukuda.html")
 		      ;; 4. day of month
 		      "\\([0-3][0-9]\\)"
 		      ;; 5. revision e.g., 20110822-2.html
-		      "\\(-[0-9]+\\)?"
+		      "-?\\([0-9]+\\)?"
 		      "\\.html\\)"
 		      "\"[^>]*>[\t\n ]*"
 		      ;; 6. subject
@@ -281,7 +281,7 @@ jp/m-magazine/backnumber/hukuda.html")
 	 (parent (shimbun-index-url shimbun))
 	 (murl parent)
 	 (from (shimbun-from-address shimbun))
-	 time year month mday url subject rev id prev headers)
+	 unreads time year month mday url subject rev id prev headers)
     (catch 'stop
       (while t
 	;; Remove commented areas.
@@ -318,20 +318,24 @@ jp/m-magazine/backnumber/hukuda.html")
 				 year month mday
 				 (string-to-number (match-string 2))
 				 (string-to-number (match-string 3))
-				 (or rev "") group))
+				 (if rev (concat "-" rev) "")
+				 group))
 	      (setq id (format "<%d%02d%02d%s.%s%%kantei.go.jp>"
 			       year month mday (or rev "") group))))
-	  (when (and (string-equal group "blog-ja")
-		     (shimbun-search-id shimbun id))
-	    (throw 'stop nil))
-	  (push (shimbun-create-header
-		 0 subject from
-		 (shimbun-make-date-string year month mday time)
-		 id "" 0 0
-		 (if (string-match "\\`http:" url)
-		     url
-		   (shimbun-expand-url url parent)))
-		headers))
+	  (unless (and (string-equal group "blog-ja")
+		       (shimbun-search-id shimbun id))
+	    (push (shimbun-create-header
+		   0 subject from
+		   (shimbun-make-date-string year month mday time)
+		   id "" 0 0
+		   (if (string-match "\\`http:" url)
+		       url
+		     (shimbun-expand-url url parent)))
+		  unreads)))
+	(if unreads
+	    (setq headers (nconc unreads headers)
+		  unreads nil)
+	  (throw 'stop nil))
 	(if (string-equal group "blog-ja")
 	    (if (string-match "/\\(20[1-9][0-9]\\)/\\([01][0-9]\\)/\\'" murl)
 		(progn
