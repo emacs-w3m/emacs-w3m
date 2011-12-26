@@ -9548,7 +9548,7 @@ session will start afresh."
   (interactive)
   (unless w3m-home-page
     (error "You have to specify the value of `w3m-home-page'"))
-  (w3m-goto-url w3m-home-page))
+  (w3m-goto-url w3m-home-page t))
 
 ;;;###autoload
 (defun w3m-create-empty-session ()
