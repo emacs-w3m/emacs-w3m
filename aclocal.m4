@@ -2,7 +2,7 @@ AC_DEFUN(AC_SET_VANILLA_FLAG,
  [dnl Determine arguments to run Emacs as vanilla.
   retval=`echo ${EMACS}| ${EGREP} xemacs| ${EGREP} -v '^$'`
   if test -z "${retval}"; then
-	VANILLA_FLAG="-q -no-site-file --no-unibyte"
+	VANILLA_FLAG="-q -no-site-file"
   else
 	VANILLA_FLAG="-vanilla"
   fi

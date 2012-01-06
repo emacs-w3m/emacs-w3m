@@ -1,6 +1,6 @@
 ;;; w3mhack.el --- a hack to setup the environment for building w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
+;; Copyright (C) 2001-2010, 2012
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
@@ -701,12 +701,25 @@ to remove some obsolete variables in the first argument VARLIST."
 	      (function directory-file-name)
 	      (nreverse paths) ":")))))
 
+;; FIXME: How to do it for Windows?
+(defun w3mhack-expand-file-name (name destdir)
+  "Convert filename NAME to the one relative to DESTDIR."
+  (if (and name destdir
+	   (eq (aref name 0) ?/)) ;; Not "NONE"?
+      (expand-file-name (substring name 1) destdir)
+    name))
+
 (defun w3mhack-what-where ()
   "Show what files should be installed and where should they go."
-  (let ((lisp-dir (pop command-line-args-left))
-	(icon-dir (pop command-line-args-left))
-	(package-dir (pop command-line-args-left))
-	(info-dir (pop command-line-args-left)))
+  (let* ((destdir (getenv "DESTDIR"))
+	 (lisp-dir (w3mhack-expand-file-name (pop command-line-args-left)
+					     destdir))
+	 (icon-dir (w3mhack-expand-file-name (pop command-line-args-left)
+					     destdir))
+	 (package-dir (w3mhack-expand-file-name (pop command-line-args-left)
+						destdir))
+	 (info-dir (w3mhack-expand-file-name (pop command-line-args-left)
+					     destdir)))
     (message "
 lispdir=%s
 ICONDIR=%s

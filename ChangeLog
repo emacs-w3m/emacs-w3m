@@ -1,3 +1,21 @@
+2012-01-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (install-icons, install-icons30, install-info)
+	(install-info-en, install-info-ja, install-package)
+	(install-package-ja):
+	* doc/Makefile.in (install): Add DESTDIR variable to installation
+	directory.
+
+	* w3mhack.el (w3mhack-expand-file-name): New function.
+	(w3mhack-what-where): Use it.
+
+	* aclocal.m4 (AC_SET_VANILLA_FLAG): Remove --no-unibyte option.
+
+2012-01-02  Elias Pipping  <pipping@lavabit.com>
+
+	* Makefile.in (install-lisp): Add DESTDIR variable to installation
+	directory.
+
 2011-12-26  Dan Jacobson  <jidanni@jidanni.org>
 
 	* w3m.el (w3m-gohome): Always reload the home page.
