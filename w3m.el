@@ -3503,10 +3503,8 @@ The database is kept in `w3m-entity-table'."
 	(delete-region start (point))
 	(w3m-add-text-properties start (point-max)
 				 (list 'w3m-name-anchor
-				       (cons
-					(w3m-decode-entities-string
-					 (w3m-url-transfer-encode-string id))
-					prenames)))))
+				       (cons (w3m-decode-entities-string id)
+					     prenames)))))
     (goto-char (point-min))
     (while (re-search-forward "<a[ \t\r\f\n]+" nil t)
       (setq start (match-beginning 0))
@@ -3574,19 +3572,13 @@ The database is kept in `w3m-entity-table'."
 	    (when name
 	      (w3m-add-text-properties start (point-max)
 				       (list 'w3m-name-anchor2
-					     (cons
-					      (w3m-decode-entities-string
-					       (w3m-url-transfer-encode-string
-						name))
-					      prenames))))))
+					     (cons (w3m-decode-entities-string name)
+						   prenames))))))
 	 (name
 	  (w3m-add-text-properties start (point-max)
 				   (list 'w3m-name-anchor2
-					 (cons
-					  (w3m-decode-entities-string
-					   (w3m-url-transfer-encode-string
-					    name))
-					  prenames)))))))
+					 (cons (w3m-decode-entities-string name)
+					       prenames)))))))
     (when w3m-icon-data
       (setq w3m-icon-data (cons (and (car w3m-icon-data)
 				     (w3m-expand-url (car w3m-icon-data)))
@@ -9342,8 +9334,7 @@ Cannot run two w3m processes simultaneously \
 			     ;; Redisplay to search an anchor sure.
 			     (sit-for 0)
 			     (w3m-search-name-anchor
-			      (w3m-url-transfer-encode-string name)
-			      nil (not (eq action 'cursor-moved)))))
+			      name nil (not (eq action 'cursor-moved)))))
 		  (setf (w3m-arrived-time (w3m-url-strip-authinfo orig))
 			(w3m-arrived-time url)))
 		(unless (eq action 'cursor-moved)

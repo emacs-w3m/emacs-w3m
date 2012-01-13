@@ -1,3 +1,8 @@
+2012-01-13  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m.el (w3m-fontify-anchors, w3m-goto-url): Not encode and decode
+	the anchor values to use Punycode.
+
 2012-01-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-image-type-alist): Add image/tiff.
