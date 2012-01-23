@@ -1,6 +1,6 @@
 ;;; w3m-ems.el --- GNU Emacs stuff for emacs-w3m
 
-;; Copyright (C) 2001-2011 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2012 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -432,6 +432,12 @@ Buffer string between BEG and END are replaced with IMAGE."
 		 (insert " ")
 		 (setq start (1+ start)
 		       end (1- end)))))
+	;; Empty text won't be buttonized, so we fill it with something.
+	;; "submit" seems to be a proper choice in nine cases out of ten.
+	(when (= start end)
+	  (goto-char start)
+	  (insert "submit")
+	  (setq end (point)))
 	(let ((w (widget-convert-button
 		  'w3m-form-button start end
 		  :w3m-form-action (plist-get properties 'w3m-action))))
