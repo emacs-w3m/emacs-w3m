@@ -1,3 +1,10 @@
+2012-01-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kantei.el (shimbun-index-url): Update url for blog-en.
+	(shimbun-get-headers): Retrieve indices, going back to past months, for
+	blog-en group; improve regexp matching blog-ja headers.
+	(shimbun-clear-contents): Use blog-ja filter also for blog-en.
+
 2011-12-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-get-headers): Update regexp; don't miss revised

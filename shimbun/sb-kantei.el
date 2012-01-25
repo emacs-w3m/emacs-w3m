@@ -1,6 +1,6 @@
 ;;; sb-kantei.el --- shimbun backend for kantei blog backnumber -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2011 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2012 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
 ;; Keywords: news
@@ -90,55 +90,54 @@ REbDs'H9$Iy#yM#*J2c'L},(m8K:8?$vTPC%D}YJ[bV#7xw|{\"DJ:_?`V1m_4^+;7+\n\
  JOf6v&x6?mU-q=0}mTK5@\"-bFGuD}2Y/(lR/V#'?HRc2Jh2UrR,oIR~NL!})|^%kw")))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-kantei))
-  (let ((url
-	 (let ((group (shimbun-current-group-internal shimbun)))
-	   (cond ((string-equal group "blog-en")
-		  "http://nodasblog.kantei.go.jp/archives.html")
-		 ((string-equal group "blog-ja")
-		  "http://kawaraban.kantei.go.jp/")
-		 ((string-equal group "blog-en.kan")
-		  "http://kansblog.kantei.go.jp/archives.html")
-		 ((string-equal group "blog-ja.kan")
-		  "http://kanfullblog.kantei.go.jp/archives.html")
-		 ((string-equal group "m-magazine-cn.hatoyama")
-		  "http://www.mmz.kantei.go.jp/\
+  (let* ((group (shimbun-current-group-internal shimbun))
+	 (url (cond ((string-equal group "blog-en")
+		     "http://nodasblog.kantei.go.jp/")
+		    ((string-equal group "blog-ja")
+		     "http://kawaraban.kantei.go.jp/")
+		    ((string-equal group "blog-en.kan")
+		     "http://kansblog.kantei.go.jp/archives.html")
+		    ((string-equal group "blog-ja.kan")
+		     "http://kanfullblog.kantei.go.jp/archives.html")
+		    ((string-equal group "m-magazine-cn.hatoyama")
+		     "http://www.mmz.kantei.go.jp/\
 foreign/m-magazine/backnumber_ch/hatoyama_index.html")
-		 ((string-equal group "m-magazine-kr.hatoyama")
-		  "http://www.mmz.kantei.go.jp/\
+		    ((string-equal group "m-magazine-kr.hatoyama")
+		     "http://www.mmz.kantei.go.jp/\
 foreign/m-magazine/backnumber_ko/hatoyama_index.html")
-		 ((string-equal group "m-magazine-en.hatoyama")
-		  "http://www.mmz.kantei.go.jp/\
+		    ((string-equal group "m-magazine-en.hatoyama")
+		     "http://www.mmz.kantei.go.jp/\
 foreign/m-magazine/backnumber/hatoyama.html")
-		 ((string-equal group "m-magazine-ja.hatoyama")
-		  "http://www.mmz.kantei.go.jp/\
+		    ((string-equal group "m-magazine-ja.hatoyama")
+		     "http://www.mmz.kantei.go.jp/\
 jp/m-magazine/backnumber/hatoyama.html")
-		 ((string-equal group "m-magazine-en.aso")
-		  "http://www.mmz.kantei.go.jp/\
+		    ((string-equal group "m-magazine-en.aso")
+		     "http://www.mmz.kantei.go.jp/\
 foreign/m-magazine/backnumber/aso.html")
-		 ((string-equal group "m-magazine-ja.aso")
-		  "http://www.mmz.kantei.go.jp/\
+		    ((string-equal group "m-magazine-ja.aso")
+		     "http://www.mmz.kantei.go.jp/\
 jp/m-magazine/backnumber/aso.html")
-		 ((string-equal group "m-magazine-en.fukuda")
-		  "http://www.mmz.kantei.go.jp/\
+		    ((string-equal group "m-magazine-en.fukuda")
+		     "http://www.mmz.kantei.go.jp/\
 foreign/m-magazine/backnumber/fukuda.html")
-		 ((string-equal group "m-magazine-ja.fukuda")
-		  "http://www.mmz.kantei.go.jp/\
+		    ((string-equal group "m-magazine-ja.fukuda")
+		     "http://www.mmz.kantei.go.jp/\
 jp/m-magazine/backnumber/hukuda.html")
-		 ((string-equal group "m-magazine-en.abe")
-		  "foreign/m-magazine/backnumber/abe.html")
-		 ((string-equal group "m-magazine-ja.abe")
-		  "jp/m-magazine/backnumber/abe.html")
-		 ((string-equal group "m-magazine-en.koizumi")
-		  "foreign/m-magazine/backnumber/koizumi.html")
-		 ((string-equal group "m-magazine-ja.koizumi")
-		  "jp/m-magazine/backnumber/koizumi.html")
-		 ;; Backward compatibility.
-		 ((string-equal group "m-magazine")
-		  "jp/m-magazine/backnumber/koizumi.html")
-		 ;; Default.
-		 (t
-		  "jp/m-magazine/backnumber/")))))
-    (cond ((string-equal "http://kawaraban.kantei.go.jp/" url)
+		    ((string-equal group "m-magazine-en.abe")
+		     "foreign/m-magazine/backnumber/abe.html")
+		    ((string-equal group "m-magazine-ja.abe")
+		     "jp/m-magazine/backnumber/abe.html")
+		    ((string-equal group "m-magazine-en.koizumi")
+		     "foreign/m-magazine/backnumber/koizumi.html")
+		    ((string-equal group "m-magazine-ja.koizumi")
+		     "jp/m-magazine/backnumber/koizumi.html")
+		    ;; Backward compatibility.
+		    ((string-equal group "m-magazine")
+		     "jp/m-magazine/backnumber/koizumi.html")
+		    ;; Default.
+		    (t
+		     "jp/m-magazine/backnumber/"))))
+    (cond ((string-match "\\`blog-\\(?:en\\|ja\\)\\'" group)
 	   (concat url (format-time-string "%Y/%02m/")))
 	  ((string-match "\\`http:" url)
 	   url)
@@ -207,7 +206,7 @@ jp/m-magazine/backnumber/hukuda.html")
 		      ;; 4. day of month
 		      "\\([0-3][0-9]\\)"
 		      ;; 5. revision e.g., 20110822-2.html
-		      "-?\\([0-9]+\\)?"
+		      "[_-]?\\([0-9]+\\)?"
 		      "\\.html\\)"
 		      "\"[^>]*>[\t\n ]*"
 		      ;; 6. subject
@@ -306,7 +305,7 @@ jp/m-magazine/backnumber/hukuda.html")
 		  subject (shimbun-replace-in-string (match-string 6)
 						     "[\t\n 　]+" " ")
 		  rev (match-string 5))
-	    (if (and (string-equal group "blog-ja")
+	    (if (and (member group '("blog-en" "blog-ja"))
 		     (prog2
 			 (setq prev (match-end 0))
 			 (re-search-forward "\
@@ -336,7 +335,7 @@ jp/m-magazine/backnumber/hukuda.html")
 	    (setq headers (nconc unreads headers)
 		  unreads nil)
 	  (throw 'stop nil))
-	(if (string-equal group "blog-ja")
+	(if (string-match "\\`blog-\\(?:en\\|ja\\)\\'" group)
 	    (if (string-match "/\\(20[1-9][0-9]\\)/\\([01][0-9]\\)/\\'" murl)
 		(progn
 		  (setq year (string-to-number (match-string 1 murl))
@@ -358,6 +357,7 @@ jp/m-magazine/backnumber/hukuda.html")
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-kantei)
 						    header)
   (let ((case-fold-search t)
+	(group (shimbun-current-group-internal shimbun))
 	start end section)
     (if (and (search-forward "<pre>" nil t)
 	     (progn
@@ -469,7 +469,7 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 		    (replace-match (concat "width=\"" (number-to-string limit)
 					   "\"")))
 		(goto-char (match-end 0)))))))
-      (cond ((string-equal "blog-ja" (shimbun-current-group-internal shimbun))
+      (cond ((string-match "\\`blog-\\(?:en\\|ja\\)\\'" group)
 	     (goto-char (point-min))
 	     (when (and (or (re-search-forward "\
 <div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"block article\"" nil t)
@@ -482,7 +482,7 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 		 (delete-region (match-beginning 0) (point-max))
 		 (insert "\n")
 		 (delete-region (point-min) start))))
-	    ((string-match "\\`blog-" (shimbun-current-group-internal shimbun))
+	    ((string-match "\\`blog-" group)
 	     (goto-char (point-min))
 	     (when (and (re-search-forward "\
 <div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"entry-body\"" nil t)
