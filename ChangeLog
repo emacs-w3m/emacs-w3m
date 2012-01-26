@@ -1,6 +1,8 @@
 2012-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-goto-url): Work for name anchors.
+	* w3m.el (w3m-mode): Don't make bidi-paragraph-direction bound globally
+	in old Emacsen and XEmacsen.
+	(w3m-goto-url): Work for name anchors.
 
 2012-01-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
