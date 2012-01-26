@@ -321,7 +321,7 @@ jp/m-magazine/backnumber/hukuda.html")
 				 group))
 	      (setq id (format "<%d%02d%02d%s.%s%%kantei.go.jp>"
 			       year month mday (or rev "") group))))
-	  (unless (and (string-equal group "blog-ja")
+	  (unless (and (string-match "\\`blog-\\(?:en\\|ja\\)\\'" group)
 		       (shimbun-search-id shimbun id))
 	    (push (shimbun-create-header
 		   0 subject from
