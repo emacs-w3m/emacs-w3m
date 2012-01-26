@@ -9159,8 +9159,9 @@ the current page."
   (unless (or (w3m-url-local-p url)
 	      (string-match "\\`about:" url))
     (w3m-string-match-url-components url)
-    (setq url (concat (w3m-url-transfer-encode-string
-		       (substring url 0 (match-beginning 8)))
+    (setq url (concat (save-match-data
+			(w3m-url-transfer-encode-string
+			 (substring url 0 (match-beginning 8))))
 		      (if (match-beginning 8)
 			  (concat "#" (match-string 9 url))
 			""))))

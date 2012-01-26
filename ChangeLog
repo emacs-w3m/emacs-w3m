@@ -1,3 +1,7 @@
+2012-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-url): Work for name anchors.
+
 2012-01-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-ems.el (w3m-form-make-button): Use "submit" instead for an empty
