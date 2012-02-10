@@ -1,3 +1,13 @@
+2012-02-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-hist.el (w3m-history-store-position): Don't trust column position
+	that Emacs tells if there's an image.
+	(w3m-history-restore-position): Revert 2011-10-21 change.
+
+2012-02-10  Kevin Ryde  <user42@zip.com.au>
+
+	* w3m.el (w3m-about-header): Show info of image where point stays.
+
 2012-01-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-mode): Don't make bidi-paragraph-direction bound globally

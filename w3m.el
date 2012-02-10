@@ -9950,15 +9950,26 @@ non-ASCII characters."
 	    (let ((time (w3m-last-modified url)))
 	      (if time (current-time-string time) "")))
 
-    (let (anchor anchor-title)
+    (let (anchor anchor-title
+          image-url image-alt image-size)
       (with-current-buffer w3m-current-buffer
 	(when (equal url w3m-current-url)
-	  (setq anchor (w3m-anchor))
-	  (setq anchor-title (w3m-anchor-title))))
+          (setq anchor (w3m-anchor)
+                anchor-title (w3m-anchor-title)
+                image-url (w3m-image)
+                image-alt (w3m-image-alt)
+                image-size (w3m-get-text-property-around 'w3m-image-size))))
       (if anchor
 	  (insert "\nCurrent Anchor: " anchor))
       (if anchor-title
-	  (insert "\nAnchor Title:   " anchor-title)))
+	  (insert "\nAnchor Title:   " anchor-title))
+      (if image-url
+          (insert "\nImage:      " image-url))
+      (if image-alt
+          (insert "\nImage Alt:  " image-alt))
+      (if image-size
+          (insert (format "\nImage Size: %sx%s"
+                          (car image-size) (cdr image-size)))))
 
     (let ((ct (w3m-arrived-content-type url))
 	  (charset (w3m-arrived-content-charset url))
