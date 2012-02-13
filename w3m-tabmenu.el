@@ -1,6 +1,7 @@
-;;; w3m-tabmenu.el --- Functions for TAB menu browsing
+;;; w3m-tabmenu.el --- Functions for TAB menu browsing -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2007, 2009, 2011 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2007, 2009, 2011-2012
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Hideyuki SHIRAI    <shirai@meadowy.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -83,13 +84,13 @@
 	   (car (nth (1- default) comp))))
     (setq buf (cdr (assoc buf comp)))
     (when (get-buffer buf)
-      (w3m-switch-to-buffer buf))))
+      (switch-to-buffer buf))))
 
 (defun w3m-tab-menubar-open-item (buf)
   "Open w3m buffer from tab menubar."
   (interactive)
   (when (get-buffer buf)
-    (w3m-switch-to-buffer buf)))
+    (switch-to-buffer buf)))
 
 (defun w3m-tab-menubar-update ()
   "Update w3m tab menubar."
@@ -172,7 +173,7 @@
 		     w3m-tab-menubar-items-sub-coeff))
 	(if (< total max)
 	    (setq menu (w3m-tab-menubar-make-items-1 buflst))
-	  (setq menu (list `(,(w3m-make-menu-item "¥¿¥Ö¤ÎÁªÂò"
+	  (setq menu (list `(,(w3m-make-menu-item "$B%?%V$NA*Br(B"
 						  "Select TAB")
 			     ,@(w3m-tab-menubar-make-items-1 buflst)))))
 	(setq w3m-tab-menubar-make-items-preitems

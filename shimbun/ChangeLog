@@ -1,3 +1,9 @@
+2012-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-switch-to-buffer): Abolish.
+	* nnshimbun.el (nnshimbun-generate-download-script): Revert to using
+	switch-to-buffer.
+
 2012-01-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kantei.el (shimbun-index-url): Update url for blog-en.

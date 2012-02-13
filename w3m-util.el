@@ -1,6 +1,6 @@
 ;;; w3m-util.el --- Utility macros and functions for emacs-w3m
 
-;; Copyright (C) 2001-2011 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2012 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -530,22 +530,6 @@ the tabs line."
 	(when (eq cbuf buf)
 	  (throw 'exist bufs))))))
 
-(defun w3m-switch-to-buffer (buffer-or-name &optional norecord)
-  "Switch to buffer BUFFER-OR-NAME in the selected window.
-Optional argument NORECORD non-nil means do not put the buffer
-specified by BUFFER-OR-NAME at the front of the buffer list and
-do not make the window displaying it the most recently selected
-one.  Return the buffer switched to.
-
-This function is intended for the non-interactive use."
-  (let ((buffer (or (get-buffer buffer-or-name)
-		    (generate-new-buffer buffer-or-name))))
-    (set-window-buffer nil buffer)
-    (set-buffer buffer)
-    (unless norecord
-      (select-window (selected-window)))
-    buffer))
-
 (defmacro w3m-popup-window-p ()
   "Return non-nil if `w3m-pop-up-windows' is non-nil and the present
 situation allows it."
@@ -598,7 +582,7 @@ according to `w3m-pop-up-windows' and `w3m-pop-up-frames' (which see)."
 		 (setq w3m-initial-frames
 		       (prog1
 			   (copy-sequence w3m-initial-frames)
-			 (w3m-switch-to-buffer buffer))))
+			 (switch-to-buffer buffer))))
 		(frame
 		 ;; Pop up the existing frame which shows BUFFER.
 		 (pop-to-buffer buffer))
@@ -619,7 +603,7 @@ according to `w3m-pop-up-windows' and `w3m-pop-up-frames' (which see)."
       (if (w3m-popup-window-p)
 	  (let ((pop-up-windows t))
 	    (pop-to-buffer buffer))
-	(w3m-switch-to-buffer buffer)))
+	(switch-to-buffer buffer)))
     (w3m-history-restore-position)))
 
 (eval-when-compile
@@ -1476,10 +1460,10 @@ The value of DEFAULT is inserted into PROMPT."
 	  (cadr c)
 	  (if (nth 3 c)
 	      `(progn
-		 (w3m-switch-to-buffer w3m-tab-button-menu-current-buffer)
+		 (switch-to-buffer w3m-tab-button-menu-current-buffer)
 		 (funcall (function ,(car c)) ,@(nthcdr 4 c)))
 	    `(save-window-excursion
-	       (w3m-switch-to-buffer w3m-tab-button-menu-current-buffer)
+	       (switch-to-buffer w3m-tab-button-menu-current-buffer)
 	       (funcall (function ,(car c)) ,@(nthcdr 4 c))))
 	  :active (nth 2 c)
 	  :keys (or (and (assq (car c) w3m-make-menu-commands-keys)

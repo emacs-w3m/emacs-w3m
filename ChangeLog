@@ -1,3 +1,20 @@
+2012-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-switch-to-buffer): Abolish.
+
+	* w3m-bookmark.el (w3m-bookmark-add-all-urls):
+	* w3m-ems.el (w3m-tab-drag-mouse-function)
+	(w3m-tab-click-mouse-function, w3m-tab-next-buffer)
+	(w3m-tab-make-keymap):
+	* w3m-form.el (w3m-form-input-textarea, w3m-form-input-select)
+	(w3m-form-input-map):
+	* w3m-session.el (w3m-session-select):
+	* w3m-tabmenu.el (w3m-switch-buffer, w3m-tab-menubar-open-item):
+	* w3m-util.el (w3m-popup-buffer, w3m-make-menu-commands):
+	* w3m.el (w3m-next-buffer, w3m-move-unseen-buffer)
+	(w3m-goto-url-new-session, w3m-reload-all-pages): Revert to using
+	switch-to-buffer.
+
 2012-02-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-hist.el (w3m-history-store-position): Don't trust column position
