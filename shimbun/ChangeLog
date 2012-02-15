@@ -1,3 +1,14 @@
+2012-02-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Remove marks feature, following Ma Gnus.
+
+	* nnshimbun.el: Don't declare server-marks.
+	(nnshimbun-marks-is-evil, nnshimbun-marks-file-name)
+	(nnshimbun-marks, nnshimbun-marks-modtime): Remove.
+	(nnshimbun-request-set-mark, nnshimbun-marks-changed-p)
+	(nnshimbun-request-update-info, nnshimbun-possibly-create-directory)
+	(nnshimbun-save-marks, nnshimbun-open-marks): Remove.
+
 2012-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-switch-to-buffer): Abolish.

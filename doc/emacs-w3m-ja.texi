@@ -4650,20 +4650,6 @@ Manual}) です。
 レベルです。新たに作られた @samp{nnshimbun} グループに適用されます。デフォ
 ルト値は @code{nil} です。これはサーバー変数 (@pxref{Server Variables,
 ,サーバー変数, gnus-ja, The Gnus Manual}) です。
-
-@item nnshimbun-marks-is-evil
-@vindex nnshimbun-marks-is-evil
-もし @code{nil} でなければ、Gnus は @samp{shimbun} スプールのために
-印 (marks) ファイルを作りも使いもしません。印ファイルを使うことによって、
-@samp{shimbun} グループを @file{.newsrc.eld} から切り放してバックアップ
-し、復元することが可能になります。何らかの理由でこれを @code{t} に設定し
-た後で、再び @code{nil} にする場合はいつも、グループの印ファイルを消さな
-ければなりません (普通それは @samp{shimbun} グループのディレクトリにあ
-る @samp{.marks} という名前のファイルですが、正確に
-は @code{nnshimbun-marks-file-name} の値を参照してください)。そうすれ
-ば Gnus によって印ファイルが再生成されるでしょう。デフォルト値
-は @code{nil} です。これはサーバー変数 (@pxref{Server Variables, ,サーバー
-変数, gnus-ja, The Gnus Manual}) です。
 @end table
 
 @cindex group parameters
