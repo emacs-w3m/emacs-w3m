@@ -8829,7 +8829,7 @@ It makes the ends of upper and lower three lines visible.  If
 
 (defun w3m-goto-mailto-url (url &optional post-data)
   (let ((before (nreverse (buffer-list)))
-	comp info buffers buffer function)
+	comp info body buffers buffer function)
     (setq url (w3m-decode-entities-string url))
     (save-window-excursion
       (if (and (symbolp w3m-mailto-url-function)
@@ -8844,14 +8844,18 @@ It makes the ends of upper and lower three lines visible.  If
 		     (fboundp comp))
 	  (error "No function to compose a mail in `%s'"
 		 (symbol-value 'mail-user-agent)))
-	;; Use rfc2368.el if exist.
-	;; rfc2368.el is written by Sen Nagata.
-	;; You can find it in "contrib" directory of Mew package
-	;; or in "utils" directory of Wanderlust package.
 	(if (or (featurep 'rfc2368)
 		(condition-case nil (require 'rfc2368) (error nil)))
+	    ;; Use rfc2368.el
 	    (progn
-	      (setq info (rfc2368-parse-mailto-url url))
+	      (setq info (rfc2368-parse-mailto-url url)
+		    body (assoc "Body" info)
+		    info (delq body info)
+		    body (list (cdr body)))
+	      (when post-data
+		(setq body (nconc body (list (if (consp post-data)
+						 (car post-data)
+					       post-data)))))
 	      (apply comp
 		     (append (mapcar
 			      (lambda (x)
@@ -8859,17 +8863,8 @@ It makes the ends of upper and lower three lines visible.  If
 				    (cdr (assoc x info))
 				  (setq info (delq (assoc x info) info))))
 			      '("To" "Subject"))
-			     (if post-data
-				 (nconc
-				  info
-				  (list (cons
-					 "body"
-					 (or (and
-					      (consp post-data)
-					      (concat (car post-data) "\n"))
-					     (concat post-data "\n")))))
-			       (list info)))))
-	  ;; without rfc2368.el.
+			     (list info))))
+	  ;; W/o rfc2368.el
 	  (string-match ":\\([^?]+\\)" url)
 	  (funcall comp (match-string 1 url)))))
     (setq buffers (nreverse (buffer-list)))
@@ -8888,7 +8883,10 @@ It makes the ends of upper and lower three lines visible.  If
 	    special-display-regexps
 	    same-window-buffer-names
 	    same-window-regexps)
-	(funcall function buffer)))))
+	(funcall function buffer)
+	(while body
+	  (insert (pop body))
+	  (unless (bolp) (insert "\n")))))))
 
 (defun w3m-convert-ftp-url-for-emacsen (url)
   (or (and (string-match "^ftp://?\\([^/@]+@\\)?\\([^/]+\\)\\(?:/~/\\)?" url)

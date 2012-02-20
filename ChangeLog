@@ -1,3 +1,7 @@
+2012-02-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-mailto-url): Work for mail body.
+
 2012-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-switch-to-buffer): Abolish.
