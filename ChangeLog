@@ -1,3 +1,8 @@
+2012-02-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-relationship-estimate-rules)
+	(w3m-open-all-links-in-new-session): Work for https Google pages.
+
 2012-02-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-mailto-url): Work for mail body.

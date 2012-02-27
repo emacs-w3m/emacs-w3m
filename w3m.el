@@ -1974,7 +1974,7 @@ Here are some predefined functions which can be used for those ways:
 
 (defcustom w3m-relationship-estimate-rules
   `((w3m-relationship-simple-estimate
-     "\\`http://\\(?:www\\|blogsearch\\|groups\\|news\\|images\\)\
+     "\\`https?://\\(?:www\\|blogsearch\\|groups\\|news\\|images\\)\
 \\.google\\.[^/]+/\\(?:\\(?:blog\\|code\\)?search\\|groups\\|news\\|images\
 \\|cse\\?cx=\\|custom\\?\\(?:q\\|hl\\)=\\)"
      ,(concat "<a[^>]+?href=" w3m-html-string-regexp "[^>]*>[\t\n ]*"
@@ -1987,7 +1987,7 @@ Here are some predefined functions which can be used for those ways:
 	      "<b>\\(?:上一頁\\|前へ\\|이전\\)</b>\\)")
      nil nil)
     (w3m-relationship-simple-estimate
-     "\\`http://www\\.google\\.[^/]+/gwt/n\\?u="
+     "\\`https?://www\\.google\\.[^/]+/gwt/n\\?u="
      ,(concat "<a[^>]+?href=" w3m-html-string-regexp
 	      "[ \t\n]+accesskey=\"3\">")
      ,(concat "<a[^>]+?href=" w3m-html-string-regexp
@@ -2258,7 +2258,7 @@ It shows a percentage of the data loaded from the web server."
 (defcustom w3m-ignored-image-url-regexp nil
   "*Regexp matching image urls which you don't want to view.
 It is effective even if `w3m-display-inline-images' is non-nil.
-For instance, the value \"^http://www\\.google\\.com/\" conceals
+For instance, the value \"^https?://www\\.google\\.com/\" conceals
 Google's logo and navigation images, but display YouTube's
 thumbnail."
   :group 'w3m
@@ -6887,10 +6887,11 @@ If Transient Mark mode, deactivate the mark."
       (setq urls (list url)))
     (save-excursion
       (goto-char start)
-      (setq all (not (and (bolp)
-			  w3m-current-url
-			  (string-match "\\`http://\\(?:[^/]+\\.\\)*google\\."
-					w3m-current-url))))
+      (setq all (not
+		 (and (bolp)
+		      w3m-current-url
+		      (string-match "\\`https?://\\(?:[^/]+\\.\\)*google\\."
+				    w3m-current-url))))
       (while (progn
 	       (w3m-next-anchor)
 	       (and (> (point) prev)
