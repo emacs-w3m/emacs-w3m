@@ -1800,7 +1800,7 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\
     (unless (eobp)
       (shimbun-japanese-hankaku-region start (point-max) quote))))
 
-;; Silence XEmacs' byte compiler.
+;; Silence XEmacs's byte compiler.
 (eval-when-compile
   (if (fboundp 'libxml-parse-xml-region) nil
     (defalias 'libxml-parse-xml-region 'ignore)))

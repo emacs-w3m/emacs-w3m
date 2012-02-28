@@ -79,7 +79,7 @@
 (require 'w3m-util)
 (require 'w3m-proc)
 
-;; Silence the Emacs' byte-compiler that says ``might not be defined''.
+;; Silence the Emacs's byte-compiler that says ``might not be defined''.
 (eval-when-compile
   (defalias 'w3m-setup-menu 'ignore))
 
@@ -1658,7 +1658,7 @@ It influences only when a new emacs-w3m buffer is created."
 
 (defcustom w3m-popup-frame-parameters nil
   "Alist of frame parameters used when creating a new emacs-w3m frame.
-It allows not only the alist form but also XEmacs' plist form."
+It allows not only the alist form but also XEmacs's plist form."
   :group 'w3m
   :type '(choice (group :inline t :tag "Frame Parameters (Emacs)"
 			(repeat :inline t :tag "Frame Parameters (Emacs)"
@@ -2456,7 +2456,7 @@ nil value means it has not been initialized.")
     ("image/tiff" . tiff)
     ("image/x-xbm" . xbm)
     ("image/x-xpm" . xpm))
-  "Alist of content types and image types defined as the Emacs' features.")
+  "Alist of content types and image types defined as the Emacs's features.")
 
 (defconst w3m-toolbar-buttons
   '("back" "parent" "forward" "reload" "open" "home" "search" "image"

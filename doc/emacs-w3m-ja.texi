@@ -2988,7 +2988,7 @@ emacs-w3m session.
 @item w3m-popup-frame-parameters
 @vindex w3m-popup-frame-parameters
 Alist of frame parameters used when creating a new emacs-w3m frame.  It
-allows not only the alist form but also XEmacs' plist form.
+allows not only the alist form but also XEmacs's plist form.
 
 @item w3m-prefer-cache
 @vindex w3m-prefer-cache

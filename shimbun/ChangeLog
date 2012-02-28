@@ -29,7 +29,7 @@
 
 2011-12-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* shimbun.el (shimbun-xml-parse-buffer): Silence XEmacs' byte compiler.
+	* shimbun.el (shimbun-xml-parse-buffer): Silence XEmacs's byte compiler.
 
 2011-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -359,7 +359,7 @@
 
 2009-11-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* sb-atom.el (shimbun-atom-get-headers): Silence XEmacs' byte compiler.
+	* sb-atom.el (shimbun-atom-get-headers): Silence XEmacs's byte compiler.
 
 	* sb-atom-hash.el (shimbun-atom-compose-tag): Don't quote lambda form.
 
