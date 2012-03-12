@@ -7776,6 +7776,7 @@ for users.  See Info node `(elisp)Key Binding Conventions'.")
 	(define-key map [(control space)] 'w3m-history-store-position)
       ;; `C- ' doesn't mean `C-SPC' in XEmacs.
       (define-key map [?\C-\ ] 'w3m-history-store-position))
+    (define-key map "\C-e" 'w3m-goto-new-session-url)
     (define-key map "\C-v" 'w3m-history-restore-position)
     (define-key map "\C-t" 'w3m-copy-buffer)
     (define-key map "\C-p" 'w3m-previous-buffer)

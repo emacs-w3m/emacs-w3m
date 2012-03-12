@@ -1,3 +1,7 @@
+2012-03-12  Dan Jacobson  <jidanni@jidanni.org>
+
+	* w3m.el (w3m-ctl-c-map): Bind `C-c C-e' to w3m-goto-new-session-url.
+
 2012-02-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-relationship-estimate-rules)
