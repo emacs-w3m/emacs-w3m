@@ -8594,56 +8594,56 @@ greater."
 If ARG (the prefix) is a number, scroll the window ARG columns.
 Otherwise, it defaults to `w3m-horizontal-scroll-columns'."
   (interactive "P")
-  (when (if (memq last-command '(w3m-scroll-left w3m-shift-left))
-	    (or (< (window-hscroll) w3m-current-longest-line)
-		(progn (ding) nil))
-	  (w3m-set-current-longest-line)
-	  (< (window-hscroll) w3m-current-longest-line))
-    (w3m-horizontal-scroll 'left (if arg
-				     (prefix-numeric-value arg)
-				   w3m-horizontal-scroll-columns))))
+  (setq arg (if arg (prefix-numeric-value arg) w3m-horizontal-scroll-columns))
+  (if (w3m-image-page-displayed-p)
+      (image-forward-hscroll arg)
+    (when (if (memq last-command '(w3m-scroll-left w3m-shift-left))
+	      (or (< (window-hscroll) w3m-current-longest-line)
+		  (progn (ding) nil))
+	    (w3m-set-current-longest-line)
+	    (< (window-hscroll) w3m-current-longest-line))
+      (w3m-horizontal-scroll 'left arg))))
 
 (defun w3m-scroll-right (arg)
   "Scroll to the right.
 If ARG (the prefix) is a number, scroll the window ARG columns.
 Otherwise, it defaults to `w3m-horizontal-scroll-columns'."
   (interactive "P")
-  (if (zerop (window-hscroll))
-      (when (memq last-command '(w3m-scroll-right w3m-shift-right))
-	(ding))
-    (w3m-horizontal-scroll 'right (if arg
-				      (prefix-numeric-value arg)
-				    w3m-horizontal-scroll-columns))))
+  (setq arg (if arg (prefix-numeric-value arg) w3m-horizontal-scroll-columns))
+  (if (w3m-image-page-displayed-p)
+      (image-backward-hscroll arg)
+    (if (zerop (window-hscroll))
+	(when (memq last-command '(w3m-scroll-right w3m-shift-right))
+	  (ding))
+      (w3m-horizontal-scroll 'right arg))))
 
 (defun w3m-shift-left (arg)
   "Shift to the left.  Shift means a fine level horizontal scrolling.
 If ARG (the prefix) is a number, scroll the window ARG columns.
 Otherwise, it defaults to `w3m-horizontal-shift-columns'."
   (interactive "P")
+  (setq arg (if arg (prefix-numeric-value arg) w3m-horizontal-shift-columns))
   (if (w3m-image-page-displayed-p)
-      (image-forward-hscroll (or arg 1))
+      (image-forward-hscroll arg)
     (when (if (memq last-command '(w3m-scroll-left w3m-shift-left))
 	      (or (< (window-hscroll) w3m-current-longest-line)
 		  (progn (ding) nil))
 	    (w3m-set-current-longest-line)
 	    (< (window-hscroll) w3m-current-longest-line))
-      (w3m-horizontal-scroll 'left (if arg
-				       (prefix-numeric-value arg)
-				     w3m-horizontal-shift-columns)))))
+      (w3m-horizontal-scroll 'left arg))))
 
 (defun w3m-shift-right (arg)
   "Shift to the right.  Shift means a fine level horizontal scrolling.
 If ARG (the prefix) is a number, scroll the window ARG columns.
 Otherwise, it defaults to `w3m-horizontal-shift-columns'."
   (interactive "P")
+  (setq arg (if arg (prefix-numeric-value arg) w3m-horizontal-shift-columns))
   (if (w3m-image-page-displayed-p)
-      (image-backward-hscroll (or arg 1))
+      (image-backward-hscroll arg)
     (if (zerop (window-hscroll))
 	(when (memq last-command '(w3m-scroll-right w3m-shift-right))
 	  (ding))
-      (w3m-horizontal-scroll 'right (if arg
-					(prefix-numeric-value arg)
-				      w3m-horizontal-shift-columns)))))
+      (w3m-horizontal-scroll 'right arg))))
 
 (defvar w3m-horizontal-scroll-done nil)
 (make-variable-buffer-local 'w3m-horizontal-scroll-done)
