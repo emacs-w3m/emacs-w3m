@@ -1,7 +1,7 @@
 2012-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-scroll-left, w3m-scroll-right): Use image-mode function
-	for an image.
+	for an image page.
 	(w3m-shift-left, w3m-shift-right): Pass prefix argument to image-mode
 	function.
 
