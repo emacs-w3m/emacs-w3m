@@ -1,3 +1,7 @@
+2012-04-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kantei.el (shimbun-get-headers): Update regexp.
+
 2012-02-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Remove marks feature, following Ma Gnus.
