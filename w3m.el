@@ -4423,8 +4423,12 @@ not being archived in Gmane cannot be helped."
 	     (w3m-url-encode-string (match-string-no-properties 1)
 				    nil t))))))))
 
+(defun w3m-shr-url-at-point ()
+  "Return a url that shr.el provides at point."
+  (w3m-get-text-property-around 'shr-url))
+
 (defun w3m-header-line-url ()
-  "Return w3m-current-url if point on header line."
+  "Return w3m-current-url if point stays at header line."
   (let ((faces (get-text-property (point) 'face)))
     (when (and (eq major-mode 'w3m-mode)
 	       (listp faces)
@@ -4474,6 +4478,7 @@ Like `ffap-url-at-point', except that text props will be stripped."
 	  (t
 	   (lambda nil
 	     (or (w3m-gmane-url-at-point)
+		 (w3m-shr-url-at-point)
 		 (w3m-header-line-url)
 		 (ffap-url-at-point)))))))
 

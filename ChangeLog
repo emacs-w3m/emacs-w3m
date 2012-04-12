@@ -1,5 +1,8 @@
 2012-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-shr-url-at-point): New function.
+	(w3m-url-at-point): Use it.
+
 	* doc/ptexinfmt.el (texinfo-format-syntax-table): Modify character
 	syntax of " and \ to w, as a workaround.
 	(texinfo-format-comma): Support @comma.
