@@ -1,6 +1,10 @@
+2012-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kantei.el (shimbun-get-headers): Work for blog-en.
+
 2012-04-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* sb-kantei.el (shimbun-get-headers): Update regexp.
+	* sb-kantei.el (shimbun-get-headers): Update regexp used for blog-ja.
 
 2012-02-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
