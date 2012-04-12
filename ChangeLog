@@ -1,3 +1,10 @@
+2012-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* doc/ptexinfmt.el (texinfo-format-syntax-table): Modify character
+	syntax of " and \ to w, as a workaround.
+	(texinfo-format-comma): Support @comma.
+	(texinfo-format-parse-args): Tweak it so as to work for @comma.
+
 2012-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-scroll-left, w3m-scroll-right): Use image-mode function
