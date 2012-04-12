@@ -185,8 +185,6 @@ jp/m-magazine/backnumber/hukuda.html")
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-kantei)
 					 &optional range)
-  (shimbun-kantei-get-headers shimbun range))
-(defun shimbun-kantei-get-headers (shimbun range)
   (let* ((group (shimbun-current-group-internal shimbun))
 	 (enp (string-match "\\`m-magazine-en" group))
 	 (cnp (string-match "\\`m-magazine-cn" group))
