@@ -8892,6 +8892,7 @@ It makes the ends of upper and lower three lines visible.  If
 	(funcall function buffer)
 	(when body
 	  (setq mod (buffer-modified-p))
+	  (goto-char (point-min))
 	  (search-forward (concat "\n" (regexp-quote mail-header-separator)
 				  "\n") nil 'move)
 	  (unless (bolp) (insert "\n"))

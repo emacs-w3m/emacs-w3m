@@ -1,7 +1,8 @@
 2012-04-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-mailto-url): Protect against nil value of body=;
-	decode url string; don't change mail buffer's modification status.
+	decode url string; don't change mail buffer's modification status;
+	make sure body text is inserted to the message body.
 
 2012-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
