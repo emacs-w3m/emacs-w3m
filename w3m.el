@@ -3914,9 +3914,9 @@ You are retrieving non-secure image(s).  Continue? ")
 	      (delete-region start end)
 	      (setq end start))
 	     (t (w3m-remove-image start end)))
-	    (w3m-add-text-properties start end
-				     '(w3m-image-status off
-							w3m-idle-image-item nil))))
+	    (w3m-add-text-properties
+	     start end
+	     '(w3m-image-status off w3m-idle-image-item nil))))
 	(set-buffer-modified-p nil)))))
 
 (defun w3m-toggle-inline-image (&optional force no-cache)
@@ -8837,7 +8837,7 @@ It makes the ends of upper and lower three lines visible.  If
 (defun w3m-goto-mailto-url (url &optional post-data)
   (let ((before (nreverse (buffer-list)))
 	comp info body buffers buffer function)
-    (setq url (w3m-decode-entities-string url))
+    (setq url (w3m-decode-entities-string (w3m-url-decode-string url)))
     (save-window-excursion
       (if (and (symbolp w3m-mailto-url-function)
 	       (fboundp w3m-mailto-url-function))
@@ -8858,7 +8858,7 @@ It makes the ends of upper and lower three lines visible.  If
 	      (setq info (rfc2368-parse-mailto-url url)
 		    body (assoc "Body" info)
 		    info (delq body info)
-		    body (list (cdr body)))
+		    body (delq nil (list (cdr body))))
 	      (when post-data
 		(setq body (nconc body (list (if (consp post-data)
 						 (car post-data)
@@ -8887,13 +8887,18 @@ It makes the ends of upper and lower three lines visible.  If
 	    (setq buffers nil)))))
     (when function
       (let (special-display-buffer-names
-	    special-display-regexps
-	    same-window-buffer-names
-	    same-window-regexps)
+	    special-display-regexps same-window-buffer-names
+	    same-window-regexps mod)
 	(funcall function buffer)
-	(while body
-	  (insert (pop body))
-	  (unless (bolp) (insert "\n")))))))
+	(when body
+	  (setq mod (buffer-modified-p))
+	  (search-forward (concat "\n" (regexp-quote mail-header-separator)
+				  "\n") nil 'move)
+	  (unless (bolp) (insert "\n"))
+	  (while body
+	    (insert (pop body))
+	    (unless (bolp) (insert "\n")))
+	  (set-buffer-modified-p mod))))))
 
 (defun w3m-convert-ftp-url-for-emacsen (url)
   (or (and (string-match "^ftp://?\\([^/@]+@\\)?\\([^/]+\\)\\(?:/~/\\)?" url)
