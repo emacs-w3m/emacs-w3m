@@ -1,7 +1,8 @@
 2012-04-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* sb-mainichi.el (shimbun-mainichi-get-headers)
-	(shimbun-mainichi-multi-next-url): Update regexps.
+	* sb-mainichi.el (shimbun-mainichi-ignored-subject): New.
+	(shimbun-mainichi-get-headers, shimbun-mainichi-multi-next-url):
+	Update regexps.
 
 2012-04-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 

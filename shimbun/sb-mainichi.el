@@ -46,6 +46,12 @@
 (defvar shimbun-mainichi-prefer-text-plain nil
   "*Non-nil means prefer text/plain articles rather than html articles.")
 
+(defvar shimbun-mainichi-ignored-subject "\\`PR: ")
+
+(luna-define-method initialize-instance :after ((shimbun shimbun-mainichi)
+						&rest init-args)
+  (shimbun-rss-initialize-ignored-subject shimbun))
+
 (defvar shimbun-mainichi-group-table
   '(("flash" "ニュース速報"
      "http://mainichi.jp/rss/etc/flash.rss")
