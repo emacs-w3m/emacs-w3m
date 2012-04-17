@@ -1,6 +1,6 @@
 ;;; w3m-lnum.el --- Operations using link numbers
 
-;; Copyright (C) 2004-2011 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2004-2012 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;;          Andrey Kotlarski <m00naticus@gmail.com>
@@ -568,6 +568,7 @@ the last used index number."
 chars, C-digit, C-SPACE: add chars, digits or space to string \
 filter | arrows: move selection | SPACE,DEL,<,>: scroll | \
 ESC, C-g: quit")
+		       (redraw-modeline)
 		       (let ((last-index (w3m-lnum ,type ,filter)))
 			 ,@body))
        (setq mode-line-format original-mode-line-format)
@@ -682,7 +683,7 @@ If EDIT, edit URL before visiting."
 	    (goto-char (cadr ,info))
 	    (w3m-history-store-position)
 	    (w3m-goto-url
-	     ,(if edit `(read-string "Visit url in new session: "
+	     ,(if edit `(read-string "Visit url: "
 				     (car ,info))
 		`(car ,info))))))
 
@@ -766,8 +767,9 @@ Function has to take one argument that is selection info."
 				     "*Emacs-w3m action selection*")))
 	      (set-buffer selection-buffer)
 	      (setq mode-line-format "RET, left click: select | \
-<down>,TAB/<up>,BACKTAB: move to next/previous action")
-	      (setq buffer-read-only nil)
+<down>,TAB/<up>,BACKTAB: move to next/previous action"
+		    buffer-read-only nil)
+	      (redraw-modeline)
 	      (mapc (lambda (option)
 		      (if (consp option)
 			  (insert
@@ -1102,10 +1104,9 @@ If no link under point, activate numbering and ask for one."
 			    (cd (read-directory-name
 				 "Save to: " (getenv "HOME")
 				 nil t))
-			    (async-shell-command (concat "curl -O '"
-							 (car info)
-							 "'")
-						 "*Curl*")
+			    (shell-command
+			     (concat "curl -k -O '" (car info) "' &")
+			     "*Curl*")
 			    (cd olddir)))
 			"Download with Curl")))))
 
