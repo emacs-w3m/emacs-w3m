@@ -1,3 +1,8 @@
+2012-04-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-create-page): Add a filter for Google Analytics tracking
+	temporarily --- maybe this should be incorporated in w3m-filter.el.
+
 2012-04-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-goto-mailto-url): Protect against nil value of body=;

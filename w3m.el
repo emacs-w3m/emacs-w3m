@@ -6351,6 +6351,14 @@ If so return \"text/html\", otherwise \"text/plain\"."
   (setq type (w3m-prepare-content url type charset))
   (w3m-safe-decode-buffer url charset type)
   (setq charset (or charset w3m-current-content-charset))
+  ;; FIXME: Maybe this should be incorporated in w3m-filter.el.
+  ;; Filter Google Analytics tracking.
+  (when (string-match "\\`https?://[a-z]+\\.google\\." url)
+    (goto-char (point-min))
+    (while (re-search-forward "\
+\\(<a[\t\n ]+href=\"\\)/\\(?:imgres\\?imgurl\\|url\\?q\\)=\\([^&]+\\)[^>]+>"
+			      nil t)
+      (replace-match "\\1\\2\">")))
   (when w3m-use-filter (w3m-filter url))
   (w3m-relationship-estimate url)
   ;; Create pages.
