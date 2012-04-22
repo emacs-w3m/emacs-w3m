@@ -1,3 +1,8 @@
+2012-04-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-create-page): Decode url in `Google Analytics tracking'
+	filter.
+
 2012-04-18  Andrey Kotlarski  <m00naticus@gmail.com>
 
 	* w3m-lnum.el (w3m-with-lnum, w3m-lnum-universal-dispatch):

@@ -6358,7 +6358,12 @@ If so return \"text/html\", otherwise \"text/plain\"."
     (while (re-search-forward "\
 \\(<a[\t\n ]+href=\"\\)/\\(?:imgres\\?imgurl\\|url\\?q\\)=\\([^&]+\\)[^>]+>"
 			      nil t)
-      (replace-match "\\1\\2\">")))
+      ;; In a search result Google encodes some special characters like "+"
+      ;; and "?" to "%2B" and "%3F" in a real url, so we need to decode them.
+      (insert (w3m-url-decode-string
+	       (prog1
+		   (concat (match-string 1) (match-string 2) "\">")
+		 (delete-region (match-beginning 0) (match-end 0)))))))
   (when w3m-use-filter (w3m-filter url))
   (w3m-relationship-estimate url)
   ;; Create pages.
