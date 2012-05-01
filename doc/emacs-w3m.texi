@@ -5850,6 +5850,9 @@ Group name is tigris.<project>.<mailinglist>.
 scipy.astropy scipy.ipython-user scipy.ipython-dev scipy.scipy-user
 scipy.scipy-dev scipy.scipy-testlog scipy.scipy-chaco scipy.scipy-cvs
 
+@item @uref{http://lists.chise.org/mailman/listinfo, lists.chise.org Mailing Lists}
+chise.apel chise.chise chise.emacs-mime
+
 @end table
 
 @node Sport Sites Supported by Shimbun

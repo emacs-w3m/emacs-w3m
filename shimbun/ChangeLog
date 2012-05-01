@@ -1,3 +1,13 @@
+2012-05-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-chise.el: New file.
+
+	* sb-mailman.el (shimbun-mailman-make-contents): Don't decode entities;
+	restore mail addresses; append comma to day of week in Date header;
+	remove useless links around mail addresses.
+	(shimbun-mailman-ja-make-contents): Don't decode entities;
+	remove useless links around mail addresses.
+
 2012-04-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-mainichi.el (shimbun-mainichi-ignored-subject): New.
