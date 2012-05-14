@@ -1,3 +1,10 @@
+2012-05-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-url-encode-string-2): New function.
+	(w3m-print-current-url, w3m-print-this-url, w3m-print-this-image-url):
+	Use it to encode url characters that are apt to be misidentified as
+	word boundaries.
+
 2012-04-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-create-page): Decode url in `Google Analytics tracking'

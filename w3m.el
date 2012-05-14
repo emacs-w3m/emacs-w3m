@@ -3330,6 +3330,23 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 	  (encode-coding-string (or str "")
 				(or coding (w3m-url-coding-system str))))))
 
+(defun w3m-url-encode-string-2 (str)
+  "Encode STR's characters, apt to be misidentified as boundaries.
+Non-ASCII characters have to have already been encoded."
+  (apply (function concat)
+	 (mapcar
+	  (lambda (ch)
+	    (cond
+	     ((eq ch ?\n)		; newline
+	      "%0D%0A")
+	     ((string-match "[-a-zA-Z0-9_:/.%]" (char-to-string ch)) ; xxx?
+	      (char-to-string ch))	; printable
+	     ((char-equal ch ?\x20)	; space
+	      "+")
+	     (t
+	      (format "%%%02X" ch))))	; escape
+	  str)))
+
 (defun w3m-url-decode-string (str &optional coding)
   (let ((start 0)
 	(buf)
@@ -7138,7 +7155,7 @@ of the url currently displayed.  The browser is defined in
   (interactive)
   (when w3m-current-url
     (let ((deactivate-mark nil))
-      (kill-new w3m-current-url)
+      (kill-new (w3m-url-encode-string-2 w3m-current-url))
       (w3m-message "%s" (w3m-url-readable-string w3m-current-url)))))
 
 (defvar message-truncate-lines)
@@ -7157,7 +7174,7 @@ of the url currently displayed.  The browser is defined in
 		   (w3m-anchor-title)
 		 (w3m-anchor-title (point)))))
     (when (or url interactive-p)
-      (and url interactive-p (kill-new url))
+      (and url interactive-p (kill-new (w3m-url-encode-string-2 url)))
       (setq url (or (w3m-url-readable-string url)
 		    (and (w3m-action) "There is a form")
 		    "There is no url under point"))
@@ -7190,7 +7207,7 @@ of the url currently displayed.  The browser is defined in
 		 (w3m-image-alt)
 	       (w3m-image-alt (point)))))
     (when (or url interactive-p)
-      (and url interactive-p (kill-new url))
+      (and url interactive-p (kill-new (w3m-url-encode-string-2 url)))
       (w3m-message "%s%s"
 		   (if (zerop (length alt))
 		       ""
