@@ -1,3 +1,8 @@
+2012-06-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-create-page): Improve regexp matching `Google Analytics
+	tracking' urls.
+
 2012-05-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-url-encode-string-2): New function.
