@@ -6713,7 +6713,8 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	      (w3m-string-match-url-components base)
 	      (match-beginning 1))
 	    (and (not (match-beginning 3))
-		 (member (match-string 2 base) w3m-url-hierarchical-schemes)
+		 (member (downcase (match-string 2 base))
+			 w3m-url-hierarchical-schemes)
 		 (setq base (concat
 			     (substring base 0 (match-end 1))
 			     "//"
@@ -6749,7 +6750,7 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	  ;; part. => URL has an absolute spec.
 	  url
 	(let ((scheme (match-string 2 url)))
-	  (if (and (member scheme w3m-url-hierarchical-schemes)
+	  (if (and (member (downcase scheme) w3m-url-hierarchical-schemes)
 		   (progn
 		     (w3m-string-match-url-components base)
 		     (equal scheme (match-string 2 base))))
@@ -6770,7 +6771,9 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	  (w3m-string-match-url-components base)
 	  (concat
 	   (substring base 0 (match-beginning 5))
-	   (if (member (match-string 2 base) w3m-url-hierarchical-schemes)
+	   (if (and (match-beginning 2)
+		    (member (downcase (match-string 2 base))
+			    w3m-url-hierarchical-schemes))
 	       (w3m-expand-path-name
 		(substring url 0 path-end)
 		(or

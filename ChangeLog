@@ -1,5 +1,8 @@
 2012-06-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-expand-url): Work for scheme name containing upcase
+	letters.  Reported by Dan Jacobson <jidanni@jidanni.org>.
+
 	* w3m-util.el (w3m-force-mode-line-update): New alias.
 
 	* w3m-lnum.el (w3m-with-lnum, w3m-lnum-universal-dispatch): Use it.
