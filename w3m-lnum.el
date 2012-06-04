@@ -568,7 +568,7 @@ the last used index number."
 chars, C-digit, C-SPACE: add chars, digits or space to string \
 filter | arrows: move selection | SPACE,DEL,<,>: scroll | \
 ESC, C-g: quit")
-		       (redraw-modeline)
+		       (w3m-force-mode-line-update)
 		       (let ((last-index (w3m-lnum ,type ,filter)))
 			 ,@body))
        (setq mode-line-format original-mode-line-format)
@@ -769,7 +769,7 @@ Function has to take one argument that is selection info."
 	      (setq mode-line-format "RET, left click: select | \
 <down>,TAB/<up>,BACKTAB: move to next/previous action"
 		    buffer-read-only nil)
-	      (redraw-modeline)
+	      (w3m-force-mode-line-update)
 	      (mapc (lambda (option)
 		      (if (consp option)
 			  (insert

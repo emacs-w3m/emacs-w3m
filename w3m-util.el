@@ -1517,6 +1517,11 @@ get to be the alias to `visited-file-modtime'."
     ;; Old ones
     (void-function '(interactive-p))))
 
+(defalias 'w3m-force-mode-line-update
+  (if (fboundp 'force-mode-line-update)
+      'force-mode-line-update)
+  'redraw-modeline)
+
 ;;; Punycode RFC 3492:
 
 (defconst w3m-puny-code-regex "xn--\\([-0-9a-zA-z]+\\)")
