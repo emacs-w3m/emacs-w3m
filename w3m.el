@@ -6369,7 +6369,7 @@ If so return \"text/html\", otherwise \"text/plain\"."
   (w3m-safe-decode-buffer url charset type)
   (setq charset (or charset w3m-current-content-charset))
   ;; FIXME: Maybe this should be incorporated in w3m-filter.el.
-  ;; Filter Google Analytics tracking.
+  ;; Filter Google's click-tracking.
   (when (string-match "\\`https?://[a-z]+\\.google\\." url)
     (goto-char (point-min))
     (while (re-search-forward "\\(<a[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\

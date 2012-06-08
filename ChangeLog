@@ -9,8 +9,8 @@
 
 2012-06-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-create-page): Improve regexp matching `Google Analytics
-	tracking' urls.
+	* w3m.el (w3m-create-page): Improve regexp matching Google's click-
+	tracking urls.
 
 2012-05-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -21,7 +21,7 @@
 
 2012-04-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-create-page): Decode url in `Google Analytics tracking'
+	* w3m.el (w3m-create-page): Decode url in Google's click-tracking
 	filter.
 
 2012-04-18  Andrey Kotlarski  <m00naticus@gmail.com>
@@ -32,7 +32,7 @@
 
 2012-04-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-create-page): Add a filter for Google Analytics tracking
+	* w3m.el (w3m-create-page): Add a filter for Google's click-tracking
 	temporarily --- maybe this should be incorporated in w3m-filter.el.
 
 2012-04-13  Katsumi Yamaoka  <yamaoka@jpl.org>
