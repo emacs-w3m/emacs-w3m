@@ -1519,8 +1519,8 @@ get to be the alias to `visited-file-modtime'."
 
 (defalias 'w3m-force-mode-line-update
   (if (fboundp 'force-mode-line-update)
-      'force-mode-line-update)
-  'redraw-modeline)
+      'force-mode-line-update
+    'redraw-modeline))
 
 ;;; Punycode RFC 3492:
 
