@@ -467,17 +467,18 @@ evaluated in a temporary buffer."
 		    (w3m-get-buffer-create
 		     (generate-new-buffer-name w3m-work-buffer-name)))
 		   (,current-buffer (current-buffer)))
-       (let ((,post-body (lambda (,var)
-			   (when (buffer-name ,temp-buffer)
-			     (set-buffer ,temp-buffer))
-			   ,@body))
-	     (,post-handler (lambda (,var)
-			      (w3m-kill-buffer ,temp-buffer)
-			      (when (buffer-name ,current-buffer)
-				(set-buffer ,current-buffer))
-			      ,var)))
+       (labels ((,post-body (,var)
+			    (when (buffer-name ,temp-buffer)
+			      (set-buffer ,temp-buffer))
+			    ,@body)
+		(,post-handler (,var)
+			       (w3m-kill-buffer ,temp-buffer)
+			       (when (buffer-name ,current-buffer)
+				 (set-buffer ,current-buffer))
+			       ,var))
 	 (let ((,var (let ((handler
-			    (cons ,post-body (cons ,post-handler handler))))
+			    (cons #',post-body
+				  (cons #',post-handler handler))))
 		       (with-current-buffer ,temp-buffer ,@form))))
 	   (if (w3m-process-p ,var)
 	       (if handler
@@ -485,12 +486,12 @@ evaluated in a temporary buffer."
 		 (w3m-process-start-process ,var))
 	     (if (w3m-process-p
 		  (setq ,var (save-current-buffer
-			       (let ((handler (cons ,post-handler handler)))
-				 (funcall ,post-body ,var)))))
+			       (let ((handler (cons #',post-handler handler)))
+				 (,post-body ,var)))))
 		 (if handler
 		     ,var
 		   (w3m-process-start-process ,var))
-	       (funcall ,post-handler ,var))))))))
+	       (,post-handler ,var))))))))
 (put 'w3m-process-do-with-temp-buffer 'lisp-indent-function 1)
 (put 'w3m-process-do-with-temp-buffer 'edebug-form-spec
      '((symbolp form) def-body))

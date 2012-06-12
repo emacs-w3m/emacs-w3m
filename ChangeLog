@@ -1,5 +1,10 @@
 2012-06-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-proc.el (w3m-process-do-with-temp-buffer): Use labels macro again.
+	Functions that the labels form generates to be used in the outside of
+	the labels form should be prefixed with #' from now on.
+	Thanks to Michael Heerdegen and Andreas Schwab.
+
 	* w3m-proc.el (w3m-process-do-with-temp-buffer): Don't use labels macro
 	of which the spec has been changed in the most recent Emacs.
 
