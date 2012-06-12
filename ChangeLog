@@ -1,3 +1,8 @@
+2012-06-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-proc.el (w3m-process-do-with-temp-buffer): Don't use labels macro
+	of which the spec has been changed in the most recent Emacs.
+
 2012-06-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-expand-url): Work for scheme name containing upcase
