@@ -1,3 +1,7 @@
+2012-06-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-url-encode-string-2): Encode only `(' and `)'.
+
 2012-06-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-proc.el (w3m-process-do-with-temp-buffer): Use labels macro again.

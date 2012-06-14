@@ -3331,21 +3331,8 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 				(or coding (w3m-url-coding-system str))))))
 
 (defun w3m-url-encode-string-2 (str)
-  "Encode STR's characters, apt to be misidentified as boundaries.
-Non-ASCII characters have to have already been encoded."
-  (apply (function concat)
-	 (mapcar
-	  (lambda (ch)
-	    (cond
-	     ((eq ch ?\n)		; newline
-	      "%0D%0A")
-	     ((string-match "[-a-zA-Z0-9_:/.%]" (char-to-string ch)) ; xxx?
-	      (char-to-string ch))	; printable
-	     ((char-equal ch ?\x20)	; space
-	      "+")
-	     (t
-	      (format "%%%02X" ch))))	; escape
-	  str)))
+  "Encode `(' and `)', apt to be misidentified as boundaries."
+  (w3m-replace-in-string (w3m-replace-in-string str "(" "%28") ")" "%29"))
 
 (defun w3m-url-decode-string (str &optional coding)
   (let ((start 0)
