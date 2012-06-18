@@ -1,7 +1,13 @@
 2012-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-minibuffer-setup): New function.
+	(w3m-input-url): Use it.
+
+	* w3m-util.el (w3m-popup-buffer): Do nothing for the current buffer.
+
 	* w3m.el (w3m-history-highlight-current-url): Extend href anchor to bol.
-	(w3m-http-status-alist): New variable.
+
+	* w3m.el (w3m-http-status-alist): New variable.
 	(w3m-http-status): New variable.
 	(w3m-w3m-retrieve): Set it.
 	(w3m-retrieve): Clear it.

@@ -547,64 +547,65 @@ for not deleting frames made for aims other than emacs-w3m sessions.")
   "Pop up BUFFER as a new window or a new frame
 according to `w3m-pop-up-windows' and `w3m-pop-up-frames' (which see)."
   (let ((window (get-buffer-window buffer t))
-	(oframe (selected-frame))
-	(popup-frame-p (w3m-popup-frame-p))
-	frame pop-up-frames buffers other)
-    (if (setq
-	 pop-up-frames
-	 (if window ;; The window showing BUFFER already exists.
-	     ;; Don't pop up a new frame if it is just the current frame.
-	     (not (eq (setq frame (window-frame window)) oframe))
-	   ;; There is no window for BUFFER, so look for the existing
-	   ;; emacs-w3m window if the tabs line is enabled or the
-	   ;; selection window exists (i.e., we can reuse it).
-	   (if (or (w3m-use-tab-p)
-		   (get-buffer-window w3m-select-buffer-name t))
-	       (progn
-		 (setq buffers (delq buffer (w3m-list-buffers t)))
-		 (while (and (not window)
-			     buffers)
-		   (setq window
-			 (get-buffer-window (setq other (pop buffers)) t)))
-		 (if window ;; The window showing another buffer exists.
-		     (not (eq (setq frame (window-frame window)) oframe))
-		   (setq other nil)
-		   ;; There is no window after all, so leave to the value
-		   ;; of `w3m-pop-up-frames' whether to pop up a new frame.
-		   popup-frame-p))
-	     ;; Ditto.
-	     popup-frame-p)))
-	(progn
-	  (cond (other
-		 ;; Pop up another emacs-w3m buffer and switch to BUFFER.
-		 (pop-to-buffer other)
-		 ;; Change the value for BUFFER's `w3m-initial-frames'.
-		 (setq w3m-initial-frames
-		       (prog1
-			   (copy-sequence w3m-initial-frames)
-			 (switch-to-buffer buffer))))
-		(frame
-		 ;; Pop up the existing frame which shows BUFFER.
-		 (pop-to-buffer buffer))
-		(t
-		 ;; Pop up a new frame.
-		 (let* ((pop-up-frame-alist (w3m-popup-frame-parameters))
-			(pop-up-frame-plist pop-up-frame-alist))
+	oframe popup-frame-p frame pop-up-frames buffers other)
+    (unless (eq window (selected-window))
+      (setq oframe (selected-frame)
+	    popup-frame-p (w3m-popup-frame-p))
+      (if (setq
+	   pop-up-frames
+	   (if window ;; The window showing BUFFER already exists.
+	       ;; Don't pop up a new frame if it is just the current frame.
+	       (not (eq (setq frame (window-frame window)) oframe))
+	     ;; There is no window for BUFFER, so look for the existing
+	     ;; emacs-w3m window if the tabs line is enabled or the
+	     ;; selection window exists (i.e., we can reuse it).
+	     (if (or (w3m-use-tab-p)
+		     (get-buffer-window w3m-select-buffer-name t))
+		 (progn
+		   (setq buffers (delq buffer (w3m-list-buffers t)))
+		   (while (and (not window)
+			       buffers)
+		     (setq window
+			   (get-buffer-window (setq other (pop buffers)) t)))
+		   (if window ;; The window showing another buffer exists.
+		       (not (eq (setq frame (window-frame window)) oframe))
+		     (setq other nil)
+		     ;; There is no window after all, so leave to the value
+		     ;; of `w3m-pop-up-frames' whether to pop up a new frame.
+		     popup-frame-p))
+	       ;; Ditto.
+	       popup-frame-p)))
+	  (progn
+	    (cond (other
+		   ;; Pop up another emacs-w3m buffer and switch to BUFFER.
+		   (pop-to-buffer other)
+		   ;; Change the value for BUFFER's `w3m-initial-frames'.
+		   (setq w3m-initial-frames
+			 (prog1
+			     (copy-sequence w3m-initial-frames)
+			   (switch-to-buffer buffer))))
+		  (frame
+		   ;; Pop up the existing frame which shows BUFFER.
 		   (pop-to-buffer buffer))
-		 (setq frame (window-frame (get-buffer-window buffer t)))))
-	  ;; Raise, select and focus the frame.
-	  (if (fboundp 'select-frame-set-input-focus)
-	      (select-frame-set-input-focus frame)
-	    (raise-frame frame)
-	    (select-frame frame)
-	    (w3m-static-when (featurep 'xemacs)
-	      (focus-frame frame))))
-      ;; Simply switch to BUFFER in the current frame.
-      (if (w3m-popup-window-p)
-	  (let ((pop-up-windows t))
-	    (pop-to-buffer buffer))
-	(switch-to-buffer buffer)))
-    (w3m-history-restore-position)))
+		  (t
+		   ;; Pop up a new frame.
+		   (let* ((pop-up-frame-alist (w3m-popup-frame-parameters))
+			  (pop-up-frame-plist pop-up-frame-alist))
+		     (pop-to-buffer buffer))
+		   (setq frame (window-frame (get-buffer-window buffer t)))))
+	    ;; Raise, select and focus the frame.
+	    (if (fboundp 'select-frame-set-input-focus)
+		(select-frame-set-input-focus frame)
+	      (raise-frame frame)
+	      (select-frame frame)
+	      (w3m-static-when (featurep 'xemacs)
+		(focus-frame frame))))
+	;; Simply switch to BUFFER in the current frame.
+	(if (w3m-popup-window-p)
+	    (let ((pop-up-windows t))
+	      (pop-to-buffer buffer))
+	  (switch-to-buffer buffer))
+	(w3m-history-restore-position)))))
 
 (eval-when-compile
   (when (and (fboundp 'select-frame-set-input-focus)

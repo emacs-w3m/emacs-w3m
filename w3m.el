@@ -4581,6 +4581,22 @@ http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
      (t
       (concat "http://" url)))))
 
+(defun w3m-minibuffer-setup ()
+  "Function that `w3m-input-url' runs using `minibuffer-setup-hook'."
+  ;; Move the cursor to the beginning of a host name.
+  (beginning-of-line)
+  (if (looking-at "[a-z]+:\\(?:/+\\)?")
+      (goto-char (match-end 0)))
+  ;; Suspend `post-command-hook' just for once after exiting minibuffer.
+  (with-current-buffer (window-buffer (minibuffer-selected-window))
+    (let ((rest (memq 'w3m-check-current-position post-command-hook))
+	  ohook)
+      (when (and rest
+		 (assq 'post-command-hook (buffer-local-variables)))
+	(setq ohook (copy-sequence post-command-hook))
+	(setcar rest `(lambda nil
+			(setq post-command-hook ',ohook)))))))
+
 (defun w3m-input-url (&optional prompt initial default quick-start
 				feeling-lucky)
   "Read a url from the minibuffer, prompting with string PROMPT."
@@ -4608,11 +4624,7 @@ http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
       (unless w3m-enable-google-feeling-lucky
 	(setq feeling-lucky nil))
       (setq url (let ((minibuffer-setup-hook
-		       (append minibuffer-setup-hook
-			       (list (lambda ()
-				       (beginning-of-line)
-				       (if (looking-at "[a-z]+:\\(?:/+\\)?")
-					   (goto-char (match-end 0)))))))
+		       (append minibuffer-setup-hook '(w3m-minibuffer-setup)))
 		      (ofunc (lookup-key minibuffer-local-completion-map " ")))
 		  (when feeling-lucky
 		    (define-key minibuffer-local-completion-map " "
