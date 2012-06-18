@@ -1,3 +1,12 @@
+2012-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-http-status-alist): New variable.
+	(w3m-http-status): New variable.
+	(w3m-w3m-retrieve): Set it.
+	(w3m-retrieve): Clear it.
+	(w3m-download, w3m-retrieve-and-render, w3m-show-error-information):
+	Show http status if download or retrieving fails.
+
 2012-06-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-url-encode-string-2): Encode only `(' and `)'.

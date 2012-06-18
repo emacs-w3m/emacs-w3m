@@ -2435,6 +2435,33 @@ See the function definitions of `w3m-toggle-inline-image',
 (defvar w3m-cache-hashtb nil)
 (defvar w3m-input-url-history nil)
 
+(defvar w3m-http-status-alist
+  '((400 . "Bad Request")
+    (401 . "Unauthorized")
+    (402 . "Payment Required")
+    (403 . "Forbidden")
+    (404 . "Not Found")
+    (405 . "Method Not Allowed")
+    (406 . "Not Acceptable")
+    (407 . "Proxy Authentication Required")
+    (408 . "Request Time-out")
+    (409 . "Conflict")
+    (410 . "Gone")
+    (411 . "Length Required")
+    (412 . "Precondition Failed")
+    (413 . "Request Entity Too Large")
+    (414 . "Request-URI Too Large")
+    (415 . "Unsupported Media Type")
+    (500 . "Internal Server Error")
+    (501 . "Not Implemented")
+    (502 . "Bad Gateway")
+    (503 . "Service Unavailable")
+    (504 . "Gateway Time-out")
+    (505 . "HTTP Version not supported"))
+  "Alist of HTTP status codes.")
+
+(defvar w3m-http-status nil)
+
 (defconst w3m-arrived-db-size 1023)
 (defvar w3m-arrived-db nil
   "Hash table, the arrived URLs database.
@@ -5511,6 +5538,7 @@ It will put the retrieved contents into the current buffer.  See
 		(set-buffer-multibyte nil)
 		(w3m-w3m-retrieve-1 url post-data referer no-cache
 				    (or w3m-follow-redirection 0) handler)))
+      (setq w3m-http-status (car-safe attr))
       (let ((w3m-message-silent silent))
 	(when attr
 	  (cond
@@ -5740,6 +5768,7 @@ string argument.
 NO-UNCOMPRESS specifies whether this function should not uncompress contents.
 NO-CACHE specifies whether this function should not use cached contents.
 POST-DATA and REFERER will be sent to the web server with a request."
+  (set (make-local-variable 'w3m-http-status) nil)
   (if (not handler)
       (condition-case nil
 	  (w3m-process-with-wait-handler
@@ -5837,7 +5866,8 @@ specifies not using the cached data."
   (if (and w3m-use-ange-ftp (string-match "\\`ftp://" url))
       (w3m-goto-ftp-url url filename)
     (lexical-let ((url url)
-		  (filename filename))
+		  (filename filename)
+		  (page-buffer (current-buffer)))
       (w3m-process-do-with-temp-buffer
 	  (type (progn
 		  (w3m-clear-local-variables)
@@ -5857,11 +5887,15 @@ specifies not using the cached data."
 		(w3m-touch-file filename (w3m-last-modified url))
 		t))
 	  (ding)
-	  (message "Cannot retrieve URL: %s%s"
-		   url
-		   (if w3m-process-exit-status
-		       (format " (exit status: %s)" w3m-process-exit-status)
-		     ""))
+	  (with-current-buffer page-buffer
+	    (message "Cannot retrieve URL: %s%s" url
+		     (cond ((and w3m-process-exit-status
+				 (not (equal w3m-process-exit-status 0)))
+			    (format " (exit status: %s)"
+				    w3m-process-exit-status))
+			   (w3m-http-status
+			    (format " (http status: %s)" w3m-http-status))
+			   (t ""))))
 	  nil)))))
 
 ;;; Retrieve data:
@@ -6200,12 +6234,16 @@ called with t as an argument.  Otherwise, it will be called with nil."
 				(not (or (w3m-url-local-p url)
 					 (string-match "\\`about:" url))))
 		       (w3m-show-error-information url charset page-buffer))
-		(w3m-message "Cannot retrieve URL: %s%s"
-			     url
-			     (if w3m-process-exit-status
-				 (format " (exit status: %s)"
-					 w3m-process-exit-status)
-			       ""))))))))))
+		(with-current-buffer page-buffer
+		  (w3m-message
+		   "Cannot retrieve URL: %s%s" url
+		   (cond ((and w3m-process-exit-status
+			       (not (equal w3m-process-exit-status 0)))
+			  (format " (exit status: %s)"
+				  w3m-process-exit-status))
+			 (w3m-http-status
+			  (format " (http status: %s)" w3m-http-status))
+			 (t ""))))))))))))
 
 (defun w3m-show-error-information (url charset page-buffer)
   "Create and prepare the error information."
@@ -6214,25 +6252,40 @@ called with t as an argument.  Otherwise, it will be called with nil."
 	t) ; Even if decoding is failed, use the cached contents.
       (let ((case-fold-search t)
 	    (header (w3m-cache-request-header url))
-	    (errmsg (format "\n<br><h1>Cannot retrieve URL: %s%s</h1>"
-			    (format "<a href=\"%s\">%s</a>" url url)
-			    (when w3m-process-exit-status
-			      (format " (exit status: %s)"
-				      w3m-process-exit-status)))))
+	    exit-status http-status errmsg)
+	(with-current-buffer page-buffer
+	  (setq exit-status w3m-process-exit-status
+		http-status w3m-http-status))
+	(setq errmsg
+	      (concat
+	       "<br><h1>Cannot retrieve URL: <a href=\""
+	       url "\">" url "</a></h1>\n"
+	       (cond
+		((and exit-status (not (equal exit-status 0)))
+		 (format "<br><br>Exit status of %s: %s\n"
+			 (file-name-nondirectory w3m-command) exit-status))
+		(http-status
+		 (format "<br><br>HTTP status: %s%s\n"
+			 http-status
+			 (let ((status (cdr (assq http-status
+						  w3m-http-status-alist))))
+			   (if status
+			       (concat " (" status ")")
+			     "")))))))
 	(if (or (null header)
 		(string-match "\\`w3m: Can't load " header))
 	    (progn
 	      (erase-buffer)
 	      (setq charset "us-ascii")
-	      (insert
-	       errmsg
-	       (format "<br><br><b>%s</b> could not be found; "
-		       (w3m-get-server-hostname url))
-	       (if (string-match "\\`news:" url)
-		   "check the name of the <b>URL</b>\
+	      (insert errmsg)
+	      (unless http-status
+		(insert (format "<br><br><b>%s</b> could not be found; "
+				(w3m-get-server-hostname url))
+			(if (string-match "\\`news:" url)
+			    "check the name of the <b>URL</b>\
  and the value of the <b>NNTPSERVER</b> environment variable\
  (that should be the address of the <b>NNTP</b> server)."
-		 "check the name of the <b>URL</b>.")))
+			  "check the name of the <b>URL</b>."))))
 	  (goto-char (point-min))
 	  (when (or (re-search-forward "<body>" nil t)
 		    (re-search-forward "<html>" nil t))
