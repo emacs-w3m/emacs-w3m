@@ -10314,6 +10314,10 @@ It does manage history position data as well."
       (w3m-next-anchor)
       (while (progn
 	       (setq start (point))
+	       ;; Extend href anchor.
+	       (put-text-property (point-at-bol) start
+				  'w3m-href-anchor
+				  (get-text-property start 'w3m-href-anchor))
 	       (re-search-forward " (\\(?:[0-9]+ \\)*[0-9]+)$" nil t))
 	(goto-char (match-beginning 0))
 	(put-text-property start (match-beginning 0)
