@@ -1,4 +1,11 @@
-2012-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+2012-06-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-cache-header, w3m-cache-request-header)
+	(w3m-cache-contents, w3m-cache-request-contents)
+	(w3m-cache-available-p): Canonicalize given url.
+	(w3m-show-error-information): Show as many info as possible.
+
+(2012-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-popup-buffer): Do nothing for the current buffer.
 

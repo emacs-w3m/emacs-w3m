@@ -4692,6 +4692,7 @@ http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
 If OVERWRITE is non-nil, it forces the storing even if there has
 already been the data corresponding to URL in the cache."
   (w3m-cache-setup)
+  (setq url (w3m-w3m-canonicalize-url url))
   (let ((ident (intern url w3m-cache-hashtb)))
     (if (boundp ident)
 	(if (and
@@ -4707,7 +4708,7 @@ already been the data corresponding to URL in the cache."
 (defun w3m-cache-request-header (url)
   "Return the header string of URL when it is stored in the cache."
   (w3m-cache-setup)
-  (let ((ident (intern url w3m-cache-hashtb)))
+  (let ((ident (intern (w3m-w3m-canonicalize-url url) w3m-cache-hashtb)))
     (and (boundp ident)
 	 (symbol-value ident))))
 
@@ -4747,6 +4748,7 @@ already been the data corresponding to URL in the cache."
 The contents are assumed to be in BUFFER.  Return a symbol which
 identifies the data in the cache."
   (w3m-cache-setup)
+  (setq url (w3m-w3m-canonicalize-url url))
   (let ((ident (intern url w3m-cache-hashtb)))
     (w3m-cache-remove url)
     ;; Remove the oldest article, if necessary.
@@ -4770,7 +4772,7 @@ identifies the data in the cache."
 Return t if the contents are found in the cache, otherwise nil.  When
 BUFFER is nil, all contents will be inserted in the current buffer."
   (w3m-cache-setup)
-  (let ((ident (intern url w3m-cache-hashtb)))
+  (let ((ident (intern (w3m-w3m-canonicalize-url url) w3m-cache-hashtb)))
     (when (memq ident w3m-cache-articles)
       ;; It was in the cache.
       (let (beg end)
@@ -4794,7 +4796,7 @@ BUFFER is nil, all contents will be inserted in the current buffer."
   "Return non-nil if a content of URL has already been cached."
   (w3m-cache-setup)
   (when (stringp url)
-    (let ((ident (intern url w3m-cache-hashtb)))
+    (let ((ident (intern (w3m-w3m-canonicalize-url url) w3m-cache-hashtb)))
       (and
        (memq ident w3m-cache-articles)
        (or
@@ -6247,55 +6249,63 @@ called with t as an argument.  Otherwise, it will be called with nil."
 
 (defun w3m-show-error-information (url charset page-buffer)
   "Create and prepare the error information."
-  (or (when (w3m-cache-request-contents url)
-	(w3m-decode-encoded-contents (w3m-content-encoding url))
-	t) ; Even if decoding is failed, use the cached contents.
-      (let ((case-fold-search t)
-	    (header (w3m-cache-request-header url))
-	    exit-status http-status errmsg)
-	(with-current-buffer page-buffer
-	  (setq exit-status w3m-process-exit-status
-		http-status w3m-http-status))
-	(setq errmsg
-	      (concat
-	       "<br><h1>Cannot retrieve URL: <a href=\""
-	       url "\">" url "</a></h1>\n"
-	       (cond
-		((and exit-status (not (equal exit-status 0)))
-		 (format "<br><br>Exit status of %s: %s\n"
-			 (file-name-nondirectory w3m-command) exit-status))
-		(http-status
-		 (format "<br><br>HTTP status: %s%s\n"
-			 http-status
-			 (let ((status (cdr (assq http-status
-						  w3m-http-status-alist))))
-			   (if status
-			       (concat " (" status ")")
-			     "")))))))
-	(if (or (null header)
-		(string-match "\\`w3m: Can't load " header))
-	    (progn
-	      (erase-buffer)
-	      (setq charset "us-ascii")
-	      (insert errmsg)
-	      (unless http-status
-		(insert (format "<br><br><b>%s</b> could not be found; "
-				(w3m-get-server-hostname url))
-			(if (string-match "\\`news:" url)
-			    "check the name of the <b>URL</b>\
- and the value of the <b>NNTPSERVER</b> environment variable\
- (that should be the address of the <b>NNTP</b> server)."
-			  "check the name of the <b>URL</b>."))))
+  (let ((case-fold-search t)
+	(header (w3m-cache-request-header url))
+	exit-status http-status errmsg)
+    (with-current-buffer page-buffer
+      (setq exit-status w3m-process-exit-status
+	    http-status w3m-http-status))
+    (setq errmsg
+	  (concat
+	   "<br><h1>Cannot retrieve URL: <a href=\""
+	   url "\">" url "</a></h1>\n"
+	   (cond
+	    ((and exit-status (not (equal exit-status 0)))
+	     (format "<br><br><h2>%s exits with the code %s</h2>\n"
+		     w3m-command exit-status))
+	    (http-status
+	     (format "<br><br><h2>%s %s</h2>\n"
+		     http-status
+		     (or (cdr (assq http-status w3m-http-status-alist))
+			 ""))))))
+    (if (or (null header)
+	    (string-match "\\`w3m: Can't load " header))
+	(progn
+	  (insert errmsg)
+	  (unless http-status
+	    (insert "\
+<br><br>Something seems to be wrong with URL or this system.\n")
+	    (when (string-match "\\`news:" url)
+	      (insert "\
+<br>Also verify the value of the <b>NNTPSERVER</b> environment variable\
+ that should be the address of the <b>NNTP</b> server.\n")))
+	  (save-restriction
+	    (narrow-to-region (point) (point))
+	    (when (w3m-cache-request-contents url)
+	      (w3m-decode-encoded-contents
+	       (setq charset (w3m-content-encoding url)))
+	      (goto-char (point-min))
+	      (insert "<br><br><hr><br>\n<h2>Contents</h2><br>\n"))))
+      (goto-char (point-min))
+      (or (search-forward "<body>" nil t)
+	  (search-forward "<html>" nil t))
+      (unless (bolp) (insert "\n"))
+      (insert errmsg)
+      (save-restriction
+	(narrow-to-region (point) (point))
+	(when (w3m-cache-request-contents url)
+	  (w3m-decode-encoded-contents
+	   (setq charset (w3m-content-encoding url)))
 	  (goto-char (point-min))
-	  (when (or (re-search-forward "<body>" nil t)
-		    (re-search-forward "<html>" nil t))
-	    (goto-char (match-end 0)))
-	  (insert errmsg "<br><br><hr><br><br>")
-	  (when (or (re-search-forward "</body>" nil t)
-		    (re-search-forward "</html>" nil 'max))
-	    (goto-char (match-end 0)))
-	  (insert "\n<br><br><hr><br><br><h2>Header information</h2><br>\n<pre>"
-		  header "</pre>\n"))))
+	  (insert "<br><br><hr><br>\n")
+	  (goto-char (point-max))))
+      (unless (eobp) (insert "<br><br><hr><br>\n"))
+      (when header
+	(or (search-forward "</body>" nil t)
+	    (search-forward "</html>" nil 'max))
+	(unless (bolp) (insert "\n"))
+	(insert "<br><br><hr><br><br><h2>Header information</h2><br>\n<pre>"
+		header "</pre>\n"))))
   (w3m-create-page url "text/html" charset page-buffer)
   nil)
 
