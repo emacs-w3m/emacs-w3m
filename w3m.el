@@ -6409,10 +6409,18 @@ If so return \"text/html\", otherwise \"text/plain\"."
       (delete-other-windows)
       (ding)
       (setq type
-	    (completing-read
-	     (format "Input %s's content type (default Download): "
-		     (file-name-nondirectory url))
-	     w3m-content-type-alist nil t))
+	    (condition-case nil
+		(completing-read
+		 (format
+		  "%s's content type (default Download or External-View): "
+		  (file-name-nondirectory url))
+		 w3m-content-type-alist nil t)
+	      ;; The user forced terminating the session with C-g.
+	      (quit
+	       (w3m-process-stop page-buffer) ;; Needless?
+	       (with-current-buffer page-buffer
+		 (setq w3m-current-process nil))
+	       (keyboard-quit))))
       (setf (w3m-arrived-content-type url) type)))
   (setq w3m-current-coding-system nil)	; Reset decoding status of this buffer.
   (setq type (w3m-prepare-content url type charset))
@@ -6440,9 +6448,16 @@ href=\"\\)/\\(?:imgres\\?imgurl\\|url\\?q\\)=\\([^&]+\\)[^>]+>"
    ((string-match "\\`image/" type)
     (w3m-create-image-page url type charset page-buffer))
    ((member type w3m-doc-view-content-types)
+    (with-current-buffer page-buffer
+      (setq w3m-current-url (if (w3m-arrived-p url)
+				(w3m-real-url url)
+			      url)))
     (w3m-doc-view url))
    (t
     (with-current-buffer page-buffer
+      (setq w3m-current-url (if (w3m-arrived-p url)
+				(w3m-real-url url)
+			      url))
       (w3m-external-view url)
       'external-view))))
 

@@ -1,3 +1,8 @@
+2012-06-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-create-page): Safely quit session when a user hits C-g;
+	make sure to set w3m-current-url.
+
 2012-06-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-cache-header, w3m-cache-request-header)
@@ -5,7 +10,7 @@
 	(w3m-cache-available-p): Canonicalize given url.
 	(w3m-show-error-information): Show as many info as possible.
 
-(2012-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+2012-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-popup-buffer): Do nothing for the current buffer.
 
