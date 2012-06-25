@@ -299,6 +299,11 @@ PROMPT-WITH-DEFAULT instead of string PROMPT."
 
 (defun w3m-search-read-variables ()
   "Ask for a search engine and words to query and return them as a list."
+  (when w3m-current-process
+    (error "%s"
+	   (substitute-command-keys "
+Cannot run two w3m processes simultaneously \
+\(Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)")))
   (let* ((search-engine
 	  (if current-prefix-arg
 	      (let ((default (or (car w3m-search-engine-history)

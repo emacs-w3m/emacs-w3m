@@ -1,5 +1,8 @@
 2012-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-search.el (w3m-search-read-variables): Make commands that use it
+	error out when other processes run in the current w3m buffer.
+
 	* w3m.el (w3m-mode): Add description of some missing commands to doc.
 
 2012-06-20  Katsumi Yamaoka  <yamaoka@jpl.org>
