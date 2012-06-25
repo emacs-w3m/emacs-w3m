@@ -8510,15 +8510,25 @@ or a list which consists of the following elements:
 
 \\[w3m-goto-url]	Visit the web page.
 \\[w3m-goto-url-new-session]	Visit the web page in a new session.
+\\[w3m-goto-new-session-url]	Open page of which url is specified by\
+ `w3m-new-session-url' in\n\ta new session.
 \\[w3m-gohome]	Go to the Home page.
 \\[w3m-view-url-with-external-browser]	Display the current page using the\
  external browser.
+
+\\[w3m-delete-left-tabs]	Delete tabs on the left side of\
+ the current tab.
+\\[w3m-delete-right-tabs]	Delete tabs on the right side of\
+ the current tab.
+\\[w3m-tab-move-left]	Move this tab N (default 1) times to the left.
+\\[w3m-tab-move-right]	Move this tab N (default 1) times to the right.
 
 \\[w3m-download]	Download the URL.
 \\[w3m-download-this-url]	Download the URL under point.
 
 \\[w3m-view-image]	Display the image under point in the external viewer.
 \\[w3m-save-image]	Save the image under point to a file.
+\\[w3m-toggle-inline-image]	Toggle the visibility of an image under point.
 \\[w3m-toggle-inline-images]	Toggle the visibility of all images.
 \\[w3m-turnoff-inline-images]	Turn off to display all images.
 \\[w3m-zoom-out-image]	Zoom in an image on the point.
@@ -8535,11 +8545,14 @@ or a list which consists of the following elements:
  page.
 \\[w3m-edit-this-url]	Edit the local file which is pointed to by URL under\
  point.
+\\[w3m-cookie]	Display cookies and enable you to manage them.
 
 \\[w3m-scroll-up-or-next-url]	Scroll up the current window, or go to the\
  next page.
 \\[w3m-scroll-down-or-previous-url]	Scroll down the current window, or\
  go to the previous page.
+\\[w3m-scroll-up-1]	Scroll the current window up one line (or lines\
+ of which the number\n\tyou specify by the prefix argument).
 \\[w3m-scroll-left]	Scroll to the left.
 \\[w3m-scroll-right]	Scroll to the right.
 \\[w3m-shift-left]	Shift to the left.
@@ -8575,6 +8588,7 @@ or a list which consists of the following elements:
 	If the prefix arg is given, display files in addition to directories.
 \\[w3m-namazu]	Search files with Namazu.
 	To change the index, give any prefix argument to the command.
+\\[w3m-pipe-source]	Pipe a page source to a shell command.
 
 \\[w3m-bookmark-view]	Display the bookmark.
 \\[w3m-bookmark-view-new-session]	Display the bookmark on a new session.
@@ -8585,9 +8599,12 @@ or a list which consists of the following elements:
  the bookmark.
 \\[w3m-bookmark-add-this-url]	Add the url under point to the bookmark.
 
+\\[w3m-create-empty-session]	Create an empty page as a new session and\
+ visit it.
 \\[w3m-copy-buffer]	Create a copy of the current page as a new session.
 \\[w3m-next-buffer]	Turn the page of emacs-w3m buffers ahead.
 \\[w3m-previous-buffer]	Turn the page of emacs-w3m buffers behind.
+\\[w3m-move-unseen-buffer]	Move to the next unseen buffer.
 \\[w3m-select-buffer]	Pop to the emacs-w3m buffers selection window up.
 \\[w3m-switch-buffer]	Select one of emacs-w3m buffers at the current window.
 \\[w3m-delete-buffer]	Delete the current emacs-w3m buffer.
@@ -8598,8 +8615,11 @@ or a list which consists of the following elements:
 \\[w3m-close-window]	Close all emacs-w3m windows, without deleteing\
  buffers.
 \\[w3m-quit]	Exit browsing web.  All emacs-w3m buffers will be deleted.
+\\[w3m-process-stop]	Try to stop internal processes of a page.
 
 \\[describe-mode]	describe-mode.
+\\[w3m-mouse-major-mode-menu]	Pop up a w3m-mode specific menu of mouse\
+ commands.
 
 \\[report-emacs-w3m-bug]	Send a bug report to the emacs-w3m team.
 "

@@ -1,3 +1,7 @@
+2012-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-mode): Add description of some missing commands to doc.
+
 2012-06-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-create-page): Safely quit session when a user hits C-g;
