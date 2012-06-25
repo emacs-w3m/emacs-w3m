@@ -4559,7 +4559,12 @@ non-nil, return the url of the current page by default."
 	     (if (string-match "\\`about://\\(?:header\\|source\\)/"
 			       w3m-current-url)
 		 (substring w3m-current-url (match-end 0))
-	       w3m-current-url)))))
+	       (let ((name
+		      (or (car (get-text-property (point) 'w3m-name-anchor))
+			  (car (get-text-property (point) 'w3m-name-anchor2)))))
+		 (if name
+		     (concat w3m-current-url "#" name)
+		   w3m-current-url)))))))
 
 (defun w3m-canonicalize-url (url &optional feeling-lucky)
   "Fix URL that does not look like a valid url.
@@ -7233,7 +7238,16 @@ of the url currently displayed.  The browser is defined in
   (interactive (list t))
   (let ((deactivate-mark nil)
 	(url (if interactive-p
-		 (or (w3m-anchor) (w3m-image))
+		 (or (w3m-anchor)
+		     (w3m-image)
+		     (and (stringp w3m-current-url)
+			  (let ((name (or (car (get-text-property
+						(point) 'w3m-name-anchor))
+					  (car (get-text-property
+						(point)
+						'w3m-name-anchor2)))))
+			    (when name
+			      (concat w3m-current-url "#" name)))))
 	       (or (w3m-anchor (point)) (w3m-image (point)))))
 	(alt (if interactive-p
 		 (w3m-image-alt)

@@ -1,5 +1,8 @@
 2012-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-active-region-or-url-at-point, w3m-print-this-url):
+	Try to pick #name anchor out.
+
 	* w3m-search.el (w3m-search-read-variables): Make commands that use it
 	error out when other processes run in the current w3m buffer.
 
