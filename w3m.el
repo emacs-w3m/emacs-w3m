@@ -7167,7 +7167,7 @@ The default name will be the original name of the image."
 If the cursor points to a link, it visits the url of the link instead
 of the url currently displayed.  The browser is defined in
 `w3m-content-type-alist' for every type of a url."
-  (interactive (list (w3m-input-url nil
+  (interactive (list (w3m-input-url "URL to view externally: "
 				    (or (w3m-anchor)
 					(unless w3m-display-inline-images
 					  (w3m-image))

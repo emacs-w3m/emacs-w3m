@@ -1,3 +1,8 @@
+2012-07-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-view-url-with-external-browser): Improve prompt string.
+	Suggested by Dan Jacobson <jidanni@jidanni.org>.
+
 2012-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-active-region-or-url-at-point, w3m-print-this-url):
