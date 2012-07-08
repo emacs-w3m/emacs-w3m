@@ -6093,19 +6093,23 @@ w3m regards it as an incomplete <a> tag that is not closed."
   ;; <a name="FOO_BAR"><TAG ... id="FOO_BAR" ...>FOO BAR</TAG></a>
   ;; in the current buffer.
   (goto-char (point-min))
-  (let (start tag name)
+  (let ((mkr (make-marker))
+	start tag name)
     (while (re-search-forward "<\\([^\t\n\r >]+\\)\
 \[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*id=\\(\"[^\"]+\"\\)"
 			      nil t)
+      (set-marker mkr (match-end 0))
       (setq start (match-beginning 0)
 	    tag (regexp-quote (match-string 1))
 	    name (match-string 2))
-      (when (looking-at (concat "[^>]*>[^<]+</" tag ">"))
+      (when (w3m-end-of-tag tag)
 	(save-restriction
 	  (narrow-to-region (goto-char start) (match-end 0))
 	  (insert "<a name=" name ">")
 	  (goto-char (point-max))
-	  (insert "</a>")))))
+	  (insert "</a>")))
+      (goto-char mkr))
+    (set-marker mkr nil))
 
   (w3m-set-display-ins-del)
   (let* ((coding-system-for-read w3m-output-coding-system)

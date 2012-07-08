@@ -1,3 +1,8 @@
+2012-07-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-rendering-half-dump): Add name anchors that w3m can
+	handle in nested tags.
+
 2012-07-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-view-url-with-external-browser): Improve prompt string.
