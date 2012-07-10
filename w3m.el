@@ -5741,7 +5741,8 @@ See RFC2397."
 	  (setq decode-string
 		(cond
 		 ((eq encode 'base64)
-		  (base64-decode-string data-string))
+		  (base64-decode-string
+		   (w3m-url-decode-string data-string 'us-ascii)))
 		 (t
 		  (w3m-url-decode-string
 		   data-string coding))))
