@@ -4228,7 +4228,7 @@ If optional KEEP-PROPERTIES is non-nil, text property is reserved."
   (save-excursion
     (goto-char (point-min))
     ;; Character entity references are case-sensitive.
-    ;; Cf. http://www.w3.org/TR/1999/REC-html401-19991224/charset.html#h-5.3.2
+    ;; cf. http://www.w3.org/TR/1999/REC-html401-19991224/charset.html#h-5.3.2
     (let (case-fold-search start fid prop value)
       (while (re-search-forward w3m-entity-regexp nil t)
 	(setq start (match-beginning 0)
@@ -4254,7 +4254,7 @@ If optional KEEP-PROPERTIES is non-nil, text property is reserved."
   "Decode entities in the string STR."
   (save-match-data
     ;; Character entity references are case-sensitive.
-    ;; Cf. http://www.w3.org/TR/1999/REC-html401-19991224/charset.html#h-5.3.2
+    ;; cf. http://www.w3.org/TR/1999/REC-html401-19991224/charset.html#h-5.3.2
     (let ((case-fold-search) (pos 0) (buf))
       (while (string-match w3m-entity-regexp str pos)
 	(setq buf (cons (or (w3m-entity-value (match-string 1 str))
@@ -6087,30 +6087,19 @@ w3m regards it as an incomplete <a> tag that is not closed."
   ;; `charset' is used by `w3m-w3m-expand-arguments' to generate
   ;; arguments for w3mmee and w3m-m17n from `w3m-halfdump-command-arguments'.
 
-  ;; Add name anchors that w3m can handle.  Cf. [emacs-w3m:11153]
-  ;; This section replaces
-  ;; <TAG ... id="FOO_BAR" ...>FOO BAR</TAG>
-  ;; with
-  ;; <a name="FOO_BAR"><TAG ... id="FOO_BAR" ...>FOO BAR</TAG></a>
-  ;; in the current buffer.
+  ;; Add name anchors that w3m can handle.  cf. [emacs-w3m:11153]
+  ;; This section adds ``<a name="FOO_BAR"></a>'' in front of
+  ;; ``<TAG ... id="FOO_BAR" ...>FOO BAR</TAG>'' in the current buffer.
   (goto-char (point-min))
-  (let ((mkr (make-marker))
-	start tag name)
-    (while (re-search-forward "<\\([^\t\n\r >]+\\)\
+  (let (st nd name)
+    (while (re-search-forward "<\\(?:[^\t\n\r >]+\\)\
 \[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*id=\\(\"[^\"]+\"\\)"
 			      nil t)
-      (set-marker mkr (match-end 0))
-      (setq start (match-beginning 0)
-	    tag (regexp-quote (match-string 1))
-	    name (match-string 2))
-      (when (w3m-end-of-tag tag)
-	(save-restriction
-	  (narrow-to-region (goto-char start) (match-end 0))
-	  (insert "<a name=" name ">")
-	  (goto-char (point-max))
-	  (insert "</a>")))
-      (goto-char mkr))
-    (set-marker mkr nil))
+      (goto-char (setq st (match-beginning 0)))
+      (setq nd (match-end 0)
+	    name (match-string 1))
+      (insert "<a name=" name "></a>")
+      (goto-char (+ nd (- (point) st)))))
 
   (w3m-set-display-ins-del)
   (let* ((coding-system-for-read w3m-output-coding-system)

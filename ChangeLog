@@ -1,3 +1,7 @@
+2012-07-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-rendering-half-dump): Add name anchors fast.
+
 2012-07-10  Naohiro Aota  <naota@elisp.net>
 
 	* w3m.el: (w3m-data-retrieve): URL-decode data-string. It can have
