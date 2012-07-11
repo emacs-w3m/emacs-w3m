@@ -1,3 +1,8 @@
+2012-07-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-create-page): Show raw contents briefly, not fully, when
+	prompting a user for the content type.
+
 2012-07-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-rendering-half-dump): Add name anchors fast.

@@ -6403,24 +6403,58 @@ If so return \"text/html\", otherwise \"text/plain\"."
   ;; Select a content type.
   (unless (and (stringp type)
 	       (assoc type w3m-content-type-alist))
-    (save-window-excursion
-      (pop-to-buffer (current-buffer))
-      (delete-other-windows)
-      (ding)
-      (setq type
-	    (condition-case nil
-		(completing-read
-		 (format
-		  "%s's content type (default Download or External-View): "
-		  (file-name-nondirectory url))
-		 w3m-content-type-alist nil t)
-	      ;; The user forced terminating the session with C-g.
-	      (quit
-	       (w3m-process-stop page-buffer) ;; Needless?
-	       (with-current-buffer page-buffer
-		 (setq w3m-current-process nil))
-	       (keyboard-quit))))
-      (setf (w3m-arrived-content-type url) type)))
+    (let ((cur (current-buffer))
+	  (mb enable-multibyte-characters)
+	  dots cont)
+      (with-temp-buffer
+	(rename-buffer " *Raw Contents*" t)
+	(set-buffer-multibyte mb)
+	(save-window-excursion
+	  (pop-to-buffer (current-buffer))
+	  (delete-other-windows)
+	  (ding)
+
+	  ;; Display the raw contents briefly.
+	  (sit-for 0)
+	  (setq truncate-lines t
+		dots (make-string (/ (- (window-width) 6) 2) ?.))
+	  (with-current-buffer cur
+	    (cond ((< (count-lines (point-min) (point-max)) (window-height))
+		   (setq cont (buffer-string)))
+		  ((< (window-height) 10)
+		   (goto-char (point-min))
+		   (forward-line (max 0 (- (window-height) 2)))
+		   (setq cont
+			 (concat
+			  (buffer-substring (point-min) (point))
+			  "\n[" dots "snip" dots "]")))
+		  (t
+		   (goto-char (point-min))
+		   (forward-line (/ (- (window-height) 4) 2))
+		   (setq cont (concat (buffer-substring (point-min) (point))
+				      "\n[" dots "snip" dots "]\n\n"))
+		   (goto-char (point-max))
+		   (forward-line (/ (- 4 (window-height)) 2))
+		   (setq cont (concat
+			       cont
+			       (buffer-substring (point) (point-max)))))))
+	  (insert cont)
+	  (goto-char (point-min))
+
+	  (setq type
+		(condition-case nil
+		    (completing-read
+		     (format
+		      "%s's content type (default Download or External-View): "
+		      (file-name-nondirectory url))
+		     w3m-content-type-alist nil t)
+		  ;; The user forced terminating the session with C-g.
+		  (quit
+		   (w3m-process-stop page-buffer) ;; Needless?
+		   (with-current-buffer page-buffer
+		     (setq w3m-current-process nil))
+		   (keyboard-quit))))
+	  (setf (w3m-arrived-content-type url) type)))))
   (setq w3m-current-coding-system nil)	; Reset decoding status of this buffer.
   (setq type (w3m-prepare-content url type charset))
   (w3m-safe-decode-buffer url charset type)
