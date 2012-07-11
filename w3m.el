@@ -3361,11 +3361,12 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
   "Encode `(' and `)', apt to be misidentified as boundaries."
   (w3m-replace-in-string (w3m-replace-in-string str "(" "%28") ")" "%29"))
 
-(defun w3m-url-decode-string (str &optional coding)
+(defun w3m-url-decode-string (str &optional coding regexp)
   (let ((start 0)
 	(buf)
 	(case-fold-search t))
-    (while (string-match "%\\(?:\\([0-9a-f][0-9a-f]\\)\\|0d%0a\\)" str start)
+    (while (string-match (or regexp "%\\(?:\\([0-9a-f][0-9a-f]\\)\\|0d%0a\\)")
+			 str start)
       (push (substring str start (match-beginning 0)) buf)
       (push (if (match-beginning 1)
 		(vector (string-to-number (match-string 1 str) 16))
@@ -10892,7 +10893,10 @@ This variable is effective only when `w3m-use-tab' is nil."
       (insert (w3m-puny-decode-url
 	       (if (string-match "[^\000-\177]" w3m-current-url)
 		   w3m-current-url
-		 (w3m-url-decode-string w3m-current-url w3m-current-coding-system))))
+		 (w3m-url-decode-string
+		  w3m-current-url
+		  w3m-current-coding-system
+		  "%\\(?:[1-6][0-9a-f]\\|7[0-9a-e]\\|[a-f][0-9a-f]\\)"))))
       (w3m-add-face-property start (point) 'w3m-header-line-location-content)
       (w3m-add-text-properties start (point)
 			       `(mouse-face highlight
