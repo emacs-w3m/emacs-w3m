@@ -4597,8 +4597,11 @@ http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
 	     (if (string-match "\\`about:" initial)
 		 (setq initial nil)
 	       (unless (string-match "[^\000-\177]" initial)
-		 (setq initial (w3m-url-decode-string
-				initial w3m-current-coding-system))))))
+		 (setq
+		  initial
+		  (w3m-url-decode-string
+		   initial w3m-current-coding-system
+		   "%\\(?:[2-6][0-9a-f]\\|7[0-9a-e]\\|[a-f][0-9a-f]\\)"))))))
 	  ((string= initial "")
 	   (setq initial nil)))
     (when initial
