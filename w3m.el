@@ -10896,7 +10896,7 @@ This variable is effective only when `w3m-use-tab' is nil."
 		 (w3m-url-decode-string
 		  w3m-current-url
 		  w3m-current-coding-system
-		  "%\\(?:[1-6][0-9a-f]\\|7[0-9a-e]\\|[a-f][0-9a-f]\\)"))))
+		  "%\\(?:[2-6][0-9a-f]\\|7[0-9a-e]\\|[a-f][0-9a-f]\\)"))))
       (w3m-add-face-property start (point) 'w3m-header-line-location-content)
       (w3m-add-text-properties start (point)
 			       `(mouse-face highlight

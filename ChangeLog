@@ -1,7 +1,7 @@
 2012-07-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-url-decode-string): Allow optional regexp matching %**.
-	(w3m-header-line-insert): Don't decode %00~%0F and %7F~%9F in url.
+	(w3m-header-line-insert): Don't decode %00~%1F and %7F~%9F in url.
 
 	* w3m.el (w3m-create-page): Show raw contents briefly, not fully, when
 	prompting a user for the content type.
