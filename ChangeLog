@@ -1,3 +1,8 @@
+2012-07-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-input-url, w3m-header-line-insert):
+	Don't decode only control characters.
+
 2012-07-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-input-url): Don't decode %00~%1F and %7F~%9F in url.

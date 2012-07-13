@@ -3362,11 +3362,11 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
   (w3m-replace-in-string (w3m-replace-in-string str "(" "%28") ")" "%29"))
 
 (defun w3m-url-decode-string (str &optional coding regexp)
+  (or regexp (setq regexp "%\\(?:\\([0-9a-f][0-9a-f]\\)\\|0d%0a\\)"))
   (let ((start 0)
 	(buf)
 	(case-fold-search t))
-    (while (string-match (or regexp "%\\(?:\\([0-9a-f][0-9a-f]\\)\\|0d%0a\\)")
-			 str start)
+    (while (string-match regexp str start)
       (push (substring str start (match-beginning 0)) buf)
       (push (if (match-beginning 1)
 		(vector (string-to-number (match-string 1 str) 16))
@@ -4599,9 +4599,8 @@ http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
 	       (unless (string-match "[^\000-\177]" initial)
 		 (setq
 		  initial
-		  (w3m-url-decode-string
-		   initial w3m-current-coding-system
-		   "%\\(?:[2-6][0-9a-f]\\|7[0-9a-e]\\|[a-f][0-9a-f]\\)"))))))
+		  (w3m-url-decode-string initial w3m-current-coding-system
+					 "%\\([2-9a-f][0-9a-f]\\)"))))))
 	  ((string= initial "")
 	   (setq initial nil)))
     (when initial
@@ -10896,10 +10895,9 @@ This variable is effective only when `w3m-use-tab' is nil."
       (insert (w3m-puny-decode-url
 	       (if (string-match "[^\000-\177]" w3m-current-url)
 		   w3m-current-url
-		 (w3m-url-decode-string
-		  w3m-current-url
-		  w3m-current-coding-system
-		  "%\\(?:[2-6][0-9a-f]\\|7[0-9a-e]\\|[a-f][0-9a-f]\\)"))))
+		 (w3m-url-decode-string w3m-current-url
+					w3m-current-coding-system
+					"%\\([2-9a-f][0-9a-f]\\)"))))
       (w3m-add-face-property start (point) 'w3m-header-line-location-content)
       (w3m-add-text-properties start (point)
 			       `(mouse-face highlight
