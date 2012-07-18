@@ -1524,7 +1524,6 @@ get to be the alias to `visited-file-modtime'."
     'redraw-modeline))
 
 ;; `labels' got obsolete since Emacs 24.2.
-(put 'w3m-flet 'lisp-indent-function 1)
 (defmacro w3m-labels (bindings &rest body)
   "Make temporary function bindings.
 In Emacs 24.2 and later, FUNCs will not be lexical scoped in FORMs
