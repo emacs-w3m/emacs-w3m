@@ -1,3 +1,27 @@
+2012-07-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-input-url): Decode url string by the coding system that
+	url itself specifies if any.
+
+	* w3m.el (w3m-goto-url): Allow optional save-pos argument, that leads
+	it to run w3m-history-store-position.
+	(w3m-view-parent-page, w3m-scroll-up-or-next-url)
+	(w3m-scroll-down-or-previous-url): Run w3m-history-store-position.
+	(w3m-gohome, w3m-browse-url, w3m-find-file, w3m-db-history)
+	(w3m-history): Run w3m-history-store-position by way of w3m-goto-url.
+
+	* w3m-util.el (w3m-labels): New macro that runs cl-labels in Emacs 24.2
+	and later, otherwise runs labels.
+
+	* mime-w3m.el (mime-w3m-insinuate):
+	* w3m-bookmark.el (w3m-bookmark-safe-string):
+	* w3m-proc.el (w3m-process-do-with-temp-buffer):
+	* w3m-rss.el (w3m-rss-parse-date-string):
+	* w3m-weather.el (w3m-weather-completion-table):
+	Replace labels with w3m-labels.
+
+	* w3mhack.el (w3mhack-nonunix-install): Don't use labels.
+
 2012-07-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-input-url, w3m-header-line-insert):

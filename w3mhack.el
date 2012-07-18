@@ -395,31 +395,31 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
   (and (not w3mhack-nonunix-icondir)
        (setq w3mhack-nonunix-icondir
 	     (expand-file-name "images/w3m" data-directory)))
-  (labels
-      ((mkdir (dir)
-	      (unless (file-directory-p dir)
-		(message "mkdir %s" dir)
-		(unless w3mhack-nonunix-dryrun
-		  (make-directory dir 'parents))))
-       (install (srcdir dstdir pattern)
-		(dolist (src (directory-files srcdir t pattern))
-		  (let ((dst (expand-file-name
-			      (file-name-nondirectory src) dstdir)))
-		    (message "cp %s %s"
-			     (file-relative-name src default-directory) dst)
-		    (unless w3mhack-nonunix-dryrun
-		      (copy-file src dst t t))))))
-    (mkdir w3mhack-nonunix-lispdir)
-    (install default-directory w3mhack-nonunix-lispdir "\\.elc?\\'")
+  (let ((mkdir (lambda (dir)
+		 (unless (file-directory-p dir)
+		   (message "mkdir %s" dir)
+		   (unless w3mhack-nonunix-dryrun
+		     (make-directory dir 'parents)))))
+	(install (lambda (srcdir dstdir pattern)
+		   (dolist (src (directory-files srcdir t pattern))
+		     (let ((dst (expand-file-name
+				 (file-name-nondirectory src) dstdir)))
+		       (message "cp %s %s"
+				(file-relative-name src default-directory) dst)
+		       (unless w3mhack-nonunix-dryrun
+			 (copy-file src dst t t)))))))
+    (funcall mkdir w3mhack-nonunix-lispdir)
+    (funcall install default-directory w3mhack-nonunix-lispdir "\\.elc?\\'")
     (let ((shimbun-directory
 	   (expand-file-name shimbun-module-directory default-directory)))
       (when (file-exists-p (expand-file-name "shimbun.elc" shimbun-directory))
-	(install shimbun-directory w3mhack-nonunix-lispdir "\\.elc?\\'")))
+	(funcall install shimbun-directory w3mhack-nonunix-lispdir
+		 "\\.elc?\\'")))
     (when w3mhack-nonunix-icondir
-      (mkdir w3mhack-nonunix-icondir)
-      (install (expand-file-name (if (featurep 'xemacs)
-				     "icons30"
-				   "icons"))
+      (funcall mkdir w3mhack-nonunix-icondir)
+      (funcall install (expand-file-name (if (featurep 'xemacs)
+					     "icons30"
+					   "icons"))
 	       w3mhack-nonunix-icondir "\\.\\(?:png\\|xpm\\)\\'"))))
 
 ;; Byte optimizers and version specific functions.

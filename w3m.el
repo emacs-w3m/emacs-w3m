@@ -4599,7 +4599,9 @@ http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
 	       (unless (string-match "[^\000-\177]" initial)
 		 (setq
 		  initial
-		  (w3m-url-decode-string initial w3m-current-coding-system
+		  (w3m-url-decode-string initial
+					 (or (w3m-url-coding-system initial)
+					     w3m-current-coding-system)
 					 "%\\([2-9a-f][0-9a-f]\\)"))))))
 	  ((string= initial "")
 	   (setq initial nil)))
@@ -6678,6 +6680,7 @@ If COUNT is zero, you will visit the top of this site."
   (unless (integerp count)
     (setq count 1))
   (setq count (abs count))
+  (w3m-history-store-position)
   (cond
    ((and w3m-current-url
 	 (eq count 0)
@@ -8721,6 +8724,7 @@ greater."
     (if (pos-visible-in-window-p (point-max))
 	(if w3m-next-url
 	    (let ((w3m-prefer-cache t))
+	      (w3m-history-store-position)
 	      (w3m-goto-url w3m-next-url))
 	  (signal 'end-of-buffer nil))
       (w3m-scroll-up-1 arg))))
@@ -8734,6 +8738,7 @@ greater."
     (if (pos-visible-in-window-p (point-min))
 	(if w3m-previous-url
 	    (let ((w3m-prefer-cache t))
+	      (w3m-history-store-position)
 	      (w3m-goto-url w3m-previous-url))
 	  (signal 'beginning-of-buffer nil))
       (scroll-down arg))))
@@ -9295,29 +9300,35 @@ It currently works only with Emacs 22 and newer."
 
 ;;;###autoload
 (defun w3m-goto-url (url &optional reload charset post-data referer handler
-			 element no-popup)
+			 element no-popup save-pos)
   "Visit World Wide Web pages.  This is the primitive function of `w3m'.
 If the second argument RELOAD is non-nil, reload a content of URL.
 Except that if it is 'redisplay, re-display the page without reloading.
 The third argument CHARSET specifies a charset to be used for decoding
 a content.
-The fourth argument POST-DATA should be a string or a cons cell.  If
-it is a string, it makes this function request a body as if the
-content-type is \"x-www-form-urlencoded\".  If it is a cons cell, the
-car of a cell is used as the content-type and the cdr of a cell is
+The fourth argument POST-DATA should be a string or a cons cell.
+If it is a string, it makes this function request a body as if
+the content-type is \"x-www-form-urlencoded\".  If it is a cons cell,
+the car of a cell is used as the content-type and the cdr of a cell is
 used as the body.
 If the fifth argument REFERER is specified, it is used for a Referer:
 field for this request.
-The remaining HANDLER, ELEMENT[1], and NO-POPUP are for the
-internal operations of emacs-w3m.
+The remaining HANDLER, ELEMENT[1], NO-POPUP, and SAVE-POS[2] are for
+the internal operations of emacs-w3m.
 You can also use \"quicksearch\" url schemes such as \"gg:emacs\" which
-would search for the term \"emacs\" with the Google search engine.  See
-the `w3m-search' function and the variable `w3m-uri-replace-alist'.
+would search for the term \"emacs\" with the Google search engine.
+See the `w3m-search' function and the variable `w3m-uri-replace-alist'.
 
-\[1] A note for the developers: ELEMENT is a history element which has
-already been registered in the `w3m-history-flat' variable.  It is
-corresponding to URL to be retrieved at this time, not for the url of
-the current page."
+Notes for the developers:
+\[1] ELEMENT is a history element which has already been registered in
+the `w3m-history-flat' variable.  It is corresponding to URL to be
+retrieved at this time, not for the url of the current page.
+
+\[2] SAVE-POS leads this function to save the current emacs-w3m window
+configuration; i.e. to run `w3m-history-store-position'.
+`w3m-history-store-position' should be called in a w3m-mode buffer, so
+this will be convenient if a command that calls this function may be
+invoked in other than a w3m-mode buffer."
   (interactive
    (list (if w3m-current-process
 	     (error "%s"
@@ -9400,10 +9411,9 @@ Cannot run two w3m processes simultaneously \
 \(Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)")))
     (w3m-process-stop (current-buffer))	; Stop all processes retrieving images.
     (w3m-idle-images-show-unqueue (current-buffer))
-    ;; Store the current position in the history structure if and only
-    ;; if this command is called interactively.  The other user commands
-    ;; that calls this function want to store the position by themselves.
-    (when (w3m-interactive-p)
+    ;; Store the current position in the history structure if SAVE-POS
+    ;; is set or this command is called interactively.
+    (when (or save-pos (w3m-interactive-p))
       (w3m-history-store-position))
     ;; Access url group
     (if (string-match "\\`group:" url)
@@ -9717,7 +9727,7 @@ session will start afresh."
   (interactive)
   (unless w3m-home-page
     (error "You have to specify the value of `w3m-home-page'"))
-  (w3m-goto-url w3m-home-page t))
+  (w3m-goto-url w3m-home-page t nil nil nil nil nil nil t))
 
 ;;;###autoload
 (defun w3m-create-empty-session ()
@@ -9999,7 +10009,7 @@ Pop to a window or a frame up according to `w3m-pop-up-windows' and
     (setq url (w3m-canonicalize-url url))
     (if new-session
 	(w3m-goto-url-new-session url)
-      (w3m-goto-url url))))
+      (w3m-goto-url url nil nil nil nil nil nil nil t))))
 
 ;;;###autoload
 (defun w3m-find-file (file)
@@ -10009,7 +10019,8 @@ The file name will be converted into the file: scheme."
   (w3m-goto-url (w3m-expand-file-name-as-url file)
 		nil
 		(w3m-static-if (fboundp 'universal-coding-system-argument)
-		    coding-system-for-read)))
+		    coding-system-for-read)
+		nil nil nil nil nil t))
 
 (defun w3m-cygwin-path (path)
   "Convert PATH in the win32 style into the cygwin format.
@@ -10439,14 +10450,15 @@ It does manage history position data as well."
    (list nil w3m-db-history-display-size))
   (w3m-goto-url (concat
 		 (format "about://db-history/?start=%d" (or start 0))
-		 (if size (format "&size=%d" size) ""))))
+		 (if size (format "&size=%d" size) ""))
+		 nil nil nil nil nil nil nil t))
 
 (defun w3m-history (&optional arg)
   "Display the history of all the links you have visited in the session.
 If it is called with the prefix argument, display the arrived URLs."
   (interactive "P")
   (if (null arg)
-      (w3m-goto-url "about://history/")
+      (w3m-goto-url "about://history/" nil nil nil nil nil nil nil t)
     (w3m-db-history nil w3m-db-history-display-size)))
 
 (defun w3m-w32-browser-with-fiber (url)

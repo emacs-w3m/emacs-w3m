@@ -1,3 +1,7 @@
+2012-07-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-chise.el (shimbun-headers): Don't use flet.
+
 2012-05-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-chise.el: New file.

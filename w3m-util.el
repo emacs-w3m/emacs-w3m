@@ -1523,6 +1523,18 @@ get to be the alias to `visited-file-modtime'."
       'force-mode-line-update
     'redraw-modeline))
 
+;; `labels' got obsolete since Emacs 24.2.
+(put 'w3m-flet 'lisp-indent-function 1)
+(defmacro w3m-labels (bindings &rest body)
+  "Make temporary function bindings.
+In Emacs 24.2 and later, FUNCs will not be lexical scoped in FORMs
+unless `lexical-binding' is in use.
+
+\(fn ((FUNC ARGLIST BODY...) ...) FORM...)"
+  `(,(progn (require 'cl) (if (fboundp 'cl-labels) 'cl-labels 'labels))
+    ,bindings ,@body))
+(put 'w3m-labels 'lisp-indent-function 1)
+
 ;;; Punycode RFC 3492:
 
 (defconst w3m-puny-code-regex "xn--\\([-0-9a-zA-z]+\\)")

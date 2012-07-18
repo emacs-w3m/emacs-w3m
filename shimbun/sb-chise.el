@@ -47,30 +47,42 @@
 
 (luna-define-method shimbun-headers ((shimbun shimbun-chise) &optional range)
   (let ((headers
-	 (let ((oindex (directory-file-name (shimbun-index-url shimbun)))
-	       (ssi (symbol-function 'shimbun-search-id))
+	 (let ((osiu (symbol-function 'shimbun-index-url))
+	       (ossi (symbol-function 'shimbun-search-id))
+	       (oindex (directory-file-name (shimbun-index-url shimbun)))
 	       (range (or shimbun-chise-index-range range)))
-	   (nconc
-	    (flet ((shimbun-index-url (shimbun) (concat oindex "-en/"))
-		   (shimbun-search-id
-		    (shimbun id)
-		    (funcall ssi shimbun
-			     (save-match-data
-			       (string-match "@" id)
-			       (concat (substring id 0 (match-beginning 0))
-				       "-en"
-				       (substring id (match-beginning 0)))))))
-	      (shimbun-mailman-headers shimbun range))
-	    (flet ((shimbun-index-url (shimbun) (concat oindex "-ja/"))
-		   (shimbun-search-id
-		    (shimbun id)
-		    (funcall ssi shimbun
-			     (save-match-data
-			       (string-match "@" id)
-			       (concat (substring id 0 (match-beginning 0))
-				       "-ja"
-				       (substring id (match-beginning 0)))))))
-	      (shimbun-mailman-headers shimbun range)))))
+	   (unwind-protect
+	       (nconc
+		(progn
+		  (fset 'shimbun-index-url
+			(lambda (shimbun) (concat oindex "-en/")))
+		  (fset 'shimbun-search-id
+			(lambda (shimbun id)
+			  (funcall
+			   ossi
+			   shimbun
+			   (save-match-data
+			     (string-match "@" id)
+			     (concat (substring id 0 (match-beginning 0))
+				     "-en"
+				     (substring id (match-beginning 0)))))))
+		  (shimbun-mailman-headers shimbun range))
+		(progn
+		  (fset 'shimbun-index-url
+			(lambda (shimbun) (concat oindex "-ja/")))
+		  (fset 'shimbun-search-id
+			(lambda (shimbun id)
+			  (funcall
+			   ossi
+			   shimbun
+			   (save-match-data
+			     (string-match "@" id)
+			     (concat (substring id 0 (match-beginning 0))
+				     "-ja"
+				     (substring id (match-beginning 0)))))))
+		  (shimbun-mailman-headers shimbun range)))
+	     (fset 'shimbun-index-url osiu)
+	     (fset 'shimbun-search-id ossi))))
 	xref lang month id)
     (dolist (header headers (shimbun-sort-headers headers))
       (setq xref (shimbun-header-xref header))

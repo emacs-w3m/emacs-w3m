@@ -1,6 +1,6 @@
 ;;; mime-w3m.el --- mime-view content filter for text
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2009, 2010
+;; Copyright (C) 2001-2005, 2009, 2010, 2012
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -101,16 +101,17 @@ by way of `post-command-hook'."
   (setq mime-setup-enable-inline-html nil)
   (let (flag)
     (when (boundp 'mime-preview-condition)
-      (labels ((overwrite (x)
-		(if (symbolp x)
-		    (if (eq x 'mime-preview-text/html)
-			(setq flag 'mime-w3m-preview-text/html)
-		      (when (eq x 'mime-w3m-preview-text/html)
-			(setq flag t))
-		      x)
-		  (if (consp x)
-		      (cons (overwrite (car x)) (overwrite (cdr x)))
-		    x))))
+      (w3m-labels
+	  ((overwrite (x)
+		      (if (symbolp x)
+			  (if (eq x 'mime-preview-text/html)
+			      (setq flag 'mime-w3m-preview-text/html)
+			    (when (eq x 'mime-w3m-preview-text/html)
+			      (setq flag t))
+			    x)
+			(if (consp x)
+			    (cons (overwrite (car x)) (overwrite (cdr x)))
+			  x))))
 	(setq mime-preview-condition
 	      (overwrite mime-preview-condition))))
     (unless flag
