@@ -1523,10 +1523,27 @@ get to be the alias to `visited-file-modtime'."
       'force-mode-line-update
     'redraw-modeline))
 
-;; `labels' got obsolete since Emacs 24.2.
+;; `flet' and `labels' got obsolete since Emacs 24.2.
+(defmacro w3m-flet (bindings &rest body)
+  "Make temporary overriding function definitions.
+
+\(fn ((FUNC ARGLIST BODY...) ...) FORM...)"
+  `(let (fn origs)
+     (dolist (bind ',bindings)
+       (setq fn (car bind))
+       (push (cons fn (and (fboundp fn) (symbol-function fn))) origs)
+       (fset fn (cons 'lambda (cdr bind))))
+     (unwind-protect
+	 (progn ,@body)
+       (dolist (orig origs)
+	 (if (cdr orig)
+	     (fset (car orig) (cdr orig))
+	   (fmakunbound (car orig)))))))
+(put 'w3m-flet 'lisp-indent-function 1)
+
 (defmacro w3m-labels (bindings &rest body)
   "Make temporary function bindings.
-In Emacs 24.2 and later, FUNCs will not be lexical scoped in FORMs
+In Emacs 24.2 and later, FUNCs will not be lexically scoped in FORMs
 unless `lexical-binding' is in use.
 
 \(fn ((FUNC ARGLIST BODY...) ...) FORM...)"

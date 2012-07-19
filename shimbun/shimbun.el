@@ -238,6 +238,7 @@ Default is the value of `w3m-default-save-directory'."
 (defalias 'shimbun-end-of-tag 'w3m-end-of-tag)
 (defalias 'shimbun-expand-url 'w3m-expand-url)
 (defalias 'shimbun-find-coding-system 'w3m-find-coding-system)
+(defalias 'shimbun-flet 'w3m-flet)
 (defalias 'shimbun-interactive-p 'w3m-interactive-p)
 (defalias 'shimbun-replace-in-string 'w3m-replace-in-string)
 (defalias 'shimbun-url-encode-string 'w3m-url-encode-string)

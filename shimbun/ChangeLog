@@ -1,3 +1,9 @@
+2012-07-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-flet): Alias to w3m-flet.
+
+	* sb-chise.el (shimbun-headers): Use it.
+
 2012-07-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-chise.el (shimbun-headers): Don't use flet.
