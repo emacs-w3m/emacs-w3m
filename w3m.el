@@ -6095,16 +6095,24 @@ w3m regards it as an incomplete <a> tag that is not closed."
   ;; Add name anchors that w3m can handle.  cf. [emacs-w3m:11153]
   ;; This section adds ``<a name="FOO_BAR"></a>'' in front of
   ;; ``<TAG ... id="FOO_BAR" ...>FOO BAR</TAG>'' in the current buffer.
-  (goto-char (point-min))
-  (let (st nd name)
-    (while (re-search-forward "<\\(?:[^\t\n\r >]+\\)\
-\[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*id=\\(\"[^\"]+\"\\)"
-			      nil t)
-      (goto-char (setq st (match-beginning 0)))
-      (setq nd (match-end 0)
-	    name (match-string 1))
-      (insert "<a name=" name "></a>")
-      (goto-char (+ nd (- (point) st)))))
+  (let ((case-fold-search t) names st nd name)
+    (goto-char (point-min))
+    (while (re-search-forward "<a[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
+href=\"#\\([a-z][-.0-9:_a-z]*\\)\"" nil t)
+      (push (match-string 1) names))
+    (when names
+      (setq names (concat "<\\(?:[^\t\n\r >]+\\)\
+\[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*id=\\(\""
+			  (mapconcat 'regexp-quote names "\\|")
+			  "\"\\)")
+	    case-fold-search nil)
+      (goto-char (point-min))
+      (while (re-search-forward names nil t)
+	(goto-char (setq st (match-beginning 0)))
+	(setq nd (match-end 0)
+	      name (match-string 1))
+	(insert "<a name=" name "></a>")
+	(goto-char (+ nd (- (point) st))))))
 
   (w3m-set-display-ins-del)
   (let* ((coding-system-for-read w3m-output-coding-system)

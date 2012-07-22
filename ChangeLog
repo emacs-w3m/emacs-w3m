@@ -1,3 +1,8 @@
+2012-07-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-rendering-half-dump): Add name anchors for only existing
+	internal links.
+
 2012-07-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-flet): New macro.
