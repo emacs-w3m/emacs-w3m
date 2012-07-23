@@ -6102,7 +6102,7 @@ href=\"#\\([a-z][-.0-9:_a-z]*\\)\"" nil t)
       (push (match-string 1) names))
     (when names
       (setq names (concat "<\\(?:[^\t\n\r >]+\\)\
-\[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*id=\\(\""
+\[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*[Ii][Dd]=\\(\""
 			  (mapconcat 'regexp-quote names "\\|")
 			  "\"\\)")
 	    case-fold-search nil)
