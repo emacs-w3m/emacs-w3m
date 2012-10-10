@@ -1,5 +1,7 @@
 2012-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-bookmark.el (w3m-bookmark-buffer): Use (0 0) as the Unix epoch.
+
 	* w3m.el (w3m-create-page): Fix regexp matching Google's click-
 	tracking urls.
 
