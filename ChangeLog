@@ -1,3 +1,8 @@
+2012-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-create-page): Fix regexp matching Google's click-
+	tracking urls.
+
 2012-07-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-rendering-half-dump): Add name anchors for only existing

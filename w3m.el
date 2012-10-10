@@ -6477,8 +6477,8 @@ If so return \"text/html\", otherwise \"text/plain\"."
   (when (string-match "\\`https?://[a-z]+\\.google\\." url)
     (goto-char (point-min))
     (while (re-search-forward "\\(<a[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
-href=\"\\)/\\(?:imgres\\?imgurl\\|url\\?q\\)=\\([^&]+\\)[^>]+>"
-			      nil t)
+href=\"\\)\\(?:[^\"]+\\)?/\\(?:imgres\\?imgurl\\|url\\?\\(?:q\\|url\\)\\)=\
+\\([^&]+\\)[^>]+>" nil t)
       ;; In a search result Google encodes some special characters like "+"
       ;; and "?" to "%2B" and "%3F" in a real url, so we need to decode them.
       (insert (w3m-url-decode-string
