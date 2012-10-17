@@ -1419,7 +1419,7 @@ nil means don't recenter, let the display follow point in the
 
 (defcustom w3m-use-filter nil
   "*Non-nil means use filter programs to convert web contents.
-See also `w3m-filter-rules'."
+See also `w3m-filter-configuration'."
   :group 'w3m
   :type 'boolean
   :require 'w3m-filter)
@@ -6091,29 +6091,6 @@ w3m regards it as an incomplete <a> tag that is not closed."
 (defun w3m-rendering-half-dump (charset)
   ;; `charset' is used by `w3m-w3m-expand-arguments' to generate
   ;; arguments for w3mmee and w3m-m17n from `w3m-halfdump-command-arguments'.
-
-  ;; Add name anchors that w3m can handle.  cf. [emacs-w3m:11153]
-  ;; This section adds ``<a name="FOO_BAR"></a>'' in front of
-  ;; ``<TAG ... id="FOO_BAR" ...>FOO BAR</TAG>'' in the current buffer.
-  (let ((case-fold-search t) names st nd name)
-    (goto-char (point-min))
-    (while (re-search-forward "<a[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
-href=\"#\\([a-z][-.0-9:_a-z]*\\)\"" nil t)
-      (push (match-string 1) names))
-    (when names
-      (setq names (concat "<\\(?:[^\t\n\r >]+\\)\
-\[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*[Ii][Dd]=\\(\""
-			  (mapconcat 'regexp-quote names "\\|")
-			  "\"\\)")
-	    case-fold-search nil)
-      (goto-char (point-min))
-      (while (re-search-forward names nil t)
-	(goto-char (setq st (match-beginning 0)))
-	(setq nd (match-end 0)
-	      name (match-string 1))
-	(insert "<a name=" name "></a>")
-	(goto-char (+ nd (- (point) st))))))
-
   (w3m-set-display-ins-del)
   (let* ((coding-system-for-read w3m-output-coding-system)
 	 (coding-system-for-write (if (eq 'binary w3m-input-coding-system)
@@ -6472,19 +6449,6 @@ If so return \"text/html\", otherwise \"text/plain\"."
   (setq type (w3m-prepare-content url type charset))
   (w3m-safe-decode-buffer url charset type)
   (setq charset (or charset w3m-current-content-charset))
-  ;; FIXME: Maybe this should be incorporated in w3m-filter.el.
-  ;; Filter Google's click-tracking.
-  (when (string-match "\\`https?://[a-z]+\\.google\\." url)
-    (goto-char (point-min))
-    (while (re-search-forward "\\(<a[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
-href=\"\\)\\(?:[^\"]+\\)?/\\(?:imgres\\?imgurl\\|url\\?\\(?:q\\|url\\)\\)=\
-\\([^&]+\\)[^>]+>" nil t)
-      ;; In a search result Google encodes some special characters like "+"
-      ;; and "?" to "%2B" and "%3F" in a real url, so we need to decode them.
-      (insert (w3m-url-decode-string
-	       (prog1
-		   (concat (match-string 1) (match-string 2) "\">")
-		 (delete-region (match-beginning 0) (match-end 0)))))))
   (when w3m-use-filter (w3m-filter url))
   (w3m-relationship-estimate url)
   ;; Create pages.

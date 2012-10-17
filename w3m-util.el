@@ -1479,12 +1479,6 @@ The value of DEFAULT is inserted into PROMPT."
        (symbol-name c)))
    menu-commands))
 
-(eval-when-compile (require 'wid-edit))
-(defun w3m-widget-type-convert-widget (widget)
-  "Convert the car of `:args' as a widget type in WIDGET."
-  (apply 'widget-convert (widget-type widget)
-	 (eval (car (widget-get widget :args)))))
-
 (defun w3m-unseen-buffer-p (buffer)
   "Return t if buffer unseen."
   (with-current-buffer buffer
@@ -1550,6 +1544,14 @@ unless `lexical-binding' is in use.
   `(,(progn (require 'cl) (if (fboundp 'cl-labels) 'cl-labels 'labels))
     ,bindings ,@body))
 (put 'w3m-labels 'lisp-indent-function 1)
+
+(eval-when-compile (require 'wid-edit))
+(defun w3m-widget-type-convert-widget (widget)
+  "Convert the car of `:args' as a widget type in WIDGET."
+  (require 'wid-edit)
+  (w3m-flet ((widget-sexp-value-to-internal (widget value) value))
+    (apply 'widget-convert (widget-type widget)
+	   (eval (car (widget-get widget :args))))))
 
 ;;; Punycode RFC 3492:
 

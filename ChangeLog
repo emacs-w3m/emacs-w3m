@@ -1,3 +1,23 @@
+2012-10-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-filter.el: Change file coding system to utf-8.
+	(w3m-filter-configuration):
+	New user option, a successor to w3m-filter-rules.
+	(w3m-filter-rules):
+	Make it semi-obsolete (but still usable) and default to nil.
+	(w3m-filter):
+	Use w3m-filter-configuration in addition to w3m-filter-rules.
+	(w3m-filter-google-click-tracking)
+	(w3m-filter-google-shrink-table-width, w3m-filter-add-name-anchors):
+	New filters.
+
+	* w3m.el (w3m-rendering-half-dump):
+	Move function, that adds name anchors, to w3m-filter.el.
+	(w3m-create-page): Move Google click-tracking filter to w3m-filter.el.
+
+	* w3m-util.el (w3m-widget-type-convert-widget):
+	Don't modify default sexp values.
+
 2012-10-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bookmark.el (w3m-bookmark-buffer): Use (0 0) as the Unix epoch.
