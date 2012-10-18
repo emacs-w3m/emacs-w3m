@@ -114,7 +114,7 @@ FLAG
   Non-nil means this filter is enabled.
 DESCRIPTION
   Describe what this filter does.  The value may be a string or a list
-  of strings; in the later case, those descriptions are written in
+  of two strings; in the later case, those descriptions are written in
   English and Japanese respectively, and only either one is displayed
   in the customization buffer according to `w3m-use-japanese-menu'.
 REGEXP
@@ -122,7 +122,10 @@ REGEXP
   contents of which the url matches.
 FUNCTION
   Filter function to run on web contents.  The value may be a function
-  or a list of a function and argument(s)."
+  or a list of a function and rest argument(s).  A function should take
+  at least one argument, a url of contents retrieved then, as the first
+  argument even if it is useless.  Use the later (i.e. a function and
+  arguments) if the function requires rest arguments."
   :group 'w3m
   :type '(repeat
 	  :convert-widget w3m-widget-type-convert-widget
@@ -143,6 +146,12 @@ FUNCTION
 			     (apply #',fn args)))))
 	    `((group
 	       :indent 2
+
+	       ;; Work around a widget bug: the default value of `choice'
+	       ;; get nil regardless of the type of items if it is within
+	       ;; (group :inline t ...).
+	       :default-get (lambda (widget) '(t "Not documented" ".*" ignore))
+
 	       :value-create
 	       (lambda (widget)
 		 (widget-group-value-create widget)
@@ -178,18 +187,18 @@ FUNCTION
 		:inline t
 		(choice
 		 :format " %v"
-		 (const :format "Not documented\n" nil)
 		 (string :format "%v")
 		 (group ,@(if w3m-use-japanese-menu
 			      '((sexp :format "") (string :format "%v"))
-			    '((string :format "%v") (sexp :format "")))))
+			    '((string :format "%v") (sexp :format ""))))
+		 (const :format "Not documented\n" nil))
 		(regexp :format "Regexp matching url: %v")
 		(choice
 		 :tag "Type" :format "Function %[Type%]: %v"
 		 :action ,(funcall locker 'widget-choice-action)
-		 (function :tag "Function with no arg" :format "%v")
+		 (function :tag "Function with no rest arg" :format "%v")
 		 (group
-		  :tag "Function and args" :indent 0 :offset 4
+		  :tag "Function and rest arg(s)" :indent 0 :offset 4
 		  (function :format "%v")
 		  (editable-list
 		   :inline t

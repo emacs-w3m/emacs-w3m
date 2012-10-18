@@ -1,3 +1,7 @@
+2012-10-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-filter.el (w3m-filter-configuration): Work around a widget bug.
+
 2012-10-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-filter.el: Change file coding system to utf-8.
