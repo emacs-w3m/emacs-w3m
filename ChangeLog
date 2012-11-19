@@ -1,3 +1,8 @@
+2012-11-19  Uday S Reddy  <u.s.reddy@cs.bham.ac.uk>
+
+	* w3m.el (w3m-command-environment): Make the "CYGWIN" environment
+	variable default to "binmode" for NTEmacs.
+
 2012-10-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-filter.el (w3m-filter-configuration): Work around a widget bug.

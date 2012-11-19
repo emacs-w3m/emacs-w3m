@@ -373,7 +373,7 @@ common part of the host names, not a regexp."
 	 (if (eq w3m-type 'w3mmee)
 	     (cons "W3MLANG" "ja_JP.kterm"))
 	 (if (eq system-type 'windows-nt)
-	     (cons "CYGWIN" "binmode tty"))))
+	     (cons "CYGWIN" "binmode"))))
   "*Alist of environment variables for subprocesses to inherit."
   :group 'w3m
   :type '(repeat
