@@ -1,5 +1,9 @@
 2012-12-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-util.el (w3m-labels): Revert; use cl-labels if available.
+
+2012-12-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m-util.el (w3m-labels): Rewrite.
 
 2012-11-19  Uday S Reddy  <u.s.reddy@cs.bham.ac.uk>

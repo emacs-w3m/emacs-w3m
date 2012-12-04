@@ -1535,46 +1535,14 @@ get to be the alias to `visited-file-modtime'."
 	   (fmakunbound (car orig)))))))
 (put 'w3m-flet 'lisp-indent-function 1)
 
-;; An alist of original function names and those unique names.
-(defvar w3m-labels-environment)
-
-(defun w3m-labels-expand (form)
-  "Expand funcalls in FORM according to `w3m-labels-environment'.
-This function is a subroutine that `w3m-labels' uses to convert any
-`(FN ...)' and #'FN elements in FORM into `(funcall UN ...)' and `UN'
-respectively if `(FN . UN)' is listed in `w3m-labels-environment'."
-  (cond ((or (not (consp form)) (memq (car form) '(\` backquote quote)))
-	 form)
-	((assq (car form) w3m-labels-environment)
-	 `(funcall ,(cdr (assq (car form) w3m-labels-environment))
-		   ,@(mapcar #'w3m-labels-expand (cdr form))))
-	((eq (car form) 'function)
-	 (if (and (assq (cadr form) w3m-labels-environment)
-		  (not (cddr form)))
-	     (cdr (assq (cadr form) w3m-labels-environment))
-	   (cons 'function (mapcar #'w3m-labels-expand (cdr form)))))
-	(t
-	 (mapcar #'w3m-labels-expand form))))
-
 (defmacro w3m-labels (bindings &rest body)
   "Make temporary function bindings.
 The lexical scoping is handled via `lexical-let' rather than relying
 on `lexical-binding'.
 
 \(fn ((FUNC ARGLIST BODY...) ...) FORM...)"
-  (let (w3m-labels-environment def defs)
-    (dolist (binding bindings)
-      (push (cons (car binding)
-		  (make-symbol (format "--w3m-%s--" (car binding))))
-	    w3m-labels-environment))
-    `(lexical-let ,(mapcar #'cdr w3m-labels-environment)
-       (setq ,@(dolist (env w3m-labels-environment (nreverse defs))
-		 (setq def (cdr (assq (car env) bindings)))
-		 (push (cdr env) defs)
-		 (push `(lambda ,(car def)
-			  ,@(mapcar #'w3m-labels-expand (cdr def)))
-		       defs)))
-       ,@(mapcar #'w3m-labels-expand body))))
+  `(,(progn (require 'cl) (if (fboundp 'cl-labels) 'cl-labels 'labels))
+    ,bindings ,@body))
 (put 'w3m-labels 'lisp-indent-function 1)
 
 (eval-when-compile (require 'wid-edit))
