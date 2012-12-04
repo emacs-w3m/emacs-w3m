@@ -1517,7 +1517,7 @@ get to be the alias to `visited-file-modtime'."
       'force-mode-line-update
     'redraw-modeline))
 
-;; `flet' and `labels' got obsolete since Emacs 24.2.
+;; `flet' and `labels' got obsolete since Emacs 24.3.
 (defmacro w3m-flet (bindings &rest body)
   "Make temporary overriding function definitions.
 
