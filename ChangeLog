@@ -1,3 +1,7 @@
+2012-12-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-flet): Rewrite it using cl-letf.
+
 2012-12-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-labels): Revert; use cl-labels if available.

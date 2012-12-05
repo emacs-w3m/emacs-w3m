@@ -1520,19 +1520,18 @@ get to be the alias to `visited-file-modtime'."
 ;; `flet' and `labels' got obsolete since Emacs 24.3.
 (defmacro w3m-flet (bindings &rest body)
   "Make temporary overriding function definitions.
+This is an analogue of a dynamically scoped `let' that operates on
+the function cell of FUNCs rather than their value cell.
 
 \(fn ((FUNC ARGLIST BODY...) ...) FORM...)"
-  `(let (fn origs)
-     (dolist (bind ',bindings)
-       (setq fn (car bind))
-       (push (cons fn (and (fboundp fn) (symbol-function fn))) origs)
-       (fset fn (cons 'lambda (cdr bind))))
-     (unwind-protect
-	 (progn ,@body)
-       (dolist (orig origs)
-	 (if (cdr orig)
-	     (fset (car orig) (cdr orig))
-	   (fmakunbound (car orig)))))))
+  (require 'cl)
+  (if (fboundp 'cl-letf)
+      `(cl-letf ,(mapcar (lambda (binding)
+			   `((symbol-function ',(car binding))
+			     (lambda ,@(cdr binding))))
+			 bindings)
+	 ,@body)
+    `(flet ,bindings ,@body)))
 (put 'w3m-flet 'lisp-indent-function 1)
 
 (defmacro w3m-labels (bindings &rest body)
