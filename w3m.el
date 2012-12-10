@@ -3545,6 +3545,8 @@ The database is kept in `w3m-entity-table'."
 				  (rel :case-ignore) (hseq :integer))
 	(unless name
 	  (setq name id))
+	(when href
+	  (setq href (w3m-decode-anchor-string href)))
 	(when rel
 	  (setq rel (split-string rel))
 	  (cond
@@ -3559,7 +3561,7 @@ The database is kept in `w3m-entity-table'."
 	  (when (re-search-forward "[ \t\r\f\n]*\\(</a>\\)" nil t)
 	    (setq end (match-beginning 0))
 	    (delete-region (match-beginning 1) (match-end 1))
-	    (setq href (w3m-expand-url (w3m-decode-anchor-string href)))
+	    (setq href (w3m-expand-url href))
 	    (unless (w3m-url-local-p href)
 	      (w3m-string-match-url-components href)
 	      (setq href (if (match-beginning 8)

@@ -1,3 +1,8 @@
+2012-12-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-decode-anchor-string): Decode url used to next/prev/...
+	cf. http://emacs-w3m.namazu.org/ml/msg11824.html
+
 2012-12-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-flet): Rewrite it using cl-letf.
