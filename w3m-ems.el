@@ -312,10 +312,8 @@ and its cdr element is used as height."
 				    (plist-get (cdr image) :data)
 				    (car set-size)(cdr set-size)
 				    handler))
-			(if resized (plist-put (cdr image) :data resized))
-			image))
-		  (w3m-image-animate image)))
-	    (w3m-image-animate image)))))))
+			(if resized (plist-put (cdr image) :data resized)))))))
+	  (w3m-image-animate image))))))
 
 (defun w3m-create-resized-image (url rate &optional referer size handler)
   "Resize an cached image object.

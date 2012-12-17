@@ -4132,7 +4132,8 @@ You are retrieving non-secure image(s).  Continue? ")
 			(let ((inhibit-read-only t))
 			  (w3m-static-when (featurep 'xemacs)
 			    (w3m-remove-image start end))
-			  (w3m-insert-image start end image iurl))
+			  (w3m-insert-image start end image iurl)
+			  (w3m-image-animate image))
 			;; Redisplay
 			(when w3m-force-redisplay
 			  (sit-for 0)))

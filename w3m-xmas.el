@@ -1,6 +1,6 @@
 ;;; w3m-xmas.el --- XEmacs stuff for emacs-w3m
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2008, 2009, 2010
+;; Copyright (C) 2001-2010, 2012
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -530,6 +530,8 @@ A buffer string between BEG and END are replaced with IMAGE."
   "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
   (and (device-on-window-system-p)
        (featurep image-type)))
+
+(defalias 'w3m-image-animate 'identity)
 
 ;;; Toolbar:
 (defcustom w3m-use-toolbar (and (featurep 'toolbar) t)

@@ -5,6 +5,10 @@
 	(w3m-image-animate): New function.
 	(w3m-create-image): Use it.
 
+	* w3m.el (w3m-resize-inline-image-internal): Use w3m-image-animate.
+
+	* w3m-xmas.el (w3m-image-animate): Alias to identity.
+
 2012-12-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-decode-anchor-string): Decode url used to next/prev/...
