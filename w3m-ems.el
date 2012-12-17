@@ -84,7 +84,10 @@
   (autoload 'w3m-delete-buffer "w3m")
   (autoload 'w3m-image-type "w3m")
   (autoload 'w3m-retrieve "w3m")
-  (autoload 'w3m-select-buffer-update "w3m"))
+  (autoload 'w3m-select-buffer-update "w3m")
+  (unless (fboundp 'image-animate)
+    (defalias 'image-animate 'ignore)
+    (defalias 'image-animated-p 'ignore)))
 
 (eval-and-compile
   (unless (fboundp 'frame-current-scroll-bars)
@@ -235,10 +238,29 @@ This function is an interface to `make-coding-system'."
 circumstances."
   (and w3m-display-inline-images (display-images-p)))
 
-(eval-and-compile
-  (defalias 'w3m-ems-create-image (if (fboundp 'create-animated-image)
-				      'create-animated-image
-				    'create-image)))
+;; Animation.
+(defcustom w3m-image-animate-seconds 10
+  "Animate images (if possible) for this many seconds.
+If nil, don't play the animation.  If t, loop forever."
+  :group 'w3m
+  :type '(choice (integer :tag "Animate for (seconds)")
+		 (const :tag "Inhibit animation" nil)
+		 (const :tag "Animate forever" t)))
+
+(defun w3m-image-animate (image)
+  "Start animating IMAGE if possible.  Return IMAGE."
+    (when (and (fboundp 'image-animate)
+	       w3m-image-animate-seconds
+	       (image-animated-p image))
+      (image-animate image nil w3m-image-animate-seconds)
+      ;; Reset an image to the initial one after playing the animation.
+      ;; FIXME: Is there a better way?
+      (when (numberp w3m-image-animate-seconds)
+	(run-with-timer (1+ w3m-image-animate-seconds) nil
+			(lambda (image)
+			  (image-animate image 0 0))
+			image)))
+    image)
 
 (defun w3m-create-image (url &optional no-cache referer size handler)
   "Retrieve data from URL and create an image object.
@@ -266,7 +288,7 @@ and its cdr element is used as height."
 				    ((match-beginning 2) 'jpeg)
 				    (t 'png)))
 			 (w3m-image-type type))))
-	  (setq image (w3m-ems-create-image
+	  (setq image (create-image
 		       (buffer-string) type t
 		       :ascent 'center
 		       :background w3m-image-default-background))
@@ -292,8 +314,8 @@ and its cdr element is used as height."
 				    handler))
 			(if resized (plist-put (cdr image) :data resized))
 			image))
-		  image))
-	    image))))))
+		  (w3m-image-animate image)))
+	    (w3m-image-animate image)))))))
 
 (defun w3m-create-resized-image (url rate &optional referer size handler)
   "Resize an cached image object.
