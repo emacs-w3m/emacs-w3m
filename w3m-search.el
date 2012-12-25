@@ -1,6 +1,6 @@
 ;;; w3m-search.el --- functions convenient to access web search engines
 
-;; Copyright (C) 2001-2011 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001--2012 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Keisuke Nishida    <kxn30@po.cwru.edu>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -328,6 +328,7 @@ Cannot run two w3m processes simultaneously \
 	  (let ((query-string (w3m-search-escape-query-string query
 							      (caddr info)))
 		(post-data (cadddr info)))
+	    (w3m-history-store-position)
 	    (funcall w3m-goto-function
 		     (format (cadr info) query-string)
 		     post-data
