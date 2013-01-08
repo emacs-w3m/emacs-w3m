@@ -148,8 +148,8 @@ FUNCTION
 	       :indent 2
 
 	       ;; Work around a widget bug: the default value of `choice'
-	       ;; get nil regardless of the type of items if it is within
-	       ;; (group :inline t ...).
+	       ;; gets nil regardless of the type of items if it is within
+	       ;; (group :inline t ...).  Fixed in Emacs 24.4 (Bug#12670).
 	       :default-get (lambda (widget) '(t "Not documented" ".*" ignore))
 
 	       :value-create
