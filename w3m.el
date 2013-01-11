@@ -1,6 +1,6 @@
 ;;; w3m.el --- an Emacs interface to w3m -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2000-2012 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000-2013 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -6912,7 +6912,8 @@ compatibility which is described in Section 5.2 of RFC 2396.")
       (setq buffer (current-buffer)))
     (let (handler)
       (w3m-process-do
-	  (success (w3m-goto-url url reload nil nil w3m-current-url handler))
+	  (success (w3m-goto-url url reload nil nil w3m-current-url handler
+				 nil w3m-new-session-in-background))
 	(set-window-hscroll (selected-window) 0)
 	;; Delete the newly created buffer if it's been made empty.
 	(when (and pos

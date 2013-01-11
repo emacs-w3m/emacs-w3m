@@ -1,3 +1,9 @@
+2013-01-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-view-this-url-1): Don't popup new session if
+	w3m-new-session-in-background is non-nil.
+	Reported by Michael Heerdegen <michael_heerdegen@web.de>.
+
 2012-12-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-search.el (w3m-search-do-search): Save history position.
