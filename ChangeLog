@@ -1,6 +1,8 @@
 2013-01-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-view-this-url-1): Don't popup new session if
+	* w3m.el (w3m-retrieve-and-render): Do (sit-for 0) to update the
+	header-line appearance as a workaround; see the 2013-01-11 comment.
+	(w3m-view-this-url-1): Don't popup new session if
 	w3m-new-session-in-background is non-nil.
 	Reported by Michael Heerdegen <michael_heerdegen@web.de>.
 

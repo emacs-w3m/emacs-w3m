@@ -6219,6 +6219,11 @@ called with t as an argument.  Otherwise, it will be called with nil."
 					    page-buffer)
 		      (w3m-force-window-update-later page-buffer)
 		      (unless (get-buffer-window page-buffer)
+
+			;; Fixme: `w3m-force-window-update-later' doesn't seem
+			;; to work, so I put this here. -- ky 2013-01-11
+			(sit-for 0)
+
 			(w3m-message "The content (%s) has been retrieved in %s"
 				     url (buffer-name page-buffer))))))
 	      (ding)
