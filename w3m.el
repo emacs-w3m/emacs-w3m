@@ -6932,22 +6932,7 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	      (save-excursion
 		(goto-char pos)
 		(w3m-refontify-anchor)))))
-	;; We need to restore the window configuration to the former
-	;; one if `w3m-new-session-in-background' is non-nil unless
-	;; the buffer's major mode has changed from the w3m-mode to
-	;; another by visiting the new url (possibly a local file,
-	;; a mailto url, doc-view-mode, etc.).
-	(if (and w3m-new-session-in-background
-		 (not (eq obuffer (current-buffer)))
-		 (or (buffer-name buffer)
-		     ;; Clear "...has been retrieved in..." message.
-		     (progn (w3m-message "") nil))
-		 (or (eq major-mode 'w3m-mode)
-		     (not (eq (with-current-buffer buffer major-mode)
-			      'w3m-mode))))
-	    (set-window-configuration wconfig)
-	  (unless (eq cur w3m-current-url)
-	    (w3m-recenter)))))))
+	(w3m-recenter)))))
 
 (defun w3m-view-this-url (&optional arg new-session)
   "Display the page pointed to by the link under point.
