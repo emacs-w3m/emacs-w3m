@@ -1,5 +1,8 @@
 2013-01-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-lnum.el (w3m-lnum-read-interactive): Replace w3m-scroll-up-1 with
+	w3m-scroll-up.
+
 	* w3m.el (w3m-scroll-up): Rename from w3m-scroll-up-1.
 	(w3m-scroll-up, w3m-scroll-up-or-next-url): Make the bottom of a page
 	border on the bottom of a screen when having finished scrolling

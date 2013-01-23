@@ -466,7 +466,7 @@ Return list of selected number and last applied filter."
 	     ((memq ch '(32 ?\ ))		; scroll down
 	      (w3m-lnum-remove-overlays (point-min) (point-max))
 	      (ignore-errors
-		(w3m-scroll-up-1)
+		(w3m-scroll-up)
 		;; scroll-up sets wrongly window-start/end
 		(if (and (fboundp 'redisplay)
 			 (not (eq (symbol-function 'redisplay) 'ignore)))
