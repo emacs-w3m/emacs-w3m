@@ -1,3 +1,18 @@
+2013-01-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-scroll-up): Rename from w3m-scroll-up-1.
+	(w3m-scroll-up, w3m-scroll-up-or-next-url): Make the bottom of a page
+	border on the bottom of a screen when having finished scrolling
+	the page up.
+	(w3m-scroll-down): New function detached from
+	w3m-scroll-down-or-previous-url.
+	(w3m-scroll-down-or-previous-url): Move point to the top when having
+	finished scrolling a page down.
+	(w3m-mwheel-scroll-up, w3m-mwheel-scroll-down): New functions.
+	(w3m-mode): Bind mwheel-scroll-(up,down)-function to
+	w3m-mwheel-scroll-(up,down).
+	Suggested by Dan Jacobson <jidanni@jidanni.org>.
+
 2013-01-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-retrieve-and-render): Do (sit-for 0) to update the

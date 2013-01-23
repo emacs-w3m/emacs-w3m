@@ -7960,7 +7960,7 @@ for users.  See Info node `(elisp)Key Binding Conventions'.")
     (define-key map "j" 'next-line)
     (define-key map "k" 'previous-line)
     (define-key map "l" 'forward-char)
-    (define-key map "J" 'w3m-scroll-up-1)
+    (define-key map "J" 'w3m-scroll-up)
     (define-key map "K" (lambda () (interactive) (scroll-down 1)))
     (define-key map "\C-?" 'w3m-scroll-down-or-previous-url)
     (define-key map "\t" 'w3m-next-anchor)
@@ -8565,7 +8565,7 @@ or a list which consists of the following elements:
  next page.
 \\[w3m-scroll-down-or-previous-url]	Scroll down the current window, or\
  go to the previous page.
-\\[w3m-scroll-up-1]	Scroll the current window up one line (or lines\
+\\[w3m-scroll-up]	Scroll the current window up one line (or lines\
  of which the number\n\tyou specify by the prefix argument).
 \\[w3m-scroll-left]	Scroll to the left.
 \\[w3m-scroll-right]	Scroll to the right.
@@ -8659,27 +8659,64 @@ or a list which consists of the following elements:
   (make-local-variable 'list-buffers-directory)
   (w3m-static-unless (featurep 'xemacs)
     (setq show-trailing-whitespace nil))
+  (when (boundp 'mwheel-scroll-up-function)
+    (eval '(set (make-local-variable (quote mwheel-scroll-up-function))
+		(function w3m-mwheel-scroll-up)))
+    (eval '(set (make-local-variable (quote mwheel-scroll-down-function))
+		(function w3m-mwheel-scroll-down))))
   (w3m-setup-toolbar)
   (w3m-setup-menu)
   (run-hooks 'w3m-mode-setup-functions)
   (w3m-run-mode-hooks 'w3m-mode-hook))
 
-(defun w3m-scroll-up-1 (&optional arg)
-  "Scroll the current window up ARG line.
+(condition-case nil
+    (define-obsolete-function-alias 'w3m-scroll-up-1 'w3m-scroll-up
+      "2013-01-23")
+  (wrong-number-of-arguments ;; XEmacs
+   (define-obsolete-function-alias 'w3m-scroll-up-1 'w3m-scroll-up)))
+(defun w3m-scroll-up (&optional arg mwheel)
+  "Scroll the current window up ARG lines.
 ARG will be fixed into 1 when this function is called interactively.
+MWHEEL indicates that this function is called by the mouse wheel.
 This function avoids the bug that Emacs 21.x hangs up when scrolling
 up for too many number of lines if `scroll-margin' is set as two or
 greater."
   (interactive '(1))
-  (w3m-static-unless (featurep 'xemacs)
-    (when (and (numberp arg)
-	       (> arg 0)
-	       (numberp scroll-margin)
-	       (> scroll-margin 0))
-      (setq arg (min arg
-		     (max 0 (- (count-lines (window-start) (point-max))
-			       scroll-margin))))))
-  (scroll-up arg))
+  (let ((cur (point))
+	end)
+    (goto-char (point-max))
+    (skip-chars-backward "\t\n\r ")
+    (forward-line 1)
+    (setq end (point))
+    (goto-char cur)
+    (if (and (or mwheel (not arg))
+	     (pos-visible-in-window-p end))
+	(run-with-timer 1e-9 nil
+			(lambda (win pos)
+			  (when (window-live-p win)
+			    (goto-char pos)
+			    (recenter -1)
+			    (w3m-message "End of buffer")))
+			(selected-window) end)
+      (w3m-static-unless (featurep 'xemacs)
+	(when (and (numberp arg)
+		   (> arg 0)
+		   (numberp scroll-margin)
+		   (> scroll-margin 0))
+	  (setq arg (min arg
+			 (max 0 (- (count-lines (window-start) (point-max))
+				   scroll-margin))))))
+      (scroll-up arg)
+      (when (and truncate-lines
+		 (or mwheel (not arg))
+		 (pos-visible-in-window-p end))
+	(setq cur (point))
+	(goto-char end)
+	(recenter -1)
+	(goto-char cur)))))
+
+(defun w3m-mwheel-scroll-up (&optional arg)
+  (w3m-scroll-up arg t))
 
 (defun w3m-scroll-up-or-next-url (arg)
   "Scroll the current window up ARG lines, or go to the next page."
@@ -8687,13 +8724,38 @@ greater."
   (if (w3m-image-page-displayed-p)
       (image-scroll-up arg)
     (w3m-keep-region-active)
-    (if (pos-visible-in-window-p (point-max))
-	(if w3m-next-url
-	    (let ((w3m-prefer-cache t))
-	      (w3m-history-store-position)
-	      (w3m-goto-url w3m-next-url))
-	  (signal 'end-of-buffer nil))
-      (w3m-scroll-up-1 arg))))
+    (if (and w3m-next-url
+	     (pos-visible-in-window-p (let ((cur (point)))
+					(goto-char (point-max))
+					(skip-chars-backward "\t\n\r ")
+					(forward-line 1)
+					(prog1
+					    (point)
+					  (goto-char cur)))))
+	(let ((w3m-prefer-cache t))
+	  (w3m-history-store-position)
+	  (w3m-goto-url w3m-next-url))
+      (w3m-scroll-up arg))))
+
+(defun w3m-scroll-down (&optional arg mwheel)
+  "Scroll the current window down ARG lines.
+ARG will be fixed into 1 when this function is called interactively.
+MWHEEL indicates that this function is called by the mouse wheel."
+  (interactive '(1))
+  (if (and (or mwheel (not arg))
+	   (pos-visible-in-window-p (point-min)))
+      (run-with-timer 1e-9 nil
+		      (lambda (win)
+			(when (window-live-p win)
+			  (select-window win)
+			  (goto-char (point-min))
+			  (recenter 0)
+			  (w3m-message "Beginning of buffer")))
+		      (selected-window))
+    (scroll-down arg)))
+
+(defun w3m-mwheel-scroll-down (&optional arg)
+  (w3m-scroll-down arg t))
 
 (defun w3m-scroll-down-or-previous-url (arg)
   "Scroll the current window down ARG lines, or go to the previous page."
@@ -8701,13 +8763,12 @@ greater."
   (if (w3m-image-page-displayed-p)
       (image-scroll-down arg)
     (w3m-keep-region-active)
-    (if (pos-visible-in-window-p (point-min))
-	(if w3m-previous-url
-	    (let ((w3m-prefer-cache t))
-	      (w3m-history-store-position)
-	      (w3m-goto-url w3m-previous-url))
-	  (signal 'beginning-of-buffer nil))
-      (scroll-down arg))))
+    (if (and w3m-previous-url
+	     (pos-visible-in-window-p (point-min)))
+	(let ((w3m-prefer-cache t))
+	  (w3m-history-store-position)
+	  (w3m-goto-url w3m-previous-url))
+      (w3m-scroll-down arg))))
 
 (defvar w3m-current-longest-line nil
   "The length of the longest line in the window.")
