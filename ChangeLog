@@ -1,3 +1,10 @@
+2013-02-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-retrieve-and-render): Remove workaround.
+	* w3m-util.el (w3m-force-window-update-later): Make 1st arg optional.
+	* w3m-ems.el (w3m-force-window-update): A window need to be redisplayed
+	for `force-window-update' to work (see the docstring).
+
 2013-01-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-lnum.el (w3m-lnum-read-interactive): Replace w3m-scroll-up-1 with

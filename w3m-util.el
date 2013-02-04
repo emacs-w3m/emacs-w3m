@@ -1,6 +1,6 @@
 ;;; w3m-util.el --- Utility macros and functions for emacs-w3m
 
-;; Copyright (C) 2001-2012 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2013 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -1398,16 +1398,16 @@ With one argument, just copy STRING without its properties."
     (defalias 'w3m-force-window-update 'ignore)))
 
 (if (boundp 'header-line-format)
-    (defun w3m-force-window-update-later (buffer &optional seconds)
+    (defun w3m-force-window-update-later (&optional buffer seconds)
       "Update the header-line appearance in BUFFER after SECONDS.
-If SECONDS is omitted, it defaults to 0.5."
-      (run-at-time (or seconds 0.5) nil
-		   (lambda (buffer)
-		     (when (and (buffer-live-p buffer)
-				(eq (get-buffer-window buffer t)
-				    (selected-window)))
-		       (w3m-force-window-update)))
-		   buffer))
+BUFFER defaults to the current buffer.  SECONDS defaults to 0.5."
+      (run-with-timer (or seconds 0.5) nil
+		      (lambda (buffer)
+			(when (and (buffer-live-p buffer)
+				   (eq (get-buffer-window buffer t)
+				       (selected-window)))
+			  (w3m-force-window-update)))
+		      (or buffer (current-buffer))))
   (defalias 'w3m-force-window-update-later 'ignore))
 
 (if (fboundp 'read-number)

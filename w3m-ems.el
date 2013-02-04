@@ -1,6 +1,6 @@
 ;;; w3m-ems.el --- GNU Emacs stuff for emacs-w3m
 
-;; Copyright (C) 2001-2012 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2013 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -846,7 +846,8 @@ otherwise works in all the emacs-w3m buffers."
 	     (not (eq (symbol-function 'force-window-update) 'ignore)))
 	(lambda (&optional window) "\
 Force redisplay of WINDOW which defaults to the selected window."
-	  (force-window-update (or window (selected-window))))
+	  (force-window-update (or window (selected-window)))
+	  (sit-for 0))
       (lambda (&optional ignore) "\
 Wobble the selected window to force redisplay of the header-line."
 	(save-window-excursion
