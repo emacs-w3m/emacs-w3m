@@ -419,7 +419,8 @@ href=\"#\\([a-z][-.0-9:_a-z]*\\)\"" nil t)
 	      (delete-region (match-beginning 0) (match-end 0))))
 	  (when tfoots
 	    (goto-char tbody-end)
-	    (apply #'insert (nreverse tfoots))))
+	    (dolist (tfoot (nreverse tfoots))
+	      (insert "<" mark (substring tfoot 1)))))
 	(goto-char (point-max))))
     (set-marker tbody-end nil)
     (unless recursion
