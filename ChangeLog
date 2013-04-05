@@ -1,3 +1,11 @@
+2013-04-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-filter.el (w3m-filter-fix-tfoot-rendering): New filter.
+	(w3m-filter-configuration): Add it but not activate.
+
+	* w3m-ems.el (w3m-image-multi-frame-p): New alias.
+	(w3m-image-animate): Use it.
+
 2013-02-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-retrieve-and-render): Remove workaround.

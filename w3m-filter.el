@@ -1,6 +1,6 @@
 ;;; w3m-filter.el --- filtering utility of advertisements on WEB sites -*- coding: utf-8 -*-
 
-;; Copyright (C) 2001-2008, 2012 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2008, 2012, 2013 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -54,6 +54,11 @@
       "すべてのページに w3m が扱える name アンカーを追加します")
      ""
      w3m-filter-add-name-anchors)
+    (nil
+     ("Render <tfoot>...</tfoot> after <tbody>...</tbody>"
+      "テーブル内の <tfoot> を <tbody> の後に描画します")
+     ""
+     w3m-filter-fix-tfoot-rendering)
     (nil
      ("Remove garbage in http://www.geocities.co.jp/*"
       "http://www.geocities.co.jp/* でゴミを取り除きます")
@@ -382,6 +387,45 @@ href=\"#\\([a-z][-.0-9:_a-z]*\\)\"" nil t)
 	      name (match-string 1))
 	(insert "<a name=" name "></a>")
 	(goto-char (+ nd (- (point) st)))))))
+
+(defun w3m-filter-fix-tfoot-rendering (url &optional recursion)
+  "Render <tfoot>...</tfoot> after <tbody>...</tbody>."
+  (let ((table-exists recursion)
+	(mark "!-- emacs-w3m-filter ")
+	(tbody-end (make-marker))
+	tfoots)
+    (goto-char (if table-exists (match-end 0) (point-min)))
+    (while (or table-exists (re-search-forward "<table[\t\n\r >]" nil t))
+      (setq table-exists nil)
+      (save-restriction
+	(if (w3m-end-of-tag "table")
+	    (narrow-to-region (match-beginning 0) (match-end 0))
+	  (narrow-to-region (match-beginning 0) (point-max)))
+	(goto-char (1+ (match-beginning 0)))
+	(insert mark)
+	(while (re-search-forward "<table[\t\n\r >]" nil t)
+	  (w3m-filter-fix-tfoot-rendering url t))
+	(goto-char (point-min))
+	(while (search-forward "</tbody>" nil t)
+	  (set-marker tbody-end (match-end 0))
+	  (goto-char (1+ (match-beginning 0)))
+	  (insert mark))
+	(unless (bobp)
+	  (setq tfoots nil)
+	  (goto-char (point-min))
+	  (while (re-search-forward "<tfoot[\t\n\r >]" nil t)
+	    (when (w3m-end-of-tag "tfoot")
+	      (push (match-string 0) tfoots)
+	      (delete-region (match-beginning 0) (match-end 0))))
+	  (when tfoots
+	    (goto-char tbody-end)
+	    (apply #'insert (nreverse tfoots))))
+	(goto-char (point-max))))
+    (set-marker tbody-end nil)
+    (unless recursion
+      (goto-char (point-min))
+      (while (search-forward mark nil t)
+	(delete-region (match-beginning 0) (match-end 0))))))
 
 (defun w3m-filter-asahi-shimbun (url)
   "Convert entity reference of UCS."

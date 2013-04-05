@@ -86,8 +86,7 @@
   (autoload 'w3m-retrieve "w3m")
   (autoload 'w3m-select-buffer-update "w3m")
   (unless (fboundp 'image-animate)
-    (defalias 'image-animate 'ignore)
-    (defalias 'image-animated-p 'ignore)))
+    (defalias 'image-animate 'ignore)))
 
 (eval-and-compile
   (unless (fboundp 'frame-current-scroll-bars)
@@ -247,11 +246,17 @@ If nil, don't play the animation.  If t, loop forever."
 		 (const :tag "Inhibit animation" nil)
 		 (const :tag "Animate forever" t)))
 
+(eval-and-compile
+  (defalias 'w3m-image-multi-frame-p
+    (if (fboundp 'image-multi-frame-p)
+	'image-multi-frame-p
+      'image-animated-p)))
+
 (defun w3m-image-animate (image)
   "Start animating IMAGE if possible.  Return IMAGE."
     (when (and (fboundp 'image-animate)
 	       w3m-image-animate-seconds
-	       (image-animated-p image))
+	       (w3m-image-multi-frame-p image))
       (image-animate image nil w3m-image-animate-seconds)
       ;; Reset an image to the initial one after playing the animation.
       ;; FIXME: Is there a better way?
