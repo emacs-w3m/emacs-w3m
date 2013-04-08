@@ -1,6 +1,6 @@
 ;;; w3m-form.el --- Stuffs to handle <form> tag
 
-;; Copyright (C) 2001-2012 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2013 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -234,15 +234,16 @@ It is useful to bind this variable with `let', but do not set it globally.")
   `(w3m-form-put-property ,form ,id :value (cons ,name ,value)))
 (defmacro w3m-form-get (form id)
   `(cdr (w3m-form-get-property ,form ,id :value)))
-(defun w3m-form-get-by-name (form name)
+(defun w3m-form-get-by-name (form id name)
   (let ((plist (w3m-form-plist form))
 	pair value)
     (while plist
-      (setq pair (plist-get (cadr plist) :value))
-      (when (and pair
-		 (string= (car pair) name))
-	(setq value (cdr pair)
-	      plist nil))
+      (when (eq id (car plist))
+	(setq pair (plist-get (cadr plist) :value))
+	(when (and pair
+		   (string= (car pair) name))
+	  (setq value (cdr pair)
+		plist nil)))
       (setq plist (cddr plist)))
     value))
 (defun w3m-form-put-by-name (form id name value)
@@ -393,7 +394,7 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
 		    (unless (eq form cform)
 		      (w3m-form-put cform id name (w3m-form-get form id))))
 		   ((string= type "radio")
-		    (let ((value (w3m-form-get-by-name form name)))
+		    (let ((value (w3m-form-get-by-name form id name)))
 		      (when value
 			(w3m-form-replace
 			 (if (string= value (nth 4 (w3m-action (point))))
@@ -682,7 +683,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	    (w3m-add-face-property start end 'w3m-form)
 	    (add-text-properties
 	     start (match-beginning 0)
-	     `(w3m-action (w3m-form-input-map ,maps ,usemap))))))
+	     `(w3m-action (w3m-form-input-map ,maps ,id ,usemap))))))
        ((string= tag "/input_alt")
 	(replace-match ""))
        ((string= tag "input_alt")
@@ -838,7 +839,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		 ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
 		 w3m-action (w3m-form-input-radio ,form ,id ,name ,value)
 		 w3m-submit (w3m-form-submit ,form ,id ,name
-					     (w3m-form-get-by-name ,form ,name)
+					     (w3m-form-get-by-name
+					      ,form ,id ,name)
 					     w3m-form-new-session
 					     w3m-form-download)
 		 w3m-anchor-sequence ,abs-hseq)))
@@ -1752,8 +1754,8 @@ selected rather than \(as usual\) some other window.  See
   (use-local-map w3m-form-input-map-keymap)
   (w3m-run-mode-hooks 'w3m-form-input-map-mode-hook))
 
-(defun w3m-form-input-map (form name)
-  (let* ((value (w3m-form-get-by-name form name))
+(defun w3m-form-input-map (form id name)
+  (let* ((value (w3m-form-get-by-name form id name))
 	 (urlname (format "%s:%s" w3m-current-url name))
 	 (cur-win (selected-window))
 	 (wincfg (current-window-configuration))
