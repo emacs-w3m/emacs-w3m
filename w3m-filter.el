@@ -373,12 +373,12 @@ This function adds ``<a name=\"FOO_BAR\"></a>'' in front of
     (goto-char (point-min))
     (while (re-search-forward "<a[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
 href=\"#\\([a-z][-.0-9:_a-z]*\\)\"" nil t)
-      (push (match-string 1) names))
+      (add-to-list 'names (match-string 1)))
     (when names
       (setq names (concat "<\\(?:[^\t\n\r >]+\\)\
-\[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*[Ii][Dd]=\\(\""
+\[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*[Ii][Dd]=\"\\("
 			  (mapconcat 'regexp-quote names "\\|")
-			  "\"\\)")
+			  "\\)\"")
 	    case-fold-search nil)
       (goto-char (point-min))
       (while (re-search-forward names nil t)

@@ -1,7 +1,12 @@
+2013-04-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-filter.el (w3m-filter-add-name-anchors): Fix regexp matching name
+	anchors.  Reported by Dan Jacobson <jidanni@jidanni.org>.
+
 2013-04-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-form.el (w3m-form-get-by-name): Distinguish the type of forms of
-	the same names.
+	the same names.  Reported by Kevin Ryde <user42@zip.com.au>.
 	(w3m-form-resume, w3m-form-parse-and-fontify, w3m-form-input-map): Do.
 
 2013-04-05  Katsumi Yamaoka  <yamaoka@jpl.org>
