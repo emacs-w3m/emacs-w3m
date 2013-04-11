@@ -1,3 +1,8 @@
+2013-04-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-filter.el (w3m-filter-configuration):
+	Use w3m-language rather than w3m-use-japanese-menu.
+
 2013-04-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-filter.el (w3m-filter-add-name-anchors): Fix regexp matching name

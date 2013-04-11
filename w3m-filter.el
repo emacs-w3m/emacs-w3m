@@ -121,7 +121,7 @@ DESCRIPTION
   Describe what this filter does.  The value may be a string or a list
   of two strings; in the later case, those descriptions are written in
   English and Japanese respectively, and only either one is displayed
-  in the customization buffer according to `w3m-use-japanese-menu'.
+  in the customization buffer according to `w3m-language'.
 REGEXP
   Regular expression to restrict this filter so as to run only on web
   contents of which the url matches.
@@ -193,7 +193,7 @@ FUNCTION
 		(choice
 		 :format " %v"
 		 (string :format "%v")
-		 (group ,@(if w3m-use-japanese-menu
+		 (group ,@(if (equal "Japanese" w3m-language)
 			      '((sexp :format "") (string :format "%v"))
 			    '((string :format "%v") (sexp :format ""))))
 		 (const :format "Not documented\n" nil))
