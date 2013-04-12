@@ -1,3 +1,7 @@
+2013-04-12  REN Lifeng  <renlifeng@wowfly.com>
+
+	* w3m-session.el (w3m-session-rename): Don't infloop.
+
 2013-04-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-filter.el (w3m-filter-configuration):
