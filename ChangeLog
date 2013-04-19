@@ -1,3 +1,7 @@
+2013-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-filter.el (w3m-filter): Don't modify w3m-filter-rules.
+
 2013-04-12  REN Lifeng  <renlifeng@wowfly.com>
 
 	* w3m-session.el (w3m-session-rename): Don't infloop.

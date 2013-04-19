@@ -279,15 +279,15 @@ This variable is semi-obsolete; use `w3m-filter-configuration' instead."
 (defun w3m-filter (url)
   "Apply filtering rule of URL against a content in this buffer."
   (save-match-data
-    (dolist (elem (nconc w3m-filter-rules
-			 (delq nil
-			       (mapcar
-				(lambda (config)
-				  (when (car config)
-				    (if (consp (nth 3 config))
-					(cons (nth 2 config) (nth 3 config))
-				      (list (nth 2 config) (nth 3 config)))))
-				w3m-filter-configuration))))
+    (dolist (elem (append w3m-filter-rules
+			  (delq nil
+				(mapcar
+				 (lambda (config)
+				   (when (car config)
+				     (if (consp (nth 3 config))
+					 (cons (nth 2 config) (nth 3 config))
+				       (list (nth 2 config) (nth 3 config)))))
+				 w3m-filter-configuration))))
       (when (string-match (car elem) url)
 	(apply (cadr elem) url (cddr elem))))))
 
