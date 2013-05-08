@@ -1,6 +1,6 @@
 ;;; shimbun.el --- interfacing with web newspapers -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2012 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2013 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
@@ -1602,7 +1602,7 @@ it considers the buffer has already been narrowed to an article."
 	(error))
       (goto-char start)
       (while (re-search-forward
-	      "[^$B!!!"!#!$!%!2!<!=!>!A$(D"7$B!F!G!H!I!J!K!N!O!P!Q!R!S!a!l!m!o(B]+"
+	      "[^$B!!!"!#!$!%!2!<!=!>!A!A!F!G!H!I!J!K!N!O!P!Q!R!S!a!l!m!o(B]+"
 	      nil t)
 	(japanese-hankaku-region (match-beginning 0) (match-end 0) t))
       (goto-char start)
@@ -1693,7 +1693,7 @@ it considers the buffer has already been narrowed to an article."
 		   (and (member (match-string 1) '("$B8aA0(B" "$B8a8e(B"))
 			(eq (char-before) ?$B;~(B))
 		   (memq (char-before (match-end 1))
-			 '(?$B!!(B ?$B!\(B ?$B!](B ?$B!^(B ?$B!_(B ?$B!`(B ?$B!a(B ?$B!b(B ?$B!e(B ?$B!f(B ?$B"b(B
+			 '(?$B!!(B ?$B!\(B ?$B!](B ?$B!^(B ?$B!_(B ?$B!`(B ?$B!a(B ?$B!b(B ?$B!e(B ?$B!f(B ?$B-p(B
 			       ?$B"c(B ?$B"d(B))
 		   (and (memq (char-before (match-end 1)) '(?$BBh(B ?$BLs(B))
 			(memq ?j
@@ -1740,12 +1740,12 @@ it considers the buffer has already been narrowed to an article."
       (let ((regexp
 	     (if (eq w3m-output-coding-system 'utf-8)
 		 (eval-when-compile
-		   (let ((chars "$A!2!4!6!8!:!<!>#"#($B!"!#!$!%!&!+!,!1!3!4!5!6!7(B\
+		   (let ((chars "$A!2!4!6!8!:!<!>$B|~$A#($B!"!#!$!%!&!+!,!1!3!4!5!6!7(B\
 $B!A!J!K!L!M!N!O!P!Q!R!S!T!U!V!W!X!Y!Z![(B"))
 		     (concat "\\(?:[ $B!!(B]\\|&nbsp;\\)\\([" chars "$A!f$B!9!n(B]\\)"
 			     "\\|\\([" chars "]\\)\\(?:[ $B!!(B]\\|&nbsp;\\)")))
 	       (eval-when-compile
-		 (let ((chars "$A!.!0!2!4!6!8!:!<!>!c!d!e!l#"#($B!"!#!$!%!&!+!,!/(B\
+		 (let ((chars "$A!.!0!2!4!6!8!:!<!>!c!d!e!l$B|~$A#($B!"!#!$!%!&!+!,!/(B\
 $B!1!3!4!5!6!7!A!B!D!E!F!G!H!I!J!K!L!M!N!O!P!Q!R!S!T!U!V!W!X!Y!Z![!k!l!m!x(B"))
 		   (concat "\\(?:[ $B!!(B]\\|&nbsp;\\)\\([" chars "$A!f$B!9!n(B]\\)"
 			   "\\|\\([" chars "]\\)\\(?:[ $B!!(B]\\|&nbsp;\\)"))))))
@@ -1815,8 +1815,8 @@ faster."
 	   (not (eq (symbol-function 'libxml-parse-xml-region) 'ignore)))
       (save-excursion
 	(goto-char (point-min))
-	(let ((xml (libxml-parse-xml-region
-		    (1- (search-forward "<" nil t)) (point-max)))
+	(let ((xml (when (search-forward "<" nil t)
+		     (libxml-parse-xml-region (match-beginning 0) (point-max))))
 	      start stylestring stylesheet)
 	  (if xml
 	      (progn

@@ -1,3 +1,10 @@
+2013-05-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-xml-parse-buffer): Don't try to parse corrupt xml.
+
+	* sb-rss.el (shimbun-rss-get-headers): Don't conceal an error if
+	debug-on-error or debug-on-quit is non-nil.
+
 2012-07-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-flet): Alias to w3m-flet.

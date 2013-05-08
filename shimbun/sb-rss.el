@@ -1,7 +1,7 @@
 ;;; sb-rss.el --- shimbun backend for RSS (Rich Site Summary).
 
-;; Copyright (C) 2003-2011 Koichiro Ohba <koichiro@meadowy.org>
-;; Copyright (C) 2003-2011 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+;; Copyright (C) 2003-2011, 2013 Koichiro Ohba <koichiro@meadowy.org>
+;; Copyright (C) 2003-2011, 2013 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
 ;;         NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
@@ -180,13 +180,15 @@ than the oldest one in the shimbun.  If NEED-ALL-ITEMS is
 non-nil, all items from the feed are returned.  If the entries
 from the feed have date information, the result is sorted by
 ascending date."
-  (let* ((xml (condition-case err
+  (let* ((xml (if (or debug-on-error debug-on-quit)
 		  (shimbun-xml-parse-buffer)
-		(error
-		 (message "Error while parsing %s: %s"
-			  (shimbun-index-url shimbun)
-			  (error-message-string err))
-		 nil)))
+		(condition-case err
+		    (shimbun-xml-parse-buffer)
+		  (error
+		   (message "Error while parsing %s: %s"
+			    (shimbun-index-url shimbun)
+			    (error-message-string err))
+		   nil))))
 	 header headers oldheaders newheaders oldest)
     (dolist (tmp (shimbun-rss-get-headers-1 xml shimbun need-descriptions))
       (let* ((date (shimbun-header-date tmp))
