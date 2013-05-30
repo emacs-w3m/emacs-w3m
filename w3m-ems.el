@@ -86,7 +86,8 @@
   (autoload 'w3m-retrieve "w3m")
   (autoload 'w3m-select-buffer-update "w3m")
   (unless (fboundp 'image-animate)
-    (defalias 'image-animate 'ignore)))
+    (defalias 'image-animate 'ignore)
+    (defalias 'image-multi-frame-p 'ignore)))
 
 (eval-and-compile
   (unless (fboundp 'frame-current-scroll-bars)
@@ -249,7 +250,8 @@ If nil, don't play the animation.  If t, loop forever."
 (eval-and-compile
   (defalias 'w3m-image-multi-frame-p
     (if (fboundp 'image-multi-frame-p)
-	'image-multi-frame-p
+	(lambda (image)
+	  (cdr (image-multi-frame-p image)))
       'image-animated-p)))
 
 (defun w3m-image-animate (image)

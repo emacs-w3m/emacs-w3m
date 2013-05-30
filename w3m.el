@@ -410,9 +410,10 @@ composing mail messages."
 If a user clicks on a `mailto' url and a mail buffer is composed by
 `mail-user-agent' with the MAJOR-MODE, FUNCTION will be called with a
 mail buffer as an argument.  Note that the variables
-`special-display-buffer-names', `special-display-regexps',
-`same-window-buffer-names' and `same-window-regexps' will be bound to
-nil while popping to a buffer up."
+`display-buffer-alist' (or `special-display-buffer-names' and
+`special-display-regexps' for old Emacsen), `same-window-buffer-names'
+and `same-window-regexps' will be bound to nil while popping to
+a buffer up."
   :group 'w3m
   :type '(repeat (cons :format "%v" :indent 11
 		       (symbol :format "Major-mode: %v\n" :size 0)
@@ -9076,10 +9077,12 @@ It makes the ends of upper and lower three lines visible.  If
 				 w3m-mailto-url-popup-function-alist)))
 	    (setq buffers nil)))))
     (when function
-      (let (special-display-buffer-names
-	    special-display-regexps same-window-buffer-names
-	    same-window-regexps mod)
-	(funcall function buffer)
+      (let (same-window-buffer-names same-window-regexps mod)
+	(w3m-static-if (boundp 'display-buffer-alist)
+	    (let (display-buffer-alist)
+	      (funcall function buffer))
+	  (let (special-display-buffer-names special-display-regexps)
+	    (funcall function buffer)))
 	(when body
 	  (setq mod (buffer-modified-p))
 	  (goto-char (point-min))

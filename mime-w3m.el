@@ -1,6 +1,6 @@
 ;;; mime-w3m.el --- mime-view content filter for text
 
-;; Copyright (C) 2001-2005, 2009, 2010, 2012
+;; Copyright (C) 2001-2005, 2009, 2010, 2012, 2013
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -208,7 +208,8 @@ Add some emacs-w3m utility functions to pre/post-command-hook."
       (w3m-insert-string (mime-entity-content entity))
       (mime-entity-type/subtype entity))))
 
-(dont-compile
+(eval
+ (quote
   ;; Arglist varies according to Emacs version.
   ;; Emacs 21.1~21.4, 23.3, 24, XEmacs, SXEmacs:
   ;; (kill-new string &optional replace)
@@ -221,7 +222,7 @@ Strip `keymap' or `local-map' properties from a killed string."
 			   'text-rendered-by-mime-w3m t (ad-get-arg 0))
 	(remove-text-properties 0 (length (ad-get-arg 0))
 				'(keymap nil local-map nil)
-				(ad-get-arg 0)))))
+				(ad-get-arg 0))))))
 
 (mime-w3m-insinuate)
 

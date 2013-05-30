@@ -1,3 +1,14 @@
+2013-05-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mime-w3m.el: Don't use obsolete macro dont-compile.
+
+	* w3m.el (w3m-goto-mailto-url): Bind display-buffer-alist instead of
+	special-display-buffer-names and special-display-regexps for Emacs >
+	24.3.
+
+	* w3m-ems.el (w3m-image-multi-frame-p): Exclude images that don't
+	specify a delay.
+
 2013-04-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-filter.el (w3m-filter): Don't modify w3m-filter-rules.
