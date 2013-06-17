@@ -1,3 +1,7 @@
+2013-06-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-mainichi.el (shimbun-mainichi-get-headers): Update regexp.
+
 2013-05-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-xml-parse-buffer): Don't try to parse corrupt xml.

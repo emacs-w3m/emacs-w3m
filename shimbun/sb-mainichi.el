@@ -1,6 +1,6 @@
 ;;; sb-mainichi.el --- shimbun backend for Mainichi jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2009, 2011, 2012 Koichiro Ohba <koichiro@meadowy.org>
+;; Copyright (C) 2001-2009, 2011-2013 Koichiro Ohba <koichiro@meadowy.org>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
 ;;         Katsumi Yamaoka <yamaoka@jpl.org>
@@ -181,7 +181,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 		     ;; 2. serial number
 		     "\\("
 		     ;; 3. year
-		     "\\(20[0-9][0-9]\\)"
+		     "m?\\(20[0-9][0-9]\\)"
 		     ;; 4. month
 		     "\\([01][0-9]\\)"
 		     ;; 5. day
