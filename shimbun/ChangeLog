@@ -1,5 +1,7 @@
 2013-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-yahoo-auctions.el: Add coding cookie.
+
 	* sb-mainichi.el (shimbun-mainichi-multi-next-url)
 	(shimbun-mainichi-clear-contents): Support the other type of navigator.
 

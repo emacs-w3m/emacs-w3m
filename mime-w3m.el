@@ -35,6 +35,7 @@
 
 (eval-when-compile
   (require 'cl)
+  (require 'calist)
   ;; mime-parse.el should be loaded before mime.el so as not to make
   ;; `mime-uri-parse-cid' an autoloaded function to which the byte
   ;; compiler might issue a nonsense warning.

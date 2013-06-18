@@ -4518,6 +4518,7 @@ Like `ffap-url-at-point', except that text props will be stripped."
 		 (w3m-header-line-url)
 		 (ffap-url-at-point)))))))
 
+(defvar ffap-url-regexp)
 (eval-after-load "ffap"
   '(progn
      ;; Under XEmacs, `ffap-url-regexp' won't match to https urls.

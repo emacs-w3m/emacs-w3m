@@ -1,3 +1,9 @@
+2013-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (ffap-url-regexp): Silence the byte compiler.
+
+	* mime-w3m.el: Require calist when compiling.
+
 2013-05-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mime-w3m.el: Don't use obsolete macro dont-compile.
