@@ -1,5 +1,7 @@
 2013-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-itmedia.el (shimbun-get-headers): Update regexp for kodera group.
+
 	* sb-yahoo-auctions.el: Add coding cookie.
 
 	* sb-mainichi.el (shimbun-mainichi-multi-next-url)

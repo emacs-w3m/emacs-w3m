@@ -1,6 +1,6 @@
 ;;; sb-itmedia.el --- shimbun backend for ITmedia -*- coding: iso-2022-7bit -*-
 
-;; Copyright (C) 2004-2011 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2004-2011, 2013 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -139,7 +139,8 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 	(goto-char (point-min))
 	(setq regexp (if (string-equal group "kodera")
 			 "<a[\t\n ]+href=\"\\(http://\
-\\(?:plusd\\.itmedia\\|monoist\\.atmarkit\\)\\.co\\.jp/[^\"]+/articles/\
+\\(?:\\(?:plusd\\|www\\)\\.itmedia\\|monoist\\.atmarkit\\)\\.co\\.jp/\
+\[^\"]+/articles/\
 \\([0-9][0-9]\\)\\([01][0-9]\\)/\\([0-3][0-9]\\)/news\\([0-9]+\\)\\.html\\)\
 \"[\t\n ]*>\\(?:[\t\n ]*\\|[\t\n ]*<strong>[\t\n ]*\\)\\([^<]+\\)"
 		       "<a[\t\n ]+href=\"\
