@@ -240,26 +240,34 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 
 (defun shimbun-mainichi-multi-next-url (shimbun header url)
   (goto-char (point-min))
-  (let (end)
-    (when (or (re-search-forward "\
+  ;; Replace this article with the full one.
+  (when (re-search-forward "\
 <span[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"More\"[^<]+\
 <a[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*href=\"\\([^\"]+\\)\"[^>]*>\
 \[\t\n ]*続きを読む[\t\n ]*</a>[\t\n ]*</span>" nil t)
-	      (and (or (and (re-search-forward "\
+    (let ((orig (buffer-string)))
+      (unless (shimbun-fetch-url shimbun (prog1
+					     (match-string 1)
+					   (erase-buffer)))
+	(erase-buffer)
+	(insert orig)))
+    (goto-char (point-min)))
+  (let (end)
+    (when (and (or (and (re-search-forward "\
 <nav[\t\n ]\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"SearchPageAutoWrap\"" nil t)
-			    (shimbun-end-of-tag "nav"))
-		       (progn
-			 (goto-char (point-min))
-			 (and (re-search-forward "\
-<ul[\t\n ]\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"SearchPageWrap clr\"" nil t)
-			      (shimbun-end-of-tag "ul"))))
+			(shimbun-end-of-tag "nav"))
 		   (progn
-		     (goto-char (match-beginning 0))
-		     (setq end (match-end 0))
-		     (re-search-forward "\
+		     (goto-char (point-min))
+		     (and (re-search-forward "\
+<ul[\t\n ]\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"SearchPageWrap clr\"" nil t)
+			  (shimbun-end-of-tag "ul"))))
+	       (progn
+		 (goto-char (match-beginning 0))
+		 (setq end (match-end 0))
+		 (re-search-forward "\
 <li[\t\n ]\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"PageSelect\"" end t))
-		   (re-search-forward "\
-<a[\t\n ]\\(?:[^\t\n >]+[\t\n ]+\\)*href=\"\\([^\"]+\\)" end t)))
+	       (re-search-forward "\
+<a[\t\n ]\\(?:[^\t\n >]+[\t\n ]+\\)*href=\"\\([^\"]+\\)" end t))
       (shimbun-expand-url (match-string 1) url))))
 
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-mainichi)
@@ -295,13 +303,6 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 	(progn
 	  (dolist (art (nreverse arts))
 	    (insert art "\n"))
-
-	  ;; Remove the 続きを読む button.
-	  (goto-char (point-min))
-	  (when (re-search-forward "\
-\[\t\n ]*<span[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"More\"[^<]+\
-<a[\t\n ]+[^>]+>[\t\n ]*続きを読む[\t\n ]*</a>[\t\n ]*</span>[\t\n ]*" nil t)
-	    (replace-match "\n"))
 
 	  ;; Break continuous lines in yoroku articles.
 	  (when (or (string-equal group "opinion.yoroku")
