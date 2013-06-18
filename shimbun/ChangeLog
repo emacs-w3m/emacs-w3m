@@ -1,3 +1,8 @@
+2013-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-mainichi.el (shimbun-mainichi-multi-next-url)
+	(shimbun-mainichi-clear-contents): Support the other type of navigator.
+
 2013-06-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-mainichi.el (shimbun-mainichi-get-headers): Update regexp.
