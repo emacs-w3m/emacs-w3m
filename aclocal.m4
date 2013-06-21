@@ -42,9 +42,10 @@ fi
 AC_DEFUN(AC_PATH_EMACS,
  [dnl Check for Emacsen.
 
-  dnl Apparently, if you run a shell window in Emacs, it sets the EMACS
-  dnl environment variable to 't'.  Lets undo the damage.
-  test x${EMACS} = xt && EMACS=
+  dnl Apparently, if you run a shell window or a term window in Emacs,
+  dnl it sets the EMACS environment variable to 't' or a version number
+  dnl of Emacs.  Lets undo the damage.
+  test "${EMACS}" = "t" -o -n "${INSIDE_EMACS}" && EMACS=
 
   dnl Ignore cache.
   unset ac_cv_prog_EMACS; unset EMACS_cv_SYS_flavor;

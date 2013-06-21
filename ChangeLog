@@ -1,3 +1,7 @@
+2013-06-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4: Make configure work for term-mode running in Emacs.
+
 2013-06-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (ffap-url-regexp): Silence the byte compiler.
