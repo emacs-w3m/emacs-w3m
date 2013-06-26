@@ -1,3 +1,12 @@
+2013-06-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-use-cookies): Default to t.
+
+	Make `w3m-input-url' offer no useless initial string.
+	* w3m.el (w3m-active-region-or-url-at-point, w3m-input-url)
+	(w3m-download, w3m-view-this-url, w3m-view-url-with-external-browser)
+	(w3m-goto-url, w3m-goto-url-new-session, w3m): Do.
+
 2013-06-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* aclocal.m4: Make configure work for term-mode running in Emacs.

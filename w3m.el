@@ -1413,7 +1413,7 @@ nil means don't recenter, let the display follow point in the
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-use-cookies nil
+(defcustom w3m-use-cookies t
   "*Non-nil means enable emacs-w3m to use cookies.  (EXPERIMENTAL)"
   :group 'w3m
   :type 'boolean)
@@ -4536,10 +4536,13 @@ Like `ffap-url-at-point', except that text props will be stripped."
 	 (setq ffap-url-regexp (replace-match "\\1\\\\|nntp:\\2"
 					      nil nil ffap-url-regexp)))))
 
-(defun w3m-active-region-or-url-at-point (&optional default=current)
+(defun w3m-active-region-or-url-at-point (&optional default-to)
   "Return an active region or a url around the cursor.
-In Transient Mark mode, deactivate the mark.  If DEFAULT=CURRENT is
-non-nil, return the url of the current page by default."
+In Transient Mark mode, deactivate the mark.
+If DEFAULT-TO is `never', only return a url found in the specified
+region if any.  If it is nil, default to a url that an anchor at
+the point points to.  If it is neither `never' nor nil, default to
+a url of the current page as the last resort."
   (if (w3m-region-active-p)
       (prog1
 	  (let ((string (buffer-substring-no-properties
@@ -4556,21 +4559,22 @@ non-nil, return the url of the current page by default."
 		(delete-region (match-beginning 0) (match-end 0)))
 	      (buffer-string)))
 	(w3m-deactivate-region))
-    (or (w3m-anchor)
-	(unless w3m-display-inline-images
-	  (w3m-image))
-	(w3m-url-at-point)
-	(and default=current
-	     (stringp w3m-current-url)
-	     (if (string-match "\\`about://\\(?:header\\|source\\)/"
-			       w3m-current-url)
-		 (substring w3m-current-url (match-end 0))
-	       (let ((name
-		      (or (car (get-text-property (point) 'w3m-name-anchor))
-			  (car (get-text-property (point) 'w3m-name-anchor2)))))
-		 (if name
-		     (concat w3m-current-url "#" name)
-		   w3m-current-url)))))))
+    (unless (eq default-to 'never)
+      (or (w3m-anchor)
+	  (unless w3m-display-inline-images
+	    (w3m-image))
+	  (w3m-url-at-point)
+	  (and default-to
+	       (stringp w3m-current-url)
+	       (if (string-match "\\`about://\\(?:header\\|source\\)/"
+				 w3m-current-url)
+		   (substring w3m-current-url (match-end 0))
+		 (let ((name
+			(or (car (get-text-property (point) 'w3m-name-anchor))
+			    (car (get-text-property (point) 'w3m-name-anchor2)))))
+		   (if name
+		       (concat w3m-current-url "#" name)
+		     w3m-current-url))))))))
 
 (defun w3m-canonicalize-url (url &optional feeling-lucky)
   "Fix URL that does not look like a valid url.
@@ -4593,12 +4597,16 @@ http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
       (concat "http://" url)))))
 
 (defun w3m-input-url (&optional prompt initial default quick-start
-				feeling-lucky)
+				feeling-lucky no-initial)
   "Read a url from the minibuffer, prompting with string PROMPT."
-  (let (url)
+  (let ((url
+	 ;; Check whether the region is active.
+	 (w3m-active-region-or-url-at-point 'never)))
     (w3m-arrived-setup)
     (cond ((null initial)
-	   (when (setq initial (w3m-active-region-or-url-at-point t))
+	   (when (setq initial (or url
+				   (unless no-initial
+				     (w3m-active-region-or-url-at-point t))))
 	     (if (string-match "\\`about:" initial)
 		 (setq initial nil)
 	       (unless (string-match "[^\000-\177]" initial)
@@ -4613,7 +4621,9 @@ http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
     (when initial
       (setq initial (w3m-puny-decode-url initial)))
     (cond ((null default)
-	   (setq default w3m-home-page))
+	   (setq default (or url
+			     (w3m-active-region-or-url-at-point)
+			     w3m-home-page)))
 	  ((string= default "")
 	   (setq default nil)))
     (if (and quick-start
@@ -4646,6 +4656,8 @@ http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
 						"BLANK")
 					       ((equal default w3m-home-page)
 						"HOME")
+					       ((equal default w3m-current-url)
+						"CURRENT")
 					       (t default))
 					 "): "))
 			     prompt)
@@ -5871,7 +5883,9 @@ NO-CHACHE (which the prefix argument gives when called interactively)
 specifies not using the cached data."
   (interactive (list nil nil current-prefix-arg))
   (unless url
-    (setq url (w3m-input-url "Download URL: ")))
+    (setq url (w3m-input-url "Download URL: " nil
+			     (or (w3m-active-region-or-url-at-point) "")
+			     nil nil 'no-initial)))
   (unless filename
     (let ((basename (file-name-nondirectory (w3m-url-strip-query url))))
       (when (string-match "^[\t ]*$" basename)
@@ -6960,9 +6974,9 @@ point."
       (if (w3m-display-graphic-p)
 	  (w3m-toggle-inline-image)
 	(w3m-view-image)))
-     ((setq url (w3m-active-region-or-url-at-point t))
+     ((setq url (w3m-active-region-or-url-at-point 'never))
       (unless (eq 'quit (setq url (w3m-input-url nil url 'quit nil
-						 'feeling-lucky)))
+						 'feeling-lucky 'no-initial)))
 	(w3m-view-this-url-1 url arg new-session)))
      (t (w3m-message "No URL at point")))))
 
@@ -7165,11 +7179,12 @@ If the cursor points to a link, it visits the url of the link instead
 of the url currently displayed.  The browser is defined in
 `w3m-content-type-alist' for every type of a url."
   (interactive (list (w3m-input-url "URL to view externally: "
+				    nil
 				    (or (w3m-anchor)
 					(unless w3m-display-inline-images
 					  (w3m-image))
 					w3m-current-url)
-				    "")))
+				    nil nil 'no-initial)))
   (when (w3m-url-valid url)
     (message "Browsing <%s>..." url)
     (w3m-external-view url)))
@@ -9360,7 +9375,7 @@ invoked in other than a w3m-mode buffer."
 	     (error "%s"
 		    (substitute-command-keys "Cannot run two w3m processes simultaneously \
 \(Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)"))
-	   (w3m-input-url nil nil nil nil 'feeling-lucky))
+	   (w3m-input-url nil nil nil nil 'feeling-lucky 'no-initial))
 	 current-prefix-arg
 	 (w3m-static-if (fboundp 'universal-coding-system-argument)
 	     coding-system-for-read)))
@@ -9705,7 +9720,10 @@ If you invoke this command in the emacs-w3m buffer, the new session
 will be created by copying the current session.  Otherwise, the new
 session will start afresh."
   (interactive
-   (list (w3m-input-url nil nil w3m-new-session-url nil 'feeling-lucky)
+   (list (w3m-input-url nil nil
+			(or (w3m-active-region-or-url-at-point)
+			    w3m-new-session-url)
+			nil 'feeling-lucky 'no-initial)
 	 current-prefix-arg
 	 (w3m-static-if (fboundp 'universal-coding-system-argument)
 	     coding-system-for-read)
@@ -9976,7 +9994,7 @@ interactive command in the batch mode."
 	    (setq new (if current-prefix-arg
 			  default
 			(w3m-input-url nil nil default w3m-quick-start
-				       'feeling-lucky)))))
+				       'feeling-lucky 'no-initial)))))
       ;; new-session
       (and w3m-make-new-session
 	   (w3m-alive-p)
