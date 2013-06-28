@@ -1237,14 +1237,14 @@ integer n:    Retrieve n pages of header indices.")
       (concat "<div align=\"left\">\n--&nbsp;<br>\nこの記事の著作権は、"
 	      (shimbun-server-name shimbun)
 	      "社に帰属します。<br>\n原物は <a href=\""
-	      (shimbun-article-base-url shimbun header) "\">"
+	      (shimbun-article-base-url shimbun header) "\">&lt;"
 	      (shimbun-article-base-url shimbun header)
-	      "</a> で公開されています。\n</div>\n")
+	      "&gt;</a> で公開されています。\n</div>\n")
     (concat "-- \nこの記事の著作権は、"
 	    (shimbun-server-name shimbun)
-	    "社に帰属します。\n原物は "
+	    "社に帰属します。\n原物は <"
 	    (shimbun-article-base-url shimbun header)
-	    " で公開されています。\n")))
+	    "> で公開されています。\n")))
 
 ;;; Misc Functions
 (defun shimbun-header-insert-and-buffer-string (shimbun header

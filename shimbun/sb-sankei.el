@@ -1,6 +1,6 @@
 ;;; sb-sankei.el --- shimbun backend for the MSN Sankei News -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003-2011 Katsumi Yamaoka
+;; Copyright (C) 2003-2011, 2013 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -275,6 +275,18 @@ title[\t\n ]+end[\t\n ]+-+>"
 	  (when (re-search-forward "[\t\n ]*<div id=\"ad2line\"><ul><li>\\'"
 				   nil t)
 	    (delete-region (match-beginning 0) (match-end 0)))
+	  ;; Remove trailing successive orphaned open tags.
+	  (goto-char (point-max))
+	  (skip-chars-backward "\t\n ")
+	  (setq start (point))
+	  (while (and (re-search-backward "[\t\n ]*<[^/>][^>]*>" nil t)
+		      (or (= (match-end 0) start)
+			  (progn
+			    (goto-char start)
+			    nil)))
+	    (setq start (match-beginning 0)))
+	  (delete-region (point) (point-max))
+	  (insert "\n")
 
 	  (shimbun-remove-orphaned-tag-strips "div\\|span")
 
