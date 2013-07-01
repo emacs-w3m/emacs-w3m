@@ -4435,7 +4435,7 @@ it is possible that the root article has been posted to another group.
 That it returns an invalid url for the article of the group which is
 not being archived in Gmane cannot be helped."
   (save-excursion
-    (let ((fmt "http://news.gmane.org/group/thread=%s/force_load=t")
+    (let ((fmt "http://thread.gmane.org/%s")
 	  (start (point))
 	  (inhibit-point-motion-hooks t)
 	  case-fold-search)
@@ -9990,7 +9990,8 @@ interactive command in the batch mode."
      (list
       ;; url
       (or url
-	  (let ((default (if (w3m-alive-p) 'popup w3m-home-page)))
+	  (let ((default (or (w3m-url-at-point)
+			     (if (w3m-alive-p) 'popup w3m-home-page))))
 	    (setq new (if current-prefix-arg
 			  default
 			(w3m-input-url nil nil default w3m-quick-start

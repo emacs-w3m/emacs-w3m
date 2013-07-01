@@ -1,3 +1,8 @@
+2013-07-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m): Enable it again to fetch Gmane url and others.
+	(w3m-gmane-url-at-point): Update url.
+
 2013-06-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-use-cookies): Default to t.
