@@ -1,4 +1,3 @@
-
 2013-07-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m): Enable it again to fetch Gmane url and others.
