@@ -1,4 +1,3 @@
-
 2013-06-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-footer): Enclose url with <> to ensure that Gnus
