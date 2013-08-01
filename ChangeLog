@@ -1,3 +1,9 @@
+2013-08-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-form.el (w3m-form-parse-and-fontify): Prefer base url if any
+	rather than the current url when constructing urls that form buttons
+	specify.  Thanks to Thorsten Jolitz [emacs-w3m: 12107].
+
 2013-07-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m): Enable it again to fetch Gmane url and others.

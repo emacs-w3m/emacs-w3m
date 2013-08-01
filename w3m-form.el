@@ -646,7 +646,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			  'application/x-www-form-urlencoded)))
 	      (setq form (w3m-form-new
 			  (or method "get")
-			  (w3m-form-normalize-action action w3m-current-url)
+			  (w3m-form-normalize-action
+			   action (or w3m-current-base-url w3m-current-url))
 			  nil
 			  (if accept-charset
 			      (setq accept-charset
