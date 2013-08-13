@@ -1,3 +1,9 @@
+2013-08-13  Kevin Ryde  <user42@zip.com.au>
+
+	* w3mhack.el (w3mhack-module-list): Remove w3mhack-load-file from the
+	modules not to be byte compiled, so that it is byte compiled.
+	(w3mhack-generate-load-file): Remove no-byte-compile from w3m-load.el.
+
 2013-08-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-form.el (w3m-form-parse-and-fontify): Prefer base url if any

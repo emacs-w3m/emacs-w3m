@@ -289,7 +289,7 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 	 (version-specific-modules '("w3m-ems.el" "w3m-xmas.el"))
 	 (ignores;; modules not to be byte-compiled.
 	  (append
-	   (list "w3mhack.el" "w3m-setup.el" w3mhack-load-file)
+	   (list "w3mhack.el" "w3m-setup.el")
 	   (delete (if (featurep 'xemacs) "w3m-xmas.el" "w3m-ems.el")
 		   (copy-sequence version-specific-modules))))
 	 (shimbun-dir (file-name-as-directory shimbun-module-directory))
@@ -979,6 +979,14 @@ NOTE: This function must be called from the top directory."
 	  (goto-char (point-max))
 	  (insert (if (featurep 'xemacs) "\C-l\n" "")
 		  ";;; " w3mhack-load-file " ends here\n"))
+
+	;; Delete "no-byte-compile" so that w3m-load.el will byte compile.
+	;; Byte compiling gives dynamic docstrings which means they aren't
+	;; loaded into memory unless or until required.
+	(goto-char (point-min))
+	(when (re-search-forward "^;; no-byte-compile: t\n" nil t)
+	  (delete-region (match-beginning 0) (match-end 0)))
+
 	(save-buffer)))))
 
 (defun w3mhack-generate-xemacs-load-file (file)
