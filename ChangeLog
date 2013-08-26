@@ -1,3 +1,16 @@
+2013-08-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-retrieve-and-render): Record failed urls as well to the
+	arrived database.  Suggested by Dan Jacobson.
+	(w3m-delete-buffer): Kill form buffers before killing a page buffer.
+	(w3m-delete-buffer): Work around mysterious bug where window positions
+	aren't restored if this command is called by a mouse event.  Reported
+	by Dan Jacobson.
+
+2013-08-26  Dan Jacobson  <jidanni@jidanni.org>
+
+	* w3m.el (w3m-toolbar): Simplify the label used for w3m-history.
+
 2013-08-13  Kevin Ryde  <user42@zip.com.au>
 
 	* w3mhack.el (w3mhack-module-list): Remove w3mhack-load-file from the

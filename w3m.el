@@ -2539,7 +2539,7 @@ nil value means it has not been initialized.")
       [w3m-toolbar-copy-icon w3m-copy-buffer t "Make a Copy of This Session"]
       [w3m-toolbar-weather-icon w3m-weather t "Weather Forecast"]
       [w3m-toolbar-antenna-icon w3m-antenna t "Investigate with Antenna"]
-      [w3m-toolbar-history-icon w3m-history t "Show a History"]
+      [w3m-toolbar-history-icon w3m-history t "History"]
       [w3m-toolbar-db-history-icon w3m-db-history t "View Arrived URLs"]))
   "Toolbar definition for emacs-w3m.")
 
@@ -6211,7 +6211,9 @@ called with t as an argument.  Otherwise, it will be called with nil."
 	    (setq url (w3m-url-strip-authinfo url))
 	    (if type
 		(if (string= type "X-w3m-error/redirection")
-		    (when (w3m-show-redirection-error-information url page-buffer)
+		    (when (w3m-show-redirection-error-information
+			   url page-buffer)
+		      (w3m-arrived-add url nil (current-time) (current-time))
 		      (w3m-message (w3m-message "Cannot retrieve URL: %s"
 						url)))
 		  (let ((modified-time (w3m-last-modified url)))
@@ -6237,6 +6239,7 @@ called with t as an argument.  Otherwise, it will be called with nil."
 		      (unless (get-buffer-window page-buffer)
 			(w3m-message "The content (%s) has been retrieved in %s"
 				     url (buffer-name page-buffer))))))
+	      (w3m-arrived-add url nil (current-time) (current-time))
 	      (ding)
 	      (when (eq (car w3m-current-forms) t)
 		(setq w3m-current-forms (cdr w3m-current-forms)))
@@ -7803,12 +7806,14 @@ passed to the `w3m-quit' function (which see)."
       (w3m-session-deleted-save (list cur))
       (w3m-process-stop cur)
       (w3m-idle-images-show-unqueue cur)
+      (when w3m-use-form
+	(w3m-form-kill-buffer cur))
       (let ((frame-auto-delete nil)
 	    (ignore-window-parameters t))
 	(kill-buffer cur))
-      (when w3m-use-form
-	(w3m-form-kill-buffer cur))
-      (w3m-history-restore-position)
+      ;; A workaround to restore the window positions correctly when
+      ;; this command is called by a mouse event.
+      (run-at-time 0.1 nil #'w3m-history-restore-position)
       (run-hooks 'w3m-delete-buffer-hook)
       (w3m-session-crash-recovery-save)))
   (w3m-select-buffer-update)
