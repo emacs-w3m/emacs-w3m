@@ -4584,17 +4584,21 @@ Also fix URL that fails to have put a separator following a domain name."
   (if (string-match "\\`\\(https?://[-.0-9a-z]+\\)\\([#?].*\\)" url)
       (concat (match-string 1 url) "/" (match-string 2 url))
     (w3m-string-match-url-components url)
-    (cond
-     ((match-beginning 1)
-      url)
-     ((and (file-name-absolute-p url) (file-exists-p url))
-      (concat "file://" url))
-     (feeling-lucky
-      (concat "\
+    (let (replaced)
+      (cond
+       ((match-beginning 1)
+	url)
+       ((and (file-name-absolute-p url) (file-exists-p url))
+	(concat "file://" url))
+       ((and (setq replaced (ignore-errors (w3m-uri-replace url)))
+	     (not (string= url replaced)))
+	replaced)
+       (feeling-lucky
+	(concat "\
 http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
-	      (w3m-url-encode-string url nil t)))
-     (t
-      (concat "http://" url)))))
+		(w3m-url-encode-string url nil t)))
+       (t
+	(concat "http://" url))))))
 
 (defun w3m-input-url (&optional prompt initial default quick-start
 				feeling-lucky no-initial)
@@ -9033,18 +9037,16 @@ It makes the ends of upper and lower three lines visible.  If
   (catch 'found-replacement
     (dolist (elem w3m-uri-replace-alist uri)
       (when (string-match (car elem) uri)
-	(if (setq uri
-		  (cond
-		   ((consp (cdr elem))
-		    (apply (cadr elem) uri (cddr elem)))
-		   ;; Rest conditions are inserted in order to keep
-		   ;; backward compatibility.
-		   ((functionp (cdr elem))
-		    (funcall (cdr elem) uri))
-		   ((stringp (cdr elem))
-		    (w3m-pattern-uri-replace uri (cdr elem)))))
-	    (throw 'found-replacement uri)
-	  (error "Invalid replacement: %s" elem))))))
+	(throw 'found-replacement
+	       (cond
+		((consp (cdr elem))
+		 (apply (cadr elem) uri (cddr elem)))
+		;; Rest conditions are inserted in order to keep
+		;; backward compatibility.
+		((functionp (cdr elem))
+		 (funcall (cdr elem) uri))
+		((stringp (cdr elem))
+		 (w3m-pattern-uri-replace uri (cdr elem)))))))))
 
 (defun w3m-goto-mailto-url (url &optional post-data)
   (let ((before (nreverse (buffer-list)))
@@ -9388,7 +9390,6 @@ invoked in other than a w3m-mode buffer."
 	     (not (w3m-interactive-p)))
     (setq url (w3m-canonicalize-url url)))
   (set-text-properties 0 (length url) nil url)
-  (setq url (w3m-uri-replace url))
   (unless (or (w3m-url-local-p url)
 	      (string-match "\\`about:" url))
     (w3m-string-match-url-components url)

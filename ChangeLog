@@ -1,3 +1,13 @@
+2013-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Prefer uris based on w3m-uri-replace-alist than Google's feeling lucky.
+	Suggested by Michael Heerdegen <michael_heerdegen@web.de>.
+
+	* w3m.el (w3m-canonicalize-url): Run w3m-uri-replace before falling
+	back to Google's feeling lucky.
+	(w3m-uri-replace): Simply return nil if there is no replacement.
+	(w3m-goto-url): Move forward w3m-uri-replace to w3m-canonicalize-url.
+
 2013-08-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-retrieve-and-render): Record failed urls as well to the
