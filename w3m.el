@@ -4586,13 +4586,13 @@ Also fix URL that fails to have put a separator following a domain name."
     (w3m-string-match-url-components url)
     (let (replaced)
       (cond
-       ((match-beginning 1)
-	url)
        ((and (file-name-absolute-p url) (file-exists-p url))
 	(concat "file://" url))
        ((and (setq replaced (ignore-errors (w3m-uri-replace url)))
 	     (not (string= url replaced)))
 	replaced)
+       ((match-beginning 1)
+	url)
        (feeling-lucky
 	(concat "\
 http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="

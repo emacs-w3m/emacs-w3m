@@ -289,7 +289,7 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 	 (version-specific-modules '("w3m-ems.el" "w3m-xmas.el"))
 	 (ignores;; modules not to be byte-compiled.
 	  (append
-	   (list "w3mhack.el" "w3m-setup.el")
+	   (list "w3mhack.el")
 	   (delete (if (featurep 'xemacs) "w3m-xmas.el" "w3m-ems.el")
 		   (copy-sequence version-specific-modules))))
 	 (shimbun-dir (file-name-as-directory shimbun-module-directory))
@@ -612,8 +612,12 @@ to remove some obsolete variables in the first argument VARLIST."
 	;; This system doesn't allow hard links.
 	(setq make-hardlink 'copy-file))
       (dolist (el (cons w3mhack-load-file (w3mhack-module-list)))
-	(funcall make-hardlink
-		 el (expand-file-name (file-name-nondirectory el) temp-dir)))
+	(setq hardlink (expand-file-name (file-name-nondirectory el) temp-dir))
+	(or (file-exists-p hardlink)
+	    ;; w3m-load.el may have been already generated.
+	    (funcall make-hardlink
+		     el (expand-file-name (file-name-nondirectory el)
+					  temp-dir))))
       (with-temp-buffer
 	(let ((standard-output (current-buffer)))
 	  (Custom-make-dependencies temp-dir))

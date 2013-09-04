@@ -1,6 +1,21 @@
+2013-09-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-decode-coding-string-with-priority):
+	Move from w3m-ems.el and w3m-xmas.el.
+	* w3m-ems.el, w3m-xmas.el
+	(w3m-decode-coding-string-with-priority): Move to w3m-util.el.
+	* w3m-proc.el: Don't Fbind it.
+
+	* w3mhack.el (w3mhack-make-package):
+	Avoid making a hard link for w3m-load.el twice.
+
+2013-09-03  Manuel Giraud  <manuel@ledu-giraud.fr>
+
+	* w3m.el (w3m-canonicalize-url): Do uri replace before normal parsing.
+
 2013-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	Prefer uris based on w3m-uri-replace-alist than Google's feeling lucky.
+	Prefer uris based on w3m-uri-replace-alist to Google's feeling lucky.
 	Suggested by Michael Heerdegen <michael_heerdegen@web.de>.
 
 	* w3m.el (w3m-canonicalize-url): Run w3m-uri-replace before falling
