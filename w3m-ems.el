@@ -524,9 +524,12 @@ is for others."
 	     (w3m-update-toolbars)))))
 
 (defcustom w3m-toolbar-use-single-image-per-icon nil
-  "Non-nil means use single image (named possibly *-up) per icon.
+  "Non-nil means use single image (named *-up) per icon.
 If it is nil, subsidiaries, e.g., *-down and *-disabled, if any, are
-used together."
+used together.
+
+Note that this option will be ignored if running Emacs built with Gtk+
+and every button will use a single icon image."
   :group 'w3m
   :type 'boolean
   :set (lambda (symbol value)
@@ -632,7 +635,8 @@ Files of types that Emacs does not support are ignored."
 			      :ascent 'center
 			      (when (eq (cdr up) 'xpm)
 				xpm-props)))
-	      (if (or w3m-toolbar-use-single-image-per-icon
+	      (if (or (boundp 'gtk-version-string)
+		      w3m-toolbar-use-single-image-per-icon
 		      (not (or down disabled)))
 		  (set icon up)
 		(when down
