@@ -2762,7 +2762,18 @@ db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?\\'\
   "Regexp matching urls which aren't stored in the history.")
 
 (defvar w3m-mode-map nil "Keymap for emacs-w3m buffers.")
+
+(defvar w3m-url-completion-map (let ((map (make-sparse-keymap)))
+				 (define-key map " " 'self-insert-command)
+				 map)
+  "Keymap that overrides the default keymap when `w3m-input-url' runs.
+By default the SPC key is bound to simply a space.  If you want it to
+complete a url as well as the TAB key, add this to `w3m-init-file':
+
+\(define-key w3m-url-completion-map \" \" 'minibuffer-complete-word)")
+
 (defvar w3m-link-map nil "Keymap used on links.")
+
 (defvar w3m-doc-view-map nil
   "Keymap used in `doc-view-mode' that emacs-w3m launches.
 `doc-view-mode-map' gets to be its parent keymap.")
@@ -4642,43 +4653,41 @@ http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
 				       (beginning-of-line)
 				       (if (looking-at "[a-z]+:\\(?:/+\\)?")
 					   (goto-char (match-end 0)))))))
-		      (ofunc (lookup-key minibuffer-local-completion-map " ")))
-		  (when feeling-lucky
-		    (define-key minibuffer-local-completion-map " "
-		      'self-insert-command))
-		  (unwind-protect
-		      (completing-read
-		       (if prompt
-			   (if default
-			       (progn
-				 (when (string-match " *: *\\'" prompt)
-				   (setq prompt
-					 (substring prompt 0
-						    (match-beginning 0))))
-				 (concat prompt " (default "
-					 (cond ((equal default "about:blank")
-						"BLANK")
-					       ((equal default w3m-home-page)
-						"HOME")
-					       ((equal default w3m-current-url)
-						"CURRENT")
-					       (t default))
-					 "): "))
-			     prompt)
-			 (if default
-			     (format "URL %s(default %s): "
-				     (if feeling-lucky "or Keyword " "")
-				     (if (stringp default)
-					 (cond ((string= default "about:blank")
-						"BLANK")
-					       ((string= default w3m-home-page)
-						"HOME")
-					       (t default))
-				       (prin1-to-string default)))
-			   (if feeling-lucky "URL or Keyword: " "URL: ")))
-		       'w3m-url-completion nil nil initial
-		       'w3m-input-url-history default)
-		    (define-key minibuffer-local-completion-map " " ofunc))))
+		      (keymap (copy-keymap w3m-url-completion-map))
+		      (minibuffer-completion-table 'w3m-url-completion)
+		      (minibuffer-completion-predicate nil)
+		      (minibuffer-completion-confirm nil))
+		  (set-keymap-parent keymap minibuffer-local-completion-map)
+		  (read-from-minibuffer
+		   (if prompt
+		       (if default
+			   (progn
+			     (when (string-match " *: *\\'" prompt)
+			       (setq prompt
+				     (substring prompt 0
+						(match-beginning 0))))
+			     (concat prompt " (default "
+				     (cond ((equal default "about:blank")
+					    "BLANK")
+					   ((equal default w3m-home-page)
+					    "HOME")
+					   ((equal default w3m-current-url)
+					    "CURRENT")
+					   (t default))
+				     "): "))
+			 prompt)
+		     (if default
+			 (format "URL %s(default %s): "
+				 (if feeling-lucky "or Keyword " "")
+				 (if (stringp default)
+				     (cond ((string= default "about:blank")
+					    "BLANK")
+					   ((string= default w3m-home-page)
+					    "HOME")
+					   (t default))
+				   (prin1-to-string default)))
+		       (if feeling-lucky "URL or Keyword: " "URL: ")))
+		   initial keymap nil 'w3m-input-url-history default)))
       (unless (string-equal url "")
 	(if (stringp url)
 	    (progn
