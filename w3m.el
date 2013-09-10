@@ -4688,7 +4688,8 @@ http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
 				   (prin1-to-string default)))
 		       (if feeling-lucky "URL or Keyword: " "URL: ")))
 		   initial keymap nil 'w3m-input-url-history default)))
-      (unless (string-equal url "")
+      (if (string-equal url "")
+	  (or default "")
 	(if (stringp url)
 	    (progn
 	      ;; remove duplication
@@ -5896,9 +5897,13 @@ NO-CHACHE (which the prefix argument gives when called interactively)
 specifies not using the cached data."
   (interactive (list nil nil current-prefix-arg))
   (unless url
-    (setq url (w3m-input-url "Download URL: " nil
-			     (or (w3m-active-region-or-url-at-point) "")
-			     nil nil 'no-initial)))
+    (while (string-equal (setq url (w3m-input-url
+				    "Download URL: " nil
+				    (or (w3m-active-region-or-url-at-point) "")
+				    nil nil 'no-initial))
+			 "")
+      (message "A url is required")
+      (sit-for 1)))
   (unless filename
     (let ((basename (file-name-nondirectory (w3m-url-strip-query url))))
       (when (string-match "^[\t ]*$" basename)
@@ -9974,8 +9979,9 @@ nil, \(default t), you will be prompted for a URL (which defaults to
 `popup' meaning to pop to an existing emacs-w3m buffer up).
 
 In addition, if the prefix argument is given or you enter the empty
-string for the prompt, it will visit the home page specified by the
-`w3m-home-page' variable or the \"about:\" page.
+string for the prompt, this command will visit a url at the point, or
+the home page the `w3m-home-page' variable specifies, or the \"about:\"
+page.
 
 You can also run this command in the batch mode as follows:
 
