@@ -54,6 +54,11 @@
       "すべてのページに w3m が扱える name アンカーを追加します")
      ""
      w3m-filter-add-name-anchors)
+    (t
+     ("Substitute disabled attr with readonly attr in forms"
+      "フォーム中の disabled 属性を readonly 属性で代用します")
+     ""
+     w3m-filter-subst-disabled-with-readonly)
     (nil
      ("Render <tfoot>...</tfoot> after <tbody>...</tbody>"
       "テーブル内の <tfoot> を <tbody> の後に描画します")
@@ -387,6 +392,26 @@ href=\"#\\([a-z][-.0-9:_a-z]*\\)\"" nil t)
 	      name (match-string 1))
 	(insert "<a name=" name "></a>")
 	(goto-char (+ nd (- (point) st)))))))
+
+(defun w3m-filter-subst-disabled-with-readonly (url)
+  ;;  cf. [emacs-w3m:12146]
+  "Substitute disabled attr with readonly attr in forms."
+  (let ((case-fold-search t) st nd)
+    (goto-char (point-min))
+    (when (and (re-search-forward "<form[\t\n ]" nil t)
+	       (w3m-end-of-tag "form"))
+      (narrow-to-region (match-beginning 0) (match-end 0))
+      (goto-char (point-min))
+      (while (re-search-forward "<[a-z]+\\(?:[\t\n ]+[a-z]+=\"[^\">]*\"\\)*\
+\[\t\n ]+\\(disabled=\"[^\">]+\"\\)[^>]*>" nil t)
+	(setq st (match-beginning 1)
+	      nd (match-end 1))
+	(when (string-match
+	       "[\t\n ]id=\"[^\">]+\""
+	       (buffer-substring (match-beginning 0) (match-end 0)))
+	  (delete-region (goto-char st) nd)
+	  (insert "readonly=\"readonly\"")))
+      (widen))))
 
 (defun w3m-filter-fix-tfoot-rendering (url &optional recursion)
   "Render <tfoot>...</tfoot> after <tbody>...</tbody>."

@@ -1418,7 +1418,7 @@ nil means don't recenter, let the display follow point in the
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-use-filter nil
+(defcustom w3m-use-filter t
   "*Non-nil means use filter programs to convert web contents.
 See also `w3m-filter-configuration'."
   :group 'w3m
@@ -11141,8 +11141,10 @@ FROM-COMMAND is defined in `w3m-minor-mode-map' with the same key in
   "Show sending form hint when the cursor is in a form."
   (let ((keys (where-is-internal 'w3m-submit-form)))
     (when (and (w3m-submit (point)) keys)
-      (w3m-message "Press %s to send the current form."
-		   (key-description (car keys))))))
+      (if (get-text-property (point) 'w3m-form-readonly)
+	  (w3m-message "This form is currently not editable")
+	(w3m-message "Press %s to send the current form"
+		     (key-description (car keys)))))))
 
 (provide 'w3m)
 

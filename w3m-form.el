@@ -71,7 +71,7 @@ Files to save text are stored in the directory specified by the
 		 (const :tag "No expire" nil)))
 
 (defcustom w3m-form-textarea-file-coding-system
-  (cond ((or (featurep 'un-define) 
+  (cond ((or (featurep 'un-define)
 	     (fboundp 'utf-translate-cjk-mode))
 	 'utf-8)
 	((equal "Japanese" w3m-language)
@@ -109,6 +109,19 @@ Files to save text are stored in the directory specified by the
   :group 'w3m-face)
 ;; backward-compatibility alias
 (put 'w3m-form-face 'face-alias 'w3m-form)
+
+(defface w3m-form-inactive
+  ;; A copy of the `shadow' face.
+  '((((class color grayscale) (min-colors 88) (background light))
+     :foreground "grey50")
+    (((class color grayscale) (min-colors 88) (background dark))
+     :foreground "grey70")
+    (((class color) (min-colors 8) (background light))
+     :foreground "green")
+    (((class color) (min-colors 8) (background dark))
+     :foreground "yellow"))
+  "Face used to dim inactive forms."
+  :group 'w3m-face)
 
 ;;; Local variables
 (defvar w3m-form-input-textarea-buffer nil)
@@ -578,7 +591,8 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
 		    (delete-char 1)
 		    (setq end (point))
 		    (insert "]"))
-		  (w3m-add-face-property start end 'w3m-form)
+		  (w3m-add-face-property
+		   start end (if readonly 'w3m-form-inactive 'w3m-form))
 		  (add-text-properties
 		   start end
 		   `(w3m-form-field-id
@@ -749,10 +763,11 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		  (w3m-form-put form id
 				name
 				(decode-coding-string
-				 (w3m-url-decode-string value
-							w3m-current-coding-system)
+				 (w3m-url-decode-string
+				  value	w3m-current-coding-system)
 				 w3m-output-coding-system))
-		(setq textareas (cons (list textareanumber form id name readonly)
+		(setq textareas (cons (list textareanumber form id
+					    name readonly)
 				      textareas)))
 	      (when w3m-current-url
 		(setq filename (expand-file-name
@@ -763,7 +778,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 				w3m-form-textarea-directory))
 		(setq w3m-form-textarea-files
 		      (cons filename w3m-form-textarea-files)))
-	      (w3m-add-face-property start end 'w3m-form)
+	      (w3m-add-face-property
+	       start end (if readonly 'w3m-form-inactive 'w3m-form))
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
@@ -800,7 +816,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					       w3m-form-download)
 		   w3m-anchor-sequence ,abs-hseq))))
 	     ((string= type "password")
-	      (w3m-add-face-property start end 'w3m-form)
+	      (w3m-add-face-property
+	       start end (if readonly 'w3m-form-inactive 'w3m-form))
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
@@ -862,7 +879,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			    id
 			    name
 			    (or value (w3m-form-get form id)))
-	      (w3m-add-face-property start end 'w3m-form)
+	      (w3m-add-face-property
+	       start end (if readonly 'w3m-form-inactive 'w3m-form))
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
@@ -963,7 +981,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 (defun w3m-form-input (form id name type width maxlength value)
   (let ((fvalue (w3m-form-get form id)))
     (if (get-text-property (point) 'w3m-form-readonly)
-	(message "READONLY %s: %s" (upcase type) fvalue)
+	(w3m-message "READONLY %s: %s" (upcase type) fvalue)
       (save-excursion
 	(let ((input (save-excursion
 		       (read-from-minibuffer (concat (upcase type) ": ") fvalue)))
@@ -1298,81 +1316,85 @@ selected rather than \(as usual\) some other window.  See
 	 (file (get-text-property (point) 'w3m-form-file-name))
 	 (coding (w3m-form-get-coding-system (w3m-form-charlst form)))
 	 (readonly (nth 3 info))
-	 (backup-p (and (not readonly)
-			(w3m-form-use-textarea-backup-p)))
-	 buffer)
-    (setq w3m-form-use-textarea-backup-p backup-p)
-    (when backup-p
-      (add-hook 'kill-emacs-hook 'w3m-form-textarea-file-cleanup)
-      (let ((dir (file-chase-links
-		  (expand-file-name w3m-form-textarea-directory))))
-	(unless (and (file-exists-p dir) (file-directory-p dir))
-	  (make-directory dir))))
-    (setq buffer
-	  (catch 'detect-buffer
-	    (save-current-buffer
-	      (dolist (buffer (buffer-list))
-		(set-buffer buffer)
-		(when (and w3m-form-input-textarea-mode
-			   (eq w3m-form-input-textarea-buffer w3mbuffer)
-			   (string= w3m-form-input-textarea-file file))
-		  (throw 'detect-buffer (cons t buffer)))))
-	    (generate-new-buffer "*w3m form textarea*")))
-    (unless (consp buffer)
-      (when (and backup-p (file-exists-p file) (file-readable-p file))
-	(with-temp-buffer
-	  (let ((buffer-file-coding-system w3m-form-textarea-file-coding-system)
-		(coding-system-for-read w3m-form-textarea-file-coding-system))
-	    (insert-file-contents file))
-	  (let ((before (buffer-string)))
-	    (when (unless (w3m-form-textarea-same-check value before)
-		    (save-window-excursion
-		      (set-window-buffer (selected-window) (current-buffer))
-		      (goto-char (abs (w3m-compare-strings
-				       before 0 (length before)
-				       value 0 (length value))))
-		      (condition-case nil
-			  (y-or-n-p
-			   "The saved text for this form exists. Use it? ")
-			(quit
-			 (kill-buffer buffer)
-			 (error "Abort textarea editing")))))
-	      (setq value before)))))
-      (with-current-buffer buffer
-	(insert value)
-	(set-buffer-modified-p nil)
-	(when readonly (setq buffer-read-only t))
-	(goto-char (point-min))
-	(forward-line (1- (nth 2 info)))
-	(w3m-form-input-textarea-mode-setup w3mbuffer)
-	(setq w3m-form-input-textarea-form form
-	      w3m-form-input-textarea-hseq hseq
-	      w3m-form-input-textarea-buffer w3mbuffer
-	      w3m-form-input-textarea-point point
-	      w3m-form-input-textarea-wincfg wincfg
-	      w3m-form-input-textarea-file file
-	      w3m-form-input-textarea-coding-system coding
-	      w3m-form-use-textarea-backup-p backup-p)))
-    (if (and (consp buffer)
-	     (get-buffer-window (cdr buffer)))
-	;; same frame only
-	(select-window (get-buffer-window (cdr buffer)))
-      ;; Use the whole current window for the textarea when a user added
-      ;; the buffer name "*w3m form textarea*" to `same-window-buffer-names'
-      ;; (that is available only in Emacs).
-      ;; cf. http://article.gmane.org/gmane.emacs.w3m/7797
-      (unless (w3m-same-window-p (buffer-name (if (consp buffer)
-						  (cdr buffer)
-						buffer)))
-	(condition-case nil
-	    (split-window cur-win (if (> size 0) size window-min-height))
-	  (error
-	   (delete-other-windows)
-	   (split-window cur-win (- (window-height cur-win)
-				    w3m-form-input-textarea-buffer-lines))))
-	(select-window (next-window)))
-      (let ((pop-up-windows nil))
-	(switch-to-buffer (if (consp buffer) (cdr buffer) buffer))))))
+	 backup-p buffer)
+    (if readonly
+	(w3m-message "READONLY TEXT")
+      (setq backup-p (and (not readonly)
+			  (w3m-form-use-textarea-backup-p))
+	    w3m-form-use-textarea-backup-p backup-p)
+      (when backup-p
+	(add-hook 'kill-emacs-hook 'w3m-form-textarea-file-cleanup)
+	(let ((dir (file-chase-links
+		    (expand-file-name w3m-form-textarea-directory))))
+	  (unless (and (file-exists-p dir) (file-directory-p dir))
+	    (make-directory dir))))
+      (setq buffer
+	    (catch 'detect-buffer
+	      (save-current-buffer
+		(dolist (buffer (buffer-list))
+		  (set-buffer buffer)
+		  (when (and w3m-form-input-textarea-mode
+			     (eq w3m-form-input-textarea-buffer w3mbuffer)
+			     (string= w3m-form-input-textarea-file file))
+		    (throw 'detect-buffer (cons t buffer)))))
+	      (generate-new-buffer "*w3m form textarea*")))
+      (unless (consp buffer)
+	(when (and backup-p (file-exists-p file) (file-readable-p file))
+	  (with-temp-buffer
+	    (let ((buffer-file-coding-system
+		   w3m-form-textarea-file-coding-system)
+		  (coding-system-for-read
+		   w3m-form-textarea-file-coding-system))
+	      (insert-file-contents file))
+	    (let ((before (buffer-string)))
+	      (when (unless (w3m-form-textarea-same-check value before)
+		      (save-window-excursion
+			(set-window-buffer (selected-window) (current-buffer))
+			(goto-char (abs (w3m-compare-strings
+					 before 0 (length before)
+					 value 0 (length value))))
+			(condition-case nil
+			    (y-or-n-p
+			     "The saved text for this form exists. Use it? ")
+			  (quit
+			   (kill-buffer buffer)
+			   (error "Abort textarea editing")))))
+		(setq value before)))))
+	(with-current-buffer buffer
+	  (insert value)
+	  (set-buffer-modified-p nil)
+	  (when readonly (setq buffer-read-only t))
+	  (goto-char (point-min))
+	  (forward-line (1- (nth 2 info)))
+	  (w3m-form-input-textarea-mode-setup w3mbuffer)
+	  (setq w3m-form-input-textarea-form form
+		w3m-form-input-textarea-hseq hseq
+		w3m-form-input-textarea-buffer w3mbuffer
+		w3m-form-input-textarea-point point
+		w3m-form-input-textarea-wincfg wincfg
+		w3m-form-input-textarea-file file
+		w3m-form-input-textarea-coding-system coding
+		w3m-form-use-textarea-backup-p backup-p)))
+      (if (and (consp buffer)
+	       (get-buffer-window (cdr buffer)))
+	  ;; same frame only
+	  (select-window (get-buffer-window (cdr buffer)))
+	;; Use the whole current window for the textarea when a user added
+	;; the buffer name "*w3m form textarea*" to `same-window-buffer-names'
+	;; (that is available only in Emacs).
+	;; cf. http://article.gmane.org/gmane.emacs.w3m/7797
+	(unless (w3m-same-window-p (buffer-name (if (consp buffer)
+						    (cdr buffer)
+						  buffer)))
+	  (condition-case nil
+	      (split-window cur-win (if (> size 0) size window-min-height))
+	    (error
+	     (delete-other-windows)
+	     (split-window cur-win (- (window-height cur-win)
+				      w3m-form-input-textarea-buffer-lines))))
+	  (select-window (next-window)))
+	(let ((pop-up-windows nil))
+	  (switch-to-buffer (if (consp buffer) (cdr buffer) buffer)))))))
 
 (defun w3m-form-use-textarea-backup-p ()
   (and w3m-form-use-textarea-backup
@@ -1827,6 +1849,17 @@ selected rather than \(as usual\) some other window.  See
 	  (setq files (cons file files))))
       files)))
 
+(defvar w3m-form-last-position nil)
+
+(defun w3m-form-restore-last-position ()
+  "Restore positions after fontifying a page containing forms."
+  (when (> (point-max) (nth 0 w3m-form-last-position))
+    (set-window-start nil (goto-char (nth 0 w3m-form-last-position)))
+    (set-window-hscroll nil (nth 1 w3m-form-last-position))
+    (forward-line (max 0 (1- (nth 2 w3m-form-last-position))))
+    (move-to-column (nth 3 w3m-form-last-position)))
+  (remove-hook 'w3m-fontify-after-hook 'w3m-form-restore-last-position))
+
 (defun w3m-form-submit (form &optional id name value new-session download)
   (if (w3m-anchor (point))
       ;; cf SA17565
@@ -1834,11 +1867,14 @@ selected rather than \(as usual\) some other window.  See
     (when (and id name
 	       (> (length name) 0))
       (w3m-form-put form id name value))
-    (let* ((orig-url w3m-current-url)
-	   (url (or (w3m-form-action form)
-		    (if (string-match "\\?" w3m-current-url)
-			(substring w3m-current-url 0 (match-beginning 0))
-		      w3m-current-url))))
+    (let ((orig-url w3m-current-url)
+	  (url (or (w3m-form-action form)
+		   (if (string-match "\\?" w3m-current-url)
+		       (substring w3m-current-url 0 (match-beginning 0))
+		     w3m-current-url))))
+      (setq w3m-form-last-position (list (window-start) (window-hscroll)
+					 (count-lines (window-start) (point))
+					 (current-column)))
       (setq w3m-form-textarea-post-files
 	    (w3m-form-submit-get-textarea-files form))
       (cond ((and (not (string= url orig-url))
@@ -1852,10 +1888,12 @@ selected rather than \(as usual\) some other window.  See
 		 ;; we use the `post' method according to the proposal
 		 ;; of RFC2070.
 		 (eq 'multipart/form-data (w3m-form-enctype form)))
-	     (if download 
+	     (if download
 		 (funcall 'w3m-download
 			  url nil nil nil
 			  (w3m-form-make-form-data form))
+	       (add-hook 'w3m-fontify-after-hook
+			 'w3m-form-restore-last-position)
 	       (funcall (if new-session
 			    'w3m-goto-url-new-session
 			  'w3m-goto-url)
@@ -1863,12 +1901,14 @@ selected rather than \(as usual\) some other window.  See
 			(w3m-form-make-form-data form)
 			w3m-current-url)))
 	    ((eq 'get (w3m-form-method form))
-	     (funcall (if download 
+	     (funcall (if download
 			  'w3m-download
+			(add-hook 'w3m-fontify-after-hook
+				  'w3m-form-restore-last-position)
 			(if new-session
 			    'w3m-goto-url-new-session
 			  'w3m-goto-url))
-		      (concat (w3m-url-strip-query url) 
+		      (concat (w3m-url-strip-query url)
 			      "?" (w3m-form-make-form-data form))))
 	    (t
 	     (w3m-message "This form's method has not been supported: %s"

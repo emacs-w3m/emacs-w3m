@@ -1,3 +1,24 @@
+2013-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make disabled forms not editable.  [emacs-w3m:12146]
+
+	* w3m.el (w3m-use-filter): Default to t.
+	(w3m-show-form-hint): Notice form is inactive.
+
+	* w3m-filter.el (w3m-filter-subst-disabled-with-readonly): New function
+	that substitutes the `disabled' attribute with the `readonly' attribute
+	in an html source so as to enable w3m to handle.
+	(w3m-filter-configuration): Add it.
+
+	* w3m-form.el (w3m-form-inactive): New face.
+	(w3m-fontify-textareas, w3m-form-parse-and-fontify): Use it if text is
+	not editable.
+	(w3m-form-input): Use w3m-message rather than message.
+	(w3m-form-input-textarea): Don't allow editing text if it is disabled.
+	(w3m-form-last-position): New variable.
+	(w3m-form-restore-last-position): New function.
+	(w3m-form-submit): Add it to w3m-fontify-after-hook.
+
 2013-09-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-input-url): Default to `default' or "".
