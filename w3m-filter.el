@@ -398,8 +398,8 @@ href=\"#\\([a-z][-.0-9:_a-z]*\\)\"" nil t)
   "Substitute disabled attr with readonly attr in forms."
   (let ((case-fold-search t) st nd)
     (goto-char (point-min))
-    (when (and (re-search-forward "<form[\t\n ]" nil t)
-	       (w3m-end-of-tag "form"))
+    (while (and (re-search-forward "<form[\t\n ]" nil t)
+		(w3m-end-of-tag "form"))
       (narrow-to-region (match-beginning 0) (match-end 0))
       (goto-char (point-min))
       (while (re-search-forward "<[a-z]+\\(?:[\t\n ]+[a-z]+=\"[^\">]*\"\\)*\
@@ -411,6 +411,7 @@ href=\"#\\([a-z][-.0-9:_a-z]*\\)\"" nil t)
 	       (buffer-substring (match-beginning 0) (match-end 0)))
 	  (delete-region (goto-char st) nd)
 	  (insert "readonly=\"readonly\"")))
+      (goto-char (point-max))
       (widen))))
 
 (defun w3m-filter-fix-tfoot-rendering (url &optional recursion)
