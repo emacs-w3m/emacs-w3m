@@ -1249,29 +1249,50 @@ Minor mode to edit form textareas of w3m.
 		(not w3m-form-input-textarea-mode)))
     (run-hooks 'w3m-form-input-textarea-mode-hook)))
 
-(defun w3m-form-input-textarea-mode-setup (caller-buffer)
-  (funcall (if (functionp w3m-form-textarea-edit-mode)
-	       w3m-form-textarea-edit-mode
-	     (or (when (buffer-live-p caller-buffer)
-		   (with-current-buffer caller-buffer
-		     (save-match-data
-		       (catch 'found-mode
-			 (dolist (elem w3m-form-textarea-edit-mode)
-			   (when (if (stringp (car elem))
-				     (string-match (car elem)
-						   w3m-current-url)
-				   (if (functionp (car elem))
-				       (funcall (car elem))
-				     (eval (car elem))))
-			     (throw 'found-mode (cdr elem))))))))
-		 'text-mode)))
-  (w3m-form-input-textarea-mode 1)
-  (message "%s"
-	   (substitute-command-keys "Type \
+(defvar view-mode-map)
+(defun w3m-form-input-textarea-mode-setup (caller-buffer readonly)
+  (funcall (or (and readonly
+		    'view-mode)
+	       (and (functionp w3m-form-textarea-edit-mode)
+		    w3m-form-textarea-edit-mode)
+	       (when (buffer-live-p caller-buffer)
+		 (with-current-buffer caller-buffer
+		   (save-match-data
+		     (catch 'found-mode
+		       (dolist (elem w3m-form-textarea-edit-mode)
+			 (when (if (stringp (car elem))
+				   (string-match (car elem)
+						 w3m-current-url)
+				 (if (functionp (car elem))
+				     (funcall (car elem))
+				   (eval (car elem))))
+			   (throw 'found-mode (cdr elem))))))))
+	       'text-mode))
+  (if readonly
+      (let ((keymap (copy-keymap view-mode-map)))
+	(set (make-local-variable 'minor-mode-map-alist)
+	     (list (cons view-mode keymap)))
+	(dolist (key (nconc (where-is-internal 'w3m-form-input-textarea-set
+					       w3m-form-input-textarea-map)
+			    (where-is-internal 'w3m-form-input-textarea-exit
+					       w3m-form-input-textarea-map)))
+	  (define-key keymap key 'w3m-form-input-textarea-exit))
+	(dolist (command '(View-exit View-exit-and-edit View-kill-and-leave
+				     View-leave View-quit View-quit-all))
+	  (substitute-key-definition command
+				     'w3m-form-input-textarea-exit keymap))
+	(w3m-message (substitute-command-keys "READONLY TEXT; type \
+`\\<w3m-form-input-textarea-map>\\[w3m-form-input-textarea-exit]' \
+to quit textarea")))
+    (w3m-form-input-textarea-mode 1)
+    (w3m-message "%s"
+		 (if readonly "\
+This text is not editable because the form has disabled or readonly attribute"
+		   (substitute-command-keys "Type \
 `\\<w3m-form-input-textarea-map>\\[w3m-form-input-textarea-set]' to exit \
 textarea, or type \
 `\\<w3m-form-input-textarea-map>\\[w3m-form-input-textarea-exit]' to quit \
-textarea")))
+textarea")))))
 
 (eval-and-compile
   (defalias 'w3m-same-window-p
@@ -1316,85 +1337,85 @@ selected rather than \(as usual\) some other window.  See
 	 (file (get-text-property (point) 'w3m-form-file-name))
 	 (coding (w3m-form-get-coding-system (w3m-form-charlst form)))
 	 (readonly (nth 3 info))
-	 backup-p buffer)
-    (if readonly
-	(w3m-message "READONLY TEXT")
-      (setq backup-p (and (not readonly)
-			  (w3m-form-use-textarea-backup-p))
-	    w3m-form-use-textarea-backup-p backup-p)
-      (when backup-p
-	(add-hook 'kill-emacs-hook 'w3m-form-textarea-file-cleanup)
-	(let ((dir (file-chase-links
-		    (expand-file-name w3m-form-textarea-directory))))
-	  (unless (and (file-exists-p dir) (file-directory-p dir))
-	    (make-directory dir))))
-      (setq buffer
-	    (catch 'detect-buffer
-	      (save-current-buffer
-		(dolist (buffer (buffer-list))
-		  (set-buffer buffer)
-		  (when (and w3m-form-input-textarea-mode
-			     (eq w3m-form-input-textarea-buffer w3mbuffer)
-			     (string= w3m-form-input-textarea-file file))
-		    (throw 'detect-buffer (cons t buffer)))))
-	      (generate-new-buffer "*w3m form textarea*")))
-      (unless (consp buffer)
-	(when (and backup-p (file-exists-p file) (file-readable-p file))
-	  (with-temp-buffer
-	    (let ((buffer-file-coding-system
-		   w3m-form-textarea-file-coding-system)
-		  (coding-system-for-read
-		   w3m-form-textarea-file-coding-system))
-	      (insert-file-contents file))
-	    (let ((before (buffer-string)))
-	      (when (unless (w3m-form-textarea-same-check value before)
-		      (save-window-excursion
-			(set-window-buffer (selected-window) (current-buffer))
-			(goto-char (abs (w3m-compare-strings
-					 before 0 (length before)
-					 value 0 (length value))))
-			(condition-case nil
-			    (y-or-n-p
-			     "The saved text for this form exists. Use it? ")
-			  (quit
-			   (kill-buffer buffer)
-			   (error "Abort textarea editing")))))
-		(setq value before)))))
-	(with-current-buffer buffer
-	  (insert value)
+	 (backup-p (and (not readonly)
+			(w3m-form-use-textarea-backup-p)))
+	 buffer)
+    (setq w3m-form-use-textarea-backup-p backup-p)
+    (when backup-p
+      (add-hook 'kill-emacs-hook 'w3m-form-textarea-file-cleanup)
+      (let ((dir (file-chase-links
+		  (expand-file-name w3m-form-textarea-directory))))
+	(unless (and (file-exists-p dir) (file-directory-p dir))
+	  (make-directory dir))))
+    (setq buffer
+	  (catch 'detect-buffer
+	    (save-current-buffer
+	      (dolist (buffer (buffer-list))
+		(set-buffer buffer)
+		(when (and w3m-form-input-textarea-mode
+			   (eq w3m-form-input-textarea-buffer w3mbuffer)
+			   (string= w3m-form-input-textarea-file file))
+		  (throw 'detect-buffer (cons t buffer)))))
+	    (generate-new-buffer "*w3m form textarea*")))
+    (unless (consp buffer)
+      (when (and backup-p (file-exists-p file) (file-readable-p file))
+	(with-temp-buffer
+	  (let ((buffer-file-coding-system w3m-form-textarea-file-coding-system)
+		(coding-system-for-read w3m-form-textarea-file-coding-system))
+
+	    (insert-file-contents file))
+	  (let ((before (buffer-string)))
+	    (when (unless (w3m-form-textarea-same-check value before)
+		    (save-window-excursion
+		      (set-window-buffer (selected-window) (current-buffer))
+		      (goto-char (abs (w3m-compare-strings
+				       before 0 (length before)
+				       value 0 (length value))))
+		      (condition-case nil
+			  (y-or-n-p
+			   "The saved text for this form exists. Use it? ")
+			(quit
+			 (kill-buffer buffer)
+			 (error "Abort textarea editing")))))
+	      (setq value before)))))
+      (with-current-buffer buffer
+	(insert value)
+	(set-buffer-modified-p nil)
+	(when readonly
+	  (w3m-add-face-property (point-min) (point-max) 'w3m-form-inactive)
 	  (set-buffer-modified-p nil)
-	  (when readonly (setq buffer-read-only t))
-	  (goto-char (point-min))
-	  (forward-line (1- (nth 2 info)))
-	  (w3m-form-input-textarea-mode-setup w3mbuffer)
-	  (setq w3m-form-input-textarea-form form
-		w3m-form-input-textarea-hseq hseq
-		w3m-form-input-textarea-buffer w3mbuffer
-		w3m-form-input-textarea-point point
-		w3m-form-input-textarea-wincfg wincfg
-		w3m-form-input-textarea-file file
-		w3m-form-input-textarea-coding-system coding
-		w3m-form-use-textarea-backup-p backup-p)))
-      (if (and (consp buffer)
-	       (get-buffer-window (cdr buffer)))
-	  ;; same frame only
-	  (select-window (get-buffer-window (cdr buffer)))
-	;; Use the whole current window for the textarea when a user added
-	;; the buffer name "*w3m form textarea*" to `same-window-buffer-names'
-	;; (that is available only in Emacs).
-	;; cf. http://article.gmane.org/gmane.emacs.w3m/7797
-	(unless (w3m-same-window-p (buffer-name (if (consp buffer)
-						    (cdr buffer)
-						  buffer)))
-	  (condition-case nil
-	      (split-window cur-win (if (> size 0) size window-min-height))
-	    (error
-	     (delete-other-windows)
-	     (split-window cur-win (- (window-height cur-win)
-				      w3m-form-input-textarea-buffer-lines))))
-	  (select-window (next-window)))
-	(let ((pop-up-windows nil))
-	  (switch-to-buffer (if (consp buffer) (cdr buffer) buffer)))))))
+	  (setq buffer-read-only t))
+	(goto-char (point-min))
+	(forward-line (1- (nth 2 info)))
+	(w3m-form-input-textarea-mode-setup w3mbuffer readonly)
+	(setq w3m-form-input-textarea-form form
+	      w3m-form-input-textarea-hseq hseq
+	      w3m-form-input-textarea-buffer w3mbuffer
+	      w3m-form-input-textarea-point point
+	      w3m-form-input-textarea-wincfg wincfg
+	      w3m-form-input-textarea-file file
+	      w3m-form-input-textarea-coding-system coding
+	      w3m-form-use-textarea-backup-p backup-p)))
+    (if (and (consp buffer)
+	     (get-buffer-window (cdr buffer)))
+	;; same frame only
+	(select-window (get-buffer-window (cdr buffer)))
+      ;; Use the whole current window for the textarea when a user added
+      ;; the buffer name "*w3m form textarea*" to `same-window-buffer-names'
+      ;; (that is available only in Emacs).
+      ;; cf. http://article.gmane.org/gmane.emacs.w3m/7797
+      (unless (w3m-same-window-p (buffer-name (if (consp buffer)
+						  (cdr buffer)
+						buffer)))
+	(condition-case nil
+	    (split-window cur-win (if (> size 0) size window-min-height))
+	  (error
+	   (delete-other-windows)
+	   (split-window cur-win (- (window-height cur-win)
+				    w3m-form-input-textarea-buffer-lines))))
+	(select-window (next-window)))
+      (let ((pop-up-windows nil))
+	(switch-to-buffer (if (consp buffer) (cdr buffer) buffer))))))
 
 (defun w3m-form-use-textarea-backup-p ()
   (and w3m-form-use-textarea-backup

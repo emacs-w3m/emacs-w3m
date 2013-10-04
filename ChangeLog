@@ -1,3 +1,10 @@
+2013-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-form.el (w3m-form-input-textarea-mode-setup): Use view-mode to
+	show disabled or readonly textarea.
+	(w3m-form-input-textarea): Revert last change; use w3m-form-inactive
+	face to show disabled or readonly textarea.
+
 2013-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make disabled forms not editable.  [emacs-w3m:12146]
