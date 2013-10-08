@@ -1271,7 +1271,7 @@ Minor mode to edit form textareas of w3m.
   (if readonly
       (let ((keymap (copy-keymap view-mode-map)))
 	(set (make-local-variable 'minor-mode-map-alist)
-	     (list (cons view-mode keymap)))
+	     (list (cons 'view-mode keymap)))
 	(dolist (key (nconc (where-is-internal 'w3m-form-input-textarea-set
 					       w3m-form-input-textarea-map)
 			    (where-is-internal 'w3m-form-input-textarea-exit

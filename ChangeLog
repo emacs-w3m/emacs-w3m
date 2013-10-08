@@ -1,3 +1,8 @@
+2013-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-form.el (w3m-form-input-textarea-mode-setup):
+	Fix typo (unquoted `view-mode').
+
 2013-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-form.el (w3m-form-input-textarea-mode-setup): Use view-mode to
