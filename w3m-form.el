@@ -95,7 +95,8 @@ Files to save text are stored in the directory specified by the
   :group 'w3m
   :type '(choice
 	  (function :tag "Major mode")
-	  (repeat :tag "Rules to select major modes for the current page"
+	  (repeat
+	   :tag "Rules to select major modes for the current page"
 	   (cons (choice (regexp :tag "Regexp matches the current page")
 			 (function :tag "Predicate checks the current page")
 			 (sexp :tag "Expression checks the current page"))
@@ -1133,6 +1134,18 @@ character."
   (define-key w3m-form-input-textarea-map "\C-x\C-s"
     'w3m-form-input-textarea-save))
 
+(defvar w3m-form-input-textarea-org-mode-map nil)
+(unless w3m-form-input-textarea-org-mode-map
+  (setq w3m-form-input-textarea-org-mode-map (make-sparse-keymap))
+  (define-key w3m-form-input-textarea-org-mode-map "\M-#c"
+    'w3m-form-input-textarea-set)
+  (define-key w3m-form-input-textarea-org-mode-map "\M-#q"
+    'w3m-form-input-textarea-exit)
+  (define-key w3m-form-input-textarea-org-mode-map "\M-#k"
+    'w3m-form-input-textarea-exit)
+  (define-key w3m-form-input-textarea-org-mode-map "\M-#s"
+    'w3m-form-input-textarea-save))
+
 (defun w3m-form-input-textarea-filename (url id)
   (condition-case nil
       (concat (md5 (concat url id) nil nil w3m-current-coding-system) ".txt")
@@ -1247,12 +1260,41 @@ Minor mode to edit form textareas of w3m.
 	      (if arg
 		  (> (prefix-numeric-value arg) 0)
 		(not w3m-form-input-textarea-mode)))
-    (run-hooks 'w3m-form-input-textarea-mode-hook)))
+    (run-hooks 'w3m-form-input-textarea-mode-hook))
+  (when (eq major-mode 'org-mode)
+    (add-to-list 'minor-mode-overriding-map-alist
+		 (cons 'w3m-form-input-textarea-mode
+		       w3m-form-input-textarea-org-mode-map))))
+
+(defvar w3m-form-textarea-use-org-mode-p nil
+  "Use org-mode for editing textareas when non-nil")
+
+(defun w3m-form-textarea-toggle-major-mode (&optional arg)
+  "Toggle editing textareas in Org-mode.
+When off, textareas are edited in text-mode, otherwise in
+org-mode. With prefix argument ARG, use org-mode if ARG is
+positive, otherwise text-mode."
+  (interactive "P")
+  (setq w3m-form-textarea-use-org-mode-p
+	(if (null arg)
+	    (not w3m-form-textarea-use-org-mode-p)
+	  (> (prefix-numeric-value arg) 0)))
+  (message "Edit textarea in Org-mode %s"
+	   (if w3m-form-textarea-use-org-mode-p "enabled" "disabled")))
+
+(autoload 'show-all "outline" nil t)
+
+(add-hook 'w3m-form-input-textarea-mode-hook
+	  (lambda ()
+	    (and (eq major-mode 'org-mode))
+	    (show-all)))
 
 (defvar view-mode-map)
 (defun w3m-form-input-textarea-mode-setup (caller-buffer readonly)
   (funcall (or (and readonly
 		    'view-mode)
+	       (and w3m-form-textarea-use-org-mode-p
+		    'org-mode)
 	       (and (functionp w3m-form-textarea-edit-mode)
 		    w3m-form-textarea-edit-mode)
 	       (when (buffer-live-p caller-buffer)
@@ -1323,6 +1365,10 @@ selected rather than \(as usual\) some other window.  See
 				      (string-match (car regexp) buffer-name)))
 			 (throw 'found t)))))))))
       'same-window-p)))
+
+(eval-when-compile
+  (unless (fboundp 'split-window-sensibly)
+    (defalias 'split-window-sensibly 'ignore)))
 
 (defun w3m-form-input-textarea (form hseq)
   (let* ((info  (w3m-form-textarea-info))
@@ -1408,7 +1454,12 @@ selected rather than \(as usual\) some other window.  See
 						  (cdr buffer)
 						buffer)))
 	(condition-case nil
-	    (split-window cur-win (if (> size 0) size window-min-height))
+	    (if (and w3m-form-textarea-use-org-mode-p
+		     (fboundp 'split-window-sensibly) ;; Emacs >= 23
+		     (not (eq (symbol-function 'split-window-sensibly)
+			      'ignore)))
+		(split-window-sensibly cur-win)
+	      (split-window cur-win (if (> size 0) size window-min-height)))
 	  (error
 	   (delete-other-windows)
 	   (split-window cur-win (- (window-height cur-win)

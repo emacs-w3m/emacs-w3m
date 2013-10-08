@@ -1,3 +1,18 @@
+2013-10-08  Thorsten Jolitz  <tjolitz@gmail.com>
+
+	* w3m-form.el (w3m-form-input-textarea-mode-setup): New option for
+	setting up the textarea input buffer in org-mode instead of text-mode.
+
+	(w3m-form-input-textarea-org-mode-map) New minor-mode-map.
+	(w3m-form-textarea-use-org-mode-p) New variable.
+	(w3m-form-textarea-toggle-major-mode) New function.
+	(w3m-form-input-textarea-mode-setup) Setup textarea edit buffer with
+	major-mode 'org-mode if `w3m-form-textarea-use-org-mode-p' is non-nil.
+	(w3m-form-input-textarea) Split window sensibly if
+	`w3m-form-textarea-use-org-mode-p' is non-nil.
+	(w3m-form-input-textarea-mode) Override default minor-mode map with
+	new minor-mode-map in case major-mode is 'org-mode.
+
 2013-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-form.el (w3m-form-input-textarea-mode-setup):

@@ -1,6 +1,6 @@
 ;;; w3m-mail.el --- an interface to mail-user-agent for sending web pages
 
-;; Copyright (C) 2006, 2009, 2010 TSUCHIYA Masatoshi
+;; Copyright (C) 2006, 2009, 2010, 2013 TSUCHIYA Masatoshi
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -209,7 +209,7 @@ the one such as \"text/html\", and the rest are the same as those of
 ;; (defun w3m-mail-compose-with-mew (source url charset content-type
 ;;                                         to subject other-headers)
 ;;   "Compose a mail using Mew.")
-
+(defvar mail-send-actions)
 (defun w3m-mail-compose-with-vm (source url charset content-type
 					to subject other-headers)
   "Compose a mail using VM."
