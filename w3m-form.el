@@ -723,7 +723,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	  (save-excursion
 	    (search-forward "</input_alt>")
 	    (setq end (match-beginning 0)))
-	  (let ((abs-hseq (or (and (null hseq) 0) (abs hseq))))
+	  (let ((abs-hseq (or (and (null hseq) 0) (abs hseq)))
+		(face (if readonly 'w3m-form-inactive 'w3m-form)))
 	    (setq w3m-max-anchor-sequence
 		  (max abs-hseq w3m-max-anchor-sequence))
 	    (if (eq w3m-type 'w3mmee)
@@ -779,8 +780,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 				w3m-form-textarea-directory))
 		(setq w3m-form-textarea-files
 		      (cons filename w3m-form-textarea-files)))
-	      (w3m-add-face-property
-	       start end (if readonly 'w3m-form-inactive 'w3m-form))
+	      (w3m-add-face-property start end face)
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
@@ -805,7 +805,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			  t)
 		      (setq selects (cons (list selectnumber form id name)
 					  selects)))
-		(w3m-add-face-property start end 'w3m-form)
+		(w3m-add-face-property start end face)
 		(add-text-properties
 		 start end
 		 `(w3m-form-field-id
@@ -815,10 +815,10 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					       (w3m-form-get ,form ,id)
 					       w3m-form-new-session
 					       w3m-form-download)
-		   w3m-anchor-sequence ,abs-hseq))))
+		   w3m-anchor-sequence ,abs-hseq
+		   w3m-form-readonly ,readonly))))
 	     ((string= type "password")
-	      (w3m-add-face-property
-	       start end (if readonly 'w3m-form-inactive 'w3m-form))
+	      (w3m-add-face-property start end face)
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
@@ -836,7 +836,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			      (if checked
 				  (cons value cvalue)
 				cvalue)))
-	      (w3m-add-face-property start end 'w3m-form)
+	      (w3m-add-face-property start end face)
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
@@ -846,12 +846,13 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					     (w3m-form-get ,form ,id)
 					     w3m-form-new-session
 					     w3m-form-download)
-		 w3m-anchor-sequence ,abs-hseq)))
+		 w3m-anchor-sequence ,abs-hseq
+		 w3m-form-readonly ,readonly)))
 	     ((string= type "radio")
 	      ;; Radio button input, one name has one value
 	      (if checked
 		  (w3m-form-put-by-name form id name value))
-	      (w3m-add-face-property start end 'w3m-form)
+	      (w3m-add-face-property start end face)
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
@@ -862,9 +863,10 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					      ,form ,id ,name)
 					     w3m-form-new-session
 					     w3m-form-download)
-		 w3m-anchor-sequence ,abs-hseq)))
+		 w3m-anchor-sequence ,abs-hseq
+		 w3m-form-readonly ,readonly)))
 	     ((string= type "file")
-	      (w3m-add-face-property start end 'w3m-form)
+	      (w3m-add-face-property start end face)
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
@@ -874,14 +876,14 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					     (w3m-form-get ,form ,id)
 					     w3m-form-new-session
 					     w3m-form-download)
-		 w3m-anchor-sequence ,abs-hseq)))
+		 w3m-anchor-sequence ,abs-hseq
+		 w3m-form-readonly ,readonly)))
 	     (t
 	      (w3m-form-put form
 			    id
 			    name
 			    (or value (w3m-form-get form id)))
-	      (w3m-add-face-property
-	       start end (if readonly 'w3m-form-inactive 'w3m-form))
+	      (w3m-add-face-property start end face)
 	      (add-text-properties
 	       start end
 	       `(w3m-form-field-id
@@ -1008,13 +1010,15 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
       (w3m-form-replace input 'invisible))))
 
 (defun w3m-form-input-checkbox (form id name value)
-  (let ((fvalue (w3m-form-get form id)))
-    (if (member value fvalue)		; already checked
-	(progn
-	  (w3m-form-put form id name (delete value fvalue))
-	  (w3m-form-replace " "))
-      (w3m-form-put form id name (cons value fvalue))
-      (w3m-form-replace "*"))))
+  (if (get-text-property (point) 'w3m-form-readonly)
+      (w3m-message "This form is currently inactive")
+    (let ((fvalue (w3m-form-get form id)))
+      (if (member value fvalue)		; already checked
+	  (progn
+	    (w3m-form-put form id name (delete value fvalue))
+	    (w3m-form-replace " "))
+	(w3m-form-put form id name (cons value fvalue))
+	(w3m-form-replace "*")))))
 
 (defun w3m-form-field-parse (fid)
   (when (and fid
@@ -1027,34 +1031,38 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	  (match-string 4 fid))))
 
 (defun w3m-form-input-radio (form id name value)
-  (save-excursion
-    (let ((fid (w3m-form-field-parse
-		(get-text-property (point) 'w3m-form-field-id)))
-	  cur-fid)
-      (when fid
-	;; Uncheck all RADIO input having same NAME
-	(goto-char 1)
-	(while (w3m-form-goto-next-field)
-	  (setq cur-fid (w3m-form-field-parse
-			 (get-text-property (point)
-					    'w3m-form-field-id)))
-	  (when (and (string= (nth 0 fid) (nth 0 cur-fid))
-		     (string= (nth 1 fid) (nth 1 cur-fid))
-		     (string= (nth 2 fid) (nth 2 cur-fid)))
-	    (w3m-form-put-by-name
-	     form (string-to-number (nth 3 fid)) (nth 2 fid) nil)
-	    (w3m-form-replace " ")))))) ; erase check
-  ;; Then set this field as checked.
-  (w3m-form-put-by-name form id name value)
-  (w3m-form-replace "*"))
+  (if (get-text-property (point) 'w3m-form-readonly)
+      (w3m-message "This form is currently inactive")
+    (save-excursion
+      (let ((fid (w3m-form-field-parse
+		  (get-text-property (point) 'w3m-form-field-id)))
+	    cur-fid)
+	(when fid
+	  ;; Uncheck all RADIO input having same NAME
+	  (goto-char 1)
+	  (while (w3m-form-goto-next-field)
+	    (setq cur-fid (w3m-form-field-parse
+			   (get-text-property (point)
+					      'w3m-form-field-id)))
+	    (when (and (string= (nth 0 fid) (nth 0 cur-fid))
+		       (string= (nth 1 fid) (nth 1 cur-fid))
+		       (string= (nth 2 fid) (nth 2 cur-fid)))
+	      (w3m-form-put-by-name
+	       form (string-to-number (nth 3 fid)) (nth 2 fid) nil)
+	      (w3m-form-replace " ")))))) ; erase check
+    ;; Then set this field as checked.
+    (w3m-form-put-by-name form id name value)
+    (w3m-form-replace "*")))
 
 (defun w3m-form-input-file (form id name value)
-  (let ((input (save-excursion
-		 (read-file-name "File name: "
-				 (or (cdr (w3m-form-get form id))
-				     "~/")))))
-    (w3m-form-put form id name (cons 'file input))
-    (w3m-form-replace input)))
+  (if (get-text-property (point) 'w3m-form-readonly)
+      (w3m-message "This form is currently inactive")
+    (let ((input (save-excursion
+		   (read-file-name "File name: "
+				   (or (cdr (w3m-form-get form id))
+				       "~/")))))
+      (w3m-form-put form id name (cons 'file input))
+      (w3m-form-replace input))))
 
 ;;; TEXTAREA
 
@@ -1682,74 +1690,76 @@ selected rather than \(as usual\) some other window.  See
   (w3m-run-mode-hooks 'w3m-form-input-select-mode-hook))
 
 (defun w3m-form-input-select (form id name)
-  (let* ((value (w3m-form-get form id))
-	 (cur-win (selected-window))
-	 (wincfg (current-window-configuration))
-	 (urlid (format "%s:%s:%d" w3m-current-url name id))
-	 (w3mbuffer (current-buffer))
-	 (point (point))
-	 (size (min
-		(- (window-height cur-win)
-		   window-min-height 1)
-		(- (window-height cur-win)
-		   (max window-min-height
-			(1+ w3m-form-input-select-buffer-lines)))))
-	 buffer cur pos)
-    (setq buffer
-	  (catch 'detect-buffer
-	    (save-current-buffer
-	      (dolist (buffer (buffer-list))
-		(set-buffer buffer)
-		(when (and w3m-form-input-select-buffer
-			   (eq w3m-form-input-select-buffer w3mbuffer)
-			   (string= w3m-form-input-select-urlid urlid))
-		  (throw 'detect-buffer (cons t buffer)))))
-	    (generate-new-buffer "*w3m form select*")))
-    (unless (consp buffer)
-      (with-current-buffer buffer
-	(setq w3m-form-input-select-form form)
-	(setq w3m-form-input-select-name name)
-	(setq w3m-form-input-select-id id)
-	(setq w3m-form-input-select-buffer w3mbuffer)
-	(setq w3m-form-input-select-point point)
-	(setq w3m-form-input-select-candidates value)
-	(setq w3m-form-input-select-wincfg wincfg)
-	(setq w3m-form-input-select-urlid urlid)
-	(when value
-	  (setq cur (car value))
-	  (setq value (cdr value))
-	  (dolist (candidate value)
-	    (setq pos (point))
-	    (insert (if (zerop (length (cdr candidate)))
-			" "		; "" -> " "
-		      (cdr candidate)))
-	    (add-text-properties pos (point)
-				 (list 'w3m-form-select-value (car candidate)
-				       'mouse-face w3m-form-mouse-face))
-	    (insert "\n")))
-	(goto-char (point-min))
-	(while (and (not (eobp))
-		    (not (equal cur
-				(get-text-property (point)
-						   'w3m-form-select-value))))
-	  (goto-char (next-single-property-change (point)
-						  'w3m-form-select-value)))
-	(set-buffer-modified-p nil)
-	(beginning-of-line)
-	(w3m-form-input-select-mode)))
-    (if (and (consp buffer)
-	     (get-buffer-window (cdr buffer)))
-	;; same frame only
-	(select-window (get-buffer-window (cdr buffer)))
-      (condition-case nil
-	  (split-window cur-win (if (> size 0) size window-min-height))
-	(error
-	 (delete-other-windows)
-	 (split-window cur-win (- (window-height cur-win)
-				  w3m-form-input-select-buffer-lines))))
-      (select-window (next-window))
-      (let ((pop-up-windows nil))
-	(switch-to-buffer (if (consp buffer) (cdr buffer) buffer))))))
+  (if (get-text-property (point) 'w3m-form-readonly)
+      (w3m-message "This form is currently inactive")
+    (let* ((value (w3m-form-get form id))
+	   (cur-win (selected-window))
+	   (wincfg (current-window-configuration))
+	   (urlid (format "%s:%s:%d" w3m-current-url name id))
+	   (w3mbuffer (current-buffer))
+	   (point (point))
+	   (size (min
+		  (- (window-height cur-win)
+		     window-min-height 1)
+		  (- (window-height cur-win)
+		     (max window-min-height
+			  (1+ w3m-form-input-select-buffer-lines)))))
+	   buffer cur pos)
+      (setq buffer
+	    (catch 'detect-buffer
+	      (save-current-buffer
+		(dolist (buffer (buffer-list))
+		  (set-buffer buffer)
+		  (when (and w3m-form-input-select-buffer
+			     (eq w3m-form-input-select-buffer w3mbuffer)
+			     (string= w3m-form-input-select-urlid urlid))
+		    (throw 'detect-buffer (cons t buffer)))))
+	      (generate-new-buffer "*w3m form select*")))
+      (unless (consp buffer)
+	(with-current-buffer buffer
+	  (setq w3m-form-input-select-form form)
+	  (setq w3m-form-input-select-name name)
+	  (setq w3m-form-input-select-id id)
+	  (setq w3m-form-input-select-buffer w3mbuffer)
+	  (setq w3m-form-input-select-point point)
+	  (setq w3m-form-input-select-candidates value)
+	  (setq w3m-form-input-select-wincfg wincfg)
+	  (setq w3m-form-input-select-urlid urlid)
+	  (when value
+	    (setq cur (car value))
+	    (setq value (cdr value))
+	    (dolist (candidate value)
+	      (setq pos (point))
+	      (insert (if (zerop (length (cdr candidate)))
+			  " "		; "" -> " "
+			(cdr candidate)))
+	      (add-text-properties pos (point)
+				   (list 'w3m-form-select-value (car candidate)
+					 'mouse-face w3m-form-mouse-face))
+	      (insert "\n")))
+	  (goto-char (point-min))
+	  (while (and (not (eobp))
+		      (not (equal cur
+				  (get-text-property (point)
+						     'w3m-form-select-value))))
+	    (goto-char (next-single-property-change (point)
+						    'w3m-form-select-value)))
+	  (set-buffer-modified-p nil)
+	  (beginning-of-line)
+	  (w3m-form-input-select-mode)))
+      (if (and (consp buffer)
+	       (get-buffer-window (cdr buffer)))
+	  ;; same frame only
+	  (select-window (get-buffer-window (cdr buffer)))
+	(condition-case nil
+	    (split-window cur-win (if (> size 0) size window-min-height))
+	  (error
+	   (delete-other-windows)
+	   (split-window cur-win (- (window-height cur-win)
+				    w3m-form-input-select-buffer-lines))))
+	(select-window (next-window))
+	(let ((pop-up-windows nil))
+	  (switch-to-buffer (if (consp buffer) (cdr buffer) buffer)))))))
 
 ;;; MAP
 

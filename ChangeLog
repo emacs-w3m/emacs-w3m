@@ -1,3 +1,12 @@
+2013-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make disabled or read-only forms inatcive.
+
+	* w3m-form.el (w3m-form-parse-and-fontify): Make `select', `checkbox',
+	`radio', and `file' input forms inactive.
+	(w3m-form-input-checkbox, w3m-form-input-radio, w3m-form-input-file)
+	(w3m-form-input-select): Don't allow keys if it is inactive.
+
 2013-10-08  Thorsten Jolitz  <tjolitz@gmail.com>
 
 	* w3m-form.el (w3m-form-input-textarea-mode-setup): New option for
