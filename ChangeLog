@@ -1,3 +1,8 @@
+2013-10-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-form.el (w3m-form-inactive): Add underline property.
+	(w3m-form-input-textarea): Don't use it to view read-only textarea.
+
 2013-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make disabled or read-only forms inatcive.

@@ -1436,7 +1436,6 @@ selected rather than \(as usual\) some other window.  See
 	(insert value)
 	(set-buffer-modified-p nil)
 	(when readonly
-	  (w3m-add-face-property (point-min) (point-max) 'w3m-form-inactive)
 	  (set-buffer-modified-p nil)
 	  (setq buffer-read-only t))
 	(goto-char (point-min))
