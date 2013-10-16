@@ -1185,10 +1185,7 @@ is non-nil means not to respond to too fast operation of mouse wheel."
 		       (when (buffer-live-p buffer)
 			 (with-current-buffer buffer
 			   (setq w3m-tab-timer nil)
-			   (when (and (eq (selected-window)
-					  (get-buffer-window buffer))
-				      w3m-process-queue)
-			     (inline (w3m-force-window-update))))))
+			   (inline (w3m-force-window-update)))))
 		     current)
 	(save-current-buffer
 	  (while buffers
