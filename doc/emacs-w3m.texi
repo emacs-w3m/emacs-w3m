@@ -1870,12 +1870,8 @@ point(@code{w3m-edit-this-url}).
 
 @item @kbd{M}
 @kindex M
-@findex w3m-view-url-with-external-browser
-Launch an external browser (other than emacs-w3m) and display the same
-web page as currently displayed in
-emacs-w3m(@code{w3m-view-url-with-external-browser}).  The external
-browser to be used is defined by the variable
-@code{w3m-content-type-alist}, depending on the kind of URL.
+@findex w3m-view-url-with-browse-url
+Open a link at point, or the current page, using @code{browse-url}.
 
 @item @kbd{|}
 @kindex |

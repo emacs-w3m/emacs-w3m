@@ -2567,12 +2567,12 @@ nil value means it has not been initialized.")
        w3m-view-parent-page
        (w3m-parent-page-available-p)]
       "----" ;; separator
-      [,(w3m-make-menu-item "このページを外部ブラウザで開く"
-	  "Open This Page in an External Browser")
-       w3m-external-view-current-url w3m-current-url]
-      [,(w3m-make-menu-item "この URL を外部ブラウザで開く"
-	  "Open This URL in an External Browser")
-       w3m-external-view-this-url (or (w3m-anchor) (w3m-image))]
+      [,(w3m-make-menu-item "現在のページを browse-url で開く"
+	  "Open The Current Page using browse-url")
+       w3m-view-url-with-browse-url w3m-current-url]
+      [,(w3m-make-menu-item "このリンクを browse-url で開く"
+	  "Open This Link using browse-url")
+       w3m-view-url-with-browse-url (or (w3m-anchor) (w3m-image))]
       [,(w3m-make-menu-item "このページのソースをコマンドに送る..."
 	  "Pipe Page Source to Command...")
        w3m-pipe-source  w3m-current-url]
@@ -7179,6 +7179,8 @@ The default name will be the original name of the image."
 	(w3m-download url)
       (w3m-message "No image at point"))))
 
+(make-obsolete 'w3m-external-view-this-url 'w3m-view-url-with-browse-url
+	       "2013-10-17")
 (defun w3m-external-view-this-url ()
   "Launch the external browser and display the link an point."
   (interactive)
@@ -7187,6 +7189,8 @@ The default name will be the original name of the image."
 	(w3m-external-view url)
       (w3m-message "No URL at point"))))
 
+(make-obsolete 'w3m-external-view-current-url 'w3m-view-url-with-browse-url
+	       "2013-10-17")
 (defun w3m-external-view-current-url ()
   "Launch the external browser and display the current URL."
   (interactive)
@@ -7194,6 +7198,8 @@ The default name will be the original name of the image."
       (w3m-external-view w3m-current-url)
     (w3m-message "No URL at this page")))
 
+(make-obsolete 'w3m-view-url-with-external-browser 'w3m-view-url-with-browse-url
+	       "2013-10-17")
 (defun w3m-view-url-with-external-browser (&optional url)
   "Launch the external browser and display the same web page.
 If the cursor points to a link, it visits the url of the link instead
@@ -7209,6 +7215,17 @@ of the url currently displayed.  The browser is defined in
   (when (w3m-url-valid url)
     (message "Browsing <%s>..." url)
     (w3m-external-view url)))
+
+(defun w3m-view-url-with-browse-url (url)
+  "Run `browse-url' to open URL."
+  (interactive (list (let ((w3m-display-inline-images t))
+		       (w3m-active-region-or-url-at-point t))))
+  (if (and (stringp url)
+	   (not (string-match "\\`about:" url)))
+      (progn
+	(w3m-message "Browsing %s..." url)
+	(browse-url url))
+    (w3m-message "No url at point")))
 
 (defun w3m-download-this-url ()
   "Download the file or the page pointed to by the link under point."
@@ -8038,7 +8055,7 @@ for users.  See Info node `(elisp)Key Binding Conventions'.")
     (define-key map "I" 'w3m-view-image)
     (define-key map "\M-i" 'w3m-save-image)
     (define-key map "c" 'w3m-print-current-url)
-    (define-key map "M" 'w3m-view-url-with-external-browser)
+    (define-key map "M" 'w3m-view-url-with-browse-url)
     (define-key map "G" 'w3m-goto-url-new-session)
     (define-key map "g" 'w3m-goto-url)
     (define-key map "\C-tt" 'w3m-create-empty-session)
@@ -8163,7 +8180,7 @@ for users.  See Info node `(elisp)Key Binding Conventions'.")
     (define-key map "\C-l" 'recenter)
     (define-key map [(control L)] 'w3m-reload-this-page)
     (define-key map [(control t) (control L)] 'w3m-reload-all-pages)
-    (define-key map "M" 'w3m-view-url-with-external-browser)
+    (define-key map "M" 'w3m-view-url-with-browse-url)
     (define-key map "n" 'w3m-view-next-page)
     (define-key map "N" 'w3m-namazu)
     (define-key map "\M-n" 'w3m-copy-buffer)
@@ -8394,8 +8411,8 @@ closed.  See also `w3m-quit'."
        ,(w3m-make-menu-item "右側のタブをすべて閉じる" "Close Right Tabs")
        ,rightp)
       -
-      (w3m-view-url-with-external-browser
-       ,(w3m-make-menu-item "外部ブラウザで開く" "View with external browser")
+      (w3m-view-url-with-browse-url
+       ,(w3m-make-menu-item "browse-url で開く" "View with browse-url")
        ,currentp ,w3m-new-session-in-background w3m-current-url)
       -
       (w3m-session-save
@@ -8457,9 +8474,9 @@ or a list which consists of the following elements:
     [,(w3m-make-menu-item "リンクを新しいセッションで開く"
 			  "Open Link in New Session")
      w3m-view-this-url-new-session (w3m-anchor (point))]
-    [,(w3m-make-menu-item "リンクを外部ブラウザで開く"
-			  "Open Link in an External Browser")
-     w3m-external-view-this-url (w3m-anchor (point))]
+    [,(w3m-make-menu-item "リンクを browse-url で開く"
+			  "Open Link using browse-url")
+     w3m-view-url-with-browse-url (w3m-anchor (point))]
     "-"
     [,(w3m-make-menu-item "このリンクをブックマーク..."
 			  "Bookmark This Link...")
@@ -8562,9 +8579,7 @@ or a list which consists of the following elements:
 \\[w3m-goto-new-session-url]	Open page of which url is specified by\
  `w3m-new-session-url' in\n\ta new session.
 \\[w3m-gohome]	Go to the Home page.
-\\[w3m-view-url-with-external-browser]	Display the current page using the\
- external browser.
-
+\\[w3m-view-url-with-browse-url]	Open a link using `browse-url'.
 \\[w3m-delete-left-tabs]	Delete tabs on the left side of\
  the current tab.
 \\[w3m-delete-right-tabs]	Delete tabs on the right side of\

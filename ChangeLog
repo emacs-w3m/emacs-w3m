@@ -1,3 +1,22 @@
+2013-10-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Replace `w3m-external-view-current-url', `w3m-external-view-this-url',
+	and `w3m-view-url-with-external-browser' with
+	`w3m-view-url-with-browse-url' that runs `browse-url'. [emacs-w3m:12190]
+
+	* w3m.el (w3m-menubar, w3m-tab-button-menu-commands, w3m-link-map): Do.
+	(w3m-external-view-current-url, w3m-external-view-this-url)
+	(w3m-view-url-with-external-browser): Make obsolete.
+	(w3m-view-url-with-browse-url): New function.
+	(w3m-mode-map): Bind "M" to it.
+
+	* w3m-lnum.el (w3m-lnum-actions-link-alist): Bind "M" to
+	w3m-view-url-with-browse-url instead of w3m-external-view.
+	(w3m-lnum-mode-map): Use the key bound to w3m-view-url-with-browse-url
+	for w3m-lnum-external-view-this-url.
+	(w3m-lnum-external-view-this-url): Use w3m-view-url-with-browse-url
+	instead of w3m-external-view.
+
 2013-10-16  Michael Heerdegen  <michael_heerdegen@web.de>
 
 	* w3m-ems.el (w3m-tab-line):

@@ -1,6 +1,6 @@
 ;;; w3m-lnum.el --- Operations using link numbers
 
-;; Copyright (C) 2004-2012 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2004-2013 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;;          Andrey Kotlarski <m00naticus@gmail.com>
@@ -166,7 +166,7 @@ filtering over an url being matched by the car."
 				    (concat im-alt ": ")))
 			 url)))
 	"Copy")
-    (?M (lambda (info) (w3m-external-view (car info)))
+    (?M (lambda (info) (w3m-view-url-with-browse-url (car info)))
 	"Open in external browser"))
   "Alist specifying keycodes and available actions over a selected link."
   :group 'w3m
@@ -218,7 +218,7 @@ filtering over an url being matched by the car."
      'w3m-edit-this-url 'w3m-lnum-edit-this-url
      'w3m-toggle-inline-image 'w3m-lnum-toggle-inline-image
      'w3m-print-this-url 'w3m-lnum-print-this-url
-     'w3m-external-view-this-url 'w3m-lnum-external-view-this-url
+     'w3m-view-url-with-browse-url 'w3m-lnum-external-view-this-url
      'w3m-bookmark-add-this-url 'w3m-lnum-bookmark-add-this-url
      'w3m-zoom-in-image 'w3m-lnum-zoom-in-image
      'w3m-zoom-out-image 'w3m-lnum-zoom-out-image)
@@ -1013,7 +1013,8 @@ If no link at point, turn on link numbers and open selected externally."
 				(car
 				 (w3m-lnum-get-action
 				  "Open in external browser: " 1))))))
-    (if url (w3m-external-view url)
+    (if url
+	(w3m-view-url-with-browse-url url)
       (w3m-message "No URL selected"))))
 
 ;;;###autoload
