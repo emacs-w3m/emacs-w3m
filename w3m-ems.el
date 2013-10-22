@@ -906,18 +906,6 @@ Wobble the selected window to force redisplay of the header-line."
       (w3m-delete-buffer))
     (w3m-force-window-update window)))
 
-(defvar w3m-tab-line-format nil
-  "Internal variable used to keep contents to be shown in the header-line.
-This is a buffer-local variable.")
-(make-variable-buffer-local 'w3m-tab-line-format)
-
-(defvar w3m-tab-timer nil
-  "Internal variable used to say time has not gone by after the tab-line
-was updated last time.  It is used to control the `w3m-tab-line'
-function running too frequently, set by the function itself and
-cleared by a timer.")
-(make-variable-buffer-local 'w3m-tab-timer)
-
 (defcustom w3m-tab-track-mouse t
   "Say whether to make the mouse track the selected tab.
 It controls the behavior of the commands `w3m-tab-previous-buffer',
@@ -947,12 +935,11 @@ font for the tab faces.  See also `w3m-tab-track-mouse'."
   :group 'w3m
   :type '(cons (number :tag "M") (integer :tag "N")))
 
-(defun w3m-tab-mouse-track-selected-tab (event order
-					       &optional buffers decelerate)
+(defun w3m-tab-mouse-track-selected-tab (event order &optional decelerate)
   "Make the mouse track the selected tab.
 EVENT is a command event.  ORDER is the order number in tabs.
-The optional BUFFERS is a list of emacs-w3m buffers, DECELERATE if it
-is non-nil means not to respond to too fast operation of mouse wheel."
+The optional DECELERATE if it is non-nil means not to respond to too
+fast operation of mouse wheel."
   (when (and w3m-use-tab window-system w3m-tab-track-mouse
 	     (consp event) (symbolp (car event)))
     (let ((e (get (car event) 'event-symbol-elements))
@@ -969,9 +956,7 @@ is non-nil means not to respond to too fast operation of mouse wheel."
 	  (while (not (cadr (setq posn (mouse-pixel-position))))
 	    (select-frame-set-input-focus frame)))
 	;; Update the header line.
-	(setq w3m-tab-timer nil)
-	(sit-for 0)
-	(setq tab w3m-tab-line-format)
+	(setq tab (w3m-tab-line))
 	(with-temp-buffer
 	  (insert tab)
 	  (setq start (point-min)
@@ -1022,7 +1007,7 @@ is non-nil means not to respond to too fast operation of mouse wheel."
       (run-hooks 'w3m-select-buffer-hook)
       (w3m-select-buffer-update)
       (w3m-tab-mouse-track-selected-tab
-       event (w3m-buffer-number (current-buffer)) buffers))))
+       event (w3m-buffer-number (current-buffer))))))
 
 (defun w3m-tab-previous-buffer (&optional n event)
   "Turn N pages of emacs-w3m buffers behind."
@@ -1049,7 +1034,7 @@ is non-nil means not to respond to too fast operation of mouse wheel."
       (w3m-buffer-set-number dest cur)
       (w3m-buffer-set-number (current-buffer) next)
       (w3m-select-buffer-update)
-      (w3m-tab-mouse-track-selected-tab event next buffers t))))
+      (w3m-tab-mouse-track-selected-tab event next t))))
 
 (defun w3m-tab-move-left (&optional n event)
   "Move this tab N times to the left (to the right if N is negative)."
@@ -1154,128 +1139,118 @@ is non-nil means not to respond to too fast operation of mouse wheel."
   "String used to separate tabs.")
 
 (defun w3m-tab-line ()
-  (or (and w3m-tab-timer w3m-tab-line-format)
-      (let* ((current (current-buffer))
-	     (buffers (w3m-list-buffers))
-	     (breadth 1)
-	     (number 0)
-	     (fringes (window-fringes))
-	     (width (+ (window-width)
-		       (/ (float (+ (or (car fringes) 0)
-				    (or (nth 1 fringes) 0)))
-			  (frame-char-width))
-		       ;; Assume that the vertical scroll-bar has
-		       ;; the width of two space characters.
-		       (if (car (frame-current-scroll-bars)) 2 0)))
-	     (nbuf (length buffers))
-	     (graphic (and window-system
-			   w3m-show-graphic-icons-in-header-line))
-	     (margin (if window-system
-			 (+ (if graphic 3.0 0.5)
-			    ;; Right and left shadows.
-			    (/ 2.0 (frame-char-width)))
-		       1))
-	     (spinner (when w3m-process-queue
-			(w3m-make-spinner-image)))
-	     buffer title data datum process unseen favicon keymap face icon
-	     line)
-	(setq w3m-tab-timer t)
-	(run-at-time 0.1 nil
-		     (lambda (buffer)
-		       (when (buffer-live-p buffer)
-			 (with-current-buffer buffer
-			   (setq w3m-tab-timer nil)
-			   (inline (w3m-force-window-update)))))
-		     current)
-	(save-current-buffer
-	  (while buffers
-	    (set-buffer (setq buffer (pop buffers)))
-	    (setq number (1+ number))
-	    (setq title (if w3m-add-tab-number
-			    (format "%d.%s" number (w3m-current-title))
-			  (w3m-current-title)))
-	    (setq breadth
-		  (max breadth
-		       ;; There may be a wide character in the beginning of
-		       ;; the title.
-		       (if (> (length title) 0)
-			   (char-width (aref title 0))
-			 0)))
-	    (push (list (eq current buffer)
-			w3m-current-process
-			(w3m-unseen-buffer-p buffer)
-			title
-			(when w3m-use-favicon w3m-favicon-image)
-			w3m-tab-map)
-		  data)))
-	(setq width (if (> (* nbuf (+ margin w3m-tab-width)) width)
-			(max (truncate (- (/ width nbuf) margin)) breadth)
-		      w3m-tab-width))
-	(while data
-	  (setq datum (pop data)
-		current (car datum)
-		process (nth 1 datum)
-		unseen (nth 2 datum)
-		title (nth 3 datum)
-		favicon (nth 4 datum)
-		keymap (nth 5 datum)
-		face (list
-		      (if process
-			  (if current
-			      'w3m-tab-selected-retrieving
-			    'w3m-tab-unselected-retrieving)
-			(if current
-			    'w3m-tab-selected
-			  (if unseen
-			      'w3m-tab-unselected-unseen
-			    'w3m-tab-unselected))))
-		icon (when graphic
-		       (cond
-			(process
-			 (when spinner
-			   (propertize
-			    " "
-			    'display spinner
-			    'face face
-			    'local-map w3m-tab-spinner-map
-			    'help-echo w3m-spinner-map-help-echo)))
-			(favicon
-			 (propertize
-			  " "
-			  'display favicon
-			  'face face
-			  'local-map keymap
-			  'help-echo title))))
-		breadth (cond (icon width)
-			      (graphic (+ 2 width))
-			      (t width)))
-	  (push
-	   (list
-	    icon
-	    (propertize
-	     (concat
-	      (when graphic w3m-tab-half-space)
-	      (replace-regexp-in-string
-	       "%" "%%"
-	       (if (and (> (string-width title) breadth)
-			(> breadth 6))
-		   (truncate-string-to-width
-		    (concat (truncate-string-to-width title (- breadth 3))
-			    "...")
-		    breadth nil ?.)
-		 (truncate-string-to-width title breadth nil ?\ ))))
-	     'face face
-	     'mouse-face 'w3m-tab-mouse
-	     'local-map keymap
-	     'help-echo title)
-	    w3m-tab-separator)
-	   line))
-	(setq w3m-tab-line-format
-	      (concat (apply 'concat (apply 'nconc line))
-		      (propertize (make-string (window-width) ?\ )
-				  'face (list 'w3m-tab-background)
-				  'mouse-face 'w3m-tab-selected-background
-				  'local-map w3m-tab-separator-map))))))
+  (let* ((current (current-buffer))
+	 (buffers (w3m-list-buffers))
+	 (breadth 1)
+	 (number 0)
+	 (fringes (window-fringes))
+	 (width (+ (window-width)
+		   (/ (float (+ (or (car fringes) 0)
+				(or (nth 1 fringes) 0)))
+		      (frame-char-width))
+		   ;; Assume that the vertical scroll-bar has
+		   ;; the width of two space characters.
+		   (if (car (frame-current-scroll-bars)) 2 0)))
+	 (nbuf (length buffers))
+	 (graphic (and window-system
+		       w3m-show-graphic-icons-in-header-line))
+	 (margin (if window-system
+		     (+ (if graphic 3.0 0.5)
+			;; Right and left shadows.
+			(/ 2.0 (frame-char-width)))
+		   1))
+	 (spinner (when w3m-process-queue
+		    (w3m-make-spinner-image)))
+	 buffer title data datum process unseen favicon keymap face icon
+	 line)
+    (save-current-buffer
+      (while buffers
+	(set-buffer (setq buffer (pop buffers)))
+	(setq number (1+ number))
+	(setq title (if w3m-add-tab-number
+			(format "%d.%s" number (w3m-current-title))
+		      (w3m-current-title)))
+	(setq breadth
+	      (max breadth
+		   ;; There may be a wide character in the beginning of
+		   ;; the title.
+		   (if (> (length title) 0)
+		       (char-width (aref title 0))
+		     0)))
+	(push (list (eq current buffer)
+		    w3m-current-process
+		    (w3m-unseen-buffer-p buffer)
+		    title
+		    (when w3m-use-favicon w3m-favicon-image)
+		    w3m-tab-map)
+	      data)))
+    (setq width (if (> (* nbuf (+ margin w3m-tab-width)) width)
+		    (max (truncate (- (/ width nbuf) margin)) breadth)
+		  w3m-tab-width))
+    (while data
+      (setq datum (pop data)
+	    current (car datum)
+	    process (nth 1 datum)
+	    unseen (nth 2 datum)
+	    title (nth 3 datum)
+	    favicon (nth 4 datum)
+	    keymap (nth 5 datum)
+	    face (list
+		  (if process
+		      (if current
+			  'w3m-tab-selected-retrieving
+			'w3m-tab-unselected-retrieving)
+		    (if current
+			'w3m-tab-selected
+		      (if unseen
+			  'w3m-tab-unselected-unseen
+			'w3m-tab-unselected))))
+	    icon (when graphic
+		   (cond
+		    (process
+		     (when spinner
+		       (propertize
+			" "
+			'display spinner
+			'face face
+			'local-map w3m-tab-spinner-map
+			'help-echo w3m-spinner-map-help-echo)))
+		    (favicon
+		     (propertize
+		      " "
+		      'display favicon
+		      'face face
+		      'local-map keymap
+		      'help-echo title))))
+	    breadth (cond (icon width)
+			  (graphic (+ 2 width))
+			  (t width)))
+      (push
+       (list
+	icon
+	(propertize
+	 (concat
+	  (when graphic w3m-tab-half-space)
+	  (replace-regexp-in-string
+	   "%" "%%"
+	   (if (and (> (string-width title) breadth)
+		    (> breadth 6))
+	       (truncate-string-to-width
+		(concat (truncate-string-to-width title (- breadth 3))
+			"...")
+		breadth nil ?.)
+	     (truncate-string-to-width title breadth nil ?\ ))))
+	 'face face
+	 'mouse-face 'w3m-tab-mouse
+	 'local-map keymap
+	 'help-echo title)
+	w3m-tab-separator)
+       line))
+    (concat (apply 'concat (apply 'nconc line))
+	    (propertize (make-string (window-width) ?\ )
+			'face (list 'w3m-tab-background)
+			'mouse-face 'w3m-tab-selected-background
+			'local-map w3m-tab-separator-map))))
 
 (add-hook 'w3m-mode-setup-functions 'w3m-tab-make-keymap)
 (add-hook 'w3m-mode-setup-functions 'w3m-setup-header-line)
