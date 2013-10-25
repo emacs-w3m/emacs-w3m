@@ -1,6 +1,6 @@
 ;;; sb-asahi.el --- shimbun backend for asahi.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2011 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2011, 2013 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -934,7 +934,8 @@ Each table is the same as the `cdr' of the element of
 
 (defvar shimbun-asahi-content-start
   "<div[\t\n ]+class=\"\
-\\(?:ThmbSet300Tb\\|ThmbSet256\\|Kansai-ThmbSet100\\|ThmbCol\\)\">\
+\\(?:ArticleBody\
+\\|ThmbSet300Tb\\|ThmbSet256\\|Kansai-ThmbSet100\\|ThmbCol\\)\">\
 \\|<!--[\t\n ]*End of Headline[\t\n ]*-->\
 \\(?:[\t\n ]*<div[\t\n ]+[^<]+</div>[\t\n ]*\
 \\|[\t\n ]*<p[\t\n ]+[^<]+</p>[\t\n ]*\\)?\
@@ -942,7 +943,8 @@ Each table is the same as the `cdr' of the element of
 \\|<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
 
 (defvar shimbun-asahi-content-end
-  "<dl[\t\n ]+class=\"PrInfo\">\
+  "</div>[\t\n ]*<!-+[\t\n ]*ArticleBody[\t\n ]+END[\t\n ]*-+>\
+\\|<dl[\t\n ]+class=\"PrInfo\">\
 \\|<!--[\t\n ]*google_ad_section_end\
 \\|<!-[^>]+[^>★]ここまで[\t\n ]*-+>\
 \\|\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<!--[\t\n ]*Start of hatenab[\t\n ]*-->\
@@ -1569,14 +1571,27 @@ that day if it failed."
 \\|<small>[^<]+</small>"))
 		(not (eq (char-after) ?<)))
 	(replace-match "\\1<br>\n")))
-    ;; Remove related topics.
+    ;; Remove related topics, etc.
     (goto-char (point-min))
     (while (re-search-forward "\
-<\\(div\\)[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"LnkRelated\\(?:AsaD\\)?\"\
+<\\(li\\)[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"ReadMore\"\
+\\|<\\(div\\)[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\
+\"\\(?:RelatedLi\\(?:nk\\|st\\)Mod\\|PrTextMod\\|LnkRelated\\(?:AsaD\\)\\)?\"\
 \\|<\\(p\\)[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"AsaDLnk\"" nil t)
-      (when (shimbun-end-of-tag (or (match-string 1) (match-string 2)) t)
+      (when (shimbun-end-of-tag
+	     (or (match-string 1) (match-string 2) (match-string 3)) t)
 	(delete-region (match-beginning 0) (match-end 0))
 	(insert "\n")))
+    ;; Remove Ads.
+    (goto-char (point-min))
+    (let (st)
+      (while (and (re-search-forward
+		   "[\t\n ]*<!-+[\t\n ]*Ad[\t\n ]+BGN[\t\n ]*-+>" nil t)
+		  (progn
+		    (setq st (match-beginning 0))
+		    (re-search-forward
+		     "<!-+[\t\n ]*Ad[\t\n ]+END[\t\n ]*-+>[\t\n ]*" nil t)))
+	(delete-region st (match-end 0))))
     (unless (shimbun-prefer-text-plain-internal shimbun)
       (shimbun-break-long-japanese-lines))
     t))
