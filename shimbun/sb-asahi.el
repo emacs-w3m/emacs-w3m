@@ -219,20 +219,16 @@ Every `.' in NAME will be replaced with `/'."
        1 nil 2 6 3 4 5)
       ("digital" "デジタル" "%s/list.html"
        ,@(shimbun-asahi-make-regexp "digital/[^\"/]+"))
-      ("editorial" "社説" "include/editorial_bno4.xml"
-       ,(concat
-	 "<a" s1 "href=\"\\./"
-	 ;; 1. url
-	 "\\(editorial"
-	 ;; 2. year
-	 "\\(20[0-9][0-9]\\)"
-	 ;; 3. month
-	 "\\([01][0-9]\\)"
-	 ;; 4. day
-	 "\\([0-3][0-9]\\)"
-	 "\\.html\\)"
-	 "\"")
-       1 nil nil nil 2 3 4)
+      ("editorial" "社説" "paper/editorial.html"
+       ,(concat "<meta" s1 "\\(?:[^\t\n >]+" s1 "\\)*name=\"RELEASE_DATE\""
+		s1 "\\(?:[^\t\n >]+" s1 "\\)*CONTENT=\""
+		;; 1. year
+		"\\(20[1-9][0-9]\\)-"
+		;; 2. month
+		"\\([01]?[0-9]\\)-"
+		;; 3. day
+		"\\([0-3]?[0-9]\\)\"")
+       nil nil nil nil 1 2 3)
       ("edu" "教育" "%s/list.html" ,@edu)
       ("english" "ENGLISH" "%s/index.html"
        ,@(let ((rest (shimbun-asahi-make-regexp "english.Herald-asahi")))
@@ -279,20 +275,16 @@ Every `.' in NAME will be replaced with `/'."
       ("sports.rugby" "ラグビー")
       ("sports.usa" "米プロスポーツ")
       ("sports.winter" "ウインタースポーツ")
-      ("tenjin" "天声人語" "include/column_bno4.xml"
-       ,(concat
-	 "<a" s1 "href=\"\\./"
-	 ;; 1. url
-	 "\\(column"
-	 ;; 2. year
-	 "\\(20[0-9][0-9]\\)"
-	 ;; 3. month
-	 "\\([01][0-9]\\)"
-	 ;; 4. day
-	 "\\([0-3][0-9]\\)"
-	 "\\.html\\)"
-	 "\"")
-       1 nil nil nil 2 3 4)
+      ("tenjin" "天声人語" "paper/column.html"
+       ,(concat "<meta" s1 "\\(?:[^\t\n >]+" s1 "\\)*name=\"RELEASE_DATE\""
+		s1 "\\(?:[^\t\n >]+" s1 "\\)*CONTENT=\""
+		;; 1. year
+		"\\(20[1-9][0-9]\\)-"
+		;; 2. month
+		"\\([01]?[0-9]\\)-"
+		;; 3. day
+		"\\([0-3]?[0-9]\\)\"")
+       nil nil nil nil 1 2 3)
       ("travel" "トラベル" "%s/news/"
        ,@(shimbun-asahi-make-regexp "travel.news"))
       ("wakata" "若田さんきぼう滞在記" "%s/"
@@ -1015,6 +1007,56 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAEIAAAAQBAMAAABQPLQnAAAAElBMVEX8rKjd3Nj+7utdXFr
 	  (t
 	   (shimbun-expand-url (format index group) shimbun-asahi-url)))))
 
+(defun shimbun-asahi-article-contents (group)
+  "Get article's contents for editorial and tenjin groups.
+Contents will be saved in the shimbun header as the extra element."
+  (let ((case-fold-search t)
+	contents)
+    (goto-char (point-min))
+    (cond ((string-equal group "editorial")
+	   (let (tem)
+	     (while (and (re-search-forward "\
+<[^\t\n >]+[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"Edit[0-9]*\"[^>]*>\
+\\(?:[\t\n ]*<[^>]*>\\)*[\t\n ]*\\([^<]+\\)" nil t)
+			 (progn
+			   (push (shimbun-replace-in-string (match-string 1)
+							    "[\t ]+\\'" "")
+				 tem)
+			   (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"BodyTxt\"" nil t))
+			 (shimbun-end-of-tag "div" t))
+	       (push (match-string 3) tem))
+	     (setq tem (nreverse tem))
+	     (while tem
+	       (setq contents (concat contents
+				      "<p><h2>" (pop tem) "</h2></p>\n"
+				      (pop tem) "\n")))))
+	  ((string-equal group "tenjin")
+	   (when (and (search-forward "▼" nil t)
+		      (re-search-backward
+		       "<p\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>" nil t)
+		      (shimbun-end-of-tag "p" t))
+	     (setq contents
+		   (concat "<p>\n"
+			   (mapconcat 'identity
+				      (split-string (match-string 3)
+						    "[\t\n 　]*▼[\t\n 　]*" t)
+				      "。\n</p>\n<p>\n　")
+			   "\n</p>\n")))))
+    (with-temp-buffer
+      (set-buffer-multibyte nil)
+      (insert (if contents
+		  (encode-coding-string contents 'utf-8)
+		"<h2>No content retrieved.</h2>\n"))
+      (let ((coding-system-for-read 'binary)
+	    (coding-system-for-write 'binary))
+	(shell-command-on-region (point-min) (point-max) "gzip -f9" nil t))
+      (base64-encode-region (point-min) (point-max))
+      (goto-char (point-min))
+      (while (re-search-forward "[\n\r]+" nil t)
+	(delete-region (match-beginning 0) (match-end 0)))
+      `((Contents . ,(buffer-string))))))
+
 (defun shimbun-asahi-get-headers (shimbun)
   "Return a list of headers."
   (let ((group (shimbun-current-group-internal shimbun))
@@ -1056,6 +1098,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAEIAAAAQBAMAAABQPLQnAAAAElBMVEX8rKjd3Nj+7utdXFr
 <h[0-9]\\(?:[\n\t ]+[^>]+\\)?>[\t\n ]*\\([^&]+\\)[\t\n ]*&#[0-9]+"
 						     nil t)
 				 (downcase (match-string 1)))))))
+		  (paper-p)
 		  (t
 		   (setq hour-min
 			 (save-excursion
@@ -1110,6 +1153,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAEIAAAAQBAMAAABQPLQnAAAAElBMVEX8rKjd3Nj+7utdXFr
 				 shimbun-asahi-top-level-domain ">")
 		       (concat "<" serial "%" rgroup "."
 			       shimbun-asahi-top-level-domain ">")))
+	    (setq extra (and paper-p (shimbun-asahi-article-contents group)))
 	    (unless (shimbun-search-id shimbun id)
 	      (push (shimbun-create-header
 		     ;; number
@@ -1170,18 +1214,21 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAEIAAAAQBAMAAABQPLQnAAAAElBMVEX8rKjd3Nj+7utdXFr
 		     ;; references, chars, lines
 		     "" 0 0
 		     ;; xref
-		     (shimbun-expand-url
-		      (match-string (nth 0 numbers))
-		      (cond (paper-p
-			     (concat shimbun-asahi-url "paper/"))
-			    (book-p
-			     "http://book.asahi.com/")
-			    ((string-match "船橋洋一の世界ブリーフィング" from)
-			     "http://opendoors.asahi.com/syukan/briefing/")
-			    (iraq-p
-			     "http://www2.asahi.com/")
-			    (t
-			     shimbun-asahi-url))))
+		     (if paper-p
+			 (shimbun-index-url shimbun)
+		       (shimbun-expand-url
+			(match-string (nth 0 numbers))
+			(cond (book-p
+			       "http://book.asahi.com/")
+			      ((string-match "船橋洋一の世界ブリーフィング"
+					     from)
+			       "http://opendoors.asahi.com/syukan/briefing/")
+			      (iraq-p
+			       "http://www2.asahi.com/")
+			      (t
+			       shimbun-asahi-url))))
+		     ;; extra
+		     extra)
 		    headers)))
 	  (when (string-match "私のミカタ" from)
 	    (setq headers (nreverse headers))))
@@ -1196,58 +1243,11 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAEIAAAAQBAMAAABQPLQnAAAAElBMVEX8rKjd3Nj+7utdXFr
 		    numbers (cdddar subgroups)
 		    subgroups (cdr subgroups)))
 	  (throw 'stop nil))))
-    (append (shimbun-sort-headers headers)
-	    (shimbun-asahi-get-headers-for-today group jname from))))
+    (shimbun-sort-headers headers)))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-asahi)
 					 &optional range)
   (shimbun-asahi-get-headers shimbun))
-
-(defun shimbun-asahi-get-headers-for-today (group jname from)
-  "Return a list of the header for today's article.
-It works for only the groups `editorial' and `tenjin'."
-  (goto-char (point-min))
-  (let ((basename (cdr (assoc group '(("editorial" . "editorial")
-				      ("tenjin" . "column")))))
-	year cmonth month day url)
-    (when (and basename
-	       (re-search-forward
-		(eval-when-compile
-		  (concat
-		   "/\\(?:editorial\\|column\\)\\.html\"[^\n0-9]+"
-		   ;; 1. month
-		   "\\([01]?[0-9]\\)" "月"
-		   ;; 2. day
-		   "\\([0-3]?[0-9]\\)" "日付"))
-		nil t))
-      (setq year (shimbun-decode-time nil 32400)
-	    cmonth (nth 4 year)
-	    year (nth 5 year)
-	    month (string-to-number (match-string 1))
-	    day (string-to-number (match-string 2)))
-      (cond ((and (= cmonth 1) (= month 12))
-	     (decf year))
-	    ((and (= cmonth 12) (= month 1))
-	     (incf year)))
-      (setq url (format "paper/%s%d%02d%02d.html" basename year month day))
-      (list
-       (shimbun-make-header
-	;; number
-	0
-	;; subject
-	(shimbun-mime-encode-string (concat jname
-					    (format " (%d/%d)" month day)))
-	;; from
-	from
-	;; date
-	(shimbun-make-date-string year month day "07:00")
-	;; id
-	(format "<%d%02d%02d%%%s.%s>"
-		year month day group shimbun-asahi-top-level-domain)
-	;; references, chars, lines
-	"" 0 0
-	;; xref
-	(shimbun-expand-url url shimbun-asahi-url))))))
 
 (defun shimbun-asahi-multi-next-url (shimbun header url)
   (goto-char (point-min))
@@ -1272,10 +1272,47 @@ It works for only the groups `editorial' and `tenjin'."
 					    header url)
   (shimbun-asahi-multi-next-url shimbun header url))
 
+(eval-when-compile
+  (unless (fboundp 'zlib-decompress-region)
+    (defalias 'zlib-decompress-region 'ignore)))
+
+(defun shimbun-asahi-article (shimbun header outbuf)
+  "Fetch article contents."
+  (if (member (shimbun-current-group-internal shimbun) '("editorial" "tenjin"))
+      (let ((contents (cdr (assq 'Contents (shimbun-header-extra header)))))
+	(insert
+	 (with-temp-buffer
+	   (if contents
+	       (progn
+		 (set-buffer-multibyte nil)
+		 (insert contents)
+		 (base64-decode-region (point-min) (point-max))
+		 (if (and (fboundp 'zlib-decompress-region)
+			  (not (eq (symbol-function 'zlib-decompress-region)
+				   'ignore)))
+		     (zlib-decompress-region (point-min) (point-max))
+		   (let ((coding-system-for-read 'binary)
+			 (coding-system-for-write 'binary))
+		     (shell-command-on-region (point-min) (point-max)
+					      "gzip -d" nil t)))
+		 (setq contents (decode-coding-string (buffer-string) 'utf-8))
+		 (erase-buffer)
+		 (set-buffer-multibyte t)
+		 (insert "<div class=\"ArticleBody\">"
+			 contents
+			 "</div><!-- ArticleBody END -->"))
+	     (insert "<h2>No content found.</h2>\n"))
+	   (shimbun-make-contents shimbun header))))
+    (luna-call-next-method)))
+
+(luna-define-method shimbun-article :around ((shimbun shimbun-asahi)
+					     header &optional outbuf)
+  (shimbun-asahi-article shimbun header outbuf))
+
 (defun shimbun-asahi-prepare-article (shimbun header)
   "Prepare an article.
-For the groups editorial and tenjin, it tries to fetch the article for
-that day if it failed."
+For the groups editorial and tenjin, use the extra element of HEADER
+as article contents."
   (let ((case-fold-search t)
 	(group (shimbun-current-group-internal shimbun))
 	(from (shimbun-header-from-internal header)))
@@ -1307,49 +1344,8 @@ that day if it failed."
 					nil t)
 		 (goto-char (match-beginning 0))
 		 (insert "\n<!-- End of Kiji -->\n"))))))
-     ((string-equal group "editorial")
-      (let ((url (shimbun-header-xref header))
-	    (retry 0)
-	    start)
-	(while retry
-	  (if (progn
-		(while (and (re-search-forward "\
-<\\(h[0-9]+\\)[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"bdr_btm_2px"
-					       nil t)
-			    (shimbun-end-of-tag (match-string 1) t)
-			    (if start
-				(progn
-				  (delete-region
-				   (goto-char (match-beginning 0))
-				   (match-beginning 1))
-				  (insert "\n&#012;\n")
-				  (forward-char 1))
-			      (setq start (match-beginning 1)))))
-		(and start
-		     (re-search-forward "[\t\n ]*\
-\\(?:<ul[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"FollowLnk\
-\\|<li[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"TopLnk\"\
-\\|<dl[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"PrInfo\"\\)"
-					nil t)))
-	      (progn
-		(goto-char (match-beginning 0))
-		(setq retry nil)
-		(insert "\n<!-- End of Kiji -->")
-		(goto-char start)
-		(insert "<!-- Start of Kiji -->")
-		(when (string-match "/editorial\\.html\\'" url)
-		  (insert "\
-\n<p>(指定された&nbsp;url&nbsp;が&nbsp;まだ/すでに&nbsp;無いので、\
-<a href=\"" url "\">トップページ</a> から記事を取得しました)</p>\n")))
-	    (erase-buffer)
-	    (if (= retry 1)
-		(setq retry nil)
-	      (setq url "http://www.asahi.com/paper/editorial.html"
-		    retry 1
-		    start nil)
-	      (shimbun-header-set-xref header url)
-	      (shimbun-fetch-url shimbun url)
-	      (goto-char (point-min)))))))
+     ((member group '("editorial" "tenjin"))
+      )
      ((string-equal group "food")
       (when (and (re-search-forward (shimbun-content-start shimbun) nil t)
 		 (re-search-forward "[\t\n ]*<!-+[\t\n ]+Creative[\t\n ]+for"
@@ -1371,47 +1367,6 @@ that day if it failed."
 	  (goto-char (match-beginning 0))
 	  (insert "<!-- End of Kiji -->"))))
      ((string-equal group "rss"))
-     ((string-equal group "tenjin")
-      (let ((url (shimbun-header-xref header))
-	    (retry 0)
-	    start)
-	(while retry
-	  (if (and (re-search-forward "\
-<p>20[0-9][0-9]年[01]?[0-9]月[0-3]?[0-9]日（[日月火水木金土]）付</p>\
-\\(\\(?:[\t\n ]*印刷\\)?[\t\n ]*<[^>]+>\\)+[\t\n ]*"
-				      nil t)
-		   (progn
-		     (setq start (match-end 0))
-		     (re-search-forward "[\t\n ]*</p>" nil t)))
-	      (save-restriction
-		(narrow-to-region start (goto-char (match-beginning 0)))
-		(setq retry nil)
-		(insert "</p>\n<!-- End of Kiji -->")
-		(goto-char start)
-		(insert "<!-- Start of Kiji --><p>")
-		(when (string-match "/column\\.html\\'" url)
-		  (insert "\
-\n<p>(指定された&nbsp;url&nbsp;が&nbsp;まだ/すでに&nbsp;無いので、\
-<a href=\"" url "\">トップページ</a> から記事を取得しました)</p>\n"))
-		(while (re-search-forward
-			(eval-when-compile
-			  (concat "[▼"
-				  (condition-case nil
-				      (list (make-char 'mule-unicode-2500-33ff
-						       33 124))
-				    (error nil))
-				  "]"))
-			nil t)
-		  (replace-match "。</p>\n<p>　")))
-	    (erase-buffer)
-	    (if (= retry 1)
-		(setq retry nil)
-	      (setq url "http://www.asahi.com/paper/column.html"
-		    retry 1
-		    start nil)
-	      (shimbun-header-set-xref header url)
-	      (shimbun-fetch-url shimbun url)
-	      (goto-char (point-min)))))))
      ((string-match "\\`book\\(?:\\.\\|\\'\\)" group)
       (while (re-search-forward "\\(<a[\t\n ]+[^>]+>\\)\
 \[\t\n ]*<img[\t\n ]+[^>]+>[\t\n ]*</a>"

@@ -1,3 +1,14 @@
+2013-11-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Work for editorial and tenjin groups again.
+
+	* sb-asahi.el (shimbun-asahi-group-table): Update urls and regexps.
+	(shimbun-asahi-article-contents): New function.
+	(shimbun-asahi-get-headers): Save articles' contents in NOV file.
+	(shimbun-asahi-get-headers-for-today): Abolish.
+	(shimbun-article, shimbun-asahi-article): New method.
+	(shimbun-asahi-prepare-article): Do nothing for those groups.
+
 2013-10-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-content-start, shimbun-asahi-content-end):
