@@ -6167,6 +6167,58 @@ w3m regards it as an incomplete <a> tag that is not closed."
 						(frame-char-width)))))
 			  (list "-o" "display_image=off")))))))))
 
+(defvar gnus-button-url-regexp)
+
+(defun w3m-markup-urls-nobreak ()
+  "Make things that look like urls unbreakable.
+This function prevents non-link long urls from being broken (w3m tries
+to fold them)."
+  (let ((case-fold-search t)
+	(regexp
+	 (eval-when-compile
+	   ;; A copy of `gnus-button-url-regexp'.
+	   (concat
+	    "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|"
+	    "nntp\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)"
+	    "\\(//[-a-z0-9_.]+:[0-9]*\\)?"
+	    (if (string-match "[[:digit:]]" "1") ;; Support POSIX?
+		(let ((chars "-a-z0-9_=#$@~%&*+\\/[:word:]")
+		      (punct "!?:;.,"))
+		  (concat
+		   "\\(?:"
+		   ;; Match paired parentheses, e.g. in Wikipedia URLs:
+		   ;; http://thread.gmane.org/47B4E3B2.3050402@gmail.com
+		   "[" chars punct "]+" "(" "[" chars punct "]+" "[" chars "]*)"
+		   "\\(?:" "[" chars punct "]+" "[" chars "]" "\\)?"
+		   "\\|"
+		   "[" chars punct "]+" "[" chars "]"
+		   "\\)"))
+	      (concat ;; XEmacs 21.4 doesn't support POSIX.
+	       "\\([-a-z0-9_=!?#$@~%&*+\\/:;.,]\\|\\w\\)+"
+	       "\\([-a-z0-9_=#$@~%&*+\\/]\\|\\w\\)"))
+	    "\\)")))
+	(nd (make-marker))
+	st)
+    (goto-char (point-min))
+    (while (re-search-forward regexp nil t)
+      (set-marker nd (match-end 0))
+      (setq st (goto-char (match-beginning 0)))
+      (if (and (re-search-backward "\\(<\\)\\|>" nil t)
+	       (match-beginning 1))
+	  (goto-char nd)
+	(goto-char st)
+	(skip-chars-backward "\t\f ")
+	(when (string-match "&lt;" (buffer-substring (max (- (point) 4)
+							  (point-min))
+						     (point)))
+	  (forward-char -4))
+	(insert "<nobr>")
+	(goto-char nd)
+	(when (looking-at "[\t\f ]*&gt;")
+	  (goto-char (match-end 0)))
+	(insert "</nobr>")))
+    (set-marker nd nil)))
+
 (defun w3m-rendering-buffer (&optional charset)
   "Do rendering of contents in the currenr buffer as HTML and return title."
   (w3m-message "Rendering...")
@@ -6177,6 +6229,7 @@ w3m regards it as an incomplete <a> tag that is not closed."
   (unless (eq w3m-type 'w3m-m17n)
     (w3m-remove-meta-charset-tags))
   (w3m-fix-illegal-blocks)
+  (w3m-markup-urls-nobreak)
   (w3m-rendering-half-dump charset)
   (w3m-message "Rendering...done")
   (w3m-rendering-extract-title))
