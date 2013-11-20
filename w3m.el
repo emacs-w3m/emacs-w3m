@@ -6167,8 +6167,6 @@ w3m regards it as an incomplete <a> tag that is not closed."
 						(frame-char-width)))))
 			  (list "-o" "display_image=off")))))))))
 
-(defvar gnus-button-url-regexp)
-
 (defun w3m-markup-urls-nobreak ()
   "Make things that look like urls unbreakable.
 This function prevents non-link long urls from being broken (w3m tries
