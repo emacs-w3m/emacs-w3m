@@ -442,35 +442,40 @@ Buffer string between BEG and END are replaced with IMAGE."
   :action (function (lambda (widget &optional e)
 		      (eval (widget-get widget :w3m-form-action)))))
 
-(defun w3m-form-make-button (start end properties)
+(defun w3m-form-make-button (start end properties &optional readonly)
   "Make button on the region from START to END."
-  (if w3m-form-use-fancy-faces
-      (progn
-	(unless (memq (face-attribute 'w3m-form-button :box)
-		      '(nil unspecified))
-	  (and (eq ?\[ (char-after start))
-	       (eq ?\] (char-before end))
-	       (save-excursion
-		 (goto-char start)
-		 (delete-char 1)
-		 (insert " ")
-		 (goto-char end)
-		 (delete-char -1)
-		 (insert " ")
-		 (setq start (1+ start)
-		       end (1- end)))))
-	;; Empty text won't be buttonized, so we fill it with something.
-	;; "submit" seems to be a proper choice in nine cases out of ten.
-	(when (= start end)
-	  (goto-char start)
-	  (insert "submit")
-	  (setq end (point)))
-	(let ((w (widget-convert-button
-		  'w3m-form-button start end
-		  :w3m-form-action (plist-get properties 'w3m-action))))
-	  (overlay-put (widget-get w :button-overlay) 'evaporate t))
-	(add-text-properties start end properties))
-    (w3m-add-text-properties start end (append '(face w3m-form) properties))))
+  (cond (readonly
+	 (w3m-add-text-properties
+	  start end
+	  (append '(face w3m-form-inactive w3m-form-readonly t) properties)))
+	(w3m-form-use-fancy-faces
+	 (unless (memq (face-attribute 'w3m-form-button :box)
+		       '(nil unspecified))
+	   (and (eq ?\[ (char-after start))
+		(eq ?\] (char-before end))
+		(save-excursion
+		  (goto-char start)
+		  (delete-char 1)
+		  (insert " ")
+		  (goto-char end)
+		  (delete-char -1)
+		  (insert " ")
+		  (setq start (1+ start)
+			end (1- end)))))
+	 ;; Empty text won't be buttonized, so we fill it with something.
+	 ;; "submit" seems to be a proper choice in nine cases out of ten.
+	 (when (= start end)
+	   (goto-char start)
+	   (insert "submit")
+	   (setq end (point)))
+	 (let ((w (widget-convert-button
+		   'w3m-form-button start end
+		   :w3m-form-action (plist-get properties 'w3m-action))))
+	   (overlay-put (widget-get w :button-overlay) 'evaporate t))
+	 (add-text-properties start end properties))
+	(t
+	 (w3m-add-text-properties start end
+				  (append '(face w3m-form) properties)))))
 
 (defun w3m-setup-widget-faces ()
   (make-local-variable 'widget-button-face)

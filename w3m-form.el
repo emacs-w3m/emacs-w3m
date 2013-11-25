@@ -465,10 +465,13 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
 
 (eval-and-compile
   (unless (fboundp 'w3m-form-make-button)
-    (defun w3m-form-make-button (start end properties)
+    (defun w3m-form-make-button (start end properties &optional readonly)
       "Make button on the region from START to END with PROPERTIES."
-      (w3m-add-text-properties start end
-			       (append '(face w3m-form) properties)))))
+      (w3m-add-text-properties
+       start end (append (if readonly
+			     '(face w3m-form-inactive w3m-form-readonly t)
+			   '(face w3m-form)
+			   properties))))))
 
 ;;; w3mmee
 ;;
@@ -752,14 +755,16 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					       (w3m-form-get ,form ,id)
 					       w3m-form-new-session
 					       w3m-form-download)
-		   w3m-anchor-sequence ,abs-hseq))))
+		   w3m-anchor-sequence ,abs-hseq)
+		 readonly)))
 	     ((string= type "reset")
 	      (w3m-form-make-button
 	       start end
 	       `(w3m-form-field-id
 		 ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
 		 w3m-action (w3m-form-reset ,form)
-		 w3m-anchor-sequence ,abs-hseq)))
+		 w3m-anchor-sequence ,abs-hseq)
+	       readonly))
 	     ((string= type "textarea")
 	      (if (eq w3m-type 'w3mmee)
 		  (w3m-form-put form id

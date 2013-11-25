@@ -1,3 +1,15 @@
+2013-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-filter.el (w3m-filter-subst-disabled-with-readonly): Replace
+	disabled or readonly select forms, that w3m doesn't support, with
+	read-only input forms.  [emacs-w3m:12222]
+
+	* w3m-form.el (w3m-form-parse-and-fontify): Make read-only text buttons
+	for image, reset, and submit forms if readonly attr is turned on.
+
+	* w3m-ems.el, w3m-form (w3m-form-make-button): Add the optional
+	readonly argument; make a read-only text button if it is non-nil.
+
 2013-11-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make non-link urls unbreakable.  [emacs-w3m:12215]

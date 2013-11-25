@@ -394,23 +394,59 @@ href=\"#\\([a-z][-.0-9:_a-z]*\\)\"" nil t)
 	(goto-char (+ nd (- (point) st)))))))
 
 (defun w3m-filter-subst-disabled-with-readonly (url)
-  ;;  cf. [emacs-w3m:12146]
+  ;;  cf. [emacs-w3m:12146] [emacs-w3m:12222]
   "Substitute disabled attr with readonly attr in forms."
-  (let ((case-fold-search t) st nd)
+  (let ((case-fold-search t) st nd val default)
     (goto-char (point-min))
     (while (and (re-search-forward "<form[\t\n ]" nil t)
 		(w3m-end-of-tag "form"))
-      (narrow-to-region (match-beginning 0) (match-end 0))
-      (goto-char (point-min))
-      (while (re-search-forward "<[a-z]+\\(?:[\t\n ]+[a-z]+=\"[^\">]*\"\\)*\
-\[\t\n ]+\\(disabled=\"[^\">]+\"\\)[^>]*>" nil t)
-	(setq st (match-beginning 1)
-	      nd (match-end 1))
-	(when (string-match
-	       "[\t\n ]id=\"[^\">]+\""
-	       (buffer-substring (match-beginning 0) (match-end 0)))
-	  (delete-region (goto-char st) nd)
-	  (insert "readonly=\"readonly\"")))
+      (narrow-to-region (goto-char (match-beginning 0)) (match-end 0))
+      (while (re-search-forward "<[^\t\n >]+\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]\
+\\(?:\\(disabled\\(=\"[^\"]+\"\\)?\\)\\|\\(readonly\\(?:=\"[^\"]+\"\\)?\\)\\)\
+\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n /]*>" nil t)
+	(setq st (match-beginning 0)
+	      nd (match-end 0)
+	      val (if (match-beginning 1)
+		      (if (match-beginning 2)
+			  "readonly=\"readonly\""
+			"readonly")
+		    (match-string 3)))
+	(if (save-match-data
+	      (goto-char st)
+	      (re-search-forward "[\t\n ]id=\"[^\">]+\"" nd t))
+	    (if (match-beginning 1)
+		(save-restriction
+		  (narrow-to-region st nd)
+		  (delete-region (goto-char (match-beginning 1)) (match-end 1))
+		  (insert val)
+		  (goto-char (point-max)))
+	      (goto-char nd))
+	  ;; Unfortunately w3m doesn't support readonly attr in select forms,
+	  ;; so we replace them with read-only input forms.
+	  (when (and (re-search-backward "<select[\t\n ]" nil t)
+		     (w3m-end-of-tag "select")
+		     (< st (match-end 0)))
+	    (save-restriction
+	      (narrow-to-region (match-beginning 0) (match-end 0))
+	      (goto-char (+ (match-beginning 0) 8))
+	      (w3m-parse-attributes (id name)
+		(if (and id name)
+		    (progn
+		      (goto-char (point-min))
+		      (setq default
+			    (when (re-search-forward "<option\
+\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]selected\\(?:=\"[^\"]+\"\\)?\
+\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n /]*>[\t\n ]*\\([^<]+\\)" nil t)
+			      (goto-char (match-end 1))
+			      (skip-chars-backward "\t\n ")
+			      (buffer-substring (match-beginning 1) (point))))
+		      (delete-region (point-min) (point-max))
+		      (insert "<input id=\"" id "\" name=\"" name "\""
+			      (if default
+				  (concat " value=\"" default "\" ")
+				" ")
+			      val ">"))
+		  (goto-char (point-max))))))))
       (goto-char (point-max))
       (widen))))
 
