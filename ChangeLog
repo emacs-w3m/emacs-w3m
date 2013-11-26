@@ -1,3 +1,8 @@
+2013-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-filter.el (w3m-filter-subst-disabled-with-readonly):
+	Fix the width of disabled select form.
+
 2013-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-filter.el (w3m-filter-subst-disabled-with-readonly): Replace

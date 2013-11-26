@@ -445,7 +445,9 @@ href=\"#\\([a-z][-.0-9:_a-z]*\\)\"" nil t)
 			      (if default
 				  (concat " value=\"" default "\" ")
 				" ")
-			      val ">"))
+			      val
+			      ;; Fit the width to that of the select form.
+			      " size=\"13\">"))
 		  (goto-char (point-max))))))))
       (goto-char (point-max))
       (widen))))
