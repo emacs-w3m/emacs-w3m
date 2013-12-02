@@ -1012,18 +1012,28 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAEIAAAAQBAMAAABQPLQnAAAAElBMVEX8rKjd3Nj+7utdXFr
 Contents will be saved in the shimbun header as the extra element."
   (let ((case-fold-search t)
 	contents)
-    (goto-char (point-min))
     (cond ((string-equal group "editorial")
+	   (goto-char (point-max))
+	   (shimbun-retrieve-url "http://www.asahi.com/paper/editorial2.html")
+	   (goto-char (point-min))
 	   (let (tem)
 	     (while (and (re-search-forward "\
-<[^\t\n >]+[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*id=\"Edit[0-9]*\"[^>]*>\
-\\(?:[\t\n ]*<[^>]*>\\)*[\t\n ]*\\([^<]+\\)" nil t)
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"ArticleTitle\"" nil t)
+			 (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"Title\"" nil t)
+			 (shimbun-end-of-tag "div")
 			 (progn
-			   (push (shimbun-replace-in-string (match-string 1)
-							    "[\t ]+\\'" "")
-				 tem)
-			   (re-search-forward "\
-<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"BodyTxt\"" nil t))
+			   (goto-char (match-beginning 2))
+			   (if (re-search-forward "<h[0-9]>[\t\n ]*\\([^<]+\\)"
+						  (match-end 2) t)
+			       (progn
+				 (push (shimbun-replace-in-string
+					(match-string 1) "[\t ]+\\'" "")
+				       tem)
+				 (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"ArticleText\"" nil t))
+			     (goto-char (match-end 0))
+			     nil))
 			 (shimbun-end-of-tag "div" t))
 	       (push (match-string 3) tem))
 	     (setq tem (nreverse tem))
@@ -1032,7 +1042,10 @@ Contents will be saved in the shimbun header as the extra element."
 				      "<p><h2>" (pop tem) "</h2></p>\n"
 				      (pop tem) "\n")))))
 	  ((string-equal group "tenjin")
-	   (when (and (search-forward "▼" nil t)
+	   (goto-char (point-min))
+	   (when (and (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"ArticleBody\"" nil t)
+		      (search-forward "▼" nil t)
 		      (re-search-backward
 		       "<p\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>" nil t)
 		      (shimbun-end-of-tag "p" t))

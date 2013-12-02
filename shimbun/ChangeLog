@@ -1,3 +1,8 @@
+2013-12-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-article-contents):
+	Work for editorial and tenjin groups again.
+
 2013-11-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Work for editorial and tenjin groups again.
