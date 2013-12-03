@@ -195,9 +195,9 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
 	(while (and (re-search-forward
 		     "[\t\n ]*<div\\(?:[\t\n ]*>\\|[\t\n ]+[^>]+>\\)" nil t)
 		    (w3m-end-of-tag "div"))
-	  (goto-char (match-end 0))
-	  (insert "\n")
 	  (goto-char (match-beginning 0))
+	  (insert "\n")
+	  (goto-char (1+ (match-end 0)))
 	  (insert "\n"))
 	(goto-char (point-min))
 	(while (re-search-forward "^[\t <>]+$" nil t)
