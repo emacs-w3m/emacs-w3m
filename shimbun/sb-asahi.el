@@ -1015,8 +1015,8 @@ Contents will be saved in the shimbun header as the extra element."
     (cond ((string-equal group "editorial")
 	   (goto-char (point-max))
 	   (shimbun-retrieve-url "http://www.asahi.com/paper/editorial2.html")
-	   (goto-char (point-min))
 	   (let (tem)
+	     (goto-char (point-min))
 	     (while (and (re-search-forward "\
 <div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"ArticleTitle\"" nil t)
 			 (re-search-forward "\
@@ -1036,6 +1036,7 @@ Contents will be saved in the shimbun header as the extra element."
 			     nil))
 			 (shimbun-end-of-tag "div" t))
 	       (push (match-string 3) tem))
+	     (goto-char (point-max))
 	     (setq tem (nreverse tem))
 	     (while tem
 	       (setq contents (concat contents
@@ -1055,7 +1056,8 @@ Contents will be saved in the shimbun header as the extra element."
 				      (split-string (match-string 3)
 						    "[\t\n 　]*▼[\t\n 　]*" t)
 				      "。\n</p>\n<p>\n　")
-			   "\n</p>\n")))))
+			   "\n</p>\n")))
+	   (goto-char (point-max))))
     (with-temp-buffer
       (set-buffer-multibyte nil)
       (insert (if contents
