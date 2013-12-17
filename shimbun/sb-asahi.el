@@ -146,7 +146,7 @@ Every `.' in NAME will be replaced with `/'."
 		"\\([^/]+\\)"
 		"\\(?:/update/"
 		;; 3 and 4. serial number
-		"\\([0-9]+\\)\\)?/\\([a-z]*[0-9]+\\)"
+		"\\([0-9]+\\)\\)?/\\([0-9a-z]*[0-9]+\\)"
 		"\\.html\\?ref=rss\\)"
 		"\"" s0 ">" s0 "<title>" s0
 		;; 5. subject
