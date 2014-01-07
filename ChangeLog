@@ -1,3 +1,10 @@
+2014-01-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-static-if, w3m-static-when, w3m-static-unless)
+	(w3m-static-cond): Add edebug spec.
+
+	* octet.el: Fix edebug spec for the static-* macros.
+
 2013-12-03  Tatsuya Kinoshita  <tats@vega.ocn.ne.jp>
 
 	* mew-w3m.el (mew-w3m-region): Set point to the end of <div> tag to

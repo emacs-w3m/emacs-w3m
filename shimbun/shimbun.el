@@ -1,6 +1,6 @@
 ;;; shimbun.el --- interfacing with web newspapers -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2013 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2014 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
@@ -72,6 +72,13 @@
 
 (eval-when-compile (require 'cl))
 (eval-when-compile (require 'static))
+
+;; Make edebug work for the static-* macros in Emacs 24.4+.
+(def-edebug-spec static-cond (&rest (&rest def-form)))
+(def-edebug-spec static-defconst (&define name def-body [&optional def-body]))
+(def-edebug-spec static-if (&rest def-form))
+(def-edebug-spec static-unless (&rest def-form))
+(def-edebug-spec static-when (&rest def-form))
 
 (require 'mcharset)
 (require 'eword-encode)

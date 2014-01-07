@@ -1,6 +1,6 @@
 ;;; w3m-util.el --- Utility macros and functions for emacs-w3m
 
-;; Copyright (C) 2001-2013 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2014 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -87,12 +87,14 @@
   "Like `if', except that it evaluates COND at compile-time."
   (if (eval cond) then `(progn  ,@else)))
 (put 'w3m-static-if 'lisp-indent-function 2)
+(def-edebug-spec w3m-static-if (&rest def-form))
 
 (put 'w3m-static-when 'lisp-indent-function 1)
 (defmacro w3m-static-when (cond &rest body)
   "Like `when', but evaluate COND at compile time."
   (if (eval cond)
       `(progn ,@body)))
+(def-edebug-spec w3m-static-when (&rest def-form))
 
 (put 'w3m-static-unless 'lisp-indent-function 1)
 (defmacro w3m-static-unless (cond &rest body)
@@ -100,6 +102,7 @@
   (if (eval cond)
       nil
     `(progn ,@body)))
+(def-edebug-spec w3m-static-unless (&rest def-form))
 
 (defmacro w3m-static-cond (&rest clauses)
   "Like `cond', except that it evaluates CONDITION part of each clause at
@@ -109,6 +112,7 @@ compile-time."
     (setq clauses (cdr clauses)))
   (if clauses
       (cons 'progn (cdr (car clauses)))))
+(def-edebug-spec w3m-static-cond (&rest (&rest def-form)))
 
 (put 'w3m-condition-case 'lisp-indent-function 2)
 (defmacro w3m-condition-case (var bodyform &rest handlers)

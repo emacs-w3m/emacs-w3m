@@ -1,3 +1,7 @@
+2014-01-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el: Fix edebug spec for the static-* macros.
+
 2013-12-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-group-table): Update regexp matching

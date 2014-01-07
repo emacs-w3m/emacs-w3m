@@ -1,6 +1,6 @@
 ;;; octet.el --- An octet stream viewer.
 
-;; Copyright (C) 2000, 2002, 2003, 2004, 2005, 2010
+;; Copyright (C) 2000, 2002, 2003, 2004, 2005, 2010, 2014
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
@@ -72,6 +72,13 @@
 (require 'mime)    ; SEMI
 (require 'static)
 (require 'w3m-util); w3m-insert-string
+
+;; Make edebug work for the static-* macros in Emacs 24.4+.
+(def-edebug-spec static-cond (&rest (&rest def-form)))
+(def-edebug-spec static-defconst (&define name def-body [&optional def-body]))
+(def-edebug-spec static-if (&rest def-form))
+(def-edebug-spec static-unless (&rest def-form))
+(def-edebug-spec static-when (&rest def-form))
 
 (defvar octet-temp-directory temporary-file-directory
   "A directory to create temporal files.")
