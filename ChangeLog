@@ -1,3 +1,9 @@
+2014-01-08  Mirko M.  <mirko.m@hotmail.com>
+
+	* w3m-util.el (w3m-delete-frames-and-windows): Don't clear the windows
+	layout that used to be before visiting an emacs-w3m buffer.
+	[emacs-w3m:12273]
+
 2014-01-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-static-if, w3m-static-when, w3m-static-unless)

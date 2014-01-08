@@ -802,8 +802,8 @@ objects will not be deleted:
 		       flag))
 		    (delete-frame frame)
 		  (delete-window window))
-	      (unless one-window-p
-		(delete-window window)))))))))
+	      ;; do not clear the layout.
+	      (switch-to-buffer nil))))))))
 
 
 ;;; Navigation:
