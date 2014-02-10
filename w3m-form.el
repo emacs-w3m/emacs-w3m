@@ -1,6 +1,6 @@
 ;;; w3m-form.el --- Stuffs to handle <form> tag
 
-;; Copyright (C) 2001-2013 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2014 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -1994,8 +1994,10 @@ selected rather than \(as usual\) some other window.  See
 			(if new-session
 			    'w3m-goto-url-new-session
 			  'w3m-goto-url))
-		      (concat (w3m-url-strip-query url)
-			      "?" (w3m-form-make-form-data form))))
+		      (let ((query (w3m-form-make-form-data form)))
+			(if (zerop (length query))
+			    url
+			  (concat (w3m-url-strip-query url) "?" query)))))
 	    (t
 	     (w3m-message "This form's method has not been supported: %s"
 			  (let (print-level print-length)

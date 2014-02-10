@@ -1,6 +1,6 @@
 ;;; w3m-filter.el --- filtering utility of advertisements on WEB sites -*- coding: utf-8 -*-
 
-;; Copyright (C) 2001-2008, 2012, 2013 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2008, 2012-2014 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -396,21 +396,26 @@ href=\"#\\([a-z][-.0-9:_a-z]*\\)\"" nil t)
 (defun w3m-filter-subst-disabled-with-readonly (url)
   ;;  cf. [emacs-w3m:12146] [emacs-w3m:12222]
   "Substitute disabled attr with readonly attr in forms."
-  (let ((case-fold-search t) st nd val default)
+  (let ((case-fold-search t) st opt nd val default)
     (goto-char (point-min))
-    (while (re-search-forward "\
-<\\(?:input\\|\\(option\\)\\|textarea\\)\
-\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]\
-\\(?:\\(disabled\\(=\"[^\"]+\"\\)?\\)\\|\\(readonly\\(?:=\"[^\"]+\"\\)?\\)\\)\
-\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n /]*>" nil t)
-      (setq st (match-beginning 0)
-	    nd (match-end 0)
-	    val (if (match-beginning 2)
-		    (if (match-beginning 3)
+    (while (and (re-search-forward "\
+<\\(?:input\\|\\(option\\)\\|textarea\\)[\t\n ]" nil t)
+		(progn
+		  (setq st (match-beginning 0)
+			opt (match-beginning 1))
+		  (search-forward ">" nil t))
+		(progn
+		  (setq nd (match-end 0))
+		  (goto-char st)
+		  (re-search-forward "[\t\n ]\
+\\(?:\\(disabled\\(=\"[^\"]+\"\\)?\\)\\|\\(readonly\\(?:=\"[^\"]+\"\\)?\\)\\)"
+				     nd t)))
+      (setq val (if (match-beginning 1)
+		    (if (match-beginning 2)
 			"readonly=\"readonly\""
 		      "readonly")
-		  (match-string 4)))
-      (if (match-beginning 1)
+		  (match-string 3)))
+      (if opt
 	  ;; Unfortunately w3m doesn't support readonly attr in select forms,
 	  ;; so we replace them with read-only input forms.
 	  (if (and (re-search-backward "<select[\t\n ]" nil t)
@@ -440,10 +445,10 @@ href=\"#\\([a-z][-.0-9:_a-z]*\\)\"" nil t)
 				" size=\"13\">"))
 		    (goto-char (point-max)))))
 	    (goto-char nd))
-	(if (match-beginning 2)
+	(if (match-beginning 1)
 	    (save-restriction
 	      (narrow-to-region st nd)
-	      (delete-region (goto-char (match-beginning 2)) (match-end 2))
+	      (delete-region (goto-char (match-beginning 1)) (match-end 1))
 	      (insert val)
 	      (goto-char (point-max)))
 	  (goto-char nd))))))
