@@ -323,7 +323,7 @@ If no field in forward, return nil without moving."
 	  (setq bufs (cons (cons number (cons name value)) bufs))))
 	(setq plist (cddr plist))))
     (when bufs
-      (setq bufs (sort bufs (lambda (x y) (< (car x) (car y)))))
+      (setq bufs (sort bufs #'car-less-than-car))
       (if (eq (w3m-form-enctype form) 'multipart/form-data)
 	  (let ((boundary (apply 'format "--_%d_%d_%d" (current-time)))
 		file type)
@@ -955,8 +955,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
     (setq w3m-current-forms (if (eq w3m-type 'w3mmee)
 				forms
 			      (mapcar 'cdr
-				      (sort forms (lambda (x y)
-						    (< (car x)(car y)))))))
+				      (sort forms #'car-less-than-car))))
     (w3m-form-resume (or reuse-forms w3m-current-forms))))
 
 (defun w3m-form-replace (string &optional invisible)

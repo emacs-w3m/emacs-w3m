@@ -1,3 +1,11 @@
+2014-02-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-url-encode-string): Encode `:' and `/'.
+	Suggested by Dan Jacobson <jidanni@jidanni.org>.
+
+	* w3m-form.el (w3m-form-make-form-data, w3m-form-parse-and-fontify):
+	Use car-less-than-car.
+
 2014-02-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-filter.el (w3m-filter-subst-disabled-with-readonly): Relax regexp.
