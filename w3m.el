@@ -1,6 +1,6 @@
 ;;; w3m.el --- an Emacs interface to w3m -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2000-2013 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000-2014 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -1980,12 +1980,16 @@ Here are some predefined functions which can be used for those ways:
 \\|cse\\?cx=\\|custom\\?\\(?:q\\|hl\\)=\\)"
      ,(concat "<a[^>]+?href=" w3m-html-string-regexp "[^>]*>[\t\n ]*"
 	      "\\(?:\\(?:</?span[^>]*>[\t\n ]*\\)*<span[^>]+>Next</span>"
-	      "\\|\\(?:</?span[^>]*>[\t\n ]*\\)*"
-	      "<b>\\(?:下一頁\\|次へ\\|다음\\)</b>\\)")
+	      "\\|\\(?:</?span[^>]*>[\t\n ]*\\)*\\(?:<b>\\)?"
+	      "\\(?:下一頁\\|&#19979;&#19968;&#38913;"
+	      "\\|次へ\\|&#27425;&#12408;"
+	      "\\|다음\\|&#45796;&#51020;\\)[\t\n ]*<\\)")
      ,(concat "<a[^>]+?href=" w3m-html-string-regexp "[^>]*>[\t\n ]*"
 	      "\\(?:\\(?:</?span[^>]*>[\t\n ]*\\)*<span[^>]+>Previous</span>"
-	      "\\|\\(?:</?span[^>]*>[\t\n ]*\\)*"
-	      "<b>\\(?:上一頁\\|前へ\\|이전\\)</b>\\)")
+	      "\\|\\(?:</?span[^>]*>[\t\n ]*\\)*\\(?:<b>\\)?"
+	      "\\(?:上一頁\\|&#19978;&#19968;&#38913;"
+	      "\\|前へ\\|&#21069;&#12408;"
+	      "\\|이전\\|&#51060;&#51204;\\)[\t\n ]*<\\)")
      nil nil)
     (w3m-relationship-simple-estimate
      "\\`https?://www\\.google\\.[^/]+/gwt/n\\?u="
