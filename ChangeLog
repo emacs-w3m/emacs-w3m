@@ -1,3 +1,8 @@
+2014-03-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-markup-urls-nobreak): Don't modify textarea.
+	[emacs-w3m:12308]
+
 2014-03-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-relationship-estimate-rules): Update regexps for Google.

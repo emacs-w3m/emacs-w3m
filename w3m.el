@@ -6174,8 +6174,9 @@ w3m regards it as an incomplete <a> tag that is not closed."
 (defun w3m-markup-urls-nobreak ()
   "Make things that look like urls unbreakable.
 This function prevents non-link long urls from being broken (w3m tries
-to fold them)."
+to fold them).  Things in textarea won't be modified."
   (let ((case-fold-search t)
+	(beg (point-min))
 	(regexp
 	 (eval-when-compile
 	   ;; A copy of `gnus-button-url-regexp'.
@@ -6201,25 +6202,40 @@ to fold them)."
 	    "\\)")))
 	(nd (make-marker))
 	st)
-    (goto-char (point-min))
-    (while (re-search-forward regexp nil t)
-      (set-marker nd (match-end 0))
-      (setq st (goto-char (match-beginning 0)))
-      (if (and (re-search-backward "\\(<\\)\\|>" nil t)
-	       (match-beginning 1))
+    (goto-char beg)
+    (while beg
+      (narrow-to-region
+       beg
+       (if (re-search-forward "[\t\n ]*\\(<textarea[\t\n ]\\)" nil t)
+	   (prog1
+	       (match-beginning 0)
+	     (goto-char beg)
+	     (setq beg (match-beginning 1)))
+	 (point-max)))
+      (while (re-search-forward regexp nil t)
+	(set-marker nd (match-end 0))
+	(setq st (goto-char (match-beginning 0)))
+	(if (and (re-search-backward "\\(<\\)\\|>" nil t)
+		 (match-beginning 1))
+	    (goto-char nd)
+	  (goto-char st)
+	  (skip-chars-backward "\t\f ")
+	  (if (string-match "&lt;" (buffer-substring (max (- (point) 4)
+							  (point-min))
+						     (point)))
+	      (forward-char -4)
+	    (goto-char st))
+	  (insert "<nobr>")
 	  (goto-char nd)
-	(goto-char st)
-	(skip-chars-backward "\t\f ")
-	(if (string-match "&lt;" (buffer-substring (max (- (point) 4)
-							(point-min))
-						   (point)))
-	    (forward-char -4)
-	  (goto-char st))
-	(insert "<nobr>")
-	(goto-char nd)
-	(when (looking-at "[\t\f ]*&gt;")
-	  (goto-char (match-end 0)))
-	(insert "</nobr>")))
+	  (when (looking-at "[\t\f ]*&gt;")
+	    (goto-char (match-end 0)))
+	  (insert "</nobr>")))
+      (goto-char (point-max))
+      (widen)
+      (setq beg (and (not (eobp))
+		     (progn
+		       (goto-char beg)
+		       (w3m-end-of-tag "textarea")))))
     (set-marker nd nil)))
 
 (defun w3m-rendering-buffer (&optional charset)
