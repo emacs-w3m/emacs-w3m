@@ -1002,7 +1002,8 @@ ___<TAG ...>___
 			      (1- num))))
 		(setq st1 (car (match-data)) ;; (match-beginning 0)
 		      st2 (nth 3 (match-data)) ;; (match-end 1)
-		      st3 (nth 1 (match-data)))) ;; (match-end 0)
+		      ;; There may be only whitespace between <tag>...</tag>.
+		      st3 (min nd3 (nth 1 (match-data))))) ;; (match-end 0)
 	    (search-forward ">")
 	    (setq nd1 (nth 1 (match-data))) ;; (match-end 0)
 	    (goto-char init)
@@ -1097,7 +1098,8 @@ ___<TAG ...>___
 			      (1+ num))))
 		(setq nd1 (nth 3 (match-data)) ;; (match-end 1)
 		      nd2 (nth 2 (match-data)) ;; (match-beginning 1)
-		      nd3 (car (match-data)))) ;; (match-beginning 0)
+		      ;; There may be only whitespace between <tag>...</tag>.
+		      nd3 (max st3 (car (match-data))))) ;; (match-beginning 0)
 	    (search-backward "<")
 	    (setq st1 (car (match-data))) ;; (match-beginning 0)
 	    (goto-char init)

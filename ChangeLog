@@ -1,3 +1,8 @@
+2014-04-21  Michael Ernst  <mernst@cs.washington.edu>
+
+	* w3m-util.el (w3m-beginning-of-tag, w3m-end-of-tag): Work correctly
+	for the case there is only whitespace between <tag> and </tag>.
+
 2014-03-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-markup-urls-nobreak): Don't modify textarea.
