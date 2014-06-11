@@ -4107,8 +4107,9 @@ resizing an image."
 	 (allow-non-secure-images (not w3m-confirm-leaving-secure-page))
 	 scale image)
     (w3m-add-text-properties start end '(w3m-image-status on))
-    (setq scale (truncate (* iscale rate 0.01)))
+    (setq scale (* iscale rate 0.01))
     (w3m-add-text-properties start end (list 'w3m-image-scale scale))
+    (setq scale (round scale))
     (if (get-text-property start 'w3m-image-redundant)
 	(progn
 	  ;; Insert a dummy string instead of a redundant image.
@@ -4185,10 +4186,10 @@ CHANGED-RATE is currently changed rate / 100."
 	       (setq changed-rate (* changed-rate
 				     (/ percent 100.0)))))
 	    ((eq char ?-)
-	     (let ((percent (- 100 (if rate
-				       (if (> rate 99) 99
-					 rate)
-				     w3m-resize-image-scale))))
+	     (let ((percent (/ 10000.0 (+ 100 (if rate
+                                                  (if (> rate 99) 99
+                                                    rate)
+                                                w3m-resize-image-scale)))))
 	       (w3m-resize-inline-image-internal image percent)
 	       (setq changed-rate (* changed-rate
 				     (/ percent 100.0)))))
@@ -4228,9 +4229,15 @@ the `w3m-resize-image-scale' variable."
 
 (defun w3m-zoom-out-image (&optional rate)
   "Zoom out an image on the point.
-Numeric prefix specifies how many percent the image is shrunk by
-\(30 means shrinking the image by 70%).  The default is the value of
-the `w3m-resize-image-scale' variable."
+Numeric prefix specifies how many percent the image is shrunk by.
+The default is the value of the `w3m-resize-image-scale'
+variable.
+
+The shrink percentage is interpreted as if the current image size
+is 100+percent and it is to be reduced back to 100.  This is the
+inverse of `w3m-zoom-in-image' so zooming in then back out gives
+the original again."
+
   (interactive "P")
   (unless (w3m-display-graphic-p)
     (error "Can't display images in this environment"))
@@ -4240,7 +4247,7 @@ the `w3m-resize-image-scale' variable."
     (if url
 	(w3m-resize-inline-image-internal
 	 url
-	 (- 100 (or rate w3m-resize-image-scale)))
+	 (/ 10000.0 (+ 100 (or rate w3m-resize-image-scale))))
       (w3m-message "No image at point"))))
 
 (defun w3m-decode-entities (&optional keep-properties)

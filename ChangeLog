@@ -1,3 +1,13 @@
+2014-06-11  Kevin Ryde  <user42_kevin@yahoo.com.au>
+
+	* w3m.el (w3m-zoom-out-image, w3m-resize-image-interactive): Treat
+	zoom-out percentage as inverse of zoom-in, so "in" then "out" returns
+	to the original size.
+	(w3m-resize-inline-image-internal): Set w3m-image-scale property to
+	flonum to avoid integer round-off when resizing in and out.  Use
+	`round' rather than `truncate' when calling "convert" so flonum
+	round-off 99.999 is original 100%.
+
 2014-06-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-content-type-alist): Don't bug out for the case where
