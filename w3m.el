@@ -1168,17 +1168,18 @@ when we implement the mailcap parser to set `w3m-content-type-alist'.")
 			    (eq 'w3m-browse-url
 				(symbol-value 'browse-url-browser-function)))
 			default
-		      (if (functionp browse-url-browser-function)
-			  (symbol-value 'browse-url-browser-function)
-			(catch 'browser
-			  (let ((alist browse-url-browser-function))
-			    (while alist
-			      (when (string-match (caar alist) "index.html")
-				(throw 'browser (cdar alist)))
-			      (setq alist (cdr alist)))
-			    (message "Found no html handler in \
+		      (if (stringp (car-safe
+				    (car-safe browse-url-browser-function)))
+			  (catch 'browser
+			    (let ((alist browse-url-browser-function))
+			      (while alist
+				(when (string-match (caar alist) "index.html")
+				  (throw 'browser (cdar alist)))
+				(setq alist (cdr alist)))
+			      (message "Found no html handler in \
 browse-url-browser-function to put in w3m-content-type-alist.")
-			    default))))))
+			      default))
+			browse-url-browser-function))))
 		(when (w3m-which-command "netscape")
 		  (list "netscape" 'url)))))
 	 (image-viewer (or fiber-viewer
