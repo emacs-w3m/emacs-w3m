@@ -1,3 +1,11 @@
+2014-06-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (install-lisp): Compress .el files.
+	* doc/Makefile.in (install): Compress info files.
+
+	* aclocal.m4 (AC_COMPRESS_INSTALL): New function.
+	* configure.in: Use it.
+
 2014-06-11  Kevin Ryde  <user42_kevin@yahoo.com.au>
 
 	* w3m.el (w3m-zoom-out-image, w3m-resize-image-interactive): Treat

@@ -425,6 +425,11 @@ may also include the Gnus directory in it separated with @samp{:}):
 % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
 @end example
 
+By default, the installer (i.e. @samp{make install}) will compress the
+Lisp source files and info files by gzip in the installation directories.
+If you don't want those files to be compressed, use the configure option
+@samp{--without-compress-install}.
+
 @item
 Just run @samp{make} and @samp{make install}.  See also the next step if
 you are using XEmacs.

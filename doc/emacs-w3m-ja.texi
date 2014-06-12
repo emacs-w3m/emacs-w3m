@@ -446,6 +446,11 @@ Emacs-w3m $B$r(B CVS $B$G<hF@$7$?$N$J$i$P!"(B@samp{configure} $B%9%/%j%W%H$
 % ./configure --with-addpath=/opt/share/apel:/opt/share/flim
 @end example
 
+$B%G%U%)%k%H$G$O%$%s%9%H!<%i(B ($B$D$^$j(B @samp{make install}) $B$O(B gzip $B$K$h$C$F(B
+$B%$%s%9%H!<%k$5$l$k(B Lisp $B$N%=!<%9%U%!%$%k$H(B info $B%U%!%$%k$r05=L$7$^$9!#$b(B
+$B$7$=$l$i$N%U%!%$%k$,05=L$5$l$k$3$H$rK>$^$J$$$N$G$"$l$P!"(Bconfigure $B%*%W%7%g(B
+$B%s$N(B {--without-compress-install} $B$r;H$C$F$/$@$5$$!#(B
+
 @item
 $BC1$K(B @samp{make} $B$H(B @samp{make install} $B$r<B9T$7$^$9!#(BXEmacs $B$r;H$C$F$$(B
 $B$k>l9g$O!"$5$i$K<!$NCJMn$b8+$F$/$@$5$$!#(B

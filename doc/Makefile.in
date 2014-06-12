@@ -10,6 +10,8 @@ srcdir       = @srcdir@
 subdir       = doc
 top_srcdir   = @top_srcdir@
 ADDITIONAL_LOAD_PATH = @ADDITIONAL_LOAD_PATH@
+GZIP_PROG    = @GZIP_PROG@
+COMPRESS_INSTALL = @COMPRESS_INSTALL@
 
 SHELL        = /bin/sh
 
@@ -71,20 +73,20 @@ install: $(INFO_DEPS)
 	$(SHELL) $(top_srcdir)/mkinstalldirs "$(DESTDIR)$(infodir)"
 	@for file in $(INFO_DEPS); do\
 	  if test -f $$file; then\
-	    for old in `cd "$(DESTDIR)$(infodir)" && echo $$file-[0-9]`; do\
-	      if test -f "$(DESTDIR)$(infodir)/$$old"; then\
-	        echo "rm -f \"$(DESTDIR)$(infodir)/$$old\"";\
-	        rm -f "$(DESTDIR)$(infodir)/$$old";\
-	      fi;\
-	    done;\
+	    rm -f "$(DESTDIR)$(infodir)"/$$file{,-[0-9],.info,.info-[0-9]};\
+	    rm -f "$(DESTDIR)$(infodir)"/$$file{,-[0-9],.info,.info-[0-9]}.gz;\
 	    echo "$(INSTALL_DATA) $$file \"$(DESTDIR)$(infodir)/$$file\"";\
 	    $(INSTALL_DATA) $$file "$(DESTDIR)$(infodir)/$$file";\
+	    if test $(COMPRESS_INSTALL) = yes -a -n "$(GZIP_PROG)"; then\
+	      $(GZIP_PROG) -9n "$(DESTDIR)$(infodir)/$$file";\
+	    fi;\
 	  else : ; fi;\
 	done
 	@if $(SHELL) -c $(INSTALL_INFO)' --version| sed 1q\
 		| fgrep -s -v -i debian'>/dev/null 2>&1; then\
 	  for file in $(INFO_DEPS); do\
-	    if test -f "$(DESTDIR)$(infodir)/$$file"; then\
+	    if test -f "$(DESTDIR)$(infodir)/$$file"\
+	      -o -f "$(DESTDIR)$(infodir)/$$file.gz"; then\
 	      echo "$(INSTALL_INFO) --info-dir=\"$(DESTDIR)$(infodir)\" \"$(DESTDIR)$(infodir)/$$file\"";\
 	      $(INSTALL_INFO) --info-dir="$(DESTDIR)$(infodir)" "$(DESTDIR)$(infodir)/$$file" || :;\
 	    else : ; fi\

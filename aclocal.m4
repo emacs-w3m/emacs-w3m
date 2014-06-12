@@ -268,3 +268,25 @@ AC_DEFUN(AC_ADD_LOAD_PATH,
     AC_MSG_ERROR([Process couldn't proceed.  See the above messages.])
   fi
   AC_SUBST(ADDITIONAL_LOAD_PATH)])
+
+AC_DEFUN(AC_COMPRESS_INSTALL,
+ [dnl Check for the `--with(out)-compress-install' option.
+  AC_PATH_PROG(GZIP_PROG, gzip)
+  AC_ARG_WITH(compress-install,
+	[  --without-compress-install
+                          do not compress .el and .info files when installing],
+	[if test "${withval}" = no; then
+		COMPRESS_INSTALL=no;
+	  else
+		if test -n "${GZIP_PROG}"; then
+			COMPRESS_INSTALL=yes;
+		else
+			COMPRESS_INSTALL=no;
+		fi;
+	  fi],
+	[if test -n "${GZIP_PROG}"; then
+		COMPRESS_INSTALL=yes;
+	  else
+		COMPRESS_INSTALL=no;
+	  fi])
+  AC_SUBST(COMPRESS_INSTALL)])

@@ -9,6 +9,8 @@ srcdir       = @srcdir@
 PACKAGEDIR   = @PACKAGEDIR@
 ICONDIR      = @ICONDIR@
 ADDITIONAL_LOAD_PATH = @ADDITIONAL_LOAD_PATH@
+GZIP_PROG    = @GZIP_PROG@
+COMPRESS_INSTALL = @COMPRESS_INSTALL@
 
 SHELL        = /bin/sh
 
@@ -69,14 +71,19 @@ install-lisp: lisp
 	    case "$$p" in\
 	      $(IGNORES)) ;;\
 	      w3m-ems\.el) if test -z "$(XEMACSDEBUG)"; then\
-	         echo "$(INSTALL_DATA) $$p \"$(DESTDIR)$(lispdir)/$$p\"";\
-	         $(INSTALL_DATA) $$p "$(DESTDIR)$(lispdir)/$$p"; fi;;\
+		echo "$(INSTALL_DATA) $$p \"$(DESTDIR)$(lispdir)/$$p\"";\
+		$(INSTALL_DATA) $$p "$(DESTDIR)$(lispdir)/$$p"; fi;;\
 	      w3m-xmas\.el) if test -n "$(XEMACSDEBUG)"; then\
-	         echo "$(INSTALL_DATA) $$p \"$(DESTDIR)$(lispdir)/$$p\"";\
-	         $(INSTALL_DATA) $$p "$(DESTDIR)$(lispdir)/$$p"; fi;;\
+		echo "$(INSTALL_DATA) $$p \"$(DESTDIR)$(lispdir)/$$p\"";\
+		$(INSTALL_DATA) $$p "$(DESTDIR)$(lispdir)/$$p"; fi;;\
 	      *) echo "$(INSTALL_DATA) $$p \"$(DESTDIR)$(lispdir)/$$p\"";\
-	         $(INSTALL_DATA) $$p "$(DESTDIR)$(lispdir)/$$p";;\
+		$(INSTALL_DATA) $$p "$(DESTDIR)$(lispdir)/$$p";;\
 	    esac;\
+	    if test $(COMPRESS_INSTALL) = yes -a -n "$(GZIP_PROG)"\
+		-a -f "$$p"c -a -f "$(DESTDIR)$(lispdir)/$$p"; then\
+		rm -f "$(DESTDIR)$(lispdir)/$$p".gz;\
+		$(GZIP_PROG) -9n "$(DESTDIR)$(lispdir)/$$p";\
+	    fi;\
 	  fi;\
 	done;\
 	for p in *.elc; do\
@@ -95,6 +102,11 @@ install-lisp: lisp
 	  for p in `cd shimbun && echo *.el`; do\
 	    echo "$(INSTALL_DATA) shimbun/$$p \"$(DESTDIR)$(lispdir)/$$p\"";\
 	    $(INSTALL_DATA) shimbun/$$p "$(DESTDIR)$(lispdir)/$$p";\
+	    if test $(COMPRESS_INSTALL) = yes -a -n "$(GZIP_PROG)"\
+		-a -f "shimbun/$$p"c; then\
+		rm -f "$(DESTDIR)$(lispdir)/$$p".gz;\
+		$(GZIP_PROG) -9n "$(DESTDIR)$(lispdir)/$$p";\
+	    fi;\
 	  done;\
 	  for p in `cd shimbun && echo *.elc`; do\
 	    echo "$(INSTALL_DATA) shimbun/$$p \"$(DESTDIR)$(lispdir)/$$p\"";\
@@ -189,7 +201,7 @@ tarball: CVS/Root CVS/Repository
 	cd $(DISTDIR) && autoconf
 	chmod 755 $(DISTDIR)/configure $(DISTDIR)/install-sh
 	tar -cf `basename $(TARBALL) .gz` $(DISTDIR)
-	gzip -9 `basename $(TARBALL) .gz`
+	$(GZIP_PROG) -9 `basename $(TARBALL) .gz`
 	rm -rf $(DISTDIR)
 
 clean:
