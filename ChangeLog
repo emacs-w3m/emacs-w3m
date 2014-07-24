@@ -1,3 +1,8 @@
+2014-07-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-filter.el (w3m-filter-add-name-anchors): Subdivide long regexp.
+	[emacs-w3m:12339]
+
 2014-06-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (install-lisp): Compress .el files.
