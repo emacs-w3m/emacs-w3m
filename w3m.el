@@ -2768,9 +2768,11 @@ db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?\\'\
 
 (defvar w3m-mode-map nil "Keymap for emacs-w3m buffers.")
 
-(defvar w3m-url-completion-map (let ((map (make-sparse-keymap)))
-				 (define-key map " " 'self-insert-command)
-				 map)
+(defvar w3m-url-completion-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map " " 'self-insert-command)
+    (define-key map "\M-n" 'w3m-input-url-next-history-element)
+    map)
   "Keymap that overrides the default keymap when `w3m-input-url' runs.
 By default the SPC key is bound to simply a space.  If you want it to
 complete a url as well as the TAB key, add this to `w3m-init-file':
@@ -4623,6 +4625,31 @@ http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
        (t
 	(concat "http://" url))))))
 
+(defcustom w3m-input-url-provide-initial-content nil
+  "Provide an initial minibuffer content (if any) when entering a url.
+A url string is not worth editing in most cases since a url thing is
+generally a list of arbitrary letters, not a human readable one.  So,
+we provide no initial content when prompting you for a url by default.
+But sometimes there will be a case to be convenient if you can modify
+the url string of the link under the cursor or of the current page.
+In that case, you can use the `M-n' key to fill the minibuffer with
+an initial content if you use Emacs 23 and up.  Otherwise, set this
+variable to a non-nil value to always provide an initial content."
+  :group 'w3m
+  :type 'boolean)
+
+(defun w3m-input-url-next-history-element (n)
+  "Use the current url string (if any) as `minibuffer-default'."
+  (interactive "p")
+  (w3m-static-if (fboundp 'minibuffer-default-add-completions)
+      (let ((minibuffer-default
+	     (or (with-current-buffer
+		     (window-buffer (minibuffer-selected-window))
+		   (or (w3m-active-region-or-url-at-point) w3m-current-url))
+		 minibuffer-default)))
+	(next-history-element n))
+    (next-history-element n)))
+
 (defun w3m-input-url (&optional prompt initial default quick-start
 				feeling-lucky no-initial)
   "Read a url from the minibuffer, prompting with string PROMPT."
@@ -4631,9 +4658,11 @@ http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
 	 (w3m-active-region-or-url-at-point 'never)))
     (w3m-arrived-setup)
     (cond ((null initial)
-	   (when (setq initial (or url
-				   (unless no-initial
-				     (w3m-active-region-or-url-at-point t))))
+	   (when (setq initial
+		       (or url
+			   (when (or w3m-input-url-provide-initial-content
+				     (not no-initial))
+			     (w3m-active-region-or-url-at-point t))))
 	     (if (string-match "\\`about:" initial)
 		 (setq initial nil)
 	       (unless (string-match "[^\000-\177]" initial)

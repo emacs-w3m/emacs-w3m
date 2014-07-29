@@ -1,3 +1,11 @@
+2014-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-input-url-provide-initial-content): New user option.
+	(w3m-input-url): Use it.
+	(w3m-input-url-next-history-element): New function.
+	(w3m-url-completion-map): Bind it.
+	[emacs-w3m:12345]
+
 2014-07-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-filter.el (w3m-filter-add-name-anchors): Subdivide long regexp.
