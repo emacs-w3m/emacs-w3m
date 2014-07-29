@@ -3788,6 +3788,19 @@ process.  It shows a percentage of the data loaded from the web server.
 @vindex w3m-show-current-title-in-buffer-tab
 If non-@code{nil}, show the title strings in the buffers tab.  It has no
 effect if your XEmacs does not support the gutter items.
+
+@item w3m-input-url-provide-initial-content
+@vindex w3m-input-url-provide-initial-content
+If non-@code{nil}, provide an initial minibuffer content (if any) when
+entering a url.  The default is @code{nil}.  A url string is not worth
+editing in most cases since a url thing is generally a list of arbitrary
+letters, not a human readable one.  So, we provide no initial content
+when prompting you for a url by default.  But sometimes there will be a
+case to be convenient if you can modify the url string of the link under
+the cursor or of the current page.  In that case, you can use the
+@kbd{M-n} key to fill the minibuffer with an initial content if you use
+Emacs 23 and up.  Otherwise, set this variable to a non-@code{nil} value
+to always provide an initial content.
 @end table
 
 @node Hooking into MUAs
