@@ -4639,7 +4639,9 @@ variable to a non-nil value to always provide an initial content."
   :type 'boolean)
 
 (defun w3m-input-url-next-history-element (n)
-  "Use the current url string (if any) as `minibuffer-default'."
+  "Use the current url string (if any) as the next history by default.
+This is a wrapper function for `next-history-element' and helps
+`minibuffer-default-add-completions' so as to provide more useful url."
   (interactive "p")
   (w3m-static-if (fboundp 'minibuffer-default-add-completions)
       (let ((minibuffer-default
