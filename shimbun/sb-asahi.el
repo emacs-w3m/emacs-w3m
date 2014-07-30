@@ -925,41 +925,16 @@ Each table is the same as the `cdr' of the element of
 `shimbun-asahi-group-table'.")
 
 (defvar shimbun-asahi-content-start
-  "<div[\t\n ]+class=\"\
-\\(?:ArticleBody\
-\\|ThmbSet300Tb\\|ThmbSet256\\|Kansai-ThmbSet100\\|ThmbCol\\)\">\
-\\|<!--[\t\n ]*End of Headline[\t\n ]*-->\
-\\(?:[\t\n ]*<div[\t\n ]+[^<]+</div>[\t\n ]*\
-\\|[\t\n ]*<p[\t\n ]+[^<]+</p>[\t\n ]*\\)?\
-\\|<!--[\t\n ]*Start of \\(Kiji\\|photo\\)[\t\n ]*-->\
-\\|<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
+  "<!-+[\t\n ]*ArticleBody[\t\n ]*BGN[\t\n ]*-+>")
 
 (defvar shimbun-asahi-content-end
-  "</div>[\t\n ]*<!-+[\t\n ]*ArticleBody[\t\n ]+END[\t\n ]*-+>\
-\\|<dl[\t\n ]+class=\"PrInfo\">\
-\\|<!--[\t\n ]*google_ad_section_end\
-\\|<!-[^>]+[^>★]ここまで[\t\n ]*-+>\
-\\|\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<!--[\t\n ]*Start of hatenab[\t\n ]*-->\
-\\|<!--[\t\n ]*End of Kiji[\t\n ]*-->\
-\\|<!--[\t\n ]*End of related link[\t\n ]*-->\
-\\|<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
+  "<!-+[\t\n ]*ArticleBody[\t\n ]*END[\t\n ]*-+>")
 
 (defvar shimbun-asahi-text-content-start
-  "<div[\t\n ]+class=\"\\(?:ThmbSet256\\|Kansai-ThmbSet100\\|ThmbCol\\)\">\
-\\|<!--[\t\n ]*End of Headline[\t\n ]*-->\
-\\(?:[\t\n ]*<div[\t\n ]+[^<]+</div>[\t\n ]*\
-\\|[\t\n ]*<p[\t\n ]+[^<]+</p>[\t\n ]*\\)?\
-\\|<!--[\t\n ]*Start of Kiji[\t\n ]*-->\
-\\|<!--[\t\n ]*FJZONE START NAME=\"HONBUN\"[\t\n ]*-->")
+  "<!-+[\t\n ]*ArticleText[\t\n ]*BGN[\t\n ]*-+>")
 
 (defvar shimbun-asahi-text-content-end
-  "<dl[\t\n ]+class=\"PrInfo\">\
-\\|<!--[\t\n ]*google_ad_section_end\
-\\|<!-[^>]+ここまで[\t\n ]*-+>\
-\\|\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<!--[\t\n ]*Start of hatenab[\t\n ]*-->\
-\\|<!--[\t\n ]*\\(?:google_ad_section\\|[AD★☆]+\\)\
-\\|<!--[\t\n ]*End of Kiji[\t\n ]*-->\
-\\|<!--[\t\n ]*FJZONE END NAME=\"HONBUN\"[\t\n ]*-->")
+  "<!-+[\t\n ]*ArticleText[\t\n ]*END[\t\n ]*-+>")
 
 (defvar shimbun-asahi-x-face-alist
   '(("default" . "\

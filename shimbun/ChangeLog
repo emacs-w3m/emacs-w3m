@@ -1,3 +1,9 @@
+2014-07-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-content-start, shimbun-asahi-content-end)
+	(shimbun-asahi-text-content-start, shimbun-asahi-text-content-end):
+	Update them following the Asahi site changes.
+
 2014-01-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el: Fix edebug spec for the static-* macros.
