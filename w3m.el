@@ -2768,11 +2768,9 @@ db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?\\'\
 
 (defvar w3m-mode-map nil "Keymap for emacs-w3m buffers.")
 
-(defvar w3m-url-completion-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map " " 'self-insert-command)
-    (define-key map "\M-n" 'w3m-input-url-next-history-element)
-    map)
+(defvar w3m-url-completion-map (let ((map (make-sparse-keymap)))
+				 (define-key map " " 'self-insert-command)
+				 map)
   "Keymap that overrides the default keymap when `w3m-input-url' runs.
 By default the SPC key is bound to simply a space.  If you want it to
 complete a url as well as the TAB key, add this to `w3m-init-file':
@@ -4638,19 +4636,21 @@ variable to a non-nil value to always provide an initial content."
   :group 'w3m
   :type 'boolean)
 
-(defun w3m-input-url-next-history-element (n)
+(defun w3m-input-url-default-add-completions ()
   "Use the current url string (if any) as the next history by default.
-This is a wrapper function for `next-history-element' and helps
-`minibuffer-default-add-completions' so as to provide more useful url."
-  (interactive "p")
-  (w3m-static-if (fboundp 'minibuffer-default-add-completions)
-      (let ((minibuffer-default
-	     (or (with-current-buffer
-		     (window-buffer (minibuffer-selected-window))
-		   (or (w3m-active-region-or-url-at-point) w3m-current-url))
-		 minibuffer-default)))
-	(next-history-element n))
-    (next-history-element n)))
+This function is used as `minibuffer-default-add-function'."
+  (w3m-static-when (fboundp 'minibuffer-default-add-completions)
+    (let ((to-add (with-current-buffer
+		      (window-buffer (minibuffer-selected-window))
+		    (or (w3m-active-region-or-url-at-point) w3m-current-url)))
+	  (def minibuffer-default)
+	  (all (all-completions ""
+				minibuffer-completion-table
+				minibuffer-completion-predicate))
+	  (listify (lambda (thing) (if (listp thing) thing (list thing)))))
+      (append (funcall listify def)
+	      (funcall listify to-add)
+	      (delete def (delete to-add all))))))
 
 (defun w3m-input-url (&optional prompt initial default quick-start
 				feeling-lucky no-initial)
@@ -4693,6 +4693,10 @@ This is a wrapper function for `next-history-element' and helps
       (setq url (let ((minibuffer-setup-hook
 		       (append minibuffer-setup-hook
 			       (list (lambda ()
+				       (set
+					(make-local-variable
+					 'minibuffer-default-add-function)
+					'w3m-input-url-default-add-completions)
 				       (beginning-of-line)
 				       (if (looking-at "[a-z]+:\\(?:/+\\)?")
 					   (goto-char (match-end 0)))))))

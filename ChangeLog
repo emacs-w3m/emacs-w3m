@@ -1,3 +1,12 @@
+2014-08-01  Michael Heerdegen  <michael_heerdegen@web.de>
+	Katsumi Yamaoka <yamaoka@jpl.org>
+
+	* w3m.el (w3m-input-url-next-history-element): Abolish.
+	(w3m-url-completion-map): Don't bind M-n key.
+	(w3m-input-url-default-add-completions): New function.
+	(w3m-input-url):
+	Bind minibuffer-default-add-function to it locally in minibuffer.
+
 2014-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-input-url-provide-initial-content): New user option.
