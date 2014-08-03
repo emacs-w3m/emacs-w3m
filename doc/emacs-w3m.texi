@@ -3796,11 +3796,11 @@ entering a url.  The default is @code{nil}.  A url string is not worth
 editing in most cases since a url thing is generally a list of arbitrary
 letters, not a human readable one.  So, we provide no initial content
 when prompting you for a url by default.  But sometimes there will be a
-case to be convenient if you can modify the url string of the link under
-the cursor or of the current page.  In that case, you can use the
-@kbd{M-n} key to fill the minibuffer with an initial content if you use
-Emacs 23 and up.  Otherwise, set this variable to a non-@code{nil} value
-to always provide an initial content.
+case to be convenient if you can modify the url string of [1]the link
+under the cursor or of [2]the current page.  In that case, you can type
+the @kbd{M-n} key [1]once or [2]twice to fill the minibuffer with an
+initial content if you use Emacs 23 and up.  Otherwise, set this
+variable to a non-@code{nil} value to always provide an initial content.
 @end table
 
 @node Hooking into MUAs
