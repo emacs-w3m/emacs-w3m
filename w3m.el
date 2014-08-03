@@ -4629,10 +4629,11 @@ A url string is not worth editing in most cases since a url thing is
 generally a list of arbitrary letters, not a human readable one.  So,
 we provide no initial content when prompting you for a url by default.
 But sometimes there will be a case to be convenient if you can modify
-the url string of the link under the cursor or of the current page.
-In that case, you can use the `M-n' key to fill the minibuffer with
-an initial content if you use Emacs 23 and up.  Otherwise, set this
-variable to a non-nil value to always provide an initial content."
+the url string of [1]the link under the cursor or of [2]the current
+page.  In that case, you can type the `M-n' key [1]once or [2]twice to
+fill the minibuffer with an initial content if you use Emacs 23 and up.
+Otherwise, set this variable to a non-nil value to always provide
+an initial content."
   :group 'w3m
   :type 'boolean)
 
@@ -4640,17 +4641,17 @@ variable to a non-nil value to always provide an initial content."
   "Use the current url string (if any) as the next history by default.
 This function is used as `minibuffer-default-add-function'."
   (w3m-static-when (fboundp 'minibuffer-default-add-completions)
-    (let ((to-add (with-current-buffer
-		      (window-buffer (minibuffer-selected-window))
-		    (or (w3m-active-region-or-url-at-point) w3m-current-url)))
-	  (def minibuffer-default)
-	  (all (all-completions ""
-				minibuffer-completion-table
-				minibuffer-completion-predicate))
-	  (listify (lambda (thing) (if (listp thing) thing (list thing)))))
-      (append (funcall listify def)
-	      (funcall listify to-add)
-	      (delete def (delete to-add all))))))
+    (let* ((to-add (with-current-buffer
+		       (window-buffer (minibuffer-selected-window))
+		     (or (w3m-active-region-or-url-at-point) w3m-current-url)))
+	   (def minibuffer-default)
+	   (all (all-completions ""
+				 minibuffer-completion-table
+				 minibuffer-completion-predicate))
+	   (add2 (if (listp to-add) to-add (list to-add)))
+	   (def2 (if (listp def) def (list def))))
+      (append def2 add2
+	      (delete def2 (delete def (delete add2 (delete to-add all))))))))
 
 (defun w3m-input-url (&optional prompt initial default quick-start
 				feeling-lucky no-initial)
