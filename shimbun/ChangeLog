@@ -1,3 +1,7 @@
+2014-09-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-group-table): Fix regexp for rss group.
+
 2014-07-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-content-start, shimbun-asahi-content-end)

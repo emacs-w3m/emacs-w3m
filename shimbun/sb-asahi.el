@@ -1,6 +1,6 @@
 ;;; sb-asahi.el --- shimbun backend for asahi.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2011, 2013 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2011, 2013, 2014 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -146,7 +146,7 @@ Every `.' in NAME will be replaced with `/'."
 		"\\([^/]+\\)"
 		"\\(?:/update/"
 		;; 3 and 4. serial number
-		"\\([0-9]+\\)\\)?/\\([0-9a-z]*[0-9]+\\)"
+		"\\([0-9]+\\)\\)?/\\([0-9a-z]+\\)"
 		"\\.html\\?ref=rss\\)"
 		"\"" s0 ">" s0 "<title>" s0
 		;; 5. subject
