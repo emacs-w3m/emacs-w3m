@@ -1,3 +1,7 @@
+2014-10-01  Herbert J. Skuhra  <h.skuhra@gmail.com>
+
+	* aclocal.m4 (AC_PATH_EMACS): Work for Emacs 25.
+
 2014-08-01  Michael Heerdegen  <michael_heerdegen@web.de>
 	Katsumi Yamaoka <yamaoka@jpl.org>
 
