@@ -1,3 +1,8 @@
+2014-10-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-extra-numeric-character-reference): Add (?\C-m . ? ).
+	[emacs-w3m:12378]
+
 2014-10-01  Herbert J. Skuhra  <h.skuhra@gmail.com>
 
 	* aclocal.m4 (AC_PATH_EMACS): Work for Emacs 25.
