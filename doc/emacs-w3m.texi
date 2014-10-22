@@ -8,7 +8,7 @@
 @synindex pg cp
 
 @copying
-Copyright @copyright{} 2000-2011 @w{TSUCHIYA Masatoshi}
+Copyright @copyright{} 2000-2014 @w{TSUCHIYA Masatoshi}
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -5318,14 +5318,14 @@ nikkei.release.service.lease nikkei.release.service.travel
 nikkei.release.service.etc nikkei.release.const.const
 nikkei.release.const.house nikkei.release.const.etc nikkei.shasetsu
 
-@item @uref{http://sankei.jp.msn.com/, MSN Sankei News}
-@itemx (This site has been shifted to MSN in October, 2007)
-sankei.points sankei.flash sankei.affairs sankei.politics sankei.economy
-sankei.world sankei.sports sankei.entertainments sankei.life
-sankei.science sankei.region sankei.west.flash sankei.west.points
-sankei.west.affairs sankei.west.sports sankei.west.life
-sankei.west.economy sankei.column.sankeisho sankei.column.shucho
-sankei.column.seiron
+@item @uref{http://www.sankei.com/, Sankei News}
+sankei.flash sankei.affairs sankei.politics sankei.world sankei.economy
+sankei.column sankei.column.sankeisyo sankei.column.editorial
+sankei.column.seiron sankei.sports sankei.entertainments sankei.life
+sankei.region.hokkaido-tohoku sankei.region.kanto sankei.region.chubu
+sankei.region.kinki sankei.regino.chugoku-shikoku
+sankei.regino.kyushu-okinawa sankei.west.flash sankei.west.affairs
+sankei.west.sports sankei.west.life sankei.west.economy
 
 @item @uref{http://www.spiegel.de/, Spiegel Online}
 spiegel.news

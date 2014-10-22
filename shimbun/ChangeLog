@@ -1,3 +1,15 @@
+2014-10-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el: Work for the new Sankei-news.
+	(shimbun-sankei): Don't rely on sb-rss.
+	(shimbun-sankei-url, shimbun-sankei-top-level-domain)
+	(shimbun-sankei-server-name, shimbun-sankei-group-table)
+	(shimbun-sankei-x-face-alist): Renew.
+	(shimbun-headers, shimbun-server-name): Remove function modifiers.
+	(shimbun-sankei-get-headers, shimbun-sankei-multi-next-url)
+	(shimbun-sankei-clear-contents): Rewrite.
+	(shimbun-footer): Correct shimbun server name.
+
 2014-09-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-group-table): Fix regexp for rss group.
