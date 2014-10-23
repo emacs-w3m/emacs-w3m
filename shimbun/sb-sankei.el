@@ -246,8 +246,9 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAD1BMVEX8/PwAAAD///+G
 	    ;; Old articles
 	    (and (re-search-forward "\
 <span[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"pageProperty\"" nil t)
-		 (shimbun-end-of-tag "span")))
-    (re-search-forward "\\(?:[\t\n ]*</[^>]+>\\)*[\t\n ]*" nil t)
+		 (shimbun-end-of-tag "span"))
+	    (re-search-forward "<!-+[\t\n ]*article[\t\n ]*-+>" nil t))
+    (re-search-forward "\\(?:[\t\n ]*<[!/][^>]+>\\)*[\t\n ]*" nil t)
     (delete-region (point-min) (point))
     (when (re-search-forward "[\t\n ]*</article>" nil t)
       (delete-region (match-beginning 0) (point-max))
