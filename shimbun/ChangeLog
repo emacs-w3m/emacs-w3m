@@ -4,6 +4,7 @@
 	rearrange Japanese group names.
 	(shimbun-sankei-category-name-alist): New variable.
 	(shimbun-sankei-get-headers): Categorize author names in flash group.
+	(shimbun-sankei-clear-contents): Work for old articles.
 
 2014-10-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 

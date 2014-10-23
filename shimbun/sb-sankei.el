@@ -231,20 +231,22 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAD1BMVEX8/PwAAAD///+G
   (shimbun-sankei-clear-contents shimbun header))
 
 (defun shimbun-sankei-clear-contents (shimbun header)
-  (when (and (or (re-search-forward
-		  "<li[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"boxGp\""
-		  nil t)
-		 (re-search-forward
-		  "<li[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"boxFb\""
-		  nil t)
-		 (re-search-forward
-		  "<li[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"boxTw\""
-		  nil t))
-	     (shimbun-end-of-tag "li" t))
-    (and (re-search-forward
-	  "<span[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"pageProperty\""
-	  nil t)
-	 (shimbun-end-of-tag "span"))
+  (when (or (and (or (re-search-forward "\
+<li[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"boxGp\"" nil t)
+		     (re-search-forward "\
+<li[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"boxFb\"" nil t)
+		     (re-search-forward "\
+<li[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"boxTw\"" nil t))
+		 (shimbun-end-of-tag "li" t)
+		 (progn
+		   (when (re-search-forward "\
+<span[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"pageProperty\"" nil t)
+		     (shimbun-end-of-tag "span"))
+		   t))
+	    ;; Old articles
+	    (and (re-search-forward "\
+<span[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"pageProperty\"" nil t)
+		 (shimbun-end-of-tag "span")))
     (re-search-forward "\\(?:[\t\n ]*</[^>]+>\\)*[\t\n ]*" nil t)
     (delete-region (point-min) (point))
     (when (re-search-forward "[\t\n ]*</article>" nil t)
