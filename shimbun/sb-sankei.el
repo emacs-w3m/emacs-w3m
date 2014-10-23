@@ -88,7 +88,7 @@
   '(("afr" . "事件") ("clm" . "コラム") ("ecn" . "経済") ("ent" . "エンタメ")
     ("etc" . "その他") ("gqj" . "GQ JAPAN") ("lif" . "ライフ") ("plt" . "政治")
     ("prm" . "プレミアム") ("spo" . "スポーツ") ("wor" . "国際")
-    ("wst" . "関西速報"))
+    ("wst" . "関西"))
   "Alist used to convert From name in the flash group.")
 
 (defvar shimbun-sankei-x-face-alist
