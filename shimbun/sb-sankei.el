@@ -69,9 +69,9 @@
      "http://www.sankei.com/region/newslist/chubu-n1.html")
     ("region.kinki" "地方 近畿"
      "http://www.sankei.com/region/newslist/kinki-n1.html")
-    ("regino.chugoku-shikoku" "地方 中国・四国"
+    ("region.chugoku-shikoku" "地方 中国・四国"
      "http://www.sankei.com/region/newslist/chushikoku-n1.html")
-    ("regino.kyushu-okinawa" "地方 九州・沖縄"
+    ("region.kyushu-okinawa" "地方 九州・沖縄"
      "http://www.sankei.com/region/newslist/kyushu-n1.html")
     ("west.flash" "産経WEST 速報"
      "http://www.sankei.com/west/newslist/west-n1.html")
@@ -234,8 +234,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAD1BMVEX8/PwAAAD///+G
       (delete-region (match-beginning 0) (point-max))
       (insert "\n")))
   (unless (memq (shimbun-japanese-hankaku shimbun) '(header subject nil))
-    (shimbun-japanese-hankaku-buffer t)
-    (goto-char (point-min)))
+    (shimbun-japanese-hankaku-buffer t))
   t)
 
 (luna-define-method shimbun-footer :around ((shimbun shimbun-sankei)
