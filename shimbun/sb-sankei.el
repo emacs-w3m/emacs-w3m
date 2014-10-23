@@ -61,28 +61,35 @@
      "http://www.sankei.com/entertainments/newslist/entertainments-n1.html")
     ("life" "ライフ"
      "http://www.sankei.com/life/newslist/life-n1.html")
-    ("region.hokkaido-tohoku" "地方 北海道・東北"
+    ("region.hokkaido-tohoku" "北海道東北"
      "http://www.sankei.com/region/newslist/tohoku-n1.html")
-    ("region.kanto" "地方 関東"
+    ("region.kanto" "関東"
      "http://www.sankei.com/region/newslist/kanto-n1.html")
-    ("region.chubu" "地方 中部"
+    ("region.chubu" "中部"
      "http://www.sankei.com/region/newslist/chubu-n1.html")
-    ("region.kinki" "地方 近畿"
+    ("region.kinki" "近畿"
      "http://www.sankei.com/region/newslist/kinki-n1.html")
-    ("region.chugoku-shikoku" "地方 中国・四国"
+    ("region.chugoku-shikoku" "中国四国"
      "http://www.sankei.com/region/newslist/chushikoku-n1.html")
-    ("region.kyushu-okinawa" "地方 九州・沖縄"
+    ("region.kyushu-okinawa" "九州沖縄"
      "http://www.sankei.com/region/newslist/kyushu-n1.html")
-    ("west.flash" "産経WEST 速報"
+    ("west.flash" "関西速報"
      "http://www.sankei.com/west/newslist/west-n1.html")
-    ("west.affairs" "産経WEST できごと"
+    ("west.affairs" "関西できごと"
      "http://www.sankei.com/west/newslist/west_affairs-n1.html")
-    ("west.sports" "産経WEST スポーツ"
+    ("west.sports" "関西スポーツ"
      "http://www.sankei.com/west/newslist/west_sports-n1.html")
-    ("west.life" "産経WEST ライフ"
+    ("west.life" "関西ライフ"
      "http://www.sankei.com/west/newslist/west_life-n1.html")
-    ("west.economy" "産経WEST 経済"
+    ("west.economy" "関西経済"
      "http://www.sankei.com/west/newslist/west_economy-n1.html")))
+
+(defvar shimbun-sankei-category-name-alist
+  '(("afr" . "事件") ("clm" . "コラム") ("ecn" . "経済") ("ent" . "エンタメ")
+    ("etc" . "その他") ("gqj" . "GQ JAPAN") ("lif" . "ライフ") ("plt" . "政治")
+    ("prm" . "プレミアム") ("spo" . "スポーツ") ("wor" . "国際")
+    ("wst" . "関西速報"))
+  "Alist used to convert From name in the flash group.")
 
 (defvar shimbun-sankei-x-face-alist
   ;; Faces used for the light background display.
@@ -123,7 +130,6 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAD1BMVEX8/PwAAAD///+G
 (defun shimbun-sankei-get-headers (shimbun range)
   "Get headers for non-RSS groups."
   (let* ((group (shimbun-current-group-internal shimbun))
-	 (name (shimbun-current-group-name shimbun))
 	 (regexp
 	  (concat
 	   (eval-when-compile
@@ -138,16 +144,17 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAD1BMVEX8/PwAAAD///+G
 	      ;; 4. day
 	      "\\([0-3][0-9]\\)"
 	      "/\\(?:[^\"/]+/\\)*"
-	      ;; 5 serial number
+	      ;; 5. category
+	      "\\([a-z]+\\)"
+	      ;; 6. serial number
 	      "\\([^\"/]+\\)"
 	      "-n[0-9]+\\.html\\)" ;; 1. url
 	      "\">[\t\n ]*"
-	      ;; 6. subject
+	      ;; 7. subject
 	      "\\(\\(?:[^\t\n <]+[\t\n ]\\)*[^\t\n <]+\\)"))))
-	 (from (concat (shimbun-server-name shimbun) " (" name ")"))
 	 (rgrp (mapconcat 'identity (nreverse (split-string group "\\.")) "."))
 	 (index (shimbun-index-url shimbun))
-	 done st nd url year month day id subj old time headers)
+	 done st nd url year month day category id subj old time from headers)
     (while (not done)
       (if (re-search-forward regexp nil t)
 	  (progn
@@ -157,9 +164,10 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAD1BMVEX8/PwAAAD///+G
 		  year (match-string 2)
 		  month (match-string 3)
 		  day (match-string 4)
-		  id (concat "<" (match-string 5) "." rgrp "%"
+		  category (match-string 5)
+		  id (concat "<" category (match-string 6) "." rgrp "%"
 			     shimbun-sankei-top-level-domain ">")
-		  subj (match-string 6))
+		  subj (match-string 7))
 	    (if (shimbun-search-id shimbun id)
 		(setq old t)
 	      (goto-char st)
@@ -173,6 +181,15 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAD1BMVEX8/PwAAAD///+G
 			(setq time (match-string 1))
 		      (goto-char (match-end 0)))
 		    (goto-char nd)))
+	      (setq from
+		    (concat
+		     (shimbun-server-name shimbun)
+		     " ("
+		     (or (and (string-equal "flash" group)
+			      (cdr (assoc category
+					  shimbun-sankei-category-name-alist)))
+			 (shimbun-current-group-name shimbun))
+		     ")"))
 	      (push (shimbun-create-header
 		     0 subj from
 		     (shimbun-make-date-string
@@ -240,7 +257,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAD1BMVEX8/PwAAAD///+G
 (luna-define-method shimbun-footer :around ((shimbun shimbun-sankei)
 					    header &optional html)
   (concat "<div align=\"left\">\n--&nbsp;<br>\n\
-この記事の著作権は産経新聞社に帰属します。オリジナルは：<br>\n\
+この記事の著作権は産経新聞社に帰属します。オリジナルはこちら：<br>\n\
 <a href=\""
 	  (shimbun-article-base-url shimbun header) "\">&lt;"
 	  (shimbun-article-base-url shimbun header) "&gt;</a>\n</div>\n"))

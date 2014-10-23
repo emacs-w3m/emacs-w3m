@@ -1,6 +1,9 @@
 2014-10-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* sb-sankei.el (shimbun-sankei-group-table): Typo fix s/regino/region/.
+	* sb-sankei.el (shimbun-sankei-group-table): Typo fix s/regino/region/;
+	rearrange Japanese group names.
+	(shimbun-sankei-category-name-alist): New variable.
+	(shimbun-sankei-get-headers): Categorize author names in flash group.
 
 2014-10-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
