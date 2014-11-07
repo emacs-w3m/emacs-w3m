@@ -253,14 +253,9 @@ This is a subroutine that `shimbun-sankei-get-headers-top' uses."
 	      day (string-to-number (match-string 4))
 	      subj (match-string 7))
 	(goto-char (point-min))
-	(if (re-search-forward "\
+	(when (re-search-forward "\
 <time>[\t\n ]*\\([012]?[0-9]:[0-5]?[0-9]\\)[\t\n ]*</time>" nil t)
-	    (setq time (match-string 1))
-	  (setq time (decode-time)
-		year (nth 5 time)
-		month (nth 4 time)
-		day (nth 3 time))
-	  (setq time (format "%02d:%02d" (nth 2 time) (nth 1 time))))
+	  (setq time (match-string 1)))
 	(setq from
 	      (concat
 	       (shimbun-server-name shimbun)
