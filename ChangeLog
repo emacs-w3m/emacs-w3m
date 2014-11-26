@@ -1,3 +1,18 @@
+2014-11-24  Andrey Kotlarski  <m00naticus@gmail.com>
+
+	* w3m-lnum.el (w3m-lnum-actions-link-alist): Add open in background
+	bindings.
+	(w3m-lnum-remove-overlays): Enlarge default region to clean.
+	(w3m-lnum-set-numbering): Use w3m-lnum-remove-overlays.
+	(w3m-lnum-next-filter): New function.
+	(w3m-lnum-read-interactive): Use it to search below and above when
+	filter has no matches left.
+	(w3m-with-lnum): Guarantee cleanup of right buffer.
+	(w3m-lnum-get-action): Fix checkdoc warning.
+	(w3m-lnum-visit): Make it function.  Enable visiting in background.
+	(w3m-lnum-follow): Add prefix combinations to visit links in
+	background.
+
 2014-10-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-extra-numeric-character-reference): Add (?\C-m . ? ).
