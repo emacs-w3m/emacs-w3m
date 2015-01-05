@@ -1,6 +1,6 @@
 ;;; sb-sankei.el --- shimbun backend for the Sankei News -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003-2011, 2013, 2014 Katsumi Yamaoka
+;; Copyright (C) 2003-2011, 2013-2015 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -334,6 +334,31 @@ This is a subroutine that `shimbun-sankei-get-headers-top' uses."
       (string-to-number (match-string 3))
       (match-string 4))))
   ;; Delete useless contents.
+  (let (case-fold-search st)
+    (goto-char (point-min))
+    (while (re-search-forward "[\t\n ]*<!-+[\t\n ]+\
+\\([Aa][Dd][\t\n ]+[^\t\n >]+\\(?:[\t\n ]+[^\t\n >]+\\)*\\)[\t\n ]*-+>[\t\n ]*"
+			      nil t)
+      (setq st (match-beginning 0))
+      (when (re-search-forward
+	     (concat "[\t\n ]*<!-+[\t\n ]+"
+		     (regexp-quote (match-string 1))
+		     "[\t\n ]*-+>[\t\n ]*")
+	     nil t)
+	(delete-region st (match-end 0))
+	(insert "\n")))
+    (goto-char (point-min))
+    (while (re-search-forward "[\t\n ]*<!-+[\t\n ]+[Bb][Ee][Gg][Ii][Nn][\t\n ]+\
+\\([Aa][Dd][\t\n ]+[^\t\n >]+\\(?:[\t\n ]+[^\t\n >]+\\)*\\)[\t\n ]*-+>[\t\n ]*"
+			      nil t)
+      (setq st (match-beginning 0))
+      (when (re-search-forward
+	     (concat "[\t\n ]*<!-+[\t\n ]+[Ee][Nn][Dd][\t\n ]+"
+		     (regexp-quote (match-string 1))
+		     "[\t\n ]*-+>[\t\n ]*")
+	     nil t)
+	(delete-region st (match-end 0))
+	(insert "\n"))))
   (goto-char (point-min))
   (when (or (and (or (re-search-forward "\
 <li[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"boxGp\"" nil t)

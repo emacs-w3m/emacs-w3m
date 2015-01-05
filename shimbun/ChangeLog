@@ -1,3 +1,7 @@
+2015-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-clear-contents): Remove ads.
+
 2014-11-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-group-table): Add `top' group.
