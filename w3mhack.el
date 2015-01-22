@@ -1,6 +1,6 @@
 ;;; w3mhack.el --- a hack to setup the environment for building w3m
 
-;; Copyright (C) 2001-2010, 2012, 2013
+;; Copyright (C) 2001-2010, 2012, 2013, 2015
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
@@ -367,6 +367,14 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
   (dolist (module (w3mhack-module-list))
     (princ (format "%sc " module))))
 
+(if (featurep 'emacs)
+    (defun w3mhack-compile-file (file)
+      "Byte-compile FILE after reporting that it's being compiled."
+      (message "Compiling %s..." (file-name-nondirectory file))
+      ;; The Emacs 25 version of it doesn't say much.
+      (byte-compile-file file))
+  (defalias 'w3mhack-compile-file 'byte-compile-file))
+
 (defun w3mhack-compile ()
   "Byte-compile the w3m modules."
   (w3mhack-generate-load-file)
@@ -382,7 +390,7 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
     (setq modules (nreverse modules))
     (while modules
       (condition-case nil
-	  (byte-compile-file (car modules))
+	  (w3mhack-compile-file (car modules))
 	(error))
       (setq modules (cdr modules)))))
 

@@ -1,3 +1,8 @@
+2015-01-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-compile-file): New function.
+	(w3mhack-compile): Use it.
+
 2014-11-24  Andrey Kotlarski  <m00naticus@gmail.com>
 
 	* w3m-lnum.el (w3m-lnum-actions-link-alist): Add open in background
