@@ -1,6 +1,7 @@
 2015-01-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-extra-numeric-character-reference): Use #x20 insted of ? .
+	* w3m.el (w3m-extra-numeric-character-reference):
+	Use #x20 instead of ? .
 	(w3m-scroll-up-1): Remove obsolete function alias to w3m-scroll-up.
 
 2015-01-22  Katsumi Yamaoka  <yamaoka@jpl.org>
