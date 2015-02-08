@@ -6763,32 +6763,39 @@ when the URL of the retrieved page matches the REGEXP."
   (interactive "sName: ")
   (let ((pos (point-min))
 	(cur-pos (point))
-	found)
+	oname found)
     (catch 'found
-      (while (setq pos (next-single-property-change pos 'w3m-name-anchor))
-	(when (member name (get-text-property pos 'w3m-name-anchor))
-	  (goto-char pos)
-	  (when (eolp) (forward-line))
-	  (w3m-horizontal-on-screen)
-	  (throw 'found (setq found t))))
-      (setq pos (point-min))
-      (while (setq pos (next-single-property-change pos 'w3m-name-anchor2))
-	(when (member name (get-text-property pos 'w3m-name-anchor2))
-	  (goto-char pos)
-	  (when (eolp) (forward-line))
-	  (w3m-horizontal-on-screen)
-	  (throw 'found (setq found t))))
-      (unless quiet
-	(message "No such anchor: %s" name)))
+      (while (not found)
+	(while (setq pos (next-single-property-change pos 'w3m-name-anchor))
+	  (when (member name (get-text-property pos 'w3m-name-anchor))
+	    (goto-char pos)
+	    (when (eolp) (forward-line))
+	    (w3m-horizontal-on-screen)
+	    (throw 'found (setq found t))))
+	(setq pos (point-min))
+	(while (setq pos (next-single-property-change pos 'w3m-name-anchor2))
+	  (when (member name (get-text-property pos 'w3m-name-anchor2))
+	    (goto-char pos)
+	    (when (eolp) (forward-line))
+	    (w3m-horizontal-on-screen)
+	    (throw 'found (setq found t))))
+	(if oname
+	    (progn
+	      (unless quiet
+		(message "No such anchor: %s" oname))
+	      (throw 'found nil))
+	  (setq pos (point-min)
+		oname name
+		name (w3m-url-decode-string name)))))
 
     (when (and found
 	       (not no-record)
 	       (/= (point) cur-pos))
-	(setq w3m-name-anchor-from-hist
-	      (append (list 1 nil (point) cur-pos)
-		      (and (integerp (car w3m-name-anchor-from-hist))
-			   (nthcdr (1+ (car w3m-name-anchor-from-hist))
-				   w3m-name-anchor-from-hist)))))
+      (setq w3m-name-anchor-from-hist
+	    (append (list 1 nil (point) cur-pos)
+		    (and (integerp (car w3m-name-anchor-from-hist))
+			 (nthcdr (1+ (car w3m-name-anchor-from-hist))
+				 w3m-name-anchor-from-hist)))))
     (when found
       (w3m-recenter))
     found))
