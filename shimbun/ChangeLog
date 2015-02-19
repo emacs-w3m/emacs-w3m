@@ -1,3 +1,8 @@
+2015-02-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-article-contents):
+	Respect shimbun-japanese-hankaku.
+
 2015-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-clear-contents): Remove ads.

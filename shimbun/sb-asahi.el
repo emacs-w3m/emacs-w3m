@@ -1,6 +1,6 @@
 ;;; sb-asahi.el --- shimbun backend for asahi.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2011, 2013, 2014 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2011, 2013-2015 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -982,7 +982,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAEIAAAAQBAMAAABQPLQnAAAAElBMVEX8rKjd3Nj+7utdXFr
 	  (t
 	   (shimbun-expand-url (format index group) shimbun-asahi-url)))))
 
-(defun shimbun-asahi-article-contents (group)
+(defun shimbun-asahi-article-contents (group shimbun)
   "Get article's contents for editorial and tenjin groups.
 Contents will be saved in the shimbun header as the extra element."
   (let ((case-fold-search t)
@@ -1034,10 +1034,20 @@ Contents will be saved in the shimbun header as the extra element."
 			   "\n</p>\n")))
 	   (goto-char (point-max))))
     (with-temp-buffer
-      (set-buffer-multibyte nil)
-      (insert (if contents
-		  (encode-coding-string contents 'utf-8)
-		"<h2>No content retrieved.</h2>\n"))
+      (if contents
+	  (progn
+	    (set-buffer-multibyte t)
+	    (insert contents)
+	    (unless (memq (shimbun-japanese-hankaku shimbun)
+			  '(header subject nil))
+	      (shimbun-japanese-hankaku-buffer t))
+	    (insert (encode-coding-string (prog1
+					      (buffer-string)
+					    (erase-buffer)
+					    (set-buffer-multibyte nil))
+					  'utf-8)))
+	(set-buffer-multibyte nil)
+	(insert "<h2>No content retrieved.</h2>\n"))
       (let ((coding-system-for-read 'binary)
 	    (coding-system-for-write 'binary))
 	(shell-command-on-region (point-min) (point-max) "gzip -f9" nil t))
@@ -1143,7 +1153,8 @@ Contents will be saved in the shimbun header as the extra element."
 				 shimbun-asahi-top-level-domain ">")
 		       (concat "<" serial "%" rgroup "."
 			       shimbun-asahi-top-level-domain ">")))
-	    (setq extra (and paper-p (shimbun-asahi-article-contents group)))
+	    (setq extra (and paper-p
+			     (shimbun-asahi-article-contents group shimbun)))
 	    (unless (shimbun-search-id shimbun id)
 	      (push (shimbun-create-header
 		     ;; number
