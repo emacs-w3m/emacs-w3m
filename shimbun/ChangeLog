@@ -1,3 +1,8 @@
+2015-02-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-get-headers)
+	(shimbun-sankei-get-headers-top-1): Protect against timestamp typo.
+
 2015-02-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-article-contents):

@@ -156,6 +156,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAD1BMVEX8/PwAAAD///+G
 	    "\">[\t\n ]*"
 	    ;; 7. subject
 	    "\\(\\(?:[^\t\n <]+[\t\n ]\\)*[^\t\n <]+\\)")))
+	(maxyear (1+ (nth 5 (decode-time))))
 	(rgrp (mapconcat 'identity (nreverse (split-string group "\\.")) "."))
 	(index (shimbun-index-url shimbun))
 	done st nd url year month day category id subj old time from headers)
@@ -197,7 +198,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAD1BMVEX8/PwAAAD///+G
 	      (push (shimbun-create-header
 		     0 subj from
 		     (shimbun-make-date-string
-		      (+ 2000 (string-to-number year))
+		      (min (+ 2000 (string-to-number year)) maxyear)
 		      (string-to-number month)
 		      (string-to-number day)
 		      time)
@@ -240,6 +241,7 @@ This is a subroutine that `shimbun-sankei-get-headers-top' uses."
 	    "\">[\t\n ]*"
 	    ;; 7. subject
 	    "\\(\\(?:[^\t\n <]+[\t\n ]\\)*[^\t\n <]+\\)")))
+	(maxyear (1+ (nth 5 (decode-time))))
 	(index (shimbun-index-url shimbun))
 	category id url year month day subj time from)
     (when (re-search-forward regexp nil t)
@@ -248,7 +250,7 @@ This is a subroutine that `shimbun-sankei-get-headers-top' uses."
 		       shimbun-sankei-top-level-domain ">"))
       (unless (shimbun-search-id shimbun id)
 	(setq url (match-string 1)
-	      year (+ 2000 (string-to-number (match-string 2)))
+	      year (min (+ 2000 (string-to-number (match-string 2))) maxyear)
 	      month (string-to-number (match-string 3))
 	      day (string-to-number (match-string 4))
 	      subj (match-string 7))
