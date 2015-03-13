@@ -370,33 +370,36 @@ href=\"\\)\\(?:[^\"]+\\)?/\\(?:imgres\\?imgurl\\|url\\?\\(?:q\\|url\\)\\)=\
 	  (goto-char (point-max)))))))
 
 (defun w3m-filter-add-name-anchors (url)
-  ;;  cf. [emacs-w3m:11153]
+  ;;  cf. [emacs-w3m:11153] [emacs-w3m:12339] [emacs-w3m:12422]
   "Add name anchors that w3m can handle.
 This function adds ``<a name=\"FOO_BAR\"></a>'' in front of
 ``<TAG ... id=\"FOO_BAR\" ...>FOO BAR</TAG>'' in the current buffer."
   (let ((case-fold-search t)
 	(maxregexps 10)
-	names regexp i st nd name)
+	names regexp i st nd)
     (goto-char (point-min))
     (while (re-search-forward "<a[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
 href=\"#\\([a-z][-.0-9:_a-z]*\\)\"" nil t)
       (add-to-list 'names (match-string 1)))
     (setq case-fold-search nil)
     (while names
-      (setq regexp "<\\(?:[^\t\n\r >]+\\)\
-\[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*[Ii][Dd]=\"\\("
+      (setq regexp "[\t\n\r ]+[Ii][Dd]=\"\\("
 	    i maxregexps)
       (while (and names (> i 0))
 	(setq regexp (concat regexp (regexp-quote (pop names)) "\\|")
 	      i (1- i)))
       (setq regexp (concat (substring regexp 0 -1) ")\""))
       (goto-char (point-min))
-      (while (re-search-forward regexp nil t)
-	(goto-char (setq st (match-beginning 0)))
-	(setq nd (match-end 0)
-	      name (match-string 1))
-	(insert "<a name=" name "></a>")
-	(goto-char (+ nd (- (point) st)))))))
+      (while (re-search-forward "<[^>]+>" nil t)
+	(setq st (match-beginning 0)
+	      nd (match-end 0))
+	(goto-char st)
+	(if (re-search-forward regexp nd t)
+	    (progn
+	      (goto-char st)
+	      (insert "<a name=" (match-string 1) "></a>")
+	      (goto-char (+ nd (- (point) st))))
+	  (goto-char nd))))))
 
 (defun w3m-filter-subst-disabled-with-readonly (url)
   ;;  cf. [emacs-w3m:12146] [emacs-w3m:12222]

@@ -1,3 +1,8 @@
+2015-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-filter.el (w3m-filter-add-name-anchors):
+	Don't use ambiguous regexp.  [emacs-w3m:12422]
+
 2015-02-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-search-name-anchor): Search for both "name" and
