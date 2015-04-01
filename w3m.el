@@ -179,7 +179,9 @@
   (autoload 'w3m-session-last-autosave-session "w3m-session")
   (autoload 'w3m-session-goto-session "w3m-session")
   (autoload 'w3m-session-crash-recovery-save "w3m-session")
-  (autoload 'w3m-session-last-crashed-session "w3m-session"))
+  (autoload 'w3m-session-last-crashed-session "w3m-session")
+  (autoload 'w3m-save-buffer "w3m-save"
+    "Save the current page and its image data locally."))
 
 ;; Avoid byte-compile warnings.
 (eval-when-compile
@@ -2562,6 +2564,8 @@ nil value means it has not been initialized.")
        w3m-download-this-url (or (w3m-anchor) (w3m-image))]
       [,(w3m-make-menu-item "ダウンロード..." "Download to...")
        w3m-download t]
+      [,(w3m-make-menu-item "この URL をセーブする..." "Save to...")
+       w3m-save-buffer t]
       "----" ;; separator
       [,(w3m-make-menu-item "前のページに戻る" "Back to Previous Page")
        w3m-view-previous-page
@@ -8231,6 +8235,7 @@ for users.  See Info node `(elisp)Key Binding Conventions'.")
     (define-key map "\C-c" w3m-ctl-c-map)
     (define-key map "C" w3m-redisplay-map)
     (define-key map "L" w3m-lnum-map)
+    (define-key map "\C-x\C-s" 'w3m-save-buffer)
     (setq w3m-lynx-like-map map)))
 
 (defvar w3m-info-like-map nil
@@ -8349,6 +8354,7 @@ for users.  See Info node `(elisp)Key Binding Conventions'.")
     (define-key map "\C-c" w3m-ctl-c-map)
     (define-key map "C" w3m-redisplay-map)
     (define-key map "L" w3m-lnum-map)
+    (define-key map "\C-x\C-s" 'w3m-save-buffer)
     (setq w3m-info-like-map map)))
 
 (defun w3m-alive-p (&optional visible)

@@ -1,3 +1,10 @@
+2015-04-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-save.el: New file.
+
+	* w3m.el (w3m-menubar, w3m-lynx-like-map, w3m-info-like-map):
+	Add w3m-save-buffer and bind `C-x C-s' to it.
+
 2015-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-filter.el (w3m-filter-add-name-anchors):
