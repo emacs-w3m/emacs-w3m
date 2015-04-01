@@ -46,7 +46,7 @@
   "Save the current page and its image data in NAME.html and NAME-files/.
 Those files will be saved in `w3m-save-buffer-directory' by default.
 No image will be saved if the prefix argument (the optional NO-IMAGE)
-is given.  You can view the saved page in \"The Next Page\".
+is given.  You can view the saved page in the \"Next Page\".
 Note that saved pages will get shown as what you see in emacs-w3m."
   (interactive
    (if (and w3m-current-url
@@ -64,14 +64,16 @@ Note that saved pages will get shown as what you see in emacs-w3m."
 		       (make-temp-name "w3m-")))
 	     (case-fold-search t))
 	 (setq name (w3m-replace-in-string name "[\C-@- \"*/:<>?\|]+" "_"))
-	 (list (read-file-name "Save this page to: " w3m-save-buffer-directory
-			       name nil (concat name ".html"))
+	 (list (read-file-name
+		"Save this page to: "
+		(file-name-as-directory w3m-save-buffer-directory)
+		name nil (concat name ".html"))
 	       current-prefix-arg))
      (error "No valid url for this page")))
   (let ((url w3m-current-url)
 	(w3m-prefer-cache w3m-save-buffer-use-cache)
 	(case-fold-search t)
-	subdir type st nd base beg sdir charset img imgs bads ibuf bname ext
+	subdir type st nd base beg sdir charset ibuf imgs img bads bname bn ext
 	num)
     (unless (and url
 		 (not (string-match "\\`[\C-@- ]*\\'\\|\\`file:" url))
@@ -158,37 +160,51 @@ Note that saved pages will get shown as what you see in emacs-w3m."
 	      (setq st (match-beginning 1)
 		    nd (match-end 1)
 		    img (w3m-expand-url (match-string 1) base))
-	      (when (and
-		     (not (or (member img imgs) (member img bads)))
-		     (with-current-buffer
-			 (or ibuf (setq ibuf (generate-new-buffer " *temp*")))
-		       (erase-buffer)
-		       (if (setq type (w3m-retrieve img))
-			   (progn
-			     (push img imgs)
-			     (setq img (file-name-nondirectory img)
-				   bname (file-name-sans-extension img)
-				   ext (file-name-extension img)
-				   num 1)
-			     (if (zerop (length ext))
-				 (when (setq ext (assoc type
-							w3m-image-type-alist))
-				   (setq ext (concat "."
-						     (symbol-name (cdr ext)))))
-			       (setq ext (concat "." ext)))
-			     (setq bname (w3m-replace-in-string
-					  bname "[\C-@- \"*/:<>?\|]+" "_"))
-			     (while (file-exists-p (expand-file-name
-						    (concat bname ext) subdir))
-			       (setq bname (concat bname "-"
-						   (number-to-string num))
-				     num (1+ num)))
-			     (write-region (point-min) (point-max)
-					   (expand-file-name
-					    (concat bname ext) subdir))
-			     t)
-			 (push img bads)
-			 nil)))
+	      (when
+		  (cond
+		   ((member img bads) nil)
+		   ((assoc img imgs)
+		    (setq bname (cadr (assoc img imgs))
+			  ext (caddr (assoc img imgs)))
+		    t)
+		   (t
+		    (with-current-buffer
+			(or ibuf
+			    (setq ibuf (generate-new-buffer " *temp*")))
+		      (erase-buffer)
+		      (if (setq type (w3m-retrieve img))
+			  (progn
+			    (push (list img) imgs)
+			    (setq img (file-name-nondirectory img)
+				  bname (file-name-sans-extension img)
+				  ext (file-name-extension img)
+				  num 1)
+			    (if (zerop (length ext))
+				(when (setq ext (assoc type
+						       w3m-image-type-alist))
+				  (setq ext (concat "."
+						    (symbol-name (cdr ext)))))
+			      (setq ext (concat "." ext)))
+			    (setq bname (w3m-replace-in-string
+					 bname "[\C-@- \"*/:<>?\|]+" "_"))
+			    (when (file-exists-p (expand-file-name
+						  (concat bname ext) subdir))
+			      (while (progn
+				       (setq bn (concat
+						 bname "-"
+						 (number-to-string num)))
+				       (file-exists-p
+					(expand-file-name
+					 (concat bn ext) subdir)))
+				(setq num (1+ num)))
+			      (setq bname bn))
+			    (setcdr (car imgs) (list bname ext))
+			    (write-region (point-min) (point-max)
+					  (expand-file-name
+					   (concat bname ext) subdir))
+			    t)
+			(push img bads)
+			nil))))
 		(delete-region (goto-char st) nd)
 		(insert sdir "/" bname (or ext ""))))
 	  (when ibuf (kill-buffer ibuf))
