@@ -31,14 +31,15 @@
 (eval-when-compile (require 'cl))
 (require 'w3m)
 
-(defcustom w3m-save-buffer-directory (expand-file-name "saved/"
-						w3m-default-save-directory)
+(defcustom w3m-save-buffer-directory (expand-file-name
+				      "saved/"
+				      w3m-default-save-directory)
   "Default directory used to save pages and those image files."
   :group 'w3m
   :type 'directory)
 
 (defcustom w3m-save-buffer-use-cache t
-  "Use cached data if available"
+  "If non-nil, use cached data if available."
   :group 'w3m
   :type 'boolean)
 
