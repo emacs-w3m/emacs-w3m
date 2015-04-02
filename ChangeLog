@@ -1,3 +1,10 @@
+2015-04-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-toolbar-buttons, w3m-toolbar): Add `Save' button.
+
+	* icons/save-up.png, icons/save-up.xpm
+	* icons30/save-up.png, icons30/save-up.xpm: New files.
+
 2015-04-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-save.el: New file.

@@ -2496,7 +2496,7 @@ nil value means it has not been initialized.")
 
 (defconst w3m-toolbar-buttons
   '("back" "parent" "forward" "reload" "open" "home" "search" "image"
-    "copy" "weather" "antenna" "history" "db-history")
+    "copy" "weather" "antenna" "save" "history" "db-history")
   "List of prefix strings for the toolbar buttons.")
 
 (defconst w3m-toolbar
@@ -2525,6 +2525,7 @@ nil value means it has not been initialized.")
 	  [w3m-toolbar-weather-icon w3m-weather t "天気予報を見る"]
 	  [w3m-toolbar-antenna-icon w3m-antenna t
 				    ,(concat a "ンテナで受信する")]
+	  [w3m-toolbar-save-icon w3m-save-buffer t "セーブ..."]
 	  [w3m-toolbar-history-icon w3m-history t "ヒストリー"]
 	  [w3m-toolbar-db-history-icon w3m-db-history t
 				       "過去に訪問した URL の履歴を見る"]))
@@ -2547,6 +2548,7 @@ nil value means it has not been initialized.")
       [w3m-toolbar-copy-icon w3m-copy-buffer t "Make a Copy of This Session"]
       [w3m-toolbar-weather-icon w3m-weather t "Weather Forecast"]
       [w3m-toolbar-antenna-icon w3m-antenna t "Investigate with Antenna"]
+      [w3m-toolbar-save-icon w3m-save-buffer t "Save to..."]
       [w3m-toolbar-history-icon w3m-history t "History"]
       [w3m-toolbar-db-history-icon w3m-db-history t "View Arrived URLs"]))
   "Toolbar definition for emacs-w3m.")
