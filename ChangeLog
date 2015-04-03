@@ -1,3 +1,10 @@
+2015-04-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-url-savable-p): New function.
+	(w3m-toolbar, w3m-menubar): Use it.
+
+	* w3m-save.el: Provide the feature.
+
 2015-04-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-toolbar-buttons, w3m-toolbar): Add `Save' button.

@@ -74,8 +74,8 @@ Note that saved pages will get shown as what you see in emacs-w3m."
   (let ((url w3m-current-url)
 	(w3m-prefer-cache w3m-save-buffer-use-cache)
 	(case-fold-search t)
-	subdir type st nd base beg sdir charset ibuf imgs img bads bname bn ext
-	num)
+	subdir type st base beg regexp sdir charset ibuf imgs nd img bads bname
+	ext num bn)
     (unless (and url
 		 (not (string-match "\\`[\C-@- ]*\\'\\|\\`file:" url))
 		 (or (not (string-match "\\`about:" url))
@@ -118,31 +118,25 @@ Note that saved pages will get shown as what you see in emacs-w3m."
 			  (progn
 			    (setq st (match-end 0))
 			    (re-search-forward "</head[\t\n >]" nil t))
-			  (progn
-			    (setq nd (match-end 0))
-			    (re-search-backward "<base\
-\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+href=\"\\([^\"]+\\)\"[^>]*>" st t)))
+			  (re-search-backward "<\\(base\
+\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+href=\"\\([^\"]+\\)\"[^>]*\\)>" st t))
 		     (prog1
-			 (match-string 1)
-		       (forward-char -1)
-		       (insert "--")
-		       (goto-char (1+ (match-beginning 0)))
-		       (insert "!--")
-		       (goto-char nd))
+			 (match-string 2)
+		       (replace-match "<!--\\1-->"))
 		   url))
       (setq beg (point))
       ;; Make link urls absolute.
-      (while (re-search-forward "\
-<a\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+href=\"\\([^\"]+\\)" nil t)
-	(insert (prog1
-		    (w3m-expand-url (match-string 1) base)
-		  (delete-region (match-beginning 1) (match-end 1)))))
-      (goto-char beg)
-      (while (re-search-forward "\
-<form\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+action=\"\\([^\"]+\\)" nil t)
-	(insert (prog1
-		    (w3m-expand-url (match-string 1) base)
-		  (delete-region (match-beginning 1) (match-end 1)))))
+      (dolist (tag '(("a" . "href") ("form" . "action")))
+	(setq regexp (concat "<" (car tag)
+			     "\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+"
+			     (cdr tag) "=\"\\([^\"]+\\)"))
+	(while (re-search-forward regexp nil t)
+	  (insert (prog1
+		      (condition-case nil
+			  (w3m-expand-url (match-string 1) base)
+			(error (match-string 1)))
+		    (delete-region (match-beginning 1) (match-end 1)))))
+	(goto-char beg))
       ;; Save images into `subdir'.
       (unless no-image
 	(goto-char beg)
@@ -218,5 +212,7 @@ Note that saved pages will get shown as what you see in emacs-w3m."
 	 (cadar w3m-history)
        (w3m-history-push (concat "file://" name)
 			 (list :title (or w3m-current-title "<no-title>")))))))
+
+(provide 'w3m-save)
 
 ;; w3m-save.el ends here

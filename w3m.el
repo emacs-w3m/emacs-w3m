@@ -2525,7 +2525,8 @@ nil value means it has not been initialized.")
 	  [w3m-toolbar-weather-icon w3m-weather t "天気予報を見る"]
 	  [w3m-toolbar-antenna-icon w3m-antenna t
 				    ,(concat a "ンテナで受信する")]
-	  [w3m-toolbar-save-icon w3m-save-buffer t "セーブ..."]
+	  [w3m-toolbar-save-icon w3m-save-buffer (w3m-url-savable-p)
+				 "セーブ..."]
 	  [w3m-toolbar-history-icon w3m-history t "ヒストリー"]
 	  [w3m-toolbar-db-history-icon w3m-db-history t
 				       "過去に訪問した URL の履歴を見る"]))
@@ -2548,7 +2549,7 @@ nil value means it has not been initialized.")
       [w3m-toolbar-copy-icon w3m-copy-buffer t "Make a Copy of This Session"]
       [w3m-toolbar-weather-icon w3m-weather t "Weather Forecast"]
       [w3m-toolbar-antenna-icon w3m-antenna t "Investigate with Antenna"]
-      [w3m-toolbar-save-icon w3m-save-buffer t "Save to..."]
+      [w3m-toolbar-save-icon w3m-save-buffer (w3m-url-savable-p) "Save to..."]
       [w3m-toolbar-history-icon w3m-history t "History"]
       [w3m-toolbar-db-history-icon w3m-db-history t "View Arrived URLs"]))
   "Toolbar definition for emacs-w3m.")
@@ -2567,7 +2568,7 @@ nil value means it has not been initialized.")
       [,(w3m-make-menu-item "ダウンロード..." "Download to...")
        w3m-download t]
       [,(w3m-make-menu-item "この URL をセーブする..." "Save to...")
-       w3m-save-buffer t]
+       w3m-save-buffer (w3m-url-savable-p)]
       "----" ;; separator
       [,(w3m-make-menu-item "前のページに戻る" "Back to Previous Page")
        w3m-view-previous-page
@@ -6811,6 +6812,14 @@ when the URL of the retrieved page matches the REGEXP."
       nil
     (save-match-data
       (string-match "\\`[a-z]+://?[^/]+/." w3m-current-url))))
+
+(defun w3m-url-savable-p ()
+  "Return non-nil if the current page is able to be saved."
+  (and w3m-current-url
+       (or (not (string-match "\\`\\(?:about\\|file\\):"
+			      w3m-current-url))
+	   (string-match "\\`about://\\(?:header\\|source\\)/"
+			 w3m-current-url))))
 
 (defun w3m-view-parent-page (&optional count)
   "Attempt to move to the parent directory of the page currently displayed.
