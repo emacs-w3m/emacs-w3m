@@ -74,7 +74,7 @@ Note that saved pages will get shown as what you see in emacs-w3m."
   (let ((url w3m-current-url)
 	(w3m-prefer-cache w3m-save-buffer-use-cache)
 	(case-fold-search t)
-	subdir type st base beg regexp sdir charset ibuf imgs nd img bads bname
+	subdir type st base regexp sdir charset ibuf imgs nd img bads bname
 	ext num bn)
     (unless (and url
 		 (or (not (string-match
@@ -125,7 +125,7 @@ Note that saved pages will get shown as what you see in emacs-w3m."
 			 (match-string 2)
 		       (replace-match "<!--\\1-->"))
 		   url))
-      (setq beg (point))
+      (setq st (point))
       ;; Make link urls absolute.
       (dolist (tag '(("a" . "href") ("form" . "action")))
 	(setq regexp (concat "<" (car tag)
@@ -137,10 +137,9 @@ Note that saved pages will get shown as what you see in emacs-w3m."
 			  (w3m-expand-url (match-string 1) base)
 			(error (match-string 1)))
 		    (delete-region (match-beginning 1) (match-end 1)))))
-	(goto-char beg))
+	(goto-char st))
       ;; Save images into `subdir'.
       (unless no-image
-	(goto-char beg)
 	(make-directory subdir t)
 	(setq sdir (file-name-nondirectory (directory-file-name subdir)))
 	(when (and (setq charset (or (w3m-arrived-content-charset url)
