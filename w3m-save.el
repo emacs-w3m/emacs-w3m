@@ -51,8 +51,8 @@ is given.  You can view the saved page in the \"Next Page\".
 Note that saved pages will get shown as what you see in emacs-w3m."
   (interactive
    (if (and w3m-current-url
-	    (not (string-match "\\`[\C-@- ]*\\'\\|\\`file:" w3m-current-url))
-	    (or (not (string-match "\\`about:" w3m-current-url))
+	    (or (not (string-match "\\`[\C-@- ]*\\'\\|\\`about:\\|\\`file:"
+				   w3m-current-url))
 		(string-match "\\`about://\\(?:header\\|source\\)/"
 			      w3m-current-url)))
        (let ((name (or (and (stringp w3m-current-title)
@@ -77,8 +77,9 @@ Note that saved pages will get shown as what you see in emacs-w3m."
 	subdir type st base beg regexp sdir charset ibuf imgs nd img bads bname
 	ext num bn)
     (unless (and url
-		 (not (string-match "\\`[\C-@- ]*\\'\\|\\`file:" url))
-		 (or (not (string-match "\\`about:" url))
+		 (or (not (string-match
+			   "\\`[\C-@- ]*\\'\\|\\`about:\\|\\`file:"
+			   url))
 		     (and (string-match "\\`about://\\(?:header\\|source\\)/"
 					url)
 			  (setq url (substring url (match-end 0)))
