@@ -3,6 +3,7 @@
 	* w3m.el (w3m-clear-display-while-reading): New user option.
 	(w3m-retrieve-and-render): Clear the current display while reading
 	a new page if w3m-clear-display-while-reading is non-nil.
+	[emacs-w3m:12428]
 
 2015-04-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
