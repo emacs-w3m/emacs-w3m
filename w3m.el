@@ -1405,6 +1405,11 @@ nil means don't recenter, let the display follow point in the
 		(const :format "%t\n" t)
 		(const :format "%t\n" nil)))
 
+(defcustom w3m-clear-display-while-reading t
+  "If non-nil, clear the display while reading a new page."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-use-form t
   "*Non-nil means make it possible to use form extensions. (EXPERIMENTAL)"
   :group 'w3m
@@ -6322,6 +6327,15 @@ It returns a `w3m-process' object and comes to an end immediately.
 The HANDLER function will be called when rendering is complete.  When
 a new content is retrieved in the buffer, the HANDLER function will be
 called with t as an argument.  Otherwise, it will be called with nil."
+  (when (and w3m-clear-display-while-reading
+	     (get-buffer-window nil 'visible))
+    ;; Clear the current display while reading a new page.
+    (let ((inhibit-read-only t))
+      (erase-buffer)
+      (insert-char ?\n (/ (window-height) 2))
+      (insert-char ?  (max 0 (/ (- (window-width) (length url) 11) 2)))
+      (insert "Reading " url "...")
+      (sit-for 0)))
   (unless (and w3m-current-ssl
 	       w3m-confirm-leaving-secure-page
 	       ;; Permit leaving safe pages without confirmation for
