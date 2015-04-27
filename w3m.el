@@ -6396,22 +6396,19 @@ called with t as an argument.  Otherwise, it will be called with nil."
 		      (unless (get-buffer-window page-buffer)
 			(w3m-message "The content (%s) has been retrieved in %s"
 				     url (buffer-name page-buffer))))))
-	      (when w3m-clear-display-while-reading
+	      (when (and w3m-clear-display-while-reading
+			 (string-match "\\`file:" url))
 		(with-current-buffer page-buffer
 		  (let ((inhibit-read-only t))
-		    (goto-char (point-max))
 		    (when (ignore-errors (require 'zone))
-		      (insert (prog1
-				  (buffer-substring (point-at-bol) (point))
-				(sit-for 0.5)
-				(zone-call 'zone-pgm-dissolve 1)
-				(goto-char (point-max)))))
-		    (beginning-of-line)
-		    (skip-chars-forward " ")
-		    (delete-region (max (point-at-bol) (- (point) 3)) (point))
-		    (end-of-line)
-		    (delete-char -3)
-		    (insert " ")
+		      (sit-for 0.5)
+		      (zone-call 'zone-pgm-dissolve 1))
+		    (erase-buffer)
+		    (insert-char ?\n (/ (window-height) 2))
+		    (insert-char ?  (max 0 (/ (- (window-width)
+						 (length url) 15)
+					      2)))
+		    (insert "Reading " url " ")
 		    (put-text-property (point) (progn
 						 (insert "failed!")
 						 (point))
