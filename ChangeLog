@@ -1,3 +1,8 @@
+2015-04-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-error): New face.
+	(w3m-retrieve-and-render): Denote `failed' if it did so.
+
 2015-04-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-clear-display-while-reading): New user option.

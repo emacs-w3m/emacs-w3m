@@ -199,6 +199,7 @@
   (autoload 'widget-convert-button "wid-edit")
   (autoload 'widget-forward "wid-edit" nil t)
   (autoload 'widget-get "wid-edit")
+  (autoload 'zone-call "zone")
   (unless (fboundp 'char-to-int)
     (defalias 'char-to-int 'identity))
   (defvar bidi-paragraph-direction)
@@ -6395,6 +6396,26 @@ called with t as an argument.  Otherwise, it will be called with nil."
 		      (unless (get-buffer-window page-buffer)
 			(w3m-message "The content (%s) has been retrieved in %s"
 				     url (buffer-name page-buffer))))))
+	      (when w3m-clear-display-while-reading
+		(with-current-buffer page-buffer
+		  (let ((inhibit-read-only t))
+		    (goto-char (point-max))
+		    (when (ignore-errors (require 'zone))
+		      (insert (prog1
+				  (buffer-substring (point-at-bol) (point))
+				(sit-for 0.5)
+				(zone-call 'zone-pgm-dissolve 1)
+				(goto-char (point-max)))))
+		    (beginning-of-line)
+		    (skip-chars-forward " ")
+		    (delete-region (max (point-at-bol) (- (point) 3)) (point))
+		    (end-of-line)
+		    (delete-char -3)
+		    (insert " ")
+		    (put-text-property (point) (progn
+						 (insert "failed!")
+						 (point))
+				       'face 'w3m-error))))
 	      (w3m-arrived-add url nil (current-time) (current-time))
 	      (ding)
 	      (when (eq (car w3m-current-forms) t)
@@ -11114,6 +11135,17 @@ This variable is effective only when `w3m-use-tab' is nil."
 ;; backward-compatibility alias
 (put 'w3m-header-line-location-content-face
      'face-alias 'w3m-header-line-location-content)
+
+(defface w3m-error
+  '((default :weight bold)
+    (((class color) (min-colors 88) (background light)) :foreground "Red1")
+    (((class color) (min-colors 88) (background dark))  :foreground "Pink")
+    (((class color) (min-colors 16) (background light)) :foreground "Red1")
+    (((class color) (min-colors 16) (background dark))  :foreground "Pink")
+    (((class color) (min-colors 8)) :foreground "red")
+    (t :inverse-video t))
+  "Face used to highlight errors and to denote failure."
+  :group 'w3m-face)
 
 (defvar w3m-header-line-map nil)
 (unless w3m-header-line-map
