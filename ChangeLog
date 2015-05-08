@@ -1,3 +1,8 @@
+2015-05-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-refresh-at-time):
+	Temporary fix to avoid Google search looping.  [emacs-w3m:12440]
+
 2015-04-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-error): New face.
