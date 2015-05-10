@@ -1,3 +1,9 @@
+2015-05-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-error): Work for XEmacs.  [emacs-w3m:12444]
+	(w3m-retrieve-and-render): Work for XEmacs.
+	Note: `get-buffer-window' requires a buffer for the 1st arg in XEmacs.
+
 2015-05-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-refresh-at-time):

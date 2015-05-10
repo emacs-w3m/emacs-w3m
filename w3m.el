@@ -6329,7 +6329,7 @@ The HANDLER function will be called when rendering is complete.  When
 a new content is retrieved in the buffer, the HANDLER function will be
 called with t as an argument.  Otherwise, it will be called with nil."
   (when (and w3m-clear-display-while-reading
-	     (get-buffer-window nil 'visible))
+	     (get-buffer-window (current-buffer) 'visible))
     ;; Clear the current display while reading a new page.
     (let ((inhibit-read-only t))
       (erase-buffer)
@@ -11137,15 +11137,14 @@ This variable is effective only when `w3m-use-tab' is nil."
      'face-alias 'w3m-header-line-location-content)
 
 (defface w3m-error
-  '((default :weight bold)
-    (((class color) (min-colors 88) (background light)) :foreground "Red1")
-    (((class color) (min-colors 88) (background dark))  :foreground "Pink")
-    (((class color) (min-colors 16) (background light)) :foreground "Red1")
-    (((class color) (min-colors 16) (background dark))  :foreground "Pink")
-    (((class color) (min-colors 8)) :foreground "red")
-    (t :inverse-video t))
+  '((((class color) (background light)) (:foreground "Red1" :bold t))
+    (((class color) (background dark))  (:foreground "Pink" :bold t))
+    (t (:inverse-video t :bold t)))
   "Face used to highlight errors and to denote failure."
   :group 'w3m-face)
+(when (featurep 'xemacs)
+  (when (featurep 'tty)
+    (set-face-reverse-p 'w3m-error t 'global '(default tty))))
 
 (defvar w3m-header-line-map nil)
 (unless w3m-header-line-map
