@@ -1142,7 +1142,7 @@ is inhibited in those cases even if `w3m-async-exec' is non-nil."
       (w3m-which-command "xloadimage")
       (w3m-which-command "xv"))
   "*Command used to view image files externally.
-Note that this option is installed temporally.  It will be abolished
+Note that this option is installed temporarily.  It will be abolished
 when we implement the mailcap parser to set `w3m-content-type-alist'.")
 
 ;; FIXME: we need to improve so that to set up the value of this
@@ -5555,7 +5555,7 @@ specified by `w3m-add-referer'."
 				     &optional body referer content-type)
   "Make the arguments for `-request' or `-header' option passed to w3m.
 METHOD is an HTTP method name.
-TEMP-FILE is a name of temporal file to write request content to.
+TEMP-FILE is a name of temporary file to write request content to.
 Optional BODY is the body content string.
 Second optional REFERER is the Referer: field content.
 Third optional CONTENT-TYPE is the Content-Type: field content."
@@ -5599,7 +5599,7 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
 				    &optional body referer content-type)
   "Make the arguments for the `-header' option passed to the w3m command.
 METHOD is an HTTP method name.
-TEMP-FILE is a name of temporal file to write post body to.
+TEMP-FILE is a name of temporary file to write post body to.
 Optional BODY is the post body content string.
 Optional second REFERER is the Referer: field content.
 Third optional CONTENT-TYPE is the Content-Type: field content."
@@ -5725,7 +5725,7 @@ It will put the retrieved contents into the current buffer.  See
 				     (format "Send POST data to `%s'?" url)))))
 			    ((eq (car attr) 303) ; => See Other
 			     (setq post-data nil))
-			    ((eq (car attr) 307) ; => Temporally Redirect
+			    ((eq (car attr) 307) ; => Temporary redirection
 			     (not (y-or-n-p
 				   (format "Send POST data to `%s'?" url))))))
 		(w3m-w3m-retrieve-1 (nth 6 attr)

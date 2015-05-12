@@ -81,7 +81,7 @@
 (def-edebug-spec static-when (&rest def-form))
 
 (defvar octet-temp-directory temporary-file-directory
-  "A directory to create temporal files.")
+  "A directory to create temporary files.")
 
 (defvar octet-html-render-function 'octet-w3m-region
   "A function for HTML rendering.")
