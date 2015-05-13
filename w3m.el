@@ -1727,10 +1727,20 @@ retrieve data."
 
 (defcustom w3m-use-refresh t
   "*Non-nil means honor the REFRESH attribute in META tags.
-Emacs-w3m arbitrarily takes you to a url specified by that attribute.
-Note that they may be malicious traps."
+Emacs-w3m arbitrarily takes you to a url specified by that attribute
+except for search results of Google[1].
+See also `w3m-refresh-minimum-interval'.
+
+[1] https://productforums.google.com/forum/#!topic/websearch/hpzglVb9B5M"
   :group 'w3m
   :type 'boolean)
+
+(defcustom w3m-refresh-minimum-interval 5
+  "Number of seconds used to override the meta refresh a page specifies.
+If the meta refresh seconds the page specifies is less than this value,
+this will be used instead of that."
+  :group 'w3m
+  :type 'integer)
 
 (defcustom w3m-mbconv-command "mbconv"
   "*Name of the \"mbconv\" command provided by the \"libmoe\" package.
@@ -2279,12 +2289,6 @@ thumbnail."
   :group 'w3m
   :type '(radio (const :format "Accept any image\n" nil)
 		(regexp :format "URL regexp: %v\n" :size 0)))
-
-(defcustom w3m-refresh-minimum-interval 60
-  "*Minimum seconds to wait for refresh, when visiting a page by
-history-back or history-next."
-  :group 'w3m
-  :type '(integer :size 0))
 
 (defvar w3m-modeline-process-status-on "<PRC>"
   "Modeline control for displaying the status when the process is running.
@@ -6104,9 +6108,6 @@ be displayed especially in shimbun articles."
 		(when (string-match "\\`[\"']\\(.*\\)[\"']\\'" refurl)
 		  (setq refurl (match-string 1 refurl)))))
 	      (when (and sec (string-match "\\`[0-9]+\\'" sec))
-		(when (and (eq w3m-use-refresh 'wait-minimum)
-			   (< (string-to-number sec) w3m-refresh-minimum-interval))
-		  (setq sec (number-to-string w3m-refresh-minimum-interval)))
 		(throw 'found
 		       (setq w3m-current-refresh
 			     (cons (string-to-number sec)
@@ -6929,8 +6930,7 @@ COUNT is treated as 1 by default if it is omitted."
 		 (w3m-history-backward count)
 	       (w3m-history-backward)))
 	    ;; Inhibit sprouting of a new history.
-	    (w3m-history-reuse-history-elements t)
-	    (w3m-use-refresh 'wait-minimum))
+	    (w3m-history-reuse-history-elements t))
 	(if (caar hist)
 	    (let ((w3m-prefer-cache t))
 	      ;; Save last position.
@@ -9876,21 +9876,23 @@ See `w3m-default-directory'."
 
 (defun w3m-refresh-at-time ()
   (when (and w3m-use-refresh w3m-current-refresh)
-    (if (= (car w3m-current-refresh) 0)
-	;; Temporary fix to avoid Google search looping [emacs-w3m:12440].
-	(unless (string-match "\\`https?://\\(?:[^\t\n /]+\\.\\)*google\\."
-			      w3m-current-url)
-	  (w3m-goto-url-with-timer (cdr w3m-current-refresh) (current-buffer)))
-      (setq w3m-refresh-timer
-	    (run-at-time (car w3m-current-refresh)
-			 nil
-			 'w3m-goto-url-with-timer
-			 (cdr w3m-current-refresh)
-			 (current-buffer))))))
+    (let ((seconds (car w3m-current-refresh))
+	  (url (cdr w3m-current-refresh)))
+      ;; Temporary fix to avoid Google search looping [emacs-w3m:12440].
+      (unless (and (= seconds 0)
+		   (string-match "\\`https?://\\(?:[^\t\n /]+\\.\\)*google\\."
+				 w3m-current-url))
+	(setq seconds (max seconds w3m-refresh-minimum-interval))
+	(if (= seconds 0)
+	    (w3m-goto-url-with-timer url (current-buffer))
+	  (setq w3m-refresh-timer
+		(run-at-time seconds nil 'w3m-goto-url-with-timer url
+			     (current-buffer))))))))
 
 (defun w3m-goto-url-with-timer (url buffer)
   "Run the `w3m-goto-url' function by the refresh timer."
-  (when (and (w3m-url-valid url) buffer (get-buffer buffer))
+  (when (and (w3m-url-valid url) buffer
+	     (if (stringp buffer) (get-buffer buffer) (buffer-name buffer)))
     (cond
      ((get-buffer-window buffer)
       (save-selected-window

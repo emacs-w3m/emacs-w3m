@@ -1,3 +1,13 @@
+2015-05-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-use-refresh): Mention Google looping problem in docstring.
+	(w3m-refresh-minimum-interval): Default to 5; change the meaning.
+	(w3m-check-refresh-attribute, w3m-view-previous-page):
+	Do nothing for w3m-refresh-minimum-interval.
+	(w3m-refresh-at-time):
+	Override meta refresh seconds by w3m-refresh-minimum-interval.
+	(w3m-goto-url-with-timer): Check for buffer's existence correctly.
+
 2015-05-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-error): Work for XEmacs.  [emacs-w3m:12444]
