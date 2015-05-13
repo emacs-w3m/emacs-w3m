@@ -1731,7 +1731,7 @@ Emacs-w3m arbitrarily takes you to a url specified by that attribute
 except for search results of Google[1].
 See also `w3m-refresh-minimum-interval'.
 
-[1] https://productforums.google.com/forum/#!topic/websearch/hpzglVb9B5M"
+[1] URL `https://productforums.google.com/forum/#!topic/websearch/hpzglVb9B5M'"
   :group 'w3m
   :type 'boolean)
 
