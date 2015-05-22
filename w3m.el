@@ -9878,16 +9878,12 @@ See `w3m-default-directory'."
   (when (and w3m-use-refresh w3m-current-refresh)
     (let ((seconds (car w3m-current-refresh))
 	  (url (cdr w3m-current-refresh)))
-      ;; Temporary fix to avoid Google search looping [emacs-w3m:12440].
-      (unless (and (= seconds 0)
-		   (string-match "\\`https?://\\(?:[^\t\n /]+\\.\\)*google\\."
-				 w3m-current-url))
-	(setq seconds (max seconds w3m-refresh-minimum-interval))
-	(if (= seconds 0)
-	    (w3m-goto-url-with-timer url (current-buffer))
-	  (setq w3m-refresh-timer
-		(run-at-time seconds nil 'w3m-goto-url-with-timer url
-			     (current-buffer))))))))
+      (setq seconds (max seconds w3m-refresh-minimum-interval))
+      (if (= seconds 0)
+	  (w3m-goto-url-with-timer url (current-buffer))
+	(setq w3m-refresh-timer
+	      (run-at-time seconds nil 'w3m-goto-url-with-timer url
+			   (current-buffer)))))))
 
 (defun w3m-goto-url-with-timer (url buffer)
   "Run the `w3m-goto-url' function by the refresh timer."

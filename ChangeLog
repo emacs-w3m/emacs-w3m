@@ -1,3 +1,7 @@
+2015-05-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-refresh-at-time): Remove workaround.  [emacs-w3m:12459]
+
 2015-05-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-use-refresh): Mention Google looping problem in docstring.
