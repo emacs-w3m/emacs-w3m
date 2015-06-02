@@ -6330,7 +6330,8 @@ The HANDLER function will be called when rendering is complete.  When
 a new content is retrieved in the buffer, the HANDLER function will be
 called with t as an argument.  Otherwise, it will be called with nil."
   (when (and w3m-clear-display-while-reading
-	     (get-buffer-window (current-buffer) 'visible))
+	     (get-buffer-window (current-buffer) 'visible)
+	     (not (string-match "\\`about:" url)))
     ;; Clear the current display while reading a new page.
     (let ((inhibit-read-only t))
       (erase-buffer)
