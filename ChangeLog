@@ -1,3 +1,11 @@
+2015-06-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-retrieve-and-render):
+	Set w3m-current-url (and w3m-current-title) so as to enable moving back
+	to the past page (in the case w3m-clear-display-while-reading is t).
+	(w3m-goto-url): Don't move point to the top when it failed to retrieve.
+	[emacs-w3m:12471]
+
 2015-06-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-retrieve-and-render):

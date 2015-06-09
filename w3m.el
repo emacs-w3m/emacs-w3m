@@ -6414,7 +6414,9 @@ called with t as an argument.  Otherwise, it will be called with nil."
 		    (put-text-property (point) (progn
 						 (insert "failed!")
 						 (point))
-				       'face 'w3m-error))))
+				       'face 'w3m-error)
+		    (setq w3m-current-url url
+			  w3m-current-title "Fail"))))
 	      (w3m-arrived-add url nil (current-time) (current-time))
 	      (ding)
 	      (when (eq (car w3m-current-forms) t)
@@ -9758,11 +9760,9 @@ Cannot run two w3m processes simultaneously \
 	    (with-current-buffer w3m-current-buffer
 	      (setq w3m-current-process nil)
 	      (if (not action)
-		  (progn
-		    (w3m-history-push w3m-current-url
-				      (list :title (or w3m-current-title
-						       "<no-title>")))
-		    (goto-char (point-min)))
+		  (w3m-history-push w3m-current-url
+				    (list :title (or w3m-current-title
+						     "<no-title>")))
 		(w3m-string-match-url-components w3m-current-url)
 		(and (match-beginning 8)
 		     (setq name (match-string 9 w3m-current-url)))
