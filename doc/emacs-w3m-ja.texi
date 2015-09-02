@@ -6202,6 +6202,9 @@ ffii.de.software-patente ffii.de.software-patente.ffii
 ffii.de.informations-infrastruktur ffii.fr.brevets-logiciels
 ffii.fr.brevets-logiciels.ffii ffii.nl.softwarepatenten
 ffii.nl.softwarepatenten.ffii
+
+@item @uref{http://yoshinori-kobayashi.com/, 小林よしのり公式サイト}
+yoshirin.blog yoshirin.topics
 @end table
 
 @node Shimbun Basics

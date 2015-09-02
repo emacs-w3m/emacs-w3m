@@ -1,3 +1,7 @@
+2015-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-yoshirin.el: New file.
+
 2015-02-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-get-headers)
