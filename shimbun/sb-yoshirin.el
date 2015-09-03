@@ -242,12 +242,19 @@ I31<&o-eCYZDs~WZVK{m,T}x>b3T9PCilX3;\"*8oF;QS\"GCHWit%'u!of`\
       (when (re-search-forward "\\(?:[\t\n\r ]*<p>&nbsp;</p>\\)*[\t\n\r ]*\
 <div\\(?:[\t\n\r ]+[^\t\n\r >]+\\)*[\t\n\r ]+class=\"post_facebook\"" nil t)
 	(delete-region (match-beginning 0) (point-max))))
-    (let ((thumnail (cdr (assq 'Thumnail (shimbun-header-extra header)))))
-      (when thumnail
-	(goto-char (point-min))
-	(insert
-	 (decode-coding-string (base64-decode-string thumnail) 'utf-8)
-	 "\n")))))
+    (let ((thumnail (cdr (assq 'Thumnail (shimbun-header-extra header))))
+	  src)
+      (when (and thumnail
+		 (progn
+		   (setq thumnail (decode-coding-string
+				   (base64-decode-string thumnail) 'utf-8))
+		   (string-match "src=\"[^\"]+\"" thumnail))
+		 (progn
+		   (setq src (regexp-quote (match-string 0 thumnail)))
+		   (goto-char (point-min))
+		   (not (re-search-forward (concat "\
+<img\\(?:[\t\n\r ]+[^\t\n\r >]+\\)*[\t\n\r ]+" src) nil t))))
+	(insert thumnail "\n")))))
 
 (provide 'sb-yoshirin)
 
