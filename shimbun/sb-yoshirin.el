@@ -128,10 +128,9 @@ I31<&o-eCYZDs~WZVK{m,T}x>b3T9PCilX3;\"*8oF;QS\"GCHWit%'u!of`\
 	   (narrow-to-region (goto-char (match-beginning 2)) (match-end 2))
 	   (re-search-forward "<img[\t\n\r ]+[^>]+>" nil t))
 	 (list (cons 'Thumnail
-		     (shimbun-replace-in-string
-		      (base64-encode-string
-		       (encode-coding-string (match-string 0) 'utf-8))
-		      "\n" ""))))))
+		     (base64-encode-string
+		      (encode-coding-string (match-string 0) 'utf-8)
+		      t))))))
 
 (defun shimbun-yoshirin-get-headers-top (shimbun)
   "Get headers for the latest articles in the group of SHIMBUN."
