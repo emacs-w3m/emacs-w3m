@@ -1,7 +1,7 @@
 2015-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-yoshirin.el (shimbun-yoshirin-get-thumnail):
-	No need to use shimbun-replace-in-string.
+	No need to use shimbun-replace-in-string; always expose alt text.
 	(shimbun-yoshirin-make-contents): Don't insert thumnail if the same one
 	exists already in the article body.
 

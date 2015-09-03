@@ -253,6 +253,10 @@ I31<&o-eCYZDs~WZVK{m,T}x>b3T9PCilX3;\"*8oF;QS\"GCHWit%'u!of`\
 		   (goto-char (point-min))
 		   (not (re-search-forward (concat "\
 <img\\(?:[\t\n\r ]+[^\t\n\r >]+\\)*[\t\n\r ]+" src) nil t))))
+	(when (string-match "[\t ]+alt=\"\\([^\"]+\\)\"" thumnail)
+	  (insert (match-string 1 thumnail) "<br>\n")
+	  (setq thumnail (concat (substring thumnail 0 (match-beginning 0))
+				 (substring thumnail (match-end 0)))))
 	(insert thumnail "\n")))))
 
 (provide 'sb-yoshirin)
