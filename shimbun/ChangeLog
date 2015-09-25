@@ -1,3 +1,7 @@
+2015-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kyoko-np.el: New file.
+
 2015-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-yoshirin.el (shimbun-yoshirin-get-thumnail):

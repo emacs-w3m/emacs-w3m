@@ -5389,6 +5389,9 @@ yomiuri.world
 もできます。それを使うには、例えばグループ名とし
 て @samp{yomiuri.atmoney} の代わりに @samp{yomiuri-html.atmoney} を指定
 してください。
+
+@item @uref{http://kyoko-np.net/, 虚構新聞社}
+kyoko-np.rss
 @end table
 
 @node News Sites Supported by Shimbun

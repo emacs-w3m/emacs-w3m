@@ -5363,6 +5363,9 @@ On the other hand, you can also use the @samp{yomiuri-html} back end to
 generate HTML articles.  In order to use it, specify
 @samp{yomiuri-html.atmoney} instead of @samp{yomiuri.atmoney} as the
 group name for example.
+
+@item @uref{http://kyoko-np.net/, Kyoko Shimbun News}
+kyoko-np.rss
 @end table
 
 @node News Sites Supported by Shimbun
