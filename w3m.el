@@ -6079,10 +6079,13 @@ be displayed especially in shimbun articles."
 		  (setq w3m-previous-url href))
 		 ((member "start" rel) (setq w3m-start-url href))
 		 ((member "contents" rel) (setq w3m-contents-url href))))))
+	   ;; <base> ought to be absolute but if not then absolutize for
+	   ;; w3m-current-base-url.  Helps bad <base href="/foo/bar/"> seen
+	   ;; from from archive.org circa 2015.
 	   ((string= tag "base")
 	    (w3m-parse-attributes (href)
 	      (when (< 0 (length href))
-		(setq w3m-current-base-url href))))))))))
+		(setq w3m-current-base-url (w3m-expand-url href)))))))))))
 
 (defun w3m-check-refresh-attribute ()
   "Get REFRESH attribute in META tags."

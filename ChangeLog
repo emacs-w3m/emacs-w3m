@@ -1,3 +1,9 @@
+2015-09-29  Kevin Ryde  <user42_kevin@yahoo.com.au>
+
+	* w3m.el (w3m-check-header-tags): w3m-expand-url <base> to tolerate
+	a non-absolute there, as for example from archive.org.
+	(If w3m-current-base-url is relative then form setups error out.)
+
 2015-06-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-retrieve-and-render):
