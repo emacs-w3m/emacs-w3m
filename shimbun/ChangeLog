@@ -1,3 +1,7 @@
+2015-10-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kyoko-np.el (shimbun-headers): Say "Checking new news...".
+
 2015-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-kyoko-np.el: New file.

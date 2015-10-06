@@ -44,6 +44,14 @@ h,:y~(ZRL6_\n !]+_+:*w'FH/kkX~]Wd>*Og6Q:)\"M&Kngqb%I\"V-k_@?Y5r5ESY8k>")))
 (luna-define-method shimbun-index-url ((shimbun shimbun-kyoko-np))
   (concat shimbun-kyoko-np-url "index.xml"))
 
+(luna-define-method shimbun-headers :around ((shimbun shimbun-kyoko-np)
+					     &optional range)
+  (prog2
+      (shimbun-message shimbun (concat shimbun-checking-new-news-format "..."))
+      (luna-call-next-method)
+    (shimbun-message shimbun (concat shimbun-checking-new-news-format
+				     "...done"))))
+
 (luna-define-method shimbun-get-headers ((shimbun shimbun-kyoko-np)
 					 &optional range)
   (let ((fn (symbol-function 'shimbun-rss-node-text)))
