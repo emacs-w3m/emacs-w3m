@@ -247,7 +247,7 @@ class=\"detail-topic[\t\n\r ]+[^>]+>[\t\n\r ]*" nil t)
       (delete-region (point-min) (point-max)))
     (widen)
     (unless (memq (shimbun-japanese-hankaku shimbun)
-		  '(header never subject nil))
+		  '(header subject nil))
       (shimbun-japanese-hankaku-buffer t))
     t))
 
