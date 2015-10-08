@@ -5205,9 +5205,10 @@ zeit-de.gesundheit zeit-de.international zeit-de.leben zeit-de.literatur
 zeit-de.musik zeit-de.news zeit-de.reisen zeit-de.schule zeit-de.sport
 zeit-de.studium zeit-de.wirtschaft zeit-de.wissen zeit-de.zuender
 
-@item @uref{http://gendai.net/, Gendai Net}
-gendai-net.today gendai-net.syakai gendai-net.sports gendai-net.geino
-gendai-net.wadai gendai-net.kenko gendai-net.syoku gendai-net.book
+@item @uref{http://www.nikkan-gendai.com/, Nikkan Gendai}
+nikkangendai.top nikkangendai.news nikkangendai.geino
+nikkangendai.sports nikkangendai.life nikkangendai.book
+nikkangendai.gourmet
 
 @item @uref{http://mainichi.jp/, Mainichi jp}
 @itemx (This site has been shifted from MSN in October, 2007)
@@ -6782,7 +6783,8 @@ Also @xref{Customizing Articles, ,Customizing Articles, gnus, The Gnus
 Manual}, for details.
 
 In addition, the experimental code below is used to display
-@samp{multipart/related} pictures.  The place might be something wrong.
+@samp{multipart/related} pictures.  The places where pictures are
+displayed are somewhat wrong, though.
 
 @lisp
 (eval-after-load "gnus-art"
@@ -6795,6 +6797,27 @@ In addition, the experimental code below is used to display
                 (lambda (handle)
                   (gnus-mime-display-mixed (cdr handle)))))
               gnus-mime-multipart-functions))))
+@end lisp
+
+If you use @code{shr} to view HTML mails, it deletes page delimiters
+(i.e., ^L) existing between multiple HTML parts in a mail.  The
+following advice is an example for adding those delimiters (even if not
+existent originally).  This might be helpful when you read shimbuns
+(@pxref{Shimbun Library}):
+
+@lisp
+(defadvice gnus-mime-display-mixed (around add-page-delimiter
+                                           (handles) activate)
+  "Add page delimiters to the beginning of succeeding html parts."
+  (if (eq mm-text-html-renderer 'shr)
+      (progn
+        (gnus-mime-display-part (pop handles))
+        (while handles
+          (if (equal (mm-handle-media-type (car handles))
+                     "text/html")
+              (insert "\C-l\n"))
+          (gnus-mime-display-part (pop handles))))
+    ad-do-it))
 @end lisp
 
 @item yahtml-mode

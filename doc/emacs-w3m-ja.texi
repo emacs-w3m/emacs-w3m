@@ -5232,9 +5232,10 @@ zeit-de.gesundheit zeit-de.international zeit-de.leben zeit-de.literatur
 zeit-de.musik zeit-de.news zeit-de.reisen zeit-de.schule zeit-de.sport
 zeit-de.studium zeit-de.wirtschaft zeit-de.wissen zeit-de.zuender
 
-@item @uref{http://gendai.net/, ゲンダイネット}
-gendai-net.today gendai-net.syakai gendai-net.sports gendai-net.geino
-gendai-net.wadai gendai-net.kenko gendai-net.syoku gendai-net.book
+@item @uref{http://www.nikkan-gendai.com/, 日刊ゲンダイ}
+nikkangendai.top nikkangendai.news nikkangendai.geino
+nikkangendai.sports nikkangendai.life nikkangendai.book
+nikkangendai.gourmet
 
 @item @uref{http://mainichi.jp/, 毎日jp}
 @itemx (2007年10月に MSN から自社サイトに移行)
@@ -6790,7 +6791,7 @@ emacs-w3m を使って HTML ファイルを閲覧することができます。
 The Gnus Manual}, を見てください。
 
 加えて、以下の実験的なコードは @samp{multipart/related} な絵を見るための
-ものです。表示される場所に難があります。
+ものです。表示される場所に少々難がありますが。
 
 @lisp
 (eval-after-load "gnus-art"
@@ -6803,6 +6804,26 @@ The Gnus Manual}, を見てください。
                 (lambda (handle)
                   (gnus-mime-display-mixed (cdr handle)))))
               gnus-mime-multipart-functions))))
+@end lisp
+
+HTML メールを読むために @code{shr} を使うと、それはメールの中の複数
+の HTML パートの間にあるページ区切り (つまり ~L) を消してしまいます。以
+下の advice はそれらのページ区切りを (元々なくても) 追加するための例です。
+新聞 (@pxref{Shimbun Library}) を読むとき役に立つかもしれません:
+
+@lisp
+(defadvice gnus-mime-display-mixed (around add-page-delimiter
+                                           (handles) activate)
+  "Add page delimiters to the beginning of succeeding html parts."
+  (if (eq mm-text-html-renderer 'shr)
+      (progn
+        (gnus-mime-display-part (pop handles))
+        (while handles
+          (if (equal (mm-handle-media-type (car handles))
+                     "text/html")
+              (insert "\C-l\n"))
+          (gnus-mime-display-part (pop handles))))
+    ad-do-it))
 @end lisp
 
 @item yahtml-mode
