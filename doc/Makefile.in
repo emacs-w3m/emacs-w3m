@@ -19,7 +19,7 @@ SHELL        = /bin/sh
 MAKEINFO     = @MAKEINFO@
 TEXI2DVI     = @TEXI2DVI@
 PTEX         = @PTEX@
-JBIBTEX      = @JBIBTEX@
+PBIBTEX      = @PBIBTEX@
 DVIPDFMX     = @DVIPDFMX@
 TEXI2PDF     = @TEXI2PDF@
 EMACS        = @EMACS@
@@ -115,7 +115,7 @@ emacs-w3m-ja.dvi: version.texi emacs-w3m-ja.texi
 	@texi=$<;\
 	case "$$texi" in \
 	  *-ja.texi) \
-	    env TEX=$(PTEX) BIBTEX=$(JBIBTEX) $(TEXI2DVI) -o $@ $$texi ;;\
+	    env TEX=$(PTEX) BIBTEX=$(PBIBTEX) $(TEXI2DVI) -o $@ $$texi ;;\
 	  *) \
 	    $(TEXI2DVI) -o $@ $$texi ;;\
 	esac
@@ -142,7 +142,7 @@ emacs-w3m-ja.pdf: version.texi emacs-w3m-ja.texi
 
 clean:
 	-rm -rf *~ *.info version.texi *.dvi missfont.log *.pdf *.aux *.cp\
- *.cps *.fn *.fns *.ky *.kys *.log *.pg *.toc *.tp *.vr *.vrs
+ *.cps *.fn *.fns *.ky *.kys *.log *.pg *.tmp *.toc *.tp *.vr *.vrs
 
 distclean: clean
 	-rm -f Makefile

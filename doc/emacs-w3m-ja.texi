@@ -6,6 +6,9 @@
 @documentlanguage ja
 @include version.texi
 @synindex pg cp
+@iftex
+@usedvipdfmx
+@end iftex
 
 @copying
 Copyright @copyright{} 2000-2014 @w{TSUCHIYA Masatoshi}
@@ -5391,7 +5394,7 @@ yomiuri.world
 て @samp{yomiuri.atmoney} の代わりに @samp{yomiuri-html.atmoney} を指定
 してください。
 
-@item @uref{http://kyoko-np.net/, 虚構新聞社}
+@item @uref{http://kyoko-np.net/, 虚構新聞}
 kyoko-np.rss
 @end table
 

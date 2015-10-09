@@ -1,3 +1,10 @@
+2015-10-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* configure.in:
+	* doc/Makefile.in (.texi.dvi): Use pbibtex rather than jbibtex.
+	* doc/emacs-w3m-ja.texi: Add @usedvipdfmx to generate pdf bookmark.
+	* doc/txi-ja.tex: Copy from <https://github.com/fukusaka/texinfo-ja/>.
+
 2015-09-29  Kevin Ryde  <user42_kevin@yahoo.com.au>
 
 	* w3m.el (w3m-check-header-tags): w3m-expand-url <base> to tolerate
