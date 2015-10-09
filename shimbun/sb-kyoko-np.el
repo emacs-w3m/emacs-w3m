@@ -41,6 +41,10 @@ h,:y~(ZRL6_\n !]+_+:*w'FH/kkX~]Wd>*Og6Q:)\"M&Kngqb%I\"V-k_@?Y5r5ESY8k>")))
 
 (defvar shimbun-kyoko-np-groups '("rss"))
 
+(defvar shimbun-kyoko-np-expiration-days nil)
+
+(defvar shimbun-kyoko-np-japanese-hankaku t)
+
 (luna-define-method shimbun-index-url ((shimbun shimbun-kyoko-np))
   (concat shimbun-kyoko-np-url "index.xml"))
 
@@ -70,7 +74,21 @@ h,:y~(ZRL6_\n !]+_+:*w'FH/kkX~]Wd>*Og6Q:)\"M&Kngqb%I\"V-k_@?Y5r5ESY8k>")))
 	     (shimbun-end-of-tag "article" t))
     (delete-region (match-end 3) (goto-char (point-max)))
     (insert "\n")
-    (delete-region (point-min) (match-beginning 3))
+    (delete-region (goto-char (point-min)) (match-beginning 3))
+    (when (and (re-search-forward "<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
+class=\"app[\t\n ]+text-center\"" nil t)
+	       (shimbun-end-of-tag "div" t)
+	       (progn
+		 (narrow-to-region (match-beginning 0) (match-end 0))
+		 (goto-char (match-beginning 3))
+		 (search-forward "href=\"https://itunes.apple.com/jp/app/"
+				 nil t)))
+      (delete-region (point-min) (point-max))
+      (insert "\n"))
+    (widen)
+    (unless (memq (shimbun-japanese-hankaku shimbun)
+		  '(header subject nil))
+      (shimbun-japanese-hankaku-buffer t))
     t))
 
 (luna-define-method shimbun-footer :around ((shimbun shimbun-kyoko-np)

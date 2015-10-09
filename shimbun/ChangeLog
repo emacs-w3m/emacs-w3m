@@ -1,3 +1,8 @@
+2015-10-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-kyoko-np.el: Disable expiration and enable hankaku by default.
+	(shimbun-clear-contents): Remove App store info.
+
 2015-10-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nikkangendai.el: New file, a successor of sb-gendai-net.el.
