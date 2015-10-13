@@ -354,7 +354,9 @@ If no field in forward, return nil without moving."
 			   "Content-Disposition: form-data; name=\""
 			   (car buf)
 			   "\"\r\n\r\n"
-			   (encode-coding-string (cdr buf) coding)
+			   (if (cdr buf)
+			       (encode-coding-string (cdr buf) coding)
+			     "")
 			   "\r\n"))
 		 (setq bufs (cdr bufs)))
 	       (insert "--" boundary "--\r\n")
