@@ -31,6 +31,8 @@
 %% 2010.06.03a modified by Shoichi Fukusaka <fukusaka@xa2.so-net.ne.jp>
 %%      for texinfo.tex 2010-05.22.17 modified version
 %%      output \special for dvipdfmx to generate pdf bookmark
+%% 2015.10.13 modified by Katsumi Yamaoka <yamaoka@jpl.org>
+%%      make the pdf document display a bookmark by default
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 92.7.8 by K.Handa
 \newif\ifNTT
@@ -363,5 +365,6 @@
         >>%
     }
   }
+  \special{pdf:docview << /PageMode /UseOutlines >>}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

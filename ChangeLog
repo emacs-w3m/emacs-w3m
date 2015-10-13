@@ -1,3 +1,7 @@
+2015-10-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* doc/txi-ja.tex: Make the pdf document display a bookmark by default.
+
 2015-10-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* configure.in:
