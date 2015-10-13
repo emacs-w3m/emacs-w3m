@@ -4472,11 +4472,23 @@ On the References header, the url that asks Gmane for the whole thread
 \(namely it begins with the article of the first ID in the header) will
 be generated.  In that case, Gmane might fail to find the thread since
 it is possible that the root article has been posted to another group.
+Then emacs-w3m will bring you to:
+
+  http://news.gmane.org/group/GROUP/thread=ARTNUM/force_load=t
+
+Where GROUP is a real group name and ARTNUM is the first article number
+of the thread.  When you tell it to friends, you can modify it as:
+
+  http://thread.gmane.org/GROUP/ARTNUM/focus=ARTNUM2
+
+ARTNUM2 is an article number to be focused (displayed); you can omit
+things on and after the last slash if ARTNUM2 equals ARTNUM.
 
 That it returns an invalid url for the article of the group which is
 not being archived in Gmane cannot be helped."
   (save-excursion
-    (let ((fmt "http://thread.gmane.org/%s")
+    (let (;;(fmt "http://thread.gmane.org/%s")
+	  (fmt "http://news.gmane.org/group/thread=%s")
 	  (start (point))
 	  (inhibit-point-motion-hooks t)
 	  case-fold-search)

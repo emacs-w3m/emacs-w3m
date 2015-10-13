@@ -1,5 +1,8 @@
 2015-10-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-gmane-url-at-point):
+	Change query url to <http://news.gmane.org/group/thread=MESSAGE-ID>.
+
 	* doc/txi-ja.tex: Make the pdf document display a bookmark by default.
 
 2015-10-09  Katsumi Yamaoka  <yamaoka@jpl.org>
