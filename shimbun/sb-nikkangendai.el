@@ -232,19 +232,23 @@ class=\"detail-topic[\t\n\r ]+[^>]+>[\t\n\r ]*" nil t)
     (delete-region (goto-char (match-end 0)) (point-max))
     (insert "\n")
     (narrow-to-region (goto-char (point-min)) (match-beginning 0))
-    (if (re-search-forward "<img[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
+    (let ((head (when (re-search-forward "\
+<div[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*class=\"article_head\"" nil t)
+		  (match-beginning 0))))
+      (if (re-search-forward "<img[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
 \\(?:alt=\"\\([^\"]+\\)\"\\)?[^>]*>" nil t)
-	(insert (prog1
-		    (if (match-beginning 1)
-			(concat (match-string 1) "<br>\n"
-				(buffer-substring (match-beginning 0)
-						  (match-beginning 1))
-				"[写真]"
-				(buffer-substring (match-end 1) (match-end 0)))
-		      (match-string 0))
-		  (delete-region (point-min) (point-max)))
-		"<br><br>\n")
-      (delete-region (point-min) (point-max)))
+	  (insert
+	   (prog1
+	       (if (match-beginning 1)
+		   (concat (match-string 1) "<br>\n"
+			   (buffer-substring (match-beginning 0)
+					     (match-beginning 1))
+			   "[写真]"
+			   (buffer-substring (match-end 1) (match-end 0)))
+		 (match-string 0))
+	     (delete-region (point-min) (or head (point-max))))
+	   "<br><br>\n")
+	(delete-region (point-min) (or head (point-max)))))
     (widen)
     (unless (memq (shimbun-japanese-hankaku shimbun)
 		  '(header subject nil))
