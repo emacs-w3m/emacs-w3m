@@ -235,6 +235,7 @@ class=\"detail-topic[\t\n\r ]+[^>]+>[\t\n\r ]*" nil t)
     (let ((head (when (re-search-forward "\
 <div[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*class=\"article_head\"" nil t)
 		  (match-beginning 0))))
+      (goto-char (point-min))
       (if (re-search-forward "<img[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
 \\(?:alt=\"\\([^\"]+\\)\"\\)?[^>]*>" nil t)
 	  (insert
