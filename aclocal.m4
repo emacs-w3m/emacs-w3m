@@ -1,6 +1,6 @@
 AC_DEFUN(AC_SET_VANILLA_FLAG,
  [dnl Determine arguments to run Emacs as vanilla.
-  retval=`echo ${EMACS}| ${EGREP} xemacs| ${EGREP} -v '^$'`
+  retval=`echo "${EMACS}"| "${EGREP}" xemacs| "${EGREP}" -v '^$'`
   if test -z "${retval}"; then
 	VANILLA_FLAG="-q -no-site-file"
   else
@@ -13,7 +13,7 @@ AC_DEFUN(AC_SET_XEMACSDEBUG,
   dnl XEmacs 21.5 starts, in order to suppress warnings for Lisp shadows
   dnl when XEmacs 21.5 starts.
   if test "${VANILLA_FLAG}" = "-vanilla"; then
-	XEMACSDEBUG='XEMACSDEBUG='\''(setq log-warning-minimum-level (quote error))'\'' '
+	XEMACSDEBUG='XEMACSDEBUG='\''(setq log-warning-minimum-level (quote error))'\'
   else
 	XEMACSDEBUG=
   fi
@@ -26,8 +26,8 @@ if test -z "$3"; then
 fi
 AC_CACHE_VAL(EMACS_cv_SYS_$1,[
 	OUTPUT=./conftest-$$
-	echo ${XEMACSDEBUG}${EMACS}' '${VANILLA_FLAG}' -batch -eval '\''(let ((x '"${elisp}"')) (write-region (format "%s" x) nil "'${OUTPUT}'" nil 5))'\' >& AC_FD_CC 2>&1
-	eval ${XEMACSDEBUG}${EMACS}' '${VANILLA_FLAG}' -batch -eval '\''(let ((x '"${elisp}"')) (write-region (format "%s" x) nil "'${OUTPUT}'" nil 5))'\' >& AC_FD_CC 2>&1
+dnl	echo "${XEMACSDEBUG} '${EMACS}' ${VANILLA_FLAG} -batch -eval '(let ((x ${elisp})) (write-region (format \"%s\" x) nil \"${OUTPUT}\" nil 5))'" >&6
+	eval "${XEMACSDEBUG} '${EMACS}' ${VANILLA_FLAG} -batch -eval '(let ((x ${elisp})) (write-region (format \"%s\" x) nil \"${OUTPUT}\" nil 5))'" >& AC_FD_CC 2>&1
 	retval="`cat ${OUTPUT}`"
 	echo "=> ${retval}" >& AC_FD_CC 2>&1
 	rm -f ${OUTPUT}
@@ -246,9 +246,9 @@ AC_DEFUN(AC_ADD_LOAD_PATH,
 	ADDITIONAL_LOAD_PATH="${withval}"
       else
 	if test x"$USER" != xroot -a x"$HOME" != x -a -f "$HOME"/.emacs; then
-          ADDITIONAL_LOAD_PATH=`${XEMACSDEBUG}${EMACS} -batch -l "$HOME"/.emacs -l w3mhack.el NONE -f w3mhack-load-path 2>/dev/null | $EGREP -v '^$'`
+          ADDITIONAL_LOAD_PATH=`${XEMACSDEBUG} \'${EMACS}\' -batch -l \'$HOME/.emacs\' -l w3mhack.el NONE -f w3mhack-load-path 2>/dev/null | \'${EGREP}\' -v \'^$\'`
         else
-          ADDITIONAL_LOAD_PATH=`${XEMACSDEBUG}${EMACS} -batch -l w3mhack.el NONE -f w3mhack-load-path 2>/dev/null | $EGREP -v '^$'`
+          ADDITIONAL_LOAD_PATH=`${XEMACSDEBUG} \'${EMACS}\' -batch -l w3mhack.el NONE -f w3mhack-load-path 2>/dev/null | \'${EGREP}\' -v \'^$\'`
         fi
       fi
       AC_MSG_RESULT(${ADDITIONAL_LOAD_PATH})],
@@ -258,12 +258,12 @@ AC_DEFUN(AC_ADD_LOAD_PATH,
                           (it does not mean installing attic libraries)],
    [if test "x${withval}" = xyes; then
       if test x"$ADDITIONAL_LOAD_PATH" = xNONE; then
-        ADDITIONAL_LOAD_PATH=`pwd`/attic
+        ADDITIONAL_LOAD_PATH="`pwd`/attic"
       else
-        ADDITIONAL_LOAD_PATH=${ADDITIONAL_LOAD_PATH}:`pwd`/attic
+        ADDITIONAL_LOAD_PATH="${ADDITIONAL_LOAD_PATH}:`pwd`/attic"
       fi
     fi])
-  retval=`eval ${XEMACSDEBUG}${EMACS}' '${VANILLA_FLAG}' -batch -l w3mhack.el '${ADDITIONAL_LOAD_PATH}' -f w3mhack-print-status 2>/dev/null | $EGREP -v '\''^$'\'`
+  retval=`eval "${XEMACSDEBUG} '${EMACS}' ${VANILLA_FLAG} -batch -l w3mhack.el '${ADDITIONAL_LOAD_PATH}' -f w3mhack-print-status 2>/dev/null | '${EGREP}' -v '^$'"`
   if test x"$retval" != xOK; then
     AC_MSG_ERROR([Process couldn't proceed.  See the above messages.])
   fi

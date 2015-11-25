@@ -1,3 +1,13 @@
+2015-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_SET_VANILLA_FLAG, AC_SET_XEMACSDEBUG, AC_EMACS_LISP)
+	(AC_ADD_LOAD_PATH):
+	* Makefile.in (FLAGS, lisp, what-where, install-lisp, install-package)
+	(install-package-ja, dist, tarball, .el.elc, slow, very-slow):
+	* doc/Makefile.in (FLAGS, EMACSINFO, version.texi, install, install-en)
+	(install-ja): Work for path names containing whitespace.
+	[emacs-w3m:12530]
+
 2015-10-13  Bruno Félix Rezende Ribeiro  <oitofelix@gnu.org>
 
 	* w3m-form.el (w3m-form-make-form-data): Protect against empty token.
