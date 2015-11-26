@@ -1,3 +1,9 @@
+2015-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* Makefile.in (lisp, what-where, install-package, install-package-ja)
+	(dist, .el.elc, slow, very-slow)
+	* doc/Makefile.in (EMACSINFO, version.texi): Quote Emacs's path name.
+
 2015-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* aclocal.m4 (AC_SET_VANILLA_FLAG, AC_SET_XEMACSDEBUG, AC_EMACS_LISP)
