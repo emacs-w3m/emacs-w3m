@@ -39,6 +39,13 @@ if test -z "$3"; then
 fi
 ])
 
+AC_DEFUN(AC_PATH_CYGWIN,
+ [dnl Do `cygpath -u' for the given argument when running on Cygwin.
+  $1=$2
+  if test x"${CYGPATH}" != xno -a -n "`echo $$1| ${EGREP} '^[[A-Za-z]]:'`"; then
+	$1=`"${CYGPATH}" -u "$$1"`
+  fi])
+
 AC_DEFUN(AC_PATH_EMACS,
  [dnl Check for Emacsen.
 
@@ -168,7 +175,7 @@ AC_DEFUN(AC_PATH_LISPDIR, [
   AC_MSG_CHECKING([prefix for ${EMACS}])
   if test "${prefix}" = NONE; then
 	AC_EMACS_LISP(prefix,(expand-file-name \"..\" invocation-directory),noecho)
-	prefix=${EMACS_cv_SYS_prefix}
+	AC_PATH_CYGWIN(prefix,"${EMACS_cv_SYS_prefix}")
   fi
   AC_MSG_RESULT(${prefix})
   AC_ARG_WITH(lispdir,
@@ -223,7 +230,7 @@ AC_DEFUN(AC_PATH_ICONDIR,
 	      (replace-match \"\$(prefix)/\" nil nil default)\
 	    default)),
 	${prefix},noecho)
-      ICONDIR=${EMACS_cv_SYS_icondir}
+      AC_PATH_CYGWIN(ICONDIR,"${EMACS_cv_SYS_icondir}")
     fi
     if test ${EMACS_FLAVOR} = xemacs; then
       AC_MSG_RESULT(${ICONDIR}/

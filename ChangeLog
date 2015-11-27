@@ -1,3 +1,12 @@
+2015-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Prefer Cygwin pathnames when building emacs-w3m on Cygwin for
+	Windows-native Emacs.  [emacs-w3m:12540]
+
+	* aclocal.m4 (AC_PATH_CYGWIN): New function.
+	(AC_PATH_LISPDIR, AC_PATH_ICONDIR): Use it.
+	* configure.in: Check for cygpath program.
+
 2015-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* Makefile.in (lisp, what-where, install-package, install-package-ja)

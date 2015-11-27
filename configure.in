@@ -8,6 +8,7 @@ AC_CHECK_PROGS(PBIBTEX, pbibtex jbibtex, false)
 AC_CHECK_PROG(DVIPDFMX, dvipdfmx, dvipdfmx, false)
 AC_CHECK_PROG(TEXI2PDF, texi2pdf, texi2pdf, false)
 AC_CHECK_PROGS(EGREP, egrep grep, )
+AC_CHECK_PROG(CYGPATH, cygpath, cygpath, no)
 AC_PATH_EMACS
 AC_PATH_LISPDIR
 AC_PATH_PACKAGEDIR
