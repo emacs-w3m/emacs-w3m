@@ -264,7 +264,7 @@ class=\"article-detail-box[\t\n\r ]+clearfix\"" nil t)
     (delete-region (match-end 2) (point-max))
     (delete-region (goto-char (point-min)) (match-beginning 2))
     (when (re-search-forward "<img[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
-\\(?:alt=\"\\([^\"]+\\)\"\\)?[^>]*>" nil t)
+alt=\"\\([^\"]+\\)\"[^>]*>" nil t)
       (delete-region (goto-char (match-beginning 1)) (match-end 1))
       (insert "[写真]"))
     (goto-char (point-min))
