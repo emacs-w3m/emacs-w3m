@@ -88,124 +88,159 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAADFBMVEX////yo4H40cPrYQC
     (shimbun-nikkangendai-get-headers shimbun range)))
 
 (defun shimbun-nikkangendai-get-headers-top (shimbun range)
-  (let ((regexp
-	 (eval-when-compile
-	   (concat
-	    "<a[\t\n\r ]+href=\""
-	    ;; 1. url
-	    "\\(/articles/view/"
-	    ;; 2. group
-	    "\\([a-z]+\\)" "/"
-	    ;; 3. serial
-	    "\\([0-9]+\\)\\)"
-	    "[^>]+>[\t\n\r ]*<span\\(?:[\t\n\r ]+[^\t\n\r >]+\\)*>[\t\n\r ]*"
-	    ;; 4. subject
-	    "\\([^<]+\\)")))
-	(base (shimbun-url-internal shimbun))
-	url group serial subject id year month day from headers)
-    (when (re-search-forward
-	   "[\t\n\r ]*<!-+[\t\n\r ]*top[\t\n\r ]+match[\t\n\r ]+" nil t)
-      (delete-region (match-beginning 0) (point-max))
-      (goto-char (point-min)))
-    (while (re-search-forward regexp nil t)
-      (setq url (shimbun-expand-url (match-string 1) base)
-	    group (match-string 2)
-	    serial (match-string 3)
-	    subject (match-string 4))
-      (setq id (concat "<" serial "." group "%"
-		       shimbun-nikkangendai-top-level-domain ">"))
-      (when (and (not (shimbun-search-id shimbun id))
-		 (with-temp-buffer
-		   (shimbun-retrieve-url url)
-		   (goto-char (point-min))
-		   (when (re-search-forward "\
-<p[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*class=\"date-create[^>]+>[\t\n\r ]*\
-\\(20[1-9][0-9]\\)年\\([01]?[0-9]\\)月\\([0-3]?[0-9]\\)日" nil t)
-		     (setq year (string-to-number (match-string 1))
-			   month (string-to-number (match-string 2))
-			   day (string-to-number (match-string 3))))))
-	(when (or (string-match "[\t\n\r ]*&nbsp;[\t\n\r ]*\\'" subject)
-		  (string-match "[\t\n\r ]+'" subject))
-	  (setq subject (substring subject 0 (match-beginning 0))))
-	(setq from (concat shimbun-nikkangendai-server-name " ("
-			   (or (cadr (assoc group
-					    shimbun-nikkangendai-group-table))
-			       (cadr (assoc (substring group 0 -1)
-					    shimbun-nikkangendai-group-table))
-			       group)
-			   ")"))
-	(push (shimbun-create-header
-	       0 subject from
-	       (shimbun-make-date-string year month day)
-	       id "" 0 0 url)
-	      headers)))
-    headers))
+  (let ((base (shimbun-url-internal shimbun))
+	year month day url group id subject from headers)
+    (when (and
+	   (re-search-forward "<time[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
+datetime=\"\\(20[1-9][0-9]\\)-\\([01]?[0-9]\\)-\\([0-3]?[0-9]\\)\"" nil t)
+	   (progn
+	     (setq year (string-to-number (match-string 1))
+		   month (string-to-number (match-string 2))
+		   day (string-to-number (match-string 3)))
+	     (re-search-forward "\
+<div[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*class=\"main-topics-wrap\"" nil t))
+	   (shimbun-end-of-tag "div"))
+      (narrow-to-region (goto-char (match-beginning 2)) (match-end 2))
+
+      ;; Main topic
+      (when (and (re-search-forward "\
+<div[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
+class=\"main-topics[\t\n\r ]+clearfix\"" nil t)
+		 (shimbun-end-of-tag "div"))
+	(save-restriction
+	  (narrow-to-region (goto-char (match-beginning 2)) (match-end 2))
+	  (when (and (re-search-forward "\
+<a[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
+href=\"\\(/articles/view/\\([^\t\n\r \"/>]+\\)/\\([0-9]+\\)\\)\"[^>]*>\
+[\t\n\r ]*\\([^<]+\\)" nil t)
+		     (progn
+		       (setq url (shimbun-expand-url (match-string 1) base)
+			     group (match-string 2)
+			     id (concat "<" (match-string 3) ;; serial
+					"." group "%"
+					shimbun-nikkangendai-top-level-domain
+					">")
+			     subject (match-string 4))
+		       (not (shimbun-search-id shimbun id))))
+	    (setq from (concat shimbun-nikkangendai-server-name " ("
+			       (or (cadr
+				    (assoc group
+					   shimbun-nikkangendai-group-table))
+				   (cadr
+				    (assoc (substring group 0 -1)
+					   shimbun-nikkangendai-group-table))
+				   group)
+			       ")"))
+	    (push (shimbun-create-header
+		   0 subject from
+		   (shimbun-make-date-string year month day)
+		   id "" 0 0 url)
+		  headers))
+	  (goto-char (point-max))))
+
+      ;; Topics
+      (while (and (re-search-forward "\
+<li[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*class=\"article-box\"" nil t)
+		  (shimbun-end-of-tag "li"))
+	(save-restriction
+	  (narrow-to-region (goto-char (match-beginning 2)) (match-end 2))
+	  (when (and (re-search-forward "\
+<a[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
+href=\"\\(/articles/view/\\([^\t\n\r \"/>]+\\)/\\([0-9]+\\)\\)\"[^>]*>" nil t)
+		     (progn
+		       (setq url (shimbun-expand-url (match-string 1) base)
+			     group (match-string 2)
+			     id (concat "<" (match-string 3) ;; serial
+					"." group "%"
+					shimbun-nikkangendai-top-level-domain
+					">"))
+		       (not (shimbun-search-id shimbun id)))
+		     (search-forward "<p>" nil t)
+		     (shimbun-end-of-tag "p"))
+	    (setq subject (match-string 2)
+		  from (concat shimbun-nikkangendai-server-name " ("
+			       (or (cadr
+				    (assoc group
+					   shimbun-nikkangendai-group-table))
+				   (cadr
+				    (assoc (substring group 0 -1)
+					   shimbun-nikkangendai-group-table))
+				   group)
+			       ")"))
+	    (push (shimbun-create-header
+		   0 subject from
+		   (shimbun-make-date-string year month day)
+		   id "" 0 0 url)
+		  headers))
+	  (goto-char (point-max))))
+      (widen)
+      headers)))
 
 (defun shimbun-nikkangendai-get-headers (shimbun range)
-  (let ((regexp
-	 (eval-when-compile
-	   (concat
-	    "<a[\t\n\r ]+href=\""
-	    ;; 1. url
-	    "\\(/articles/view/"
-	    ;; 2. group
-	    "\\([a-z]+\\)" "/"
-	    ;; 3. serial
-	    "\\([0-9]+\\)\\)"
-	    "[^>]+>[\t\n\r ]*"
-	    ;; 4. subject
-	    "\\([^<]+\\)"
-	    "\\(?:<[/b-z][^>]*>[\t\n\r ]*\\)*"
-	    "\\(?:"
-	    ;; 5. year
-	    "\\(20[1-9][0-9]\\)年"
-	    ;; 6. month-1
-	    "\\([01]?[0-9]\\)月"
-	    ;; 7. day-1
-	    "\\([0-3]?[0-9]\\)日"
-	    "\\|\("
-	    ;; 8. month-2
-	    "\\([01]?[0-9]\\)月"
-	    ;; 9. day-2
-	    "\\([0-3]?[0-9]\\)日"
-	    "\\)")))
-	(base (shimbun-url-internal shimbun))
-	cyear cmonth url group serial subject year month day id from headers)
-    (setq cyear (shimbun-decode-time nil 32400)
-	  cmonth (nth 4 cyear))
-    (setq cyear (nth 5 cyear))
-    (while (re-search-forward regexp nil t)
-      (setq url (shimbun-expand-url (match-string 1) base)
-	    group (match-string 2)
-	    serial (match-string 3)
-	    subject (match-string 4)
-	    year (match-string 5))
-      (if year
-	  (setq year (string-to-number year)
-		month (string-to-number (match-string 6))
-		day (string-to-number (match-string 7)))
-	(setq month (string-to-number (match-string 8))
-	      day (string-to-number (match-string 9)))
-	(setq year (if (and (= cmonth 1) (= month 12))
-		       (1- cyear)
-		     cyear)))
-      (when (or (string-match "[\t\n\r ]*&nbsp;[\t\n\r ]*\\'" subject)
-		(string-match "[\t\n\r ]+'" subject))
-	(setq subject (substring subject 0 (match-beginning 0))))
-      (setq id (concat "<" serial "." group "%"
-		       shimbun-nikkangendai-top-level-domain ">")
-	    from (concat shimbun-nikkangendai-server-name " ("
-			 (or (cadr (assoc group
-					  shimbun-nikkangendai-group-table))
-			     (cadr (assoc (substring group 0 -1)
-					  shimbun-nikkangendai-group-table))
-			     group)
-			 ")"))
-      (push (shimbun-create-header
-	     0 subject from
-	     (shimbun-make-date-string year month day)
-	     id "" 0 0 url)
-	    headers))
+  (let ((base (shimbun-url-internal shimbun))
+	url group id year month day subject from headers)
+    (when (and (re-search-forward "\
+<div[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
+class=\"contents-wrapper[\t\n\r ]+clearfix\"" nil t)
+	       (shimbun-end-of-tag "div"))
+      (narrow-to-region (goto-char (match-beginning 2)) (match-end 2))
+      (while (re-search-forward "\
+<div[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*class=\"category-title\"\
+[^>]*>[\t\n\r ]*<a[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
+href=\"\\([^\"]+\\)" nil t)
+	(setq url (shimbun-expand-url (match-string 1) base))
+	(with-temp-buffer
+	  (shimbun-retrieve-url url)
+	  (goto-char (point-min))
+	  (while (and (re-search-forward "\
+<li[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*class=\"article-box\"" nil t)
+		      (shimbun-end-of-tag "li"))
+	    (save-restriction
+	      (narrow-to-region (goto-char (match-beginning 2)) (match-end 2))
+	      (when (and (re-search-forward "\
+<a[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
+href=\"\\(/articles/view/\\([^\t\n\r \"/>]+\\)/\\([0-9]+\\)\\)\"[^>]*>" nil t)
+			 (progn
+			   (setq url (shimbun-expand-url (match-string 1) base)
+				 group (match-string 2)
+				 id (concat
+				     "<" (match-string 3) ;; serial
+				     "." group "%"
+				     shimbun-nikkangendai-top-level-domain
+				     ">"))
+			   (not (shimbun-search-id shimbun id)))
+			 (progn
+			   (goto-char (point-min))
+			   (re-search-forward "\
+<time[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
+datetime=\"\\(20[1-9][0-9]\\)-\\([01]?[0-9]\\)-\\([0-3]?[0-9]\\)\"" nil t))
+			 (progn
+			   (setq year (string-to-number (match-string 1))
+				 month (string-to-number (match-string 2))
+				 day (string-to-number (match-string 3)))
+			   (goto-char (point-min))
+			   (re-search-forward "\
+<span[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*class=\"entry-ttl\"" nil t))
+			 (shimbun-end-of-tag "span"))
+		(setq subject (match-string 2)
+		      from (concat shimbun-nikkangendai-server-name " ("
+				   (or (cadr
+					(assoc
+					 group
+					 shimbun-nikkangendai-group-table))
+				       (cadr
+					(assoc
+					 (substring group 0 -1)
+					 shimbun-nikkangendai-group-table))
+				       group)
+				   ")"))
+		(push (shimbun-create-header
+		       0 subject from
+		       (shimbun-make-date-string year month day)
+		       id "" 0 0 url)
+		      headers))
+	      (goto-char (point-max))))))
+      (goto-char (point-max)))
     headers))
 
 (luna-define-method shimbun-multi-next-url ((shimbun shimbun-nikkangendai)
@@ -213,8 +248,9 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAADFBMVEX////yo4H40cPrYQC
 ;;  (shimbun-nikkangendai-multi-next-url shimbun header url))
 ;;(defun shimbun-nikkangendai-multi-next-url (shimbun header url)
   (goto-char (point-min))
-  (when (re-search-forward "<a[\t\n\r ]+href=\"\\([^\"]+\\)\"[\t\n\r ]*>\
-[\t\n\r ]*次へ&gt;&gt;[\t\n\r ]*</a>" nil t)
+  (when (re-search-forward "<a[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
+href=\"\\([^\"]+\\)\"[^>]*>[\t\n\r ]*次へ[\t\n\r ]*\
+\\(?:<[^>]+>[\t\n\r ]*\\)?&gt;&gt;" nil t)
     (shimbun-expand-url (match-string 1) url)))
 
 (luna-define-method shimbun-clear-contents :around
@@ -223,34 +259,22 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAADFBMVEX////yo4H40cPrYQC
 ;;(defun shimbun-nikkangendai-clear-contents (shimbun header)
   (goto-char (point-min))
   (when (and (re-search-forward "<div[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
-class=\"detail-topic[\t\n\r ]+[^>]+>[\t\n\r ]*" nil t)
-	     (progn
-	       (delete-region (point-min) (match-end 0))
-	       (re-search-forward "\
-<span[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*class=\"article_body\"" nil t)
-	       (shimbun-end-of-tag "span")))
-    (delete-region (goto-char (match-end 0)) (point-max))
-    (insert "\n")
-    (narrow-to-region (goto-char (point-min)) (match-beginning 0))
-    (let ((head (when (re-search-forward "\
-<div[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*class=\"article_head\"" nil t)
-		  (match-beginning 0))))
-      (goto-char (point-min))
-      (if (re-search-forward "<img[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
+class=\"article-detail-box[\t\n\r ]+clearfix\"" nil t)
+	     (shimbun-end-of-tag "div"))
+    (delete-region (match-end 2) (point-max))
+    (delete-region (goto-char (point-min)) (match-beginning 2))
+    (when (re-search-forward "<img[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
 \\(?:alt=\"\\([^\"]+\\)\"\\)?[^>]*>" nil t)
-	  (insert
-	   (prog1
-	       (if (match-beginning 1)
-		   (concat (match-string 1) "<br>\n"
-			   (buffer-substring (match-beginning 0)
-					     (match-beginning 1))
-			   "[写真]"
-			   (buffer-substring (match-end 1) (match-end 0)))
-		 (match-string 0))
-	     (delete-region (point-min) (or head (point-max))))
-	   "<br><br>\n")
-	(delete-region (point-min) (or head (point-max)))))
-    (widen)
+      (delete-region (goto-char (match-beginning 1)) (match-end 1))
+      (insert "[写真]"))
+    (goto-char (point-min))
+    (when (and (re-search-forward "<p[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
+class=\"full-text\"" nil t)
+	       (shimbun-end-of-tag "p" t))
+      (delete-region (match-end 3) (match-end 0))
+      (insert "\n")
+      (delete-region (goto-char (match-beginning 0)) (match-beginning 3))
+      (insert "<br>\n"))
     (unless (memq (shimbun-japanese-hankaku shimbun)
 		  '(header subject nil))
       (shimbun-japanese-hankaku-buffer t))

@@ -1,3 +1,9 @@
+2015-12-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nikkangendai.el (shimbun-nikkangendai-get-headers-top)
+	(shimbun-nikkangendai-get-headers, shimbun-multi-next-url)
+	(shimbun-clear-contents): Rewrite following the site renewal.
+
 2015-11-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nikkangendai.el (shimbun-clear-contents): Fix image gathering.
