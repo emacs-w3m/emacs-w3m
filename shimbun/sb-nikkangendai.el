@@ -253,47 +253,67 @@ href=\"\\([^\"]+\\)\"[^>]*>[\t\n\r ]*次へ[\t\n\r ]*\
 \\(?:<[^>]+>[\t\n\r ]*\\)?&gt;&gt;" nil t)
     (shimbun-expand-url (match-string 1) url)))
 
-(luna-define-method shimbun-clear-contents :around
-  ((shimbun shimbun-nikkangendai) header)
-;;  (shimbun-nikkangendai-clear-contents shimbun header))
-;;(defun shimbun-nikkangendai-clear-contents (shimbun header)
-  (goto-char (point-min))
-  (when (and (re-search-forward "<div[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
-class=\"article-detail-box[\t\n\r ]+clearfix\"" nil t)
-	     (shimbun-end-of-tag "div"))
-    (delete-region (match-end 2) (point-max))
-    (delete-region (goto-char (point-min)) (match-beginning 2))
-    (when (re-search-forward "<img[\t\n\r ]+\\([^>]*\\)>" nil t)
-      (insert "<br>\n")
-      (goto-char (match-beginning 1))
-      (if (re-search-forward "alt=\"\\([^\"]*\\)\"" (match-end 1) t)
-	  (replace-match "alt=\"[写真]\"")
-	(goto-char (match-end 1))
-	(insert " alt=\"[写真]\"")))
-    (goto-char (point-min))
-    (when (and (re-search-forward "<p[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
-class=\"full-text\"" nil t)
-	       (shimbun-end-of-tag "p" t))
-      (delete-region (match-end 3) (match-end 0))
-      (insert "\n")
-      (delete-region (goto-char (match-beginning 0)) (match-beginning 3))
-      (insert "<br>\n"))
-    (unless (memq (shimbun-japanese-hankaku shimbun)
-		  '(header subject nil))
-      (shimbun-japanese-hankaku-buffer t))
-    t))
-
 (luna-define-method shimbun-multi-clear-contents
   ((shimbun shimbun-nikkangendai) header has-previous-page has-next-page)
 ;;  (shimbun-nikkangendai-multi-clear-contents shimbun header
 ;;					     has-previous-page))
 ;;(defun shimbun-nikkangendai-multi-clear-contents (shimbun header
 ;;							  has-previous-page)
-  (when (shimbun-clear-contents shimbun header)
-    (when has-previous-page
+  (let (authinfo subttl)
+    (unless has-previous-page
       (goto-char (point-min))
-      (insert "&#012;\n"))
-    t))
+      (when (and (re-search-forward "\
+<div[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
+class=\"author-info-box[\t\n\r ]+clearfix\"" nil t)
+		 (shimbun-end-of-tag "div"))
+	(setq authinfo (match-string 0)))
+      (goto-char (point-min))
+      (when (and (re-search-forward "\
+<div[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*class=\"column-name\"" nil t)
+		 (shimbun-end-of-tag "div")
+		 (progn
+		   (goto-char (match-beginning 2))
+		   (re-search-forward "\
+<a[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*href=" (match-end 2) t))
+		 (shimbun-end-of-tag "a"))
+	(setq subttl (match-string 0))))
+    (goto-char (point-min))
+    (when (and (re-search-forward "\
+<div[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
+class=\"article-detail-box[\t\n\r ]+clearfix\"" nil t)
+	       (shimbun-end-of-tag "div"))
+      (delete-region (match-end 2) (point-max))
+      (delete-region (goto-char (point-min)) (match-beginning 2))
+      (when (and (re-search-forward "\
+<p[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
+class=\"full-text\"" nil t)
+		 (shimbun-end-of-tag "p" t))
+	(delete-region (match-end 3) (match-end 0))
+	(insert "\n")
+	(delete-region (goto-char (match-beginning 0)) (match-beginning 3))
+	(insert "<br>\n"))
+      (if has-previous-page
+	  (progn
+	    (goto-char (point-min))
+	    (insert "&#012;\n"))
+	(when subttl
+	  (goto-char (point-min))
+	  (insert subttl "<br><br>\n"))
+	(when authinfo
+	  (goto-char (point-min))
+	  (insert authinfo "\n")))
+      (goto-char (point-min))
+      (while (re-search-forward "<img[\t\n\r ]+\\([^>]*\\)>" nil t)
+	(insert "<br>\n")
+	(goto-char (match-beginning 1))
+	(if (re-search-forward "alt=\"\\([^\"]*\\)\"" (match-end 1) t)
+	    (replace-match "alt=\"[写真]\"")
+	  (goto-char (match-end 1))
+	  (insert " alt=\"[写真]\"")))
+      (unless (memq (shimbun-japanese-hankaku shimbun)
+		    '(header subject nil))
+	(shimbun-japanese-hankaku-buffer t))
+      t)))
 
 (luna-define-method shimbun-footer :around ((shimbun shimbun-nikkangendai)
 					    header &optional html)

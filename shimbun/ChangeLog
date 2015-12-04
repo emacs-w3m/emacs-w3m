@@ -1,7 +1,9 @@
 2015-12-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* sb-nikkangendai.el (shimbun-clear-contents):
-	Improve regexp to search img tag.
+	* sb-nikkangendai.el (shimbun-clear-contents): Remove;
+	merge to shimbun-multi-clear-contents.
+	(shimbun-multi-clear-contents): Improve regexp to search img tag;
+	add author's info and subtitle if any.
 
 2015-12-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
