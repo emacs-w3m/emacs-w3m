@@ -55,7 +55,18 @@ in advance).  If you don't do so, you will never get old articles.")
   '(("default" . "X-Face: SX1=HV&[cI##/uM,,hed]\"a1.(e<M21Jl\
 2dAy1-JnWwb'yT9t|fq*~ZpiUV%bx\\@&sdy`Vb\n c5[lT$}jl2|X~V97O'\
 I31<&o-eCYZDs~WZVK{m,T}x>b3T9PCilX3;\"*8oF;QS\"GCHWit%'u!of`\
-\\p\n &ute*s]IuWa5co-wMr4X1dQqqx/PB3y,@P3~Cdc<:$9.Jp^X$-*DPC")))
+\\p\n &ute*s]IuWa5co-wMr4X1dQqqx/PB3y,@P3~Cdc<:$9.Jp^X$-*DPC")
+    ("\\`topics\\'" . "\
+Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAADFBMVEUAAAD///9fX1/d3d1
+ VizmfAAAB0UlEQVQoz22SQWsTURSFz0yYxRiykqEgWehiuhHcpbhRIjiIYiGjczIz6UyaVrKIEmm
+ RQCO0pAUR3SiWp26UgkYL3QnBlSBKF/6AURG0uNCFWxUqVPS+CG0W3tX7uOede97lgayaLwEYsyQ
+ EoCuHIQT4VxqmR6GC/8HGKMBFNdoFG8nRXSggwKhsDxyEe5BhDjCztK7hHRpyfv+bC8NehPGHNa/
+ FhihQNcNnRZkd6uCRUWvdX4PDMiwk9tKhOztwJYmF0DbjAxKFP2CApwxulXNc7OrHnjRD1UO/Vi/
+ nwbOY74lTeO+2C3HJwdhCob1d0EHt3pGNBo4lYr1vB1jPf17AdgnR1w9mvsYZNuxNROWc93Tt4DL
+ 98RkkzTPWdXKSU/vPI/n20bv1Z91isiLgXLRkjlKBv6oXkvm/OrL/y6vgi+DJd+oKfFB9mn2cZfz
+ CRy1UszhlXonugYeYpUVOqzZ/jpVwKRsralGTN4nN6l37Gj0x8Ih+EPMcfeoQcLqT5I2EiqcF4om
+ OiiYyDqHytjnga4d8I3fiqfaJNFVkQdw6abce9RVDi7hyQecaSLQSkRTlED4nK0rWb6fSaZGv9Ke
+ YO07Ok5GrIewNrrpcOiz9v8e9pILarDM0AAAAAElFTkSuQmCC")))
 
 (defvar shimbun-yoshirin-expiration-days 1000)
 
