@@ -1,3 +1,8 @@
+2015-12-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-mainichi.el (shimbun-mainichi-clear-contents):
+	Emergency fix to regexp to search article body.
+
 2015-12-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-yoshirin.el (shimbun-yoshirin-x-face-alist): Add a face.

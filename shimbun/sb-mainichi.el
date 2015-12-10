@@ -1,6 +1,6 @@
 ;;; sb-mainichi.el --- shimbun backend for Mainichi jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2009, 2011-2013 Koichiro Ohba <koichiro@meadowy.org>
+;; Copyright (C) 2001-2009, 2011-2013, 2015 Koichiro Ohba <koichiro@meadowy.org>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
 ;;         Katsumi Yamaoka <yamaoka@jpl.org>
@@ -292,10 +292,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 				    nil t)
 		 (shimbun-end-of-tag (match-string 1)))
 	(setq arts (nconc arts (list (concat "<p>" (match-string 2) "</p>"))))))
-    (while (and (re-search-forward "\
-<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\
-\"\\(?:NewsBody\\(?: clr\\)?\\|Credit\\)\""
-				   nil t)
+    (while (and (re-search-forward "<div class=\"main-text\">" nil t)
 		(shimbun-end-of-tag "div"))
       (push (match-string 2) arts))
     (erase-buffer)
