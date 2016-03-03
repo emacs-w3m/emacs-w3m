@@ -1208,6 +1208,7 @@ browse-url-browser-function to put in w3m-content-type-alist.")
       ("text/html" "\\.s?html?\\'" ,external-browser nil)
       ("text/sgml" "\\.sgml?\\'" nil "text/plain")
       ("text/xml" "\\.xml\\'" nil "text/plain")
+      ("text/x-markdown" "\\.md\\'" nil w3m-prepare-markdown-content)
       ("image/jpeg" "\\.jpe?g\\'" ,image-viewer nil)
       ("image/png" "\\.png\\'" ,image-viewer nil)
       ("image/gif" "\\.gif\\'" ,image-viewer nil)
@@ -1759,6 +1760,8 @@ of the w3m command.  See also `w3m-command'."
 				      "xhtm"
 				      "xhtml"
 				      "txt")
+				    (and (w3m-which-command "grip")
+					 '("md"))
 				    (and (w3m-image-type-available-p 'jpeg)
 					 '("jpeg" "jpg"))
 				    (and (w3m-image-type-available-p 'gif)
@@ -6538,6 +6541,19 @@ specified in the `w3m-content-type-alist' variable."
      ((not filter) type)
      ; Failed.
      (t ""))))
+
+(defun w3m-prepare-markdown-content (url type charset)
+  (if (executable-find "grip")
+      (let ((coding-system-for-read 'utf-8)
+	    (coding-system-for-write 'utf-8))
+	(w3m-decode-buffer url charset type)
+	(call-process-region (point-min)
+			     (point-max)
+			     "grip"
+			     t '(t nil) nil
+			     "--quiet" "--title" "" "--export" "-")
+	"text/html")
+    "text/plain"))
 
 (defun w3m-detect-xml-type (url type charset)
   "Check if the type of xml contents of URL is xhtml+xml.
