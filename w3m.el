@@ -1750,6 +1750,18 @@ of the w3m command.  See also `w3m-command'."
   :group 'w3m
   :type '(string :size 0))
 
+(defcustom w3m-markdown-converter
+  (cond
+   ((w3m-which-command "markdown")
+    '("markdown"))
+   ((w3m-which-command "grip")
+    '("grip" "--quiet" "--title" "" "--export" "-")))
+  "*List of COMMAND which convert markdown formed files into HTML
+format and its ARGUMENTS."
+  :group 'w3m
+  :type '(cons (string :format "Command: %v\n" :size 0)
+	       (repeat (string :format "Arguments:\n%v\n" :size 0))))
+
 (defcustom w3m-local-find-file-regexps
   (cons nil
 	(concat "\\."
@@ -1760,8 +1772,7 @@ of the w3m command.  See also `w3m-command'."
 				      "xhtm"
 				      "xhtml"
 				      "txt")
-				    (and (w3m-which-command "markdown")
-					 '("md"))
+				    (and w3m-markdown-converter '("md"))
 				    (and (w3m-image-type-available-p 'jpeg)
 					 '("jpeg" "jpg"))
 				    (and (w3m-image-type-available-p 'gif)
@@ -6543,14 +6554,16 @@ specified in the `w3m-content-type-alist' variable."
      (t ""))))
 
 (defun w3m-prepare-markdown-content (url type charset)
-  (if (executable-find "markdown")
+  (if w3m-markdown-converter
       (let ((coding-system-for-read 'utf-8)
 	    (coding-system-for-write 'utf-8))
 	(w3m-decode-buffer url charset type)
-	(call-process-region (point-min)
-			     (point-max)
-			     "markdown"
-			     t '(t nil) nil)
+	(apply (function call-process-region)
+	       (point-min)
+	       (point-max)
+	       (car w3m-markdown-converter)
+	       t '(t nil) nil
+	       (cdr w3m-markdown-converter))
 	"text/html")
     "text/plain"))
 
