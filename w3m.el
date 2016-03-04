@@ -1760,7 +1760,7 @@ of the w3m command.  See also `w3m-command'."
 				      "xhtm"
 				      "xhtml"
 				      "txt")
-				    (and (w3m-which-command "grip")
+				    (and (w3m-which-command "markdown")
 					 '("md"))
 				    (and (w3m-image-type-available-p 'jpeg)
 					 '("jpeg" "jpg"))
@@ -6543,15 +6543,14 @@ specified in the `w3m-content-type-alist' variable."
      (t ""))))
 
 (defun w3m-prepare-markdown-content (url type charset)
-  (if (executable-find "grip")
+  (if (executable-find "markdown")
       (let ((coding-system-for-read 'utf-8)
 	    (coding-system-for-write 'utf-8))
 	(w3m-decode-buffer url charset type)
 	(call-process-region (point-min)
 			     (point-max)
-			     "grip"
-			     t '(t nil) nil
-			     "--quiet" "--title" "" "--export" "-")
+			     "markdown"
+			     t '(t nil) nil)
 	"text/html")
     "text/plain"))
 

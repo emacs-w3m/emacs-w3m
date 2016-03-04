@@ -1,3 +1,8 @@
+2016-03-04  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (w3m-prepare-markdown-content): Use "markdown" command instead
+	of "grip", because "markdown" works faster.
+
 2016-03-03  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m.el: Add support for markdown formed files.
