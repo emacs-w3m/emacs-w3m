@@ -1,3 +1,7 @@
+2016-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-clear-contents): Remove garbage.
+
 2015-12-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-mainichi.el (shimbun-mainichi-clear-contents):

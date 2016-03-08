@@ -1,6 +1,6 @@
 ;;; sb-asahi.el --- shimbun backend for asahi.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2011, 2013-2015 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2011, 2013-2016 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -1538,6 +1538,10 @@ as article contents."
 	     (or (match-string 1) (match-string 2) (match-string 3)) t)
 	(delete-region (match-beginning 0) (match-end 0))
 	(insert "\n")))
+    (goto-char (point-min))
+    (when (re-search-forward "\
+[\t\n ]*<!-+[\t\n ]*Outbrain[\t\n ]+TAG[\t\n ]+PC[\t\n ]*-+>" nil t)
+      (delete-region (match-end 0) (point-max)))
     ;; Remove Ads.
     (goto-char (point-min))
     (let (st)
