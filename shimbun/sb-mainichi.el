@@ -1,6 +1,7 @@
 ;;; sb-mainichi.el --- shimbun backend for Mainichi jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2009, 2011-2013, 2015 Koichiro Ohba <koichiro@meadowy.org>
+;; Copyright (C) 2001-2009, 2011-2013, 2015, 2016
+;; Koichiro Ohba <koichiro@meadowy.org>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
 ;;         Katsumi Yamaoka <yamaoka@jpl.org>
@@ -277,68 +278,42 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 (defun shimbun-mainichi-clear-contents (shimbun header)
   (shimbun-strip-cr)
   (goto-char (point-min))
-  (let ((group (shimbun-current-group-internal shimbun))
-	(hankaku (shimbun-japanese-hankaku shimbun))
-	(case-fold-search t)
-	arts)
-    (when (string-equal group "weekly")
-      (when (and (re-search-forward "\
-<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"Words\""
-				    nil t)
-		 (shimbun-end-of-tag "div"))
-	(setq arts (list (match-string 2))))
-      (when (and (re-search-forward "\
-<\\([^\t\n >]+\\)[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"NewsTitle\""
-				    nil t)
-		 (shimbun-end-of-tag (match-string 1)))
-	(setq arts (nconc arts (list (concat "<p>" (match-string 2) "</p>"))))))
-    (while (and (re-search-forward "<div class=\"main-text\">" nil t)
-		(shimbun-end-of-tag "div"))
-      (push (match-string 2) arts))
-    (erase-buffer)
-    (if arts
-	(progn
-	  (dolist (art (nreverse arts))
-	    (insert art "\n"))
-
-	  ;; Break continuous lines in yoroku articles.
-	  (when (or (string-equal group "opinion.yoroku")
-		    (string-match "\\`余録[:：]"
-				  (shimbun-header-subject header t)))
-	    (goto-char (point-min))
-	    (while (re-search-forward
-		    (eval-when-compile
-		      (concat "[▲"
-			      (condition-case nil
-				  (list (make-char 'mule-unicode-2500-33ff
-						   33 114))
-				(error nil))
-			      "]"))
-		    nil t)
-	      (replace-match "。</p>\n<p>　")))
-
-	  ;; Convert Japanese zenkaku ASCII chars into hankaku.
-	  (when (and hankaku (not (memq hankaku '(header subject))))
-	    (shimbun-japanese-hankaku-buffer t))
-
-	  (if (shimbun-prefer-text-plain-internal shimbun)
-	      (progn
-		;; Replace image tags with text.
-		(goto-char (point-min))
-		(while (and (re-search-forward "\\(<img[\t\n ]+\
+  (if (and (re-search-forward
+	    "<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"main-text\"" nil t)
+	   (shimbun-end-of-tag "div"))
+      (let ((hankaku (shimbun-japanese-hankaku shimbun))
+	    regexp)
+	(delete-region (match-end 2) (point-max))
+	(delete-region (point-min) (match-beginning 2))
+	(dolist (rm '("class=\"img-left[\t\n ]+ad\""
+		      "class=\"txtad\"" "id=\"tools\""))
+	  (setq regexp (concat "<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*" rm))
+	  (goto-char (point-min))
+	  (while (re-search-forward regexp nil t)
+	    (when (shimbun-end-of-tag "div" t)
+	      (delete-region (goto-char (match-beginning 0)) (match-end 0))
+	      (insert "\n"))))
+	;; Convert Japanese zenkaku ASCII chars into hankaku.
+	(when (and hankaku (not (memq hankaku '(header subject))))
+	  (shimbun-japanese-hankaku-buffer t))
+	(if (shimbun-prefer-text-plain-internal shimbun)
+	    (progn
+	      ;; Replace image tags with text.
+	      (goto-char (point-min))
+	      (while (and (re-search-forward "\\(<img[\t\n ]+\
 \\(?:[^\t\n >]+[\t\n ]+\\)*alt=\"\\)[^\"]+"
-					       nil t)
-			    (shimbun-end-of-tag nil t))
-		  (replace-match "\n&lt;写真&gt;\n")))
-	    ;; Break long lines.
-	    (shimbun-break-long-japanese-lines))
-	  t)
-
-      (insert "<html><body>\
+					     nil t)
+			  (shimbun-end-of-tag nil t))
+		(replace-match "\n&lt;写真&gt;\n")))
+	  ;; Break long lines.
+	  (shimbun-break-long-japanese-lines))
+	t)
+    (erase-buffer)
+    (insert "<html><body>\
 この記事はもうありません。<br>\n\
 \(さもなければ通常とは異なる形式を使っているか、<br>\n\
 &nbsp;または取得に失敗したのかもしれません。)</body></html>\n")
-      nil)))
+    nil))
 
 (luna-define-method shimbun-multi-clear-contents :around ((shimbun
 							   shimbun-mainichi)
