@@ -1,6 +1,6 @@
 ;;; sb-nikkangendai.el --- shimbun backend for Nikkan Gendai -*- coding: utf-8; -*-
 
-;; Copyright (C) 2015 Katsumi Yamaoka
+;; Copyright (C) 2015, 2016 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -264,7 +264,7 @@ href=\"\\([^\"]+\\)\"[^>]*>[\t\n\r ]*次へ[\t\n\r ]*\
       (goto-char (point-min))
       (when (and (re-search-forward "\
 <div[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
-class=\"author-info-box[\t\n\r ]+clearfix\"" nil t)
+class=\"author-info-box[\t\n\r ]+clearfix" nil t)
 		 (shimbun-end-of-tag "div"))
 	(setq authinfo (match-string 0)))
       (goto-char (point-min))
