@@ -90,17 +90,18 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAADFBMVEX////yo4H40cPrYQC
 (defun shimbun-nikkangendai-get-headers-top (shimbun range)
   (let ((base (shimbun-url-internal shimbun))
 	year month day url group id subject from headers)
+    (goto-char (point-min))
     (when (and
-	   (re-search-forward "<time[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
-datetime=\"\\(20[1-9][0-9]\\)-\\([01]?[0-9]\\)-\\([0-3]?[0-9]\\)\"" nil t)
+	   (re-search-forward "\
+<div[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*class=\"article-wrap\"" nil t)
+	   (shimbun-end-of-tag "div")
 	   (progn
-	     (setq year (string-to-number (match-string 1))
-		   month (string-to-number (match-string 2))
-		   day (string-to-number (match-string 3)))
-	     (re-search-forward "\
-<div[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*class=\"main-topics-wrap\"" nil t))
-	   (shimbun-end-of-tag "div"))
-      (narrow-to-region (goto-char (match-beginning 2)) (match-end 2))
+	     (narrow-to-region (goto-char (match-beginning 2)) (match-end 2))
+	     (re-search-forward "<time[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
+datetime=\"\\(20[1-9][0-9]\\)-\\([01]?[0-9]\\)-\\([0-3]?[0-9]\\)\"" nil t)))
+      (setq year (string-to-number (match-string 1))
+	    month (string-to-number (match-string 2))
+	    day (string-to-number (match-string 3)))
 
       ;; Main topic
       (when (and (re-search-forward "\

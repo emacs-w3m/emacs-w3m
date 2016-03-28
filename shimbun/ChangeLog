@@ -1,3 +1,7 @@
+2016-03-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-nikkangendai.el (shimbun-nikkangendai-get-headers-top): Work.
+
 2016-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-nikkangendai.el (shimbun-multi-clear-contents): Fix regexp.
