@@ -1,6 +1,6 @@
 ;;; w3m-util.el --- Utility macros and functions for emacs-w3m
 
-;; Copyright (C) 2001-2014 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2014, 2016 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -516,12 +516,12 @@ An argument of nil means kill the current buffer."
 	   (setq x (cons x
 			 (if (match-beginning 1)
 			     (string-to-number (match-string 2 x))
-			   1))))
+			   0))))
       (if (string-match "\\*w3m\\*\\(<\\([0-9]+\\)>\\)?\\'" y)
 	  (< (cdr x)
 	     (if (match-beginning 1)
 		 (string-to-number (match-string 2 y))
-	       1))
+	       0))
 	(string< (car x) y))
     (string< x y)))
 
