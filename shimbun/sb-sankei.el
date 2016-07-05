@@ -1,6 +1,6 @@
 ;;; sb-sankei.el --- shimbun backend for the Sankei News -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003-2011, 2013-2015 Katsumi Yamaoka
+;; Copyright (C) 2003-2011, 2013-2016 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -381,7 +381,8 @@ This is a subroutine that `shimbun-sankei-get-headers-top' uses."
 	    (re-search-forward "<!-+[\t\n ]*article[\t\n ]*-+>" nil t))
     (re-search-forward "\\(?:[\t\n ]*<[!/][^>]+>\\)*[\t\n ]*" nil t)
     (delete-region (point-min) (point))
-    (when (re-search-forward "[\t\n ]*</article>" nil t)
+    (when (or (re-search-forward "<!-+[^>]*[ _]article[ _]end[ _]" nil t)
+	      (re-search-forward "[\t\n ]*</article>" nil t))
       (delete-region (match-beginning 0) (point-max))
       (insert "\n")))
   (unless (memq (shimbun-japanese-hankaku shimbun) '(header subject nil))
