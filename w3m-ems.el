@@ -1,6 +1,6 @@
 ;;; w3m-ems.el --- GNU Emacs stuff for emacs-w3m
 
-;; Copyright (C) 2001-2013 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2013, 2016 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -278,7 +278,8 @@ and its cdr element is used as height."
   (if (not handler)
       (w3m-process-with-wait-handler
 	(w3m-create-image url no-cache referer size handler))
-    (lexical-let ((set-size size)
+    (lexical-let ((cur (current-buffer))
+		  (set-size size)
 		  (url url)
 		  image size)
       (w3m-process-do-with-temp-buffer
@@ -320,7 +321,7 @@ and its cdr element is used as height."
 				    (car set-size)(cdr set-size)
 				    handler))
 			(if resized (plist-put (cdr image) :data resized)))))))
-	  (w3m-image-animate image))))))
+	  (with-current-buffer cur (w3m-image-animate image)))))))
 
 (defun w3m-create-resized-image (url rate &optional referer size handler)
   "Resize an cached image object.
