@@ -1,3 +1,10 @@
+2016-07-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-goto-url): Run w3m-select-buffer-update after evaluating
+	w3m-display-hook and w3m-display-functions.  [emacs-w3m:12568]
+	It seems to be rational to run w3m-force-window-update, that
+	w3m-select-buffer-update runs, after settling down the page display.
+
 2016-04-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-buffer-name-lessp): Work for Emacs 25.2 that starts

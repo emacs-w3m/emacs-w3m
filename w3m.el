@@ -9857,12 +9857,12 @@ Cannot run two w3m processes simultaneously \
 	      (setq default-directory (w3m-current-directory w3m-current-url))
 	      (w3m-buffer-name-add-title)
 	      (w3m-update-toolbar)
-	      (w3m-select-buffer-update)
 	      (let ((real-url (if (w3m-arrived-p url)
 				  (or (w3m-real-url url) url)
 				url)))
 		(run-hook-with-args 'w3m-display-functions real-url)
 		(run-hook-with-args 'w3m-display-hook real-url))
+	      (w3m-select-buffer-update)
 	      (w3m-session-crash-recovery-save)
 	      (when (and w3m-current-url
 			 (stringp w3m-current-url)
