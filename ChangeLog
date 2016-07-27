@@ -1,3 +1,14 @@
+2016-07-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make w3m-delete-buffer return to the buffer that launches
+	the buffer to be deleted if w3m-use-tab is non-nil.
+
+	* w3m.el (w3m-parent-session-buffer): New internal variable.
+	(w3m-view-this-url-1):
+	Save the current session in it when launching a new session.
+	(w3m-delete-buffer, w3m-next-buffer):
+	Return to the buffer that launches the buffer to be deleted.
+
 2016-07-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-lynx-like-map): Bind "K" to w3m-scroll-down.
