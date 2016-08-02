@@ -1,3 +1,7 @@
+2016-08-01  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-lnum.el: Do a boundp test for browse-url-generic-program.
+
 2016-07-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make w3m-delete-buffer return to the buffer that launches

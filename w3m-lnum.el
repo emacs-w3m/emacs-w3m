@@ -1,6 +1,6 @@
 ;;; w3m-lnum.el --- Operations using link numbers
 
-;; Copyright (C) 2004-2014 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2004-2014, 2016 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;;          Andrey Kotlarski <m00naticus@gmail.com>
@@ -1155,7 +1155,8 @@ If no link under point, activate numbering and ask for one."
 
 
 ;;; add link action for generic browser
-(if browse-url-generic-program
+(if (and (boundp 'browse-url-generic-program)
+	 (symbol-value 'browse-url-generic-program))
     (setq w3m-lnum-actions-link-alist
 	  (append w3m-lnum-actions-link-alist
 		  `((?m (lambda (info) (browse-url-generic (car info)))
