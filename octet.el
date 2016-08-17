@@ -201,7 +201,7 @@ nil in NEW-TYPE means filtering is completed.")
     (funcall (symbol-function 'w3m-region)
 	     beg end (concat "about://octet-attachments/"
 			     (base64-encode-string
-			      (string-to-multibyte
+			      (string-make-multibyte
 			       (buffer-name (current-buffer))))
 			     "/"))
     (setq octet-attachments nil))

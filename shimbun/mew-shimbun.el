@@ -1023,7 +1023,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 	(forward-line)
 	(mew-header-goto-next)
 	(delete-region beg (point)))
-      (md5 (string-to-unibyte
+      (md5 (string-make-unibyte
 	    (mew-buffer-substring (point-min)
 				  (min (point-max) (+ (point-min) 4096))))
 	   nil nil 'binary))))
