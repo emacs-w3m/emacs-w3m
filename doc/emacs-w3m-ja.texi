@@ -3904,12 +3904,6 @@ variable to a non-@code{nil} value to always provide an initial content.
 のカスタマイズ, emacs-mime-ja, The Emacs MIME Manual}.  さら
 に @xref{HTML, ,HTML, gnus-ja, The Gnus Manual}.
 
-@quotation
-XEmacs で @code{gnus-article-html} を使うためのヒント
-が @uref{http://article.gmane.org/gmane.emacs.gnus.general/72704} にあり
-ます。
-@end quotation
-
 しかし、もしお使いの Gnus が少し古くて @code{mm-shr} 関数
 や @code{gnus-article-html} 関数が使えないか、または @acronym{HTML} 記事
 の描画のために emacs-w3m を試してみたいのであれば、この章はまさにあなた
@@ -6879,9 +6873,7 @@ Emacs-w3m メーリングリスト @t{<emacs-w3m@@namazu.org>}
 
 このリストに投稿するときは、日本語か英語を使ってください。多くのメンバー
 は日本人です。投稿された記事は公開されていて、ウェ
-ブ (@uref{http://emacs-w3m.namazu.org/ml/}) や NetNews (サー
-バ @samp{news.gmane.org} 上の @samp{gmane.emacs.w3m} というグループ) で
-も読むことができます。
+ブ (@uref{http://emacs-w3m.namazu.org/ml/}) でも読むことができます。
 
 このリストのメッセージをメールで受け取りたい人は、本文に
 

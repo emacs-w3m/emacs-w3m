@@ -4475,57 +4475,6 @@ It replaces the faces on the arrived anchors from `w3m-anchor' to
      ((eq flag 'lambda)
       (if (w3m-arrived-p url) t nil)))))
 
-(defun w3m-gmane-url-at-point ()
-  "Return a url that indicates the thread page in Gmane.
-This function works only when the cursor stays in the References
-header or the Message-ID header, otherwise returns nil.
-
-On the Message-ID header, the url that asks Gmane for the thread
-beginning with the current article will be generated.
-On the References header, the url that asks Gmane for the whole thread
-\(namely it begins with the article of the first ID in the header) will
-be generated.  In that case, Gmane might fail to find the thread since
-it is possible that the root article has been posted to another group.
-Then emacs-w3m will bring you to:
-
-  http://news.gmane.org/group/GROUP/thread=ARTNUM/force_load=t
-
-Where GROUP is a real group name and ARTNUM is the first article number
-of the thread.  When you tell it to friends, you can modify it as:
-
-  http://thread.gmane.org/GROUP/ARTNUM/focus=ARTNUM2
-
-ARTNUM2 is an article number to be focused (displayed); you can omit
-things on and after the last slash if ARTNUM2 equals ARTNUM.
-
-That it returns an invalid url for the article of the group which is
-not being archived in Gmane cannot be helped."
-  (save-excursion
-    (let (;;(fmt "http://thread.gmane.org/%s")
-	  (fmt "http://news.gmane.org/group/thread=%s")
-	  (start (point))
-	  (inhibit-point-motion-hooks t)
-	  case-fold-search)
-      (goto-char (point-min))
-      (re-search-forward (concat "^\\(?:"
-				 (regexp-quote mail-header-separator)
-				 "\\)?$")
-			 nil 'move)
-      (when (< start (point))
-	(setq case-fold-search t)
-	(save-restriction
-	  (narrow-to-region (point-min) (point))
-	  (goto-char start)
-	  (beginning-of-line)
-	  (while (and (memq (char-after) '(?\t ? ))
-		      (zerop (forward-line -1))))
-	  (when (looking-at
-		 "\\(?:Message-ID\\|References\\):[\t\n ]*<\\([^\t\n <>]+\\)>")
-	    (format
-	     fmt
-	     (w3m-url-encode-string (match-string-no-properties 1)
-				    nil t))))))))
-
 (defun w3m-shr-url-at-point ()
   "Return a url that shr.el provides at point."
   (w3m-get-text-property-around 'shr-url))
@@ -4547,8 +4496,7 @@ not being archived in Gmane cannot be helped."
 	   (lambda nil "\
 Like `ffap-url-at-point', except that text props will be stripped and
 iso646 characters are unified into ascii characters."
-	     (or (w3m-gmane-url-at-point)
-		 (w3m-header-line-url)
+	     (or (w3m-header-line-url)
 		 (let ((left (buffer-substring-no-properties (point-at-bol)
 							     (point)))
 		       (right (buffer-substring-no-properties (point)
@@ -4571,8 +4519,7 @@ iso646 characters are unified into ascii characters."
 	  ((featurep 'xemacs)
 	   (lambda nil "\
 Like `ffap-url-at-point', except that text props will be stripped."
-	     (or (w3m-gmane-url-at-point)
-		 (w3m-header-line-url)
+	     (or (w3m-header-line-url)
 		 (unless (fboundp 'ffap-url-at-point)
 		   ;; It is necessary to bind `ffap-xemacs'.
 		   (load "ffap" nil t))
@@ -4580,8 +4527,7 @@ Like `ffap-url-at-point', except that text props will be stripped."
 		   (ffap-url-at-point)))))
 	  (t
 	   (lambda nil
-	     (or (w3m-gmane-url-at-point)
-		 (w3m-shr-url-at-point)
+	     (or (w3m-shr-url-at-point)
 		 (w3m-header-line-url)
 		 (ffap-url-at-point)))))))
 
@@ -6278,7 +6224,7 @@ to fold them).  Things in textarea won't be modified."
 		  (concat
 		   "\\(?:"
 		   ;; Match paired parentheses, e.g. in Wikipedia URLs:
-		   ;; http://thread.gmane.org/47B4E3B2.3050402@gmail.com
+		   ;; <https://lists.gnu.org/archive/html/bug-gnu-emacs/2013-07/msg00890.html>
 		   "[" chars punct "]+" "(" "[" chars punct "]+" "[" chars "]*)"
 		   "\\(?:" "[" chars punct "]+" "[" chars "]" "\\)?"
 		   "\\|"
@@ -7111,7 +7057,7 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 		(substring url 0 path-end)
 		(or
 		 ;; Avoid file name handlers; cf.
-		 ;; http://news.gmane.org/group/gmane.emacs.w3m/thread=4210
+		 ;; <https://lists.gnu.org/archive/html/tramp-devel/2004-05/msg00016.html>
 		 (let (file-name-handler-alist)
 		   (file-name-directory (match-string 5 base)))
 		 "/"))

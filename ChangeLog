@@ -1,3 +1,9 @@
+2016-08-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Remove Gmane mailing list archive stuff.
+
+	* w3m.el (w3m-gmane-url-at-point): Remove.
+
 2016-08-01  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-lnum.el: Do a boundp test for browse-url-generic-program.
@@ -451,7 +457,8 @@
 
 	* w3m-ems.el (w3m-toolbar-make-buttons): Make tool-bar button use
 	a single icon image if Emacs built with Gtk+ is running.
-	cf. <http://thread.gmane.org/gmane.emacs.bugs/78021>
+	cf.
+	<https://lists.gnu.org/archive/html/bug-gnu-emacs/2013-09/msg00170.html>
 	(w3m-toolbar-use-single-image-per-icon): Add a note to docstring.
 
 2013-09-04  Katsumi Yamaoka  <yamaoka@jpl.org>
@@ -2169,7 +2176,7 @@
 
 	* w3m.el (w3m-link-menu): Always provide title string.  Suggested by
 	David Abrahams <dave@boostpro.com>.
-	Cf. <URL:http://news.gmane.org/group/gmane.emacs.w3m/thread=8126>.
+	cf. <http://emacs-w3m.namazu.org/ml/msg10658.html>.
 
 2009-03-17  Victor Ren  <victor.ren@ericsson.com>
 
@@ -3856,7 +3863,8 @@
 
 	* w3m-bug.el (report-emacs-w3m-bug): Use a new buffer to compose a mail
 	if at least mail-user-agent is sendmail-user-agent that is the default.
-	cf. http://article.gmane.org/gmane.emacs.devel/67501
+	cf.
+	<https://lists.gnu.org/archive/html/emacs-devel/2007-03/msg00399.html>
 
 2007-03-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -5077,8 +5085,8 @@
 
 2005-07-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-check-current-position): Bind deactivate-mark.  (cf.
-	http://news.gmane.org/group/gmane.emacs.pretest.bugs/thread=8335).
+	* w3m.el (w3m-check-current-position): Bind deactivate-mark.  cf.
+	<https://lists.gnu.org/archive/html/emacs-pretest-bug/2005-07/msg00109.html>
 
 2005-07-05  Masayuki Ataka  <ataka@milk.freemail.ne.jp>
 

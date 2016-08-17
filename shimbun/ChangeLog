@@ -685,7 +685,6 @@
 	* sb-cnet.el (shimbun-rss-process-date):
 	* sb-multi.el (shimbun-multi-make-contents): Use values-list to make
 	sure the 2nd argument of multiple-value-bind to be multiple-value.
-	Cf. http://news.gmane.org/group/gmane.emacs.xemacs.beta/thread=30500/
 
 2009-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 

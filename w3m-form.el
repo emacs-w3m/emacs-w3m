@@ -1462,7 +1462,8 @@ selected rather than \(as usual\) some other window.  See
       ;; Use the whole current window for the textarea when a user added
       ;; the buffer name "*w3m form textarea*" to `same-window-buffer-names'
       ;; (that is available only in Emacs).
-      ;; cf. http://article.gmane.org/gmane.emacs.w3m/7797
+      ;; cf.
+      ;; <https://lists.gnu.org/archive/html/help-gnu-emacs/2008-11/msg00551.html>
       (unless (w3m-same-window-p (buffer-name (if (consp buffer)
 						  (cdr buffer)
 						buffer)))

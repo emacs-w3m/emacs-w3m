@@ -3844,11 +3844,6 @@ want to do anything.  @xref{Display Customization, ,Display
 Customization, emacs-mime, The Emacs MIME Manual}.  Also @xref{HTML,
 ,HTML, gnus, The Gnus Manual}.
 
-@quotation
-There's a tip on using @code{gnus-article-html} under XEmacs in:
-@uref{http://article.gmane.org/gmane.emacs.gnus.general/72704}
-@end quotation
-
 But if Gnus you use is a bit old and neither the @code{mm-shr} function
 nor the @code{gnus-article-html} function is available, or if you'd like
 to try emacs-w3m to render @acronym{HTML} articles, this section is just
@@ -6871,8 +6866,7 @@ command (or the @w{@kbd{C-c C-b}} key) if you have set the
 English and Japanese can be used when posting to this list, since many
 of its members are Japanese.  Articles posted to the list are opened to
 the public and you can read them on the web (at
-@uref{http://emacs-w3m.namazu.org/ml/}), or in NetNews (group
-@samp{gmane.emacs.w3m} on the server @samp{news.gmane.org}).
+@uref{http://emacs-w3m.namazu.org/ml/}).
 
 If you want to receive articles by mail, send a mail containing
 
