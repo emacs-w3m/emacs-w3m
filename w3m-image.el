@@ -164,7 +164,7 @@ nil forcibly."
 	  t
 	(message "Image conversion failed (code `%s')"
 		 (if (stringp return)
-		     (decode-coding-string return 'undecided)
+		     (string-to-multibyte return)
 		   return))
 	nil))))
 

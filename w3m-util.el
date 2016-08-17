@@ -1368,8 +1368,8 @@ multibyteness of the buffer."
 	   (subrp (symbol-function 'decode-coding-string)))
       `(let ((string ,string))
 	 (insert (if enable-multibyte-characters
-		     (decode-coding-string string 'undecided)
-		   (encode-coding-string string 'binary))))
+		     (string-to-multibyte string)
+		   (string-to-unibyte string))))
     `(insert ,string)))
 
 (defun w3m-custom-hook-initialize (symbol value)

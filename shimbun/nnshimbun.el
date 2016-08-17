@@ -919,7 +919,7 @@ shimbun group."
 		   (car (delete "" nnshimbun-server-history))
 		   'nnshimbun-server-history))
      (static-unless (featurep 'xemacs)
-       (setq server (encode-coding-string server 'binary)))
+       (setq server (string-to-unibyte server)))
      (if (assoc server alist)
 	 (let ((shimbun (shimbun-open server)))
 	   (setq group (completing-read

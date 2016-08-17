@@ -2,6 +2,7 @@
 
 	Don't use `string-as-multibyte' and `string-as-unibyte' that are
 	obsolete in Emacs 25.2.
+	Use `string-to-multibyte' and `string-to-unibyte' instead.
 
 	* octet.el (octet-w3m-region):
 	* w3m-image.el (w3m-imagick-convert-buffer):

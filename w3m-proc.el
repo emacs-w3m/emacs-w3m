@@ -514,7 +514,7 @@ evaluated in a temporary buffer."
     (setq w3m-process-exit-status nil))
    (t
     (setq w3m-process-exit-status
-	  (decode-coding-string (format "%s" exit-status) 'undecided))
+	  (string-to-multibyte (format "%s" exit-status)))
     nil)))
 
 (defvar w3m-process-background nil

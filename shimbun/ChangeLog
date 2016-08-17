@@ -1,6 +1,7 @@
 2016-08-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Don't use `string-as-unibyte' that is obsolete in Emacs 25.2.
+	Use `string-to-unibyte' instead.
 
 	* mew-shimbun.el (mew-shimbun-md5):
 	* nnshimbun.el (gnus-group-make-shimbun-group): Do.
