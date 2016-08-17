@@ -514,7 +514,9 @@ evaluated in a temporary buffer."
     (setq w3m-process-exit-status nil))
    (t
     (setq w3m-process-exit-status
-	  (string-make-multibyte (format "%s" exit-status)))
+	  (w3m-static-if (featurep 'emacs)
+	      (string-make-multibyte (format "%s" exit-status))
+	    (format "%s" exit-status)))
     nil)))
 
 (defvar w3m-process-background nil

@@ -163,8 +163,10 @@ nil forcibly."
 	       (zerop return))
 	  t
 	(message "Image conversion failed (code `%s')"
-		 (if (stringp return)
-		     (string-make-multibyte return)
+		 (w3m-static-if (featurep 'emacs)
+		     (if (stringp return)
+			 (string-make-multibyte return)
+		       return)
 		   return))
 	nil))))
 

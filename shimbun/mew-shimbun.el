@@ -1023,9 +1023,12 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 	(forward-line)
 	(mew-header-goto-next)
 	(delete-region beg (point)))
-      (md5 (string-make-unibyte
-	    (mew-buffer-substring (point-min)
-				  (min (point-max) (+ (point-min) 4096))))
+      (md5 (static-if (featurep 'emacs)
+	       (string-make-unibyte
+		(mew-buffer-substring (point-min)
+				      (min (point-max) (+ (point-min) 4096))))
+	     (mew-buffer-substring (point-min)
+				   (min (point-max) (+ (point-min) 4096))))
 	   nil nil 'binary))))
 
 (defvar mew-shimbun-touch-folder-p
