@@ -1364,12 +1364,12 @@ pairs from PLIST whose value is nil."
 (defmacro w3m-insert-string (string)
   "Insert STRING at point without conversions in either case the
 multibyteness of the buffer."
-  (if (and (fboundp 'string-as-multibyte)
-	   (subrp (symbol-function 'string-as-multibyte)))
+  (if (and (fboundp 'decode-coding-string)
+	   (subrp (symbol-function 'decode-coding-string)))
       `(let ((string ,string))
 	 (insert (if enable-multibyte-characters
-		     (string-as-multibyte string)
-		   (string-as-unibyte string))))
+		     (decode-coding-string string 'undecided)
+		   (encode-coding-string string 'binary))))
     `(insert ,string)))
 
 (defun w3m-custom-hook-initialize (symbol value)

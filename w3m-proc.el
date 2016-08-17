@@ -1,6 +1,6 @@
 ;;; w3m-proc.el --- Functions and macros to control sub-processes
 
-;; Copyright (C) 2001-2005, 2007-2010, 2012, 2013
+;; Copyright (C) 2001-2005, 2007-2010, 2012, 2013, 2016
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -514,7 +514,7 @@ evaluated in a temporary buffer."
     (setq w3m-process-exit-status nil))
    (t
     (setq w3m-process-exit-status
-	  (string-as-multibyte (format "%s" exit-status)))
+	  (decode-coding-string (format "%s" exit-status) 'undecided))
     nil)))
 
 (defvar w3m-process-background nil

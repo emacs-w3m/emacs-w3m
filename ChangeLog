@@ -1,5 +1,13 @@
 2016-08-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	Don't use `string-as-multibyte' and `string-as-unibyte' that are
+	obsolete in Emacs 25.2.
+
+	* octet.el (octet-w3m-region):
+	* w3m-image.el (w3m-imagick-convert-buffer):
+	* w3m-proc.el (w3m-process-start-after):
+	* w3m-util.el (w3m-insert-string): Do.
+
 	Remove Gmane mailing list archive stuff.
 
 	* w3m.el (w3m-gmane-url-at-point): Remove.
