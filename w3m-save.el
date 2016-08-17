@@ -1,6 +1,6 @@
 ;;; w3m-save.el --- Save the page to the local files
 
-;; Copyright (C) 2015 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2015, 2016 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -34,7 +34,7 @@
 (defcustom w3m-save-buffer-directory (expand-file-name
 				      "saved/"
 				      w3m-default-save-directory)
-  "Default directory used to save pages and those image files."
+  "Default directory for saved pages and their image files."
   :group 'w3m
   :type 'directory)
 
@@ -95,7 +95,7 @@ Note that saved pages will get shown as what you see in emacs-w3m."
     (setq subdir (concat (file-name-sans-extension name) "-files"))
     (cond ((and (not no-image) (file-exists-p name) (file-exists-p subdir))
 	   (if (yes-or-no-p
-		(format "#1=%s and #1#-files/ already exist in %s, erase? "
+		(format "#1=%s and #1#-files/ already exist in %s, overwrite? "
 			(file-name-nondirectory name)
 			(file-name-directory name)))
 	       (progn
@@ -103,11 +103,11 @@ Note that saved pages will get shown as what you see in emacs-w3m."
 		 (delete-directory subdir t))
 	     (keyboard-quit)))
 	  ((file-exists-p name)
-	   (if (yes-or-no-p (format "%s already exists, erase? " name))
+	   (if (yes-or-no-p (format "%s already exists, overwrite? " name))
 	       (delete-file name)
 	     (keyboard-quit)))
 	  ((and (not no-image) (file-exists-p subdir))
-	   (if (yes-or-no-p (format "%s already exists, erase? " subdir))
+	   (if (yes-or-no-p (format "%s already exists, overwrite? " subdir))
 	       (delete-directory subdir t)
 	     (keyboard-quit))))
     (with-temp-buffer
