@@ -1136,14 +1136,16 @@ is inhibited in those cases even if `w3m-async-exec' is non-nil."
   :group 'w3m
   :type '(string :size 0))
 
-(defvar w3m-image-viewer
+(defcustom w3m-image-viewer
   (or (w3m-which-command "display")
       (w3m-which-command "eeyes")
       (w3m-which-command "xloadimage")
       (w3m-which-command "xv"))
-  "*Command used to view image files externally.
+  "Command used to view image files externally.
 Note that this option is installed temporarily.  It will be abolished
-when we implement the mailcap parser to set `w3m-content-type-alist'.")
+when we implement the mailcap parser to set `w3m-content-type-alist'."
+  :group 'w3m
+  :type 'string)
 
 ;; FIXME: we need to improve so that to set up the value of this
 ;; variable may be performed by parsing the mailcap file.
@@ -5931,7 +5933,7 @@ POST-DATA and REFERER will be sent to the web server with a request."
 ;;;###autoload
 (defun w3m-download (&optional url filename no-cache handler post-data)
   "Download contents of URL to a file named FILENAME.
-NO-CHACHE (which the prefix argument gives when called interactively)
+NO-CACHE (which the prefix argument gives when called interactively)
 specifies not using the cached data."
   (interactive (list nil nil current-prefix-arg))
   (unless url

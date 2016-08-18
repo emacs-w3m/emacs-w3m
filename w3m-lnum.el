@@ -1010,7 +1010,7 @@ image."
 ;;;###autoload
 (defun w3m-lnum-save-image ()
   "Save the image under point to a file.
-If no image at poing, turn on image numbers and save selected.
+If no image at point, turn on image numbers and save selected.
 The default name will be the original name of the image."
   (interactive)
   (let ((im (w3m-url-valid (w3m-image))))

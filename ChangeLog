@@ -1,3 +1,7 @@
+2016-08-18  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-image-viewer): Make it defcustom.
+
 2016-08-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Don't use `string-as-multibyte' and `string-as-unibyte' that are

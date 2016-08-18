@@ -47,8 +47,8 @@
   "Save the current page and its image data in NAME.html and NAME-files/.
 Those files will be saved in `w3m-save-buffer-directory' by default.
 No image will be saved if the prefix argument (the optional NO-IMAGE)
-is given.  You can view the saved page in the \"Next Page\".
-Note that saved pages will get shown as what you see in emacs-w3m."
+is given.  The saved page will be added to the history list, and be
+viewable using `w3m-next-page'."
   (interactive
    (if (and w3m-current-url
 	    (or (not (string-match "\\`[\C-@- ]*\\'\\|\\`about:\\|\\`file:"
