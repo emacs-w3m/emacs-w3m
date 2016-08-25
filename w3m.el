@@ -4493,44 +4493,44 @@ It replaces the faces on the arrived anchors from `w3m-anchor' to
 
 (eval-and-compile
   (autoload 'ffap-url-at-point "ffap")
-  (defalias 'w3m-url-at-point
-    (cond ((and (featurep 'xemacs) (featurep 'mule))
-	   (lambda nil "\
+  (cond ((featurep 'emacs)
+	 (defun w3m-url-at-point ()
+	   (or (w3m-shr-url-at-point)
+	       (w3m-header-line-url)
+	       (ffap-url-at-point))))
+	((featurep 'mule)
+	 (defun w3m-url-at-point ()
+	   "\
 Like `ffap-url-at-point', except that text props will be stripped and
 iso646 characters are unified into ascii characters."
-	     (or (w3m-header-line-url)
-		 (let ((left (buffer-substring-no-properties (point-at-bol)
-							     (point)))
-		       (right (buffer-substring-no-properties (point)
-							      (point-at-eol)))
-		       (regexp (format "[%c-%c]"
-				       (make-char 'latin-jisx0201 33)
-				       (make-char 'latin-jisx0201 126)))
-		       (diff (- (char-to-int (make-char 'latin-jisx0201 33))
-				33))
-		       index)
-		   (while (setq index (string-match regexp left))
-		     (aset left index (- (aref left index) diff)))
-		   (while (setq index (string-match regexp right))
-		     (aset right index (- (aref right index) diff)))
-		   (with-temp-buffer
-		     (insert right)
-		     (goto-char (point-min))
-		     (insert left)
-		     (ffap-url-at-point))))))
-	  ((featurep 'xemacs)
-	   (lambda nil "\
-Like `ffap-url-at-point', except that text props will be stripped."
-	     (or (w3m-header-line-url)
-		 (unless (fboundp 'ffap-url-at-point)
-		   ;; It is necessary to bind `ffap-xemacs'.
-		   (load "ffap" nil t))
-		 (let (ffap-xemacs)
-		   (ffap-url-at-point)))))
-	  (t
-	   (lambda nil
-	     (or (w3m-shr-url-at-point)
-		 (w3m-header-line-url)
+	   (or (w3m-header-line-url)
+	       (let ((left (buffer-substring-no-properties (point-at-bol)
+							   (point)))
+		     (right (buffer-substring-no-properties (point)
+							    (point-at-eol)))
+		     (regexp (format "[%c-%c]"
+				     (make-char 'latin-jisx0201 33)
+				     (make-char 'latin-jisx0201 126)))
+		     (diff (- (char-to-int (make-char 'latin-jisx0201 33))
+			      33))
+		     index)
+		 (while (setq index (string-match regexp left))
+		   (aset left index (- (aref left index) diff)))
+		 (while (setq index (string-match regexp right))
+		   (aset right index (- (aref right index) diff)))
+		 (with-temp-buffer
+		   (insert right)
+		   (goto-char (point-min))
+		   (insert left)
+		   (ffap-url-at-point))))))
+	(t
+	 (defun w3m-url-at-point ()
+	   "Like `ffap-url-at-point', except that text props will be stripped."
+	   (or (w3m-header-line-url)
+	       (unless (fboundp 'ffap-url-at-point)
+		 ;; It is necessary to bind `ffap-xemacs'.
+		 (load "ffap" nil t))
+	       (let (ffap-xemacs)
 		 (ffap-url-at-point)))))))
 
 (defvar ffap-url-regexp)
