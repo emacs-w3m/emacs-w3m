@@ -758,7 +758,7 @@ objects will not be deleted:
 	(set-buffer buffer)
 	(while windows
 	  (setq window (pop windows)
-		frame (window-frame window))
+		frame (and (window-live-p window) (window-frame window)))
 	  (when (and frame
 		     (not (eq frame exception)))
 	    (setq one-window-p

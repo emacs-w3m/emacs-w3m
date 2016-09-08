@@ -1,3 +1,9 @@
+2016-09-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-delete-frames-and-windows): Don't try to delete
+	window that this function deleted already in conjunction with its frame.
+	It happened when a frame has two or more emacs-w3m windows.
+
 2016-09-08  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-save.el (w3m-save-buffer-html-only): New user option.
