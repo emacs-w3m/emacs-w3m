@@ -43,12 +43,27 @@
   :group 'w3m
   :type 'boolean)
 
-(defun w3m-save-buffer (name &optional no-image)
-  "Save the current page and its image data in NAME.html and NAME-files/.
-Those files will be saved in `w3m-save-buffer-directory' by default.
-No image will be saved if the prefix argument (the optional NO-IMAGE)
-is given.  The saved page will be added to the history list, and be
-viewable using `w3m-next-page'."
+(defcustom w3m-save-buffer-html-only nil
+  "Save images along with a web-page, or just html.
+If nil, `w3m-save-buffer' will save the images of a buffer in
+addition to the buffer's html. If the buffer was originally
+loaded without images, the images will now be retrieved. The
+value of this variable may be over-ridden at run-time by passing
+a prefix argument to function `w3m-save-buffer'."
+  :group 'w3m
+  :type 'boolean)
+
+(defun w3m-save-buffer (name &optional no-images)
+  "Save the current w3m buffer.
+Save the current buffer as `w3m-save-buffer-directory'/NAME.html,
+and optionally save the buffer's associated image files in
+folder `w3m-save-buffer-directory'/NAME-files/. Use of
+`w3m-save-buffer-directory' may be over-ridden by including a
+folder path in NAME. Variable `w3m-save-buffer-html-only'
+determines whether images will be saved by default, but that
+setting may be toggled using the prefix argument (the
+optional NO-IMAGES). The saved page will be added to the
+history list, and be viewable using `w3m-next-page'."
   (interactive
    (if (and w3m-current-url
 	    (or (not (string-match "\\`[\C-@- ]*\\'\\|\\`about:\\|\\`file:"
@@ -71,6 +86,8 @@ viewable using `w3m-next-page'."
 		name nil (concat name ".html"))
 	       current-prefix-arg))
      (error "No valid url for this page")))
+  (when w3m-save-buffer-html-only
+    (setq no-images (not no-images)))
   (let ((url w3m-current-url)
 	(w3m-prefer-cache w3m-save-buffer-use-cache)
 	(case-fold-search t)
@@ -93,7 +110,7 @@ viewable using `w3m-next-page'."
     (unless (file-name-directory name)
       (setq name (expand-file-name name w3m-save-buffer-directory)))
     (setq subdir (concat (file-name-sans-extension name) "-files"))
-    (cond ((and (not no-image) (file-exists-p name) (file-exists-p subdir))
+    (cond ((and (not no-images) (file-exists-p name) (file-exists-p subdir))
 	   (if (yes-or-no-p
 		(format "#1=%s and #1#-files/ already exist in %s, overwrite? "
 			(file-name-nondirectory name)
@@ -106,7 +123,7 @@ viewable using `w3m-next-page'."
 	   (if (yes-or-no-p (format "%s already exists, overwrite? " name))
 	       (delete-file name)
 	     (keyboard-quit)))
-	  ((and (not no-image) (file-exists-p subdir))
+	  ((and (not no-images) (file-exists-p subdir))
 	   (if (yes-or-no-p (format "%s already exists, overwrite? " subdir))
 	       (delete-directory subdir t)
 	     (keyboard-quit))))
@@ -139,7 +156,7 @@ viewable using `w3m-next-page'."
 		    (delete-region (match-beginning 1) (match-end 1)))))
 	(goto-char st))
       ;; Save images into `subdir'.
-      (unless no-image
+      (unless no-images
 	(make-directory subdir t)
 	(setq sdir (file-name-nondirectory (directory-file-name subdir)))
 	(when (and (setq charset (or (w3m-arrived-content-charset url)

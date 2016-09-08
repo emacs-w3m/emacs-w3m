@@ -1,3 +1,8 @@
+2016-09-08  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-save.el (w3m-save-buffer-html-only): New user option.
+	(w3m-save-buffer): Use it; improve docstring.  [emacs-w3m:12595]
+
 2016-08-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-url-at-point): Refactor.
