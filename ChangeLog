@@ -1,3 +1,7 @@
+2016-09-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-retrieve-and-render): Reset hscroll.
+
 2016-09-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-delete-frames-and-windows): Don't try to delete

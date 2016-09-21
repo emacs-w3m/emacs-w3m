@@ -6310,6 +6310,7 @@ called with t as an argument.  Otherwise, it will be called with nil."
 	     (get-buffer-window (current-buffer) 'visible)
 	     (not (string-match "\\`about:" url)))
     ;; Clear the current display while reading a new page.
+    (set-window-hscroll nil 0)
     (let ((inhibit-read-only t))
       (erase-buffer)
       (insert-char ?\n (/ (window-height) 2))
