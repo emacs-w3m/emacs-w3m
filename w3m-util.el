@@ -1614,6 +1614,7 @@ the function cell of FUNCs rather than their value cell.
 	 ,@body)
     `(flet ,bindings ,@body)))
 (put 'w3m-flet 'lisp-indent-function 1)
+(def-edebug-spec w3m-flet ((&rest (sexp sexp &rest form)) &rest form))
 
 (defmacro w3m-labels (bindings &rest body)
   "Make temporary function bindings.
@@ -1626,6 +1627,7 @@ rather than relying on `lexical-binding'.
   `(,(progn (require 'cl) (if (fboundp 'cl-labels) 'cl-labels 'labels))
     ,bindings ,@body))
 (put 'w3m-labels 'lisp-indent-function 1)
+(def-edebug-spec w3m-labels ((&rest (sexp sexp &rest form)) &rest form))
 
 (eval-when-compile (require 'wid-edit))
 (defun w3m-widget-type-convert-widget (widget)

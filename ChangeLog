@@ -1,3 +1,7 @@
+2016-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-flet, w3m-labels): Add edebug spec.
+
 2016-09-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-retrieve-and-render): Reset hscroll.
