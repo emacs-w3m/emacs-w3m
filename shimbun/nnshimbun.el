@@ -1028,6 +1028,14 @@ puts a '&' after each w3m command."
 	     (concat "$W3M $OPTS " (shell-quote-argument url) " > " fname
 		     (if async " &\n" "\n")))))))))
 
+(defadvice gnus-backlog-shutdown (after do-it-for-nnshimbun-as-well activate)
+  "Do it for nnshimbun as well."
+  (ad-with-originals (gnus-backlog-shutdown)
+    (nnshimbun-backlog (gnus-backlog-shutdown)))
+  (dolist (buffer (buffer-list))
+    (when (string-match "\\` \\*nnshimbun backlog " (buffer-name buffer))
+      (kill-buffer buffer))))
+
 (provide 'nnshimbun)
 
 ;;; nnshimbun.el ends here

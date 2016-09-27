@@ -1,3 +1,7 @@
+2016-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnshimbun.el: Add an advice to gnus-backlog-shutdown.
+
 2016-08-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Don't use `string-as-unibyte' that is obsolete in Emacs 25.2.
