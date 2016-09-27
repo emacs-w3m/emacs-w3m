@@ -416,14 +416,6 @@ If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
 			      (cons (list 'nnshimbun-shimbun shimbun) defs))
 	  t))))
 
-(defadvice gnus-backlog-shutdown (after do-it-for-nnshimbun-as-well activate)
-  "Do it for nnshimbun as well."
-  (ad-with-originals (gnus-backlog-shutdown)
-    (nnshimbun-backlog (gnus-backlog-shutdown)))
-  (dolist (buffer (buffer-list))
-    (when (string-match "\\` \\*nnshimbun backlog " (buffer-name buffer))
-      (kill-buffer buffer))))
-
 (deffoo nnshimbun-close-server (&optional server)
   (when (nnshimbun-server-opened server)
     (when nnshimbun-shimbun
@@ -431,7 +423,7 @@ If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
 	(when (buffer-live-p (nnshimbun-nov-buffer-name group))
 	  (nnshimbun-write-nov group t)))
       (shimbun-close nnshimbun-shimbun)))
-  (gnus-backlog-shutdown)
+  (nnshimbun-backlog (gnus-backlog-shutdown))
   (nnoo-close-server 'nnshimbun server)
   t)
 
@@ -1035,6 +1027,14 @@ puts a '&' after each w3m command."
 	    (insert
 	     (concat "$W3M $OPTS " (shell-quote-argument url) " > " fname
 		     (if async " &\n" "\n")))))))))
+
+(defadvice gnus-backlog-shutdown (after do-it-for-nnshimbun-as-well activate)
+  "Do it for nnshimbun as well."
+  (ad-with-originals (gnus-backlog-shutdown)
+    (nnshimbun-backlog (gnus-backlog-shutdown)))
+  (dolist (buffer (buffer-list))
+    (when (string-match "\\` \\*nnshimbun backlog " (buffer-name buffer))
+      (kill-buffer buffer))))
 
 (provide 'nnshimbun)
 
