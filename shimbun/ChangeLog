@@ -1,3 +1,9 @@
+2016-09-3  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnshimbun.el (nnshimbun-decode-group-name)
+	(gnus-group-make-shimbun-group): Use Emacs functions rather than
+	mm-coding-system-p, mm-decode-coding-string, or mm-encode-coding-string.
+
 2016-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnshimbun.el: Add an advice to gnus-backlog-shutdown.

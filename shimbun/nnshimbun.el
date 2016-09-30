@@ -370,8 +370,8 @@ If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
 	   `(plist-get (nnshimbun-find-group-parameters ,name) ,symbol)))))
 
 (defun nnshimbun-decode-group-name (group)
-  (if (and group (mm-coding-system-p 'utf-8))
-      (mm-decode-coding-string group 'utf-8)
+  (if (and group (coding-system-p 'utf-8))
+      (decode-coding-string group 'utf-8)
     group))
 
 (defun nnshimbun-nov-buffer-name (&optional group)
@@ -940,9 +940,9 @@ shimbun group."
 			"Group name [Hit TAB to see candidates]: "
 			(mapcar 'list (shimbun-groups shimbun))))
 	   ;; Unify non-ASCII text.
-	   (when (mm-coding-system-p 'utf-8)
-	     (setq group (mm-decode-coding-string
-			  (mm-encode-coding-string group 'utf-8) 'utf-8)))
+	   (when (coding-system-p 'utf-8)
+	     (setq group (decode-coding-string
+			  (encode-coding-string group 'utf-8) 'utf-8)))
 	   (unless (shimbun-group-p shimbun group)
 	     (setq group nil)))
        (setq server nil))
@@ -951,8 +951,8 @@ shimbun group."
       (let (nname)
 	(setq server (list 'nnshimbun server)
 	      nname (gnus-group-prefixed-name
-		     (if (mm-coding-system-p 'utf-8)
-			 (mm-encode-coding-string group 'utf-8)
+		     (if (coding-system-p 'utf-8)
+			 (encode-coding-string group 'utf-8)
 		       group)
 		     server))
 	(if ephemeral
