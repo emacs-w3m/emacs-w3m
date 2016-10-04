@@ -1,3 +1,7 @@
+2016-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_PATH_EMACS): Work for Emacs 26.
+
 2016-09-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-flet, w3m-labels): Add edebug spec.
