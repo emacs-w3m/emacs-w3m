@@ -1,3 +1,15 @@
+2016-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-mainichi.el (shimbun-mainichi-group-table): Fix fuchiso url.
+	(shimbun-mainichi-get-headers-fuchisou): New function.
+	(shimbun-get-headers): Use it.
+	(shimbun-mainichi-get-headers): Fix regexp.
+	(shimbun-mainichi-clear-contents): Don't conceal error page.
+
+	Note: These changes don't let we get to subscribe to fuchiso (yet).
+	It requires shimbun.el to work for <body onload="..."> automatically.
+	In addition, a user has to have an account on mainichi.jp of course.
+
 2016-09-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnshimbun.el (nnshimbun-decode-group-name)
