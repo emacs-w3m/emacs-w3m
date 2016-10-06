@@ -1,6 +1,6 @@
 ;;; sb-yoshirin.el --- shimbun backend for Yoshinori Kobayashi Official Site -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2015 Katsumi Yamaoka
+;; Copyright (C) 2015, 2016 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -253,7 +253,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAADFBMVEUAAAD///9fX1/d3d1
 <div\\(?:[\t\n\r ]+[^\t\n\r >]+\\)*[\t\n\r ]+class=\"post_facebook\"" nil t)
 	(delete-region (match-beginning 0) (point-max))))
     (let ((thumnail (cdr (assq 'Thumnail (shimbun-header-extra header))))
-	  src)
+	  (case-fold-search t)
+	  src caption)
       (when (and thumnail
 		 (progn
 		   (setq thumnail (decode-coding-string
@@ -265,9 +266,12 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAADFBMVEUAAAD///9fX1/d3d1
 		   (not (re-search-forward (concat "\
 <img\\(?:[\t\n\r ]+[^\t\n\r >]+\\)*[\t\n\r ]+" src) nil t))))
 	(when (string-match "[\t ]+alt=\"\\([^\"]+\\)\"" thumnail)
-	  (insert (match-string 1 thumnail) "<br>\n")
-	  (setq thumnail (concat (substring thumnail 0 (match-beginning 0))
-				 (substring thumnail (match-end 0)))))
+	  (setq caption (match-string 1 thumnail)
+		thumnail (concat (substring thumnail 0 (match-beginning 0))
+				 (substring thumnail (match-end 0))))
+	  (when (string-match "\\`\\(?:%[0-9a-f][0-9a-f:]\\)+\\'" caption)
+	    (setq caption (w3m-url-decode-string caption 'utf-8)))
+	  (insert caption "<br>\n"))
 	(insert thumnail "\n")))))
 
 (provide 'sb-yoshirin)
