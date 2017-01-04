@@ -1,6 +1,6 @@
 ;;; w3m-save.el --- Save the page to the local files
 
-;; Copyright (C) 2015, 2016 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2015-2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -227,7 +227,7 @@ history list, and be viewable using `w3m-next-page'."
     (w3m-history-set-current
      (prog1
 	 (cadar w3m-history)
-       (w3m-history-push (concat "file://" name)
+       (w3m-history-push (w3m-expand-file-name-as-url name)
 			 (list :title (or w3m-current-title "<no-title>")))))))
 
 (provide 'w3m-save)

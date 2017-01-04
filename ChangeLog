@@ -1,3 +1,8 @@
+2017-01-04  Kevin Ryde  <user42_kevin@yahoo.com.au>
+
+	* w3m-save.el (w3m-save-buffer): Use w3m-expand-file-name-as-url for
+	w3m-history-push in case filename ~/foo etc.  [emacs-w3m:12617]
+
 2016-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* aclocal.m4 (AC_PATH_EMACS): Work for Emacs 26.
