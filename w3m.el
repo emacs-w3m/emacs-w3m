@@ -1,6 +1,6 @@
 ;;; w3m.el --- an Emacs interface to w3m -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2000-2016 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000-2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -3175,13 +3175,22 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 	     (attrs (w3m-attributes ,url ,no-cache handler))
 	   (nth 4 attrs)))
     `(nth 4 (w3m-attributes ,url ,no-cache))))
-(defmacro w3m-real-url (url &optional no-cache handler)
+(defmacro w3m-real-url-1 (url &optional no-cache handler)
   (if handler
       `(let ((handler ,handler))
 	 (w3m-process-do
 	     (attrs (w3m-attributes ,url ,no-cache handler))
 	   (nth 5 attrs)))
     `(nth 5 (w3m-attributes ,url ,no-cache))))
+
+(defun w3m-real-url (url &optional no-cache handler)
+  (w3m-string-match-url-components url)
+  (let ((name (match-string 9 url))
+	(real (w3m-real-url-1 url no-cache handler)))
+    (w3m-string-match-url-components real)
+    (cond ((match-beginning 8) real)
+	  (name (concat real "#" name))
+	  (t real))))
 
 (defmacro w3m-make-help-echo (property)
   "Make a function returning a string used for the `help-echo' message.
