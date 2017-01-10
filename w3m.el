@@ -7359,32 +7359,35 @@ The default name will be the original name of the image."
 	(w3m-download url)
       (w3m-message "No image at point"))))
 
-(make-obsolete 'w3m-external-view-this-url 'w3m-view-url-with-browse-url
-	       "2013-10-17")
 (defun w3m-external-view-this-url ()
   "Launch the external browser and display the link an point."
+  ;; This command was listed in the menu bar and a link menu till
+  ;; 2013-10-17.  As someone may still need it, don't delete it even
+  ;; if emacs-w3m no longer uses.
   (interactive)
   (let ((url (w3m-url-valid (or (w3m-anchor) (w3m-image)))))
     (if url
 	(w3m-external-view url)
       (w3m-message "No URL at point"))))
 
-(make-obsolete 'w3m-external-view-current-url 'w3m-view-url-with-browse-url
-	       "2013-10-17")
 (defun w3m-external-view-current-url ()
   "Launch the external browser and display the current URL."
+  ;; This command was listed in the menu bar till 2013-10-17.
+  ;; As someone may still need it, don't delete it even if emacs-w3m
+  ;; no longer uses.
   (interactive)
   (if w3m-current-url
       (w3m-external-view w3m-current-url)
     (w3m-message "No URL at this page")))
 
-(make-obsolete 'w3m-view-url-with-external-browser 'w3m-view-url-with-browse-url
-	       "2013-10-17")
 (defun w3m-view-url-with-external-browser (&optional url)
   "Launch the external browser and display the same web page.
 If the cursor points to a link, it visits the url of the link instead
 of the url currently displayed.  The browser is defined in
 `w3m-content-type-alist' for every type of a url."
+  ;; This command bound the M key and was listed in the tab menu till
+  ;; 2013-10-17.  As someone may still need it, don't delete it even
+  ;; if emacs-w3m no longer uses.
   (interactive (list (w3m-input-url "URL to view externally: "
 				    nil
 				    (or (w3m-anchor)
