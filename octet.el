@@ -1,6 +1,6 @@
 ;;; octet.el --- An octet stream viewer.
 
-;; Copyright (C) 2000, 2002, 2003, 2004, 2005, 2010, 2014, 2016
+;; Copyright (C) 2000, 2002, 2003, 2004, 2005, 2010, 2014, 2016, 2017
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
@@ -186,7 +186,9 @@ nil in NEW-TYPE means filtering is completed.")
   (let (buffer attachments pair)
     (set-buffer-multibyte nil)
     (when (string-match "\\`about://octet-attachments/\\([^/]+\\)/" url)
-      (setq buffer (get-buffer (base64-decode-string (match-string 1 url)))
+      (setq buffer (get-buffer (decode-coding-string
+				(base64-decode-string (match-string 1 url))
+				'utf-8))
 	    url (substring url (match-end 0))
 	    attachments (with-current-buffer buffer
 			  octet-attachments))
@@ -201,10 +203,7 @@ nil in NEW-TYPE means filtering is completed.")
     (funcall (symbol-function 'w3m-region)
 	     beg end (concat "about://octet-attachments/"
 			     (base64-encode-string
-			      (static-if (featurep 'emacs)
-				  (string-make-multibyte
-				   (buffer-name (current-buffer)))
-				(buffer-name (current-buffer))))
+			      (encode-coding-string (buffer-name) 'utf-8))
 			     "/"))
     (setq octet-attachments nil))
   0)

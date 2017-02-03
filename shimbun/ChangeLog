@@ -1,3 +1,10 @@
+2017-02-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Don't use string-make-unibyte that got obsolete in Emacs 26.
+
+	* mew-shimbun.el (mew-shimbun-md5): Encode a string by utf-8-emacs.
+	* nnshimbun.el (gnus-group-make-shimbun-group): Don't use it.
+
 2016-10-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-yoshirin.el (shimbun-yoshirin-make-contents):

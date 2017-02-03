@@ -1,7 +1,7 @@
 ;; -*- mode: emacs-lisp -*-
 ;; mew-shimbun.el --- View shimbun contents with Mew
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2010, 2016
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2010, 2016, 2017
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -1024,9 +1024,10 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 	(mew-header-goto-next)
 	(delete-region beg (point)))
       (md5 (static-if (featurep 'emacs)
-	       (string-make-unibyte
+	       (encode-coding-string
 		(mew-buffer-substring (point-min)
-				      (min (point-max) (+ (point-min) 4096))))
+				      (min (point-max) (+ (point-min) 4096)))
+		'utf-8-emacs)
 	     (mew-buffer-substring (point-min)
 				   (min (point-max) (+ (point-min) 4096))))
 	   nil nil 'binary))))

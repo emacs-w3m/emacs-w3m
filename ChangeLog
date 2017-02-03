@@ -1,3 +1,17 @@
+2017-02-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Don't use string-make-(multi|uni)byte that got obsolete in Emacs 26.
+
+	* octet.el (w3m-about-octet-attachments, octet-w3m-region):
+	Use (decode|encode)-coding-string.
+	* w3m-image.el (w3m-imagick-convert-buffer): Bind LC_ALL with C.
+	* w3m-proc.el (w3m-process-start-after):
+	Bind LC_ALL with C in w3m-command-environment.
+	* w3m-util.el (w3m-decode-coding-string-with-priority): Don't use it.
+	(w3m-insert-string): Encode a string by utf-8-emacs when inserting it
+	into a unibyte buffer.
+	* w3m.el (w3m-command-environment): Bind LC_ALL with C.
+
 2017-01-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-external-view-this-url, w3m-external-view-current-url)

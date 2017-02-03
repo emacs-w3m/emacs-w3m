@@ -1,6 +1,6 @@
 ;;; w3m-image.el --- Image conversion routines.
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2007, 2008
+;; Copyright (C) 2001, 2002, 2003, 2005, 2007, 2008, 2009, 2016, 2017
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>
@@ -139,6 +139,7 @@ nil forcibly."
 	   (coding-system-for-read 'binary)
 	   (coding-system-for-write 'binary)
 	   (default-process-coding-system (cons 'binary 'binary))
+	   (process-environment (cons "LC_ALL=C" process-environment))
 	   return)
       (write-region (point-min) (point-max) in-file nil 'nomsg)
       (erase-buffer)
@@ -162,12 +163,7 @@ nil forcibly."
       (if (and (numberp return)
 	       (zerop return))
 	  t
-	(message "Image conversion failed (code `%s')"
-		 (w3m-static-if (featurep 'emacs)
-		     (if (stringp return)
-			 (string-make-multibyte return)
-		       return)
-		   return))
+	(message "Image conversion failed (code `%s')" return)
 	nil))))
 
 (defun w3m-imagick-convert-data (data from-type to-type &rest args)

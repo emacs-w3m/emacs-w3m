@@ -1,6 +1,6 @@
 ;;; nnshimbun.el --- interfacing with web newspapers
 
-;; Copyright (C) 2000-2012, 2016 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000-2012, 2016, 2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          ARISAWA Akihiro    <ari@mbf.sphere.ne.jp>,
@@ -932,8 +932,6 @@ shimbun group."
 		   alist nil t
 		   (car (delete "" nnshimbun-server-history))
 		   'nnshimbun-server-history))
-     (static-unless (featurep 'xemacs)
-       (setq server (string-make-unibyte server)))
      (if (assoc server alist)
 	 (let ((shimbun (shimbun-open server)))
 	   (setq group (completing-read

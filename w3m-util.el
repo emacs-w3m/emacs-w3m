@@ -1,6 +1,6 @@
 ;;; w3m-util.el --- Utility macros and functions for emacs-w3m
 
-;; Copyright (C) 2001-2014, 2016 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2014, 2016, 2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -135,7 +135,6 @@ If CODING is a list, look for the coding system using it as a priority
 list."
   (w3m-static-cond
    ((featurep 'emacs)
-    (setq str (string-make-unibyte str))
     (when (listp coding)
       (setq coding
 	    (with-temp-buffer
@@ -1364,12 +1363,11 @@ pairs from PLIST whose value is nil."
 (defmacro w3m-insert-string (string)
   "Insert STRING at point without conversions in either case the
 multibyteness of the buffer."
-  (if (and (fboundp 'string-make-multibyte)
-	   (subrp (symbol-function 'string-make-multibyte)))
+  (if (featurep 'emacs)
       `(let ((string ,string))
 	 (insert (if enable-multibyte-characters
-		     (string-make-multibyte string)
-		   (string-make-unibyte string))))
+		     string
+		   (encode-coding-string string 'utf-8-emacs))))
     `(insert ,string)))
 
 (defun w3m-custom-hook-initialize (symbol value)
