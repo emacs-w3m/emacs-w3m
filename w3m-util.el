@@ -135,6 +135,7 @@ If CODING is a list, look for the coding system using it as a priority
 list."
   (w3m-static-cond
    ((featurep 'emacs)
+    (setq str (string-make-unibyte str))
     (when (listp coding)
       (setq coding
 	    (with-temp-buffer
