@@ -236,7 +236,7 @@ generated asynchronous process is ignored.  Otherwise,
 (defun w3m-process-start-queued-processes ()
   "Start a process which is registerd in `w3m-process-queue' if the
 number of current working processes is less than `w3m-process-max'."
-  (w3m-process-kill-stray-processes)
+  ;; Run `w3m-process-kill-stray-processes' in advance.
   (let ((num 0))
     (catch 'last
       (dolist (obj (reverse w3m-process-queue))
@@ -292,7 +292,17 @@ which have no handler."
   (when (buffer-name buffer)
     (with-current-buffer buffer
       (setq w3m-current-process nil)))
-  (w3m-process-start-queued-processes)
+  (w3m-process-kill-stray-processes)
+  (if w3m-process-queue
+      (w3m-process-start-queued-processes)
+    (when (and w3m-clear-display-while-reading
+	       (progn
+		 (goto-char (point-min))
+		 (looking-at "\n* *Reading [^\n]+\\.\\.\\.\\'")))
+      (let ((inhibit-read-only t))
+	(erase-buffer)
+	(setq w3m-current-url nil
+	      w3m-current-title nil))))
   (w3m-force-window-update-later buffer))
 
 (defun w3m-process-shutdown ()
@@ -573,6 +583,7 @@ evaluated in a temporary buffer."
 		(throw 'last nil)))))
       (delete-process process)
       (unless ignore-queue
+	(w3m-process-kill-stray-processes)
 	(w3m-process-start-queued-processes)))))
 
 (defun w3m-process-filter (process string)

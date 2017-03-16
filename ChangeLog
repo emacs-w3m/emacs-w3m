@@ -1,3 +1,10 @@
+2017-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-proc.el (w3m-process-stop): Blank page if
+	w3m-clear-display-while-reading is non-nil ([emacs-w3m:12633]).
+	(w3m-process-kill-stray-processes): Separate it from
+	w3m-process-start-queued-processes.
+
 2017-02-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Revert last change in w3m-decode-coding-string-with-priority.
