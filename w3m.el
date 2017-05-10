@@ -4622,6 +4622,8 @@ Also fix URL that fails to have put a separator following a domain name."
 	(concat "\
 http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
 		(w3m-url-encode-string url nil t)))
+       ((file-exists-p url)
+	(concat "file://" (expand-file-name url)))
        (t
 	(concat "http://" url))))))
 

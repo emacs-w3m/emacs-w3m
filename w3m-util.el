@@ -680,10 +680,12 @@ according to `w3m-pop-up-windows' and `w3m-pop-up-frames' (which see)."
 	      (w3m-static-when (featurep 'xemacs)
 		(focus-frame frame))))
 	;; Simply switch to BUFFER in the current frame.
-	(if (w3m-popup-window-p)
-	    (let ((pop-up-windows t))
-	      (pop-to-buffer buffer))
-	  (switch-to-buffer buffer))
+	(let ((cd default-directory))
+	  (if (w3m-popup-window-p)
+	      (let ((pop-up-windows t))
+		(pop-to-buffer buffer))
+	    (switch-to-buffer buffer))
+	  (setq default-directory cd))
 	(w3m-history-restore-position)))))
 
 (eval-when-compile

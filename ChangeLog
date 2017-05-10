@@ -1,3 +1,10 @@
+2017-05-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Allow local file of which the name is not absolute ([emacs-w3m:12643])
+
+	* w3m.el (w3m-canonicalize-url): Allow local file of relative name.
+	* w3m-util.el (w3m-popup-buffer): Preserve the current directory.
+
 2017-03-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-proc.el (w3m-process-stop): Blank page if
