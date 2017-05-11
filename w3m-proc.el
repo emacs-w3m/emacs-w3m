@@ -44,21 +44,23 @@
 (require 'w3m-util)
 
 (eval-when-compile
-  ;; Variable(s) which are used in the following inline functions.
-  ;; They should be defined in the other module at run-time.
-  (defvar w3m-current-url)
-  (defvar w3m-current-buffer)
-  (defvar w3m-current-process)
-  (defvar w3m-profile-directory)
-  (defvar w3m-terminal-coding-system)
+  ;; External functions and variables used in this module,
+  ;; and should be defined in the other module at run-time.
+  (autoload 'w3m-idle-images-show-unqueue "w3m")
+  (defvar w3m-async-exec)
+  (defvar w3m-clear-display-while-reading)
   (defvar w3m-command)
   (defvar w3m-command-arguments)
   (defvar w3m-command-environment)
-  (defvar w3m-async-exec)
+  (defvar w3m-current-buffer)
+  (defvar w3m-current-process)
+  (defvar w3m-current-title)
+  (defvar w3m-current-url)
   (defvar w3m-process-connection-type)
   (defvar w3m-process-modeline-format)
-  (defvar w3m-work-buffer-list)
-  (autoload 'w3m-idle-images-show-unqueue "w3m"))
+  (defvar w3m-profile-directory)
+  (defvar w3m-terminal-coding-system)
+  (defvar w3m-work-buffer-list))
 
 (defvar w3m-process-inhibit-quit t
   "`w3m-process-sentinel' binds `inhibit-quit' according to this variable.")

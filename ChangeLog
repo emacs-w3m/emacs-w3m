@@ -1,3 +1,7 @@
+2017-05-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-proc.el: Bind w3m-clear-display-while-reading, w3m-current-title.
+
 2017-05-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Allow local file of which the name is not absolute ([emacs-w3m:12643])
