@@ -1,3 +1,12 @@
+2017-05-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Don't use string-(as|make|to)-(multi|uni)byte ([emacs-w3m:12630]).
+
+	* w3m.el (w3m-url-decode-string): Use a unibyte buffer to represent
+	encoded byte stream.
+
+	* w3m-util.el (w3m-decode-coding-string-with-priority): Simplify.
+
 2017-05-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-proc.el: Bind w3m-clear-display-while-reading, w3m-current-title.

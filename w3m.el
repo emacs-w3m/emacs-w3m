@@ -3425,17 +3425,23 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 (defun w3m-url-decode-string (str &optional coding regexp)
   (or regexp (setq regexp "%\\(?:\\([0-9a-f][0-9a-f]\\)\\|0d%0a\\)"))
   (let ((start 0)
-	(buf)
 	(case-fold-search t))
-    (while (string-match regexp str start)
-      (push (substring str start (match-beginning 0)) buf)
-      (push (if (match-beginning 1)
-		(vector (string-to-number (match-string 1 str) 16))
-	      "\n")
-	    buf)
-      (setq start (match-end 0)))
-    (setq str (apply 'concat (nreverse (cons (substring str start) buf))))
-    (w3m-decode-coding-string-with-priority str coding)))
+    (with-temp-buffer
+      (set-buffer-multibyte nil)
+      (while (string-match regexp str start)
+	(insert (substring str start (match-beginning 0))
+		(if (match-beginning 1)
+		    (string-to-number (match-string 1 str) 16)
+		  ?\n))
+	(setq start (match-end 0)))
+      (decode-coding-string
+       (buffer-string)
+       (or (if (listp coding)
+	       (w3m-detect-coding-region (point-min) (point-max) coding)
+	     coding)
+	   w3m-default-coding-system
+	   w3m-coding-system
+	   'iso-2022-7bit)))))
 
 (defun w3m-url-readable-string (url)
   "Return a readable string for a given encoded URL."

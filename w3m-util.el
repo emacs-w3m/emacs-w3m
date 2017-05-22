@@ -73,6 +73,8 @@
 
 ;;; Things should be defined in advance:
 (eval-when-compile
+  (autoload 'w3m-detect-coding-region
+    (if (featurep 'emacs) "w3m-ems" "w3m-xmas"))
   (autoload 'w3m-fb-frame-parameter "w3m-fb")
   (autoload 'w3m-history-restore-position "w3m-hist" nil t))
 
@@ -133,72 +135,19 @@ or `debug-on-quit' is non-nil."
   "Decode the string STR which is encoded in CODING.
 If CODING is a list, look for the coding system using it as a priority
 list."
-  (w3m-static-cond
-   ((featurep 'emacs)
-    (setq str (string-make-unibyte str))
-    (when (listp coding)
-      (setq coding
-	    (with-temp-buffer
-	      (set-buffer-multibyte nil)
-	      (insert str)
-	      ;; A copy of `w3m-detect-coding-region' defined in w3m-ems.el.
-	      (w3m-static-if (fboundp 'with-coding-priority)
-		  (with-coding-priority coding
-		    (car (detect-coding-region (point-min) (point-max))))
-		(let (category categories)
-		  (dolist (codesys coding)
-		    (setq category (coding-system-category codesys))
-		    (unless (or (null category) (assq category categories))
-		      (push (cons category codesys) categories)))
-		  (car (detect-coding-with-priority
-			(point-min) (point-max) (nreverse categories))))))))
-    (decode-coding-string str
-			  (or coding
-			      w3m-default-coding-system
-			      w3m-coding-system
-			      'iso-2022-7bit)))
-   ;; XEmacs w/ Mule
-   ((featurep 'mule)
-    (if (listp coding)
-	(with-temp-buffer
-	  (insert str)
-	  (let* ((orig-category-list (coding-priority-list))
-		 (orig-category-systems (mapcar #'coding-category-system
-						orig-category-list))
-		 codesys category priority-list)
-	    (unwind-protect
-		(progn
-		  (while coding
-		    (setq codesys (car coding)
-			  coding (cdr coding)
-			  category (or (coding-system-category codesys)
-				       (coding-system-name codesys)))
-		    (unless (or (eq (coding-system-type codesys) 'undecided)
-				(assq category priority-list))
-		      (set-coding-category-system category codesys)
-		      (push category priority-list)))
-		  (set-coding-priority-list (nreverse priority-list))
-		  ;; `detect-coding-region' always returns `undecided'
-		  ;; ignoring `priority-list' in XEmacs 21.5-b19, but
-		  ;; that's okay.
-		  (when (consp (setq codesys (detect-coding-region
-					      (point-min) (point-max))))
-		    (setq codesys (car codesys)))
-		  (decode-coding-region (point-min) (point-max)
-					(or codesys
-					    w3m-default-coding-system
-					    w3m-coding-system
-					    'iso-2022-7bit))
-		  (buffer-string))
-	      (set-coding-priority-list orig-category-list)
-	      (while orig-category-list
-		(set-coding-category-system (car orig-category-list)
-					    (car orig-category-systems))
-		(setq orig-category-list (cdr orig-category-list)
-		      orig-category-systems (cdr orig-category-systems))))))
-      (decode-coding-string str coding)))
-   ;; XEmacs w/o Mule
-   (t str)))
+  (w3m-static-if (featurep 'mule)
+      (with-temp-buffer
+	(w3m-static-when (featurep 'emacs) (set-buffer-multibyte nil))
+	(insert str)
+	(decode-coding-string
+	 (buffer-string)
+	 (or (if (listp coding)
+		 (w3m-detect-coding-region (point-min) (point-max) coding)
+	       coding)
+	     w3m-default-coding-system
+	     w3m-coding-system
+	     'iso-2022-7bit)))
+    str))
 
 ;;; Text props:
 
