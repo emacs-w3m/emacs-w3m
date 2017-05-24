@@ -1,3 +1,8 @@
+2017-05-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-url-decode-string): Fix previous commit, that breaks url
+	of being not encoded.
+
 2017-05-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Don't use string-(as|make|to)-(multi|uni)byte ([emacs-w3m:12630]).

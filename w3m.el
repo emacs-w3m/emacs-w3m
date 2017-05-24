@@ -3434,6 +3434,7 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 		    (string-to-number (match-string 1 str) 16)
 		  ?\n))
 	(setq start (match-end 0)))
+      (insert (substring str start))
       (decode-coding-string
        (buffer-string)
        (or (if (listp coding)
