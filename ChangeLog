@@ -1,3 +1,8 @@
+2017-05-26  Aubrey Raech  <aubrey@raech.net>
+
+	* w3m-search.el (w3m-search-engine-alist):
+	Replace freshmeat with duckduckgo.
+
 2017-05-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-url-decode-string): Fix previous commit, that breaks url

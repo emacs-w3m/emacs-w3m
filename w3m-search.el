@@ -1,6 +1,6 @@
 ;;; w3m-search.el --- functions convenient to access web search engines
 
-;; Copyright (C) 2001--2012 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001--2012, 2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Keisuke Nishida    <kxn30@po.cwru.edu>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -227,7 +227,7 @@ __mk_ja_JP=%%83J%%83%%5E%%83J%%83i&url=search-alias%%3Daps&field-keywords=%s"
       ("ja.wikipedia" "http://ja.wikipedia.org/wiki/Special:Search?search=%s"
        utf-8)
       ("msdn" "http://search.msdn.microsoft.com/search/default.aspx?query=%s")
-      ("freshmeat" "http://freshmeat.net/search/?q=%s&section=projects")))
+      ("duckduckgo" "https://duckduckgo.com/?q=%s" utf-8)))
   "*An alist of search engines.
 Each element looks like (ENGINE ACTION CODING POST-DATA)
 ENGINE is a string, the name of the search engine.
