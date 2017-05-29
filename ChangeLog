@@ -1,3 +1,7 @@
+2017-05-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-filter.el (w3m-toggle-filtering): Use completing-read.
+
 2017-05-28  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-filter.el (w3m-toggle-filtering): New user command.

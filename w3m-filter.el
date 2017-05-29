@@ -301,10 +301,8 @@ This variable is semi-obsolete; use `w3m-filter-configuration' instead."
 (defun w3m-toggle-filtering (arg)
   "Toggle whether web pages will have their html modified by w3m's \
 filters before being rendered.
-
-When called with the universal argument, prompts for a single filter
-to toggle, and supplies in the minibuffer history a scrollable /
-searchable list of existing filters."
+When called with a prefix argument, prompt for a single filter to
+toggle with completion (a function toggled last will first appear)."
   (interactive "P")
   (if (not arg)
       ;; toggle state for all filters
@@ -315,37 +313,30 @@ searchable list of existing filters."
 		  (if w3m-use-filter "enabled" "disabled"))))
     ;; the remainder of this function if for the case of toggling
     ;; an individual filter
-    (let (elem atom w3m-filter-selection-list)
-      ;; update w3m-filter-selection-list
-      (dolist (elem w3m-filter-configuration)
-	(let* ((atom (nth 0 (last elem)))
-	       (atom (if (listp atom) (nth 0 atom) atom))
-	       (atom (prin1-to-string atom)))
-	  (when (not (member atom w3m-filter-selection-list))
-	    (push atom w3m-filter-selection-list))))
-      (let ((choice (read-from-minibuffer
-		     "Enter filter name (or choose by scrolling): " nil nil nil
-		     '(w3m-filter-selection-list . 1))))
-	(when (and (boundp 'choice) (not (string= "" choice)))
-	  (unless
-	      (catch 'found
-		(dolist (elem w3m-filter-configuration)
-		  (let* ((atom (nth 0 (last elem)))
-			 (atom (if (listp atom) (nth 0 atom) atom)))
-		    (when (equal choice (prin1-to-string atom))
-		      (setq w3m-filter-configuration
-			    (delq elem w3m-filter-configuration))
-		      (if (pop elem)
-			  (progn
-			    (push nil elem)
-			    (push elem w3m-filter-configuration))
-			(setq w3m-use-filter t)
-			(push t elem)
-			(push elem w3m-filter-configuration))
-		      (message (concat "filter `" choice "' now "
-				       (if (car elem) "enabled" "disabled")))
-		      (throw 'found t)))))
-	    (message (concat "filter `" choice "' not found"))))))))
+    (let* ((selection-list (delq nil (mapcar
+				      (lambda (elem)
+					(when (and (symbolp (nth 3 elem))
+						   (fboundp (nth 3 elem)))
+					  (symbol-name (nth 3 elem))))
+				      w3m-filter-configuration)))
+	   (choice (completing-read
+		    "Enter filter name: " selection-list nil t
+		    (or (car w3m-filter-selection-history)
+			(car selection-list))
+		    'w3m-filter-selection-history))
+	   (filters w3m-filter-configuration)
+	   elem)
+      (unless (string= "" choice)
+	(setq choice (intern choice))
+	(while (setq elem (pop filters))
+	  (when (eq choice (nth 3 elem))
+	    (setq filters nil)
+	    (setcar elem (not (car elem)))
+	    (when (car elem)
+	      (setq w3m-use-filter t))
+	    (message "filter `%s' now %s"
+		     choice
+		     (if (car elem) "enabled" "disabled"))))))))
 
 (defun w3m-filter-delete-regions (url start end)
   "Delete regions surrounded with a START pattern and an END pattern."
