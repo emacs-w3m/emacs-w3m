@@ -145,6 +145,10 @@
   (autoload 'w3m-form-kill-buffer "w3m-form")
   (autoload 'w3m-form-set-number "w3m-form")
   (autoload 'w3m-filter "w3m-filter")
+  (autoload 'w3m-toggle-filtering "w3m-filter"
+    "Toggle whether web pages will have their html modified by w3m's \
+filters before being rendered."
+    t)
   (autoload 'w3m-setup-tab-menu "w3m-tabmenu")
   (autoload 'w3m-setup-bookmark-menu "w3m-bookmark")
   (autoload 'w3m-switch-buffer "w3m-tabmenu")
@@ -8211,6 +8215,7 @@ for users.  See Info node `(elisp)Key Binding Conventions'.")
     (if (featurep 'xemacs)
 	(define-key map [(shift space)] 'w3m-scroll-down-or-previous-url)
       (define-key map [?\S-\ ] 'w3m-scroll-down-or-previous-url))
+    (define-key map "f" 'w3m-toggle-filtering)
     (define-key map "h" 'backward-char)
     (define-key map "j" 'next-line)
     (define-key map "k" 'previous-line)
@@ -8365,7 +8370,7 @@ for users.  See Info node `(elisp)Key Binding Conventions'.")
     (define-key map "D" 'w3m-download-this-url)
     (define-key map "e" 'w3m-edit-current-url)
     (define-key map "E" 'w3m-edit-this-url)
-    (define-key map "f" 'undefined) ;; reserved.
+    (define-key map "f" 'w3m-toggle-filtering)
     (define-key map "g" 'w3m-goto-url)
     (define-key map "G" 'w3m-goto-url-new-session)
     (define-key map "\C-tt" 'w3m-create-empty-session)

@@ -1,6 +1,7 @@
 ;;; w3m-filter.el --- filtering utility of advertisements on WEB sites -*- coding: utf-8 -*-
 
-;; Copyright (C) 2001-2008, 2012-2015 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2008, 2012-2015, 2017
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -295,6 +296,56 @@ This variable is semi-obsolete; use `w3m-filter-configuration' instead."
 				 w3m-filter-configuration))))
       (when (string-match (car elem) url)
 	(apply (cadr elem) url (cddr elem))))))
+
+;;;###autoload
+(defun w3m-toggle-filtering (arg)
+  "Toggle whether web pages will have their html modified by w3m's \
+filters before being rendered.
+
+When called with the universal argument, prompts for a single filter
+to toggle, and supplies in the minibuffer history a scrollable /
+searchable list of existing filters."
+  (interactive "P")
+  (if (not arg)
+      ;; toggle state for all filters
+      (progn
+	(setq w3m-use-filter (not w3m-use-filter))
+	(message (concat
+		  "web page filtering now "
+		  (if w3m-use-filter "enabled" "disabled"))))
+    ;; the remainder of this function if for the case of toggling
+    ;; an individual filter
+    (let (elem atom w3m-filter-selection-list)
+      ;; update w3m-filter-selection-list
+      (dolist (elem w3m-filter-configuration)
+	(let* ((atom (nth 0 (last elem)))
+	       (atom (if (listp atom) (nth 0 atom) atom))
+	       (atom (prin1-to-string atom)))
+	  (when (not (member atom w3m-filter-selection-list))
+	    (push atom w3m-filter-selection-list))))
+      (let ((choice (read-from-minibuffer
+		     "Enter filter name (or choose by scrolling): " nil nil nil
+		     '(w3m-filter-selection-list . 1))))
+	(when (and (boundp 'choice) (not (string= "" choice)))
+	  (unless
+	      (catch 'found
+		(dolist (elem w3m-filter-configuration)
+		  (let* ((atom (nth 0 (last elem)))
+			 (atom (if (listp atom) (nth 0 atom) atom)))
+		    (when (equal choice (prin1-to-string atom))
+		      (setq w3m-filter-configuration
+			    (delq elem w3m-filter-configuration))
+		      (if (pop elem)
+			  (progn
+			    (push nil elem)
+			    (push elem w3m-filter-configuration))
+			(setq w3m-use-filter t)
+			(push t elem)
+			(push elem w3m-filter-configuration))
+		      (message (concat "filter `" choice "' now "
+				       (if (car elem) "enabled" "disabled")))
+		      (throw 'found t)))))
+	    (message (concat "filter `" choice "' not found"))))))))
 
 (defun w3m-filter-delete-regions (url start end)
   "Delete regions surrounded with a START pattern and an END pattern."
@@ -704,7 +755,7 @@ href=\"#\\([a-z][-.0-9:_a-z]*\\)\"" nil t)
 	  (goto-char (point-min))
 	  (insert (format "<meta HTTP-EQUIV=\"Refresh\" CONTENT=\"0;URL=%s\">\n"
 			  aturl)))
-      (while (re-search-forward (concat "<a[ \t\r\l\n]+href=\"javascript:[^(]+('"
+      (while (re-search-forward (concat "<a[ \t\r\f\n]+href=\"javascript:[^(]+('"
 					"\\([^']+\\)')\">")
 				nil t)
 	(setq aturl (match-string 1))
@@ -715,7 +766,7 @@ href=\"#\\([a-z][-.0-9:_a-z]*\\)\"" nil t)
   "Make anchor reference to work."
   (goto-char (point-min))
   (let (matched-text refid)
-    (while (re-search-forward 
+    (while (re-search-forward
 	    "<\\(?:sup\\|cite\\) id=\"\\([^\"]*\\)\"" nil t)
       (setq matched-text (match-string 0)
 	    refid        (match-string 1))

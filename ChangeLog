@@ -1,3 +1,12 @@
+2017-05-28  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-filter.el (w3m-toggle-filtering): New user command.
+
+	* w3m.el (w3m-lynx-like-map, w3m-info-like-map): Bind "f" to it.
+
+	* w3m-lnum.el (w3m-lnum-mode-map): Don't bind f, F, and w keys;
+	use `L'-prefixed version defined in `w3m-lnum-map' instead.
+
 2017-05-26  Aubrey Raech  <aubrey@raech.net>
 
 	* w3m-search.el (w3m-search-engine-alist):

@@ -1,6 +1,6 @@
 ;;; w3m-lnum.el --- Operations using link numbers
 
-;; Copyright (C) 2004-2014, 2016 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2004-2014, 2016, 2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;;          Andrey Kotlarski <m00naticus@gmail.com>
@@ -207,9 +207,10 @@ filtering over an url being matched by the car."
   "Keymap used when command `w3m-lnum-mode' is active.")
 (unless w3m-lnum-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "f" 'w3m-lnum-follow)
-    (define-key map "F" 'w3m-lnum-goto)
-    (define-key map "w" 'w3m-lnum-universal)
+    ;; Use `L'-prefixed keys for those commands.
+    ;; (define-key map "f" 'w3m-lnum-follow)
+    ;; (define-key map "F" 'w3m-lnum-goto)
+    ;; (define-key map "w" 'w3m-lnum-universal)
     (w3m-substitute-key-definitions
      map w3m-mode-map
      'w3m-view-image 'w3m-lnum-view-image
