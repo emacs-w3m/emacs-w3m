@@ -297,6 +297,8 @@ This variable is semi-obsolete; use `w3m-filter-configuration' instead."
       (when (string-match (car elem) url)
 	(apply (cadr elem) url (cddr elem))))))
 
+(defvar w3m-filter-selection-history nil)
+
 ;;;###autoload
 (defun w3m-toggle-filtering (arg)
   "Toggle whether web pages will have their html modified by w3m's \
