@@ -1932,12 +1932,9 @@ timestamp with the `-t' option."
 
 (defcustom w3m-uri-replace-alist
   '(("\\`gg:" w3m-search-uri-replace "google")
-    ("\\`ggg:" w3m-search-uri-replace "google groups")
     ("\\`ya:" w3m-search-uri-replace "yahoo")
-    ("\\`al:" w3m-search-uri-replace "altavista")
     ("\\`bts:" w3m-search-uri-replace "debian-bts")
     ("\\`dpkg:" w3m-search-uri-replace "debian-pkg")
-    ("\\`archie:" w3m-search-uri-replace "iij-archie")
     ("\\`alc:"  w3m-search-uri-replace "alc")
     ("\\`urn:ietf:rfc:\\([0-9]+\\)" w3m-pattern-uri-replace
      "http://www.ietf.org/rfc/rfc\\1.txt"))
