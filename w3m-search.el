@@ -48,185 +48,172 @@
 		    (and (not ja) (w3m-find-coding-system 'utf-8)))))
     `(,@(if ja
 	    '(("yahoo"
-	       "http://search.yahoo.co.jp/bin/search?p=%s"
+	       "https://search.yahoo.co.jp/bin/search?p=%s"
 	       euc-japan)
 	      ("yahoo-en"
-	       "http://search.yahoo.com/bin/search?p=%s"))
+	       "https://search.yahoo.com/bin/search?p=%s"))
 	  '(("yahoo"
-	     "http://search.yahoo.com/bin/search?p=%s")
+	     "https://search.yahoo.com/bin/search?p=%s")
 	    ("yahoo-ja"
-	     "http://search.yahoo.co.jp/bin/search?p=%s"
+	     "https://search.yahoo.co.jp/bin/search?p=%s"
 	     euc-japan)))
-      ("alc" "http://eow.alc.co.jp/%s/UTF-8/" utf-8)
+      ("alc" "https://eow.alc.co.jp/%s/UTF-8/" utf-8)
       ,@(cond
 	 ((and ja utf-8)
 	  '(("blog"
-	     "http://blogsearch.google.com/blogsearch?q=%s&hl=ja&lr=lang_ja&oe=utf-8&ie=utf-8"
+	     "https://blogsearch.google.com/blogsearch?q=%s&hl=ja&lr=lang_ja&oe=utf-8&ie=utf-8"
 	     utf-8)
 	    ("blog-en"
-	     "http://blogsearch.google.com/blogsearch?q=%s&hl=en&oe=utf-8&ie=utf-8"
+	     "https://blogsearch.google.com/blogsearch?q=%s&hl=en&oe=utf-8&ie=utf-8"
 	     utf-8)))
 	 (ja
 	  '(("blog"
-	     "http://blogsearch.google.com/blogsearch?q=%s&hl=ja&lr=lang_ja&ie=Shift_JIS&oe=Shift_JIS"
+	     "https://blogsearch.google.com/blogsearch?q=%s&hl=ja&lr=lang_ja&ie=Shift_JIS&oe=Shift_JIS"
 	     shift_jis)
 	    ("blog-en"
-	     "http://blogsearch.google.com/blogsearch?q=%s&hl=en")))
+	     "https://blogsearch.google.com/blogsearch?q=%s&hl=en")))
 	 (utf-8
 	  '(("blog"
-	     "http://blogsearch.google.com/blogsearch?q=%s&oe=utf-8&ie=utf-8"
+	     "https://blogsearch.google.com/blogsearch?q=%s&oe=utf-8&ie=utf-8"
 	     utf-8)
 	    ("blog-en"
-	     "http://blogsearch.google.com/blogsearch?q=%s&hl=en&oe=utf-8&ie=utf-8"
+	     "https://blogsearch.google.com/blogsearch?q=%s&hl=en&oe=utf-8&ie=utf-8"
 	     utf-8)))
 	 (t
 	  '(("blog"
-	     "http://blogsearch.google.com/blogsearch?q=%s")
+	     "https://blogsearch.google.com/blogsearch?q=%s")
 	    ("blog-ja"
-	     "http://blogsearch.google.com/blogsearch?q=%s&lr=lang_ja&ie=Shift_JIS&oe=Shift_JIS"
+	     "https://blogsearch.google.com/blogsearch?q=%s&lr=lang_ja&ie=Shift_JIS&oe=Shift_JIS"
 	     shift_jis))))
       ,@(cond
 	 ((and ja utf-8)
 	  '(("google"
-	     "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=utf-8&oe=utf-8"
+	     "https://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=utf-8&oe=utf-8"
 	     utf-8)
 	    ("google-en"
-	     "http://www.google.com/search?q=%s&hl=en&ie=utf-8&oe=utf-8"
+	     "https://www.google.com/search?q=%s&hl=en&ie=utf-8&oe=utf-8"
 	     utf-8)))
 	 (ja
 	  '(("google"
-	     "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=Shift_JIS&oe=Shift_JIS"
+	     "https://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=Shift_JIS&oe=Shift_JIS"
 	     shift_jis)
 	    ("google-en"
-	     "http://www.google.com/search?q=%s&hl=en")))
+	     "https://www.google.com/search?q=%s&hl=en")))
 	 (utf-8
 	  '(("google"
-	     "http://www.google.com/search?q=%s&ie=utf-8&oe=utf-8"
+	     "https://www.google.com/search?q=%s&ie=utf-8&oe=utf-8"
 	     utf-8)
 	    ("google-en"
-	     "http://www.google.com/search?q=%s&hl=en&ie=utf-8&oe=utf-8"
+	     "https://www.google.com/search?q=%s&hl=en&ie=utf-8&oe=utf-8"
 	     utf-8)))
 	 (t
 	  '(("google"
-	     "http://www.google.com/search?q=%s")
+	     "https://www.google.com/search?q=%s")
 	    ("google-ja"
-	     "http://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=Shift_JIS&oe=Shift_JIS"
+	     "https://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=Shift_JIS&oe=Shift_JIS"
 	     shift_jis))))
       ,@(cond
 	 ((and ja utf-8)
 	  '(("google news"
-	     "http://news.google.co.jp/news?q=%s&hl=ja&ie=utf-8&oe=utf-8"
+	     "https://news.google.co.jp/news?q=%s&hl=ja&ie=utf-8&oe=utf-8"
 	     utf-8)
 	    ("google news-en"
-	     "http://news.google.com/news?q=%s&hl=en")))
+	     "https://news.google.com/news?q=%s&hl=en")))
 	 (ja
 	  '(("google news"
-	     "http://news.google.co.jp/news?q=%s&hl=ja&ie=Shift_JIS&oe=Shift_JIS"
+	     "https://news.google.co.jp/news?q=%s&hl=ja&ie=Shift_JIS&oe=Shift_JIS"
 	     shift_jis)
 	    ("google news-en"
-	     "http://news.google.com/news?q=%s&hl=en")))
+	     "https://news.google.com/news?q=%s&hl=en")))
 	 (utf-8
 	  '(("google news"
-	     "http://news.google.com/news?q=%s&ie=utf-8&oe=utf-8"
+	     "https://news.google.com/news?q=%s&ie=utf-8&oe=utf-8"
 	     utf-8)
 	    ("google news-en"
-	     "http://news.google.com/news?q=%s&hl=en&ie=utf-8&oe=utf-8")))
+	     "https://news.google.com/news?q=%s&hl=en&ie=utf-8&oe=utf-8")))
 	 (t
 	  '(("google news"
-	     "http://news.google.com/news?q=%s")
+	     "https://news.google.com/news?q=%s")
 	    ("google news-ja"
-	     "http://news.google.co.jp/news?q=%s&hl=ja&ie=Shift_JIS&oe=Shift_JIS"
+	     "https://news.google.co.jp/news?q=%s&hl=ja&ie=Shift_JIS&oe=Shift_JIS"
 	     shift_jis))))
-      ("google groups"
-       "http://groups.google.com/groups?q=%s")
-      ,@(if ja
-	    '(("All the Web"
-	       "http://www.alltheweb.com/search?q=%s&web&_sb_lang=ja&cs=euc-jp"
-	       euc-japan)
-	      ("All the Web-en"
-	       "http://www.alltheweb.com/search?q=%s&web&_sb_lang=en"))
-	  '(("All the Web"
-	     "http://www.alltheweb.com/search?q=%s&web&_sb_lang=en")
-	    ("All the Web-ja"
-	     "http://www.alltheweb.com/search?q=%s&web&_sb_lang=ja&cs=euc-jp"
-	     euc-japan)))
       ,@(if ja
 	    '(("technorati"
-	       "http://www.technorati.jp/search/search.html?query=%s&language=ja"
+	       "https://www.technorati.jp/search/search.html?query=%s&language=ja"
 	       utf-8)
 	      ("technorati-en"
-	       "http://www.technorati.com/search/%s"
+	       "https://www.technorati.com/search/%s"
 	       utf-8))
 	  '(("technorati"
-	     "http://www.technorati.com/search/%s"
+	     "https://www.technorati.com/search/%s"
 	     utf-8)
 	    ("technorati-ja"
-	     "http://www.technorati.jp/search/search.html?query=%s&language=ja"
+	     "https://www.technorati.jp/search/search.html?query=%s&language=ja"
 	     utf-8)))
       ("technorati-tag"
-       "http://www.technorati.com/tag/%s"
+       "https://www.technorati.com/tag/%s"
        utf-8)
       ("goo-ja"
-       "http://search.goo.ne.jp/web.jsp?MT=%s"
+       "https://search.goo.ne.jp/web.jsp?MT=%s"
        euc-japan)
       ("excite-ja"
-       "http://www.excite.co.jp/search.gw?target=combined&look=excite_jp\
+       "https://www.excite.co.jp/search.gw?target=combined&look=excite_jp\
 &lang=jp&tsug=-1&csug=-1&search=%s"
        shift_jis)
       ("altavista"
-       "http://altavista.com/sites/search/web?q=\"%s\"&kl=ja&search=Search")
+       "https://altavista.com/sites/search/web?q=\"%s\"&kl=ja&search=Search")
       ("rpmfind"
-       "http://rpmfind.net/linux/rpm2html/search.php?query=%s"
+       "https://rpmfind.net/linux/rpm2html/search.php?query=%s"
        nil)
       ("debian-pkg"
-       "http://packages.debian.org/cgi-bin/search_contents.pl\
+       "https://packages.debian.org/cgi-bin/search_contents.pl\
 ?directories=yes&arch=i386&version=unstable&case=insensitive&word=%s")
       ("debian-bts"
-       "http://bugs.debian.org/cgi-bin/pkgreport.cgi?archive=yes&pkg=%s")
+       "https://bugs.debian.org/cgi-bin/pkgreport.cgi?archive=yes&pkg=%s")
       ("freebsd-users-jp"
-       "http://home.jp.FreeBSD.org/cgi-bin/namazu.cgi?key=\"%s\"&whence=0\
+       "https://home.jp.FreeBSD.org/cgi-bin/namazu.cgi?key=\"%s\"&whence=0\
 &max=50&format=long&sort=score&dbname=FreeBSD-users-jp"
        euc-japan)
       ("iij-archie"
-       "http://www.iij.ad.jp/cgi-bin/archieplexform?query=%s\
+       "https://www.iij.ad.jp/cgi-bin/archieplexform?query=%s\
 &type=Case+Insensitive+Substring+Match&order=host&server=archie1.iij.ad.jp\
 &hits=95&nice=Nice")
       ("waei"
-       "http://dictionary.goo.ne.jp/search.php?MT=%s&kind=je"
+       "https://dictionary.goo.ne.jp/search.php?MT=%s&kind=je"
        euc-japan)
       ("eiwa"
-       "http://dictionary.goo.ne.jp/search.php?MT=%s&kind=ej")
+       "https://dictionary.goo.ne.jp/search.php?MT=%s&kind=ej")
       ("kokugo"
-       "http://dictionary.goo.ne.jp/search.php?MT=%s&kind=jn"
+       "https://dictionary.goo.ne.jp/search.php?MT=%s&kind=jn"
        euc-japan)
       ("eiei"
-       "http://www.dictionary.com/cgi-bin/dict.pl?term=%s&r=67")
+       "https://www.dictionary.com/cgi-bin/dict.pl?term=%s&r=67")
       ,@(if ja
 	    '(("amazon"
-	       "http://www.amazon.co.jp/gp/search?\
+	       "https://www.amazon.co.jp/gp/search?\
 __mk_ja_JP=%%83J%%83%%5E%%83J%%83i&url=search-alias%%3Daps&field-keywords=%s"
 	       shift_jis)
 	      ("amazon-en"
-	       "http://www.amazon.com/exec/obidos/search-handle-form/\
+	       "https://www.amazon.com/exec/obidos/search-handle-form/\
 250-7496892-7797857"
 	       iso-8859-1
 	       "url=index=blended&field-keywords=%s"))
 	  '(("amazon"
-	     "http://www.amazon.com/exec/obidos/search-handle-form/\
+	     "https://www.amazon.com/exec/obidos/search-handle-form/\
 250-7496892-7797857"
 	     iso-8859-1
 	     "url=index=blended&field-keywords=%s")
 	    ("amazon-ja"
-	       "http://www.amazon.co.jp/gp/search?\
+	       "https://www.amazon.co.jp/gp/search?\
 __mk_ja_JP=%%83J%%83%%5E%%83J%%83i&url=search-alias%%3Daps&field-keywords=%s"
 	       shift_jis)))
-      ("emacswiki" "http://www.emacswiki.org/cgi-bin/wiki?search=%s")
-      ("en.wikipedia" "http://en.wikipedia.org/wiki/Special:Search?search=%s")
-      ("de.wikipedia" "http://de.wikipedia.org/wiki/Spezial:Search?search=%s"
+      ("emacswiki" "https://www.emacswiki.org/cgi-bin/wiki?search=%s")
+      ("en.wikipedia" "https://en.wikipedia.org/wiki/Special:Search?search=%s")
+      ("de.wikipedia" "https://de.wikipedia.org/wiki/Spezial:Search?search=%s"
        utf-8)
-      ("ja.wikipedia" "http://ja.wikipedia.org/wiki/Special:Search?search=%s"
+      ("ja.wikipedia" "https://ja.wikipedia.org/wiki/Special:Search?search=%s"
        utf-8)
-      ("msdn" "http://search.msdn.microsoft.com/search/default.aspx?query=%s")
+      ("msdn" "https://search.msdn.microsoft.com/search/default.aspx?query=%s")
       ("duckduckgo" "https://duckduckgo.com/?q=%s" utf-8)))
   "*An alist of search engines.
 Each element looks like (ENGINE ACTION CODING POST-DATA)

@@ -1,3 +1,9 @@
+2017-05-30  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-search.el (w3m-search-engine-alist): Remove Google groups that
+	requires javascript and alltheweb that is forwarded to Yahoo!; use
+	https on all urls ([emacs-w3m:12657]).
+
 2017-05-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-filter.el (w3m-toggle-filtering): Use completing-read.
