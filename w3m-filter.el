@@ -65,23 +65,29 @@
       "テーブル内の <tfoot> を <tbody> の後に描画します")
      ""
      w3m-filter-fix-tfoot-rendering)
+    (t
+     "Filter top and bottom cruft for rt.com"
+     "\\`https://www.rt\\.com/"
+     w3m-filter-rt)
+    (t
+     "Filter for slashdot"
+     "\\`http[s]?://\\([a-z]+\\.\\)?slashdot\\.org/"
+     w3m-filter-slashdot)
     (nil
      ("Remove garbage in http://www.geocities.co.jp/*"
       "http://www.geocities.co.jp/* でゴミを取り除きます")
      "\\`http://www\\.geocities\\.co\\.jp/"
-     (w3m-filter-delete-regions
-      "<DIV ALIGN=CENTER>\n<!--*/GeoGuide/*-->" "<!--*/GeoGuide/*-->\n</DIV>"))
+     w3m-filter-geocities-remove-garbage)
     (nil
      ("Remove ADV in http://*.hp.infoseek.co.jp/*"
       "http://*.hp.infoseek.co.jp/* で広告を取り除きます")
      "\\`http://[a-z]+\\.hp\\.infoseek\\.co\\.jp/"
-     (w3m-filter-delete-regions "<!-- start AD -->" "<!-- end AD -->"))
+     w3m-filter-infoseek-remove-ads)
     (nil
      ("Remove ADV in http://linux.ascii24.com/linux/*"
       "http://linux.ascii24.com/linux/* で広告を取り除きます")
      "\\`http://linux\\.ascii24\\.com/linux/"
-     (w3m-filter-delete-regions
-      "<!-- DAC CHANNEL AD START -->" "<!-- DAC CHANNEL AD END -->"))
+     w3m-filter-ascii24-remove-ads)
     (nil
      "A filter for Google"
      "\\`http://\\(www\\|images\\|news\\|maps\\|groups\\)\\.google\\."
@@ -340,22 +346,50 @@ toggle with completion (a function toggled last will first appear)."
 		     choice
 		     (if (car elem) "enabled" "disabled"))))))))
 
-(defun w3m-filter-delete-regions (url start end)
-  "Delete regions surrounded with a START pattern and an END pattern."
-  (goto-char (point-min))
-  (let (p (i 0))
-    (while (and (search-forward start nil t)
-		(setq p (match-beginning 0))
-		(search-forward end nil t))
-      (delete-region p (match-end 0))
-      (incf i))
-    (> i 0)))
+(defmacro w3m-filter-delete-regions (url start end
+					 &optional without-start without-end
+					 use-regex start-pos end-pos count)
+  "Delete regions surrounded with a START pattern and an END pattern.
+If WITHOUT-START is non-nil, do not delete the START pattern.
+If WITHOUT-END is non-nil, do not delete the the END strings.
+If USE-REGEX is non-nil, treat START and END as regular expressions.
+START-POS is a position from which to begin deletions.
+END-POS is a position at which to stop deletions.
+COUNT is the maximum number of deletions to make."
+  `(let (p ,@(if count '((i 0))))
+     (goto-char ,(or start-pos '(point-min)))
+     (while (and ,@(if count `((< i ,count)))
+		 ,(if use-regex
+		      `(re-search-forward ,start ,end-pos t)
+		    `(search-forward ,start ,end-pos t))
+		 (setq p ,(if without-start
+			      '(match-end 0)
+			    '(match-beginning 0)))
+		 ,(if use-regex
+		      `(re-search-forward ,end ,end-pos t)
+		    `(search-forward ,end ,end-pos t)))
+       (delete-region p ,(if without-end
+			     '(match-beginning 0)
+			   '(match-end 0)))
+       ,@(if count '((setq i (1+ i)))))))
 
-(defun w3m-filter-replace-regexp (url regexp to-string)
-  "Replace all occurrences of REGEXP with TO-STRING."
-  (goto-char (point-min))
-  (while (re-search-forward regexp nil t)
-    (replace-match to-string nil nil)))
+(defmacro w3m-filter-replace-regexp (url regexp to-string
+					 &optional start-pos end-pos count)
+  "Replace all occurrences of REGEXP with TO-STRING.
+Optional START-POS, END-POS, and COUNT limit the scope of
+the replacements."
+  (if count
+      `(let ((i 0))
+	 (goto-char ,(or start-pos '(point-min)))
+	 (while (and (< i ,count)
+		     (re-search-forward ,regexp ,end-pos t))
+	   (replace-match ,to-string nil nil)
+	   (setq i (1+ i)))
+	 (> i 0))
+    `(progn
+       (goto-char ,(or start-pos '(point-min)))
+       (while (re-search-forward ,regexp ,end-pos t)
+	 (replace-match ,to-string nil nil)))))
 
 ;; Filter functions:
 (defun w3m-filter-google-click-tracking (url)
@@ -765,5 +799,61 @@ href=\"#\\([a-z][-.0-9:_a-z]*\\)\"" nil t)
 	    refid        (match-string 1))
       (delete-region (match-beginning 0) (match-end 0))
       (insert (format "<a name=\"%s\"></a>%s" refid matched-text)))))
+
+(defun w3m-filter-rt (url)
+  "Filter top and bottom cruft for rt.com."
+  (w3m-filter-delete-regions url "<body.*>" "<h1.*>" t t t nil nil 1)
+  (w3m-filter-delete-regions url "<div class=\"layout__footer\"" "</body>"))
+
+(defun w3m-filter-slashdot (url)
+  "Filter js deadlinks, top and bottom cruft for slashdot"
+  (w3m-filter-delete-regions url "<body.*>" "<h2.*>" t t t nil nil 1)
+  (when (search-forward "<aside class=\"grid_24 view_mode\">" nil t)
+    (w3m-filter-replace-regexp url "<i>" "" nil (match-beginning 0)))
+  (w3m-filter-delete-regions
+   url
+   "<aside class=\"grid_24 view_mode\">"
+   "<span class=\"totalcommentcnt\">"
+   nil nil t (point) nil 1)
+  (insert "<h2>")
+  (w3m-filter-delete-regions
+   url
+   "</a>"
+   "<ul id=\"commentlisting\" class=\"d2\">"
+   nil nil t (point) nil 1)
+  (insert "</h2><ul>")
+  (w3m-filter-delete-regions
+   url
+   "<div class=\"grid_10 d1or2\""
+   "<section id=\"besttabs.*>"
+   nil nil t (point) nil 1)
+  (w3m-filter-delete-regions
+   url
+   "<div class=\"commentSub\""
+   "<div id=\"replyto_[0-9]+\">" nil nil t)
+  (w3m-filter-delete-regions
+   url
+   "<a id=\"reply_link_"
+   "Flag as Inappropriate</a>")
+  (w3m-filter-delete-regions
+   url
+   "<noscript><p><b>There may be more comments"
+   "</body>"))
+
+(defun w3m-filter-geocities-remove-garbage (url)
+  "Remove garbage in http://www.geocities.co.jp/*."
+  (w3m-filter-delete-regions
+   url
+   "<DIV ALIGN=CENTER>\n<!--*/GeoGuide/*-->" "<!--*/GeoGuide/*-->\n</DIV>"))
+
+(defun w3m-filter-infoseek-remove-ads (url)
+  "Remove ADV in http://*.hp.infoseek.co.jp/*."
+  (w3m-filter-delete-regions url "<!-- start AD -->" "<!-- end AD -->"))
+
+(defun w3m-filter-ascii24-remove-ads (url)
+  "Remove ADV in http://linux.ascii24.com/linux/*."
+  (w3m-filter-delete-regions
+   url
+   "<!-- DAC CHANNEL AD START -->" "<!-- DAC CHANNEL AD END -->"))
 
 ;;; w3m-filter.el ends here

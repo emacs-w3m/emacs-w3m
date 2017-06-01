@@ -1,4 +1,17 @@
+2017-06-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-filter.el (w3m-filter-delete-regions, w3m-filter-replace-regexp):
+	Refactor to Lisp macros.
+	(w3m-filter-geocities-remove-garbage, w3m-filter-infoseek-remove-ads)
+	(w3m-filter-ascii24-remove-ads): New filters that replace the ones
+	having existed in w3m-filter-configuration ([emacs-w3m:12669]).
+
 2017-05-30  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-filter.el (w3m-filter-delete-regions, w3m-filter-replace-regexp):
+	Allow optional args used to modify search/replace boundaries.
+	(w3m-filter-rt, w3m-filter-slashdot): New filters.
+	(w3m-filter-configuration): Add new filters ([emacs-w3m:12666]).
 
 	* w3m.el (w3m-uri-replace-alist): Remove Google groups, Altavista, and
 	iij-archie ([emacs-w3m:12661]).
