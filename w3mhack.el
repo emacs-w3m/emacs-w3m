@@ -376,11 +376,11 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 	  ;; Silence the warning "value returned from (> i 0) is unused".
 	  ;; See `w3m-filter-delete-regions', `w3m-filter-replace-regexp',
 	  ;; and the filter functions that use those macros.
-	  (let ((val (function-get '> 'side-effect-free)))
-	    (function-put '> 'side-effect-free 'error-free)
+	  (let ((val (get '> 'side-effect-free)))
+	    (put '> 'side-effect-free 'error-free)
 	    (unwind-protect
 		(byte-compile-file file)
-	      (function-put '> 'side-effect-free val)))
+	      (put '> 'side-effect-free val)))
 	(byte-compile-file file)))
   (defalias 'w3mhack-compile-file 'byte-compile-file))
 
