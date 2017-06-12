@@ -350,13 +350,14 @@ toggle with completion (a function toggled last will first appear)."
 					 &optional without-start without-end
 					 use-regex start-pos end-pos count)
   "Delete regions surrounded with a START pattern and an END pattern.
+Return t if at least one region is deleted.
 If WITHOUT-START is non-nil, do not delete the START pattern.
 If WITHOUT-END is non-nil, do not delete the the END strings.
 If USE-REGEX is non-nil, treat START and END as regular expressions.
 START-POS is a position from which to begin deletions.
 END-POS is a position at which to stop deletions.
 COUNT is the maximum number of deletions to make."
-  `(let (p ,@(if count '((i 0))))
+  `(let (p (i 0))
      (goto-char ,(or start-pos '(point-min)))
      (while (and ,@(if count `((< i ,count)))
 		 ,(if use-regex
@@ -371,25 +372,24 @@ COUNT is the maximum number of deletions to make."
        (delete-region p ,(if without-end
 			     '(match-beginning 0)
 			   '(match-end 0)))
-       ,@(if count '((setq i (1+ i)))))))
+       (setq i (1+ i)))
+     (> i 0)))
 
 (defmacro w3m-filter-replace-regexp (url regexp to-string
 					 &optional start-pos end-pos count)
   "Replace all occurrences of REGEXP with TO-STRING.
+Return t if at least one replacement is made.
 Optional START-POS, END-POS, and COUNT limit the scope of
 the replacements."
-  (if count
-      `(let ((i 0))
-	 (goto-char ,(or start-pos '(point-min)))
-	 (while (and (< i ,count)
-		     (re-search-forward ,regexp ,end-pos t))
-	   (replace-match ,to-string nil nil)
-	   (setq i (1+ i)))
-	 (> i 0))
-    `(progn
-       (goto-char ,(or start-pos '(point-min)))
-       (while (re-search-forward ,regexp ,end-pos t)
-	 (replace-match ,to-string nil nil)))))
+  `(let ((i 0))
+     (goto-char ,(or start-pos '(point-min)))
+     (while ,(if count
+		 `(and (< i ,count)
+		       #1=(re-search-forward ,regexp ,end-pos t))
+	       `#1#)
+       (replace-match ,to-string nil nil)
+       (setq i (1+ i)))
+     (> i 0)))
 
 ;; Filter functions:
 (defun w3m-filter-google-click-tracking (url)

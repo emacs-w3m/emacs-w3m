@@ -1,3 +1,9 @@
+2017-06-11  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-filter.el (w3m-filter-delete-regions, w3m-filter-replace-regexp):
+	Make a return value always mean deletion or replacement is made
+	([emacs-w3m:12674]).
+
 2017-06-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-filter.el (w3m-filter-delete-regions, w3m-filter-replace-regexp):
