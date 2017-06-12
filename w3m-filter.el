@@ -802,43 +802,256 @@ href=\"#\\([a-z][-.0-9:_a-z]*\\)\"" nil t)
 
 (defun w3m-filter-rt (url)
   "Filter top and bottom cruft for rt.com."
-  (w3m-filter-delete-regions url "<body.*>" "<h1.*>" t t t nil nil 1)
-  (w3m-filter-delete-regions url "<div class=\"layout__footer\"" "</body>"))
+  (if (w3m-filter-delete-regions url
+				 "<body.*>"
+				 "<h1.*>"
+				 t t t nil nil 1)
+      (w3m-filter-delete-regions url "<div class=\"news-block\"" "</body>")
+    ;; BEGIN: When page is Home or Article Index pages ...
+    (w3m-filter-delete-regions url
+			       "<body>"
+			       "<div class=\"header__date\">"
+			       nil nil nil nil nil 1)
+    (w3m-filter-delete-regions url
+			       "</time>"
+			       "<div class=\"layout__content \">"
+			       nil nil nil (point) nil 1)
+    (w3m-filter-delete-regions url
+			       "<div class=\"rightpoll\">"
+			       "</body>"
+			       nil nil nil (point) nil 1)
+    (goto-char (point-min))
+    (when (search-forward "<h2 class=\"main-viralbox__title\">" nil t)
+      (setq p (match-beginning 0))
+      (goto-char (point-min))
+      (while (re-search-forward "<a[^>]+>\\(<img[^>]+>\\)</a>" p t)
+	(replace-match "\\1"))
+      (while (re-search-forward "<a[^>]+>\\(<div[^>]+>\\)?\
+\\(<img[^>]+>\\)\\(.*?\\)\\(<a[^<]+</a>\\)"
+				nil t)
+	(replace-match "\\3\\4 \\2")))
+    (w3m-filter-delete-regions url
+			       "<button"
+			       "</button>")
+    (goto-char (point-min))
+    (while (re-search-forward "<h2[^>]*>" nil t)
+      (replace-match "<b>")
+      (when (search-forward "</h2>" nil t)
+	(replace-match "</b>"))
+      t)
+    (goto-char (point-min))
+    (when (search-forward "\
+<strong class=\"news-line__title\">News line</strong>\
+<div class=\"news-line__content\">"
+			  nil t)
+      (replace-match
+       "<br><a href=\"https://www.rt.com/news/line/\">News Line:</a>")
+      (when (re-search-forward "<ul[^>]+>" nil t)
+	(replace-match ""))
+      (w3m-filter-replace-regexp url
+				 "<li class=\"news-line__item\">[^>]+>"
+				 "<br>* "
+				 (point))
+      (w3m-filter-delete-regions url "<ul class=\"buttons\">" "</ul>")
+      (w3m-filter-delete-regions url
+				 "<div class=\"banners__border\">" "</div>")))
+  ;; END: When page is Home or Article Index pages ...
+  (goto-char (point-min))
+  (while (re-search-forward "alt=\"[^\"]+\"" nil t)
+    (replace-match "alt=[photo]"))
+  (goto-char (point-min))
+  (when (re-search-forward "</h1>.*me:" nil t)
+    (replace-match "</b><blockquote>Published:"))
+  (when (search-forward
+	 "</div><div class=\"article__short-url\"><div class=\"short-url\">"
+	 nil t)
+    (replace-match ""))
+  (when (search-forward "Get short URL" nil t)
+    (replace-match " [Short URL]"))
+  (when (search-forward
+	 "</div></div><div class=\"article__cover\"><div class=\"media  \">"
+	 nil t)
+    (replace-match " "))
+  (when (w3m-filter-delete-regions url
+				   "<div class=\"article__share\">"
+				   "<div class=\"article__summary summary \">"
+				   nil nil nil (point) nil 1)
+    (insert "</blockquote><p>"))
+  (goto-char (point-min))
+  (while (search-forward "</p>&mdash;" nil t)
+    (replace-match "<br>&mdash;"))
+  (goto-char (point-min))
+  (while (search-forward "<center>" nil t)
+    (replace-match ""))
+  (goto-char (point-min))
+  (while (re-search-forward "\\(<a [^>]+>\\)?<strong>\\(<a [^>]+>\\)?\
+READ MORE:\\([^<]+\\)\\(</a>\\)?</strong>\\(</p>\\)?"
+			    nil t)
+    (replace-match
+     "<blockquote>Related Article:<br>\\1\\2\\3</a></blockquote>"))
+  (goto-char (point-min))
+  (while (search-forward "</a><a href" nil t)
+    (replace-match "</a> - <a href"))
+  (goto-char (point-min))
+  (while (re-search-forward "\\(<a[^>]+>\\) *\n+  *\\(<img[^>]+>\\)" nil t)
+    (replace-match "\\2<br>\\1"))
+  (goto-char (point-min))
+  (while (search-forward "<div class=\"tags-trends\">" nil t)
+    (replace-match "<blockquote>")
+    (when (search-forward "Trends<" nil t)
+      (replace-match "Trends: <"))
+    (when (search-forward "</div>" nil t)
+      (replace-match "</blockquote>")))
+  (goto-char (point-min))
+  (while (search-forward "<div class=\"read-more__title\">" nil t)
+    (replace-match "<blockquote>\\1")
+    (when (re-search-forward "Read more:?")
+      (replace-match "Related article:"))
+    (when (search-forward "</a>")
+      (replace-match "\\1</blockquote>")))
+  (goto-char (point-min))
+  (while (re-search-forward "\\(<div[^>]+>\\)+" nil t)
+    (replace-match "")))
 
 (defun w3m-filter-slashdot (url)
   "Filter js deadlinks, top and bottom cruft for slashdot"
-  (w3m-filter-delete-regions url "<body.*>" "<h2.*>" t t t nil nil 1)
+  (goto-char (point-min))
+  ;; BEGIN: When page is Home or Article Index pages ...
+  (when (search-forward "<body class=\"anon index" nil t)
+    ;; Title pages have css rule to treat <i> as <blockquote>
+    (w3m-filter-replace-regexp url "<i>" "<blockquote>")
+    (w3m-filter-replace-regexp url "</i>" "</blockquote>")
+    (goto-char (point-min))
+    ;; Title page tighten display
+    (while (re-search-forward "<h2[^>]+>" nil t)
+      (replace-match "<p><b>"))
+    (goto-char (point-min))
+    (search-forward "<!-- WIT -->" nil t)
+    (w3m-filter-delete-regions url
+			       "<!-- WIT -->"
+			       "<header id=\"mostdiscussed-title\">"
+			       nil nil nil (point) nil 1)
+    (w3m-filter-delete-regions url
+			       "<header id=\"srandblock-title\">"
+			       "<nav role=\"firehose footer\">"
+			       nil nil nil (point) nil 1)
+    (insert "Jump to stories from:<br>&nbsp; ")
+    (search-forward "<ul id=\"pagination-controls\">" nil t)
+    (replace-match "")
+    (w3m-filter-replace-regexp url
+			       "<li class=\"fleft\">"
+			       ""
+			       (point) nil 8)
+    (w3m-filter-delete-regions url
+			       "</li>"
+			       "</body>"
+			       nil t nil (point) nil 1)
+    (goto-char (point-min))
+    (while (w3m-filter-delete-regions url
+				      "<div class=\"story-tags\">"
+				      "<span id=\"tagbar-.+>"
+				      nil nil t (point) nil 1)
+      (insert "<br>Tags: "))
+    (goto-char (point-min))
+    (while (w3m-filter-delete-regions url
+				      "<div class=\"tag-menu\">"
+				      "</footer>"
+				      nil nil nil (point) nil 1)
+      (insert "<hr><p>")))
+  ;; END: When page is Home or Article Index pages ...
+  (w3m-filter-delete-regions url
+			     "<body"
+			     "<header>"
+			     nil nil nil nil nil 1)
+  (insert "<body>")
+  (w3m-filter-replace-regexp url
+			     "<div class=\"body\"[^>]+>"
+			     "<p>"
+			     (point))
+  (goto-char (point-min))
+  (while (w3m-filter-delete-regions url
+				    "<!-- comment bubble -->"
+				    "<span class=\"story-byline\">"
+				    nil nil nil (point) nil 1)
+    (insert "</b><br>&nbsp;&nbsp;&nbsp;&nbsp;")
+    (when (search-forward "</time>" nil t)
+      (replace-match "<br>&nbsp;&nbsp;&nbsp;&nbsp;"))
+    t)
+  (goto-char (point-min))
   (when (search-forward "<aside class=\"grid_24 view_mode\">" nil t)
-    (w3m-filter-replace-regexp url "<i>" "" nil (match-beginning 0)))
-  (w3m-filter-delete-regions
-   url
-   "<aside class=\"grid_24 view_mode\">"
-   "<span class=\"totalcommentcnt\">"
-   nil nil t (point) nil 1)
-  (insert "<h2>")
-  (w3m-filter-delete-regions
-   url
-   "</a>"
-   "<ul id=\"commentlisting\" class=\"d2\">"
-   nil nil t (point) nil 1)
-  (insert "</h2><ul>")
-  (w3m-filter-delete-regions
-   url
-   "<div class=\"grid_10 d1or2\""
-   "<section id=\"besttabs.*>"
-   nil nil t (point) nil 1)
-  (w3m-filter-delete-regions
-   url
-   "<div class=\"commentSub\""
-   "<div id=\"replyto_[0-9]+\">" nil nil t)
-  (w3m-filter-delete-regions
-   url
-   "<a id=\"reply_link_"
-   "Flag as Inappropriate</a>")
-  (w3m-filter-delete-regions
-   url
-   "<noscript><p><b>There may be more comments"
-   "</body>"))
+    (w3m-filter-replace-regexp url
+			       "<i>"
+			       ""
+			       nil (match-beginning 0)))
+  (when (w3m-filter-delete-regions url
+				   "<aside class=\"grid_24 view_mode\">"
+				   "<span class=\"totalcommentcnt\">"
+				   nil nil t (point) nil 1)
+    (insert "<br><b>"))
+  (when (w3m-filter-delete-regions url
+				   "</a>"
+				   "<ul id=\"commentlisting\" class=\"d2\">"
+				   nil nil t (point) nil 1)
+    (insert "</b><ul>"))
+  (w3m-filter-delete-regions url
+			     "<div class=\"grid_10 d1or2\""
+			     "<ul id=\"commtree_"
+			     nil t t (point) nil 1)
+  (w3m-filter-replace-regexp url
+			     "<div id=\"comment_body_[^>]+> *<p>"
+			     "")
+  (w3m-filter-replace-regexp url
+			     "<div class=\"commentSub\""
+			     "<p>\\&")
+  (w3m-filter-replace-regexp url
+			     "<div class=\"quote\"><p>\\(.+?\\)</div>"
+			     "<blockquote>\\1</blockquote>")
+  (w3m-filter-delete-regions url
+			     "(<span class=\"ind\""
+			     "</a>)")
+  (w3m-filter-delete-regions url
+			     "<div class=\"commentSub\""
+			     "<div id=\"replyto_[0-9]+\">" nil nil t)
+  (w3m-filter-delete-regions url
+			     "<a id=\"reply_link_"
+			     "Flag as Inappropriate</a>")
+  (w3m-filter-delete-regions url
+			     "<noscript><p><b>There may be more comments"
+			     "</body>")
+  (goto-char (point-min))
+  (while (re-search-forward "<ul id=\"group_[^>]+>\n\t+\
+<li id=\"hiddens_[0-9]+\" class=\"hide\"></li>\n</ul>"
+			    nil t)
+    (replace-match ""))
+  (goto-char (point-min))
+  (while (re-search-forward "<li id=\"tree_[0-9]+\" class=\"comment hidden\">"
+			    nil t)
+    (replace-match ""))
+  (goto-char (point-min))
+  (while (re-search-forward "<div[^>]+>\n*</div>" nil t)
+    (replace-match ""))
+  (goto-char (point-min))
+  (while (re-search-forward "<span id=\"comment_score_.+:</span>" nil t)
+    (replace-match "</b>(Score:"))
+  (goto-char (point-min))
+  (while (re-search-forward "</a> *<span class=\"uid\"><a[^>]+>" nil t)
+    (replace-match ""))
+  (goto-char (point-min))
+  (while (search-forward "<h4>" nil t)
+    (replace-match "<b>")
+    (when (search-forward "</h4>" nil t)
+      (replace-match "</b><br>"))
+    t)
+  (w3m-filter-delete-regions url "<article" "<header>")
+  (goto-char (point-min))
+  (while (re-search-forward
+	  "\\( beneath your current threshold.\\)</b></noscript>"
+	  nil t)
+    (replace-match "</b>\\1<p></noscript>"))
+  (w3m-filter-replace-regexp url "</a>" "</a> ")
+  (goto-char (point-min))
+  (while (re-search-forward "\n[\n\t ]+" nil t)
+    (replace-match "")))
 
 (defun w3m-filter-geocities-remove-garbage (url)
   "Remove garbage in http://www.geocities.co.jp/*."
