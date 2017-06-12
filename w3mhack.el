@@ -1,6 +1,6 @@
 ;;; w3mhack.el --- a hack to setup the environment for building w3m
 
-;; Copyright (C) 2001-2010, 2012, 2013, 2015
+;; Copyright (C) 2001-2010, 2012, 2013, 2015, 2017
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
@@ -370,9 +370,18 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 (if (featurep 'emacs)
     (defun w3mhack-compile-file (file)
       "Byte-compile FILE after reporting that it's being compiled."
+      ;; The byte compiler in Emacs >=25 doesn't say much.
       (message "Compiling %s..." (file-name-nondirectory file))
-      ;; The Emacs 25 version of it doesn't say much.
-      (byte-compile-file file))
+      (if (string-equal (file-name-nondirectory file) "w3m-filter.el")
+	  ;; Silence the warning "value returned from (> i 0) is unused".
+	  ;; See `w3m-filter-delete-regions', `w3m-filter-replace-regexp',
+	  ;; and the filter functions that use those macros.
+	  (let ((val (function-get '> side-effect-free)))
+	    (function-put '> 'side-effect-free 'error-free)
+	    (unwind-protect
+		(byte-compile-file file)
+	      (function-put '> 'side-effect-free val)))
+	(byte-compile-file file)))
   (defalias 'w3mhack-compile-file 'byte-compile-file))
 
 (defun w3mhack-compile ()

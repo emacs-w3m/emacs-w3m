@@ -1,3 +1,8 @@
+2017-06-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-compile-file): Silence compile warnings when
+	compiling w3m-filter.el ([emacs-w3m:12676]).
+
 2017-06-11  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-filter.el (w3m-filter-delete-regions, w3m-filter-replace-regexp):
