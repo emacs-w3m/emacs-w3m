@@ -1,3 +1,7 @@
+2017-06-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-makeinfo): Simplify the tweaking of `message'.
+
 2017-06-12  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-cookie.el (w3m-cookie-clear): Make it a user command.

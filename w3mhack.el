@@ -878,10 +878,8 @@ NOTE: This function must be called from the top directory."
 					       ',coding)))))
 			       (t
 				`(lambda (fmt &rest args)
-				   (funcall ,si:message "%s"
-					    (encode-coding-string
-					     (apply 'format fmt args)
-					     ',coding))))))))
+				   (let ((coding-system-for-write ',coding))
+				     (apply ,si:message fmt args))))))))
 		     ((featurep 'xemacs)
 		      (byte-compile
 		       `(lambda (fmt &rest args)
