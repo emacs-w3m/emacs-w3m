@@ -11060,10 +11060,10 @@ buffer list.  The following command keys are available:
 
 (defun w3m-select-buffer-delete-buffer (&optional force)
   "Delete the buffer on the current menu line.
-If there is the sole emacs-w3m buffer, it is assumed to be called for
-terminating the emacs-w3m session; the prefix argument FORCE will be
-passed to the `w3m-quit' function so as to quit immediately if it is
-non-nil, otherwise you will be prompted for the confirmation."
+If only one emacs-w3m buffer exists, it is assumed that the function
+was called to terminate the emacs-w3m session.  In this case, the
+optional prefix argument FORCE can be set non-nil to exit the session
+without prompting for confirmation."
   (interactive "P")
   (let ((pos (point))
 	(buffer (w3m-select-buffer-show-this-line)))
