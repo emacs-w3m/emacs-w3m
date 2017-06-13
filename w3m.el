@@ -11062,21 +11062,24 @@ buffer list.  The following command keys are available:
   "Delete the buffer on the current menu line.
 If there is the sole emacs-w3m buffer, it is assumed to be called for
 terminating the emacs-w3m session; the prefix argument FORCE will be
-passed to the `w3m-quit' function (which see)."
+passed to the `w3m-quit' function so as to quit immediately if it is
+non-nil, otherwise you will be prompted for the confirmation."
   (interactive "P")
-  (w3m-select-buffer-show-this-line)
-  (if (= 1 (count-lines (point-min) (point-max)))
-      (w3m-quit force)
-    (let ((buffer (w3m-select-buffer-current-buffer)))
-      (forward-line -1)
-      (w3m-process-stop buffer)
-      (w3m-idle-images-show-unqueue buffer)
-      (kill-buffer buffer)
-      (when w3m-use-form
-	(w3m-form-kill-buffer buffer))
-      (run-hooks 'w3m-delete-buffer-hook)
-      (w3m-select-buffer-generate-contents (w3m-select-buffer-current-buffer))
-      (w3m-select-buffer-show-this-line))))
+  (let ((pos (point))
+	(buffer (w3m-select-buffer-show-this-line)))
+    (when (= 1 (count-lines (point-min) (point-max)))
+      (w3m-quit force))
+    (w3m-process-stop buffer)
+    (w3m-idle-images-show-unqueue buffer)
+    (kill-buffer buffer)
+    (when w3m-use-form
+      (w3m-form-kill-buffer buffer))
+    (run-hooks 'w3m-delete-buffer-hook)
+    (w3m-select-buffer-generate-contents
+     (w3m-select-buffer-current-buffer))
+    (w3m-select-buffer-show-this-line)
+    (goto-char (min pos (point-max)))
+    (beginning-of-line)))
 
 (defun w3m-select-buffer-delete-other-buffers ()
   "Delete emacs-w3m buffers except for the buffer on the current menu."

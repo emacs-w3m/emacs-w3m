@@ -1,6 +1,6 @@
 ;;; w3m-cookie.el --- Functions for cookie processing
 
-;; Copyright (C) 2002, 2003, 2005, 2006, 2008, 2009, 2010
+;; Copyright (C) 2002, 2003, 2005, 2006, 2008, 2009, 2010, 2017
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Teranishi Yuuichi  <teranisi@gohome.org>
@@ -410,7 +410,13 @@ If ask, ask user whether accept bad cookies or not."
 
 (defun w3m-cookie-clear ()
   "Clear cookie list."
-  (setq w3m-cookies nil))
+  (interactive)
+  (setq w3m-cookies nil)
+  (dolist (buffer (w3m-list-buffers t))
+    (with-current-buffer buffer
+      (when (equal w3m-current-url "about://cookie/")
+	(let ((w3m-message-silent t))
+	  (w3m-reload-this-page nil t))))))
 
 (defun w3m-cookie-save (&optional domain)
   "Save cookies.
@@ -508,7 +514,7 @@ BEG and END should be an HTTP response header region on current buffer."
 (defun w3m-cookie (&optional no-cache)
   "Display cookies and enable you to manage them."
   (interactive "P")
-  (w3m-goto-url "about://cookie/" no-cache))
+  (w3m-goto-url-new-session "about://cookie/" no-cache))
 
 ;;;###autoload
 (defun w3m-about-cookie (url &optional no-decode no-cache post-data &rest args)

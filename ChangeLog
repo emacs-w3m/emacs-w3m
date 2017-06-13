@@ -1,5 +1,15 @@
 2017-06-12  Boruch Baum  <boruch_baum@gmx.com>
 
+	* w3m-cookie.el (w3m-cookie-clear): Make it a user command.
+	(w3m-cookie): Open it as a new session ([emacs-w3m:12685]).
+
+	* w3m.el (w3m-select-buffer-delete-buffer): Don't move point forward
+	([emacs-w3m:12684]); clarify doc string.
+
+	* w3m-filter.el (w3m-filter-rt): Bind ephemeral var ([emacs-w3m:12682]).
+
+2017-06-12  Boruch Baum  <boruch_baum@gmx.com>
+
 	* w3m-filter.el (w3m-filter-rt, w3m-filter-slashdot):
 	Update ([emacs-w3m:12678]).
 
