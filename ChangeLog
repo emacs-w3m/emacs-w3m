@@ -1,3 +1,11 @@
+2017-06-14  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-cookie.el (w3m-cookie-url, w3m-cookie-domain, w3m-cookie-secure)
+	(w3m-cookie-name, w3m-cookie-value, w3m-cookie-path)
+	(w3m-cookie-version, w3m-cookie-expires, w3m-cookie-ignore): Add docs.
+	(w3m-cookie): Test w3m-use-cookies here insted.
+	(w3m-about-cookie): Don't test it.  [emacs-w3m:12699]
+
 2017-06-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-makeinfo): Simplify the tweaking of `message'.

@@ -89,22 +89,31 @@ If ask, ask user whether accept bad cookies or not."
 
 ;;; Cookie accessor.
 (defmacro w3m-cookie-url (cookie)
+  "Return the url of COOKIE."
   `(aref ,cookie 0))
 (defmacro w3m-cookie-domain (cookie)
+  "Return the domain of COOKIE."
   `(aref ,cookie 1))
 (defmacro w3m-cookie-secure (cookie)
+  "Return whether COOKIE is secure."
   `(aref ,cookie 2))
 (defmacro w3m-cookie-name (cookie)
+  "Return the name of COOKIE."
   `(aref ,cookie 3))
 (defmacro w3m-cookie-value (cookie)
+  "Return the value of COOKIE."
   `(aref ,cookie 4))
 (defmacro w3m-cookie-path (cookie)
+  "Return the relative file path of COOKIE."
   `(aref ,cookie 5))
 (defmacro w3m-cookie-version (cookie)
+  "Return a version information of COOKIE."
   `(aref ,cookie 6))
 (defmacro w3m-cookie-expires (cookie)
+  "Return when COOKIE will expire."
   `(aref ,cookie 7))
 (defmacro w3m-cookie-ignore (cookie)
+  "Return t if COOKIE is marked to be ignored by emacs-w3m."
   `(aref ,cookie 8))
 
 (defun w3m-cookie-create (&rest args)
@@ -514,12 +523,15 @@ BEG and END should be an HTTP response header region on current buffer."
 (defun w3m-cookie (&optional no-cache)
   "Display cookies and enable you to manage them."
   (interactive "P")
-  (w3m-goto-url-new-session "about://cookie/" no-cache))
+  (unless w3m-use-cookies
+    (when (y-or-n-p "Use of cookies is currently disable.  Enable? ")
+      (setq w3m-use-cookies t)))
+  (when w3m-use-cookies
+    (w3m-goto-url-new-session "about://cookie/" no-cache)))
 
 ;;;###autoload
 (defun w3m-about-cookie (url &optional no-decode no-cache post-data &rest args)
   "Make the html contents to display and to enable you to manage cookies."
-  (unless w3m-use-cookies (error "You must enable emacs-w3m to use cookies."))
   (w3m-cookie-setup)
   (let ((pos 0))
     (when post-data
