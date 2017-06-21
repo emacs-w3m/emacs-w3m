@@ -1,3 +1,8 @@
+2017-06-20  Vladimir Sedach  <vas@oneofus.la>
+
+	* w3m.el (w3m-goto-url-new-session): Handle POST data.
+	[emacs-w3m:12704]
+
 2017-06-14  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-cookie.el (w3m-cookie-url, w3m-cookie-domain, w3m-cookie-secure)

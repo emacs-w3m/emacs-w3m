@@ -9996,7 +9996,7 @@ session will start afresh."
 			charset post-data referer)
 	  ;; Delete useless newly created buffer if it is empty.
 	  (w3m-delete-buffer-if-empty buffer))
-      (w3m-goto-url url))))
+      (w3m-goto-url url nil charset post-data))))
 
 (defun w3m-move-point-for-localcgi (url)
   (when (and (w3m-url-local-p url)
