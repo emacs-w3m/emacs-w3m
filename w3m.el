@@ -737,6 +737,11 @@ w3m command, edit the file named \"~/.w3m/config\" normally."
   :group 'w3m
   :type '(directory :size 0))
 
+(defcustom w3m-external-view-temp-directory w3m-profile-directory
+  "Directory where files are saved for the external file viewer."
+  :group 'w3m
+  :type 'directory)
+
 (defcustom w3m-default-directory nil
   "*Directory used as the current directory in emacs-w3m buffers.
 The valid values include a string specifying an existing directory,
@@ -7298,8 +7303,9 @@ No method to view `%s' is registered. Use `w3m-edit-this-url'"
 	      (lexical-let
 		  ((command (w3m-which-command (car method)))
 		   (arguments (cdr method))
-		   (file (make-temp-name
-			  (expand-file-name "w3mel" w3m-profile-directory)))
+		   (file (make-temp-name (expand-file-name
+					  "w3mel"
+					  w3m-external-view-temp-directory)))
 		   suffix)
 		(setq suffix (file-name-nondirectory url))
 		(when (string-match "\\.[a-zA-Z0-9]+$" suffix)

@@ -1,3 +1,9 @@
+2017-06-22  Vladimir Sedach  <vas@oneofus.la>
+
+	* w3m.el (w3m-external-view-temp-directory): New user option.
+	(w3m-external-view): Use it control which directory files are saved to
+	before being opened with the external viewer.  [emacs-w3m:12708]
+
 2017-06-20  Vladimir Sedach  <vas@oneofus.la>
 
 	* w3m.el (w3m-goto-url-new-session): Handle POST data.
