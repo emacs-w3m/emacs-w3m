@@ -2815,7 +2815,7 @@ db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?\\'\
 				 map)
   "*Keymap that overrides the default keymap when `w3m-input-url' runs.
 By default SPC and \"?\" are bound to `self-insert-command' since those
-are common url characters, so use TAB for completion.")
+are common url characters.  Use TAB for completion.")
 
 (defvar w3m-link-map nil "Keymap used on links.")
 
