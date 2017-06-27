@@ -1,3 +1,8 @@
+2017-06-26  Vladimir Sedach  <vas@oneofus.la>
+
+	* w3m.el (w3m-url-completion-map): Bind "?" to self-insert-command.
+	[emacs-w3m:12721]
+
 2017-06-22  Vladimir Sedach  <vas@oneofus.la>
 
 	* w3m.el (w3m-external-view-temp-directory): New user option.

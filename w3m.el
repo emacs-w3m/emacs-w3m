@@ -2811,12 +2811,11 @@ db-history\\|antenna\\|namazu\\|dtree\\)/.*\\)?\\'\
 
 (defvar w3m-url-completion-map (let ((map (make-sparse-keymap)))
 				 (define-key map " " 'self-insert-command)
+				 (define-key map "?" 'self-insert-command)
 				 map)
-  "Keymap that overrides the default keymap when `w3m-input-url' runs.
-By default the SPC key is bound to simply a space.  If you want it to
-complete a url as well as the TAB key, add this to `w3m-init-file':
-
-\(define-key w3m-url-completion-map \" \" 'minibuffer-complete-word)")
+  "*Keymap that overrides the default keymap when `w3m-input-url' runs.
+By default SPC and \"?\" are bound to `self-insert-command' since those
+are common url characters, so use TAB for completion.")
 
 (defvar w3m-link-map nil "Keymap used on links.")
 
