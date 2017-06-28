@@ -1,6 +1,6 @@
 ;;; w3m-ems.el --- GNU Emacs stuff for emacs-w3m
 
-;; Copyright (C) 2001-2013, 2016 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2013, 2016, 2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -714,7 +714,7 @@ otherwise works in all the emacs-w3m buffers."
 			     (if (and (numberp value) (> value 0))
 				 value
 			       16)))
-  :type '(integer :size 0))
+  :type 'integer)
 
 (defface w3m-tab-unselected
   '((((type x w32 mac ns) (class color))

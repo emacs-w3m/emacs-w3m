@@ -59,12 +59,12 @@ Currently only browser local cookies are stored.")
 (defcustom w3m-cookie-accept-domains nil
   "A list of trusted domain name string."
   :group 'w3m
-  :type '(repeat (string :format "Domain name: %v\n" :size 0)))
+  :type '(repeat (string :format "Domain name: %v\n")))
 
 (defcustom w3m-cookie-reject-domains nil
   "A list of untrusted domain name string."
   :group 'w3m
-  :type '(repeat (string :format "Domain name: %v\n" :size 0)))
+  :type '(repeat (string :format "Domain name: %v\n")))
 
 (defcustom w3m-cookie-accept-bad-cookies nil
   "If nil, don't accept bad cookies.
@@ -85,7 +85,7 @@ If ask, ask user whether accept bad cookies or not."
   (expand-file-name ".cookie" w3m-profile-directory)
   "File in which cookies are kept."
   :group 'w3m
-  :type '(file :size 0))
+  :type 'file)
 
 ;;; Cookie accessor.
 (defmacro w3m-cookie-url (cookie)

@@ -1,6 +1,6 @@
 ;;; sb-geocrawler.el --- shimbun backend for geocrawler.com.
 
-;; Copyright (C) 2002, 2003, 2005 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2002, 2003, 2005, 2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: news
@@ -40,14 +40,14 @@
   :group 'shimbun
   :type '(repeat
 	  (group :indent 0
-		 (string :format "Name: %v\n" :size 0)
-		 (string :format "   List ID: %v\n" :size 0)
+		 (string :format "Name: %v\n")
+		 (string :format "   List ID: %v\n")
 		 (radio :format "  Reply-To: %v"
 			(const :format "None " nil)
-			(string :format "Address: %v\n" :size 0))
+			(string :format "Address: %v\n"))
 		 (radio :format "    X-Face: %v"
 			(const :format "None " nil)
-			(string :format "%t: %v\n" :size 0)))))
+			(string :format "%t: %v\n")))))
 
 (defvar shimbun-geocrawler-content-start "<P>&nbsp;<P>")
 (defvar shimbun-geocrawler-content-end "</BODY>")

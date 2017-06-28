@@ -1,6 +1,6 @@
 ;;; w3m-antenna.el --- Utility to detect changes of WEB
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2017
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -126,7 +126,7 @@ that consists of:
   (expand-file-name ".antenna" w3m-profile-directory)
   "File which has list of antenna URLs."
   :group 'w3m-antenna
-  :type '(file :size 0))
+  :type 'file)
 
 (defcustom w3m-antenna-refresh-interval nil
   "Interval time to update (to refresh) the antenna page automatically.
@@ -149,9 +149,9 @@ not to update the page."
   :type `(repeat
 	  (group
 	   :indent 7
-	   (w3m-antenna-string :format "URL: %v\n" :size 0
+	   (w3m-antenna-string :format "URL: %v\n"
 			       :value-from w3m-antenna-tmp-url)
-	   (w3m-antenna-string :format "Title: %v\n" :size 0
+	   (w3m-antenna-string :format "Title: %v\n"
 			       :value-from w3m-antenna-tmp-title)
 	   (choice
 	    :tag "Procedure"
@@ -200,7 +200,7 @@ not to update the page."
 	  (function-item :tag "Simple style." w3m-antenna-make-summary)
 	  (function-item :tag "Natsumican style."
 			 w3m-antenna-make-summary-like-natsumican)
-	  (function :format "User function: %v\n" :size 0)))
+	  (function :format "User function: %v\n")))
 
 (defcustom w3m-antenna-sort-changed-sites-function
   'w3m-antenna-sort-sites-by-time
@@ -212,7 +212,7 @@ not to update the page."
 			 w3m-antenna-sort-sites-by-time)
 	  (function-item :tag "Sort by title." w3m-antenna-sort-sites-by-title)
 	  (function-item :tag "Do nothing." identity)
-	  (function :format "User function: %v\n" :size 0)))
+	  (function :format "User function: %v\n")))
 
 (defcustom w3m-antenna-sort-unchanged-sites-function
   'w3m-antenna-sort-sites-by-time
@@ -224,7 +224,7 @@ not to update the page."
 			 w3m-antenna-sort-sites-by-time)
 	  (function-item :tag "Sort by title." w3m-antenna-sort-sites-by-title)
 	  (function-item :tag "Do nothing." identity)
-	  (function :format "User function: %v\n" :size 0)))
+	  (function :format "User function: %v\n")))
 
 (defun w3m-antenna-alist ()
   (let ((alist (w3m-load-list w3m-antenna-file)))

@@ -1,6 +1,6 @@
 ;;; sb-slashdot-jp.el --- shimbun backend for slashdot.jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2010
+;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2010, 2017
 ;; NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
@@ -92,8 +92,8 @@
   :group 'shimbun
   :type '(repeat
 	  (cons :format "%v" :indent 4
-		(string :format "Group name: %v\n" :size 0)
-		(string :format "        RSS URL: %v\n" :size 0))))
+		(string :format "Group name: %v\n")
+		(string :format "        RSS URL: %v\n"))))
 
 (luna-define-class shimbun-slashdot-jp (shimbun-rss) ())
 

@@ -1,6 +1,6 @@
 ;;; w3m-dtree.el --- The add-on program to display local directory tree.
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2009
+;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2009, 2017
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Hideyuki SHIRAI    <shirai@meadowy.org>,
@@ -44,7 +44,7 @@
   :group 'w3m
   :type '(choice
 	  (const :tag "No limit" nil)
-	  (integer :format "%t: %v\n" :size 0 :tag "depth" 10)))
+	  (integer :format "%t: %v\n" :tag "depth" 10)))
 
 (defcustom w3m-dtree-indent-strings ["|-" "+-" "|  " "   "]
   "*Vector of strings to be used for indentation with w3m-dtree.
@@ -74,16 +74,16 @@ If you care for another style, set manually and try it :-).
 			     ["|-" "+-" "|  " "   "])))
 	     `(:format "Others:\n%v" :indent 4
 		       (string :format "%{|-%}          %v\n"
-			       :sample-face widget-field-face :size 0
+			       :sample-face widget-field-face
 			       :value ,(aref defaults 0))
 		       (string :format "%{+-%}          %v\n"
-			       :sample-face widget-field-face :size 0
+			       :sample-face widget-field-face
 			       :value ,(aref defaults 1))
 		       (string :format "%{|  %}         %v\n"
-			       :sample-face widget-field-face :size 0
+			       :sample-face widget-field-face
 			       :value ,(aref defaults 2))
 		       (string :format "%{   %}         %v"
-			       :sample-face widget-field-face :size 0
+			       :sample-face widget-field-face
 			       :value ,(aref defaults 3)))))))
 
 (defcustom w3m-dtree-stop-strings ["|=" "+="]
@@ -104,10 +104,10 @@ over the 'w3m-dtree-directory-depth'."
 			     ["|=" "+="])))
 	     `(:format "Others:\n%v" :indent 4
 		       (string :format "|=          %{|=%}              %v\n"
-			       :sample-face bold :size 0
+			       :sample-face bold
 			       :value ,(aref defaults 0))
 		       (string :format "+=          %{+=%}              %v\n"
-			       :sample-face bold :size 0
+			       :sample-face bold
 			       :value ,(aref defaults 1)))))))
 
 (defun w3m-dtree-expand-file-name (path)

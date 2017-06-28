@@ -1,6 +1,6 @@
 ;;; mime-w3m.el --- mime-view content filter for text
 
-;; Copyright (C) 2001-2005, 2009, 2010, 2012, 2013
+;; Copyright (C) 2001-2005, 2009, 2010, 2012, 2013, 2017
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -78,7 +78,7 @@ this to the regexp which matches the safe url names.  The value of the
 variable `w3m-safe-url-regexp' will be bound with this value.  You may
 set this value to nil if you consider all the urls to be safe."
   :group 'mime-w3m
-  :type '(choice (regexp :format "%t: %v\n" :size 0)
+  :type '(choice (regexp :format "%t: %v\n")
 		 (const :tag "All URLs are safe" nil)))
 
 (defcustom mime-w3m-after-cursor-move-hook

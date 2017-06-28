@@ -77,7 +77,7 @@
   "*The folder where SHIMBUN are contained."
   :group 'shimbun
   :group 'mew-shimbun
-  :type '(string :size 0))
+  :type 'string)
 
 (defcustom mew-shimbun-folder-groups nil
   "*Alist of `shimbun folder name (exclude `mew-shimbun-folder')'
@@ -102,22 +102,22 @@ show below example,
   :type '(repeat
 	  (cons
 	   :format "%v" :indent 2
-	   (string :format "Folder: %v\n" :size 0)
+	   (string :format "Folder: %v\n")
 	   (repeat
 	    :format "%{Server.Group + Index_Checking_Range%}:\n %v%i\n"
 	    :indent 3 :sample-face underline
 	    (cons :format "%v" :indent 6
-		  (string :format "Server.Group: %v\n" :size 0)
+		  (string :format "Server.Group: %v\n")
 		  (radio :format "Range: %v " :value all
 			 (const :format "%v " all)
 			 (const :format "%v " last)
-			 (integer :format "Pages: %v\n" :size 0)))))))
+			 (integer :format "Pages: %v\n")))))))
 
 (defcustom mew-shimbun-db-file ".mew-shimbun-db"
   "*File name of mew-shimbun database."
   :group 'shimbun
   :group 'mew-shimbun
-  :type '(file :size 0))
+  :type 'file)
 
 (defcustom mew-shimbun-expires nil
   "*Alist of `shimbun folder name' and expire days.
@@ -130,8 +130,8 @@ Show below expire,
   :group 'mew-shimbun
   :type '(repeat
 	  (cons :format "%v" :indent 11
-		(string :format "Folder: %v\n" :size 0)
-		(integer :format "Days: %v\n" :size 0))))
+		(string :format "Folder: %v\n")
+		(integer :format "Days: %v\n"))))
 
 (defcustom mew-shimbun-use-expire-pack nil
   "*If non-nin, exec `pack' after expire."
@@ -156,21 +156,20 @@ show below example,
   :group 'mew-shimbun
   :type '(radio
 	  (const :tag "Same as `mew-lisp-max-length'" nil)
-	  (integer :format "Limit for all groups: %v\n"
-		   :size 0 :value 2000)
+	  (integer :format "Limit for all groups: %v\n" :value 2000)
 	  (repeat :indent 4 :tag "Alist of folders and lengths"
 		  (cons :format "%v" :indent 8
 			(radio :format "%v" :value t
 			       (const :format "Other " t)
-			       (string :format "Folder: %v\n" :size 0))
+			       (string :format "Folder: %v\n"))
 			(integer :format "Maximum length of database: %v\n"
-				 :size 0 :value 2000)))))
+				 :value 2000)))))
 
 (defcustom mew-shimbun-unknown-from "foo@bar.baz"
   "*Shimbun mail address when From header is strange."
   :group 'shimbun
   :group 'mew-shimbun
-  :type '(string :size 0))
+  :type 'string)
 
 (defcustom mew-shimbun-mark-re-retrieve (or (and (boundp 'mew-mark-multi)
 						 mew-mark-multi)

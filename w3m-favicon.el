@@ -1,6 +1,6 @@
 ;;; w3m-favicon.el --- utilities for handling favicon in emacs-w3m
 
-;; Copyright (C) 2001-2005, 2007, 2009, 2011
+;; Copyright (C) 2001-2005, 2007, 2009, 2011, 2017
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -60,8 +60,8 @@ be omitted."
   :group 'w3m
   :type '(radio (const :tag "Not specified" nil)
 		(cons :format "%v"
-		      (integer :format "Width: %v " :size 0 :value 16)
-		      (integer :format "Height: %v " :size 0 :value 16))))
+		      (integer :format "Width: %v " :value 16)
+		      (integer :format "Height: %v " :value 16))))
 
 (defconst w3m-favicon-name "favicon.ico"
   "The favicon name.")
@@ -79,13 +79,13 @@ It defaults to the file named \".favicon\" under the directory specified
 by the `w3m-profile-directory' variable."
   :group 'w3m
   :type '(radio (const :format "Not specified\n")
-		(file :format "%t: %v\n" :size 0)))
+		(file :format "%t: %v\n")))
 
 (defcustom w3m-favicon-cache-expire-wait (* 30 24 60 60)
   "*The cache will be expired after specified seconds passed since retrieval.
 If this variable is nil, never expired."
   :group 'w3m
-  :type '(integer :size 0))
+  :type 'integer)
 
 (defcustom w3m-favicon-type
   (let ((types '(gif png pbm xpm bmp))
@@ -140,9 +140,9 @@ Note that this value is effective only with Emacs 22 and greater."
 			      (cons (list (car vals) (nth 1 vals))
 				    (nthcdr 2 vals))
 			    (cons (list (car vals)) (cdr vals))))
-			(string :format "Arg: %v " :value "-" :size 0)
+			(string :format "Arg: %v " :value "-")
 			(checklist :inline t
-				   (string :format "Value: %v\n" :size 0)))))
+				   (string :format "Value: %v\n")))))
 
 (defcustom w3m-favicon-default-background nil
   "Color name used as transparent color of favicon image.
@@ -151,7 +151,7 @@ string \"\" is special, that will be replaced with the background color
 of the header line or the mode line on which the favicon is displayed.
 Note that this value is effective only with Emacs 22 and greater."
   :group 'w3m
-  :type '(radio (string :format "Color: %v\n" :size 0
+  :type '(radio (string :format "Color: %v\n"
 			:match (lambda (widget value)
 				 (and (stringp value) (> (length value) 0))))
 		(const :tag "Use the background color of the Emacs frame" nil)

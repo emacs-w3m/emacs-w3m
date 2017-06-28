@@ -1,6 +1,6 @@
 ;;; w3m-perldoc.el --- The add-on program to view Perl documents.
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2017
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -42,18 +42,18 @@
 (defcustom w3m-perldoc-command "perldoc"
   "*Name of the executable file of perldoc."
   :group 'w3m-perldoc
-  :type '(string :size 0))
+  :type 'string)
 
 (defcustom w3m-perldoc-pod2html-command "pod2html"
   "*Name of the executable file of pod2html."
   :group 'w3m-perldoc
-  :type '(string :size 0))
+  :type 'string)
 
 (defcustom w3m-perldoc-pod2html-arguments
   '("--noindex")
   "*Arguments of pod2html."
   :group 'w3m-perldoc
-  :type '(repeat (string :format "Argument: %v\n" :size 0))
+  :type '(repeat (string :format "Argument: %v\n"))
   :get (lambda (symbol)
 	 (delq nil (delete "" (mapcar (lambda (x) (if (stringp x) x))
 				      (default-value symbol)))))
@@ -71,13 +71,13 @@
       'iso-latin-1))
   "*Coding system used when writing to `w3m-perldoc-command'."
   :group 'w3m-perldoc
-  :type '(coding-system :size 0))
+  :type 'coding-system)
 
 (defcustom w3m-perldoc-output-coding-system
   'undecided
   "*Coding system used when reading from `w3m-perldoc-command'."
   :group 'w3m-perldoc
-  :type '(coding-system :size 0))
+  :type 'coding-system)
 
 ;;;###autoload
 (defun w3m-about-perldoc (url &optional no-decode no-cache &rest args)

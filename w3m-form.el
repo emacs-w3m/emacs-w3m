@@ -1,6 +1,6 @@
 ;;; w3m-form.el --- Stuffs to handle <form> tag
 
-;; Copyright (C) 2001-2014 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2014, 2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -82,13 +82,13 @@ Files to save text are stored in the directory specified by the
 	 'iso-2022-7bit-ss2))
   "Coding system for textarea's backup file."
   :group 'w3m
-  :type '(coding-system :size 0))
+  :type 'coding-system)
 
 (defcustom w3m-form-textarea-directory
   (expand-file-name ".textarea" w3m-profile-directory)
   "*Name of the directory to save the file of textarea input."
   :group 'w3m
-  :type '(directory :size 0))
+  :type 'directory)
 
 (defcustom w3m-form-textarea-edit-mode 'text-mode
   "*Major mode to edit textarea."
@@ -1075,7 +1075,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 (defcustom w3m-form-input-textarea-buffer-lines 10
   "*Buffer lines for form textarea buffer."
   :group 'w3m
-  :type '(integer :size 0))
+  :type 'integer)
 
 (defcustom w3m-form-input-textarea-mode-hook nil
   "*A hook called after w3m-form-input-textarea-mode."
@@ -1588,7 +1588,7 @@ selected rather than \(as usual\) some other window.  See
 (defcustom w3m-form-input-select-buffer-lines 10
   "*Buffer lines for form select buffer."
   :group 'w3m
-  :type '(integer :size 0))
+  :type 'integer)
 
 (defcustom w3m-form-input-select-mode-hook nil
   "*A hook called after w3m-form-input-select-mode."
@@ -1772,7 +1772,7 @@ selected rather than \(as usual\) some other window.  See
 (defcustom w3m-form-input-map-buffer-lines 10
   "*Buffer lines for form select map buffer."
   :group 'w3m
-  :type '(integer :size 0))
+  :type 'integer)
 
 (defcustom w3m-form-input-map-mode-hook nil
   "*A hook called after w3m-form-input-map-mode."

@@ -1,3 +1,9 @@
+2017-06-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mew-shimbun.el, nnshimbun.el, sb-geocrawler.el, sb-marc-aims.el,
+	sb-slashdot-jp.el, sb-sourceforge-jp.el, sb-tigris.el, shimbun.el:
+	Remove `:size 0' from defcustoms ([emacs-w3m:12709]).
+
 2017-02-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Don't use string-make-unibyte that got obsolete in Emacs 26.

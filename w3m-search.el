@@ -226,20 +226,20 @@ If CODING is omitted, it defaults to `w3m-default-coding-system'."
   :group 'w3m
   :type `(repeat
 	  (group :indent 2
-		 (string :format "Engine: %v\n" :size 0)
-		 (string :format "       Action: %v\n" :size 0)
-		 (coding-system :format "%t: %v\n" :size 0)
+		 (string :format "Engine: %v\n")
+		 (string :format "       Action: %v\n")
+		 (coding-system :format "%t: %v\n")
 		 (checklist :inline t
 			    :entry-format ,(if (w3m-device-on-window-system-p)
 					       "%b   %v"
 					     "%b  %v")
-			    (string :format "PostData: %v\n" :size 0)))))
+			    (string :format "PostData: %v\n")))))
 
 (defcustom w3m-search-default-engine "google"
   "*Name of the default search engine.
 See also `w3m-search-engine-alist'."
   :group 'w3m
-  :type '(string :size 0))
+  :type 'string)
 
 (defcustom w3m-search-word-at-point t
   "*Non-nil means that the word at point is used as an initial string.

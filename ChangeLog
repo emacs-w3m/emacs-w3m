@@ -1,3 +1,11 @@
+2017-06-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mime-w3m.el, w3m-antenna.el, w3m-bookmark.el, w3m-cookie.el,
+	w3m-dtree.el, w3m-ems.el, w3m-favicon.el, w3m-filter.el, w3m-form.el,
+	w3m-namazu.el, w3m-perldoc.el, w3m-search.el, w3m-session.el,
+	w3m-symbol.el, w3m.el:
+	Remove `:size 0' from defcustoms ([emacs-w3m:12709]).
+
 2017-06-26  Vladimir Sedach  <vas@oneofus.la>
 
 	* w3m.el (w3m-url-completion-map): Bind "?" to self-insert-command.

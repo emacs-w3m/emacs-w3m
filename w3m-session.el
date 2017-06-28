@@ -1,6 +1,7 @@
 ;;; w3m-session.el --- Functions to operate session of w3m -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2003, 2005-2013 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2003, 2005-2013, 2017
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Hideyuki SHIRAI <shirai@meadowy.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -51,7 +52,7 @@
   (expand-file-name ".sessions" w3m-profile-directory)
   "*File name to keep sessions."
   :group 'w3m
-  :type '(file :size 0))
+  :type 'file)
 
 (defcustom w3m-session-autosave t
   "*Non-nil means save automatically when w3m quit."
@@ -75,7 +76,7 @@
     "%Y-%m-%d (%a) %H:%M")
   "*Format of saved time."
   :group 'w3m
-  :type '(string :size 0))
+  :type 'string)
 
 (defcustom w3m-session-automatic-title
   (if (equal "Japanese" w3m-language)
@@ -83,7 +84,7 @@
     "Automatic saved sessions")
   "*String of title to save session automatically."
   :group 'w3m
-  :type '(string :size 0))
+  :type 'string)
 
 (defcustom w3m-session-deleted-title
   (if (equal "Japanese" w3m-language)
@@ -91,7 +92,7 @@
     "Removed sessions")
   "*String of title to save session when buffer delete."
   :group 'w3m
-  :type '(string :size 0))
+  :type 'string)
 
 (defcustom w3m-session-crash-recovery-title
   (if (equal "Japanese" w3m-language)
@@ -99,22 +100,22 @@
     "Crash recovery sessions")
   "*String of title to save session to use for crash recovering."
   :group 'w3m
-  :type '(string :size 0))
+  :type 'string)
 
 (defcustom w3m-session-deleted-keep-number 5
   "*Number to keep sessions when buffers delete."
   :group 'w3m
-  :type '(integer :size 0))
+  :type 'integer)
 
 (defcustom w3m-session-automatic-keep-number 5
   "*Number to keep sessions automatically."
   :group 'w3m
-  :type '(integer :size 0))
+  :type 'integer)
 
 (defcustom w3m-session-unknown-title "<Unknown Title>"
   "*String of title to use when title is not specified."
   :group 'w3m
-  :type '(string :size 0))
+  :type 'string)
 
 (defcustom w3m-session-load-last-sessions nil
   "*Whether to load the last sessions when emacs-w3m starts."

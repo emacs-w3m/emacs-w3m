@@ -1,6 +1,6 @@
 ;;; w3m-symbol.el --- Stuffs to replace symbols for emacs-w3m -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2009
+;; Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2009, 2017
 ;; ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
 
 ;; Author: ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
@@ -175,7 +175,7 @@
 		(const :format "Korean      " w3m-Korean-symbol)
 		,@(when w3m-mule-unicode-symbol
 		   '((const :tag "Mule-Unicode" w3m-mule-unicode-symbol)))
-		(variable :format "%t symbol: %v\n" :size 0
+		(variable :format "%t symbol: %v\n"
 			  :value w3m-default-symbol)
 		,w3m-symbol-custom-type))
 

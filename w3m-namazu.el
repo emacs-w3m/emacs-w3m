@@ -1,6 +1,6 @@
 ;;; w3m-namazu.el --- The add-on program to search files with Namazu.
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2009
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2009, 2017
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -63,7 +63,7 @@
 (defcustom w3m-namazu-command "namazu"
   "*Name of the executable file of Namazu."
   :group 'w3m-namazu
-  :type '(string :size 0))
+  :type 'string)
 
 (defcustom w3m-namazu-arguments
   '("-h"			; print in HTML format.
@@ -75,8 +75,7 @@
   :type '(repeat
 	  (restricted-sexp :format "Argument: %v\n"
 			   :match-alternatives
-			   (stringp 'w3m-namazu-page-max 'whence)
-			   :size 0)))
+			   (stringp 'w3m-namazu-page-max 'whence))))
 
 (defcustom w3m-namazu-page-max
   (if (boundp 'namazu-search-num)
@@ -84,14 +83,14 @@
     30)
   "*A maximum number of documents which are retrieved by one-time search."
   :group 'w3m-namazu
-  :type '(integer :size 0))
+  :type 'integer)
 
 (defconst w3m-namazu-default-index-customize-spec
   '`(choice
      (const :tag "No default index" nil)
      ,@(mapcar (lambda (x) (list 'const (car x)))
 	       w3m-namazu-index-alist)
-     (directory :format "Index directory: %v\n" :size 0)))
+     (directory :format "Index directory: %v\n")))
 
 (defcustom w3m-namazu-index-alist
   (when (boundp 'namazu-dir-alist)
@@ -105,10 +104,10 @@
 	  (group
 	   :indent 0 :inline t
 	   (cons :format "%v"
-		 (string :format "Alias: %v\n" :size 0)
+		 (string :format "Alias: %v\n")
 		 (repeat
 		  :format "%v%i\n" :indent 8
-		  (directory :format "Index directory: %v\n" :size 0)))))
+		  (directory :format "Index directory: %v\n")))))
   :set (lambda (symbol value)
 	 (custom-set-default symbol value)
 	 (put 'w3m-namazu-default-index 'custom-type
@@ -134,7 +133,7 @@ argument."
       'euc-japan-unix))
   "*Coding system for namazu process."
   :group 'w3m-namazu
-  :type '(coding-system :size 0))
+  :type 'coding-system)
 
 (defcustom w3m-namazu-input-coding-system
   (if (boundp 'namazu-cs-read)
@@ -142,7 +141,7 @@ argument."
     'undecided)
   "*Coding system for namazu process."
   :group 'w3m-namazu
-  :type '(coding-system :size 0))
+  :type 'coding-system)
 
 
 (defun w3m-namazu-call-process (index query whence)

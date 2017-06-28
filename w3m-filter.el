@@ -232,19 +232,19 @@ This variable is semi-obsolete; use `w3m-filter-configuration' instead."
   :group 'w3m
   :type '(repeat
 	  (group :format "%v" :indent 2
-		 (regexp :format "Regexp: %v\n" :value ".*" :size 0)
+		 (regexp :format "Regexp: %v\n" :value ".*")
 		 (choice
 		  :tag "Filtering Rule"
 		  (group :inline t
 			 :tag "Delete regions surrounded with these patterns"
 			 (const :format "Function: %v\n"
 				w3m-filter-delete-regions)
-			 (string :format "Start: %v\n" :size 0
+			 (string :format "Start: %v\n"
 				 :value "not a regexp")
-			 (string :format "  End: %v\n" :size 0
+			 (string :format "  End: %v\n"
 				 :value "not a regexp"))
 		  (function :tag "Filter with a user defined function"
-			    :format "Function: %v\n" :size 0)))))
+			    :format "Function: %v\n")))))
 
 (defcustom w3m-filter-google-use-utf8
   (or (featurep 'un-define) (fboundp 'utf-translate-cjk-mode)
@@ -280,7 +280,7 @@ This variable is semi-obsolete; use `w3m-filter-configuration' instead."
    "/\\([0-9]+\\)")
   "*Regexp to extract ASIN number for Amazon."
   :group 'w3m
-  :type '(string :size 0))
+  :type 'string)
 
 (defcustom w3m-filter-amazon-short-url-bottom nil
   "*Amazon short URLs insert bottom position."

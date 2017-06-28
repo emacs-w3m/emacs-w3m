@@ -1,6 +1,6 @@
 ;;; shimbun.el --- interfacing with web newspapers -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2014 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2014, 2017 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
@@ -118,18 +118,18 @@
 dJrT4Cd<Ls?U!G4}0S%FA~KegR;YZWieoc%`|$4M\\\"i*2avWm?"
   "*Default X-Face field for shimbun."
   :group 'shimbun
-  :type '(string :format "%{%t%}:\n%v" :size 0))
+  :type '(string :format "%{%t%}:\n%v"))
 
 (defcustom shimbun-server-additional-path nil
   "*List of additional directories to search for shimbun servers."
   :group 'shimbun
-  :type '(repeat (directory :format "%t: %v\n" :size 0)))
+  :type '(repeat (directory :format "%t: %v\n")))
 
 (defcustom shimbun-checking-new-news-format "Checking new news on #S for #g"
   "*Format string used to show a progress message while chacking new news.
 See `shimbun-message' for the special format specifiers."
   :group 'shimbun
-  :type '(string :format "%{%t%}:\n%v" :size 0))
+  :type '(string :format "%{%t%}:\n%v"))
 
 (defcustom shimbun-verbose t
   "*Flag controls whether shimbun should be verbose.
@@ -768,7 +768,7 @@ you want to use no database."
 	  (const :tag "Use no database" never)
 	  (const :tag "Use BBDB" shimbun-bbdb-get-x-face)
 	  (const :tag "Use LSDB" shimbun-lsdb-get-x-face)
-	  (function :format "User defined function: %v\n" :size 0)))
+	  (function :format "User defined function: %v\n")))
 
 (defun shimbun-header-insert (shimbun header)
   (let ((from (shimbun-header-from header))

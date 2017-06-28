@@ -106,8 +106,7 @@ Note that smaller values may spoil the `prefetch-articles' feature,
 since nnshimbun uses the backlog to keep the prefetched articles."
   :group 'nnshimbun
   :type '(choice (const :tag "Off" nil)
-		 (integer :format "%t: %v\n"
-			  :size 0)
+		 (integer :format "%t: %v\n")
 		 (sexp :format "All\n"
 		       :match (lambda (widget value)
 				(and value (not (numberp value))))

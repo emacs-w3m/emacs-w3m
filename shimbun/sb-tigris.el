@@ -1,6 +1,6 @@
 ;;; sb-tigris.el --- shimbun backend for tigris.org ML
 
-;; Copyright (C) 2005, 2007, 2009 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2005, 2007, 2009, 2017 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: news
@@ -65,9 +65,9 @@
   :type '(repeat
 	  (cons
 	   :format "%v" :indent 2
-	   (string :format "Project Name: %v\n" :size 0)
+	   (string :format "Project Name: %v\n")
 	   (repeat
-	    (string :format "ML: %v\n" :size 0))))
+	    (string :format "ML: %v\n"))))
   )
 
 (defmacro shimbun-tigris-get-project (shimbun)
