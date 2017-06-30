@@ -1,3 +1,9 @@
+2017-06-30  Vladimir Sedach  <vas@oneofus.la>
+
+	* w3m-form.el (w3m-form-input): If input is readonly, put the input
+	value on the kill ring in addition to displaying it in the echo area.
+	[emacs-w3m:12724]
+
 2017-06-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mime-w3m.el, w3m-antenna.el, w3m-bookmark.el, w3m-cookie.el,

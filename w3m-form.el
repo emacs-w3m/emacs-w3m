@@ -990,7 +990,9 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 (defun w3m-form-input (form id name type width maxlength value)
   (let ((fvalue (w3m-form-get form id)))
     (if (get-text-property (point) 'w3m-form-readonly)
-	(w3m-message "READONLY %s: %s" (upcase type) fvalue)
+	(progn
+	  (kill-new fvalue)
+	  (w3m-message "READONLY %s: %s" (upcase type) fvalue))
       (save-excursion
 	(let ((input (save-excursion
 		       (read-from-minibuffer (concat (upcase type) ": ") fvalue)))
