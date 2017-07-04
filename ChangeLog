@@ -1,3 +1,8 @@
+2017-07-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-content-type-alist): Use mailcap.
+	(w3m-create-page): Allow user to download file of unknown content-type.
+
 2017-06-30  Vladimir Sedach  <vas@oneofus.la>
 
 	* w3m-form.el (w3m-form-input): If input is readonly, put the input

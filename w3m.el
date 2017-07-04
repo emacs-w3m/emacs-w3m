@@ -1144,99 +1144,64 @@ is inhibited in those cases even if `w3m-async-exec' is non-nil."
   :group 'w3m
   :type 'string)
 
-(defcustom w3m-image-viewer
-  (or (w3m-which-command "display")
-      (w3m-which-command "eeyes")
-      (w3m-which-command "xloadimage")
-      (w3m-which-command "xv"))
-  "Command used to view image files externally.
-Note that this option is installed temporarily.  It will be abolished
-when we implement the mailcap parser to set `w3m-content-type-alist'."
-  :group 'w3m
-  :type 'string)
+(require 'mailcap)
 
-;; FIXME: we need to improve so that to set up the value of this
-;; variable may be performed by parsing the mailcap file.
-(defcustom w3m-content-type-alist
-  (let* ((fiber-viewer (when (and (eq system-type 'windows-nt)
-				  (w3m-which-command "fiber"))
-			 (list "fiber.exe" "-s" 'file)))
-	 (external-browser
-	  (if (and (eq system-type 'windows-nt) (w3m-which-command "fiber"))
-	      'w3m-w32-browser-with-fiber
-	    (or (when (condition-case nil (require 'browse-url) (error nil))
-		  (let ((default
-			  (cond
-			   ((and (memq system-type '(windows-nt ms-dos cygwin))
-				 (fboundp 'browse-url-default-windows-browser))
-			    'browse-url-default-windows-browser)
-			   ((and (memq system-type '(darwin))
-				 (fboundp 'browse-url-default-macosx-browser))
-			    'browse-url-default-macosx-browser)
-			   ((fboundp 'browse-url-default-browser)
-			    'browse-url-default-browser)
-			   ((fboundp 'browse-url-netscape)
-			    'browse-url-netscape))))
-		    (if (or (not (boundp 'browse-url-browser-function))
-			    (eq 'w3m-browse-url
-				(symbol-value 'browse-url-browser-function)))
-			default
-		      (if (stringp (car-safe
-				    (car-safe browse-url-browser-function)))
-			  (catch 'browser
-			    (let ((alist browse-url-browser-function))
-			      (while alist
-				(when (string-match (caar alist) "index.html")
-				  (throw 'browser (cdar alist)))
-				(setq alist (cdr alist)))
-			      (message "Found no html handler in \
-browse-url-browser-function to put in w3m-content-type-alist.")
-			      default))
-			browse-url-browser-function))))
-		(when (w3m-which-command "netscape")
-		  (list "netscape" 'url)))))
-	 (image-viewer (or fiber-viewer
-			   (when w3m-image-viewer
-			     (list w3m-image-viewer 'file))))
-	 (video-viewer (or fiber-viewer
-			   (when (w3m-which-command "mpeg_play")
-			     (list "mpeg_play" 'file))))
-	 (dvi-viewer (or fiber-viewer
-			 (cond ((w3m-which-command "xdvi") (list "xdvi" 'file))
-			       ((w3m-which-command "dvitty")
-				(list "dvitty" 'file)))))
-	 (ps-viewer (or fiber-viewer
-			(cond
-			 ((w3m-which-command "gv") (list "gv" 'file))
-			 ((w3m-which-command "gs") (list "gs" 'file)))))
-	 (pdf-viewer (or fiber-viewer
-			 (cond
-			  ((w3m-which-command "xpdf") (list "xpdf" 'file))
-			  ((w3m-which-command "acroread")
-			   (list "acroread" 'file))))))
-    `(("text/plain" "\\.\\(?:txt\\|tex\\|el\\)\\'" nil nil)
-      ("text/html" "\\.s?html?\\'" ,external-browser nil)
-      ("text/sgml" "\\.sgml?\\'" nil "text/plain")
-      ("text/xml" "\\.xml\\'" nil "text/plain")
-      ("text/x-markdown" "\\.md\\'" nil w3m-prepare-markdown-content)
-      ("image/jpeg" "\\.jpe?g\\'" ,image-viewer nil)
-      ("image/png" "\\.png\\'" ,image-viewer nil)
-      ("image/gif" "\\.gif\\'" ,image-viewer nil)
-      ("image/tiff" "\\.tif?f\\'" ,image-viewer nil)
-      ("image/x-xwd" "\\.xwd\\'" ,image-viewer nil)
-      ("image/x-xbm" "\\.xbm\\'" ,image-viewer nil)
-      ("image/x-xpm" "\\.xpm\\'" ,image-viewer nil)
-      ("image/x-bmp" "\\.bmp\\'" ,image-viewer nil)
-      ("video/mpeg" "\\.mpe?g\\'" ,video-viewer nil)
-      ("video/quicktime" "\\.mov\\'" ,video-viewer nil)
-      ("application/dvi" "\\.dvi\\'" ,dvi-viewer nil)
-      ("application/postscript" "\\.e?ps\\'" ,ps-viewer nil)
-      ("application/pdf" "\\.pdf\\'" ,pdf-viewer nil)
-      ("application/x-pdf" "\\.pdf\\'" ,pdf-viewer nil)
-      ("application/xml" "\\.xml\\'" nil w3m-detect-xml-type)
-      ("application/rdf+xml" "\\.rdf\\'" nil "text/plain")
-      ("application/rss+xml" "\\.rss\\'" nil "text/plain")
-      ("application/xhtml+xml" nil nil "text/html")))
+(defvar w3m-content-type-alist
+  (let ((additions
+	 '(("text/sgml" "\\.sgml?\\'" nil "text/plain")
+	   ("text/xml" "\\.xml\\'" nil "text/plain")
+	   ("text/x-markdown" "\\.md\\'" nil w3m-prepare-markdown-content)
+	   ("application/xml" "\\.xml\\'" nil w3m-detect-xml-type)
+	   ("application/rdf+xml" "\\.rdf\\'" nil "text/plain")
+	   ("application/rss+xml" "\\.rss\\'" nil "text/plain")
+	   ("application/xhtml+xml" nil nil "text/html")
+	   ("application/x-bzip2" "\\.bz2\\'" nil nil nil)
+	   ("application/x-gzip" "\\.gz\\'" nil nil nil)))
+	(extensions (copy-sequence mailcap-mime-extensions))
+	elem ext type exts tem viewer rest)
+    ;; items w/ file extensions
+    (while (setq elem (pop extensions))
+      (setq ext (car elem)
+	    type (cdr elem))
+      (unless (zerop (length ext))
+	(setq exts (list ext))
+	(while (setq tem (rassoc type extensions))
+	  (unless (member (car tem) exts) (push (car tem) exts))
+	  (setq extensions (delq tem extensions)))
+	(setq viewer (mailcap-mime-info type))
+	(push (list type
+		    (concat (if (cdr exts)
+				(regexp-opt exts)
+			      (regexp-quote ext))
+			    "\\'")
+		    (when (stringp viewer) viewer)
+		    nil)
+	      rest)))
+    ;; items w/o file extension
+    (dolist (major mailcap-mime-data)
+      (dolist (minor (cdr major))
+	(unless (string-match "\\`\\.\\*\\'" (car minor))
+	  (setq type (cdr (assq 'type (cdr minor)))
+		viewer (cdr (assq 'viewer (cdr minor))))
+	  (or (string-match "/\\*\\'" type)
+	      (assoc type rest)
+	      (push (list type nil (when (stringp viewer) viewer) nil)
+		    rest)))))
+    ;; convert viewers
+    (dolist (elem rest)
+      (when (setq viewer (car (cdr (cdr elem))))
+	(dolist (v (prog1 (split-string viewer) (setq viewer nil)))
+	  (push (cond ((string-equal "%s" v) 'file)
+		      ((string-equal "%u" v) 'url)
+		      (t v))
+		viewer))
+	(setcar (cdr (cdr elem)) (nreverse viewer))))
+    ;; addition
+    (dolist (elem additions)
+      (if (setq tem (assoc (car elem) rest))
+	  (setcdr tem (cdr elem)) ;; overkill?
+	(push elem rest)))
+    (nreverse rest))
   "*Alist of content types, regexps, commands to view, and filters.
 Each element is a list which consists of the following data:
 
@@ -1258,31 +1223,7 @@ Each element is a list which consists of the following data:
    a. Lisp function that takes three arguments URL, CONTENT-TYPE, and
       CHARSET, and returns a content type.
    b. String that specifies a content type.
-   c. nil that means not to override the content type."
-  :group 'w3m
-  :type '(repeat
-	  (group
-	   :indent 2
-	   (string :format "Type: %v\n")
-	   (radio :format "%{Regexp%}: %v" :extra-offset 8
-		  :sample-face underline
-		  (const :tag "Not specified" nil)
-		  (regexp :format "String: %v\n"))
-	   (radio :format "%{Viewer%}: %v" :extra-offset 8
-		  :sample-face underline
-		  (const :tag "Not specified" nil)
-		  (cons :tag "External viewer" :extra-offset 2
-			(string :format "Command: %v\n")
-			(repeat :format "Arguments:\n%v%i\n" :extra-offset 2
-				(restricted-sexp
-				 :format "%v\n"
-				 :match-alternatives (stringp 'file 'url))))
-		  (function :format "%t: %v\n"))
-	   (radio :format "%{Filter%}: %v" :extra-offset 8
-		  :sample-face underline
-		  (const :tag "Not specified" nil)
-		  (string :format "Equivalent type: %v\n")
-		  (function :format "Function: %v\n")))))
+   c. nil that means not to override the content type.")
 
 ;; FIXME: we need to rearrange the complicated and redundant relation of
 ;; `w3m-encoding-type-alist', `w3m-decoder-alist', and `w3m-encoding-alist'.
@@ -6641,17 +6582,23 @@ If so return \"text/html\", otherwise \"text/plain\"."
 	  (setq type
 		(condition-case nil
 		    (completing-read
-		     (format
-		      "%s's content type (default Download or External-View): "
-		      (file-name-nondirectory url))
-		     w3m-content-type-alist nil t)
+		     (format "Content type for %s (%s): "
+			     (file-name-nondirectory url)
+			     (if (zerop (length type))
+				 "default download or external-view"
+			       (concat "`" type "' is unknown;\
+ default download or external-view")))
+		     (cons "Download_or_External-view"
+			   w3m-content-type-alist)
+		     nil t)
 		  ;; The user forced terminating the session with C-g.
 		  (quit
 		   (w3m-process-stop page-buffer) ;; Needless?
 		   (with-current-buffer page-buffer
 		     (setq w3m-current-process nil))
 		   (keyboard-quit))))
-	  (setf (w3m-arrived-content-type url) type)))))
+	  (unless (member type '("" "Download_or_External-view"))
+	    (setf (w3m-arrived-content-type url) type))))))
   (setq w3m-current-coding-system nil)	; Reset decoding status of this buffer.
   (setq type (w3m-prepare-content url type charset))
   (w3m-safe-decode-buffer url charset type)
