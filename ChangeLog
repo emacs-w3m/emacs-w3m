@@ -1,6 +1,7 @@
 2017-07-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-content-type-alist): Use mailcap.
+	(w3m-image-viewer): Abolish.
 	(w3m-create-page): Allow user to download file of unknown content-type.
 
 2017-06-30  Vladimir Sedach  <vas@oneofus.la>
