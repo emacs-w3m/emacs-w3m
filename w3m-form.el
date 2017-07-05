@@ -1298,12 +1298,18 @@ positive, otherwise text-mode."
   (message "Edit textarea in Org-mode %s"
 	   (if w3m-form-textarea-use-org-mode-p "enabled" "disabled")))
 
-(autoload 'show-all "outline" nil t)
-
-(add-hook 'w3m-form-input-textarea-mode-hook
-	  (lambda ()
-	    (and (eq major-mode 'org-mode))
-	    (show-all)))
+(eval-when-compile (require 'outline))
+(w3m-static-if (fboundp 'outline-show-all)
+    ;; Emacs >=25
+    (progn
+      (autoload 'outline-show-all "outline" nil t)
+      (add-hook 'w3m-form-input-textarea-mode-hook
+		(lambda ()
+		  (and (eq major-mode 'org-mode) (outline-show-all)))))
+  (autoload 'show-all "outline" nil t)
+  (add-hook 'w3m-form-input-textarea-mode-hook
+	    (lambda ()
+	      (and (eq major-mode 'org-mode) (show-all)))))
 
 (defvar view-mode-map)
 (defun w3m-form-input-textarea-mode-setup (caller-buffer readonly)
