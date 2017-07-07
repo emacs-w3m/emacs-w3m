@@ -1,3 +1,10 @@
+2017-07-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-show-form-hint): Expand form so at to show text fully.
+	* w3m-form.el (w3m-form-input): Revert 2017-06-30 change.
+	(w3m-form-expand-form, w3m-form-unexpand-form): New functions.
+	[emacs-w3m:12728]
+
 2017-07-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-form.el (w3m-form-input-textarea-mode-hook): Fix mismatched paren;

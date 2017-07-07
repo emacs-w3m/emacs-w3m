@@ -144,6 +144,8 @@
   (autoload 'w3m-form-textarea-files-remove "w3m-form")
   (autoload 'w3m-form-kill-buffer "w3m-form")
   (autoload 'w3m-form-set-number "w3m-form")
+  (autoload 'w3m-form-expand-form "w3m-form")
+  (autoload 'w3m-form-unexpand-form "w3m-form")
   (autoload 'w3m-filter "w3m-filter")
   (autoload 'w3m-toggle-filtering "w3m-filter"
     "Toggle whether web pages will have their html modified by w3m's \
@@ -11316,10 +11318,14 @@ FROM-COMMAND is defined in `w3m-minor-mode-map' with the same key in
 
 (defun w3m-show-form-hint ()
   "Show sending form hint when the cursor is in a form."
+  (when w3m-use-form (w3m-form-unexpand-form))
   (let ((keys (where-is-internal 'w3m-submit-form)))
     (when (and (w3m-submit (point)) keys)
       (if (get-text-property (point) 'w3m-form-readonly)
-	  (w3m-message "This form is currently not editable")
+	  (progn
+	    (w3m-form-expand-form)
+	    (w3m-message
+	     "This form is not editable; type `c' to copy the contents"))
 	(w3m-message "Press %s to send the current form"
 		     (key-description (car keys)))))))
 

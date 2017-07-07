@@ -990,9 +990,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 (defun w3m-form-input (form id name type width maxlength value)
   (let ((fvalue (w3m-form-get form id)))
     (if (get-text-property (point) 'w3m-form-readonly)
-	(progn
-	  (kill-new fvalue)
-	  (w3m-message "READONLY %s: %s" (upcase type) fvalue))
+	(w3m-message "READONLY %s: %s" (upcase type) fvalue)
       (save-excursion
 	(let ((input (save-excursion
 		       (read-from-minibuffer (concat (upcase type) ": ") fvalue)))
@@ -2030,6 +2028,93 @@ selected rather than \(as usual\) some other window.  See
 	(goto-char (or (w3m-form-real-reset form (w3m-action pos))
 		       (next-single-property-change pos 'w3m-action)))))))
 
+(defun w3m-form-expand-form ()
+  "Expand the form at point so as to show the contents fully.
+`w3m-show-form-hint' uses this function."
+  (unless (get-text-property (point) 'w3m-form-expanded)
+    (let ((inhibit-read-only t)
+	  (act (w3m-action))
+	  (mod (buffer-modified-p))
+	  value from pt to keymap)
+      (when (cond ((eq (car act) 'w3m-form-input)
+		   (setq value (w3m-form-get (nth 1 act) (nth 2 act))))
+		  ((eq (car act) 'w3m-form-input-textarea)
+		   (setq value (w3m-form-get (nth 1 act)
+					     (car (w3m-form-textarea-info))))))
+	(if (bobp)
+	    (setq from (point))
+	  (if (or (get-text-property (1- (point)) 'w3m-action)
+		  (and (setq pt (previous-single-property-change
+				 (1- (point)) 'w3m-action))
+		       (equal (get-text-property
+			       (setq pt (max (1- pt) (point-min))) 'w3m-action)
+			      act)))
+	      (while (and (not from)
+			  (setq from (previous-single-property-change
+				      (or pt (point)) 'w3m-action)))
+		(when (and (setq pt (previous-single-property-change
+				     from 'w3m-action))
+			   (equal (get-text-property
+				   (max (1- pt) (point-min)) 'w3m-action)
+				  act))
+		  (setq from nil)))
+	    (setq from (point))))
+	(setq pt nil)
+	(while (and (not to)
+		    (setq to (text-property-any (or pt (point)) (point-max)
+						'w3m-action nil)))
+	  (when (and (setq pt (next-single-property-change to 'w3m-action))
+		     (equal (get-text-property pt 'w3m-action) act))
+	    (setq to nil)))
+	(define-key (setq keymap (make-sparse-keymap))
+	  "c" `(lambda nil (interactive) (kill-new ,value)))
+	(if (<= (length (replace-regexp-in-string "[\t\n ]+" "" value))
+		(length (replace-regexp-in-string
+			 "[\t\n ]+" ""
+			 (replace-regexp-in-string
+			  "][\t\n ]*\\[" ""
+			  (buffer-substring-no-properties from to)))))
+	    (put-text-property from to 'keymap keymap)
+	  (save-excursion
+	    (goto-char to)
+	    (add-text-properties
+	     from to (list 'rear-nonsticky nil 'keymap keymap))
+	    (insert-and-inherit value)
+	    (put-text-property to (point) 'w3m-form-expanded
+			       (list from (- (point) (- to from))
+				     (buffer-substring from to)))
+	    (dolist (o (overlays-at from))
+	      (when (= (overlay-start o) from)
+		(move-overlay o to (point))))
+	    (delete-region from to)
+	    (set-buffer-modified-p mod)))))))
+
+(defun w3m-form-unexpand-form ()
+  "Unexpand expanded form not being in the current line.
+`w3m-show-form-hint' uses this function."
+  (unless (or (get-text-property (point) 'w3m-form-expanded)
+	      (< (next-single-property-change
+		  (point-at-bol) 'w3m-form-expanded nil (point-at-eol))
+		 (point-at-eol)))
+    (let ((pt (text-property-not-all (point-min) (point-max)
+				     'w3m-form-expanded nil)))
+      (when pt
+	(let* ((inhibit-read-only t)
+	       (expanded (when pt (get-text-property pt 'w3m-form-expanded)))
+	       (from (car expanded))
+	       (to (nth 1 expanded))
+	       (value (nth 2 expanded))
+	       (mod (buffer-modified-p)))
+	  (add-text-properties
+	   from to '(keymap nil rear-nonsticky t w3m-form-expanded nil))
+	  (save-excursion
+	    (goto-char to)
+	    (insert value)
+	    (dolist (o (overlays-at from))
+	      (when (= (overlay-start o) from)
+		(move-overlay o to (point))))
+	    (delete-region from to)
+	    (set-buffer-modified-p mod)))))))
 
 (provide 'w3m-form)
 
