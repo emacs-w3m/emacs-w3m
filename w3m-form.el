@@ -2075,19 +2075,24 @@ selected rather than \(as usual\) some other window.  See
 			  "][\t\n ]*\\[" ""
 			  (buffer-substring-no-properties from to)))))
 	    (put-text-property from to 'keymap keymap)
-	  (save-excursion
-	    (goto-char to)
-	    (add-text-properties
-	     from to (list 'rear-nonsticky nil 'keymap keymap))
-	    (insert-and-inherit value)
-	    (put-text-property to (point) 'w3m-form-expanded
-			       (list from (- (point) (- to from))
-				     (buffer-substring from to)))
-	    (dolist (o (overlays-at from))
-	      (when (= (overlay-start o) from)
-		(move-overlay o to (point))))
-	    (delete-region from to)
-	    (set-buffer-modified-p mod)))))))
+	  (setq pt (cons (current-column)
+			 (- (count-lines from (point))
+			    (if (= from (point)) 0 1))))
+	  (goto-char to)
+	  (add-text-properties
+	   from to (list 'rear-nonsticky nil 'keymap keymap))
+	  (insert-and-inherit value)
+	  (put-text-property to (point) 'w3m-form-expanded
+			     (list from (- (point) (- to from))
+				   (buffer-substring from to)))
+	  (dolist (o (overlays-at from))
+	    (when (= (overlay-start o) from)
+	      (move-overlay o to (point))))
+	  (delete-region from to)
+	  (goto-char from)
+	  (forward-line (cdr pt))
+	  (move-to-column (car pt))
+	  (set-buffer-modified-p mod))))))
 
 (defun w3m-form-unexpand-form ()
   "Unexpand expanded form not being in the current line.
@@ -2107,14 +2112,23 @@ selected rather than \(as usual\) some other window.  See
 	       (mod (buffer-modified-p)))
 	  (add-text-properties
 	   from to '(keymap nil rear-nonsticky t w3m-form-expanded nil))
-	  (save-excursion
-	    (goto-char to)
-	    (insert value)
-	    (dolist (o (overlays-at from))
-	      (when (= (overlay-start o) from)
-		(move-overlay o to (point))))
-	    (delete-region from to)
-	    (set-buffer-modified-p mod)))))))
+	  (setq pt (cons (current-column)
+			 (cond ((< (point) from)
+				(- 1 (count-lines (point) from)))
+			       ((>= (point) to)
+				(count-lines to (point))))))
+	  (goto-char to)
+	  (insert value)
+	  (dolist (o (overlays-at from))
+	    (when (= (overlay-start o) from)
+	      (move-overlay o to (point))))
+	  (when (> (cdr pt) 0) (forward-line (cdr pt)))
+	  (delete-region from to)
+	  (when (< (cdr pt) 0)
+	    (goto-char from)
+	    (forward-line (cdr pt)))
+	  (move-to-column (car pt))
+	  (set-buffer-modified-p mod))))))
 
 (provide 'w3m-form)
 
