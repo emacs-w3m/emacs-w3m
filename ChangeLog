@@ -1,5 +1,11 @@
 2017-07-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-show-form-hint): Clarify echo message.
+	* w3m-form.el (w3m-form-expand-form, w3m-form-unexpand-form):
+	Work for mouse-clicking ([emacs-w3m:12731]).
+
+2017-07-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-show-form-hint): Expand form so at to show text fully.
 	* w3m-form.el (w3m-form-input): Revert 2017-06-30 change.
 	(w3m-form-expand-form, w3m-form-unexpand-form): New functions.

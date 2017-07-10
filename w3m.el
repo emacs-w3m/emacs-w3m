@@ -11322,10 +11322,13 @@ FROM-COMMAND is defined in `w3m-minor-mode-map' with the same key in
   (let ((keys (where-is-internal 'w3m-submit-form)))
     (when (and (w3m-submit (point)) keys)
       (if (get-text-property (point) 'w3m-form-readonly)
-	  (progn
-	    (w3m-form-expand-form)
-	    (w3m-message
-	     "This form is not editable; type `c' to copy the contents"))
+	  (if (memq (car (w3m-action))
+		    '(w3m-form-input w3m-form-input-textarea))
+	      (progn
+		(w3m-form-expand-form)
+		(w3m-message
+		 "This form is not editable; type `c' to copy the contents"))
+	    (w3m-message "This form is not accessible"))
 	(w3m-message "Press %s to send the current form"
 		     (key-description (car keys)))))))
 

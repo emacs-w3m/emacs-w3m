@@ -2066,8 +2066,11 @@ selected rather than \(as usual\) some other window.  See
 	  (when (and (setq pt (next-single-property-change to 'w3m-action))
 		     (equal (get-text-property pt 'w3m-action) act))
 	    (setq to nil)))
-	(define-key (setq keymap (make-sparse-keymap))
-	  "c" `(lambda nil (interactive) (kill-new ,value)))
+	(setq keymap (make-sparse-keymap))
+	(define-key keymap "c" `(lambda nil (interactive) (kill-new ,value)))
+	(w3m-static-when (featurep 'emacs)
+	  (define-key keymap [mouse-1] 'ignore)
+	  (define-key keymap [drag-mouse-1] 'ignore))
 	(if (<= (length (replace-regexp-in-string "[\t\n ]+" "" value))
 		(length (replace-regexp-in-string
 			 "[\t\n ]+" ""
@@ -2092,6 +2095,7 @@ selected rather than \(as usual\) some other window.  See
 	  (goto-char from)
 	  (forward-line (cdr pt))
 	  (move-to-column (car pt))
+	  (deactivate-mark)
 	  (set-buffer-modified-p mod))))))
 
 (defun w3m-form-unexpand-form ()
@@ -2100,7 +2104,10 @@ selected rather than \(as usual\) some other window.  See
   (unless (or (get-text-property (point) 'w3m-form-expanded)
 	      (< (next-single-property-change
 		  (point-at-bol) 'w3m-form-expanded nil (point-at-eol))
-		 (point-at-eol)))
+		 (point-at-eol))
+	      (and (eq (char-after (point-at-bol)) ?\])
+		   (get-text-property (max (1- (point-at-bol)) (point-min))
+				      'w3m-form-expanded)))
     (let ((pt (text-property-not-all (point-min) (point-max)
 				     'w3m-form-expanded nil)))
       (when pt
@@ -2113,21 +2120,24 @@ selected rather than \(as usual\) some other window.  See
 	  (add-text-properties
 	   from to '(keymap nil rear-nonsticky t w3m-form-expanded nil))
 	  (setq pt (cons (current-column)
-			 (cond ((< (point) from)
-				(- 1 (count-lines (point) from)))
-			       ((>= (point) to)
-				(count-lines to (point))))))
+			 (if (< (point) from)
+			     (- 1 (count-lines (point) from))
+			   (max 1 (+ (count-lines to (point))
+				     (if (= to (point))
+					 1
+				       (if (bolp) 0 -1)))))))
 	  (goto-char to)
 	  (insert value)
 	  (dolist (o (overlays-at from))
 	    (when (= (overlay-start o) from)
 	      (move-overlay o to (point))))
-	  (when (> (cdr pt) 0) (forward-line (cdr pt)))
+	  (unless (< (cdr pt) 0) (forward-line (cdr pt)))
 	  (delete-region from to)
 	  (when (< (cdr pt) 0)
 	    (goto-char from)
 	    (forward-line (cdr pt)))
 	  (move-to-column (car pt))
+	  (deactivate-mark)
 	  (set-buffer-modified-p mod))))))
 
 (provide 'w3m-form)
