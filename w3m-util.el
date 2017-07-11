@@ -715,7 +715,7 @@ objects will not be deleted:
 	    (setq one-window-p (one-window-p t frame))
 	    (when (and
 		   (or
-		    ;; Also a frame having only windows for emacs-w3m
+		    ;; A frame having only windows for emacs-w3m
 		    ;; sessions or the buffer selection can be deleted.
 		    (progn
 		      (setq flag t)
@@ -739,7 +739,7 @@ objects will not be deleted:
 		       'no-minibuf)
 		      (set-buffer buffer)
 		      flag)
-		    ;; A frame having the sole window can be deleted.
+		    ;; Also a frame having the sole window can be deleted.
 		    one-window-p)
 		   (memq frame w3m-initial-frames)
 		   (not (eq (next-frame frame) frame)))
