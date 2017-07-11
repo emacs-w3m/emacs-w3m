@@ -11012,19 +11012,19 @@ without prompting for confirmation."
   (interactive "P")
   (let ((pos (point))
 	(buffer (w3m-select-buffer-show-this-line)))
-    (when (= 1 (count-lines (point-min) (point-max)))
-      (w3m-quit force))
-    (w3m-process-stop buffer)
-    (w3m-idle-images-show-unqueue buffer)
-    (kill-buffer buffer)
-    (when w3m-use-form
-      (w3m-form-kill-buffer buffer))
-    (run-hooks 'w3m-delete-buffer-hook)
-    (w3m-select-buffer-generate-contents
-     (w3m-select-buffer-current-buffer))
-    (w3m-select-buffer-show-this-line)
-    (goto-char (min pos (point-max)))
-    (beginning-of-line)))
+    (if (= 1 (count-lines (point-min) (point-max)))
+	(w3m-quit force)
+      (w3m-process-stop buffer)
+      (w3m-idle-images-show-unqueue buffer)
+      (kill-buffer buffer)
+      (when w3m-use-form
+	(w3m-form-kill-buffer buffer))
+      (run-hooks 'w3m-delete-buffer-hook)
+      (w3m-select-buffer-generate-contents
+       (w3m-select-buffer-current-buffer))
+      (w3m-select-buffer-show-this-line)
+      (goto-char (min pos (point-max)))
+      (beginning-of-line))))
 
 (defun w3m-select-buffer-delete-other-buffers ()
   "Delete emacs-w3m buffers except for the buffer on the current menu."

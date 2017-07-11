@@ -712,50 +712,38 @@ objects will not be deleted:
 		frame (and (window-live-p window) (window-frame window)))
 	  (when (and frame
 		     (not (eq frame exception)))
-	    (setq one-window-p
-		  (w3m-static-if (featurep 'xemacs)
-		      (one-window-p t frame)
-		    ;; Emulate XEmacs version's `one-window-p'.
-		    (prog2
-			(setq flag nil)
-			(catch 'exceeded
-			  (walk-windows (lambda (w)
-					  (when (eq (window-frame w) frame)
-					    (if flag
-						(throw 'exceeded nil)
-					      (setq flag t))))
-					'no-minibuf t)
-			  flag)
-		      (set-buffer buffer))))
-	    (if (and (memq frame w3m-initial-frames)
-		     (not (eq (next-frame frame) frame)))
-		(if (or
-		     ;; A frame having the sole window can be deleted.
-		     one-window-p
-		     ;; Also a frame having only windows for emacs-w3m
-		     ;; sessions or the buffer selection can be deleted.
-		     (progn
-		       (setq flag t)
-		       (walk-windows
-			(lambda (w)
-			  (when flag
-			    (if (eq w exception)
-				(setq flag nil)
-			      (set-buffer (window-buffer w))
-			      (setq flag (or (memq major-mode
-						   '(w3m-mode
-						     w3m-select-buffer-mode
-						     w3m-session-select-mode))
-					     (string-match "\\` ?\\*w3m[ -]"
-							   (buffer-name)))))))
-			'no-minibuf)
-		       (set-buffer buffer)
-		       flag))
-		    (delete-frame frame)
-		  (delete-window window))
-	      ;; do not clear the layout.
-	      (switch-to-buffer nil))))))))
-
+	    (setq one-window-p (one-window-p t frame))
+	    (when (and
+		   (or
+		    ;; Also a frame having only windows for emacs-w3m
+		    ;; sessions or the buffer selection can be deleted.
+		    (progn
+		      (setq flag t)
+		      (walk-windows
+		       (lambda (w)
+			 (when flag
+			   (if (eq w exception)
+			       (setq flag nil)
+			     (set-buffer (window-buffer w))
+			     (when (setq flag
+					 (or
+					  (memq major-mode
+						'(w3m-mode
+						  w3m-select-buffer-mode
+						  w3m-session-select-mode))
+					  (string-match "\\` ?\\*w3m[ -]"
+							(buffer-name))))
+			       (if (eq (next-window w 'no-minibuf) w)
+				   (bury-buffer)
+				 (delete-window w))))))
+		       'no-minibuf)
+		      (set-buffer buffer)
+		      flag)
+		    ;; A frame having the sole window can be deleted.
+		    one-window-p)
+		   (memq frame w3m-initial-frames)
+		   (not (eq (next-frame frame) frame)))
+	      (delete-frame frame))))))))
 
 ;;; Navigation:
 

@@ -1,4 +1,11 @@
-2017-07-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+2017-07-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-delete-frames-and-windows): Work for Emacs on tty;
+	always delete w3m windows if possible ([emacs-w3m:12733]).
+	* w3m.el (w3m-select-buffer-delete-buffer):
+	No need to wind up selection buffer when quitting.
+
+2017-07-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-show-form-hint): Clarify echo message.
 	* w3m-form.el (w3m-form-expand-form, w3m-form-unexpand-form):
