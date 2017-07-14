@@ -715,8 +715,8 @@ objects will not be deleted:
 	    (setq flag nil)
 	    (setq one-window-p
 		  ;; This is similar to the `one-window-p' function
-		  ;; but works for even unselected frames in additon
-		  ;; to the selected frame.
+		  ;; but works for even unselected windows in addition
+		  ;; to the selected window in all frames.
 		  (catch 'two
 		    (walk-windows (lambda (w)
 				    (when (eq (window-frame w) frame)
