@@ -712,7 +712,19 @@ objects will not be deleted:
 		frame (and (window-live-p window) (window-frame window)))
 	  (when (and frame
 		     (not (eq frame exception)))
-	    (setq one-window-p (one-window-p t frame))
+	    (setq flag nil)
+	    (setq one-window-p
+		  ;; This is similar to the `one-window-p' function
+		  ;; but works for even unselected frames in additon
+		  ;; to the selected frame.
+		  (catch 'two
+		    (walk-windows (lambda (w)
+				    (when (eq (window-frame w) frame)
+				      (if flag
+					  (throw 'two nil)
+					(setq flag t))))
+				  'no-minibuf t)
+		    flag))
 	    (when (and
 		   (or
 		    ;; A frame having only windows for emacs-w3m

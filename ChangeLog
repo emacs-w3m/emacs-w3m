@@ -1,3 +1,8 @@
+2017-07-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-delete-frames-and-windows): Replace `one-window-p'
+	with a custom function that works for unselected frames as well.
+
 2017-07-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-delete-frames-and-windows): Work for Emacs on tty;
