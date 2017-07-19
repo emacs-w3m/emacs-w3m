@@ -4571,7 +4571,7 @@ http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
        ((file-exists-p url)
 	(concat "file://" (expand-file-name url)))
        (t
-	(concat "http://" url))))))
+	(concat "https://" url))))))
 
 (defcustom w3m-input-url-provide-initial-content nil
   "Provide an initial minibuffer content (if any) when entering a url.

@@ -1,3 +1,8 @@
+2017-07-16  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-canonicalize-url): Make scheme default to https, not http.
+	[emacs-w3m:12749]
+
 2017-07-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-delete-frames-and-windows): Replace `one-window-p'
