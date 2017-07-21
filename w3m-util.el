@@ -803,8 +803,24 @@ If currently over such PROPERTY, find next such occurence."
 
 ;;; Miscellaneous:
 
-(defconst w3m-url-fallback-base "http:///")
-(defconst w3m-url-invalid-regexp "\\`http:///")
+(eval-and-compile
+  (defconst w3m-url-invalid-base "http:///"
+    "A url base used to make url absolutely invalid.
+`w3m-expand-url' will use it as a last resort if no other appropriate
+base is given."))
+
+(defsubst w3m-url-valid (url)
+  "Return URL if it is not marked invalid, otherwise nil.
+This function is intended only to reject a url that `w3m-expand-url'
+marks invalid purposely (using `w3m-url-invalid-base'), does not
+necessarily guarantee that URL to return is valid in a general sense."
+  ;; cf. [emacs-w3m:04095], [emacs-w3m:04101] (Japanese),
+  ;; and [emacs-w3m:12761] (summarized in English).
+  (and url
+       (not (string-match (eval-when-compile
+			    (concat "\\`" w3m-url-invalid-base))
+			  url))
+       url))
 
 (defmacro w3m-substitute-key-definitions (new-map old-map &rest keys)
   "In NEW-MAP substitute cascade of OLD-MAP KEYS.
@@ -819,10 +835,6 @@ KEYS is alternating list of key-value."
 		   res)
 	     (setq keys (cddr keys)))
 	   (nreverse res)))))
-
-(defun w3m-url-valid (url)
-  (and url (not (string-match w3m-url-invalid-regexp url))
-       url))
 
 (defmacro w3m-set-match-data (list)
   "Same as the `set-match-data'; convert points into markers under XEmacs."

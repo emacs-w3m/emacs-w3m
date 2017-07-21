@@ -6968,7 +6968,8 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 	  (error "BASE must have a scheme part: %s" base))
       (setq base (or w3m-current-base-url
 		     w3m-current-url
-		     w3m-url-fallback-base)))
+		     ;; Make url absolutely invalid.  See `w3m-url-valid'.
+		     w3m-url-invalid-base)))
     (w3m-string-match-url-components url)
     ;; Remove an empty fragment part.
     (when (and (match-beginning 8)
