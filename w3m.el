@@ -4555,22 +4555,19 @@ FEELING-LUCKY is non-nil (what is called \"I'm Feeling Lucky\" on Google).
 Also fix URL that fails to have put a separator following a domain name."
   (if (string-match "\\`\\(https?://[-.0-9a-z]+\\)\\([#?].*\\)" url)
       (concat (match-string 1 url) "/" (match-string 2 url))
-    (w3m-string-match-url-components url)
     (let (replaced)
       (cond
-       ((and (file-name-absolute-p url) (file-exists-p url))
-	(concat "file://" url))
        ((and (setq replaced (ignore-errors (w3m-uri-replace url)))
 	     (not (string= url replaced)))
 	replaced)
-       ((match-beginning 1)
+       ((file-exists-p url)
+	(concat "file://" (expand-file-name url)))
+       ((progn (w3m-string-match-url-components url) (match-beginning 1))
 	url)
        (feeling-lucky
 	(concat "\
 http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
 		(w3m-url-encode-string url nil t)))
-       ((file-exists-p url)
-	(concat "file://" (expand-file-name url)))
        (t
 	(concat "https://" url))))))
 

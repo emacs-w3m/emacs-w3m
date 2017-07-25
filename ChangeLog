@@ -1,6 +1,7 @@
 2017-07-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-content-type-alist): Exclude zero-length extension.
+	(w3m-canonicalize-url): Test preferentially if URL is a local file.
 
 2017-07-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
