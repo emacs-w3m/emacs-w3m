@@ -1168,7 +1168,8 @@ is inhibited in those cases even if `w3m-async-exec' is non-nil."
       (unless (zerop (length ext))
 	(setq exts (list ext))
 	(while (setq tem (rassoc type extensions))
-	  (unless (member (car tem) exts) (push (car tem) exts))
+	  (unless (or (zerop (length (car tem))) (member (car tem) exts))
+	    (push (car tem) exts))
 	  (setq extensions (delq tem extensions)))
 	(setq viewer (mailcap-mime-info type))
 	(push (list type
