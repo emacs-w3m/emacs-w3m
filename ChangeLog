@@ -1,3 +1,22 @@
+2017-07-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Fix cookies handling ([emacs-w3m:12768], [emacs-w3m:12772])
+
+	Regard a Set-Cookie header as it contains a single cookie, that is,
+	the one at the beginning of the field is it and succeeding semi-colon
+	separated ones are the attributions of it.  Formerly the Lisp code
+	regarded the semi-colon separated ones as all individual cookies, and
+	therefore the locally stored cookies would potentially be all bogus.
+	So, we highly recommend resetting it once when you start using or if
+	you are already using this version of w3m-cookie.el.  To do that,
+	shutdown Emacs and delete the "~/.w3m/.cookie" file (or the ".cookie"
+	file existing in the `w3m-profile-directory').
+
+	* w3m-cookie.el (w3m-cookie-parse-args): Reverse the order of the value.
+	(w3m-cookie-1-set): Regard a Set-Cookie header as it contains a single
+	cookie; prefer Max-Age than Expires and convert it to Expires.
+	(w3m-cookie-get): Use "NAME", not "NAME=", if the value of NAME is null.
+
 2017-07-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-content-type-alist): Exclude zero-length extension.

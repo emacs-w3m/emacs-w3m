@@ -270,7 +270,7 @@ If ask, ask user whether accept bad cookies or not."
 				      (point)))))))
 	(push (cons name value) results)
 	(skip-chars-forward "; \n\t"))
-      results)))
+      (nreverse results))))
 
 (defun w3m-cookie-trusted-host-p (host)
   "Returns non-nil when the HOST is specified as trusted by user."
@@ -340,20 +340,25 @@ If ask, ask user whether accept bad cookies or not."
   ;; Set-Cookie:, version 0 cookie.
   (let ((http-url (w3m-parse-http-url url))
 	(case-fold-search t)
-	secure domain expires path rest)
+	secure domain expires max-age path cookie)
     (when http-url
       (setq secure (and (w3m-assoc-ignore-case "secure" args) t)
 	    domain (or (cdr-safe (w3m-assoc-ignore-case "domain" args))
 		       (w3m-http-url-host http-url))
 	    expires (cdr-safe (w3m-assoc-ignore-case "expires" args))
+	    max-age (cdr-safe (w3m-assoc-ignore-case "max-age" args))
 	    path (or (cdr-safe (w3m-assoc-ignore-case "path" args))
 		     (file-name-directory
-		      (w3m-http-url-path http-url))))
-      (while args
-	(if (not (member (downcase (car (car args)))
-			 '("secure" "domain" "expires" "path")))
-	    (setq rest (cons (car args) rest)))
-	(setq args (cdr args)))
+		      (w3m-http-url-path http-url)))
+	    cookie (car args))
+      ;; Convert Max-Age to Expires
+      (and max-age
+	   (setq max-age
+		 (ignore-errors
+		   (format-time-string "%a %b %d %H:%M:%S %Y GMT"
+				       (time-add nil (read max-age))
+				       t)))
+	   (setq expires max-age))
       (cond
        ((not (w3m-cookie-trusted-host-p (w3m-http-url-host http-url)))
 	;; The site was explicity marked as untrusted by the user
@@ -364,22 +369,22 @@ If ask, ask user whether accept bad cookies or not."
 		 (y-or-n-p (format "Accept bad cookie from %s for %s? "
 				   (w3m-http-url-host http-url) domain))))
 	;; Cookie is accepted by the user, and passes our security checks
-	(dolist (elem rest)
-	  ;; If a CGI script wishes to delete a cookie, it can do so by
-	  ;; returning a cookie with the same name, and an expires time
-	  ;; which is in the past.
-	  (when (and expires
-		     (w3m-time-newer-p (current-time)
-				       (w3m-time-parse-string expires)))
-	    (w3m-cookie-remove domain path (car elem)))
-	  (w3m-cookie-store
-	   (w3m-cookie-create :url url
-			      :domain domain
-			      :name (car elem)
-			      :value (cdr elem)
-			      :path path
-			      :expires expires
-			      :secure secure))))
+
+	;; If a CGI script wishes to delete a cookie, it can do so by
+	;; returning a cookie with the same name, and an expires time
+	;; which is in the past.
+	(when (and expires
+		   (w3m-time-newer-p (current-time)
+				     (w3m-time-parse-string expires)))
+	  (w3m-cookie-remove domain path (car cookie)))
+	(w3m-cookie-store
+	 (w3m-cookie-create :url url
+			    :domain domain
+			    :name (car cookie)
+			    :value (cdr cookie)
+			    :path path
+			    :expires expires
+			    :secure secure)))
        (t
 	(message "%s tried to set a cookie for domain %s - rejected."
 		 (w3m-http-url-host http-url) domain))))))
@@ -505,7 +510,8 @@ BEG and END should be an HTTP response header region on current buffer."
 	 (cookies (and http-url
 		       (w3m-cookie-retrieve (w3m-http-url-host http-url)
 					    (w3m-http-url-path http-url)
-					    (w3m-http-url-secure http-url)))))
+					    (w3m-http-url-secure http-url))))
+	 value)
     ;; When sending cookies to a server, all cookies with a more specific path
     ;; mapping should be sent before cookies with less specific path mappings.
     (setq cookies (sort cookies
@@ -514,8 +520,9 @@ BEG and END should be an HTTP response header region on current buffer."
 			     (length (w3m-cookie-path y))))))
     (when cookies
       (mapconcat (lambda (cookie)
-		   (concat (w3m-cookie-name cookie)
-			   "=" (w3m-cookie-value cookie)))
+		   (if (setq value (w3m-cookie-value cookie))
+		       (concat (w3m-cookie-name cookie) "=" value)
+		     (w3m-cookie-name cookie)))
 		 cookies
 		 "; "))))
 
