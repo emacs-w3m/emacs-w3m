@@ -1,3 +1,14 @@
+2017-07-28  defanor  <defanor@uberspace.net>
+
+	"google feeling lucky" to "feeling searchy" ([emacs-w3m:12774])
+
+	* w3m.el (w3m-enable-feeling-searchy):
+	Rename from w3m-enable-google-feeling-lucky.
+	(w3m-canonicalize-url):
+	Doc fix; use w3m-search-do-search to generate url.
+	(w3m-canonicalize-url, w3m-input-url, w3m-view-this-url, w3m-goto-url)
+	(w3m-goto-url-new-session, w3m): feeling-lucky to feeling-searchy.
+
 2017-07-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Fix cookies handling ([emacs-w3m:12768], [emacs-w3m:12772])

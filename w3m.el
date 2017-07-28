@@ -2017,9 +2017,10 @@ Here are some predefined functions which can be used for those ways:
 		 function
 		 (repeat :tag "Args" :extra-offset 1 (sexp :format "%v"))))))
 
-(defcustom w3m-enable-google-feeling-lucky t
+(defcustom w3m-enable-feeling-searchy t
   "Non-nil enables you to enter any words as well as a url when prompted.
-In that case, emacs-w3m uses Google to search for the words."
+In that case, emacs-w3m uses the default search engine to search
+for the words."
   :group 'w3m
   :type 'boolean)
 
@@ -4548,11 +4549,15 @@ a url of the current page as the last resort."
 		       (concat w3m-current-url "#" name)
 		     w3m-current-url))))))))
 
-(defun w3m-canonicalize-url (url &optional feeling-lucky)
+(declare-function w3m-search-do-search "w3m-search")
+(defvar w3m-search-default-engine)
+
+(defun w3m-canonicalize-url (url &optional feeling-searchy)
   "Fix URL that does not look like a valid url.
-For URL having no scheme part, return a url that leaves it to chance if
-FEELING-LUCKY is non-nil (what is called \"I'm Feeling Lucky\" on Google).
-Also fix URL that fails to have put a separator following a domain name."
+For a query that neither has a scheme part nor is an existing
+local file, return a search url for the default search engine.
+Also fix URL that fails to have put a separator following a
+domain name."
   (if (string-match "\\`\\(https?://[-.0-9a-z]+\\)\\([#?].*\\)" url)
       (concat (match-string 1 url) "/" (match-string 2 url))
     (let (replaced)
@@ -4564,10 +4569,10 @@ Also fix URL that fails to have put a separator following a domain name."
 	(concat "file://" (expand-file-name url)))
        ((progn (w3m-string-match-url-components url) (match-beginning 1))
 	url)
-       (feeling-lucky
-	(concat "\
-http://www.google.com/search?btnI=I%%27m+Feeling+Lucky&ie=UTF-8&oe=UTF-8&q="
-		(w3m-url-encode-string url nil t)))
+       (feeling-searchy
+	(require 'w3m-search)
+	(w3m-search-do-search (lambda (url &rest rest) url)
+			      w3m-search-default-engine url))
        (t
 	(concat "https://" url))))))
 
@@ -4602,7 +4607,7 @@ This function is used as `minibuffer-default-add-function'."
 	      (delete def2 (delete def (delete add2 (delete to-add all))))))))
 
 (defun w3m-input-url (&optional prompt initial default quick-start
-				feeling-lucky no-initial)
+				feeling-searchy no-initial)
   "Read a url from the minibuffer, prompting with string PROMPT."
   (let ((url
 	 ;; Check whether the region is active.
@@ -4637,8 +4642,8 @@ This function is used as `minibuffer-default-add-function'."
 	     default
 	     (not initial))
 	default
-      (unless w3m-enable-google-feeling-lucky
-	(setq feeling-lucky nil))
+      (unless w3m-enable-feeling-searchy
+	(setq feeling-searchy nil))
       (setq url (let ((minibuffer-setup-hook
 		       (append minibuffer-setup-hook
 			       (list (lambda ()
@@ -4674,7 +4679,7 @@ This function is used as `minibuffer-default-add-function'."
 			 prompt)
 		     (if default
 			 (format "URL %s(default %s): "
-				 (if feeling-lucky "or Keyword " "")
+				 (if feeling-searchy "or Keyword " "")
 				 (if (stringp default)
 				     (cond ((string= default "about:blank")
 					    "BLANK")
@@ -4682,7 +4687,7 @@ This function is used as `minibuffer-default-add-function'."
 					    "HOME")
 					   (t default))
 				   (prin1-to-string default)))
-		       (if feeling-lucky "URL or Keyword: " "URL: ")))
+		       (if feeling-searchy "URL or Keyword: " "URL: ")))
 		   initial keymap nil 'w3m-input-url-history default)))
       (if (string-equal url "")
 	  (or default "")
@@ -4691,7 +4696,7 @@ This function is used as `minibuffer-default-add-function'."
 	      ;; remove duplication
 	      (setq w3m-input-url-history
 		    (cons url (delete url w3m-input-url-history)))
-	      (w3m-canonicalize-url url feeling-lucky))
+	      (w3m-canonicalize-url url feeling-searchy))
 	  ;; It may be `popup'.
 	  url)))))
 
@@ -7131,7 +7136,7 @@ point."
 	(w3m-view-image)))
      ((setq url (w3m-active-region-or-url-at-point 'never))
       (unless (eq 'quit (setq url (w3m-input-url nil url 'quit nil
-						 'feeling-lucky 'no-initial)))
+						 'feeling-searchy 'no-initial)))
 	(w3m-view-this-url-1 url arg new-session)))
      (t (w3m-message "No URL at point")))))
 
@@ -9562,7 +9567,7 @@ invoked in other than a w3m-mode buffer."
 	     (error "%s"
 		    (substitute-command-keys "Cannot run two w3m processes simultaneously \
 \(Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)"))
-	   (w3m-input-url nil nil nil nil 'feeling-lucky 'no-initial))
+	   (w3m-input-url nil nil nil nil 'feeling-searchy 'no-initial))
 	 current-prefix-arg
 	 (w3m-static-if (fboundp 'universal-coding-system-argument)
 	     coding-system-for-read)))
@@ -9671,144 +9676,144 @@ Cannot run two w3m processes simultaneously \
 		    (history-position (get-text-property (point)
 							 'history-position))
 		    (reuse-history w3m-history-reuse-history-elements))
-	(when w3m-current-forms
-	  ;; Store the current forms in the history structure.
-	  (w3m-history-plist-put :forms w3m-current-forms))
-	(let ((w3m-current-buffer (current-buffer)))
-	  (unless element
-	    (setq element
-		  (if (and (equal referer "about://history/")
-			   history-position)
-		      (w3m-history-element history-position t)
-		    (if w3m-history-reuse-history-elements
-			(w3m-history-assoc url)))))
-	  ;; Set current forms using the history structure.
-	  (when (setq w3m-current-forms
-		      (when (and (not reload) ; If reloading, ignore history.
-				 (null post-data) ; If post, ignore history.
-				 (or (w3m-cache-available-p url)
-				     (w3m-url-local-p url)))
-			;; Don't use `w3m-history-plist-get' here.
-			(plist-get (nthcdr 3 element) :forms)))
-	    ;; Mark that the form is from history structure.
-	    (setq w3m-current-forms (cons t w3m-current-forms)))
-	  (when (and post-data element)
-	    ;; Remove processing url's forms from the history structure.
-	    (w3m-history-set-plist (cadr element) :forms nil))
-	  ;; local directory URL check
-	  (when (and (w3m-url-local-p url)
-		     (file-directory-p (w3m-url-to-file-name url))
-		     (setq url (file-name-as-directory url))
-		     (eq w3m-local-directory-view-method 'w3m-dtree)
-		     (string-match "\\`file:///" url))
-	    (setq url (replace-match "about://dtree/" nil nil url)
-		  orig url))
-	  ;; Split body and fragments.
-	  (w3m-string-match-url-components url)
-	  (and (match-beginning 8)
-	       (setq name (match-string 9 url)
-		     url (substring url 0 (match-beginning 8))))
-	  (when (w3m-url-local-p url)
-	    (unless (string-match "[^\000-\177]" url)
-	      (setq url (w3m-url-decode-string url))))
-	  (w3m-process-do
-	      (action
-	       (if (and (not reload)
-			(not redisplay)
-			(stringp w3m-current-url)
-			(string= url w3m-current-url))
-		   (progn
-		     (w3m-refontify-anchor)
-		     'cursor-moved)
-		 (when w3m-name-anchor-from-hist
-		   (w3m-history-plist-put
-		    :name-anchor-hist
-		    (append (list 1 nil)
-			    (and (integerp (car w3m-name-anchor-from-hist))
-				 (nthcdr (1+ (car w3m-name-anchor-from-hist))
-					 w3m-name-anchor-from-hist)))))
-		 (setq w3m-name-anchor-from-hist
-		       (plist-get (nthcdr 3 element) :name-anchor-hist))
-		 (setq w3m-current-process
-		       (w3m-retrieve-and-render orig reload charset
-						post-data referer handler))))
-	    (with-current-buffer w3m-current-buffer
-	      (setq w3m-current-process nil)
-	      (if (not action)
-		  (w3m-history-push w3m-current-url
-				    (list :title (or w3m-current-title
-						     "<no-title>")))
-		(w3m-string-match-url-components w3m-current-url)
-		(and (match-beginning 8)
-		     (setq name (match-string 9 w3m-current-url)))
-		(when (and name
-			   (progn
-			     ;; Redisplay to search an anchor sure.
-			     (sit-for 0)
-			     (w3m-search-name-anchor
-			      name nil (not (eq action 'cursor-moved)))))
-		  (setf (w3m-arrived-time (w3m-url-strip-authinfo orig))
-			(w3m-arrived-time url)))
-		(unless (eq action 'cursor-moved)
-		  (if (equal referer "about://history/")
-		      ;; Don't sprout a new branch for the existing history
-		      ;; element.
-		      (let ((w3m-history-reuse-history-elements t))
-			(w3m-history-push w3m-current-url
-					  (list :title w3m-current-title))
-			;; Fix the history position pointers.
-			(when history-position
-			  (setcar w3m-history
-				  (w3m-history-regenerate-pointers
-				   history-position))))
-		    (let ((w3m-history-reuse-history-elements reuse-history)
-			  (position (when (eq 'reload reuse-history)
-				      (cadar w3m-history))))
-		      (w3m-history-push w3m-current-url
-					(list :title w3m-current-title))
-		      (when position
-			(w3m-history-set-current position))))
-		  (w3m-history-add-properties (list :referer referer
-						    :post-data post-data))
-		  (unless w3m-toggle-inline-images-permanently
-		    (setq w3m-display-inline-images
-			  w3m-default-display-inline-images))
-		  (when (and w3m-use-form reload)
-		    (w3m-form-textarea-files-remove))
-		  (cond ((w3m-display-inline-images-p)
-			 (and w3m-force-redisplay (sit-for 0))
-			 (w3m-toggle-inline-images 'force reload))
-			((and (w3m-display-graphic-p)
-			      (eq action 'image-page))
-			 (and w3m-force-redisplay (sit-for 0))
-			 (w3m-toggle-inline-image 'force reload)))))
-	      (setq buffer-read-only t)
-	      (set-buffer-modified-p nil)
-	      (setq list-buffers-directory w3m-current-title)
-	      ;; must be `w3m-current-url'
-	      (setq default-directory (w3m-current-directory w3m-current-url))
-	      (w3m-buffer-name-add-title)
-	      (w3m-update-toolbar)
-	      (let ((real-url (if (w3m-arrived-p url)
-				  (or (w3m-real-url url) url)
-				url)))
-		(run-hook-with-args 'w3m-display-functions real-url)
-		(run-hook-with-args 'w3m-display-hook real-url))
-	      (w3m-select-buffer-update)
-	      (w3m-session-crash-recovery-save)
-	      (when (and w3m-current-url
-			 (stringp w3m-current-url)
-			 (or (string-match
-			      "\\`about://\\(?:header\\|source\\)/"
-			      w3m-current-url)
-			     (equal (w3m-content-type w3m-current-url)
-				    "text/plain")))
-		(setq truncate-lines nil))
-	      ;; restore position must call after hooks for localcgi.
-	      (when (or reload redisplay)
-		(w3m-history-restore-position))
-	      (w3m-set-buffer-unseen)
-	      (w3m-refresh-at-time)))))))
+		   (when w3m-current-forms
+		     ;; Store the current forms in the history structure.
+		     (w3m-history-plist-put :forms w3m-current-forms))
+		   (let ((w3m-current-buffer (current-buffer)))
+		     (unless element
+		       (setq element
+			     (if (and (equal referer "about://history/")
+				      history-position)
+				 (w3m-history-element history-position t)
+			       (if w3m-history-reuse-history-elements
+				   (w3m-history-assoc url)))))
+		     ;; Set current forms using the history structure.
+		     (when (setq w3m-current-forms
+				 (when (and (not reload) ; If reloading, ignore history.
+					    (null post-data) ; If post, ignore history.
+					    (or (w3m-cache-available-p url)
+						(w3m-url-local-p url)))
+				   ;; Don't use `w3m-history-plist-get' here.
+				   (plist-get (nthcdr 3 element) :forms)))
+		       ;; Mark that the form is from history structure.
+		       (setq w3m-current-forms (cons t w3m-current-forms)))
+		     (when (and post-data element)
+		       ;; Remove processing url's forms from the history structure.
+		       (w3m-history-set-plist (cadr element) :forms nil))
+		     ;; local directory URL check
+		     (when (and (w3m-url-local-p url)
+				(file-directory-p (w3m-url-to-file-name url))
+				(setq url (file-name-as-directory url))
+				(eq w3m-local-directory-view-method 'w3m-dtree)
+				(string-match "\\`file:///" url))
+		       (setq url (replace-match "about://dtree/" nil nil url)
+			     orig url))
+		     ;; Split body and fragments.
+		     (w3m-string-match-url-components url)
+		     (and (match-beginning 8)
+			  (setq name (match-string 9 url)
+				url (substring url 0 (match-beginning 8))))
+		     (when (w3m-url-local-p url)
+		       (unless (string-match "[^\000-\177]" url)
+			 (setq url (w3m-url-decode-string url))))
+		     (w3m-process-do
+			 (action
+			  (if (and (not reload)
+				   (not redisplay)
+				   (stringp w3m-current-url)
+				   (string= url w3m-current-url))
+			      (progn
+				(w3m-refontify-anchor)
+				'cursor-moved)
+			    (when w3m-name-anchor-from-hist
+			      (w3m-history-plist-put
+			       :name-anchor-hist
+			       (append (list 1 nil)
+				       (and (integerp (car w3m-name-anchor-from-hist))
+					    (nthcdr (1+ (car w3m-name-anchor-from-hist))
+						    w3m-name-anchor-from-hist)))))
+			    (setq w3m-name-anchor-from-hist
+				  (plist-get (nthcdr 3 element) :name-anchor-hist))
+			    (setq w3m-current-process
+				  (w3m-retrieve-and-render orig reload charset
+							   post-data referer handler))))
+		       (with-current-buffer w3m-current-buffer
+			 (setq w3m-current-process nil)
+			 (if (not action)
+			     (w3m-history-push w3m-current-url
+					       (list :title (or w3m-current-title
+								"<no-title>")))
+			   (w3m-string-match-url-components w3m-current-url)
+			   (and (match-beginning 8)
+				(setq name (match-string 9 w3m-current-url)))
+			   (when (and name
+				      (progn
+					;; Redisplay to search an anchor sure.
+					(sit-for 0)
+					(w3m-search-name-anchor
+					 name nil (not (eq action 'cursor-moved)))))
+			     (setf (w3m-arrived-time (w3m-url-strip-authinfo orig))
+				   (w3m-arrived-time url)))
+			   (unless (eq action 'cursor-moved)
+			     (if (equal referer "about://history/")
+				 ;; Don't sprout a new branch for the existing history
+				 ;; element.
+				 (let ((w3m-history-reuse-history-elements t))
+				   (w3m-history-push w3m-current-url
+						     (list :title w3m-current-title))
+				   ;; Fix the history position pointers.
+				   (when history-position
+				     (setcar w3m-history
+					     (w3m-history-regenerate-pointers
+					      history-position))))
+			       (let ((w3m-history-reuse-history-elements reuse-history)
+				     (position (when (eq 'reload reuse-history)
+						 (cadar w3m-history))))
+				 (w3m-history-push w3m-current-url
+						   (list :title w3m-current-title))
+				 (when position
+				   (w3m-history-set-current position))))
+			     (w3m-history-add-properties (list :referer referer
+							       :post-data post-data))
+			     (unless w3m-toggle-inline-images-permanently
+			       (setq w3m-display-inline-images
+				     w3m-default-display-inline-images))
+			     (when (and w3m-use-form reload)
+			       (w3m-form-textarea-files-remove))
+			     (cond ((w3m-display-inline-images-p)
+				    (and w3m-force-redisplay (sit-for 0))
+				    (w3m-toggle-inline-images 'force reload))
+				   ((and (w3m-display-graphic-p)
+					 (eq action 'image-page))
+				    (and w3m-force-redisplay (sit-for 0))
+				    (w3m-toggle-inline-image 'force reload)))))
+			 (setq buffer-read-only t)
+			 (set-buffer-modified-p nil)
+			 (setq list-buffers-directory w3m-current-title)
+			 ;; must be `w3m-current-url'
+			 (setq default-directory (w3m-current-directory w3m-current-url))
+			 (w3m-buffer-name-add-title)
+			 (w3m-update-toolbar)
+			 (let ((real-url (if (w3m-arrived-p url)
+					     (or (w3m-real-url url) url)
+					   url)))
+			   (run-hook-with-args 'w3m-display-functions real-url)
+			   (run-hook-with-args 'w3m-display-hook real-url))
+			 (w3m-select-buffer-update)
+			 (w3m-session-crash-recovery-save)
+			 (when (and w3m-current-url
+				    (stringp w3m-current-url)
+				    (or (string-match
+					 "\\`about://\\(?:header\\|source\\)/"
+					 w3m-current-url)
+					(equal (w3m-content-type w3m-current-url)
+					       "text/plain")))
+			   (setq truncate-lines nil))
+			 ;; restore position must call after hooks for localcgi.
+			 (when (or reload redisplay)
+			   (w3m-history-restore-position))
+			 (w3m-set-buffer-unseen)
+			 (w3m-refresh-at-time)))))))
    (t (w3m-message "Invalid URL: %s" url))))
 
 (defun w3m-current-directory (url)
@@ -9908,7 +9913,7 @@ session will start afresh."
    (list (w3m-input-url nil nil
 			(or (w3m-active-region-or-url-at-point)
 			    w3m-new-session-url)
-			nil 'feeling-lucky 'no-initial)
+			nil 'feeling-searchy 'no-initial)
 	 current-prefix-arg
 	 (w3m-static-if (fboundp 'universal-coding-system-argument)
 	     coding-system-for-read)
@@ -10181,7 +10186,7 @@ interactive command in the batch mode."
 	    (setq new (if current-prefix-arg
 			  default
 			(w3m-input-url nil nil default w3m-quick-start
-				       'feeling-lucky 'no-initial)))))
+				       'feeling-searchy 'no-initial)))))
       ;; new-session
       (and w3m-make-new-session
 	   (w3m-alive-p)
