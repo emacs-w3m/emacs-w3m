@@ -1924,12 +1924,10 @@ use search engines, by going to specially crafted URLs.  For more
 information about this feature, see @ref{Quick Searching}.
 
 @item
-The ``I'm feeling lucky'' feature: if it's enabled
-(@code{w3m-enable-google-feeling-lucky}), entering words instead of a
-regular URL at the URL prompt will begin a Google search for the words
-automatically, and display the most relevant result.  This is useful if
-you actually want to fetch the most relevant page, it does not display a
-list of search results.
+The ``feeling searchy'' feature: if it's enabled
+(@code{w3m-enable-feeling-searchy}), entering words instead of a
+regular URL at the URL prompt will begin a web search for the words
+automatically.
 @end itemize
 
 @menu
@@ -2020,8 +2018,8 @@ is the word we will be searching for.  The prefix and the search term
 must be separated by a colon.  Hit @kbd{@key{RET}}, and you will see the
 results of your search.  Note that you can input several words by
 separating them with spaces.  @kbd{@key{SPC}} is a self-inserting key in
-the minibuffer if the ``Feeling Lucky'' feature is enabled (it is by
-default; see @code{w3m-enable-google-feeling-lucky}).  If it's disabled,
+the minibuffer if the ``Feeling Searchy'' feature is enabled (it is by
+default; see @code{w3m-enable-feeling-searchy}).  If it's disabled,
 then hit @kbd{C-q} first, i.e. @w{@kbd{C-q @key{SPC}}}.
 
 The default configuration of emacs-w3m includes several prefixes you can
@@ -2714,10 +2712,10 @@ either @code{w3m-edit-current-url} or @code{w3m-edit-this-url} is
 invoked.  When no suitable function is found from this alist,
 @code{w3m-edit-function} is used.
 
-@item w3m-enable-google-feeling-lucky
-@vindex w3m-enable-google-feeling-lucky
+@item w3m-enable-feeling-searchy
+@vindex w3m-enable-feeling-searchy
 Non-@code{nil} enables you to enter any words as well as a url when
-prompted.  In that case, emacs-w3m uses Google to search for the words.
+prompted.  In that case, emacs-w3m will do a web search for the words.
 The default value is @code{t}.
 
 @item w3m-encoding-type-alist

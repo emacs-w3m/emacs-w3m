@@ -1950,12 +1950,10 @@ Emacs-w3m $B$K$O8!:w%(%s%8%s$rMxMQ$9$k$?$a$N@h?J$N5!G=$,$"$j!";0$D$N%$%s%?!<(B
 $B$@$5$$!#(B
 
 @item
-``I'm feeling lucky'' $B5!G=$,M-8z$K$J$C$F$$(B
-$B$k(B (@code{w3m-enable-google-feeling-lucky}) $B$H!"(BURL $B$rF~NO$9$k$H$-$KDL>o(B
-$B$N(B URL $B$NBe$o$j$K2?$+$N8l6g$r;XDj$9$k$3$H$K$h$C$F!"$=$N8l6g$N(B Google $B8!(B
-$B:w$r<+F0E*$K3+;O$7$F!":G$b4X78$,$"$j$=$&$J7k2L$rI=<($5$;$k$3$H$,$G$-$^$9!#(B
-$B$3$l$O:G$b4X78$,$"$j$=$&$J%Z!<%8$r$9$0$K8+$?$$>l9g$KJXMx$G$9$,!"8!:w7k2L(B
-$B$N%j%9%H$OI=<($5$l$^$;$s!#(B
+``feeling searchy'' $B5!G=$,M-8z$K$J$C$F$$(B
+$B$k(B (@code{w3m-enable-feeling-searchy}) $B$H!"(BURL $B$rF~NO$9$k$H$-$KDL>o(B
+$B$N(B URL $B$NBe$o$j$K2?$+$N8l6g$r;XDj$9$k$3$H$K$h$C$F!"$=$N8l6g$N(B web $B8!:w$r(B
+$B<+F0E*$K3+;O$5$;$k$3$H$,$G$-$^$9!#(B
 @end itemize
 
 @menu
@@ -2040,9 +2038,9 @@ Variables} $B;2>H(B) $B$r%+%9%?%^%$%:$9$k$3$H$K$h$C$F!"$3$N?6$kIq$$$rJQ99$9$k
 $B;HMQ$7$?$$$3$H$r<($7$^$9!#BhFs$NItJ,$O8!:w8l$G$9!#%(%s%8%s$H8!:w8l$O!"%3(B
 $B%m%s$GJ,$1$J$1$l$P$J$j$^$;$s!#$=$7$F(B @kbd{@key{RET}} $B$rC!$1$P8!:w7k2L$r(B
 $B8+$k$3$H$,$G$-$^$9!#%9%Z!<%9$GJ,N%$7$?J#?t$N8l$rF~NO$G$-$k$3$H$r!"?4$KN1(B
-$B$a$F$*$$$F$/$@$5$$!#(B``Feeling Lucky'' $B5!G=$,M-8z$K$J$C$F$$$l$P!"%_%K%P%C(B
+$B$a$F$*$$$F$/$@$5$$!#(B``Feeling Searchy'' $B5!G=$,M-8z$K$J$C$F$$$l$P!"%_%K%P%C(B
 $B%U%!$G(B @kbd{@key{SPC}} $B$O(B self-insert $B%-!<$K$J$C$F$$$^$9(B ($B$3$l$,%G%U%)%k(B
-$B%H$G$9!#(B@code{w3m-enable-google-feeling-lucky} $B$r;2>H$7$F$/$@$5$$!#(B) $BL5(B
+$B%H$G$9!#(B@code{w3m-enable-feeling-searchy} $B$r;2>H$7$F$/$@$5$$!#(B) $BL5(B
 $B8z$K$7$F$"$k>l9g$O!":G=i$K(B @kbd{C-q} $B$rC!$$$F$/$@$5$$!#$D$^(B
 $B$j(B @w{@kbd{C-q @key{SPC}}} $B$G$9!#(B
 
@@ -2779,11 +2777,11 @@ non-@code{nil} $B$J$i$PFs9T0J>e$NO"B3$7$?6uGr9T$r0l9T$K$^$H$a$k!#(B
 $BG[Ns$+$iE,Ev$J4X?t$,8+$D$+$i$J$1$l$P!"(B@code{w3m-edit-function} $B$,;H$o$l(B
 $B$^$9!#(B
 
-@item w3m-enable-google-feeling-lucky
-@vindex w3m-enable-google-feeling-lucky
+@item w3m-enable-feeling-searchy
+@vindex w3m-enable-feeling-searchy
 non-@code{nil} $B$J$i$P!"(Burl $B$H$7$F$I$s$JC18l$bF~NO$9$k$3$H$,$G$-$k$h$&$K(B
-$B$J$j$^$9!#$=$N>l9g!"(Bemacs-w3m $B$O(B Google $B$r;H$C$F$=$N8@MU$r8!:w$7$^$9!#%G(B
-$B%U%)%k%H$G$O(B @code{t} $B$G$9!#(B
+$B$J$j$^$9!#$=$N>l9g!"(Bemacs-w3m $B$O$=$N8@MU$r(B web $B8!:w$7$^$9!#%G%U%)%k%H$G(B
+$B$O(B @code{t} $B$G$9!#(B
 
 @item w3m-encoding-type-alist
 @vindex w3m-encoding-type-alist
