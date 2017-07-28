@@ -1,6 +1,6 @@
 ;;; sb-yomiuri.el --- shimbun backend for www.yomiuri.co.jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 Authors
+;; Copyright (C) 2001-2008, 2017
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -859,8 +859,6 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-yomiuri)
 						    header)
   (when (luna-call-next-method)
-    (unless (shimbun-prefer-text-plain-internal shimbun)
-      (shimbun-break-long-japanese-lines))
     t))
 
 (provide 'sb-yomiuri)

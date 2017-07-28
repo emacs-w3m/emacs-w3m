@@ -1,6 +1,6 @@
 ;;; sb-mainichi.el --- shimbun backend for Mainichi jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2009, 2011-2013, 2015, 2016
+;; Copyright (C) 2001-2009, 2011-2013, 2015-2017
 ;; Koichiro Ohba <koichiro@meadowy.org>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
@@ -399,9 +399,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 \\(?:[^\t\n >]+[\t\n ]+\\)*alt=\"\\)[^\"]+"
 					     nil t)
 			  (shimbun-end-of-tag nil t))
-		(replace-match "\n&lt;写真&gt;\n")))
-	  ;; Break long lines.
-	  (shimbun-break-long-japanese-lines))
+		(replace-match "\n&lt;写真&gt;\n"))))
 	t)
 ;;    (erase-buffer)
 ;;    (insert "<html><body>\

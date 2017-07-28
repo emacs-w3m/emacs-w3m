@@ -1,6 +1,6 @@
 ;;; sb-nikkansports.el --- shimbun backend for www.nikkansports.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2008
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2008, 2017
 ;; MIYOSHI Masanori <miyoshi@meadowy.org>
 
 ;; Author: MIYOSHI Masanori <miyoshi@meadowy.org>
@@ -157,8 +157,6 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUDKpy11PIeeNv///+
   (shimbun-strip-cr)
   (goto-char (point-min))
   (when (luna-call-next-method)
-    (unless (shimbun-prefer-text-plain-internal shimbun)
-      (shimbun-break-long-japanese-lines))
     t))
 
 (provide 'sb-nikkansports)

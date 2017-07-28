@@ -1,6 +1,6 @@
 ;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2007, 2009-2011
+;; Copyright (C) 2001-2007, 2009-2011, 2017
 ;; Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>
 
 ;; Author: Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>,
@@ -1534,9 +1534,7 @@ http://markets.nikkei.co.jp/kokunai/bunkatsu3.aspx" (match-string 1)) folder))
 \\(?:<\\(?:\\(?:/?div\\|/?p\\)\\(?:[\t\n ]*\\|[\t\n ]+[^>]+\\)\\|![^>]+\\)>\
 \[\t\n ]*\\)+\\'"
 				  nil t)
-	   (replace-match "\n"))
-	 ;; Break long lines.
-	 (shimbun-break-long-japanese-lines))
+	   (replace-match "\n")))
       (erase-buffer)
       (insert "<html><body>\
 Couldn't extract the body for this article.<br>\

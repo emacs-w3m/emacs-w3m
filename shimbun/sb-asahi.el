@@ -1,6 +1,6 @@
 ;;; sb-asahi.el --- shimbun backend for asahi.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2011, 2013-2016 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2011, 2013-2017 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -1552,8 +1552,6 @@ as article contents."
 		    (re-search-forward
 		     "<!-+[\t\n ]*Ad[\t\n ]+END[\t\n ]*-+>[\t\n ]*" nil t)))
 	(delete-region st (match-end 0))))
-    (unless (shimbun-prefer-text-plain-internal shimbun)
-      (shimbun-break-long-japanese-lines))
     t))
 
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-asahi)

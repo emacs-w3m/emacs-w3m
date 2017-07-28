@@ -1,3 +1,9 @@
+2017-07-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-break-long-japanese-lines): Abolish.
+	* sb-asahi.el, sb-mainichi.el, sb-nikkansports.el, sb-nikkei.el,
+	sb-yomiuri.el: Do.
+
 2017-06-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mew-shimbun.el, nnshimbun.el, sb-geocrawler.el, sb-marc-aims.el,
