@@ -166,8 +166,8 @@
        "https://rpmfind.net/linux/rpm2html/search.php?query=%s"
        nil)
       ("debian-pkg"
-       "https://packages.debian.org/cgi-bin/search_contents.pl\
-?directories=yes&arch=i386&version=unstable&case=insensitive&word=%s")
+       "https://packages.debian.org/search\
+?&searchon=names&suite=stable&section=all&arch=amd64&keywords=%s")
       ("debian-bts"
        "https://bugs.debian.org/cgi-bin/pkgreport.cgi?archive=yes&pkg=%s")
       ("freebsd-users-jp"

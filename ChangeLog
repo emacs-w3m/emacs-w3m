@@ -1,3 +1,9 @@
+2017-08-02  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-search.el (w3m-search-engine-alist): Update URL for debian
+	package search, and change its default parameters from i386
+	architecture to amd64.  [emacs-w3m:12776]
+
 2017-07-28  defanor  <defanor@uberspace.net>
 
 	"google feeling lucky" to "feeling searchy" ([emacs-w3m:12774])
