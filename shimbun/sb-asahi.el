@@ -219,16 +219,15 @@ Every `.' in NAME will be replaced with `/'."
        1 nil 2 6 3 4 5)
       ("digital" "デジタル" "%s/list.html"
        ,@(shimbun-asahi-make-regexp "digital/[^\"/]+"))
-      ("editorial" "社説" "paper/editorial.html"
-       ,(concat "<meta" s1 "\\(?:[^\t\n >]+" s1 "\\)*name=\"RELEASE_DATE\""
-		s1 "\\(?:[^\t\n >]+" s1 "\\)*CONTENT=\""
-		;; 1. year
-		"\\(20[1-9][0-9]\\)-"
-		;; 2. month
-		"\\([01]?[0-9]\\)-"
-		;; 3. day
-		"\\([0-3]?[0-9]\\)\"")
-       nil nil nil nil 1 2 3)
+      ("editorial" "社説" "news/editorial.html"
+       ,(concat "<p\\(?:" s1 "[^>]+\\)?" s0 ">" s0 "<a" s1 "href=\""
+		;; 1. url
+		"\\(/articles/"
+		;; 2. serial
+		"\\([^./]+\\)" "\\.html[^\"]*\\)" "[^>]*>" s0
+		;; 3. subject
+		"\\([^<]+\\)" s0 "</a>")
+       1 2 nil 3)
       ("edu" "教育" "%s/list.html" ,@edu)
       ("english" "ENGLISH" "%s/index.html"
        ,@(let ((rest (shimbun-asahi-make-regexp "english.Herald-asahi")))
@@ -275,7 +274,7 @@ Every `.' in NAME will be replaced with `/'."
       ("sports.rugby" "ラグビー")
       ("sports.usa" "米プロスポーツ")
       ("sports.winter" "ウインタースポーツ")
-      ("tenjin" "天声人語" "paper/column.html"
+      ("tenjin" "天声人語" "paper/column.html" ;; WON'T WORK
        ,(concat "<meta" s1 "\\(?:[^\t\n >]+" s1 "\\)*name=\"RELEASE_DATE\""
 		s1 "\\(?:[^\t\n >]+" s1 "\\)*CONTENT=\""
 		;; 1. year
@@ -983,41 +982,11 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAEIAAAAQBAMAAABQPLQnAAAAElBMVEX8rKjd3Nj+7utdXFr
 	   (shimbun-expand-url (format index group) shimbun-asahi-url)))))
 
 (defun shimbun-asahi-article-contents (group shimbun)
-  "Get article's contents for editorial and tenjin groups.
+  "Get article's contents for the tenjin group [WON'T WORK].
 Contents will be saved in the shimbun header as the extra element."
   (let ((case-fold-search t)
 	contents)
-    (cond ((string-equal group "editorial")
-	   (goto-char (point-max))
-	   (shimbun-retrieve-url "http://www.asahi.com/paper/editorial2.html")
-	   (let (tem)
-	     (goto-char (point-min))
-	     (while (and (re-search-forward "\
-<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"ArticleTitle\"" nil t)
-			 (re-search-forward "\
-<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"Title\"" nil t)
-			 (shimbun-end-of-tag "div")
-			 (progn
-			   (goto-char (match-beginning 2))
-			   (if (re-search-forward "<h[0-9]>[\t\n ]*\\([^<]+\\)"
-						  (match-end 2) t)
-			       (progn
-				 (push (shimbun-replace-in-string
-					(match-string 1) "[\t ]+\\'" "")
-				       tem)
-				 (re-search-forward "\
-<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"ArticleText\"" nil t))
-			     (goto-char (match-end 0))
-			     nil))
-			 (shimbun-end-of-tag "div" t))
-	       (push (match-string 3) tem))
-	     (goto-char (point-max))
-	     (setq tem (nreverse tem))
-	     (while tem
-	       (setq contents (concat contents
-				      "<p><h2>" (pop tem) "</h2></p>\n"
-				      (pop tem) "\n")))))
-	  ((string-equal group "tenjin")
+    (cond ((string-equal group "tenjin")
 	   (goto-char (point-min))
 	   (when (and (re-search-forward "\
 <div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"ArticleBody\"" nil t)
@@ -1063,7 +1032,7 @@ Contents will be saved in the shimbun header as the extra element."
 	(from (concat (shimbun-server-name shimbun)
 		      " (" (shimbun-current-group-name shimbun) ")"))
 	(case-fold-search t)
-	regexp jname numbers book-p cyear cmonth rss-p paper-p en-category
+	regexp jname numbers book-p cyear cmonth cday rss-p paper-p en-category
 	hour-min month year day serial num extra rgroup id headers
 	travel-p subgroups iraq-p)
     (setq regexp (assoc group shimbun-asahi-group-table)
@@ -1077,6 +1046,7 @@ Contents will be saved in the shimbun header as the extra element."
 						    (substring group 5)
 						  group))))))
     (setq cyear (shimbun-decode-time nil 32400)
+	  cday (nth 3 cyear)
 	  cmonth (nth 4 cyear)
 	  cyear (nth 5 cyear)
 	  rss-p (member group '("book" "rss"))
@@ -1090,7 +1060,20 @@ Contents will be saved in the shimbun header as the extra element."
       (while t
 	(when regexp
 	  (while (re-search-forward regexp nil t)
-	    (cond ((string-equal group "english")
+	    (cond ((string-equal group "editorial")
+		   (let ((pt (point)))
+		     (save-match-data
+		       (if (re-search-backward "<!-+[\t\n ]*\
+\\([01]?[0-9]\\)[\t\n ]*/[\t\n ]*\\([0-3]?[0-9]\\)[\t\n ]*-+>" nil t)
+			   (progn
+			     (goto-char pt)
+			     (setq day (string-to-number (match-string 2))
+				   month (string-to-number (match-string 1))
+				   year (if (> month cmonth)
+					    (1- cyear)
+					  cyear)))
+			 (setq day cday month cmonth year cyear)))))
+		  ((string-equal group "english")
 		   (setq en-category
 			 (save-excursion
 			   (save-match-data
@@ -1108,24 +1091,25 @@ Contents will be saved in the shimbun header as the extra element."
 \\([012]?[0-9]:[0-5][0-9]\\))[\t\n ]*</span>"
 						    nil t)
 				 (match-string 1)))))))
-	    (setq month (string-to-number (match-string (nth 5 numbers)))
-		  year (if (setq num (nth 4 numbers))
-			   (string-to-number (match-string num))
-			 (cond ((>= (- month cmonth) 2)
-				(1- cyear))
-			       ((and (= 1 month) (= 12 cmonth))
-				(1+ cyear))
-			       (t
-				cyear)))
-		  day (string-to-number (match-string (nth 6 numbers)))
-		  serial (cond (rss-p
+	    (unless (string-equal group "editorial")
+	      (setq month (string-to-number (match-string (nth 5 numbers)))
+		    year (if (setq num (nth 4 numbers))
+			     (string-to-number (match-string num))
+			   (cond ((>= (- month cmonth) 2)
+				  (1- cyear))
+				 ((and (= 1 month) (= 12 cmonth))
+				  (1+ cyear))
+				 (t
+				  cyear)))
+		    day (string-to-number (match-string (nth 6 numbers)))))
+	    (setq serial (cond (rss-p
 				(if (match-beginning (nth 1 numbers))
 				    (format "%d%s.%s"
 					    year
 					    (match-string (nth 1 numbers))
 					    (match-string (nth 2 numbers)))
 				  (match-string (nth 2 numbers))))
-			       (paper-p
+			       ((string-equal group "tenjin") ;; WON'T WORK
 				(format "%d%02d%02d" year month day))
 			       ((and (setq num (nth 1 numbers))
 				     (match-beginning num))
@@ -1153,7 +1137,7 @@ Contents will be saved in the shimbun header as the extra element."
 				 shimbun-asahi-top-level-domain ">")
 		       (concat "<" serial "%" rgroup "."
 			       shimbun-asahi-top-level-domain ">")))
-	    (setq extra (and paper-p
+	    (setq extra (and (string-equal group "tenjin") ;; WON'T WORK
 			     (shimbun-asahi-article-contents group shimbun)))
 	    (unless (shimbun-search-id shimbun id)
 	      (push (shimbun-create-header
@@ -1173,7 +1157,10 @@ Contents will be saved in the shimbun header as the extra element."
 				 (match-beginning num))
 			    (concat "[" (match-string num) "] "
 				    (match-string (nth 3 numbers))))
-			   (paper-p
+			   ((string-equal group "editorial")
+			    (format "%d/%d %s" month day
+				    (match-string (nth 3 numbers))))
+			   (paper-p ;; tenjin WON'T WORK
 			    (concat jname (format " (%d/%d)" month day)))
 			   (travel-p
 			    (save-match-data
@@ -1215,7 +1202,7 @@ Contents will be saved in the shimbun header as the extra element."
 		     ;; references, chars, lines
 		     "" 0 0
 		     ;; xref
-		     (if paper-p
+		     (if (string-equal group "tenjin") ;; WON'T WORK
 			 (shimbun-index-url shimbun)
 		       (shimbun-expand-url
 			(match-string (nth 0 numbers))
@@ -1279,7 +1266,7 @@ Contents will be saved in the shimbun header as the extra element."
 
 (defun shimbun-asahi-article (shimbun header outbuf)
   "Fetch article contents."
-  (if (member (shimbun-current-group-internal shimbun) '("editorial" "tenjin"))
+  (if (member (shimbun-current-group-internal shimbun) '("tenjin"));; WON'T WORK
       (let ((contents (cdr (assq 'Contents (shimbun-header-extra header)))))
 	(insert
 	 (with-temp-buffer
@@ -1312,8 +1299,8 @@ Contents will be saved in the shimbun header as the extra element."
 
 (defun shimbun-asahi-prepare-article (shimbun header)
   "Prepare an article.
-For the groups editorial and tenjin, use the extra element of HEADER
-as article contents."
+For the tenjin group [WON'T WORK], use the extra element of HEADER as
+article contents."
   (let ((case-fold-search t)
 	(group (shimbun-current-group-internal shimbun))
 	(from (shimbun-header-from-internal header)))

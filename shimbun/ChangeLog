@@ -1,6 +1,8 @@
 2016-08-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* sb-asahi.el (shimbun-asahi-clear-contents): Update article-end rexexp.
+	* sb-asahi.el (shimbun-asahi-group-table, shimbun-asahi-get-headers):
+	Make editorial group work again.
+	(shimbun-asahi-clear-contents): Update article-end rexexp.
 
 2017-07-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
