@@ -1483,9 +1483,9 @@ as article contents."
   (when (luna-call-next-method)
     ;; Remove garbage after an article.
     (goto-char (point-min))
-    (when (re-search-forward
-	   "[\t\n ]*<!-+[\t\n ]*main[\t\n ]+text[\t\n ]+end[\t\n ]*-+>"
-	   nil t)
+    (when (re-search-forward "[\t\n ]*\
+<!-+[\t\n ]*\\(?:article\\|main\\)[\t\n ]*text[\t\n ]+end[\t\n ]*-+>"
+			     nil t)
       (delete-region (match-beginning 0) (point-max))
       (goto-char (point-min)))
     ;; Remove forms and links.
