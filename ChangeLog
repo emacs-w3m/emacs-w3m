@@ -1,3 +1,12 @@
+2017-08-03  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-scroll-up, w3m-scroll-down): Remove restriction of using
+	prefix-argument, remove code that fixes bug in emacs v21.
+	(w3m-mwheel-scroll-up, w3m-mwheel-scroll-down): Delete.
+	(w3m-mode): Change local bindings of `mwheel-scroll-up-function' and
+	`mwheel-scroll-down-function' to `w3m-scroll-up' and `w3m-scroll-down'.
+	[emacs-w3m:12779]
+
 2017-08-02  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-search.el (w3m-search-engine-alist): Update URL for debian
