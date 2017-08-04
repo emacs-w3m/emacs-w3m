@@ -48,13 +48,19 @@
   "A list of cookie elements.
 Currently only browser local cookies are stored.")
 
+;; Use `url-domsuf-cookie-allowed-p', if available (Emacs >= 24.3),
+;; to check if a domain is unique to allow having cookies set.
+(eval-and-compile (ignore-errors (require 'url-domsuf)))
+(declare-function url-domsuf-cookie-allowed-p "url-domsuf")
+
 (defconst w3m-cookie-two-dot-domains-regexp
   (concat "\\.\\(?:"
 	  (mapconcat 'identity (list "com" "edu" "net" "org" "gov" "mil" "int")
 		     "\\|")
 	  "\\)$")
-  "A regular expression of top-level domains that only require two matching
-'.'s in the domain name in order to set a cookie.")
+  "A regular expression of top-level domains that only require two dots
+in the domain name in order to set a cookie.
+This constant will never be used if url-domsuf.el(c) is available.")
 
 (defcustom w3m-cookie-accept-domains nil
   "A list of trusted domain name string."
@@ -314,27 +320,27 @@ If ask, ask user whether accept bad cookies or not."
 
 ;;; Version 0 cookie.
 (defun w3m-cookie-1-acceptable-p (host domain)
-  (let ((numdots 0)
-	(last nil)
-	(case-fold-search t)
-	(mindots 3))
-    (while (setq last (string-match "\\." domain last))
-      (setq numdots (1+ numdots)
-	    last (1+ last)))
-    (if (string-match w3m-cookie-two-dot-domains-regexp domain)
-	(setq mindots 2))
-    (cond
-     ((string= host domain)		; Apparently netscape lets you do this
-      t)
-     ;; A special case that domain name is ".hostname".
-     ((string= (concat "." host) domain)
-      t)
-     ((>= numdots mindots)		; We have enough dots in domain name
-      ;; Need to check and make sure the host is actually _in_ the
-      ;; domain it wants to set a cookie for though.
-      (string-match (concat (regexp-quote domain) "$") host))
-     (t
-      nil))))
+  (cond
+   ((string= host domain)		; Apparently netscape lets you do this
+    t)
+   ;; A special case that domain name is ".hostname".
+   ((string= (concat "." host) domain)
+    t)
+   ((fboundp 'url-domsuf-cookie-allowed-p)
+    (url-domsuf-cookie-allowed-p (if (eq (aref domain 0) ?.)
+				     (substring domain 1)
+				   domain)))
+   ((let ((case-fold-search t) (numdots 0) last)
+      (while (setq last (string-match "\\." domain last))
+	(setq numdots (1+ numdots)
+	      last (1+ last)))
+      (>= numdots			; We have enough dots in domain name
+	  (if (string-match w3m-cookie-two-dot-domains-regexp domain) 2 3)))
+    ;; Need to check and make sure the host is actually _in_ the
+    ;; domain it wants to set a cookie for though.
+    (string-match (concat (regexp-quote domain) "$") host))
+   (t
+    nil)))
 
 (defun w3m-cookie-1-set (url &rest args)
   ;; Set-Cookie:, version 0 cookie.
