@@ -2986,44 +2986,51 @@ The file is specified by `w3m-arrived-file'."
 The database `w3m-arrived-db' will be cleared after saving.  The file
 is specified by `w3m-arrived-file'."
   (when w3m-arrived-db
-    ;; Re-read the database file, and if there are data which another
-    ;; Emacs process registered, merge them to the current database.
-    (dolist (elem (w3m-arrived-load-list))
-      (when (w3m-time-newer-p (nth 3 elem) (w3m-arrived-time (car elem)))
-	(w3m-arrived-add (if (string-match "\\`/" (car elem))
-			     (w3m-expand-file-name-as-url (car elem))
-			   (car elem))
-			 (nth 1 elem)
-			 (nth 2 elem)
-			 (nth 3 elem)
-			 (when (stringp (nth 4 elem)) (nth 4 elem))
-			 (nth 5 elem))))
-    ;; Convert current database to a list.
-    (let (list)
-      (mapatoms
-       (lambda (sym)
-	 (and sym
-	      (boundp sym)
-	      (symbol-value sym) ; Ignore an entry lacks an arrival time.
-	      (push (list (symbol-name sym)
-			  (get sym 'title)
-			  (get sym 'last-modified)
-			  (symbol-value sym)
-			  (get sym 'content-charset)
-			  (get sym 'content-type))
-		    list)))
-       w3m-arrived-db)
-      (w3m-save-list w3m-arrived-file
-		     (w3m-sub-list
-		      (sort list
-			    (lambda (a b)
-			      (if (equal (nth 3 a) (nth 3 b))
-				  (string< (car a) (car b))
-				(w3m-time-newer-p (nth 3 a) (nth 3 b)))))
-		      w3m-keep-arrived-urls)
-		     nil t))
-    (setq w3m-arrived-db nil)
-    (run-hooks 'w3m-arrived-shutdown-functions)))
+    ;; Don't error out no matter what happens
+    ;; since `kill-emacs-hook' runs this function.
+    (condition-case err
+	(progn
+	  ;; Re-read the database file, and if there are data which another
+	  ;; Emacs process registered, merge them to the current database.
+	  (dolist (elem (w3m-arrived-load-list))
+	    (when (w3m-time-newer-p (nth 3 elem) (w3m-arrived-time (car elem)))
+	      (w3m-arrived-add (if (string-match "\\`/" (car elem))
+				   (w3m-expand-file-name-as-url (car elem))
+				 (car elem))
+			       (nth 1 elem)
+			       (nth 2 elem)
+			       (nth 3 elem)
+			       (when (stringp (nth 4 elem)) (nth 4 elem))
+			       (nth 5 elem))))
+	  ;; Convert current database to a list.
+	  (let (list)
+	    (mapatoms
+	     (lambda (sym)
+	       (and sym
+		    (boundp sym)
+		    (symbol-value sym) ; Ignore an entry lacks an arrival time.
+		    (push (list (symbol-name sym)
+				(get sym 'title)
+				(get sym 'last-modified)
+				(symbol-value sym)
+				(get sym 'content-charset)
+				(get sym 'content-type))
+			  list)))
+	     w3m-arrived-db)
+	    (w3m-save-list w3m-arrived-file
+			   (w3m-sub-list
+			    (sort list
+				  (lambda (a b)
+				    (if (equal (nth 3 a) (nth 3 b))
+					(string< (car a) (car b))
+				      (w3m-time-newer-p (nth 3 a) (nth 3 b)))))
+			    w3m-keep-arrived-urls)
+			   nil t))
+	  (setq w3m-arrived-db nil)
+	  (run-hooks 'w3m-arrived-shutdown-functions))
+      (error
+       (message "Error while running w3m-arrived-shutdown: %s"
+		(error-message-string err))))))
 
 (add-hook 'kill-emacs-hook 'w3m-arrived-shutdown)
 (add-hook 'w3m-arrived-shutdown-functions 'w3m-cleanup-temp-files)

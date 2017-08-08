@@ -1,3 +1,8 @@
+2017-08-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-arrived-shutdown):
+	* w3m-cookie.el (w3m-cookie-shutdown): Don't error out.
+
 2017-08-08  Akinori MUSHA  <knu@iDaemons.org>
 
 	* w3m.el: Don't add autoload functions to hooks (see below).

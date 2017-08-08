@@ -475,15 +475,24 @@ When DOMAIN is non-nil, only save cookies whose domains match it."
     (setq w3m-cookie-init t)))
 
 ;;;###autoload
-(defun w3m-cookie-shutdown ()
+(defun w3m-cookie-shutdown (&optional interactive-p)
   "Save cookies, and reset cookies' data."
-  (interactive)
-  (when w3m-cookie-save-cookies
-    (w3m-cookie-save))
-  (setq w3m-cookie-init nil)
-  (w3m-cookie-clear)
-  (if (get-buffer " *w3m-cookie-parse-temp*")
-      (kill-buffer (get-buffer " *w3m-cookie-parse-temp*"))))
+  (interactive (list t))
+  ;; Don't error out no matter what happens
+  ;; since `kill-emacs-hook' runs this function.
+  (condition-case err
+      (progn
+	(when w3m-cookie-save-cookies
+	  (w3m-cookie-save))
+	(setq w3m-cookie-init nil)
+	(w3m-cookie-clear)
+	(if (get-buffer " *w3m-cookie-parse-temp*")
+	    (kill-buffer (get-buffer " *w3m-cookie-parse-temp*"))))
+    (error
+     (if interactive-p
+	 (signal (car err) (cdr err))
+       (message "Error while running w3m-cookie-shutdown: %s"
+		(error-message-string err))))))
 
 (add-hook 'kill-emacs-hook 'w3m-cookie-shutdown)
 
