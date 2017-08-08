@@ -1,3 +1,13 @@
+2017-08-08  Akinori MUSHA  <knu@iDaemons.org>
+
+	* w3m.el: Don't add autoload functions to hooks (see below).
+	[emacs-w3m:12784]
+
+	* w3m-cookie.el: Add w3m-cookie-shutdown to kill-emacs-hook here.
+
+	* w3m-sesseion.el: Add w3m-session-crash-recovery-remove and
+	w3m-session-automatic-save to w3m-arrived-shutdown-functions here.
+
 2017-08-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-scroll-up, w3m-scroll-down): Make argument default to 1

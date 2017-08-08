@@ -907,6 +907,9 @@ file exists, otherwise nil."
 		      (eq w3m-session-load-crashed-sessions t)))
 	 item)))))
 
+(add-hook 'w3m-arrived-shutdown-functions 'w3m-session-crash-recovery-remove t)
+(add-hook 'w3m-arrived-shutdown-functions 'w3m-session-automatic-save t)
+
 (provide 'w3m-session)
 
 ;;; w3m-session.el ends here

@@ -485,6 +485,8 @@ When DOMAIN is non-nil, only save cookies whose domains match it."
   (if (get-buffer " *w3m-cookie-parse-temp*")
       (kill-buffer (get-buffer " *w3m-cookie-parse-temp*"))))
 
+(add-hook 'kill-emacs-hook 'w3m-cookie-shutdown)
+
 ;;;###autoload
 (defun w3m-cookie-set (url beg end)
   "Register cookies which correspond to URL.

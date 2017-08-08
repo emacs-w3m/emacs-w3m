@@ -3026,9 +3026,6 @@ is specified by `w3m-arrived-file'."
     (run-hooks 'w3m-arrived-shutdown-functions)))
 
 (add-hook 'kill-emacs-hook 'w3m-arrived-shutdown)
-(add-hook 'kill-emacs-hook 'w3m-cookie-shutdown)
-(add-hook 'w3m-arrived-shutdown-functions 'w3m-session-automatic-save)
-(add-hook 'w3m-arrived-shutdown-functions 'w3m-session-crash-recovery-remove)
 (add-hook 'w3m-arrived-shutdown-functions 'w3m-cleanup-temp-files)
 
 ;;; Generic macros and inline functions:
