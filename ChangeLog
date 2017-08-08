@@ -16,8 +16,8 @@
 2017-08-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-scroll-up, w3m-scroll-down): Make argument default to 1
-	if called interactively so that w3m-scroll-up-or-next-url and
-	w3m-scroll-down-or-previous-url work as before.  [emacs-w3m:12783]
+	if and only if called interactively so that w3m-scroll-up-or-next-url
+	and w3m-scroll-down-or-previous-url work as before.  [emacs-w3m:12783]
 
 2017-08-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
