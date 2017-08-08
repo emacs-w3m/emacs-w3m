@@ -8881,10 +8881,11 @@ or a list which consists of the following elements:
   (wrong-number-of-arguments ;; XEmacs
    (define-obsolete-function-alias 'w3m-scroll-up-1 'w3m-scroll-up)))
 
-(defun w3m-scroll-up (&optional arg)
-  "Scroll the current window up ARG lines."
-  (interactive "P")
-  (scroll-up (or arg 1)))
+(defun w3m-scroll-up (&optional arg interactive-p)
+  "Scroll the current window up ARG lines.
+When called interactively, ARG defaults to 1."
+  (interactive (list current-prefix-arg t))
+  (scroll-up (or arg (and interactive-p 1))))
 
 (defun w3m-scroll-up-or-next-url (arg)
   "Scroll the current window up ARG lines, or go to the next page."
@@ -8905,10 +8906,11 @@ or a list which consists of the following elements:
 	  (w3m-goto-url w3m-next-url))
       (w3m-scroll-up arg))))
 
-(defun w3m-scroll-down (&optional arg)
-  "Scroll the current window down ARG lines."
-  (interactive "P")
-  (scroll-down (or arg 1)))
+(defun w3m-scroll-down (&optional arg interactive-p)
+  "Scroll the current window down ARG lines.
+When called interactively, ARG defaults to 1."
+  (interactive (list current-prefix-arg t))
+  (scroll-down (or arg (and interactive-p 1))))
 
 (defun w3m-scroll-down-or-previous-url (arg)
   "Scroll the current window down ARG lines, or go to the previous page."
