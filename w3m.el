@@ -146,6 +146,7 @@
   (autoload 'w3m-form-set-number "w3m-form")
   (autoload 'w3m-form-expand-form "w3m-form")
   (autoload 'w3m-form-unexpand-form "w3m-form")
+  (autoload 'w3m-form-make-form-data "w3m-form")
   (autoload 'w3m-filter "w3m-filter")
   (autoload 'w3m-toggle-filtering "w3m-filter"
     "Toggle whether web pages will have their html modified by w3m's \
@@ -6309,6 +6310,31 @@ called with t as an argument.  Otherwise, it will be called with nil."
 		  (w3m-clear-local-variables)
 		  (w3m-retrieve url nil no-cache post-data referer handler)))
 	(let ((w3m-message-silent silent))
+	  ;; Onload redirection for the OpenID transaction.
+	  (when (and w3m-use-cookies w3m-use-form)
+	    (let ((case-fold-search t)
+		  (cur (current-buffer))
+		  (ourl url)
+		  ;; Why does just `form', not `(form)', cause an error?
+		  (form) (xurl) (post-data))
+	      (while (and
+		      (equal type "text/html")
+		      (progn
+			(goto-char (point-min))
+			(re-search-forward "\
+<body[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*onload=" nil t))
+		      (with-temp-buffer
+			(set-buffer-multibyte nil)
+			(insert-buffer-substring cur)
+			(w3m-region (point-min) (point-max))
+			(setq form (car w3m-current-forms)))
+		      (setq xurl (aref form 2))
+		      (setq post-data (w3m-form-make-form-data form))
+		      (progn
+			(w3m-message "Redirect to %s..." xurl)
+			(erase-buffer)
+			(setq type (w3m-retrieve xurl nil t post-data ourl)))
+		      (setq url (w3m-real-url (setq ourl xurl)))))))
 	  (when (buffer-live-p page-buffer)
 	    (setq url (w3m-url-strip-authinfo url))
 	    (if type

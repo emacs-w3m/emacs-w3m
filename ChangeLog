@@ -1,3 +1,8 @@
+2017-08-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-retrieve-and-render): Do onload redirection.
+	[emacs-w3m:12787]
+
 2017-08-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-arrived-shutdown):

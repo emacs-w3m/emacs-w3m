@@ -1,3 +1,8 @@
+2017-08-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-retrieve-url): Do onload redirection.
+	[emacs-w3m:12787]
+
 2016-08-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-group-table, shimbun-asahi-get-headers):
