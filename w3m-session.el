@@ -132,9 +132,9 @@
 		(const :format "Never load the crashed sessions automatically." nil)))
 
 (defface w3m-session-select
-  `((((class color) (background light) (type tty))
+  `((((class color) (background light) (type nil))
      (:foreground "black"))
-    (((class color) (background dark) (type tty))
+    (((class color) (background dark) (type nil))
      (:foreground "cyan"))
     (((class color) (background light))
      (:foreground "dark blue"))
@@ -147,9 +147,9 @@
 (put 'w3m-session-select-face 'face-alias 'w3m-session-select)
 
 (defface w3m-session-selected
-  `((((class color) (background light) (type tty))
+  `((((class color) (background light) (type nil))
      (:foreground "blue" :bold t :underline t))
-    (((class color) (background dark) (type tty))
+    (((class color) (background dark) (type nil))
      (:foreground "cyan" :bold t :underline t))
     (((class color) (background light))
      (:foreground "dark blue" :bold t :underline t))

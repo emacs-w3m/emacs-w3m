@@ -1021,7 +1021,7 @@ of the original request method."
 ;; backward-compatibility alias
 (put 'w3m-bold-face 'face-alias 'w3m-bold)
 
-(defface w3m-italic '((((type tty)) (:underline t))
+(defface w3m-italic '((((type nil)) (:underline t))
 		      (t (:italic t)))
   "Face used for displaying italic text.
 By default it will be a underline face on a non-window system."

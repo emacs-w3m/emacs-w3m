@@ -1,3 +1,11 @@
+2017-08-11  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-italic):
+	* w3m-lnum.el (w3m-lnum-minibuffer-prompt, w3m-lnum-match):
+	* w3m-session.el (w3m-session-select, w3m-session-selected):
+	Update "face spec" DISPLAY form "type" to be `nil' for character-only
+	terminals.  [emacs-w3m:12788]
+
 2017-08-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-retrieve-and-render): Do onload redirection.

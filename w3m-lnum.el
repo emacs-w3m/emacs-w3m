@@ -58,7 +58,7 @@
   :group 'w3m-face)
 
 (defface w3m-lnum-minibuffer-prompt
-  '((((class color) (background light) (type tty))
+  '((((class color) (background light) (type nil))
      (:foreground "blue"))
     (((class color) (background dark)) (:foreground "cyan"))
     (t (:foreground "medium blue")))
@@ -66,9 +66,9 @@
   :group 'w3m-face)
 
 (defface w3m-lnum-match
-  '((((class color) (background light) (type tty))
+  '((((class color) (background light) (type nil))
      (:background "yellow" :foreground "black"))
-    (((class color) (background dark) (type tty))
+    (((class color) (background dark) (type nil))
      (:background "blue" :foreground "white"))
     (((class color) (background light)) (:background "yellow1"))
     (((class color) (background dark)) (:background "RoyalBlue3"))
