@@ -1,6 +1,6 @@
 2017-08-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* shimbun.el (shimbun-retrieve-url): Parse a form in a page buffer.
+	* shimbun.el (shimbun-retrieve-url): Parse a form in its page buffer.
 
 2017-08-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 

@@ -1,6 +1,6 @@
 2017-08-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-retrieve-and-render): Parse a form in a page buffer.
+	* w3m.el (w3m-retrieve-and-render): Parse a form in its page buffer.
 
 2017-08-11  Boruch Baum  <boruch_baum@gmx.com>
 
