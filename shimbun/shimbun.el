@@ -296,9 +296,9 @@ Return content-type of URL as string when retrieval succeeded."
 		       (set-buffer-multibyte nil)
 		       (insert-buffer-substring cur)
 		       (w3m-region (point-min) (point-max))
-		       (setq form (car w3m-current-forms)))
-		     (setq xurl (aref form 2))
-		     (setq post-data (w3m-form-make-form-data form))
+		       (and (setq form (car w3m-current-forms))
+			    (setq xurl (aref form 2))
+			    (setq post-data (w3m-form-make-form-data form))))
 		     (progn
 		       (w3m-message "Redirect to %s..." xurl)
 		       (erase-buffer)

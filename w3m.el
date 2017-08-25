@@ -6327,9 +6327,9 @@ called with t as an argument.  Otherwise, it will be called with nil."
 			(set-buffer-multibyte nil)
 			(insert-buffer-substring cur)
 			(w3m-region (point-min) (point-max))
-			(setq form (car w3m-current-forms)))
-		      (setq xurl (aref form 2))
-		      (setq post-data (w3m-form-make-form-data form))
+			(and (setq form (car w3m-current-forms))
+			     (setq xurl (aref form 2))
+			     (setq post-data (w3m-form-make-form-data form))))
 		      (progn
 			(w3m-message "Redirect to %s..." xurl)
 			(erase-buffer)
