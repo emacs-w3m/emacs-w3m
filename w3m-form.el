@@ -301,6 +301,7 @@ If no field in forward, return nil without moving."
 (defun w3m-form-make-form-data (form)
   (let ((plist (w3m-form-plist form))
 	(coding (w3m-form-charlst form))
+	(w3m-cookie-p (equal "about://cookie/" (w3m-form-action form)))
 	buf bufs)
     (setq coding (w3m-form-get-coding-system coding))
     (while plist
@@ -365,11 +366,13 @@ If no field in forward, return nil without moving."
 		     (setq elem (cdr elem))
 		     (format "%s=%s"
 			     (w3m-url-encode-string (car elem) coding t)
-			     (w3m-url-encode-string (if (stringp (cdr elem))
-							(cdr elem)
-						      "")
-						    coding
-						    t)))
+			     (w3m-url-encode-string
+			      (if (stringp (cdr elem))
+				  (cdr elem)
+				"")
+			      coding
+			      (not (and w3m-cookie-p
+					(equal (car elem) "search"))))))
 		   bufs "&")))))
 
 (defun w3m-form-resume (forms)

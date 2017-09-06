@@ -2,6 +2,8 @@
 
 	* w3m-cookie.el (w3m-about-cookie):
 	Add GUIs that support limiting and deleting ([emacs-w3m:12790]).
+	* w3m-form.el (w3m-form-make-form-data):
+	Don't encode SPC in a search word used for w3m-cookie.
 
 2017-08-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
