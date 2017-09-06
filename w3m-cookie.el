@@ -591,7 +591,8 @@ string is case insensitive and allows a regular expression."
 	  (_ (when (equal (cadr pair) "0")
 	       (push (string-to-number (car pair)) dels))))))
     (if (zerop (length (car match)))
-	(setq match nil)
+	(setq match nil
+	      cookies w3m-cookies)
       (setq regexp (car match))
       (unless (cdr match)
 	(setq regexp (regexp-quote regexp)))
@@ -601,15 +602,15 @@ string is case insensitive and allows a regular expression."
       (setq cookies (nreverse cookies)))
     (pcase delete
       ("0" (dolist (del dels)
-	     (setf (w3m-cookie-ignore (nth del (or cookies w3m-cookies))) t)))
-      ("1" (dolist (cookie (or cookies w3m-cookies))
+	     (setf (w3m-cookie-ignore (nth del cookies)) t)))
+      ("1" (dolist (cookie cookies)
 	     (setf (w3m-cookie-ignore cookie) nil)))
-      ("2" (dolist (cookie (or cookies w3m-cookies))
+      ("2" (dolist (cookie cookies)
 	     (setf (w3m-cookie-ignore cookie) t)))
       ("3" (progn
 	     (dolist (del dels)
-	       (setf (w3m-cookie-ignore (nth del (or cookies w3m-cookies))) t))
-	     (dolist (cookie (copy-sequence (or cookies w3m-cookies)))
+	       (setf (w3m-cookie-ignore (nth del cookies)) t))
+	     (dolist (cookie (copy-sequence cookies))
 	       (when (w3m-cookie-ignore cookie)
 		 (when cookies
 		   (setq cookies (delq cookie cookies)))
@@ -629,50 +630,49 @@ string is case insensitive and allows a regular expression."
 <input type=radio name=\"delete\" value=3>Delete unused all&nbsp;
 <input type=submit value=\"OK\"></td></tr></table></p>
 <ol>")
-    (dolist (cookie (or cookies w3m-cookies))
-      (when (or (not regexp) (string-match regexp (w3m-cookie-url cookie)))
-	(insert
-	 "<p><li><h1><a href=\""
-	 (w3m-cookie-url cookie)
-	 "\">"
-	 (w3m-cookie-url cookie)
-	 "</a></h1>"
-	 "<table cellpadding=0>"
-	 "<tr><td width=\"80\"><b>Cookie:</b></td><td>"
-	 (w3m-cookie-name cookie) "=" (w3m-cookie-value cookie)
-	 "</td></tr>"
-	 (if (w3m-cookie-expires cookie)
-	     (concat
-	      "<tr><td width=\"80\"><b>Expires:</b></td><td>"
-	      (w3m-cookie-expires cookie)
-	      "</td></tr>")
-	   "")
-	 "<tr><td width=\"80\"><b>Version:</b></td><td>"
-	 (number-to-string (w3m-cookie-version cookie))
-	 "</td></tr>"
-	 (if (w3m-cookie-domain cookie)
-	     (concat
-	      "<tr><td width=\"80\"><b>Domain:</b></td><td>"
-	      (w3m-cookie-domain cookie)
-	      "</td></tr>")
-	   "")
-	 (if (w3m-cookie-path cookie)
-	     (concat
-	      "<tr><td width=\"80\"><b>Path:</b></td><td>"
-	      (w3m-cookie-path cookie)
-	      "</td></tr>")
-	   "")
-	 "<tr><td width=\"80\"><b>Secure:</b></td><td>"
-	 (if (w3m-cookie-secure cookie) "Yes" "No")
-	 "</td></tr><tr><td width=\"80\"><b>Use:</b></td><td>"
-	 (format "<input type=radio name=\"%d\" value=1%s>Yes"
-		 pos (if (w3m-cookie-ignore cookie) "" " checked"))
-	 "&nbsp;&nbsp;"
-	 (format "<input type=radio name=\"%d\" value=0%s>No"
-		 pos (if (w3m-cookie-ignore cookie) " checked" ""))
-	 "&nbsp;&nbsp;"
-	 "<input type=submit value=\"OK\"></td></tr></table>")
-	(setq pos (1+ pos))))
+    (dolist (cookie cookies)
+      (insert
+       "<p><li><h1><a href=\""
+       (w3m-cookie-url cookie)
+       "\">"
+       (w3m-cookie-url cookie)
+       "</a></h1>"
+       "<table cellpadding=0>"
+       "<tr><td width=\"80\"><b>Cookie:</b></td><td>"
+       (w3m-cookie-name cookie) "=" (w3m-cookie-value cookie)
+       "</td></tr>"
+       (if (w3m-cookie-expires cookie)
+	   (concat
+	    "<tr><td width=\"80\"><b>Expires:</b></td><td>"
+	    (w3m-cookie-expires cookie)
+	    "</td></tr>")
+	 "")
+       "<tr><td width=\"80\"><b>Version:</b></td><td>"
+       (number-to-string (w3m-cookie-version cookie))
+       "</td></tr>"
+       (if (w3m-cookie-domain cookie)
+	   (concat
+	    "<tr><td width=\"80\"><b>Domain:</b></td><td>"
+	    (w3m-cookie-domain cookie)
+	    "</td></tr>")
+	 "")
+       (if (w3m-cookie-path cookie)
+	   (concat
+	    "<tr><td width=\"80\"><b>Path:</b></td><td>"
+	    (w3m-cookie-path cookie)
+	    "</td></tr>")
+	 "")
+       "<tr><td width=\"80\"><b>Secure:</b></td><td>"
+       (if (w3m-cookie-secure cookie) "Yes" "No")
+       "</td></tr><tr><td width=\"80\"><b>Use:</b></td><td>"
+       (format "<input type=radio name=\"%d\" value=1%s>Yes"
+	       pos (if (w3m-cookie-ignore cookie) "" " checked"))
+       "&nbsp;&nbsp;"
+       (format "<input type=radio name=\"%d\" value=0%s>No"
+	       pos (if (w3m-cookie-ignore cookie) " checked" ""))
+       "&nbsp;&nbsp;"
+       "<input type=submit value=\"OK\"></td></tr></table>")
+      (setq pos (1+ pos)))
     (insert "</ol></form></body></html>")
     "text/html"))
 
