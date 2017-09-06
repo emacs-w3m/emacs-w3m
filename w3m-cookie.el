@@ -614,63 +614,59 @@ string is case insensitive and allows a regular expression."
 	       (when (w3m-cookie-ignore cookie)
 		 (setq cookies (delq cookie cookies)
 		       w3m-cookies (delq cookie w3m-cookies)))))))
-    (insert "\
-<html><head><title>Cookies</title></head>
+    (insert
+     (concat ;; Allow nil values in operand.
+      "<html><head><title>Cookies</title></head>
 <body><center><b>Cookies</b></center>
 <form method=\"post\" action=\"about://cookie/\">
 <p><table><tr><td>Limit to <textarea name=\"search\">"
-	    (or (car match) "")
-	    "</textarea>&lt;=&nbsp;<input type=checkbox name=\"re-search\""
-	    (if (cdr match) " checked" "")
-	    ">regexp&nbsp;<input type=submit value=\"OK\"></td></tr>
+      (car match)
+      "</textarea>&lt;=&nbsp;<input type=checkbox name=\"re-search\""
+      (when (cdr match) " checked")
+      ">regexp&nbsp;<input type=submit value=\"OK\"></td></tr>
 <tr><td><input type=radio name=\"delete\" value=0 checked>Noop&nbsp;
 <input type=radio name=\"delete\" value=1>Use all&nbsp;
 <input type=radio name=\"delete\" value=2>Unuse all&nbsp;
 <input type=radio name=\"delete\" value=3>Delete unused all&nbsp;
 <input type=submit value=\"OK\"></td></tr></table></p>
-<ol>")
+<ol>"))
     (dolist (cookie cookies)
       (insert
-       "<p><li><h1><a href=\""
-       (w3m-cookie-url cookie)
-       "\">"
-       (w3m-cookie-url cookie)
-       "</a></h1>"
-       "<table cellpadding=0>"
-       "<tr><td width=\"80\"><b>Cookie:</b></td><td>"
-       (w3m-cookie-name cookie) "=" (w3m-cookie-value cookie)
-       "</td></tr>"
-       (if (w3m-cookie-expires cookie)
-	   (concat
-	    "<tr><td width=\"80\"><b>Expires:</b></td><td>"
-	    (w3m-cookie-expires cookie)
-	    "</td></tr>")
-	 "")
-       "<tr><td width=\"80\"><b>Version:</b></td><td>"
-       (number-to-string (w3m-cookie-version cookie))
-       "</td></tr>"
-       (if (w3m-cookie-domain cookie)
-	   (concat
-	    "<tr><td width=\"80\"><b>Domain:</b></td><td>"
-	    (w3m-cookie-domain cookie)
-	    "</td></tr>")
-	 "")
-       (if (w3m-cookie-path cookie)
-	   (concat
-	    "<tr><td width=\"80\"><b>Path:</b></td><td>"
-	    (w3m-cookie-path cookie)
-	    "</td></tr>")
-	 "")
-       "<tr><td width=\"80\"><b>Secure:</b></td><td>"
-       (if (w3m-cookie-secure cookie) "Yes" "No")
-       "</td></tr><tr><td width=\"80\"><b>Use:</b></td><td>"
-       (format "<input type=radio name=\"%d\" value=1%s>Yes"
-	       pos (if (w3m-cookie-ignore cookie) "" " checked"))
-       "&nbsp;&nbsp;"
-       (format "<input type=radio name=\"%d\" value=0%s>No"
-	       pos (if (w3m-cookie-ignore cookie) " checked" ""))
-       "&nbsp;&nbsp;"
-       "<input type=submit value=\"OK\"></td></tr></table>")
+       (concat ;; Allow nil values in operand.
+	"<p><li><h1><a href=\""
+	(w3m-cookie-url cookie)
+	"\">"
+	(w3m-cookie-url cookie)
+	"</a></h1>"
+	"<table cellpadding=0>"
+	"<tr><td width=\"80\"><b>Cookie:</b></td><td>"
+	(w3m-cookie-name cookie) "=" (or (w3m-cookie-value cookie) "(no value)")
+	"</td></tr>"
+	(when (w3m-cookie-expires cookie)
+	  (concat "<tr><td width=\"80\"><b>Expires:</b></td><td>"
+		  (w3m-cookie-expires cookie)
+		  "</td></tr>"))
+	"<tr><td width=\"80\"><b>Version:</b></td><td>"
+	(number-to-string (w3m-cookie-version cookie))
+	"</td></tr>"
+	(when (w3m-cookie-domain cookie)
+	  (concat "<tr><td width=\"80\"><b>Domain:</b></td><td>"
+		  (w3m-cookie-domain cookie)
+		  "</td></tr>"))
+	(when (w3m-cookie-path cookie)
+	  (concat "<tr><td width=\"80\"><b>Path:</b></td><td>"
+		  (w3m-cookie-path cookie)
+		  "</td></tr>"))
+	"<tr><td width=\"80\"><b>Secure:</b></td><td>"
+	(if (w3m-cookie-secure cookie) "Yes" "No")
+	"</td></tr><tr><td width=\"80\"><b>Use:</b></td><td>"
+	(format "<input type=radio name=\"%d\" value=1%s>Yes"
+		pos (if (w3m-cookie-ignore cookie) "" " checked"))
+	"&nbsp;&nbsp;"
+	(format "<input type=radio name=\"%d\" value=0%s>No"
+		pos (if (w3m-cookie-ignore cookie) " checked" ""))
+	"&nbsp;&nbsp;"
+	"<input type=submit value=\"OK\"></td></tr></table>"))
       (setq pos (1+ pos)))
     (insert "</ol></form></body></html>")
     "text/html"))
