@@ -1,3 +1,8 @@
+2017-09-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-cookie.el (w3m-about-cookie):
+	Add GUIs that support limiting and deleting ([emacs-w3m:12790]).
+
 2017-08-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-retrieve-and-render): Parse a form in its page buffer.

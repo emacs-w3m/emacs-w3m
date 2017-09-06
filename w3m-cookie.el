@@ -555,63 +555,124 @@ BEG and END should be an HTTP response header region on current buffer."
 
 ;;;###autoload
 (defun w3m-about-cookie (url &optional no-decode no-cache post-data &rest args)
-  "Make the html contents to display and to enable you to manage cookies."
+  "Make the html contents to display and to enable you to manage cookies.
+To delete all cookies associated with amazon.com for example, do it in
+the following two steps:
+
+1. Mark them `unused' (type `C-c C-c' or press any OK button).
+
+Limit to [amazon.com          ] <= [ ]regexp  [OK]
+( )Noop  ( )Use all  (*)Unuse all  ( )Delete unused all  [OK]
+
+2. Delete cookies that are marked `unused'.
+
+Limit to [amazon.com          ] <= [ ]regexp  [OK]
+( )Noop  ( )Use all  ( )Unuse all  (*)Delete unused all  [OK]
+
+You can mark cookies on the one-by-one basis of course.  The `Limit-to'
+string is case insensitive and allows a regular expression."
   (w3m-cookie-setup)
-  (let ((pos 0))
+  (let ((case-fold-search t)
+	(pos 0)
+	;; The car is a string used to limit cookies to the ones matching,
+	;; and the cdr is a boolean flag that specifies whether the string
+	;; is a regexp or not.
+	(match '(nil . nil))
+	delete dels cookies regexp)
     (when post-data
       (dolist (pair (split-string post-data "&"))
 	(setq pair (split-string pair "="))
-	(setf (w3m-cookie-ignore
-	       (nth (string-to-number (car pair)) w3m-cookies))
-	      (eq (string-to-number (cadr pair)) 0))))
-    (insert
-     (concat
-      "\
+	(pcase (car pair)
+	  ("delete" (setq delete (cadr pair)))
+	  ("re-search" (setcdr match t))
+	  ("search" (setcar match (replace-regexp-in-string
+				   "[\n\r].*" ""
+				   (w3m-url-decode-string (cadr pair)))))
+	  (_ (when (equal (cadr pair) "0")
+	       (push (string-to-number (car pair)) dels))))))
+    (if (zerop (length (car match)))
+	(setq match nil)
+      (setq regexp (car match))
+      (unless (cdr match)
+	(setq regexp (regexp-quote regexp)))
+      (dolist (cookie w3m-cookies)
+	(when (string-match regexp (w3m-cookie-url cookie))
+	  (push cookie cookies)))
+      (setq cookies (nreverse cookies)))
+    (pcase delete
+      ("0" (dolist (del dels)
+	     (setf (w3m-cookie-ignore (nth del (or cookies w3m-cookies))) t)))
+      ("1" (dolist (cookie (or cookies w3m-cookies))
+	     (setf (w3m-cookie-ignore cookie) nil)))
+      ("2" (dolist (cookie (or cookies w3m-cookies))
+	     (setf (w3m-cookie-ignore cookie) t)))
+      ("3" (progn
+	     (dolist (del dels)
+	       (setf (w3m-cookie-ignore (nth del (or cookies w3m-cookies))) t))
+	     (dolist (cookie (copy-sequence (or cookies w3m-cookies)))
+	       (when (w3m-cookie-ignore cookie)
+		 (when cookies
+		   (setq cookies (delq cookie cookies)))
+		 (setq w3m-cookies (delq cookie w3m-cookies)))))))
+    (insert "\
 <html><head><title>Cookies</title></head>
 <body><center><b>Cookies</b></center>
-<p><form method=\"post\" action=\"about://cookie/\">
-<ol>"))
-    (dolist (cookie w3m-cookies)
-      (insert
-       (concat
-	"<li><h1><a href=\""
-	(w3m-cookie-url cookie)
-	"\">"
-	(w3m-cookie-url cookie)
-	"</a></h1>"
-	"<table cellpadding=0>"
-	"<tr><td width=\"80\"><b>Cookie:</b></td><td>"
-	(w3m-cookie-name cookie) "=" (w3m-cookie-value cookie)
-	"</td></tr>"
-	(when (w3m-cookie-expires cookie)
-	  (concat
-	   "<tr><td width=\"80\"><b>Expires:</b></td><td>"
-	   (w3m-cookie-expires cookie)
-	   "</td></tr>"))
-	"<tr><td width=\"80\"><b>Version:</b></td><td>"
-	(number-to-string (w3m-cookie-version cookie))
-	"</td></tr>"
-	(when (w3m-cookie-domain cookie)
-	  (concat
-	   "<tr><td width=\"80\"><b>Domain:</b></td><td>"
-	   (w3m-cookie-domain cookie)
-	   "</td></tr>"))
-	(when (w3m-cookie-path cookie)
-	  (concat
-	   "<tr><td width=\"80\"><b>Path:</b></td><td>"
-	   (w3m-cookie-path cookie)
-	   "</td></tr>"))
-	"<tr><td width=\"80\"><b>Secure:</b></td><td>"
-	(if (w3m-cookie-secure cookie) "Yes" "No")
-	"</td></tr><tr><td>"
-	"<tr><td width=\"80\"><b>Use:</b></td><td>"
-	(format "<input type=radio name=\"%d\" value=1%s>Yes"
-		pos (if (w3m-cookie-ignore cookie) "" " checked"))
-	"&nbsp;&nbsp;"
-	(format "<input type=radio name=\"%d\" value=0%s>No"
-		pos (if (w3m-cookie-ignore cookie) " checked" ""))
-	"</td></tr><tr><td><input type=submit value=\"OK\"></table><p>"))
-      (setq pos (1+ pos)))
+<form method=\"post\" action=\"about://cookie/\">
+<p><table><tr><td>Limit to <textarea name=\"search\">"
+	    (or (car match) "")
+	    "</textarea>&lt;=&nbsp;<input type=checkbox name=\"re-search\""
+	    (if (cdr match) " checked" "")
+	    ">regexp&nbsp;<input type=submit value=\"OK\"></td></tr>
+<tr><td><input type=radio name=\"delete\" value=0 checked>Noop&nbsp;
+<input type=radio name=\"delete\" value=1>Use all&nbsp;
+<input type=radio name=\"delete\" value=2>Unuse all&nbsp;
+<input type=radio name=\"delete\" value=3>Delete unused all&nbsp;
+<input type=submit value=\"OK\"></td></tr></table></p>
+<ol>")
+    (dolist (cookie (or cookies w3m-cookies))
+      (when (or (not regexp) (string-match regexp (w3m-cookie-url cookie)))
+	(insert
+	 "<p><li><h1><a href=\""
+	 (w3m-cookie-url cookie)
+	 "\">"
+	 (w3m-cookie-url cookie)
+	 "</a></h1>"
+	 "<table cellpadding=0>"
+	 "<tr><td width=\"80\"><b>Cookie:</b></td><td>"
+	 (w3m-cookie-name cookie) "=" (w3m-cookie-value cookie)
+	 "</td></tr>"
+	 (if (w3m-cookie-expires cookie)
+	     (concat
+	      "<tr><td width=\"80\"><b>Expires:</b></td><td>"
+	      (w3m-cookie-expires cookie)
+	      "</td></tr>")
+	   "")
+	 "<tr><td width=\"80\"><b>Version:</b></td><td>"
+	 (number-to-string (w3m-cookie-version cookie))
+	 "</td></tr>"
+	 (if (w3m-cookie-domain cookie)
+	     (concat
+	      "<tr><td width=\"80\"><b>Domain:</b></td><td>"
+	      (w3m-cookie-domain cookie)
+	      "</td></tr>")
+	   "")
+	 (if (w3m-cookie-path cookie)
+	     (concat
+	      "<tr><td width=\"80\"><b>Path:</b></td><td>"
+	      (w3m-cookie-path cookie)
+	      "</td></tr>")
+	   "")
+	 "<tr><td width=\"80\"><b>Secure:</b></td><td>"
+	 (if (w3m-cookie-secure cookie) "Yes" "No")
+	 "</td></tr><tr><td width=\"80\"><b>Use:</b></td><td>"
+	 (format "<input type=radio name=\"%d\" value=1%s>Yes"
+		 pos (if (w3m-cookie-ignore cookie) "" " checked"))
+	 "&nbsp;&nbsp;"
+	 (format "<input type=radio name=\"%d\" value=0%s>No"
+		 pos (if (w3m-cookie-ignore cookie) " checked" ""))
+	 "&nbsp;&nbsp;"
+	 "<input type=submit value=\"OK\"></td></tr></table>")
+	(setq pos (1+ pos))))
     (insert "</ol></form></body></html>")
     "text/html"))
 
