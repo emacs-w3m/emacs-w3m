@@ -1,3 +1,10 @@
+2017-09-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-verbose, shimbun-message-enable-logging)
+	(shimbun-message): Doc fix.
+	(shimbun-retrieve-url, shimbun-headers):
+	Bind w3m-message-silent and w3m-verbose.
+
 2017-08-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-retrieve-url): Parse a form in its page buffer.

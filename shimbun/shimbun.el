@@ -132,14 +132,16 @@ See `shimbun-message' for the special format specifiers."
   :type '(string :format "%{%t%}:\n%v"))
 
 (defcustom shimbun-verbose t
-  "*Flag controls whether shimbun should be verbose.
-If it is non-nil, the `w3m-verbose' variable will be bound to nil
-while shimbun is waiting for a server's response."
+  "If non-nil, `shimbun-message' will display echo messages.
+If it is nil, messages will be neither displayed nor logged into the
+\"*Messages*\" buffer.  Note that the meaning of this variable differs
+from `w3m-verbose'.  See also `shimbun-message-enable-logging'."
   :group 'shimbun
   :type 'boolean)
 
 (defcustom shimbun-message-enable-logging nil
-  "*Non-nil means preserve echo messages in the *Message* buffer."
+  "If non-nil, `shimbun-message' logs echo messages in *Messages* buffer.
+See also `shimbun-verbose'."
   :group 'shimbun
   :type 'boolean)
 
@@ -253,7 +255,9 @@ Default is the value of `w3m-default-save-directory'."
 (defun shimbun-retrieve-url (url &optional no-cache no-decode referer)
   "Rertrieve URL contents and insert to current buffer.
 Return content-type of URL as string when retrieval succeeded."
-  (let (type charset fname)
+  (let ((w3m-message-silent (not shimbun-verbose))
+	(w3m-verbose shimbun-message-enable-logging)
+	type charset fname)
     (if (and url
 	     shimbun-use-local
 	     shimbun-local-path
@@ -284,7 +288,6 @@ Return content-type of URL as string when retrieval succeeded."
 		 (ourl url)
 		 (w3m-use-cookies t)
 		 (w3m-use-form t)
-		 (w3m-verbose (or shimbun-verbose w3m-verbose))
 		 form xurl post-data)
 	     (while (and
 		     (equal type "text/html")
@@ -1027,7 +1030,8 @@ Bind it to nil per shimbun if the refresh brings unwanted page.")
   (shimbun-message shimbun (concat shimbun-checking-new-news-format "..."))
   (prog1
       (with-temp-buffer
-	(let ((w3m-verbose (if shimbun-verbose nil w3m-verbose))
+	(let ((w3m-message-silent (not shimbun-verbose))
+	      (w3m-verbose shimbun-message-enable-logging)
 	      headers)
 	  (shimbun-headers-1 shimbun (shimbun-index-url shimbun))
 	  (setq headers (shimbun-get-headers shimbun range))
@@ -1492,8 +1496,8 @@ format specifiers:
 
 Use ## to put a single # into the output.  If `shimbun-verbose' is nil,
 it will run silently.  The `shimbun-message-enable-logging' variable
-controls whether this function should preserve a message in the
-*Messages* buffer."
+controls whether this function should log messages in the \"*Messages*\"
+buffer."
   (let (specifier)
     (with-temp-buffer
       (static-unless (featurep 'xemacs)

@@ -1,5 +1,7 @@
 2017-09-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-verbose, w3m-message-silent, w3m-message): Doc fix.
+
 	* w3m-cookie.el (w3m-about-cookie):
 	Add GUIs that support limiting and deleting ([emacs-w3m:12790]).
 	* w3m-form.el (w3m-form-make-form-data):

@@ -2390,10 +2390,12 @@ It is used for favicon data.  The type is often `ico'.")
 	  w3m-current-refresh refresh
 	  w3m-current-ssl ssl)))
 
-(defvar w3m-verbose nil
-  "*Flag controls whether to log messages in the *Messages* buffer.
-If it is nil, a lot of messages issued by emacs-w3m will be displayed
-only in the echo area.")
+(defcustom w3m-verbose nil
+  "If non-nil, `w3m-message' will log echo messages in *Messages* buffer.
+Echo messages will be displayed no matter what this variable is unless
+`w3m-message-silent' is not temprarily bound to a non-nil value."
+  :group 'w3m
+  :type 'boolean)
 
 (defvar w3m-safe-url-regexp nil
   "Regexp matching urls which are considered to be safe.
@@ -3187,18 +3189,19 @@ message."
 (defvar w3m-current-message nil
   "The string currently displayed by `w3m-message' in the echo area.")
 (defvar w3m-message-silent nil
-  "When set to `t', w3m-message is just ignored.")
+  "If bound to non-nil, `w3m-message' will do nothing.")
 
 (defun w3m-message (&rest args)
-  "Print a one-line message at the bottom of the screen.
-It displays a given message without logging, when the cursor is
-neither in the minibuffer or in the echo area and `w3m-verbose' is
-nil.  When the cursor is either in the minibuffer or in the echo area
-and `w3m-verbose' is nil, it behaves as `format' and simply returns a
-string.  When `w3m-verbose' is non-nil, it behaves identically as
-`message', that displays a given message with logging."
+  "Display a message at the bottom of the screen.
+This function works like `message' if `w3m-verbose' is non-nil.  In
+that case, the message also goes into the \"*Messages*\" buffer if
+`message-log-max' is non-nil.  But if `w3m-verbose' is nil, this
+function only displays the message, does not log the message into the
+\"*Messages*\" buffer (no matter what `message-log-max' is).
+If `w3m-message-silent' is temporarily bound to non-nil, this function
+does neither display nor log the message."
   ;; Always clear previous message in order to shrink the window height
-  ;; for the echo area.
+  ;; of the echo area.
   (unless (or (featurep 'xemacs)
 	      (< emacs-major-version 22)
 	      (< (string-width (or (current-message) "")) (window-width)))
