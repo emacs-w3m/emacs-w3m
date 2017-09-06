@@ -610,11 +610,10 @@ string is case insensitive and allows a regular expression."
       ("3" (progn
 	     (dolist (del dels)
 	       (setf (w3m-cookie-ignore (nth del cookies)) t))
-	     (dolist (cookie (copy-sequence cookies))
+	     (dolist (cookie cookies)
 	       (when (w3m-cookie-ignore cookie)
-		 (when cookies
-		   (setq cookies (delq cookie cookies)))
-		 (setq w3m-cookies (delq cookie w3m-cookies)))))))
+		 (setq cookies (delq cookie cookies)
+		       w3m-cookies (delq cookie w3m-cookies)))))))
     (insert "\
 <html><head><title>Cookies</title></head>
 <body><center><b>Cookies</b></center>
