@@ -639,9 +639,9 @@ string is case insensitive and allows a regular expression."
 	(w3m-cookie-url cookie)
 	"</a></h1>"
 	"<table cellpadding=0>"
-	"<tr><td width=\"80\"><b>Cookie:</b></td><td>"
+	"<tr><td width=\"80\"><b>Cookie:</b></td><td><nobr>"
 	(w3m-cookie-name cookie) "=" (or (w3m-cookie-value cookie) "(no value)")
-	"</td></tr>"
+	"</nobr></td></tr>"
 	(when (w3m-cookie-expires cookie)
 	  (concat "<tr><td width=\"80\"><b>Expires:</b></td><td>"
 		  (w3m-cookie-expires cookie)
