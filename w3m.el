@@ -6326,8 +6326,11 @@ called with t as an argument.  Otherwise, it will be called with nil."
 		      (equal type "text/html")
 		      (progn
 			(goto-char (point-min))
+			;; FIXME: Is there any other name that does not end
+			;; with ".submit" for the function used to sumbit?
 			(re-search-forward "\
-<body[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*onload=" nil t))
+<body[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*onload=\
+[^\t\n\r ()>]+\\.submit()" nil t))
 		      (with-temp-buffer
 			(set-buffer-multibyte nil)
 			(insert-buffer-substring cur)

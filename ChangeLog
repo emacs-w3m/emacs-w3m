@@ -1,5 +1,8 @@
 2017-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-retrieve-and-render): Workaround: don't do redirection if
+	the onload function name doesn't end with ".submit" ([emacs-w3m:12795]).
+
 	* w3m.el (w3m-content-type-alist): Run mailcap-parse-mailcaps and
 	mailcap-parse-mimetypes before setting it.
 	(w3m-create-page): Run w3m-external-view in tty for images, etc.

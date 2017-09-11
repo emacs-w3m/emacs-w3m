@@ -272,9 +272,8 @@ Return content-type of URL as string when retrieval succeeded."
 	    (insert-file-contents fname))
 	  (when (re-search-forward "^$" nil t)
 	    (let ((pos (match-beginning 0)))
-	      (re-search-backward
-	       "^Content-Type: \\(.*?\\)\\(?:[ ;]+\\|$\\)\\(charset=\\(.*\\)\\)?"
-	       nil t)
+	      (re-search-backward "\
+^Content-Type: \\(.*?\\)\\(?:[ ;]+\\|$\\)\\(charset=\\(.*\\)\\)?" nil t)
 	      (setq type (match-string 1)
 		    charset (match-string 3))
 	      (delete-region (point-min) pos))))
@@ -293,8 +292,11 @@ Return content-type of URL as string when retrieval succeeded."
 		     (equal type "text/html")
 		     (progn
 		       (goto-char (point-min))
+		       ;; FIXME: Is there any other name that does not end
+		       ;; with ".submit" for the function used to sumbit?
 		       (re-search-forward "\
-<body[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*onload=" nil t))
+<body[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*onload=\
+[^\t\n\r ()>]+\\.submit()" nil t))
 		     (with-temp-buffer
 		       (set-buffer-multibyte nil)
 		       (insert-buffer-substring cur)
