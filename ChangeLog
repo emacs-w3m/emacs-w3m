@@ -1,3 +1,11 @@
+2017-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-content-type-alist): Run mailcap-parse-mailcaps and
+	mailcap-parse-mimetypes before setting it.
+	(w3m-create-page): Run w3m-external-view in tty for images, etc.
+	(w3m-external-view-file): Make deleting of temp file delayed.
+	[emacs-w3m:12793]
+
 2017-09-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-verbose, w3m-message-silent, w3m-message): Doc fix.

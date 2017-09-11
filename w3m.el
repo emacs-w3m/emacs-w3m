@@ -1148,6 +1148,8 @@ is inhibited in those cases even if `w3m-async-exec' is non-nil."
   :type 'string)
 
 (require 'mailcap)
+(mailcap-parse-mailcaps nil t)
+(mailcap-parse-mimetypes nil t)
 
 (defvar w3m-content-type-alist
   (let ((additions
@@ -6345,8 +6347,7 @@ called with t as an argument.  Otherwise, it will be called with nil."
 		    (when (w3m-show-redirection-error-information
 			   url page-buffer)
 		      (w3m-arrived-add url nil (current-time) (current-time))
-		      (w3m-message (w3m-message "Cannot retrieve URL: %s"
-						url)))
+		      (w3m-message "Cannot retrieve URL: %s" url))
 		  (let ((modified-time (w3m-last-modified url)))
 		    (w3m-arrived-add url nil modified-time arrival-time)
 		    (unless modified-time
@@ -6647,9 +6648,9 @@ If so return \"text/html\", otherwise \"text/plain\"."
   (cond
    ((string-match "\\`text/" type)
     (w3m-create-text-page url type charset page-buffer))
-   ((string-match "\\`image/" type)
+   ((and (w3m-display-graphic-p) (string-match "\\`image/" type))
     (w3m-create-image-page url type charset page-buffer))
-   ((member type w3m-doc-view-content-types)
+   ((and (w3m-display-graphic-p) (member type w3m-doc-view-content-types))
     (with-current-buffer page-buffer
       (setq w3m-current-url (if (w3m-arrived-p url)
 				(w3m-real-url url)
@@ -6659,7 +6660,18 @@ If so return \"text/html\", otherwise \"text/plain\"."
     (with-current-buffer page-buffer
       (setq w3m-current-url (if (w3m-arrived-p url)
 				(w3m-real-url url)
-			      url))
+			      url)
+	    w3m-current-title (file-name-nondirectory w3m-current-url))
+      (let ((inhibit-read-only t))
+	(erase-buffer)
+	(insert (format "This display does not support %s:\n<%s>"
+			(if (string-match "\\`image/" type)
+			    "image" type)
+			url))
+	(center-region (point-min) (point))
+	(goto-char (point-min))
+	(insert-char ?\n (/ (- (window-height) 3) 2)))
+      (goto-char (point-min))
       (w3m-external-view url)
       'external-view))))
 
@@ -7320,13 +7332,18 @@ No method to view `%s' is registered. Use `w3m-edit-this-url'"
 	     proc
 	     (lambda (proc event)
 	       (let ((buffer (process-buffer proc)))
-		 (when (and (string-match "^\\(?:finished\\|exited\\)" event)
-			    (buffer-name buffer))
-		   (with-current-buffer buffer
-		     (and (stringp file)
-			  (file-exists-p file)
-			  (delete-file file)))
-		   (kill-buffer buffer))))))
+		 (when (string-match "^\\(?:finished\\|exited\\)" event)
+		   ;; Some program lies that the process has been finished
+		   ;; even though it has not read the temp file yet, so
+		   ;; it is necessary to delay deleting of the file.
+		   (run-at-time 1 nil
+				(lambda (file buffer)
+				  (when (file-exists-p file)
+				    (delete-file file))
+				  (when (buffer-name buffer)
+				    (kill-buffer buffer))
+				  (message ""))
+				file buffer))))))
 	(and (stringp file)
 	     (file-exists-p file)
 	     (unless (and (processp proc)
