@@ -9922,32 +9922,30 @@ session will start afresh."
 	 nil ;; post-data
 	 nil)) ;; referer
   (let (buffer)
-    (if (or (eq 'w3m-mode major-mode)
-	    (and (setq buffer (w3m-alive-p))
-		 (progn
-		   (w3m-popup-buffer buffer)
-		   t)))
-	(progn
-	  ;; Store the current position in the history structure.
-	  (w3m-history-store-position)
-	  (switch-to-buffer
-	   (setq buffer (w3m-copy-buffer nil nil
-					 w3m-new-session-in-background
-					 'empty)))
-	  (w3m-display-progress-message url)
-	  (w3m-goto-url url
-			(or reload
-			    ;; When new URL has `name' portion, we have to
-			    ;; goto the base url because generated buffer
-			    ;; has no content at this moment.
-			    (and (progn
-				   (w3m-string-match-url-components url)
-				   (match-beginning 8))
-				 'redisplay))
-			charset post-data referer)
-	  ;; Delete useless newly created buffer if it is empty.
-	  (w3m-delete-buffer-if-empty buffer))
-      (w3m-goto-url url nil charset post-data))))
+    (if (not
+	 (or (eq 'w3m-mode major-mode)
+	     (and (setq buffer (w3m-alive-p))
+		  (prog1 t (w3m-popup-buffer buffer)))))
+	(w3m-goto-url url nil charset post-data)
+      ;; Store the current position in the history structure.
+      (w3m-history-store-position)
+      (switch-to-buffer
+       (setq buffer (w3m-copy-buffer nil  "*w3m*"
+				     w3m-new-session-in-background
+				     'empty)))
+      (w3m-display-progress-message url)
+      (w3m-goto-url url
+		    (or reload
+			;; When new URL has `name' portion, we have to
+			;; goto the base url because generated buffer
+			;; has no content at this moment.
+			(and
+			 (w3m-string-match-url-components url)
+			 (match-beginning 8)
+			 'redisplay))
+		    charset post-data referer)
+      ;; Delete useless newly created buffer if it is empty.
+      (w3m-delete-buffer-if-empty buffer))))
 
 (defun w3m-move-point-for-localcgi (url)
   (when (and (w3m-url-local-p url)

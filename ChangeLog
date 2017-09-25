@@ -1,3 +1,9 @@
+2017-09-25  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-goto-url-new-session): Use
+	(if (not CONDITION) FOO BAR) instead of (if CONDITION FOO BAR) style
+	in order to improve the visibility of the code.
+
 2017-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-retrieve-and-render): Workaround: don't do redirection if
