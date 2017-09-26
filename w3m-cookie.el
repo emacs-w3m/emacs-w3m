@@ -582,14 +582,23 @@ string is case insensitive and allows a regular expression."
     (when post-data
       (dolist (pair (split-string post-data "&"))
 	(setq pair (split-string pair "="))
-	(pcase (car pair)
-	  ("delete" (setq delete (cadr pair)))
-	  ("re-search" (setcdr match t))
-	  ("search" (setcar match (replace-regexp-in-string
-				   "[\n\r].*" ""
-				   (w3m-url-decode-string (cadr pair)))))
-	  (_ (when (equal (cadr pair) "0")
-	       (push (string-to-number (car pair)) dels))))))
+	(w3m-static-if (fboundp 'pcase)
+	    (pcase (car pair)
+	      ("delete" (setq delete (cadr pair)))
+	      ("re-search" (setcdr match t))
+	      ("search" (setcar match (replace-regexp-in-string
+				       "[\n\r].*" ""
+				       (w3m-url-decode-string (cadr pair)))))
+	      (_ (when (equal (cadr pair) "0")
+		   (push (string-to-number (car pair)) dels))))
+	  (cond ((equal "delete" (car pair)) (setq delete (cadr pair)))
+		((equal "re-search" (car pair)) (setcdr match t))
+		((equal "search" (car pair))
+		 (setcar match (replace-regexp-in-string
+				"[\n\r].*" ""
+				(w3m-url-decode-string (cadr pair)))))
+		(t (when (equal (cadr pair) "0")
+		     (push (string-to-number (car pair)) dels)))))))
     (if (zerop (length (car match)))
 	(setq match nil
 	      cookies w3m-cookies)
@@ -600,14 +609,31 @@ string is case insensitive and allows a regular expression."
 	(when (string-match regexp (w3m-cookie-url cookie))
 	  (push cookie cookies)))
       (setq cookies (nreverse cookies)))
-    (pcase delete
-      ("0" (dolist (del dels)
-	     (setf (w3m-cookie-ignore (nth del cookies)) t)))
-      ("1" (dolist (cookie cookies)
-	     (setf (w3m-cookie-ignore cookie) nil)))
-      ("2" (dolist (cookie cookies)
-	     (setf (w3m-cookie-ignore cookie) t)))
-      ("3" (progn
+    (w3m-static-if (fboundp 'pcase)
+	(pcase delete
+	  ("0" (dolist (del dels)
+		 (setf (w3m-cookie-ignore (nth del cookies)) t)))
+	  ("1" (dolist (cookie cookies)
+		 (setf (w3m-cookie-ignore cookie) nil)))
+	  ("2" (dolist (cookie cookies)
+		 (setf (w3m-cookie-ignore cookie) t)))
+	  ("3" (progn
+		 (dolist (del dels)
+		   (setf (w3m-cookie-ignore (nth del cookies)) t))
+		 (dolist (cookie cookies)
+		   (when (w3m-cookie-ignore cookie)
+		     (setq cookies (delq cookie cookies)
+			   w3m-cookies (delq cookie w3m-cookies)))))))
+      (cond ((equal "0" delete)
+	     (dolist (del dels)
+	       (setf (w3m-cookie-ignore (nth del cookies)) t)))
+	    ((equal "1" delete)
+	     (dolist (cookie cookies)
+	       (setf (w3m-cookie-ignore cookie) nil)))
+	    ((equal "2" delete)
+	     (dolist (cookie cookies)
+	       (setf (w3m-cookie-ignore cookie) t)))
+	    ((equal "3" delete)
 	     (dolist (del dels)
 	       (setf (w3m-cookie-ignore (nth del cookies)) t))
 	     (dolist (cookie cookies)

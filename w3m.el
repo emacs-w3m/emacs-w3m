@@ -3830,6 +3830,16 @@ The database is kept in `w3m-entity-table'."
 				 t
 				 'w3m-idle-images-show)))))
 
+(defcustom w3m-confirm-leaving-secure-page t
+  "If non-nil, you'll be asked for confirmation when leaving secure pages.
+This option controls whether the confirmation is made also when
+retrieving data (typically images) in a secure page from non-secure
+pages.  It is STRONGLY recommended to set non-nil value to this option.
+You MUST understand what you want to do completely before switching
+off this option."
+  :group 'w3m
+  :type 'boolean)
+
 (defvar w3m-image-no-idle-timer nil)
 (defun w3m-toggle-inline-images-internal (status
 					  &optional no-cache url
@@ -6259,16 +6269,6 @@ to fold them).  Things in textarea won't be modified."
   (w3m-rendering-half-dump charset)
   (w3m-message "Rendering...done")
   (w3m-rendering-extract-title))
-
-(defcustom w3m-confirm-leaving-secure-page t
-  "If non-nil, you'll be asked for confirmation when leaving secure pages.
-This option controls whether the confirmation is made also when
-retrieving data (typically images) in a secure page from non-secure
-pages.  It is STRONGLY recommended to set non-nil value to this option.
-You MUST understand what you want to do completely before
-switching off this option."
-  :group 'w3m
-  :type 'boolean)
 
 (defun w3m-retrieve-and-render (url &optional no-cache charset
 				    post-data referer handler)
@@ -9930,7 +9930,7 @@ session will start afresh."
       ;; Store the current position in the history structure.
       (w3m-history-store-position)
       (switch-to-buffer
-       (setq buffer (w3m-copy-buffer nil  "*w3m*"
+       (setq buffer (w3m-copy-buffer nil "*w3m*"
 				     w3m-new-session-in-background
 				     'empty)))
       (w3m-display-progress-message url)
