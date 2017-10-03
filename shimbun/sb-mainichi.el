@@ -118,7 +118,7 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
   :type '(choice (const :tag "None" nil) (string :tag "User name")))
 
 (defcustom shimbun-mainichi-login-password nil
-  "Login name used to login to mainichi.jp.
+  "Password used to login to mainichi.jp.
 To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
   :group 'shimbun
   :type '(choice (const :tag "None" nil) (string :tag "Password")))
