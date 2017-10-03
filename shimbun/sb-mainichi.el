@@ -494,8 +494,13 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 	    (w3m-process-with-wait-handler
 	      (w3m-retrieve (w3m-form-action form) nil t
 			    (w3m-form-make-form-data form)
-			    shimbun-mainichi-login-url handler))
-	    (w3m-cookie-save)))))))
+			    shimbun-mainichi-login-url handler)))))
+      (when (and w3m-cookies w3m-cookie-save-cookies)
+	(w3m-cookie-save))
+      (when (get-buffer " *w3m-cookie-parse-temp*")
+	(kill-buffer (get-buffer " *w3m-cookie-parse-temp*")))
+      ;; FIXME: When do we kill the `w3m-cache-buffer'?
+      )))
 
 (provide 'sb-mainichi)
 
