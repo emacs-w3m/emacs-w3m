@@ -183,7 +183,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 		    (concat
 		     "<a[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*href=\""
 		     ;; 1. url
-		     "\\(/articles/"
+		     "\\(\\(?:/[^\"/>]+\\)*/articles/"
 		     ;; 2. serial number
 		     "\\("
 		     ;; 3. year
