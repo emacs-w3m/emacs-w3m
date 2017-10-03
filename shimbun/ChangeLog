@@ -1,6 +1,10 @@
 2017-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* sb-mainichi.el (shimbun-mainichi-get-headers-fuchisou): Update regexp.
+	* sb-mainichi.el (shimbun-mainichi-login-url)
+	(shimbun-mainichi-login-name)
+	(shimbun-mainichi-login-password): New variables;
+	do login if name and password are set.
+	(shimbun-mainichi-get-headers-fuchisou): Update regexp.
 
 2017-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 

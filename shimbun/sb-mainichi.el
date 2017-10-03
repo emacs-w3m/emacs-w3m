@@ -107,6 +107,22 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 
 (defvar shimbun-mainichi-expiration-days 7)
 
+(defvar shimbun-mainichi-login-url
+  "https://mainichi.jp/auth/login.php?url=https%3A%2F%2Fmainichi.jp%2F"
+  "*Url to login to.")
+
+(defcustom shimbun-mainichi-login-name nil
+  "Login name used to login to mainichi.jp.
+To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
+  :group 'shimbun
+  :type '(choice (const :tag "None" nil) (string :tag "User name")))
+
+(defcustom shimbun-mainichi-login-password nil
+  "Login name used to login to mainichi.jp.
+To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
+  :group 'shimbun
+  :type '(choice (const :tag "None" nil) (string :tag "Password")))
+
 (luna-define-method shimbun-groups ((shimbun shimbun-mainichi))
   (mapcar 'car shimbun-mainichi-group-table))
 
@@ -424,6 +440,62 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
       (goto-char (point-min))
       (insert "&#012;\n"))
     t))
+
+(eval-when-compile
+  (require 'w3m-cookie)
+  (require 'w3m-form))
+
+(when (and w3m-use-cookies w3m-use-form
+	   shimbun-mainichi-login-name shimbun-mainichi-login-password)
+  ;; Login
+  (ignore-errors
+    (require 'w3m-cookie)
+    (require 'w3m-form)
+    (let ((num 0) form plist val uid pass handler)
+      (w3m-process-do-with-temp-buffer
+	  (type (w3m-retrieve shimbun-mainichi-url nil t))
+	(when (and type
+		   (progn
+		     (goto-char (point-min))
+		     (re-search-forward
+		      "<a[\t\n ]+href=\"/auth/login\\.php\\?url=" nil t)))
+	  (erase-buffer)
+	  (set-buffer-multibyte t)
+	  (w3m-process-with-wait-handler
+	    (w3m-retrieve-and-render shimbun-mainichi-login-url
+				     t nil nil shimbun-mainichi-url handler))
+	  (setq form (car w3m-current-forms))
+	  (when (string-match "/auth\\.mainichi\\.co\\.jp/"
+			      (w3m-form-action form))
+	    (setq plist (w3m-form-plist form))
+	    (while (and (not (and uid pass)) (setq val (pop plist)))
+	      (if (numberp val)
+		  (setq num (max num val))
+		(when (eq (car val) :value)
+		  (setq val (cadr val))
+		  (cond ((string-equal "uidemail" (car val))
+			 (setcdr val shimbun-mainichi-login-name)
+			 (setq uid t))
+			((string-equal "password" (car val))
+			 (setcdr val shimbun-mainichi-login-password)
+			 (setq pass t))))))
+	    (unless uid
+	      (nconc (setq plist (w3m-form-plist form))
+		     (list (setq num (1+ num))
+			   (list :value
+				 (cons "uidemail"
+				       shimbun-mainichi-login-name)))))
+	    (unless pass
+	      (nconc (or plist (w3m-form-plist form))
+		     (list (setq num (1+ num))
+			   (list :value
+				 (cons "password"
+				       shimbun-mainichi-login-password)))))
+	    (w3m-process-with-wait-handler
+	      (w3m-retrieve (w3m-form-action form) nil t
+			    (w3m-form-make-form-data form)
+			    shimbun-mainichi-login-url handler))
+	    (w3m-cookie-save)))))))
 
 (provide 'sb-mainichi)
 
