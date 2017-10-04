@@ -1,3 +1,11 @@
+2017-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-mainichi.el (shimbun-mainichi-url): Use https.
+	(shimbun-mainichi-login-url): Remove query part.
+	(shimbun-mainichi-logout-url): New variable.
+	(shimbun-mainichi-login): Make it a user command.
+	(shimbun-mainichi-logout): New user command.
+
 2017-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-mainichi.el (shimbun-mainichi-login-url)

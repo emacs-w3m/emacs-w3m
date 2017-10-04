@@ -38,7 +38,7 @@
 (luna-define-class shimbun-mainichi (shimbun-japanese-newspaper
 				     shimbun-multi shimbun-rss) ())
 
-(defvar shimbun-mainichi-url "http://mainichi.jp/")
+(defvar shimbun-mainichi-url "https://mainichi.jp/")
 
 (defvar shimbun-mainichi-top-level-domain "mainichi.jp")
 
@@ -107,9 +107,11 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 
 (defvar shimbun-mainichi-expiration-days 7)
 
-(defvar shimbun-mainichi-login-url
-  "https://mainichi.jp/auth/login.php?url=https%3A%2F%2Fmainichi.jp%2F"
-  "*Url to login to.")
+(defvar shimbun-mainichi-login-url "https://mainichi.jp/auth/login.php"
+  "*Url base to login to mainichi.jp.")
+
+(defvar shimbun-mainichi-logout-url "https://mainichi.jp/auth/logout.php"
+  "*Url base to logout from mainichi.jp.")
 
 (defcustom shimbun-mainichi-login-name nil
   "Login name used to login to mainichi.jp.
@@ -445,62 +447,162 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
   (require 'w3m-cookie)
   (require 'w3m-form))
 
-(when (and w3m-use-cookies w3m-use-form
-	   shimbun-mainichi-login-name shimbun-mainichi-login-password)
-  ;; Login
-  (ignore-errors
-    (require 'w3m-cookie)
-    (require 'w3m-form)
-    (let ((num 0) form plist val uid pass handler)
-      (w3m-process-do-with-temp-buffer
-	  (type (w3m-retrieve shimbun-mainichi-url nil t))
-	(when (and type
-		   (progn
-		     (goto-char (point-min))
-		     (re-search-forward
-		      "<a[\t\n ]+href=\"/auth/login\\.php\\?url=" nil t)))
-	  (erase-buffer)
-	  (set-buffer-multibyte t)
-	  (w3m-process-with-wait-handler
-	    (w3m-retrieve-and-render shimbun-mainichi-login-url
-				     t nil nil shimbun-mainichi-url handler))
-	  (setq form (car w3m-current-forms))
-	  (when (string-match "/auth\\.mainichi\\.co\\.jp/"
-			      (w3m-form-action form))
-	    (setq plist (w3m-form-plist form))
-	    (while (and (not (and uid pass)) (setq val (pop plist)))
-	      (if (numberp val)
-		  (setq num (max num val))
-		(when (eq (car val) :value)
-		  (setq val (cadr val))
-		  (cond ((string-equal "uidemail" (car val))
-			 (setcdr val shimbun-mainichi-login-name)
-			 (setq uid t))
-			((string-equal "password" (car val))
-			 (setcdr val shimbun-mainichi-login-password)
-			 (setq pass t))))))
-	    (unless uid
-	      (nconc (setq plist (w3m-form-plist form))
-		     (list (setq num (1+ num))
-			   (list :value
-				 (cons "uidemail"
-				       shimbun-mainichi-login-name)))))
-	    (unless pass
-	      (nconc (or plist (w3m-form-plist form))
-		     (list (setq num (1+ num))
-			   (list :value
-				 (cons "password"
-				       shimbun-mainichi-login-password)))))
-	    (w3m-process-with-wait-handler
-	      (w3m-retrieve (w3m-form-action form) nil t
-			    (w3m-form-make-form-data form)
-			    shimbun-mainichi-login-url handler)))))
-      (when (and w3m-cookies w3m-cookie-save-cookies)
-	(w3m-cookie-save))
-      (when (get-buffer " *w3m-cookie-parse-temp*")
-	(kill-buffer (get-buffer " *w3m-cookie-parse-temp*")))
-      ;; FIXME: When do we kill the `w3m-cache-buffer'?
-      )))
+(autoload 'password-cache-add "password-cache")
+(autoload 'password-read-from-cache "password-cache")
+
+(defun shimbun-mainichi-login (&optional name password interactive-p)
+  "Login to mainichi.jp with NAME and PASSWORD.
+NAME and PASSWORD default to `shimbun-mainichi-login-name' and
+`shimbun-mainichi-login-password' respectively.  `password-data', if
+cached, overrides `shimbun-mainichi-login-password'.  If the prefix
+argument is given, you will be prompted for new NAME and PASSWORD."
+  (interactive (let ((pass (copy-sequence shimbun-mainichi-login-password))
+		     name default password)
+		 (unless (and w3m-use-cookies w3m-use-form)
+		   (error "\
+You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
+		 (setq name (if current-prefix-arg
+				(completing-read
+				 "Login name: "
+				 (cons shimbun-mainichi-login-name nil)
+				 nil nil shimbun-mainichi-login-name)
+			      shimbun-mainichi-login-name))
+		 (when (and name (string-match "\\`[\t ]*\\'" name))
+		   (setq name nil))
+		 (setq default (and name
+				    (or (password-read-from-cache name)
+					;; `password-cache' will expire
+					;; the password by filling it with
+					;; C-@'s, so we use a copy of
+					;; the original.
+					(copy-sequence
+					 shimbun-mainichi-login-password)))
+		       password (and name
+				     (if current-prefix-arg
+					 (read-passwd
+					  (concat "Password"
+						  (when default
+						    (concat " (default "
+							    (make-string
+							     (length default)
+							     ?*)
+							    ")"))
+						  ": ")
+					  nil default)
+				       default)))
+		 (when (and password (string-match "\\`[\t ]*\\'" password))
+		   (setq name nil
+			 password nil))
+		 (list name password t)))
+  (unless interactive-p
+    (if (or name (setq name shimbun-mainichi-login-name))
+	(or password
+	    (setq password
+		  (or (password-read-from-cache name)
+		      (copy-sequence shimbun-mainichi-login-password)))
+	    (setq name nil))
+      (setq password nil)))
+  (if (not (and w3m-use-cookies w3m-use-form name password))
+      (when interactive-p (message "Quit"))
+    (condition-case err
+      (progn
+	(require 'w3m-cookie)
+	(require 'w3m-form)
+	(let ((cache (buffer-live-p w3m-cache-buffer))
+	      (num 0)
+	      form plist val uid pass handler)
+	  (w3m-process-do-with-temp-buffer
+	      (type (w3m-retrieve shimbun-mainichi-url nil t))
+	    (if (not type)
+		(when interactive-p (message "Failed to login"))
+	      (goto-char (point-min))
+	      (if (not (re-search-forward
+			"<a[\t\n ]+href=\"/auth/login\\.php\\?url="
+			nil t))
+		  (when interactive-p (message "Already logged in"))
+		(erase-buffer)
+		(set-buffer-multibyte t)
+		(w3m-process-with-wait-handler
+		  (w3m-retrieve-and-render
+		   (concat shimbun-mainichi-login-url "?url="
+			   (shimbun-url-encode-string shimbun-mainichi-url))
+		   t nil nil shimbun-mainichi-url handler))
+		(setq form (car w3m-current-forms))
+		(if (not (string-match "/auth\\.mainichi\\.co\\.jp/"
+				       (w3m-form-action form)))
+		    (when interactive-p
+		      (message "Already logged in"))
+		  (setq plist (w3m-form-plist form))
+		  (while (and (not (and uid pass)) (setq val (pop plist)))
+		    (if (numberp val)
+			(setq num (max num val))
+		      (when (eq (car val) :value)
+			(setq val (cadr val))
+			(cond ((string-equal "uidemail" (car val))
+			       (setcdr val name)
+			       (setq uid t))
+			      ((string-equal "password" (car val))
+			       (setcdr val password)
+			       (setq pass t))))))
+		  (unless uid
+		    (nconc (setq plist (w3m-form-plist form))
+			   (list (setq num (1+ num))
+				 (list :value (cons "uidemail" name)))))
+		  (unless pass
+		    (nconc (or plist (w3m-form-plist form))
+			   (list (setq num (1+ num))
+				 (list :value (cons "password" password)))))
+		  (erase-buffer)
+		  (w3m-process-with-wait-handler
+		    (w3m-retrieve-and-render
+		     (w3m-form-action form) t nil
+		     (w3m-form-make-form-data form)
+		     shimbun-mainichi-login-url handler))
+		  (if (not (string-equal w3m-current-url shimbun-mainichi-url))
+		      (when interactive-p (message "Failed to login"))
+		    (when interactive-p (message "Logged in"))
+		    (password-cache-add name password)
+		    (when w3m-cookie-save-cookies (w3m-cookie-save))))))
+	    (when (get-buffer " *w3m-cookie-parse-temp*")
+	      (kill-buffer (get-buffer " *w3m-cookie-parse-temp*")))
+	    (unless cache (w3m-cache-shutdown)))))
+      (error (when interactive-p (signal (car err) (cdr err)))))))
+
+(defun shimbun-mainichi-logout (&optional interactive-p)
+  "Logout from mainichi.jp."
+  (interactive (list t))
+  (condition-case err
+      (progn
+	(require 'w3m-cookie)
+	(require 'w3m-form)
+	(let ((cache (buffer-live-p w3m-cache-buffer))
+	      handler)
+	  (w3m-process-do-with-temp-buffer
+	      (type (w3m-retrieve shimbun-mainichi-url nil t))
+	    (if (not type)
+		(when interactive-p (message "Failed to logout"))
+	      (goto-char (point-min))
+	      (if (not (re-search-forward
+			"<a[\t\n ]+href=\"/auth/logout\\.php\\?url="
+			nil t))
+		  (when interactive-p (message "Already logged out"))
+		(erase-buffer)
+		(set-buffer-multibyte t)
+		(w3m-process-with-wait-handler
+		  (w3m-retrieve-and-render
+		   (concat shimbun-mainichi-logout-url "?url="
+			   (shimbun-url-encode-string shimbun-mainichi-url))
+		   t nil nil shimbun-mainichi-url handler))
+		(if (not (string-equal w3m-current-url shimbun-mainichi-url))
+		    (when interactive-p (message "Failed to logout"))
+		  (message "Logged out")
+		  (when w3m-cookie-save-cookies (w3m-cookie-save)))))
+	    (when (get-buffer " *w3m-cookie-parse-temp*")
+	      (kill-buffer (get-buffer " *w3m-cookie-parse-temp*")))
+	    (unless cache (w3m-cache-shutdown)))))
+    (error (when interactive-p (signal (car err) (cdr err))))))
+
+(shimbun-mainichi-login)
 
 (provide 'sb-mainichi)
 
