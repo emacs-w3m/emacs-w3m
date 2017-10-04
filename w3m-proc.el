@@ -483,27 +483,22 @@ evaluated in a temporary buffer."
 				   (when (buffer-name ,current-buffer)
 				     (set-buffer ,current-buffer))
 				   ,var))
-	 (unwind-protect
-	     (let ((,var (let ((handler
-				(cons #',post-body
-				      (cons #',post-handler handler))))
-			   (with-current-buffer ,temp-buffer ,@form))))
-	       (if (w3m-process-p ,var)
-		   (if handler
-		       ,var
-		     (w3m-process-start-process ,var))
-		 (if (w3m-process-p
-		      (setq ,var (save-current-buffer
-				   (let ((handler (cons #',post-handler
-							handler)))
-				     (,post-body ,var)))))
-		     (if handler
-			 ,var
-		       (w3m-process-start-process ,var))
-		   (,post-handler ,var))))
-	   (when (buffer-name ,temp-buffer)
-	     (w3m-kill-buffer ,temp-buffer)))))))
-
+	 (let ((,var (let ((handler
+			    (cons #',post-body
+				  (cons #',post-handler handler))))
+		       (with-current-buffer ,temp-buffer ,@form))))
+	   (if (w3m-process-p ,var)
+	       (if handler
+		   ,var
+		 (w3m-process-start-process ,var))
+	     (if (w3m-process-p
+		  (setq ,var (save-current-buffer
+			       (let ((handler (cons #',post-handler handler)))
+				 (,post-body ,var)))))
+		 (if handler
+		     ,var
+		   (w3m-process-start-process ,var))
+	       (,post-handler ,var))))))))
 (put 'w3m-process-do-with-temp-buffer 'lisp-indent-function 1)
 (put 'w3m-process-do-with-temp-buffer 'edebug-form-spec
      '((symbolp form) def-body))

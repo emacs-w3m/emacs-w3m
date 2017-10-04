@@ -1,7 +1,3 @@
-2017-10-04  Katsumi Yamaoka  <yamaoka@jpl.org>
-
-	* w3m-proc.el (w3m-process-do-with-temp-buffer): Unwind protect.
-
 2017-09-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-cookie.el (w3m-about-cookie): Work for old Emacsen.
