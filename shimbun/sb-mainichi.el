@@ -504,15 +504,16 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
       (setq password nil)))
   (if (not (and w3m-use-cookies w3m-use-form name password))
       (when interactive-p (message "Quit"))
-    (condition-case err
-      (progn
-	(require 'w3m-cookie)
-	(require 'w3m-form)
-	(let ((cache (buffer-live-p w3m-cache-buffer))
-	      (num 0)
-	      form plist val uid pass handler)
+    (require 'w3m-cookie)
+    (require 'w3m-form)
+    (let ((cache (buffer-live-p w3m-cache-buffer))
+	  (num 0)
+	  temp form plist val uid pass handler)
+      (condition-case err
 	  (w3m-process-do-with-temp-buffer
-	      (type (w3m-retrieve shimbun-mainichi-url nil t))
+	      (type (progn
+		      (setq temp (current-buffer))
+		      (w3m-retrieve shimbun-mainichi-url nil t)))
 	    (if (not type)
 		(when interactive-p (message "Failed to login"))
 	      (goto-char (point-min))
@@ -565,42 +566,51 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
 		    (when w3m-cookie-save-cookies (w3m-cookie-save))))))
 	    (when (get-buffer " *w3m-cookie-parse-temp*")
 	      (kill-buffer (get-buffer " *w3m-cookie-parse-temp*")))
-	    (unless cache (w3m-cache-shutdown)))))
-      (error (when interactive-p (signal (car err) (cdr err)))))))
+	    (unless cache (w3m-cache-shutdown)))
+	(error (if (or interactive-p debug-on-error)
+		   (signal (car err) (cdr err))
+		 (message "Error while logging in to mainichi.jp:\n %s"
+			  (error-message-string err))
+		 (when (buffer-live-p temp) (kill-buffer temp))))))))
 
 (defun shimbun-mainichi-logout (&optional interactive-p)
   "Logout from mainichi.jp."
   (interactive (list t))
-  (condition-case err
-      (progn
-	(require 'w3m-cookie)
-	(require 'w3m-form)
-	(let ((cache (buffer-live-p w3m-cache-buffer))
-	      handler)
-	  (w3m-process-do-with-temp-buffer
-	      (type (w3m-retrieve shimbun-mainichi-url nil t))
-	    (if (not type)
-		(when interactive-p (message "Failed to logout"))
-	      (goto-char (point-min))
-	      (if (not (re-search-forward
-			"<a[\t\n ]+href=\"/auth/logout\\.php\\?url="
-			nil t))
-		  (when interactive-p (message "Already logged out"))
-		(erase-buffer)
-		(set-buffer-multibyte t)
-		(w3m-process-with-wait-handler
-		  (w3m-retrieve-and-render
-		   (concat shimbun-mainichi-logout-url "?url="
-			   (shimbun-url-encode-string shimbun-mainichi-url))
-		   t nil nil shimbun-mainichi-url handler))
-		(if (not (string-equal w3m-current-url shimbun-mainichi-url))
-		    (when interactive-p (message "Failed to logout"))
-		  (when interactive-p (message "Logged out"))
-		  (when w3m-cookie-save-cookies (w3m-cookie-save)))))
-	    (when (get-buffer " *w3m-cookie-parse-temp*")
-	      (kill-buffer (get-buffer " *w3m-cookie-parse-temp*")))
-	    (unless cache (w3m-cache-shutdown)))))
-    (error (when interactive-p (signal (car err) (cdr err))))))
+  (require 'w3m-cookie)
+  (require 'w3m-form)
+  (let ((cache (buffer-live-p w3m-cache-buffer))
+	temp handler)
+    (condition-case err
+	(w3m-process-do-with-temp-buffer
+	    (type (progn
+		    (setq temp (current-buffer))
+		    (w3m-retrieve shimbun-mainichi-url nil t)))
+	  (if (not type)
+	      (when interactive-p (message "Failed to logout"))
+	    (goto-char (point-min))
+	    (if (not (re-search-forward
+		      "<a[\t\n ]+href=\"/auth/logout\\.php\\?url="
+		      nil t))
+		(when interactive-p (message "Already logged out"))
+	      (erase-buffer)
+	      (set-buffer-multibyte t)
+	      (w3m-process-with-wait-handler
+		(w3m-retrieve-and-render
+		 (concat shimbun-mainichi-logout-url "?url="
+			 (shimbun-url-encode-string shimbun-mainichi-url))
+		 t nil nil shimbun-mainichi-url handler))
+	      (if (not (string-equal w3m-current-url shimbun-mainichi-url))
+		  (when interactive-p (message "Failed to logout"))
+		(when interactive-p (message "Logged out"))
+		(when w3m-cookie-save-cookies (w3m-cookie-save)))))
+	  (when (get-buffer " *w3m-cookie-parse-temp*")
+	    (kill-buffer (get-buffer " *w3m-cookie-parse-temp*")))
+	  (unless cache (w3m-cache-shutdown)))
+      (error (if (or interactive-p debug-on-error)
+		 (signal (car err) (cdr err))
+	       (message "Error while logging out from mainichi.jp:\n %s"
+			(error-message-string err))
+	       (when (buffer-live-p temp) (kill-buffer temp)))))))
 
 (shimbun-mainichi-login)
 
