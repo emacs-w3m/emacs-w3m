@@ -645,9 +645,9 @@ string is case insensitive and allows a regular expression."
       "<html><head><title>Cookies</title></head>
 <body><center><b>Cookies</b></center>
 <form method=\"post\" action=\"about://cookie/\">
-<p><table><tr><td>Limit to <textarea name=\"search\">"
+<p><table><tr><td>Limit to <input type=\"text\" name=\"search\" value=\""
       (car match)
-      "</textarea>&lt;=&nbsp;<input type=checkbox name=\"re-search\""
+      "\">&nbsp;&lt;=&nbsp;<input type=checkbox name=\"re-search\""
       (when (cdr match) " checked")
       ">regexp&nbsp;<input type=submit value=\"OK\"></td></tr>
 <tr><td><input type=radio name=\"delete\" value=0 checked>Noop&nbsp;

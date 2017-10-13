@@ -7142,7 +7142,7 @@ launches the current session, i.e., the one to be deleted.")
 	      (parent (current-buffer)))
 	  (setq pos (point-marker)
 		buffer (w3m-copy-buffer
-			nil nil nil empty w3m-new-session-in-background))
+			nil nil nil empty w3m-new-session-in-background t))
 	  (when w3m-new-session-in-background
 	    (set-buffer buffer))
 	  (setq w3m-parent-session-buffer parent)
@@ -7889,18 +7889,21 @@ Return t if highlighting is successful."
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
-(defun w3m-copy-buffer (&optional buffer newname just-copy empty background)
-  "Create a copy of the BUFFER in which emacs-w3m is working.
+(defun w3m-copy-buffer (&optional buffer newname just-copy empty background
+				  last)
+  "Create a copy of the BUFFER where emacs-w3m is running.
 Return a new buffer.
 
 If BUFFER is nil, the current buffer is assumed.  If NEWNAME is nil,
 it defaults to the name of the current buffer.  If JUST-COPY is nil,
-this function lets a new buffer be the current buffer and pop up as a
-new window or a new frame according to `w3m-pop-up-windows' and
-`w3m-pop-up-frames' (which see), otherwise just creates BUFFER's copy.
-If EMPTY is nil, a page of the same url will be re-rendered in a new
-buffer, otherwise an empty buffer is created. If BACKGROUND is non-nil,
-this function stays on the current buffer.
+this function makes the new buffer the current buffer and pops up as
+a new window or a new frame according to `w3m-pop-up-windows' and
+`w3m-pop-up-frames' (which see), otherwise creates just BUFFER's copy.
+If EMPTY is nil, a page of the same url will be re-rendered in the new
+buffer, otherwise an empty buffer is created.  If BACKGROUND is non-nil,
+you will not leave the current buffer.  If LAST is non-nil, the new
+buffer will be made the last in order of the w3m buffers, otherwise it
+will be made the next of the current buffer.
 
 Note that this function should be called on the window displaying the
 original buffer BUFFER even if JUST-COPY is non-nil in order to render
@@ -7927,7 +7930,7 @@ a page in a new buffer with the correct width."
 	(setq empty t))
       ;;
       (w3m-history-store-position)
-      (set-buffer (setq new (w3m-generate-new-buffer newname)))
+      (set-buffer (setq new (w3m-generate-new-buffer newname (not last))))
       (w3m-mode)
       ;; Make copies of `w3m-history' and `w3m-history-flat'.
       (w3m-history-copy buffer)
@@ -9676,7 +9679,8 @@ Cannot run two w3m processes simultaneously \
 		      (prog1
 			  (w3m-goto-url (pop urls))
 			(dotimes (i (length urls))
-			  (push (w3m-copy-buffer nil nil nil 'empty) buffers))
+			  (push (w3m-copy-buffer nil nil nil 'empty nil t)
+				buffers))
 			(dolist (url (nreverse urls))
 			  (with-current-buffer (pop buffers)
 			    (w3m-goto-url url))))))
@@ -9947,7 +9951,7 @@ session will start afresh."
       (switch-to-buffer
        (setq buffer (w3m-copy-buffer nil "*w3m*"
 				     w3m-new-session-in-background
-				     'empty)))
+				     'empty nil t)))
       (w3m-display-progress-message url)
       (w3m-goto-url url
 		    (or reload

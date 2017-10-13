@@ -1,5 +1,17 @@
 2017-10-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m-copy-buffer): Make the copied buffer the next of the
+	current buffer by default (like Firefox does); use the new argument
+	LAST to make it the last in order of buffers.
+	(w3m-view-this-url-1, w3m-goto-url, w3m-goto-url-new-session): Set LAST.
+
+	* w3m-util.el (w3m-generate-new-buffer): Make the new buffer the next
+	of the current buffer if the new argument NEXT is set.
+
+	* w3m-util.el (w3m-about-cookie): Use input instead of textarea.
+
+2017-10-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	Make `w3m-retrieve' do onload redirection.
 
 	* w3m.el (w3m-retrieve-and-render): Move onload redirection stuff to

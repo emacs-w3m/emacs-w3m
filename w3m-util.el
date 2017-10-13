@@ -443,17 +443,36 @@ An argument of nil means kill the current buffer."
 	(setq newname (format "%s *w3m*<%d>" (w3m-current-title) number)))
       (rename-buffer newname))))
 
-(defun w3m-generate-new-buffer (name)
-  (if w3m-use-title-buffer-name
-      (let* ((maxbuf (let ((w3m-fb-mode nil))
-		       (car (nreverse (w3m-list-buffers)))))
-	     (number (w3m-buffer-number maxbuf)))
-	(when (string-match "\\*w3m\\*\\(<\\([0-9]+\\)>\\)?\\'" name)
-	  (setq name "*w3m*"))
-	(if (and maxbuf number)
-	    (generate-new-buffer (format "%s<%d>" name (1+ number)))
-	  (generate-new-buffer name)))
-    (generate-new-buffer name)))
+(defun w3m-generate-new-buffer (name &optional next)
+  "Create and return a buffer with a name based on NAME.
+Make the new buffer the next of the current buffer if NEXT is non-nil."
+  (when (string-match "<[0-9]+>\\'" name)
+    (setq name (substring name 0 (match-beginning 0))))
+  (let* ((w3m-fb-mode nil)
+	 (buffers (w3m-list-buffers))
+	 (regexp (concat "\\`" (regexp-quote name) "\\(?:<[0-9]+>\\)?\\'"))
+	 (siblings (delq nil
+			 (mapcar
+			  (lambda (buffer)
+			    (when (string-match regexp (buffer-name buffer))
+			      buffer))
+			  buffers)))
+	 youngers cur number num)
+    (if (and next
+	     (setq youngers (cdr (memq (setq cur (current-buffer)) siblings))))
+	(progn
+	  (setq number (1+ (w3m-buffer-number cur))
+		num (+ 1 (length youngers)
+		       (w3m-buffer-number (car (reverse youngers)))))
+	  (dolist (buffer (reverse youngers))
+	    (w3m-buffer-set-number buffer (setq num (1- num))))
+	  (setq num number)
+	  (dolist (buffer youngers)
+	    (w3m-buffer-set-number buffer (setq num (1+ num))))
+	  (generate-new-buffer (format "%s<%d>" name number)))
+      (if (setq number (w3m-buffer-number (car (nreverse siblings))))
+	  (generate-new-buffer (format "%s<%d>" name (1+ number)))
+	(generate-new-buffer name)))))
 
 (defun w3m-buffer-name-lessp (x y)
   "Return t if first arg buffer's name is less than second."
