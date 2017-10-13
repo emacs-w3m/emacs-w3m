@@ -1,3 +1,12 @@
+2017-10-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make `w3m-retrieve' do onload redirection.
+
+	* w3m.el (w3m-retrieve-and-render): Move onload redirection stuff to
+	(w3m-w3m-onload-redirection): New function.
+	(w3m-w3m-retrieve-1): Use it.
+	(w3m-decode-encoded-contents): Use zlib-decompress-region for gzip.
+
 2017-09-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-cookie.el (w3m-about-cookie): Work for old Emacsen.
