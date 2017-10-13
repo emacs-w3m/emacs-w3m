@@ -278,37 +278,9 @@ Return content-type of URL as string when retrieval succeeded."
 		    charset (match-string 3))
 	      (delete-region (point-min) pos))))
       ;; retrieve URL
-      (and url
-	   (setq type (w3m-retrieve (w3m-url-transfer-encode-string url)
-				    nil no-cache nil referer))
-	   ;; Onload redirection for the OpenID transaction.
-	   (let ((case-fold-search t)
-		 (cur (current-buffer))
-		 (ourl url)
-		 (w3m-use-cookies t)
-		 (w3m-use-form t)
-		 form xurl post-data)
-	     (while (and
-		     (equal type "text/html")
-		     (progn
-		       (goto-char (point-min))
-		       ;; FIXME: Is there any other name that does not end
-		       ;; with ".submit" for the function used to sumbit?
-		       (re-search-forward "\
-<body[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*onload=\
-[^\t\n\r ()>]+\\.submit()" nil t))
-		     (with-temp-buffer
-		       (set-buffer-multibyte nil)
-		       (insert-buffer-substring cur)
-		       (w3m-region (point-min) (point-max))
-		       (and (setq form (car w3m-current-forms))
-			    (setq xurl (aref form 2))
-			    (setq post-data (w3m-form-make-form-data form))))
-		     (progn
-		       (w3m-message "Redirect to %s..." xurl)
-		       (erase-buffer)
-		       (setq type (w3m-retrieve xurl nil t post-data ourl)))
-		     (setq url (w3m-real-url (setq ourl xurl))))))))
+      (when url
+	(setq type (w3m-retrieve (w3m-url-transfer-encode-string url)
+				 nil no-cache nil referer))))
     (if type
 	(progn
 	  (unless no-decode
