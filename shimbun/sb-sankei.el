@@ -1,6 +1,6 @@
 ;;; sb-sankei.el --- shimbun backend for the Sankei News -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003-2011, 2013-2016 Katsumi Yamaoka
+;; Copyright (C) 2003-2011, 2013-2017 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -337,6 +337,13 @@ This is a subroutine that `shimbun-sankei-get-headers-top' uses."
       (match-string 4))))
   ;; Delete useless contents.
   (let (case-fold-search st)
+    (goto-char (point-min))
+    (while (and (re-search-forward "\
+<\\(ul\\)\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+class=\"socialBox\"\\|\
+<\\(div\\)\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+class=\"socialFloatingFixedBox\""
+				   nil t)
+		(shimbun-end-of-tag (or (match-string 1) (match-string 2)) t))
+      (replace-match "\n"))
     (goto-char (point-min))
     (while (re-search-forward "[\t\n ]*<!-+[\t\n ]+\
 \\([Aa][Dd][\t\n ]+[^\t\n >]+\\(?:[\t\n ]+[^\t\n >]+\\)*\\)[\t\n ]*-+>[\t\n ]*"
