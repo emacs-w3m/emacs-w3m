@@ -4985,13 +4985,15 @@ This function supports the encoding types gzip, bzip, and deflate."
   (let ((case-fold-search t))
     (goto-char (point-min))
     (catch 'found
-      (while (re-search-forward "<meta[ \t\r\f\n]+" nil t)
-	(w3m-parse-attributes ((http-equiv :case-ignore)
-			       (content :case-ignore))
-	  (when (and (string= http-equiv "content-type")
-		     content
-		     (string-match ";[ \t\n]*charset=\\([^\";]+\\)" content))
-	    (throw 'found (match-string 1 content))))))))
+      (while (re-search-forward "\\(<!--\\)\\|<meta[ \t\r\f\n]+" nil t)
+	(if (match-beginning 1)
+	    (w3m-end-of-tag)
+	  (w3m-parse-attributes ((http-equiv :case-ignore)
+				 (content :case-ignore))
+	    (when (and (string= http-equiv "content-type")
+		       content
+		       (string-match ";[ \t\n]*charset=\\([^\";]+\\)" content))
+	      (throw 'found (match-string 1 content)))))))))
 
 (defun w3m-detect-xml-charset ()
   (let ((case-fold-search t))

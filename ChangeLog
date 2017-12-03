@@ -1,3 +1,8 @@
+2017-12-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-detect-meta-charset): Ignore comment ([emacs-w3m:12828]).
+	Thanks to Renato Ferreira.
+
 2017-11-18  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-filter.el (w3m-filter-add-name-anchors):
