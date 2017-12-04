@@ -1,3 +1,8 @@
+2017-12-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-filter.el (w3m-filter-add-name-anchors): Relax regexp
+	([emacs-w3m:12824]).  Thanks to Musha-san and Shirai-san.
+
 2017-12-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-detect-meta-charset): Ignore comment ([emacs-w3m:12828]).
