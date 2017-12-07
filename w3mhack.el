@@ -71,6 +71,7 @@ nil means that all icons are installed to the default directory.")
 but do not execute them.")
 
 (require 'cl)
+(condition-case nil (require 'seq) (error))
 
 ;; Check whether the shell command can be used.
 (let ((test (lambda (shell)
