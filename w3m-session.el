@@ -242,7 +242,7 @@ Sorry, an error found in \"%s\"; may we remove it? "
        (setq len (length urls))
        (setq urls (nreverse urls))
        (when (assoc title sessions)
-	 (setq sessions (delete (assoc title sessions) sessions)))
+	 (setq sessions (delq (assoc title sessions) sessions)))
        (setq sessions (cons (list title (current-time) urls cnum) sessions))
        (w3m-save-list w3m-session-file sessions)
        (if (= len 1)
@@ -361,7 +361,7 @@ Sorry, an error found in \"%s\"; may we remove it? "
 	 (when urls
 	   (setq urls (nreverse urls))
 	   (setq tmp (assoc title sessions))
-	   (when tmp (setq sessions (delete tmp sessions)))
+	   (when tmp (setq sessions (delq tmp sessions)))
 	   (setq sessions (cons (list title (current-time) urls nil) sessions))
 	   (w3m-save-list w3m-session-file sessions)))))))
 
@@ -373,7 +373,7 @@ Sorry, an error found in \"%s\"; may we remove it? "
      (let* ((sessions (w3m-load-list w3m-session-file))
 	    (item (assoc w3m-session-crash-recovery-title sessions)))
        (when item
-	 (setq sessions (delete item sessions))
+	 (setq sessions (delq item sessions))
 	 (w3m-save-list w3m-session-file sessions))))))
 
 (defvar w3m-session-select-mode-map nil)
@@ -736,7 +736,7 @@ Sorry, an error found in \"%s\"; may we remove it? "
 	  (if (not (y-or-n-p (format "\"%s\" exists. Overwrite? " title)))
 	      (setq prompt default-prompt
 		    title nil))
-	  (setq sessions (delete (assoc title sessions) sessions))
+	  (setq sessions (delq (assoc title sessions) sessions))
 	  (setq num (seq-position sessions (assoc otitle sessions))))))
       ; in this case, wrapper must decrement its copy of num
       (setcar tmp title)
@@ -746,9 +746,9 @@ Sorry, an error found in \"%s\"; may we remove it? "
 (defun w3m-session-delete (sessions num)
   (if (consp num)
       (let* ((item (nth 2 (nth (car num) sessions)))
-	     (tmp (delete (nth (cdr num) item) item)))
+	     (tmp (delq (nth (cdr num) item) item)))
 	(setf (nth 2 (nth (car num) sessions)) tmp))
-    (setq sessions (delete (nth num sessions) sessions)))
+    (setq sessions (delq (nth num sessions) sessions)))
   (if sessions
       (w3m-save-list w3m-session-file sessions)
     (let ((file (expand-file-name w3m-session-file)))

@@ -1,3 +1,9 @@
+2017-12-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-session.el (w3m-session-save, w3m-session-crash-recovery-save)
+	(w3m-session-crash-recovery-remove, w3m-session-rename)
+	(w3m-session-delete): Use delq rather than delete.
+
 2017-12-07  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-session.el (w3m-session-select-delete)
