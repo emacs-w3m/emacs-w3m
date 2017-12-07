@@ -1,3 +1,9 @@
+2017-12-07  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-session.el (w3m-session-select-delete)
+	(w3m-session-select-rename): Retain cursor position after completion;
+	simplify code ([emacs-w3m:12832]).
+
 2017-12-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-filter.el (w3m-filter-add-name-anchors): Relax regexp

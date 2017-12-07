@@ -633,7 +633,8 @@ Sorry, an error found in \"%s\"; may we remove it? "
 	(sessions w3m-session-select-sessions))
     (w3m-session-select-quit)
     (w3m-session-rename sessions num)
-    (w3m-session-select)))
+    (w3m-session-select)
+    (forward-line num)))
 
 (defun w3m-session-select-delete ()
   "Delete the session."
@@ -645,7 +646,8 @@ Sorry, an error found in \"%s\"; may we remove it? "
 	  (sessions w3m-session-select-sessions))
       (w3m-session-select-quit)
       (w3m-session-delete sessions num)
-      (w3m-session-select))))
+      (w3m-session-select)
+      (forward-line num))))
 
 ;;;###autoload
 (defun w3m-session-select ()
@@ -710,56 +712,48 @@ Sorry, an error found in \"%s\"; may we remove it? "
     (message "Session goto(%s)...done" title)))
 
 (defun w3m-session-rename (sessions num)
-    (if (consp num)
-	(message "This command can execute in Main session area")
-      (let ((prompt "New session title: ")
-	    (overwrite nil)
-	    tmp title otitle)
-	(setq tmp (nth num sessions))
-	(setq otitle (car tmp))
-	(setq title otitle)
-	(catch 'loop
-	  (while t
-	    (setq title (read-from-minibuffer prompt otitle))
-	    (cond
-	     ((string= title "")
-	      nil)
-	     ((string= title otitle)
-	      (when (y-or-n-p
-		     (format "\"%s\" is same as original title. Do not rename? "
-			     title))
-		(throw 'loop t)))
-	     ((assoc title sessions)
-	      (when (y-or-n-p (format "\"%s\" is exist. Overwrite? " title))
-		(setq overwrite t)
-		(throw 'loop t)))
-	     (t
-	      (throw 'loop t)))
-	    (setq prompt "Again New session title: ")))
-	(when overwrite
-	  (setq sessions (delete (assoc title sessions) sessions)))
-	(unless (string= title otitle)
-	  (setq sessions (delete tmp sessions))
-	  (setcar tmp title)
-	  (setq sessions (cons tmp sessions))
-	  (w3m-save-list w3m-session-file sessions)))))
+  (if (consp num)
+      (message
+       "This command must be run from the `w3m-session-select' minibuffer.")
+    ; OK, but why do we allow `w3m-session-delete' to run otherwise?
+    (let* ((default-prompt "Enter new session title (C-g to abort): ")
+	   (prompt default-prompt)
+	   overwrite
+	   title
+	   (tmp (nth num sessions))
+	   (otitle (car tmp)))
+      (while (not title)
+	(setq title (read-from-minibuffer prompt nil nil nil nil otitle))
+	(cond
+	 ((string= title "")
+	  (setq title nil
+		prompt default-prompt))
+	 ((string= title otitle)
+	  (setq prompt (concat title
+			       " is same as original title (C-g to abort): ")
+		title nil))
+	 ((assoc title sessions)
+	  (if (not (y-or-n-p (format "\"%s\" exists. Overwrite? " title)))
+	      (setq prompt default-prompt
+		    title nil))
+	  (setq sessions (delete (assoc title sessions) sessions))
+	  (setq num (seq-position sessions (assoc otitle sessions))))))
+      ; in this case, wrapper must decrement its copy of num
+      (setcar tmp title)
+      (setcar (nthcdr num sessions) tmp)
+      (w3m-save-list w3m-session-file sessions))))
 
 (defun w3m-session-delete (sessions num)
-  (let (tmp)
-    (if (consp num)
-	(let ((item (nth 2 (nth (car num) sessions))))
-	  (setq tmp (delete (nth (cdr num) item)
-			    item))
-	  (setf (nth 2 (nth (car num) sessions))
-		tmp))
-      (setq tmp (nth num sessions))
-      (setq sessions (delete tmp sessions)))
-    (if sessions
-	(w3m-save-list w3m-session-file sessions)
-      (let ((file (expand-file-name w3m-session-file)))
-	(when (and (file-exists-p file)
-		   (file-writable-p file))
-	  (delete-file file))))))
+  (if (consp num)
+      (let* ((item (nth 2 (nth (car num) sessions)))
+	     (tmp (delete (nth (cdr num) item) item)))
+	(setf (nth 2 (nth (car num) sessions)) tmp))
+    (setq sessions (delete (nth num sessions) sessions)))
+  (if sessions
+      (w3m-save-list w3m-session-file sessions)
+    (let ((file (expand-file-name w3m-session-file)))
+      (when (and (file-exists-p file) (file-writable-p file))
+	(delete-file file)))))
 
 (defvar w3m-session-menu-items
   `([,(w3m-make-menu-item "新しいセッションを作る..."
