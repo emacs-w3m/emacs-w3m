@@ -1,3 +1,9 @@
+2017-12-07  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-search.el (w3m-search, w3m-search-new-session)
+	(w3m-search-read-variables): Provide visual feedback for whether search
+	will be in new or current session.
+
 2017-12-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el: Require seq.

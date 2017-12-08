@@ -284,26 +284,27 @@ PROMPT-WITH-DEFAULT instead of string PROMPT."
 		   prompt)
 		 initial history default)))
 
-(defun w3m-search-read-variables ()
+(defun w3m-search-read-variables (session)
   "Ask for a search engine and words to query and return them as a list."
   (when w3m-current-process
     (error "%s"
 	   (substitute-command-keys "
 Cannot run two w3m processes simultaneously \
 \(Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)")))
-  (let* ((search-engine
+  (let* ((prompt-prefix (format "Search in %s session. " session))
+	 (search-engine
 	  (if current-prefix-arg
 	      (let ((default (or (car w3m-search-engine-history)
 				 w3m-search-default-engine))
 		    (completion-ignore-case t))
-		(completing-read (format "Which engine? (default %s): "
-					 default)
+		(completing-read (format "%sWhich engine? (default %s): "
+					 prompt-prefix default)
 				 w3m-search-engine-alist nil t nil
 				 'w3m-search-engine-history default))
 	    w3m-search-default-engine))
 	 (query
 	  (w3m-search-read-query
-	   (format "%s search: " search-engine)
+	   (format "%s %s search: " prompt-prefix search-engine)
 	   (format "%s search (default %%s): " search-engine))))
     (list search-engine query)))
 
@@ -331,13 +332,13 @@ the search engines defined in `w3m-search-engine-alist'.  Otherwise use
 `w3m-search-default-engine'.
 If Transient Mark mode, use the region as an initial string of query
 and deactivate the mark."
-  (interactive (w3m-search-read-variables))
+  (interactive (w3m-search-read-variables "current"))
   (w3m-search-do-search 'w3m-goto-url search-engine query))
 
 ;;;###autoload
 (defun w3m-search-new-session (search-engine query)
   "Like `w3m-search', but do the search in a new session."
-  (interactive (w3m-search-read-variables))
+  (interactive (w3m-search-read-variables "new"))
   (w3m-search-do-search 'w3m-goto-url-new-session search-engine query))
 
 ;;;###autoload
