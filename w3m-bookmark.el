@@ -359,7 +359,7 @@ With prefix, ask for a new url instead of the present one."
 
 ;;;###autoload
 (defun w3m-bookmark-view (&optional reload)
-  "Display the bookmark."
+  "Display the bookmark list in the current buffer."
   (interactive "P")
   (if (file-exists-p w3m-bookmark-file)
       (progn
@@ -370,7 +370,7 @@ With prefix, ask for a new url instead of the present one."
 
 ;;;###autoload
 (defun w3m-bookmark-view-new-session (&optional reload)
-  "Display the bookmark on a new session."
+  "Display the bookmark list in a new buffer."
   (interactive "P")
   (if (not (eq major-mode 'w3m-mode))
       (message "This command can be used in w3m mode only")

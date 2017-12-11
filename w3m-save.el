@@ -80,11 +80,14 @@ history list, and be viewable using `w3m-next-page'."
 		       (make-temp-name "w3m-")))
 	     (case-fold-search t))
 	 (setq name (w3m-replace-in-string name "[\C-@- \"*/:<>?\|]+" "_"))
-	 (list (read-file-name
-		"Save this page to: "
-		(file-name-as-directory w3m-save-buffer-directory)
-		name nil (concat name ".html"))
-	       current-prefix-arg))
+	 (list
+	  (read-file-name
+	   (if (not w3m-save-buffer-html-only)
+	       "Save this page (with images) to: "
+	     "Save this page (html only) to: ")
+	   (file-name-as-directory w3m-save-buffer-directory)
+	   name nil (concat name ".html"))
+	  current-prefix-arg))
      (error "No valid url for this page")))
   (when w3m-save-buffer-html-only
     (setq no-images (not no-images)))
@@ -228,7 +231,8 @@ history list, and be viewable using `w3m-next-page'."
      (prog1
 	 (cadar w3m-history)
        (w3m-history-push (w3m-expand-file-name-as-url name)
-			 (list :title (or w3m-current-title "<no-title>")))))))
+			 (list :title (or w3m-current-title "<no-title>")))))
+    name))
 
 (provide 'w3m-save)
 

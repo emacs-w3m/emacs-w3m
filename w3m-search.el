@@ -284,14 +284,18 @@ PROMPT-WITH-DEFAULT instead of string PROMPT."
 		   prompt)
 		 initial history default)))
 
-(defun w3m-search-read-variables (session)
-  "Ask for a search engine and words to query and return them as a list."
+(defun w3m-search-read-variables (where)
+  "Ask for a search engine and words to query and return them as a list.
+
+WHERE is a string which should have the value \"current\" is the calling
+function intends for the search results to be presented in the current
+buffer, or \"new\" if in a new buffer."
   (when w3m-current-process
     (error "%s"
 	   (substitute-command-keys "
 Cannot run two w3m processes simultaneously \
 \(Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)")))
-  (let* ((prompt-prefix (format "Search in %s session. " session))
+  (let* ((prompt-prefix (format "Search in %s buffer. " where))
 	 (search-engine
 	  (if current-prefix-arg
 	      (let ((default (or (car w3m-search-engine-history)
@@ -327,6 +331,9 @@ Cannot run two w3m processes simultaneously \
 ;;;###autoload
 (defun w3m-search (search-engine query)
   "Search QUERY using SEARCH-ENGINE.
+
+Search results will appear in the current buffer.
+
 When called interactively with a prefix argument, you can choose one of
 the search engines defined in `w3m-search-engine-alist'.  Otherwise use
 `w3m-search-default-engine'.
@@ -337,7 +344,7 @@ and deactivate the mark."
 
 ;;;###autoload
 (defun w3m-search-new-session (search-engine query)
-  "Like `w3m-search', but do the search in a new session."
+  "Like `w3m-search', but do the search in a new buffer."
   (interactive (w3m-search-read-variables "new"))
   (w3m-search-do-search 'w3m-goto-url-new-session search-engine query))
 

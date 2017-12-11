@@ -1,8 +1,28 @@
+2017-12-08  Boruch Baum  <boruch_baum@gmx.com>
+
+	[emacs-w3m:12840]
+	* w3m.el (w3m-edit-url, w3m-edit-current-url, w3m-edit-this-url):
+	Enable editing non-local files. In such cases, the user is prompted to
+	save the emacs-w3m buffer locally, prior to beginning the editing
+	session. Edit docstring.
+	(w3m-goto-url, w3m-goto-url-new-session): Clarify in docstring
+	and in input prompt whether the action is to happen in the current or
+	in a new buffer.
+	* w3m-save.el (w3m-save-buffer): function returns the saved file name.
+	* w3m-bookmark.el (w3m-bookmark-view-new-session): Add to docstring
+	whether the bookmark list will be presented in the current or in a new
+	buffer.
+	* w3m-search.el (w3m-search-read-variables): Add to docstring
+	information on new arg, rename arg to `where', change terminology from
+	`session' to `buffer'.
+	(w3m-search, w3m-search-new-session): Add to docstring whether results
+	will be repesented in the current or in a new buffer.
+
 2017-12-07  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-search.el (w3m-search, w3m-search-new-session)
 	(w3m-search-read-variables): Provide visual feedback for whether search
-	will be in new or current session.
+	will be in new or current session ([emacs-w3m:12837]).
 
 2017-12-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 

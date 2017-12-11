@@ -4198,9 +4198,9 @@ CHANGED-RATE is currently changed rate / 100."
 				     (/ percent 100.0)))))
 	    ((eq char ?-)
 	     (let ((percent (/ 10000.0 (+ 100 (if rate
-                                                  (if (> rate 99) 99
-                                                    rate)
-                                                w3m-resize-image-scale)))))
+						  (if (> rate 99) 99
+						    rate)
+						w3m-resize-image-scale)))))
 	       (w3m-resize-inline-image-internal image percent)
 	       (setq changed-rate (* changed-rate
 				     (/ percent 100.0)))))
@@ -7173,9 +7173,8 @@ launches the current session, i.e., the one to be deleted.")
   "Display the page pointed to by the link under point.
 If ARG is the number 2 or the list of the number 16 (you may produce
 this by typing `C-u' twice) or NEW-SESSION is non-nil and the link is
-an anchor, this function makes a copy of the current session in
-advance.  Otherwise, if ARG is non-nil, it forces to reload the url at
-point."
+an anchor, this function makes a copy of the current buffer in advance.
+Otherwise, if ARG is non-nil, it forces to reload the url at point."
   (interactive (if (member current-prefix-arg '(2 (16)))
 		   (list nil t)
 		 (list current-prefix-arg nil)))
@@ -7612,7 +7611,7 @@ Return t if highlighting is successful."
 		      (w3m-highlight-current-anchor-1 seq))))))))
 
 (defun w3m-edit-url (url)
-  "Edit the page pointed by URL."
+  "Edit the source code of URL."
   (interactive (list (w3m-input-url)))
   (when (string-match "\\`about://\\(?:header\\|source\\)/" url)
     (setq url (substring url (match-end 0))))
@@ -7623,17 +7622,18 @@ Return t if highlighting is successful."
 	(throw 'found (funcall (cdr pair) url))))
     (funcall w3m-edit-function
 	     (or (w3m-url-to-file-name url)
+		 (call-interactively 'w3m-save-buffer)
 		 (error "URL:%s is not a local file" url)))))
 
 (defun w3m-edit-current-url ()
-  "Edit this viewing page."
+  "Edit the source code of the file that the current buffer is viewing."
   (interactive)
   (if w3m-current-url
       (w3m-edit-url w3m-current-url)
     (w3m-message "No URL")))
 
 (defun w3m-edit-this-url ()
-  "Edit the page linked from the anchor under the cursor."
+  "Edit the source code of the file linked from the anchor at point."
   (interactive)
   (let ((url (w3m-url-valid (w3m-anchor))))
     (if url
@@ -9555,7 +9555,10 @@ It currently works only with Emacs 22 and newer."
 ;;;###autoload
 (defun w3m-goto-url (url &optional reload charset post-data referer handler
 			 element no-popup save-pos)
-  "Visit World Wide Web pages.  This is the primitive function of `w3m'.
+  "Visit World Wide Web pages in the current buffer.
+
+This is the primitive function of `w3m'.
+
 If the second argument RELOAD is non-nil, reload a content of URL.
 Except that if it is 'redisplay, re-display the page without reloading.
 The third argument CHARSET specifies a charset to be used for decoding
@@ -9586,9 +9589,11 @@ invoked in other than a w3m-mode buffer."
   (interactive
    (list (if w3m-current-process
 	     (error "%s"
-		    (substitute-command-keys "Cannot run two w3m processes simultaneously \
+		    (substitute-command-keys
+		     "Cannot run two w3m processes simultaneously \
 \(Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)"))
-	   (w3m-input-url nil nil nil nil 'feeling-searchy 'no-initial))
+	   (w3m-input-url "Open URL in current buffer" nil nil nil
+			  'feeling-searchy 'no-initial))
 	 current-prefix-arg
 	 (w3m-static-if (fboundp 'universal-coding-system-argument)
 	     coding-system-for-read)))
@@ -9927,12 +9932,13 @@ See `w3m-default-directory'."
 ;;;###autoload
 (defun w3m-goto-url-new-session (url &optional reload charset post-data
 				     referer)
-  "Visit World Wide Web pages in a new session.
-If you invoke this command in the emacs-w3m buffer, the new session
-will be created by copying the current session.  Otherwise, the new
-session will start afresh."
+  "Visit World Wide Web pages in a new buffer.
+
+If you invoke this command in the emacs-w3m buffer, the new buffer
+will be created by copying the current buffer.  Otherwise, the new
+buffer will start afresh."
   (interactive
-   (list (w3m-input-url nil nil
+   (list (w3m-input-url "Open URL in new buffer" nil
 			(or (w3m-active-region-or-url-at-point)
 			    w3m-new-session-url)
 			nil 'feeling-searchy 'no-initial)
@@ -10163,10 +10169,10 @@ The variables `w3m-pop-up-windows' and `w3m-pop-up-frames' control
 whether this command should pop to a window or a frame up for the
 session.
 
-When emacs-w3m sessions have already been opened, this command will
-pop to the existing window or frame up, but if `w3m-quick-start' is
-nil, \(default t), you will be prompted for a URL (which defaults to
-`popup' meaning to pop to an existing emacs-w3m buffer up).
+When an emacs-w3m session has already been opened, this command will
+pop to an existing window or frame, but if `w3m-quick-start' is nil,
+(default t), you will be prompted for a URL (which defaults to `popup'
+meaning to pop to an existing emacs-w3m buffer up).
 
 In addition, if the prefix argument is given or you enter the empty
 string for the prompt, this command will visit a url at the point, or
@@ -10369,7 +10375,8 @@ non-ASCII characters."
 				(substring w3m-current-url (match-end 0)))))
 	 (t
 	  (w3m-goto-url  (concat "about://source/" w3m-current-url))))
-	(w3m-history-restore-position))
+	(w3m-history-restore-position)
+     t) ; <-- an improvement, but wrong if the above failed (BORUCH)
     (w3m-message "Can't view page source")))
 
 (defun w3m-make-separator ()
@@ -10392,25 +10399,25 @@ non-ASCII characters."
 	      (if time (current-time-string time) "")))
 
     (let (anchor anchor-title
-          image-url image-alt image-size)
+		 image-url image-alt image-size)
       (with-current-buffer w3m-current-buffer
 	(when (equal url w3m-current-url)
-          (setq anchor (w3m-anchor)
-                anchor-title (w3m-anchor-title)
-                image-url (w3m-image)
-                image-alt (w3m-image-alt)
-                image-size (w3m-get-text-property-around 'w3m-image-size))))
+	  (setq anchor (w3m-anchor)
+		anchor-title (w3m-anchor-title)
+		image-url (w3m-image)
+		image-alt (w3m-image-alt)
+		image-size (w3m-get-text-property-around 'w3m-image-size))))
       (if anchor
 	  (insert "\nCurrent Anchor: " anchor))
       (if anchor-title
 	  (insert "\nAnchor Title:   " anchor-title))
       (if image-url
-          (insert "\nImage:      " image-url))
+	  (insert "\nImage:      " image-url))
       (if image-alt
-          (insert "\nImage Alt:  " image-alt))
+	  (insert "\nImage Alt:  " image-alt))
       (if image-size
-          (insert (format "\nImage Size: %sx%s"
-                          (car image-size) (cdr image-size)))))
+	  (insert (format "\nImage Size: %sx%s"
+			  (car image-size) (cdr image-size)))))
 
     (let ((ct (w3m-arrived-content-type url))
 	  (charset (w3m-arrived-content-charset url))
