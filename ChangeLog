@@ -1,3 +1,9 @@
+2017-12-12  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-lynx-like-map): Remap "s" to `w3m-search', "S" to
+	`w3m-search-new-session'. [emacs-w3m:12838]
+	(w3m-ctl-c-map): Remap "C-c M-h" to `w3m-history' [emacs-w3m:12842]
+
 2017-12-08  Boruch Baum  <boruch_baum@gmx.com>
 
 	[emacs-w3m:12840]
