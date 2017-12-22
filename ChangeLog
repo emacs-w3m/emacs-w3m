@@ -1,3 +1,15 @@
+2017-12-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Update selection buffer properly after deletion or renaming.
+	Suggested by Boruch Baum ([emacs-w3m:12847]).
+
+	* w3m-session.el (w3m-session-save): Update selection buffer.
+	(w3m-session-select-rename, w3m-session-select-delete):
+	Make the selected session highlighted after renaming or deletion.
+	(w3m-session-select): Allow specifying the session number;
+	close selection window when no session remains after deletion.
+	(w3m-session-save, w3m-session-rename): Emulate INITIAL-INPUT.
+
 2017-12-12  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m-lynx-like-map): Remap "s" to `w3m-search', "S" to

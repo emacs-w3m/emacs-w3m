@@ -216,7 +216,9 @@ Sorry, an error found in \"%s\"; may we remove it? "
      (setq titles (cons (cons title title) titles))
      (catch 'loop
        (while t
-	 (setq title (completing-read prompt titles nil nil title))
+	 ;; A devious way to emulate INITIAL-INPUT that is deprecated.
+	 (let ((minibuffer-setup-hook (lambda nil (insert title))))
+	   (setq title (completing-read prompt titles nil nil nil nil title)))
 	 (if (or (string= title "")
 		 (and (assoc title sessions)
 		      (not (y-or-n-p (format "\"%s\" is exist. Overwrite? "
@@ -247,7 +249,10 @@ Sorry, an error found in \"%s\"; may we remove it? "
        (w3m-save-list w3m-session-file sessions)
        (if (= len 1)
 	   (message "%s: 1 session save...done" title)
-	 (message "%s: %d sessions save...done" title len))))))
+	 (message "%s: %d sessions save...done" title len))
+       (when (and (setq buf (get-buffer " *w3m-session select*"))
+		  (get-buffer-window buf 'visible))
+	 (save-selected-window (w3m-session-select)))))))
 
 (defun w3m-session-automatic-save ()
   "Save list of displayed session automatically."
@@ -631,10 +636,8 @@ Sorry, an error found in \"%s\"; may we remove it? "
   (let ((num (get-text-property
 	      (point) 'w3m-session-number))
 	(sessions w3m-session-select-sessions))
-    (w3m-session-select-quit)
     (w3m-session-rename sessions num)
-    (w3m-session-select)
-    (forward-line num)))
+    (w3m-session-select num)))
 
 (defun w3m-session-select-delete ()
   "Delete the session."
@@ -644,43 +647,52 @@ Sorry, an error found in \"%s\"; may we remove it? "
     (let ((num (get-text-property
 		(point) 'w3m-session-number))
 	  (sessions w3m-session-select-sessions))
-      (w3m-session-select-quit)
       (w3m-session-delete sessions num)
-      (w3m-session-select)
-      (forward-line num))))
+      (w3m-session-select (min num (1- (length sessions)))))))
 
 ;;;###autoload
-(defun w3m-session-select ()
-  "Select session from session list."
+(defun w3m-session-select (&optional n)
+  "Select session from session list.
+Position point at N-th session if N is given."
   (interactive)
   (w3m-session-ignore-errors
-   (let* ((sessions (w3m-load-list w3m-session-file))
-	  (showbuf (w3m-get-buffer-create " *w3m-session select*"))
-	  (wheight (max (+ (length sessions) 5) window-min-height))
-	  (wincfg (current-window-configuration))
-	  window last-window)
-     (setq last-window (previous-window
-			(w3m-static-if (fboundp 'frame-highest-window)
-			    (frame-highest-window)
-			  (frame-first-window))))
-     (while (minibuffer-window-active-p last-window)
-       (setq last-window (previous-window last-window)))
-     (while (and
-	     (not (one-window-p))
-	     (or (< (window-width last-window)
-		    (frame-width))
-		 (< (window-height last-window)
-		    (+ wheight window-min-height))))
-       (setq window last-window)
-       (setq last-window (previous-window window))
-       (delete-window window))
-     (select-window (split-window last-window))
-     (condition-case nil
-	 (shrink-window (- (window-height) wheight))
-       (error nil))
-     (switch-to-buffer showbuf)
-     (setq w3m-session-select-wincfg wincfg)
-     (w3m-session-select-mode sessions))))
+   (let ((sessions (w3m-load-list w3m-session-file))
+	 (showbuf " *w3m-session select*")
+	 window)
+     (if sessions
+	 (let ((wheight (max (+ (length sessions) 5) window-min-height))
+	       (wincfg (current-window-configuration))
+	       last-window)
+	   (setq last-window (previous-window
+			      (w3m-static-if (fboundp 'frame-highest-window)
+				  (frame-highest-window)
+				(frame-first-window))))
+	   (while (minibuffer-window-active-p last-window)
+	     (setq last-window (previous-window last-window)))
+	   (while (and
+		   (not (one-window-p))
+		   (or (< (window-width last-window)
+			  (frame-width))
+		       (< (window-height last-window)
+			  (+ wheight window-min-height))))
+	     (setq window last-window)
+	     (setq last-window (previous-window window))
+	     (delete-window window))
+	   (select-window (split-window last-window))
+	   (condition-case nil
+	       (shrink-window (- (window-height) wheight))
+	     (error nil))
+	   (switch-to-buffer (w3m-get-buffer-create showbuf))
+	   (setq w3m-session-select-wincfg wincfg)
+	   (w3m-session-select-mode sessions)
+	   (when n (w3m-session-select-next n)))
+       (when (setq showbuf (get-buffer showbuf))
+	 (when (setq window (prog1 (get-buffer-window showbuf t)
+			      (kill-buffer showbuf)))
+	   (save-selected-window
+	     (select-window window)
+	     (or (one-window-p t t) (delete-window window)))))
+       (message "No saved session")))))
 
 (defun w3m-session-goto-session (session)
   "Goto URLs."
@@ -723,7 +735,9 @@ Sorry, an error found in \"%s\"; may we remove it? "
 	   (tmp (nth num sessions))
 	   (otitle (car tmp)))
       (while (not title)
-	(setq title (read-from-minibuffer prompt nil nil nil nil otitle))
+	;; A devious way to emulate INITIAL-INPUT that is deprecated.
+	(let ((minibuffer-setup-hook (lambda nil (insert otitle))))
+	  (setq title (read-from-minibuffer prompt nil nil nil nil otitle)))
 	(cond
 	 ((string= title "")
 	  (setq title nil
