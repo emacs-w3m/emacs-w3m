@@ -1063,8 +1063,8 @@ Contents will be saved in the shimbun header as the extra element."
 	    (cond ((string-equal group "editorial")
 		   (let ((pt (point)))
 		     (save-match-data
-		       (if (re-search-backward "<!-+[\t\n ]*\
-\\([01]?[0-9]\\)[\t\n ]*/[\t\n ]*\\([0-3]?[0-9]\\)[\t\n ]*-+>" nil t)
+		       (if (re-search-backward "<dl\\(?:[\t\n ]+[^\t\n >]+\\)*\
+[\t\n ]+data-date=\"[^\"0-9]*\\([01]?[0-9]\\)[^\"0-9]+\\([0-3]?[0-9]\\)" nil t)
 			   (progn
 			     (goto-char pt)
 			     (setq day (string-to-number (match-string 2))

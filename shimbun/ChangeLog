@@ -1,3 +1,7 @@
+2017-12-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-asahi-get-headers): Update regexp for editorial.
+
 2017-10-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-clear-contents): Add a garbage filter.
