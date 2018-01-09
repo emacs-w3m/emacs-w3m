@@ -1,6 +1,6 @@
 ;;; sb-kyoko-np.el --- shimbun backend for Kyoko Shimbun News -*- coding: utf-8; -*-
 
-;; Copyright (C) 2015 Katsumi Yamaoka
+;; Copyright (C) 2015, 2018 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -58,15 +58,27 @@ h,:y~(ZRL6_\n !]+_+:*w'FH/kkX~]Wd>*Og6Q:)\"M&Kngqb%I\"V-k_@?Y5r5ESY8k>")))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-kyoko-np)
 					 &optional range)
-  (let ((fn (symbol-function 'shimbun-rss-node-text)))
+  (let ((fn (symbol-function 'shimbun-rss-node-text))
+	headers xref)
     (fset 'shimbun-rss-node-text
 	  (lambda (namespace local-name element)
 	    (if (eq local-name 'author)
 		"虚構新聞社社主 ＵＫ"
 	      (funcall fn namespace local-name element))))
     (unwind-protect
-	(shimbun-rss-get-headers shimbun range t)
-      (fset 'shimbun-rss-node-text fn))))
+	(setq headers (shimbun-rss-get-headers shimbun range t))
+      (fset 'shimbun-rss-node-text fn))
+    (dolist (header headers (shimbun-sort-headers headers))
+      (when (and (zerop (length (shimbun-header-date header)))
+		 (setq xref (shimbun-header-xref header))
+		 (string-match "\
+/\\(20[1-9][0-9]\\)\\([01][0-9]\\)\\([0-3][0-9]\\)[0-9][0-9]\\.html\\'" xref))
+	(shimbun-header-set-date
+	 header
+	 (shimbun-make-date-string
+	  (string-to-number (match-string 1 xref))
+	  (string-to-number (match-string 2 xref))
+	  (string-to-number (match-string 3 xref))))))))
 
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-kyoko-np)
 						    header)
