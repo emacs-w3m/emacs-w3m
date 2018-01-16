@@ -17,10 +17,6 @@ SHELL        = /bin/sh
 
 @SET_MAKE@
 MAKEINFO     = @MAKEINFO@
-TEXI2DVI     = @TEXI2DVI@
-PTEX         = @PTEX@
-PBIBTEX      = @PBIBTEX@
-DVIPDFMX     = @DVIPDFMX@
 TEXI2PDF     = @TEXI2PDF@
 EMACS        = @EMACS@
 VANILLA_FLAG = @VANILLA_FLAG@
@@ -37,6 +33,9 @@ INFO_DEPS_EN = emacs-w3m.info
 INFO_DEPS_JA = emacs-w3m-ja.info
 INFO_DEPS    = $(INFO_DEPS_EN) $(INFO_DEPS_JA)
 
+# Use xetex if it is your taste.
+PDFTEX=luatex
+
 default: $(INFO_DEPS)
 
 en: $(INFO_DEPS_EN)
@@ -52,6 +51,10 @@ emacs-w3m.info: version.texi emacs-w3m.texi
 
 emacs-w3m-ja.info: version.texi emacs-w3m-ja.texi
 
+# We can use makeinfo to format Japanese info files by replacing
+#	$(EMACSINFO) $$texi
+# with
+#	$(MAKEINFO) --no-split -o $@ $$texi
 .texi.info:
 	@texi=$<;\
 	case "$$texi" in \
@@ -101,25 +104,6 @@ install-ja: $(INFO_DEPS_JA)
 	$(MAKE) INFO_DEPS='$(INFO_DEPS_JA)' $(XEMACSDEBUG) EMACS="$(EMACS)"\
 		infodir="$(infodir)" install
 
-dvi: dvi-en dvi-ja
-
-dvi-en: emacs-w3m.dvi
-
-dvi-ja: emacs-w3m-ja.dvi
-
-emacs-w3m.dvi: version.texi emacs-w3m.texi
-
-emacs-w3m-ja.dvi: version.texi emacs-w3m-ja.texi
-
-.texi.dvi:
-	@texi=$<;\
-	case "$$texi" in \
-	  *-ja.texi) \
-	    env TEX=$(PTEX) BIBTEX=$(PBIBTEX) $(TEXI2DVI) -o $@ $$texi ;;\
-	  *) \
-	    $(TEXI2DVI) -o $@ $$texi ;;\
-	esac
-
 pdf: pdf-en pdf-ja
 
 pdf-en: emacs-w3m.pdf
@@ -131,18 +115,11 @@ emacs-w3m.pdf: version.texi emacs-w3m.texi
 emacs-w3m-ja.pdf: version.texi emacs-w3m-ja.texi
 
 .texi.pdf:
-	@texi=$<;\
-	case "$$texi" in\
-	  *-ja.texi)\
-	     i=`basename $@ .pdf`;\
-	    $(MAKE) $$i.dvi; $(DVIPDFMX) $$i;;\
-	  *) \
-	    $(TEXI2PDF) $$texi;;\
-	esac
+	sed '/^@dircategory/d' $< > w3mtmp.texi
+	env PDFTEX=$(PDFTEX) $(TEXI2PDF) -o $@ w3mtmp.texi
 
 clean:
-	-rm -rf *~ *.info version.texi *.dvi missfont.log *.pdf *.aux *.cp\
- *.cps *.fn *.fns *.ky *.kys *.log *.pg *.tmp *.toc *.tp *.vr *.vrs
+	-rm -f *.info *.pdf *~ version.texi w3mtmp.*
 
 distclean: clean
 	-rm -f Makefile

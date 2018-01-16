@@ -297,3 +297,25 @@ AC_DEFUN(AC_COMPRESS_INSTALL,
 		COMPRESS_INSTALL=no;
 	  fi])
   AC_SUBST(COMPRESS_INSTALL)])
+
+AC_DEFUN(AC_CHECK_TEXINFO,
+ [dnl Check the existence and the version of a texinfo command.
+  command=$1
+  name=`echo $command| tr a-z A-Z`
+  if test "${name}" != no; then
+    AC_MSG_CHECKING([if ${command} version >= 6.3])
+    version=`${command} --version\
+      | awk 'BEGIN {zero=0}\
+        tolower($zero)~/gnu +texinfo/&&match($zero,/[[0-9]]+\.[[0-9]]+/)\
+        {print substr($zero,RSTART,RLENGTH); exit}' 2>/dev/null`
+    case "${version}" in
+    6\.[[3-9]]|[[7-9]]\.[[0-9]])
+      AC_MSG_RESULT([ok (${version})]);;
+    *)
+      if test -z "${version}"; then
+        AC_MSG_RESULT(no)
+      else
+        AC_MSG_RESULT([no (${version})])
+      fi;;
+    esac
+  fi])

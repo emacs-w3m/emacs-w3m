@@ -1,3 +1,31 @@
+2018-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make `cd doc; make pdf' work again
+
+	This requires Texinfo the version >=6.3, and either (or both) of LuaTeX
+	>=0.95 (i.e., TeXLive >=2016) or XeTeX >=0.9998 (i.e., TeXLive >=2012).
+
+	* Makefile.in (clean): Use doc/Makefile's clean.
+
+	* aclocal.m4 (AC_CHECK_TEXINFO): New function.
+
+	* configure.in (MAKEINFO, TEXI2PDF): Check version.
+	(TEXI2DVI, PTEX, PBIBTEX, DVIPDFMX, TEXI2PDF): Remove.
+
+	* doc/Makefile.in (TEXI2DVI, PTEX, PBIBTEX, DVIPDFMX, TEXI2PDF): Remove.
+	(PDFTEX): New internal variable.
+	(dvi, dvi-en, dvi-ja, emacs-w3m.dvi, emacs-w3m-ja.dvi, .texi.dvi):
+	Remove targets.
+	(.texi.pdf): Use texi2pdf instead of dvipdfmx.
+	(clean): Renew.
+
+	* doc/emacs-w3m-ja.texi (texinfo-ja.tex): Use it instead of texinfo.tex.
+	(@documentencoding): New.
+	(@usedvipdfmx): Remove.
+
+	* doc/texinfo-ja.tex: New file.
+	* doc/texinfo.tex, doc/txi-en.tex, doc/txi-ja.tex: Renew.
+
 2017-12-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Update selection buffer properly after deletion or renaming.
