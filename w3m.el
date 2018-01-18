@@ -319,22 +319,40 @@ The value of `w3m-user-agent' is used for the field body."
   :group 'w3m
   :type 'boolean)
 
-(defvar w3m-user-agent-default-alist (list
-  (cons "Emacs-w3m (user default)" w3m-user-agent)
-  (cons "Emacs-w3m (package default)" (concat "Emacs-w3m/" emacs-w3m-version " " w3m-version))
-  '("Don't send user agent" . ""))
-"An default alist of user agent strings, used when offering the user the opportunity to change user agent strings. This should normally not be modified; instead modify `w3m-user-agent-alist'.")
+(defvar w3m-user-agent-default-alist
+  '((cons "Emacs-w3m (user default)" w3m-user-agent)
+    (cons "Emacs-w3m (package default)"
+	  (concat "Emacs-w3m/" emacs-w3m-version " " w3m-version))
+    '("Don't send user agent" . ""))
+  "An default alist of user agent strings.
+This is used when offering the user the opportunity to change user
+agent strings. This should normally not be modified; instead modify
+`w3m-user-agent-alist'.")
 
-(defcustom w3m-user-agent-alist '(
-  ("Android Webkit" . "Mozilla/5.0 (Linux; U; Android 4.0.3; ko-kr; LG-L160L Build/IML74K) AppleWebkit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30")
-  ("Firefox 57" . "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0")
-  ("IE Mobile" . "Mozilla/5.0 (compatible; MSIE 9.0; Windows Phone OS 7.5; Trident/5.0; IEMobile/9.0)")
-  ("Opera Mini 9.80" . "Opera/9.80 (J2ME/MIDP; Opera Mini/9.80 (S60; SymbOS; Opera Mobi/23.348; U; en) Presto/2.5.25 Version/10.54")
-  ("Opera Mobile 12" . "Opera/12.02 (Android 4.1; Linux; Opera Mobi/ADR-1111101157; U; en-US) Presto/2.9.201 Version/12.02")
-  ("Chrome 51" . "Mozilla/5.0 (Linux; Android 5.1.1; VS810PP Build/LMY47V) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.81 Mobile Safari/537.36"))
-"An alist of user agent strings. Each entry should be a cons of a short descriptive string and the user agent string."
-:group 'w3m
-:type '(repeat (cons (string :tag "Short Description") (string :tag "User Agent string"))))
+(defcustom w3m-user-agent-alist
+  '(("Android Webkit" . "\
+Mozilla/5.0 (Linux; U; Android 4.0.3; ko-kr; LG-L160L Build/IML74K)\
+ AppleWebkit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30")
+    ("Firefox 57" . "\
+Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0")
+    ("IE Mobile" . "\
+Mozilla/5.0 (compatible; MSIE 9.0; Windows Phone OS 7.5; Trident/5.0;\
+ IEMobile/9.0)")
+    ("Opera Mini 9.80" . "\
+Opera/9.80 (J2ME/MIDP; Opera Mini/9.80 (S60; SymbOS; Opera Mobi/23.348; U; en)\
+ Presto/2.5.25 Version/10.54")
+    ("Opera Mobile 12" . "\
+Opera/12.02 (Android 4.1; Linux; Opera Mobi/ADR-1111101157; U; en-US)\
+ Presto/2.9.201 Version/12.02")
+    ("Chrome 51" . "\
+Mozilla/5.0 (Linux; Android 5.1.1; VS810PP Build/LMY47V) AppleWebKit/537.36\
+ (KHTML, like Gecko) Chrome/51.0.2704.81 Mobile Safari/537.36"))
+  "An alist of user agent strings.
+Each entry should be a cons of a short descriptive string and
+the user agent string."
+  :group 'w3m
+  :type '(repeat (cons (string :tag "Short Description")
+		       (string :tag "User Agent string"))))
 
 (defcustom w3m-language
   (if (and (boundp 'current-language-environment)
@@ -5544,8 +5562,8 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
       (if (and (null cookie)(null body)
 	       (null content-type))
 	  (append
-           (list "-header" (concat "User-Agent:"
-             (if w3m-add-user-agent w3m-user-agent "?")))
+	   (list "-header" (concat "User-Agent:"
+				   (if w3m-add-user-agent w3m-user-agent "?")))
 	   (when (w3m-add-referer-p url referer)
 	     (list "-header" (concat "Referer: " referer)))
 	   (when w3m-accept-languages
@@ -5587,7 +5605,7 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
 	args)
     (setq args (nconc args
       (list "-o" (concat "user_agent="
-        (if w3m-add-user-agent w3m-user-agent "?")))))
+			 (if w3m-add-user-agent w3m-user-agent "?")))))
     (when cookie
       (setq args (nconc args
 			(list "-header" (concat "Cookie: " cookie)))))
@@ -10014,7 +10032,7 @@ buffer will start afresh."
   (w3m-goto-url-new-session "about:blank"))
 
 (defun w3m-user-agent-change (&optional ua-string)
-"Return a user-agent string.
+  "Return a user-agent string.
 
 Prompt the user to select from entries in
 `w3m-user-agent-default-alist', `w3m-user-agent-alist', or the
@@ -10025,18 +10043,19 @@ When called interactively, variables `w3m-user-agent' and
   (interactive "P")
   (when (not ua-string)
     (let ((ua-list (append w3m-user-agent-default-alist w3m-user-agent-alist)))
-     (setq ua-string
-       (or (cdr (assoc (setq ua-string
-                         (completing-read "Select a user-agent: " ua-list))
-                   ua-list))
-           ua-string))))
+      (setq ua-string
+	    (or (cdr (assoc (setq ua-string
+				  (completing-read "Select a user-agent: "
+						   ua-list))
+			    ua-list))
+		ua-string))))
   (when (string-equal ua-string "")
     (setq ua-string nil))
   (when (called-interactively-p 'interactive)
     (if (not ua-string)
-      (setq w3m-add-user-agent nil)
-     (setq w3m-add-user-agent t)
-     (setq w3m-user-agent ua-string)))
+	(setq w3m-add-user-agent nil)
+      (setq w3m-add-user-agent t)
+      (setq w3m-user-agent ua-string)))
   ua-string)
 
 (defun w3m-reload-this-page (&optional arg no-popup)
@@ -10052,15 +10071,16 @@ string to be sent for the reload."
   (interactive "P")
   (if w3m-current-url
     (let*
-      ((w3m-history-reuse-history-elements 'reload) ;; Don't move the history position.
+      (;; Don't move the history position.
+       (w3m-history-reuse-history-elements 'reload)
        (w3m-user-agent
-         (if (or (equal arg '(16)) (equal arg '(64)))
-           (w3m-user-agent-change)
-          w3m-user-agent))
+	(if (or (equal arg '(16)) (equal arg '(64)))
+	    (w3m-user-agent-change)
+	  w3m-user-agent))
        (w3m-add-user-agent
-         (if (or (equal arg '(16)) (equal arg '(64)))
-           w3m-user-agent
-          w3m-add-user-agent))
+	(if (or (equal arg '(16)) (equal arg '(64)))
+	    w3m-user-agent
+	  w3m-add-user-agent))
        post-data)
 	(if (or (equal arg '(4)) (equal arg '(64)))
 	    (progn
