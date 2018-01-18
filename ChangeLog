@@ -1,3 +1,10 @@
+2018-01-17  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-user-agent-change): New feature.
+	(w3m-reload-this-page): Integrate new feature.
+	(w3m-request-arguments, w3m-header-arguments): Ensure w3m and
+	w3mmee honor `w3m-add-user-agent'.
+
 2018-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make `cd doc; make pdf' work again
