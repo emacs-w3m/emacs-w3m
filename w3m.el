@@ -354,7 +354,7 @@ the user agent string."
   :type '(repeat (cons (string :tag "Short Description")
 		       (string :tag "User Agent string"))))
 
-(defcustom w3m-user-agent-site-specific-alist
+(defcustom w3m-user-agent-site-specific-alist nil
   "An alist of user-agent strings to be used for specific URLs.
 Each entry should be a cons of a regexp for the URLs to be
 covered by the rule, and a user-agent string to be used."
