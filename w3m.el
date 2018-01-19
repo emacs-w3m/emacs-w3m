@@ -354,6 +354,14 @@ the user agent string."
   :type '(repeat (cons (string :tag "Short Description")
 		       (string :tag "User Agent string"))))
 
+(defcustom w3m-user-agent-site-specific-alist
+  "An alist of user-agent strings to be used for specific URLs.
+Each entry should be a cons of a regexp for the URLs to be
+covered by the rule, and a user-agent string to be used."
+  :group 'w3m
+  :type '(repeat (cons (string :tag "URL regexp")
+		       (string :tag "User Agent string"))))
+
 (defcustom w3m-language
   (if (and (boundp 'current-language-environment)
 	   ;; In XEmacs 21.5 it may be the one like "Japanese (UTF-8)".
@@ -1848,7 +1856,7 @@ If it is nil, the dirlist.cgi module of the w3m command will be used."
 (defcustom w3m-add-referer
   (if (boundp 'w3m-add-referer-regexps)
       (symbol-value 'w3m-add-referer-regexps)
-    (cons "\\`http:" "\\`http://\\(?:localhost\\|127\\.0\\.0\\.1\\)/"))
+    (cons "\\`https?:" "\\`https?://\\(?:localhost\\|127\\.0\\.0\\.1\\)/"))
   "*Rule of sending referers.
 There are five choices as the valid values of this option.
 
@@ -1871,8 +1879,8 @@ sending referers which will disclose your private informations, as
 follows:
 
 \(setq w3m-add-referer
-      '(\"\\\\`http:\"
-	. \"\\\\`http://\\\\(?:[^./]+\\\\.\\\\)*example\\\\.net/\")\)
+      '(\"\\\\`https?:\"
+	. \"\\\\`https?://\\\\(?:[^./]+\\\\.\\\\)*example\\\\.net/\")\)
 "
   :group 'w3m
   :type '(choice
@@ -5563,7 +5571,10 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
 	       (null content-type))
 	  (append
 	   (list "-header" (concat "User-Agent:"
-				   (if w3m-add-user-agent w3m-user-agent "?")))
+				   (if w3m-add-user-agent
+				       (or (w3m-user-agent-site-specific url)
+					   w3m-user-agent)
+				     "?")))
 	   (when (w3m-add-referer-p url referer)
 	     (list "-header" (concat "Referer: " referer)))
 	   (when w3m-accept-languages
@@ -5605,7 +5616,10 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
 	args)
     (setq args (nconc args
       (list "-o" (concat "user_agent="
-			 (if w3m-add-user-agent w3m-user-agent "?")))))
+			 (if w3m-add-user-agent
+			     (or (w3m-user-agent-site-specific url)
+				 w3m-user-agent)
+			   "?")))))
     (when cookie
       (setq args (nconc args
 			(list "-header" (concat "Cookie: " cookie)))))
@@ -10031,6 +10045,19 @@ buffer will start afresh."
   (interactive)
   (w3m-goto-url-new-session "about:blank"))
 
+(defun w3m-user-agent-site-specific (url)
+  "Return a site-specific user-agent string.
+
+Compares URL against the regexps of `w3m-user-agent-site-specific-alist'
+and returns the corresponding user-agent string of the first match, or
+NIL if none match."
+  (let ((check-list w3m-user-agent-site-specific-alist) result entry)
+    (while (and (not result) (setq entry (pop check-list)))
+      (message "%s" entry)
+      (when (string-match (car entry) url)
+	(setq result (cdr entry))))
+    result))
+
 (defun w3m-user-agent-change (&optional ua-string)
   "Return a user-agent string.
 
@@ -10052,6 +10079,14 @@ When called interactively, variables `w3m-user-agent' and
   (when (string-equal ua-string "")
     (setq ua-string nil))
   (when (called-interactively-p 'interactive)
+;   Does not work because we use temporary work buffers when
+;   constructing the GET header (eg. `w3m-header-arguments')
+;   (if (y-or-n-p "For this buffer only? ")
+;     (progn
+;       (make-local-variable 'w3m-add-user-agent)
+;       (make-local-variable 'w3m-user-agent))
+;    (kill-local-variable 'w3m-add-user-agent)
+;    (kill-local-variable 'w3m-user-agent))
     (if (not ua-string)
 	(setq w3m-add-user-agent nil)
       (setq w3m-add-user-agent t)

@@ -1,13 +1,21 @@
+2018-01-18  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-add-referer): Update for https support.
+	(w3m-user-agent-site-specific-alist, w3m-user-agent-site-specific):
+	New feature.
+	(w3m-header-arguments, w3m-request-arguments): Integrate new feature.
+	[emacs-w3m:12881]
+
 2018-01-17  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m-user-agent-change): New feature.
 	(w3m-reload-this-page): Integrate new feature.
 	(w3m-request-arguments, w3m-header-arguments): Ensure w3m and
-	w3mmee honor `w3m-add-user-agent'.
+	w3mmee honor `w3m-add-user-agent'.  [emacs-w3m:12876]
 
 2018-01-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	Make `cd doc; make pdf' work again
+	Make `cd doc; make pdf' work again  [emacs-w3m:12875]
 
 	This requires Texinfo the version >=6.3, and either (or both) of LuaTeX
 	>=0.95 (i.e., TeXLive >=2016) or XeTeX >=0.9998 (i.e., TeXLive >=2012).
