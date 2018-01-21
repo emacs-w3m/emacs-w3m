@@ -10053,7 +10053,6 @@ and returns the corresponding user-agent string of the first match, or
 NIL if none match."
   (let ((check-list w3m-user-agent-site-specific-alist) result entry)
     (while (and (not result) (setq entry (pop check-list)))
-      (message "%s" entry)
       (when (string-match (car entry) url)
 	(setq result (cdr entry))))
     result))
