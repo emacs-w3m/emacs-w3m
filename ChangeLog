@@ -1,3 +1,7 @@
+2018-01-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-filter.el (w3m-filter-gnome-bugzilla): New ([emacs-w3m:12885]).
+
 2018-01-19  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m-user-agent-site-specific): Remove debug message.

@@ -1,6 +1,6 @@
 ;;; w3m-filter.el --- filtering utility of advertisements on WEB sites -*- coding: utf-8 -*-
 
-;; Copyright (C) 2001-2008, 2012-2015, 2017
+;; Copyright (C) 2001-2008, 2012-2015, 2017, 2018
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -73,6 +73,10 @@
      "Filter for slashdot"
      "\\`http[s]?://\\([a-z]+\\.\\)?slashdot\\.org/"
      w3m-filter-slashdot)
+    (t
+     "GNOME Bugzilla - ignore <pre> in order to fold long lines"
+     "\\`https://bugzilla\\.gnome\\.org/show_bug\\.cgi\\?id="
+     w3m-filter-gnome-bugzilla)
     (nil
      ("Remove garbage in http://www.geocities.co.jp/*"
       "http://www.geocities.co.jp/* でゴミを取り除きます")
@@ -1053,6 +1057,23 @@ READ MORE:\\([^<]+\\)\\(</a>\\)?</strong>\\(</p>\\)?"
   (goto-char (point-min))
   (while (re-search-forward "\n[\n\t ]+" nil t)
     (replace-match "")))
+
+(defun w3m-filter-gnome-bugzilla (url)
+  "Filter <pre> in order to fold logn lines in GNOME Bugzilla."
+  (goto-char (point-min))
+  (while (re-search-forward "<pre\\(?:[\n\t ]+[^\n\t >]+\\)*[\n\t ]*>" nil t)
+    (or (save-match-data
+	  (when (w3m-end-of-tag "pre")
+	    (narrow-to-region (match-beginning 0) (match-end 0))
+	    (insert "<br>\n")
+	    (delete-region (match-end 1) (match-end 0))
+	    (delete-region (goto-char (match-beginning 0)) (match-beginning 1))
+	    (insert "<br>\n")
+	    (while (search-forward "\n" nil t)
+	      (replace-match "<br>\n"))
+	    (widen)
+	    t))
+	(replace-match ""))))
 
 (defun w3m-filter-geocities-remove-garbage (url)
   "Remove garbage in http://www.geocities.co.jp/*."
