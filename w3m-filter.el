@@ -1063,7 +1063,7 @@ READ MORE:\\([^<]+\\)\\(</a>\\)?</strong>\\(</p>\\)?"
   "Filter <pre class=\"bz_comment_text\"> to fold long lines in GNOME Bugzilla."
   (goto-char (point-min))
   (while (re-search-forward "\
-<pre\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+class=\"bz_comment_text\"" nil t)
+<pre\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+class=\"bz_comment_text\"[^>]*>" nil t)
     (or (save-match-data
 	  (when (w3m-end-of-tag "pre")
 	    (narrow-to-region (match-beginning 0) (match-end 0))
