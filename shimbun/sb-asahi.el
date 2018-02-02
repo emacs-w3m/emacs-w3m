@@ -1,6 +1,6 @@
 ;;; sb-asahi.el --- shimbun backend for asahi.com -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2011, 2013-2017 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2011, 2013-2018 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -924,7 +924,7 @@ Each table is the same as the `cdr' of the element of
 `shimbun-asahi-group-table'.")
 
 (defvar shimbun-asahi-content-start
-  "<!-+[\t\n ]*ArticleBody[\t\n ]*BGN[\t\n ]*-+>")
+  "<!-+[\t\n ]*ArticleTitle[\t\n ]*BGN[\t\n ]*-+>")
 
 (defvar shimbun-asahi-content-end
   "<!-+[\t\n ]*ArticleBody[\t\n ]*END[\t\n ]*-+>")
@@ -1468,8 +1468,17 @@ article contents."
 
 (defun shimbun-asahi-clear-contents (shimbun header)
   (when (luna-call-next-method)
-    ;; Remove garbage after an article.
+    ;; Remove garbage between the title and the body.
     (goto-char (point-min))
+    (when (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*\
+<!-+[\t\n ]*ArticleTitle[\t\n ]*END[\t\n ]*-+>" nil t)
+      (let ((st (match-beginning 0)))
+	(when (re-search-forward
+	       "<!-+[\t\n ]*ArticleBody[\t\n ]*BGN[\t\n ]*-+>" nil t)
+	  (delete-region st (match-end 0))
+	  (insert "\n")))
+      (goto-char (point-min)))
+    ;; Remove garbage after an article.
     (when (re-search-forward "[\t\n ]*\
 <!-+[\t\n ]*\\(?:article\\|main\\)[\t\n ]*text[\t\n ]+end[\t\n ]*-+>"
 			     nil t)
