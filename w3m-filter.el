@@ -74,7 +74,8 @@
      "\\`http[s]?://\\([a-z]+\\.\\)?slashdot\\.org/"
      w3m-filter-slashdot)
     (t
-     "GNOME Bugzilla - ignore <pre> in order to fold long lines"
+     "GNOME Bugzilla - ignore <pre class=\"bz_comment_text\">
+   in order to fold long lines"
      "\\`https://bugzilla\\.gnome\\.org/show_bug\\.cgi\\?id="
      w3m-filter-gnome-bugzilla)
     (nil
@@ -1059,9 +1060,10 @@ READ MORE:\\([^<]+\\)\\(</a>\\)?</strong>\\(</p>\\)?"
     (replace-match "")))
 
 (defun w3m-filter-gnome-bugzilla (url)
-  "Filter <pre> in order to fold logn lines in GNOME Bugzilla."
+  "Filter <pre class=\"bz_comment_text\"> to fold long lines in GNOME Bugzilla."
   (goto-char (point-min))
-  (while (re-search-forward "<pre\\(?:[\n\t ]+[^\n\t >]+\\)*[\n\t ]*>" nil t)
+  (while (re-search-forward "\
+<pre\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+class=\"bz_comment_text\"" nil t)
     (or (save-match-data
 	  (when (w3m-end-of-tag "pre")
 	    (narrow-to-region (match-beginning 0) (match-end 0))

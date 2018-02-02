@@ -1,3 +1,9 @@
+2018-02-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-filter.el (w3m-filter-gnome-bugzilla):
+	Limit to <pre class="bz_comment_text">.  Thanks to Kevin Ryde
+	([emacs-w3m:12890]).
+
 2018-01-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-filter.el (w3m-filter-gnome-bugzilla): New ([emacs-w3m:12885]).
