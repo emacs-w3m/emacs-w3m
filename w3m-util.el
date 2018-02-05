@@ -1,6 +1,6 @@
 ;;; w3m-util.el --- Utility macros and functions for emacs-w3m
 
-;; Copyright (C) 2001-2014, 2016, 2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2014, 2016-2018 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -1112,10 +1112,11 @@ ___<TAG ...>___
        nil))))
 
 (defun w3m-string-match-url-components-1 (string)
-  "Subroutine used by `w3m-string-match-url-components'."
+  "A last resort run when `w3m-string-match-url-components' fails."
 
-  ;; ^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?
-  ;;  12            3  4          5       6  7        8 9
+  ;; \`(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?\'
+  ;;   1-----------1 3-----------3 5------56---------6 8-----8
+  ;;    2--------2      4-------4             7-----7    9--9
 
   (let ((md (make-vector 20 nil))
 	pt)
@@ -1149,7 +1150,7 @@ ___<TAG ...>___
 	(skip-chars-forward "^#")
 	(aset md 13 (setq pt (1- (point))))
 	(aset md 15 pt))
-      (unless (eobp)
+      (unless (or (eobp) (eq (char-after (1+ (point))) ?/))
 	(aset md 16 (1- (point)))
 	(aset md 18 (point))
 	(aset md 17 (setq pt (1- (point-max))))
@@ -1158,20 +1159,33 @@ ___<TAG ...>___
   0)
 
 (defconst w3m-url-components-regexp
-  "\\`\\(\\([^:/?#]+\\):\\)?\\(//\\([^/?#]*\\)\\)?\
-\\([^?#]*\\)\\(\\?\\([^#]*\\)\\)?\\(#\\(.*\\)\\)?\\'"
+  (eval-when-compile
+    (concat
+     "\\`\\(\\([^:/?#]+\\):\\)?\\(//\\([^/?#]*\\)\\)?"
+     ;;    1-----------------1   3-----------------3
+     ;;       2----------2            4---------4
+     "\\([^?#]*\\)\\(\\?\\([^#]*\\)\\)?\\(#\\(.*\\)\\)?\\'"
+     ;; 5--------5  6----------------6   8-----------8
+     ;;                   7-------7          9----9
+     ))
   "Regexp used for parsing a URI Reference.
 It matches the potential four components and fragment identifier of a
 URI reference.  See RFC2396, Appendix B for details.")
 
-(defmacro w3m-string-match-url-components (string)
+(defsubst w3m-string-match-url-components (string)
   "Do the same thing as `(string-match w3m-url-components-regexp STRING)'.
 But this function should work even if STRING is considerably long."
-  `(let ((string ,string))
-     (condition-case nil
-	 (string-match w3m-url-components-regexp string)
-       (error ;; Stack overflow in regexp matcher
-	(w3m-string-match-url-components-1 string)))))
+  (condition-case nil
+      (prog1
+	  (string-match w3m-url-components-regexp string)
+	;; Don't recognize "#" that "/" follows as a name attribute;
+	;; e.g. <https://melpa.org/#/w3m>
+	(and (match-beginning 9)
+	     (< (match-beginning 9) (match-end 9))
+	     (eq (aref string (match-beginning 9)) ?/)
+	     (set-match-data (nbutlast (match-data) 4))))
+    (error ;; Stack overflow in regexp matcher
+     (w3m-string-match-url-components-1 string))))
 
 (defun w3m-time-newer-p (a b)
   "Return t, if A is newer than B.  Otherwise return nil.
@@ -1236,7 +1250,8 @@ Otherwise return nil."
 
 (defun w3m-url-strip-fragment (url)
   "Remove the fragment identifier from the URL."
-  (if (string-match "\\`\\([^#]*\\)#" url)
+  (if (and (string-match "\\`\\([^#]*\\)#\\(/\\)?" url)
+	   (not (match-beginning 2)))
       (match-string 1 url)
     url))
 

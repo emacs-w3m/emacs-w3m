@@ -1,3 +1,9 @@
+2018-02-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-string-match-url-components)
+	(w3m-string-match-url-components-1, w3m-url-strip-fragment):
+	Don't recognize a url fragment "#/foo" as a name attribution.
+
 2018-02-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-filter.el (w3m-filter-gnome-bugzilla):
