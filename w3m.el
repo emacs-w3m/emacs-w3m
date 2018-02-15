@@ -7363,7 +7363,7 @@ No method to view `%s' is registered. Use `w3m-edit-this-url'"
 					  w3m-external-view-temp-directory)))
 		   suffix)
 		(setq suffix (file-name-nondirectory url))
-		(when (string-match "\\.[a-zA-Z0-9]+$" suffix)
+		(when (string-match "\\.[a-zA-Z0-9]+" suffix)
 		  (setq suffix (match-string 0 suffix))
 		  (when (< (length suffix) 5)
 		    (setq file (concat file suffix))))

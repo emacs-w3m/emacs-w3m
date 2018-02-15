@@ -1,3 +1,8 @@
+2018-02-14  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-external-view): Fix regex for url's that contain uri
+	'query' and or 'fragment' components ([emacs-w3m:12901]).
+
 2018-02-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-string-match-url-components)
