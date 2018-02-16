@@ -695,18 +695,14 @@ Note that `after-make-frame-hook' doesn't take an argument."
 (defun w3m-delete-w3m-initial-frames (frame)
   "Delete FRAME from `w3m-initial-frames', the buffer-local variable.
 It is done when the FRAME in which emacs-w3m is running is deleted.
-This function is added to `delete-frame-hook' (`delete-frame-functions'
-is used instead in Emacs 22) or merged into the `delete-frame' function
-using `defadvice'."
+This function is added to `delete-frame-functions' or merged into
+the `delete-frame' function using `defadvice'."
   (save-current-buffer
     (dolist (buffer (w3m-list-buffers t))
       (set-buffer buffer)
       (setq w3m-initial-frames (delq frame w3m-initial-frames)))))
 
-(cond ((boundp 'delete-frame-functions)
-       (add-hook 'delete-frame-functions 'w3m-delete-w3m-initial-frames))
-      (t
-       (add-hook 'delete-frame-hook 'w3m-delete-w3m-initial-frames)))
+(add-hook 'delete-frame-functions 'w3m-delete-w3m-initial-frames)
 
 (defun w3m-delete-frames-and-windows (&optional exception)
   "Delete all frames and windows related to emacs-w3m buffers.
@@ -774,7 +770,10 @@ objects will not be deleted:
 		    one-window-p)
 		   (memq frame w3m-initial-frames)
 		   (not (eq (next-frame frame) frame)))
-	      (delete-frame frame))))))))
+	      (let ((delete-frame-functions
+		     (delq 'w3m-fb-delete-frame-buffers
+			   (copy-sequence delete-frame-functions))))
+		(delete-frame frame)))))))))
 
 ;;; Navigation:
 

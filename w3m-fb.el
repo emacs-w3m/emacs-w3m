@@ -1,6 +1,6 @@
 ;;; w3m-fb.el --- frame-local buffers support for Emacs-w3m
 
-;;; Copyright (C) 2005, 2006 Matthew P. Hodges
+;;; Copyright (C) 2005, 2006, 2018 Matthew P. Hodges
 
 ;; Author: Matthew P. Hodges <MPHodges@member.fsf.org>
 ;; Version: $Id$
@@ -50,16 +50,6 @@
      (t
       (error "No frame parameter/property function")))))
 
-(defvar w3m-fb-delete-frame-functions
-  (cond
-   ((boundp 'delete-frame-functions)
-    'delete-frame-functions)
-   ((boundp 'delete-frame-hook)
-    'delete-frame-hook)
-   (t
-    (error "No delete-frame hook/functions variable found")))
-  "Symbol associated with `delete-frame' hooks.")
-
 (defvar w3m-fb-list-buffers-frame nil
   "Frame to list buffers for in `w3m-list-buffers'.
 Bind this if the buffers associated with a frame other than the
@@ -79,9 +69,9 @@ selected frame are required.")
 	 (set sym val)
 	 (when (boundp 'w3m-fb-mode)
 	   (if w3m-fb-mode
-	       (add-hook w3m-fb-delete-frame-functions
+	       (add-hook 'delete-frame-functions
 			 'w3m-fb-delete-frame-buffers)
-	     (remove-hook w3m-fb-delete-frame-functions
+	     (remove-hook 'delete-frame-functions
 			  'w3m-fb-delete-frame-buffers)))))
 
 ;; Internal variables
@@ -195,12 +185,11 @@ W3M Frame Buffer mode not activated (non-nil w3m-pop-up-frames)")
 	(add-hook 'w3m-mode-hook 'w3m-fb-add)
 	(add-hook 'kill-buffer-hook 'w3m-fb-remove)
 	(when w3m-fb-delete-frame-kill-buffers
-	  (add-hook w3m-fb-delete-frame-functions
-		    'w3m-fb-delete-frame-buffers))
+	  (add-hook 'delete-frame-functions 'w3m-fb-delete-frame-buffers))
 	(w3m-fb-associate))
     (remove-hook 'w3m-mode-hook 'w3m-fb-add)
     (remove-hook 'kill-buffer-hook 'w3m-fb-remove)
-    (remove-hook w3m-fb-delete-frame-functions 'w3m-fb-delete-frame-buffers)
+    (remove-hook 'delete-frame-functions 'w3m-fb-delete-frame-buffers)
     (w3m-fb-dissociate)))
 
 (provide 'w3m-fb)

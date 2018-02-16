@@ -1,3 +1,13 @@
+2018-02-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-fb.el (w3m-fb-mode, w3m-fb-delete-frame-kill-buffers):
+	Use delete-frame-functions.
+	(w3m-fb-delete-frame-functions): Remove.
+
+	* w3m-util.el (w3m-delete-frames-and-windows): Bind
+	delete-frame-functions so as not to run w3m-fb-delete-frame-buffers.
+	(w3m-delete-w3m-initial-frames): Remove obsolete delete-frame-hook.
+
 2018-02-14  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m-external-view): Fix regex for url's that contain uri
