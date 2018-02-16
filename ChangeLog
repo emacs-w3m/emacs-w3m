@@ -8,6 +8,20 @@
 	delete-frame-functions so as not to run w3m-fb-delete-frame-buffers.
 	(w3m-delete-w3m-initial-frames): Remove obsolete delete-frame-hook.
 
+2018-02-15  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-session.el: Add commentary, correct grammar of prompts..
+	(w3m-session-group-open): New variable
+	(w3m-session-select-quit): Quitting a session-group display returns to
+	its parent session list display.
+	(w3m-session-select-open-session-group, w3m-session-select-rename)
+	(w3m-session-select-delete): Stay on proper line when within
+	session-group display, after renaming or deleting an entry. This
+	required adding an optional arg to the function.
+	(w3m-session-rename): Allow renaming individual tabs of a session.
+	(w3m-session-delete): Allow deleting individual tabs of a session.
+	[emacs-w3m:12907]
+
 2018-02-14  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m-external-view): Fix regex for url's that contain uri

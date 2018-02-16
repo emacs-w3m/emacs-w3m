@@ -5,6 +5,7 @@
 
 ;; Author: Hideyuki SHIRAI <shirai@meadowy.org>
 ;; Keywords: w3m, WWW, hypermedia
+;; Homepage: http://emacs-w3m.namazu.org/
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -23,10 +24,64 @@
 
 ;;; Commentary:
 
-;; w3m-session.el is the add-on program of emacs-w3m to save and load
-;; sessions.   For more detail about emacs-w3m, see:
-;;
-;;    http://emacs-w3m.namazu.org/
+;; w3m-session.el is an add-on program of emacs-w3m to save, load,
+;; delete, and rename sessions or their selected tabs.
+
+;; You need not load or restore an entire session. You can examine and
+;; manage the contents (individual tabs) of any session, including
+;; deleting, renaming, or loading them one at a time.
+
+;; A session is any collection of buffers (tabs) open at any given
+;; time. Be aware, however, that unfortunately much of the code and
+;; documentation uses the terms session and buffer interchangeably.
+;; There is also a term 'session-group' which is identical to a
+;; session which has more than buffer. Yes, this does need to be
+;; refactored!
+
+;; Session management does its best to automatically keep track of the
+;; current collection of w3m buffers so that should a catastrophic
+;; crash occur, the entire session can be restored. Upon restarting
+;; emacs-w3m after a crash, the user will be prompted whether to
+;; recover the prior session. Additionally, the user may at any time
+;; manually save the current session, or restore the tabs of a prior
+;; session. Note that restoring a prior session is not destructive; it
+;; only adds new tabs into the current session for each tab of the
+;; saved session.
+
+;; Session information is also saved when one quits emacs-w3m using
+;; the `w3m-quit' command, bound by default to `Q'.
+
+;; The session information for all sessions are stored as a single
+;; elisp object, by default in file ~/.w3m/.session. Tab content is
+;; NOT stored. What is stored for each tab is the url, title, cursor
+;; position, and tab history. Even so, this can eventually become a
+;; monstrously large data structure, and probably needlessly, if one
+;; accumulates large history records for each tab.
+
+;;;; Typical usage and tutorial
+
+;; One enters session management by evaluating `w3m-session-select'
+;; (M-s). Typically, there will be at least one session automatically
+;; present, either labeled as a crash recovery session or an
+;; automatically saved one. Next to each session name will be a number
+;; in brackets representing the number of tab (buffers) in the
+;; session. There will also be column entries for the session
+;; timestamp, and summary URL entries. One exits session management
+;; with either `q' or `C-g'.
+
+;; From any emacs-w3m buffer one may save a session by evaluating
+;; `w3m-session-save' (M-S).
+
+;; From within session management, one can rename (`r') or delete
+;; (`d') any session. Selecting a session using the RET key will load
+;; ALL of that session's tabs. You can examine the details of a
+;; session by pressing `M-s' (the same key binding you used to enter
+;; the session management). At this point, you can rename, delete, or
+;; load any individual tab. Note that the first entry on the list
+;; gives you a second chance to load ALL the tabs. Quitting returns
+;; you to the session list.
+
+;; All changes are saved to disk immediately.
 
 
 ;;; Code:
@@ -47,6 +102,16 @@
   (autoload 'w3m-history-tree "w3m-hist")
   (autoload 'w3m-load-list "w3m")
   (autoload 'w3m-save-list "w3m"))
+
+(defvar w3m-session-group-open nil
+  "If a session-group is currently open, ie. when displaying a
+  list of buffers for an individual session, this should be set
+  to the session (session-group) number.
+
+  There is a legacy terminology problem that needs to be addressed
+  here. The documentation and symbol names currently confuse
+  'sessions', 'buffers`, and 'session-groups'. A 'session-group'
+  is identical to a 'session' that has more than one 'buffer'.")
 
 (defcustom w3m-session-file
   (expand-file-name ".sessions" w3m-profile-directory)
@@ -118,18 +183,20 @@
   :type 'string)
 
 (defcustom w3m-session-load-last-sessions nil
-  "*Whether to load the last sessions when emacs-w3m starts."
+  "*Whether to re-load the most recent session when emacs-w3m
+starts."
   :group 'w3m
-  :type '(radio (const :format "Load the last sessions automatically." t)
-		(const :format "Ask whether to load the last sessions." ask)
-		(const :format "Never load the last sessions automatically." nil)))
+  :type '(radio (const :format "Re-load the last session automatically." t)
+		(const :format "Ask whether to re-load the last session." ask)
+		(const :format "Never re-load the last session automatically." nil)))
 
 (defcustom w3m-session-load-crashed-sessions 'ask
-  "*Whether to load the crashed sessions when emacs-w3m starts."
+  "*Whether to re-load a crashed session when emacs-w3m starts.
+This is used when emacs-w3m determines that the most recent session crashed."
   :group 'w3m
-  :type '(radio (const :format "Load the crashed sessions automatically." t)
-		(const :format "Ask whether to load the crashed sessions." ask)
-		(const :format "Never load the crashed sessions automatically." nil)))
+  :type '(radio (const :format "RelLoad the crashed session automatically." t)
+		(const :format "Ask whether to re-load the crashed session." ask)
+		(const :format "Never re-load the crashed session automatically." nil)))
 
 (defface w3m-session-select
   `((((class color) (background light) (type nil))
@@ -171,7 +238,7 @@
 		 (list x)))
 	     (copy-sequence (w3m-history-slimmed-history-flat))))))
 
-;; format of sessin file.
+;; format of session file.
 ;; '((sessiontitle1 time1 ((url11 pos11 hflat11 urltitle11)
 ;;                         (url12 pos12 hflat12 urltitle12) ...) current1)
 ;;   ...
@@ -183,22 +250,26 @@
      (error
       (if (and (file-exists-p w3m-session-file)
 	       (yes-or-no-p (format
-			     "\
-Sorry, an error found in \"%s\"; may we remove it? "
+			     "An error was found in \"%s\"; may we remove it? "
 			     ,(if (featurep 'xemacs)
 				  '(abbreviate-file-name w3m-session-file t)
 				'(abbreviate-file-name w3m-session-file)))))
 	  (progn
 	    (delete-file w3m-session-file)
 	    (run-at-time 0.1 nil #'message
-			 "\"%s\" has been removed; try again"
+			 "\"%s\" has been removed; try again."
 			 (abbreviate-file-name w3m-session-file))
 	    (keyboard-quit))
 	(signal (car err) (cdr err))))))
 
 ;;;###autoload
 (defun w3m-session-save ()
-  "Save list of displayed session."
+  "Save the current session (all currently open emacs-w3m buffers).
+
+The user will be prompted for a name for the saved session. The
+saved session information will include, for each currently open
+emacs-w3m buffer: the current url and page title, and the
+buffer's url history."
   (interactive)
   (w3m-session-ignore-errors
    (let ((sessions (w3m-load-list w3m-session-file))
@@ -221,9 +292,9 @@ Sorry, an error found in \"%s\"; may we remove it? "
 	   (setq title (completing-read prompt titles nil nil nil nil title)))
 	 (if (or (string= title "")
 		 (and (assoc title sessions)
-		      (not (y-or-n-p (format "\"%s\" is exist. Overwrite? "
+		      (not (y-or-n-p (format "\"%s\" exists. Overwrite? "
 					     title)))))
-	     (setq prompt "Again New session title: ")
+	     (setq prompt "New session title: ")
 	   (throw 'loop t))))
      (setq cbuf (current-buffer))
      (save-current-buffer
@@ -240,16 +311,14 @@ Sorry, an error found in \"%s\"; may we remove it? "
 				  w3m-current-title)
 			    urls)))))
      (if (not urls)
-	 (message "%s: no session save...done" title)
+	 (message "%s: no buffers saved...done" title)
        (setq len (length urls))
        (setq urls (nreverse urls))
        (when (assoc title sessions)
 	 (setq sessions (delq (assoc title sessions) sessions)))
        (setq sessions (cons (list title (current-time) urls cnum) sessions))
        (w3m-save-list w3m-session-file sessions)
-       (if (= len 1)
-	   (message "%s: 1 session save...done" title)
-	 (message "%s: %d sessions save...done" title len))
+       (message "%s: %d buffer%s saved...done" title len (if (= len 1) "" "s"))
        (when (and (setq buf (get-buffer " *w3m-session select*"))
 		  (get-buffer-window buf 'visible))
 	 (save-selected-window (w3m-session-select)))))))
@@ -435,11 +504,12 @@ Sorry, an error found in \"%s\"; may we remove it? "
 	   major-mode 'w3m-session-select-mode
 	   w3m-session-select-sessions sessions
 	   buffer-read-only t)
+     (setq w3m-session-group-open nil)
      (use-local-map w3m-session-select-mode-map)
      (w3m-session-select-list-all-sessions))))
 
 (defun w3m-session-select-list-all-sessions ()
-  "List up all saved sessions."
+  "List all saved sessions."
   (let ((sessions w3m-session-select-sessions)
 	(num 0)
 	(max 0)
@@ -496,6 +566,11 @@ Sorry, an error found in \"%s\"; may we remove it? "
       (setq buffer-read-only t))))
 
 (defun w3m-session-select-list-session-group (arg)
+  "List all buffers (ie. tabs) within a session.
+
+The list can be acted upon similarly to a session list, ie.
+entries can be individually deleted, renamed, or opened as a new
+buffer in the current session."
   (let ((session (nth 2 (nth arg w3m-session-select-sessions)))
 	(num 0)
 	(max 0)
@@ -578,11 +653,15 @@ Sorry, an error found in \"%s\"; may we remove it? "
 (defun w3m-session-select-quit ()
   "Exit from w3m session select mode."
   (interactive)
-  (let ((buffer (current-buffer))
-	(wincfg w3m-session-select-wincfg))
-    (or (one-window-p) (delete-window))
-    (kill-buffer buffer)
-    (set-window-configuration wincfg)))
+  (if w3m-session-group-open
+    (let ((num w3m-session-group-open))
+      (setq w3m-session-group-open nil)
+      (w3m-session-select-list-all-sessions))
+   (let ((buffer (current-buffer))
+ 	(wincfg w3m-session-select-wincfg))
+     (or (one-window-p) (delete-window))
+     (kill-buffer buffer)
+     (set-window-configuration wincfg))))
 
 (defun w3m-session-select-select ()
   "Select the session."
@@ -590,30 +669,30 @@ Sorry, an error found in \"%s\"; may we remove it? "
   (beginning-of-line)
   (let* ((num (get-text-property
 	       (point) 'w3m-session-number))
-	 (item (if (consp num) 
+	 (item (if (consp num)
 		   (nth (cdr num)
-			(caddr (nth (car num) 
+			(caddr (nth (car num)
 				    w3m-session-select-sessions)))
 		 (nth num w3m-session-select-sessions)))
 	 (session (if (consp num)
 		      (list (or (cadddr item) w3m-session-unknown-title)
 			    nil
-			    (list item) 
+			    (list item)
 			    nil)
 		    item)))
     (w3m-session-select-quit)
     (w3m-session-goto-session session)))
 
-(defun w3m-session-select-open-session-group ()
+(defun w3m-session-select-open-session-group (&optional arg)
   "Open the session group."
   (interactive)
   (beginning-of-line)
-  (let ((num (get-text-property
-	      (point) 'w3m-session-number))
+  (let ((num (or arg (get-text-property (point) 'w3m-session-number)))
 	wheight)
     (if (consp num)
-	(message "There is no session group.")
-      (setq wheight 
+	(message "This is not a session group.")
+      (setq w3m-session-group-open num)
+      (setq wheight
 	    (max (+ (length (caddr (nth num w3m-session-select-sessions))) 6)
 		 window-min-height))
       (condition-case nil
@@ -624,7 +703,7 @@ Sorry, an error found in \"%s\"; may we remove it? "
 (defun w3m-session-select-save ()
   "Save the session."
   (interactive)
-  (when (y-or-n-p "Save this sessions? ")
+  (when (y-or-n-p "Save this session? ")
     (w3m-session-select-quit)
     (w3m-session-save)
     (w3m-session-select)))
@@ -637,18 +716,25 @@ Sorry, an error found in \"%s\"; may we remove it? "
 	      (point) 'w3m-session-number))
 	(sessions w3m-session-select-sessions))
     (w3m-session-rename sessions num)
-    (w3m-session-select num)))
+    (if (not w3m-session-group-open)
+      (w3m-session-select num)
+     (w3m-session-select-open-session-group w3m-session-group-open))))
 
 (defun w3m-session-select-delete ()
-  "Delete the session."
+  "Delete an entry (either a session or a buffer)."
   (interactive)
-  (when (y-or-n-p "Delete this session? ")
+  (when (y-or-n-p "Delete this entry? ")
     (beginning-of-line)
     (let ((num (get-text-property
 		(point) 'w3m-session-number))
 	  (sessions w3m-session-select-sessions))
       (w3m-session-delete sessions num)
-      (w3m-session-select (min num (1- (length sessions)))))))
+;;    (w3m-session-select)
+;;    (forward-line (min num (- (line-number-at-pos (point-max)) 4))))))
+    (if (not w3m-session-group-open)
+      (w3m-session-select (min num (1- (length sessions))))
+     (w3m-session-select-open-session-group w3m-session-group-open)
+     (forward-line (min (cdr num) (- (line-number-at-pos (point-max)) 4)))))))
 
 ;;;###autoload
 (defun w3m-session-select (&optional n)
@@ -724,41 +810,63 @@ Position point at N-th session if N is given."
     (message "Session goto(%s)...done" title)))
 
 (defun w3m-session-rename (sessions num)
-  (if (consp num)
-      (message
-       "This command must be run from the `w3m-session-select' minibuffer.")
-    ; OK, but why do we allow `w3m-session-delete' to run otherwise?
-    (let* ((default-prompt "Enter new session title (C-g to abort): ")
-	   (prompt default-prompt)
-	   overwrite
-	   title
-	   (tmp (nth num sessions))
-	   (otitle (car tmp)))
-      (while (not title)
-	;; A devious way to emulate INITIAL-INPUT that is deprecated.
-	(let ((minibuffer-setup-hook (lambda nil (insert otitle))))
-	  (setq title (read-from-minibuffer prompt nil nil nil nil otitle)))
-	(cond
-	 ((string= title "")
-	  (setq title nil
-		prompt default-prompt))
-	 ((string= title otitle)
-	  (setq prompt (concat title
-			       " is same as original title (C-g to abort): ")
-		title nil))
-	 ((assoc title sessions)
-	  (if (not (y-or-n-p (format "\"%s\" exists. Overwrite? " title)))
-	      (setq prompt default-prompt
-		    title nil))
-	  (setq sessions (delq (assoc title sessions) sessions))
-	  (setq num (seq-position sessions (assoc otitle sessions))))))
-      ; in this case, wrapper must decrement its copy of num
-      (setcar tmp title)
-      (setcar (nthcdr num sessions) tmp)
-      (w3m-save-list w3m-session-file sessions))))
+  ; When num is a cons cell, we are not dealing with a session, but
+  ; with a single buffer entry (ie. a tab) within a session. The car
+  ; of the cons will be the session number, and the cdr will be the
+  ; buffer number.
+  (let* ((default-prompt "Enter new session title (C-g to abort): ")
+         (prompt default-prompt)
+         overwrite
+         title
+         (group (if (consp num) (nth 2 (nth (car num) sessions)) nil))
+         (tmp  (if group (nth (cdr num) group) (nth num sessions)))
+         (otitle (if (consp num) (nth 2 (cdr tmp)) (car tmp))))
+    (while (not title)
+      ;; A devious way to emulate INITIAL-INPUT that is deprecated.
+      (let ((minibuffer-setup-hook (lambda nil (insert otitle))))
+        (setq title (read-from-minibuffer prompt nil nil nil nil otitle)))
+      (cond
+       ((string= title "")
+        (setq title nil
+      	prompt default-prompt))
+       ((string= title otitle)
+        (setq prompt (concat title
+      		       " is same as original title (C-g to abort): ")
+      	title nil))
+       ((assoc title (if group nil sessions)
+        (if (not (y-or-n-p (format "\"%s\" exists. Overwrite? " title)))
+            (setq prompt default-prompt
+      	    title nil))
+         (cond
+          (group ; handle *buffer* rename within a session ("session-group")
+            (setq prompt "Not yet supported. Manually delete the other entry, or try again."
+                  title nil))
+          (t
+            (setq sessions (delq (assoc title sessions) sessions))
+            (setq num (seq-position sessions (assoc otitle sessions)))))))))
+    ; in this case, wrapper must decrement its copy of num
+    ; BB_2018-02-15: I don't understand that comment
+    (cond
+     (group ; handle *buffer* rename within a session ("session-group")
+      (setf (nth 2 (cdr tmp)) title)
+      (setf (nth (cdr num) group) tmp)
+      (setf (nth 2 (nth (car num) sessions)) group))
+      ; BB_2018-02-15: The good news is that this seems to be working;
+      ; the bad news is that an examination of the .sessions file
+      ; reveals a format difference, in that the original buffer name
+      ; was encoded with text properties, like so:
+      ;     #("w3m_home_page.html" 0 1 (idx 0))
+      ; and the replacement is just a string. The text property may
+      ; just be cruft for the purpose of this file, but I'm not sure.
+     (t
+       (setcar tmp title)
+       (setcar (nthcdr num sessions) tmp)))
+    (w3m-save-list w3m-session-file sessions)))
 
 (defun w3m-session-delete (sessions num)
   (if (consp num)
+      ; When num is a cons cell, we are not dealing with a session,
+      ; but with a single buffer entry (ie. a tab) within a session
       (let* ((item (nth 2 (nth (car num) sessions)))
 	     (tmp (delq (nth (cdr num) item) item)))
 	(setf (nth 2 (nth (car num) sessions)) tmp))
