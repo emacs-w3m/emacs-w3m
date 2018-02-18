@@ -1,6 +1,6 @@
 ;;; w3m-search.el --- functions convenient to access web search engines
 
-;; Copyright (C) 2001--2012, 2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001--2012, 2017, 2018 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Keisuke Nishida    <kxn30@po.cwru.edu>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -204,9 +204,9 @@ __mk_ja_JP=%%83J%%83%%5E%%83J%%83i&url=search-alias%%3Daps&field-keywords=%s"
 	     iso-8859-1
 	     "url=index=blended&field-keywords=%s")
 	    ("amazon-ja"
-	       "https://www.amazon.co.jp/gp/search?\
+	     "https://www.amazon.co.jp/gp/search?\
 __mk_ja_JP=%%83J%%83%%5E%%83J%%83i&url=search-alias%%3Daps&field-keywords=%s"
-	       shift_jis)))
+	     shift_jis)))
       ("emacswiki" "https://www.emacswiki.org/cgi-bin/wiki?search=%s")
       ("en.wikipedia" "https://en.wikipedia.org/wiki/Special:Search?search=%s")
       ("de.wikipedia" "https://de.wikipedia.org/wiki/Spezial:Search?search=%s"
@@ -236,10 +236,13 @@ If CODING is omitted, it defaults to `w3m-default-coding-system'."
 			    (string :format "PostData: %v\n")))))
 
 (defcustom w3m-search-default-engine "google"
-  "*Name of the default search engine.
+  "Name of the default search engine.
 See also `w3m-search-engine-alist'."
   :group 'w3m
-  :type 'string)
+  :type (nconc '(radio) (mapcar
+			 (lambda (x)
+			   (list 'const (w3m-substring-no-properties (car x))))
+			 w3m-search-engine-alist)))
 
 (defcustom w3m-search-word-at-point t
   "*Non-nil means that the word at point is used as an initial string.

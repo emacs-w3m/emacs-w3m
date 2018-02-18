@@ -1,3 +1,8 @@
+2018-02-18  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-search.el (w3m-search-default-engine): Restrict options to valid
+	current choices and present them as radio buttons ([emacs-w3m:12915]).
+
 2018-02-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-session.el: Tidy up source code so as to be within 80-column.
