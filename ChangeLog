@@ -1,5 +1,16 @@
 2018-02-18  Boruch Baum  <boruch_baum@gmx.com>
 
+	* w3m.el (w3m-quit): Maintain frame isolation when in fb-mode. Update
+	docstring.
+	(w3m-close-window): Update doscstring.
+
+	* w3m-fb.el (w3m-fb-delete-frame-buffers): Kill all buffers directly
+	instead of incrementally moving to next one. This also is part of the
+	fix so that frame isolation is maintained in fb-mode after quitting.
+	[emacs-w3m:12916].
+
+2018-02-18  Boruch Baum  <boruch_baum@gmx.com>
+
 	* w3m-search.el (w3m-search-default-engine): Restrict options to valid
 	current choices and present them as radio buttons ([emacs-w3m:12915]).
 

@@ -93,10 +93,8 @@ selected frame are required.")
 	 ;; to other frames.
 	 (w3m-fb-mode nil)
 	 (w3m-fb-inhibit-buffer-selection t))
-    (save-window-excursion
-      (dolist (b buffers)
-	(with-current-buffer b
-	  (w3m-delete-buffer))))))
+    (dolist (b buffers)
+      (kill-buffer b))))
 
 ;; Could use set-frame-parameter here, but it isn't portable
 (defun w3m-fb-set-frame-parameter (frame parameter value)
@@ -160,8 +158,7 @@ Applies to all frames."
    (t
     ;; If no w3m buffers belong to frame, don't display any w3m buffer
     (while (eq major-mode 'w3m-mode)
-;;      (assert (eq (current-buffer)
-;;		  (window-buffer (selected-window))))
+      ;; (assert (eq (current-buffer) (window-buffer (selected-window))))
       (bury-buffer)))))
 
 ;; Minor mode setup
