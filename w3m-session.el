@@ -1,6 +1,6 @@
 ;;; w3m-session.el --- Functions to operate session of w3m -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2003, 2005-2013, 2017
+;; Copyright (C) 2001-2003, 2005-2013, 2017, 2018
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Hideyuki SHIRAI <shirai@meadowy.org>
@@ -104,14 +104,16 @@
   (autoload 'w3m-save-list "w3m"))
 
 (defvar w3m-session-group-open nil
-  "If a session-group is currently open, ie. when displaying a
-  list of buffers for an individual session, this should be set
-  to the session (session-group) number.
+  "Which session-group is open.
 
-  There is a legacy terminology problem that needs to be addressed
-  here. The documentation and symbol names currently confuse
-  'sessions', 'buffers`, and 'session-groups'. A 'session-group'
-  is identical to a 'session' that has more than one 'buffer'.")
+If a session-group is currently open, ie. when displaying a
+list of buffers for an individual session, this should be set
+to the session (session-group) number.
+
+There is a legacy terminology problem that needs to be addressed
+here. The documentation and symbol names currently confuse
+'sessions', 'buffers`, and 'session-groups'. A 'session-group'
+is identical to a 'session' that has more than one 'buffer'.")
 
 (defcustom w3m-session-file
   (expand-file-name ".sessions" w3m-profile-directory)
@@ -130,7 +132,7 @@
   :type 'boolean)
 
 (defcustom w3m-session-crash-recovery t
-  "*Non-nil means emacs-w3m save session set automatically, and recover it when emacs-w3m crash."
+  "If non-nil, recover session by auto-saved one when emacs-w3m crashes."
   :group 'w3m
   :type 'boolean)
 
@@ -186,17 +188,21 @@
   "*Whether to re-load the most recent session when emacs-w3m
 starts."
   :group 'w3m
-  :type '(radio (const :format "Re-load the last session automatically." t)
-		(const :format "Ask whether to re-load the last session." ask)
-		(const :format "Never re-load the last session automatically." nil)))
+  :type
+  '(radio
+    (const :format "Re-load the last session automatically." t)
+    (const :format "Ask whether to re-load the last session." ask)
+    (const :format "Never re-load the last session automatically." nil)))
 
 (defcustom w3m-session-load-crashed-sessions 'ask
   "*Whether to re-load a crashed session when emacs-w3m starts.
 This is used when emacs-w3m determines that the most recent session crashed."
   :group 'w3m
-  :type '(radio (const :format "RelLoad the crashed session automatically." t)
-		(const :format "Ask whether to re-load the crashed session." ask)
-		(const :format "Never re-load the crashed session automatically." nil)))
+  :type
+  '(radio
+    (const :format "RelLoad the crashed session automatically." t)
+    (const :format "Ask whether to re-load the crashed session." ask)
+    (const :format "Never re-load the crashed session automatically." nil)))
 
 (defface w3m-session-select
   `((((class color) (background light) (type nil))
@@ -579,7 +585,8 @@ buffer in the current session."
 	titles urls pos)
     (when session
       (mapc (lambda (x)
-	      (setq title (format "%s" (or (nth 3 x) w3m-session-unknown-title)))
+	      (setq title
+		    (format "%s" (or (nth 3 x) w3m-session-unknown-title)))
 	      (setq wid (string-width title))
 	      (when (> wid max)
 		(setq max wid))
@@ -654,14 +661,14 @@ buffer in the current session."
   "Exit from w3m session select mode."
   (interactive)
   (if w3m-session-group-open
-    (let ((num w3m-session-group-open))
-      (setq w3m-session-group-open nil)
-      (w3m-session-select-list-all-sessions))
-   (let ((buffer (current-buffer))
- 	(wincfg w3m-session-select-wincfg))
-     (or (one-window-p) (delete-window))
-     (kill-buffer buffer)
-     (set-window-configuration wincfg))))
+      (let ((num w3m-session-group-open))
+	(setq w3m-session-group-open nil)
+	(w3m-session-select-list-all-sessions))
+    (let ((buffer (current-buffer))
+	  (wincfg w3m-session-select-wincfg))
+      (or (one-window-p) (delete-window))
+      (kill-buffer buffer)
+      (set-window-configuration wincfg))))
 
 (defun w3m-session-select-select ()
   "Select the session."
@@ -717,8 +724,8 @@ buffer in the current session."
 	(sessions w3m-session-select-sessions))
     (w3m-session-rename sessions num)
     (if (not w3m-session-group-open)
-      (w3m-session-select num)
-     (w3m-session-select-open-session-group w3m-session-group-open))))
+	(w3m-session-select num)
+      (w3m-session-select-open-session-group w3m-session-group-open))))
 
 (defun w3m-session-select-delete ()
   "Delete an entry (either a session or a buffer)."
@@ -729,12 +736,13 @@ buffer in the current session."
 		(point) 'w3m-session-number))
 	  (sessions w3m-session-select-sessions))
       (w3m-session-delete sessions num)
-;;    (w3m-session-select)
-;;    (forward-line (min num (- (line-number-at-pos (point-max)) 4))))))
-    (if (not w3m-session-group-open)
-      (w3m-session-select (min num (1- (length sessions))))
-     (w3m-session-select-open-session-group w3m-session-group-open)
-     (forward-line (min (cdr num) (- (line-number-at-pos (point-max)) 4)))))))
+      ;;(w3m-session-select)
+      ;;(forward-line (min num (- (line-number-at-pos (point-max)) 4))))))
+      (if (not w3m-session-group-open)
+	  (w3m-session-select (min num (1- (length sessions))))
+	(w3m-session-select-open-session-group w3m-session-group-open)
+	(forward-line (min (cdr num)
+			   (- (line-number-at-pos (point-max)) 4)))))))
 
 ;;;###autoload
 (defun w3m-session-select (&optional n)
@@ -810,40 +818,46 @@ Position point at N-th session if N is given."
     (message "Session goto(%s)...done" title)))
 
 (defun w3m-session-rename (sessions num)
-  ; When num is a cons cell, we are not dealing with a session, but
-  ; with a single buffer entry (ie. a tab) within a session. The car
-  ; of the cons will be the session number, and the cdr will be the
-  ; buffer number.
+  "Rename an entry (either a session or a buffer).
+
+Rename session number NUM, when NUM is an integer. NUM may also
+be a cons cell, for which the car is a session number and the cdr
+is a buffer entry (ie. a tab) within that session. In that case
+rename the buffer entry."
   (let* ((default-prompt "Enter new session title (C-g to abort): ")
-         (prompt default-prompt)
-         overwrite
-         title
-         (group (if (consp num) (nth 2 (nth (car num) sessions)) nil))
-         (tmp  (if group (nth (cdr num) group) (nth num sessions)))
-         (otitle (if (consp num) (nth 2 (cdr tmp)) (car tmp))))
+	 (prompt default-prompt)
+	 overwrite
+	 title
+	 (group (if (consp num) (nth 2 (nth (car num) sessions)) nil))
+	 (tmp  (if group (nth (cdr num) group) (nth num sessions)))
+	 (otitle (if (consp num) (nth 2 (cdr tmp)) (car tmp))))
     (while (not title)
       ;; A devious way to emulate INITIAL-INPUT that is deprecated.
       (let ((minibuffer-setup-hook (lambda nil (insert otitle))))
-        (setq title (read-from-minibuffer prompt nil nil nil nil otitle)))
+	(setq title (read-from-minibuffer prompt nil nil nil nil otitle)))
       (cond
        ((string= title "")
-        (setq title nil
-      	prompt default-prompt))
+	(setq title nil
+	      prompt default-prompt))
        ((string= title otitle)
-        (setq prompt (concat title
-      		       " is same as original title (C-g to abort): ")
-      	title nil))
-       ((assoc title (if group nil sessions)
-        (if (not (y-or-n-p (format "\"%s\" exists. Overwrite? " title)))
-            (setq prompt default-prompt
-      	    title nil))
-         (cond
-          (group ; handle *buffer* rename within a session ("session-group")
-            (setq prompt "Not yet supported. Manually delete the other entry, or try again."
-                  title nil))
-          (t
-            (setq sessions (delq (assoc title sessions) sessions))
-            (setq num (seq-position sessions (assoc otitle sessions)))))))))
+	(setq prompt (concat title
+			     " is same as original title (C-g to abort): ")
+	      title nil))
+       ((assoc
+	 title
+	 (if group nil sessions)
+	 (if (not (y-or-n-p (format "\"%s\" exists. Overwrite? " title)))
+	     (setq prompt default-prompt
+		   title nil))
+	 (cond
+	  (group
+	   ;; handle *buffer* rename within a session ("session-group")
+	   (setq prompt "Not yet supported.\
+  Manually delete the other entry, or try again."
+		 title nil))
+	  (t
+	   (setq sessions (delq (assoc title sessions) sessions))
+	   (setq num (seq-position sessions (assoc otitle sessions)))))))))
     ; in this case, wrapper must decrement its copy of num
     ; BB_2018-02-15: I don't understand that comment
     (cond
@@ -851,22 +865,26 @@ Position point at N-th session if N is given."
       (setf (nth 2 (cdr tmp)) title)
       (setf (nth (cdr num) group) tmp)
       (setf (nth 2 (nth (car num) sessions)) group))
-      ; BB_2018-02-15: The good news is that this seems to be working;
-      ; the bad news is that an examination of the .sessions file
-      ; reveals a format difference, in that the original buffer name
-      ; was encoded with text properties, like so:
-      ;     #("w3m_home_page.html" 0 1 (idx 0))
-      ; and the replacement is just a string. The text property may
-      ; just be cruft for the purpose of this file, but I'm not sure.
+     ; BB_2018-02-15: The good news is that this seems to be working;
+     ; the bad news is that an examination of the .sessions file
+     ; reveals a format difference, in that the original buffer name
+     ; was encoded with text properties, like so:
+     ;     #("w3m_home_page.html" 0 1 (idx 0))
+     ; and the replacement is just a string. The text property may
+     ; just be cruft for the purpose of this file, but I'm not sure.
      (t
-       (setcar tmp title)
-       (setcar (nthcdr num sessions) tmp)))
+      (setcar tmp title)
+      (setcar (nthcdr num sessions) tmp)))
     (w3m-save-list w3m-session-file sessions)))
 
 (defun w3m-session-delete (sessions num)
+  "Delete an entry (either a session or a buffer).
+
+Delete session number NUM, when NUM is an integer. NUM may also
+be a cons cell, for which the car is a session number and the cdr
+is a buffer entry (ie. a tab) within that session. In that case
+delete the buffer entry."
   (if (consp num)
-      ; When num is a cons cell, we are not dealing with a session,
-      ; but with a single buffer entry (ie. a tab) within a session
       (let* ((item (nth 2 (nth (car num) sessions)))
 	     (tmp (delq (nth (cdr num) item) item)))
 	(setf (nth 2 (nth (car num) sessions)) tmp))
@@ -903,7 +921,7 @@ Position point at N-th session if N is given."
      w3m-session-save t]
     [,(w3m-make-menu-item "セッションを選択する" "Select Sessions")
      w3m-session-select t])
-    "*List of the session menu items.")
+  "*List of the session menu items.")
 
 ;;;###autoload
 (defun w3m-setup-session-menu ()
@@ -933,8 +951,8 @@ Position point at N-th session if N is given."
       (easy-menu-define w3m-session-menu w3m-mode-map
 	"The menu kepmap for the emacs-w3m session."
 	(cons "Session" (if pages
-			     (append items '("----") pages)
-			   items)))
+			    (append items '("----") pages)
+			  items)))
       (w3m-static-when (featurep 'xemacs)
 	(when (setq items (car (find-menu-item current-menubar '("Session"))))
 	  (setcdr items (cdr w3m-session-menu))
