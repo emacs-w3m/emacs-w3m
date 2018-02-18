@@ -482,9 +482,7 @@ buffer's url history."
     (setq w3m-session-select-mode-map map)))
 
 ;;; Local variables
-(defvar w3m-session-select-wincfg nil)
 (defvar w3m-session-select-sessions nil)
-(make-variable-buffer-local 'w3m-session-select-wincfg)
 (make-variable-buffer-local 'w3m-session-select-sessions)
 
 (defun w3m-session-select-mode (&optional sessions)
@@ -664,11 +662,9 @@ buffer in the current session."
       (let ((num w3m-session-group-open))
 	(setq w3m-session-group-open nil)
 	(w3m-session-select-list-all-sessions))
-    (let ((buffer (current-buffer))
-	  (wincfg w3m-session-select-wincfg))
+    (let ((buffer (current-buffer)))
       (or (one-window-p) (delete-window))
-      (kill-buffer buffer)
-      (set-window-configuration wincfg))))
+      (kill-buffer buffer))))
 
 (defun w3m-session-select-select ()
   "Select the session."
@@ -755,7 +751,6 @@ Position point at N-th session if N is given."
 	 window)
      (if sessions
 	 (let ((wheight (max (+ (length sessions) 5) window-min-height))
-	       (wincfg (current-window-configuration))
 	       last-window)
 	   (setq last-window (previous-window
 			      (w3m-static-if (fboundp 'frame-highest-window)
@@ -777,7 +772,6 @@ Position point at N-th session if N is given."
 	       (shrink-window (- (window-height) wheight))
 	     (error nil))
 	   (switch-to-buffer (w3m-get-buffer-create showbuf))
-	   (setq w3m-session-select-wincfg wincfg)
 	   (w3m-session-select-mode sessions)
 	   (when n (w3m-session-select-next n)))
        (when (setq showbuf (get-buffer showbuf))

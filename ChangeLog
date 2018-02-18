@@ -1,16 +1,23 @@
 2018-02-18  Boruch Baum  <boruch_baum@gmx.com>
 
+	* w3m-session.el (w3m-session-select-quit): Remove cruft:
+	w3m-session-select-wincfg is used, but never set.  This caused a bad
+	(nil) window configuration to be used when exiting a session-select
+	window in w3m-fb mode ([emacs-w3m:12918]).
+
+2018-02-18  Boruch Baum  <boruch_baum@gmx.com>
+
 	* w3m-session.el (w3m-session-rename): BUGFIX: had been failing to find
 	buffers with identical names to rename candidate ([emacs-w3m:12917]).
 
 2018-02-18  Boruch Baum  <boruch_baum@gmx.com>
 
-	* w3m.el (w3m-quit): Maintain frame isolation when in fb-mode. Update
-	docstring.
+	* w3m.el (w3m-quit): Maintain frame isolation when in fb-mode.
+	Update docstring.
 	(w3m-close-window): Update doscstring.
 
 	* w3m-fb.el (w3m-fb-delete-frame-buffers): Kill all buffers directly
-	instead of incrementally moving to next one. This also is part of the
+	instead of incrementally moving to next one.  This also is part of the
 	fix so that frame isolation is maintained in fb-mode after quitting.
 	[emacs-w3m:12916].
 
@@ -46,8 +53,8 @@
 	its parent session list display.
 	(w3m-session-select-open-session-group, w3m-session-select-rename)
 	(w3m-session-select-delete): Stay on proper line when within
-	session-group display, after renaming or deleting an entry. This
-	required adding an optional arg to the function.
+	session-group display, after renaming or deleting an entry.
+	This required adding an optional arg to the function.
 	(w3m-session-rename): Allow renaming individual tabs of a session.
 	(w3m-session-delete): Allow deleting individual tabs of a session.
 	[emacs-w3m:12907]
