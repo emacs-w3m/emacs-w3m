@@ -27,24 +27,24 @@
 ;; w3m-session.el is an add-on program of emacs-w3m to save, load,
 ;; delete, and rename sessions or their selected tabs.
 
-;; You need not load or restore an entire session. You can examine and
+;; You need not load or restore an entire session.  You can examine and
 ;; manage the contents (individual tabs) of any session, including
 ;; deleting, renaming, or loading them one at a time.
 
 ;; A session is any collection of buffers (tabs) open at any given
-;; time. Be aware, however, that unfortunately much of the code and
+;; time.  Be aware, however, that unfortunately much of the code and
 ;; documentation uses the terms session and buffer interchangeably.
 ;; There is also a term 'session-group' which is identical to a
-;; session which has more than buffer. Yes, this does need to be
+;; session which has more than buffer.  Yes, this does need to be
 ;; refactored!
 
 ;; Session management does its best to automatically keep track of the
 ;; current collection of w3m buffers so that should a catastrophic
-;; crash occur, the entire session can be restored. Upon restarting
+;; crash occur, the entire session can be restored.  Upon restarting
 ;; emacs-w3m after a crash, the user will be prompted whether to
-;; recover the prior session. Additionally, the user may at any time
+;; recover the prior session.  Additionally, the user may at any time
 ;; manually save the current session, or restore the tabs of a prior
-;; session. Note that restoring a prior session is not destructive; it
+;; session.  Note that restoring a prior session is not destructive; it
 ;; only adds new tabs into the current session for each tab of the
 ;; saved session.
 
@@ -52,33 +52,33 @@
 ;; the `w3m-quit' command, bound by default to `Q'.
 
 ;; The session information for all sessions are stored as a single
-;; elisp object, by default in file ~/.w3m/.session. Tab content is
-;; NOT stored. What is stored for each tab is the url, title, cursor
-;; position, and tab history. Even so, this can eventually become a
+;; elisp object, by default in file ~/.w3m/.session.  Tab content is
+;; NOT stored.  What is stored for each tab is the url, title, cursor
+;; position, and tab history.  Even so, this can eventually become a
 ;; monstrously large data structure, and probably needlessly, if one
 ;; accumulates large history records for each tab.
 
 ;;;; Typical usage and tutorial
 
 ;; One enters session management by evaluating `w3m-session-select'
-;; (M-s). Typically, there will be at least one session automatically
+;; (M-s).  Typically, there will be at least one session automatically
 ;; present, either labeled as a crash recovery session or an
-;; automatically saved one. Next to each session name will be a number
+;; automatically saved one.  Next to each session name will be a number
 ;; in brackets representing the number of tab (buffers) in the
-;; session. There will also be column entries for the session
-;; timestamp, and summary URL entries. One exits session management
+;; session.  There will also be column entries for the session
+;; timestamp, and summary URL entries.  One exits session management
 ;; with either `q' or `C-g'.
 
 ;; From any emacs-w3m buffer one may save a session by evaluating
 ;; `w3m-session-save' (M-S).
 
 ;; From within session management, one can rename (`r') or delete
-;; (`d') any session. Selecting a session using the RET key will load
-;; ALL of that session's tabs. You can examine the details of a
+;; (`d') any session.  Selecting a session using the RET key will load
+;; ALL of that session's tabs.  You can examine the details of a
 ;; session by pressing `M-s' (the same key binding you used to enter
-;; the session management). At this point, you can rename, delete, or
-;; load any individual tab. Note that the first entry on the list
-;; gives you a second chance to load ALL the tabs. Quitting returns
+;; the session management).  At this point, you can rename, delete, or
+;; load any individual tab.  Note that the first entry on the list
+;; gives you a second chance to load ALL the tabs.  Quitting returns
 ;; you to the session list.
 
 ;; All changes are saved to disk immediately.
@@ -106,13 +106,13 @@
 (defvar w3m-session-group-open nil
   "Which session-group is open.
 
-If a session-group is currently open, ie. when displaying a
+If a session-group is currently open, i.e., when displaying a
 list of buffers for an individual session, this should be set
 to the session (session-group) number.
 
 There is a legacy terminology problem that needs to be addressed
-here. The documentation and symbol names currently confuse
-'sessions', 'buffers`, and 'session-groups'. A 'session-group'
+here.  The documentation and symbol names currently confuse
+'sessions', 'buffers`, and 'session-groups'.  A 'session-group'
 is identical to a 'session' that has more than one 'buffer'.")
 
 (defcustom w3m-session-file
@@ -272,7 +272,7 @@ This is used when emacs-w3m determines that the most recent session crashed."
 (defun w3m-session-save ()
   "Save the current session (all currently open emacs-w3m buffers).
 
-The user will be prompted for a name for the saved session. The
+The user will be prompted for a name for the saved session.  The
 saved session information will include, for each currently open
 emacs-w3m buffer: the current url and page title, and the
 buffer's url history."
@@ -298,7 +298,7 @@ buffer's url history."
 	   (setq title (completing-read prompt titles nil nil nil nil title)))
 	 (if (or (string= title "")
 		 (and (assoc title sessions)
-		      (not (y-or-n-p (format "\"%s\" exists. Overwrite? "
+		      (not (y-or-n-p (format "\"%s\" exists.  Overwrite? "
 					     title)))))
 	     (setq prompt "New session title: ")
 	   (throw 'loop t))))
@@ -572,9 +572,9 @@ buffer's url history."
       (setq buffer-read-only t))))
 
 (defun w3m-session-select-list-session-group (arg)
-  "List all buffers (ie. tabs) within a session.
+  "List all buffers (i.e., tabs) within a session.
 
-The list can be acted upon similarly to a session list, ie.
+The list can be acted upon similarly to a session list, i.e.,
 entries can be individually deleted, renamed, or opened as a new
 buffer in the current session."
   (let ((session (nth 2 (nth arg w3m-session-select-sessions)))
@@ -820,9 +820,9 @@ Position point at N-th session if N is given."
 (defun w3m-session-rename (sessions num)
   "Rename an entry (either a session or a buffer).
 
-Rename session number NUM, when NUM is an integer. NUM may also
+Rename session number NUM, when NUM is an integer.  NUM may also
 be a cons cell, for which the car is a session number and the cdr
-is a buffer entry (ie. a tab) within that session. In that case
+is a buffer entry (i.e., a tab) within that session.  In that case
 rename the buffer entry."
   (let* ((default-prompt "Enter new session title (C-g to abort): ")
 	 (prompt default-prompt)
@@ -843,35 +843,32 @@ rename the buffer entry."
 	(setq prompt (concat title
 			     " is same as original title (C-g to abort): ")
 	      title nil))
-       ((assoc
-	 title
-	 (if group nil sessions)
-	 (if (not (y-or-n-p (format "\"%s\" exists. Overwrite? " title)))
-	     (setq prompt default-prompt
-		   title nil))
-	 (cond
-	  (group
-	   ;; handle *buffer* rename within a session ("session-group")
-	   (setq prompt "Not yet supported.\
-  Manually delete the other entry, or try again."
-		 title nil))
-	  (t
-	   (setq sessions (delq (assoc title sessions) sessions))
-	   (setq num (seq-position sessions (assoc otitle sessions)))))))))
-    ; in this case, wrapper must decrement its copy of num
-    ; BB_2018-02-15: I don't understand that comment
+       ((and (not group) (assoc title sessions))
+	(if (not (y-or-n-p (format "\"%s\" exists.  Overwrite? " title)))
+	    (setq prompt default-prompt
+		  title nil)
+	  (setq sessions (delq (assoc title sessions) sessions))
+	  (setq num (seq-position sessions (assoc otitle sessions)))))
+       ((and group (member title (mapcar (lambda (x) (car (last x))) group)))
+	;; handle *buffer* rename (overwrite existing)
+	;; within a session ("session-group")
+	(setq prompt "\
+Not yet supported.  Manually delete the other entry, or try again. "
+	      title nil))))
+    ;; in this case, wrapper must decrement its copy of num
+    ;; BB_2018-02-15: I don't understand that comment
     (cond
-     (group ; handle *buffer* rename within a session ("session-group")
+     (group ;; handle *buffer* rename within a session ("session-group")
       (setf (nth 2 (cdr tmp)) title)
       (setf (nth (cdr num) group) tmp)
       (setf (nth 2 (nth (car num) sessions)) group))
-     ; BB_2018-02-15: The good news is that this seems to be working;
-     ; the bad news is that an examination of the .sessions file
-     ; reveals a format difference, in that the original buffer name
-     ; was encoded with text properties, like so:
-     ;     #("w3m_home_page.html" 0 1 (idx 0))
-     ; and the replacement is just a string. The text property may
-     ; just be cruft for the purpose of this file, but I'm not sure.
+     ;; BB_2018-02-15: The good news is that this seems to be working;
+     ;; the bad news is that an examination of the .sessions file
+     ;; reveals a format difference, in that the original buffer name
+     ;; was encoded with text properties, like so:
+     ;;     #("w3m_home_page.html" 0 1 (idx 0))
+     ;; and the replacement is just a string.  The text property may
+     ;; just be cruft for the purpose of this file, but I'm not sure.
      (t
       (setcar tmp title)
       (setcar (nthcdr num sessions) tmp)))
@@ -880,9 +877,9 @@ rename the buffer entry."
 (defun w3m-session-delete (sessions num)
   "Delete an entry (either a session or a buffer).
 
-Delete session number NUM, when NUM is an integer. NUM may also
+Delete session number NUM, when NUM is an integer.  NUM may also
 be a cons cell, for which the car is a session number and the cdr
-is a buffer entry (ie. a tab) within that session. In that case
+is a buffer entry (i.e., a tab) within that session.  In that case
 delete the buffer entry."
   (if (consp num)
       (let* ((item (nth 2 (nth (car num) sessions)))

@@ -1,5 +1,10 @@
 2018-02-18  Boruch Baum  <boruch_baum@gmx.com>
 
+	* w3m-session.el (w3m-session-rename): BUGFIX: had been failing to find
+	buffers with identical names to rename candidate ([emacs-w3m:12917]).
+
+2018-02-18  Boruch Baum  <boruch_baum@gmx.com>
+
 	* w3m.el (w3m-quit): Maintain frame isolation when in fb-mode. Update
 	docstring.
 	(w3m-close-window): Update doscstring.
