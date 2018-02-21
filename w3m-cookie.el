@@ -551,7 +551,8 @@ BEG and END should be an HTTP response header region on current buffer."
     (when (y-or-n-p "Use of cookies is currently disable.  Enable? ")
       (setq w3m-use-cookies t)))
   (when w3m-use-cookies
-    (w3m-goto-url-new-session "about://cookie/" no-cache)))
+    (w3m-goto-url-new-session "about://cookie/" no-cache)
+    (w3m-history-minimize)))
 
 ;;;###autoload
 (defun w3m-about-cookie (url &optional no-decode no-cache post-data &rest args)

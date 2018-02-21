@@ -7025,7 +7025,10 @@ COUNT is treated as 1 by default if it is omitted."
 	      (setcar w3m-history (cdr hist))
 	      ;; Restore last position.
 	      (w3m-history-restore-position))
-	  (message "There's no more history"))))))
+	  (if (and (equal w3m-current-url "about://cookie/")
+		   (> (length (w3m-list-buffers t)) 1))
+	      (w3m-delete-buffer)
+	    (message "There's no more history")))))))
 
 (defun w3m-view-next-page (&optional count)
   "Move forward COUNT pages in history.

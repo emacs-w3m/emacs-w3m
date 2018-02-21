@@ -1,3 +1,13 @@
+2018-02-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Delete about://cookie/ buffer when w3m-view-previous-page is performed.
+	Suggested by Dan Jacobson.
+
+	* w3m-cookie.el (w3m-cookie): Clear history.
+
+	* w3m.el (w3m-view-previous-page): Delete about://cookie/ buffer
+	if there is no other w3m-mode buffer.
+
 2018-02-18  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-session.el (w3m-session-select-quit): Remove cruft:
