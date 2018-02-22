@@ -3,6 +3,12 @@
 	* w3m-util.el (w3m-generate-new-buffer): Work for w3m-fb-mode correctly
 	([emacs-w3m:12904]).
 
+2018-02-20  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-relationship-estimate-rules): Remove rule for
+	discontinued freshmeat.net website.  Improve docstring
+	([emacs-w3m:12924]).
+
 2018-02-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Delete about://cookie/ buffer when w3m-view-previous-page is performed.

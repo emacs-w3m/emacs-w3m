@@ -2033,16 +2033,37 @@ Here are some predefined functions which can be used for those ways:
      ,(concat "<a href=" w3m-html-string-regexp ">次のページ</a>")
      ,(concat "<a href=" w3m-html-string-regexp ">前のページ</a>")
      nil nil)
-    (w3m-relationship-simple-estimate
-     "\\`http://freshmeat\\.net/\\(search\\|browse\\)/"
-     ,(concat "<A HREF=" w3m-html-string-regexp ">\\[&raquo;\\]</A>")
-     ,(concat "<A HREF=" w3m-html-string-regexp ">\\[&laquo;\\]</A>")
-     nil nil)
     (w3m-relationship-oddmuse-estimate)
     (w3m-relationship-magicpoint-estimate)
     (w3m-relationship-slashdot-estimate)
     (w3m-relationship-alc-estimate))
-  "*Rules to estimate relationships between a retrieved page and others."
+  "Rules to estimate relationships between a retrieved page and others.
+
+This variable supports the emacs-w3m ability to navigate
+structured websites, using shortcut keys, to a current page's
+parent page (`w3m-view-parent-page'), or next / previous
+pages (`w3m-scroll-up-or-next-url', `w3m-scroll-down-or-previous-url').
+
+The variable is a list of RULES. Each RULE is sequence in the
+form FUNCTION URL NEXT PREV START CONTENTS.
+
+FUNCTION is the method to to be used to evaluate the other
+fields. A FUNCTION should set variables `w3m-start-url',
+`w3m-next-url', `w3m-previous-url', `w3m-contents-url'. Emacs-w3m
+provides functions `w3m-relationship-simple-estimate',
+`w3m-relationship-magicpoint-estimate',
+`w3m-relationship-oddmuse-estimate',
+`w3m-relationship-slashdot-estimate',
+`w3m-relationship-alc-estimate', but of course you can add your
+own.
+
+URL is a regex defining the urls for which to use this rule.
+
+NEXT, PREV, START and CONTENTS are regexs of html source code
+from which to extract the values of variables `w3m-next-url',
+`w3m-previous-url', `w3m-start-url', `w3m-contents-url'
+respectively. The url to store should be defined as a regex
+collection group."
   :group 'w3m
   :type '(repeat
 	  (choice
