@@ -450,11 +450,12 @@ Make the new buffer the next of the current buffer if NEXT is non-nil."
     (setq name (substring name 0 (match-beginning 0))))
   (let* ((w3m-fb-mode nil)
 	 (buffers (w3m-list-buffers))
-	 (regexp (concat "\\`" (regexp-quote name) "\\(?:<[0-9]+>\\)?\\'"))
 	 (siblings (delq nil
 			 (mapcar
 			  (lambda (buffer)
-			    (when (string-match regexp (buffer-name buffer))
+			    (when (string-match
+				   "\\*w3m\\*\\(?:<[0-9]+>\\)?\\'"
+				   (buffer-name buffer))
 			      buffer))
 			  buffers)))
 	 youngers cur number num)
