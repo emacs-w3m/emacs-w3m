@@ -1,6 +1,6 @@
 ;;; w3m-ems.el --- GNU Emacs stuff for emacs-w3m
 
-;; Copyright (C) 2001-2013, 2016, 2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2013, 2016-2018 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -589,8 +589,9 @@ variable or both the value of this variable and the global value of
       (setq n (1- n)
 	    def (nth n defs))
       (define-key keymap (vector 'tool-bar (aref def 1))
-	(list 'menu-item (aref def 3) (aref def 1)
+	(list 'menu-item " " (aref def 1)
 	      :enable (aref def 2)
+	      :help (aref def 3)
 	      :image (symbol-value (aref def 0)))))))
 
 (defun w3m-find-image (name &optional directory)
