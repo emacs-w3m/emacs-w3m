@@ -76,7 +76,8 @@
   (autoload 'w3m-detect-coding-region
     (if (featurep 'emacs) "w3m-ems" "w3m-xmas"))
   (autoload 'w3m-fb-frame-parameter "w3m-fb")
-  (autoload 'w3m-history-restore-position "w3m-hist" nil t))
+  (autoload 'w3m-history-restore-position "w3m-hist" nil t)
+  (autoload 'w3m-mode "w3m"))
 
 ;; XEmacs 21.4 wants this.
 (defalias 'w3m-make-local-hook (if (featurep 'xemacs)
@@ -446,34 +447,24 @@ An argument of nil means kill the current buffer."
 (defun w3m-generate-new-buffer (name &optional next)
   "Create and return a buffer with a name based on NAME.
 Make the new buffer the next of the current buffer if NEXT is non-nil."
-  (when (string-match "<[0-9]+>\\'" name)
-    (setq name (substring name 0 (match-beginning 0))))
-  (let* ((w3m-fb-mode nil)
-	 (buffers (w3m-list-buffers))
-	 (siblings (delq nil
-			 (mapcar
-			  (lambda (buffer)
-			    (when (string-match
-				   "\\*w3m\\*\\(?:<[0-9]+>\\)?\\'"
-				   (buffer-name buffer))
-			      buffer))
-			  buffers)))
-	 youngers cur number num)
-    (if (and next
-	     (setq youngers (cdr (memq (setq cur (current-buffer)) siblings))))
-	(progn
-	  (setq number (1+ (w3m-buffer-number cur))
-		num (+ 1 (length youngers)
-		       (w3m-buffer-number (car (reverse youngers)))))
-	  (dolist (buffer (reverse youngers))
-	    (w3m-buffer-set-number buffer (setq num (1- num))))
-	  (setq num number)
-	  (dolist (buffer youngers)
-	    (w3m-buffer-set-number buffer (setq num (1+ num))))
-	  (generate-new-buffer (format "%s<%d>" name number)))
-      (if (setq number (w3m-buffer-number (car (nreverse siblings))))
-	  (generate-new-buffer (format "%s<%d>" name (1+ number)))
-	(generate-new-buffer name)))))
+  (when w3m-use-title-buffer-name
+    (let* ((tailbufs (let ((w3m-fb-mode nil))
+		       (let ((all-w3m-buffers (w3m-list-buffers)))
+			 (if next
+			     (memq (current-buffer) all-w3m-buffers)
+			   (last all-w3m-buffers)))))
+	   (new-buffer-number (w3m-buffer-number (car tailbufs))))
+      (when (string-match "\\*w3m\\*\\(<\\([0-9]+\\)>\\)?\\'" name)
+	(setq name "*w3m*"))
+      (when (and tailbufs new-buffer-number)
+	(let ((n (1+ new-buffer-number)))
+	  (dolist (buf (cdr tailbufs))
+	    (w3m-buffer-set-number buf (setq n (1+ n))))
+	  (setq name (format "%s<%d>" name (1+ new-buffer-number)))))))
+  (let ((new (generate-new-buffer name)))
+    (with-current-buffer new
+      (w3m-mode))
+    new))
 
 (defun w3m-buffer-name-lessp (x y)
   "Return t if first arg buffer's name is less than second."

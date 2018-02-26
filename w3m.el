@@ -7199,12 +7199,6 @@ compatibility which is described in Section 5.2 of RFC 2396.")
   (put-text-property (point) (point-max) 'w3m-progress-message t)
   (sit-for 0))
 
-(defvar w3m-parent-session-buffer nil
-  "A buffer of the parent session that launches this session.
-This is used to make `w3m-delete-buffer' return to the session that
-launches the current session, i.e., the one to be deleted.")
-(make-variable-buffer-local 'w3m-parent-session-buffer)
-
 (defun w3m-view-this-url-1 (url reload new-session)
   (lexical-let ((url url)
 		pos buffer)
@@ -7218,14 +7212,12 @@ launches the current session, i.e., the one to be deleted.")
 			   (match-beginning 8))
 			 (string-equal w3m-current-url
 				       (substring url
-						  0 (match-beginning 8))))))
-	      (parent (current-buffer)))
+						  0 (match-beginning 8)))))))
 	  (setq pos (point-marker)
 		buffer (w3m-copy-buffer
 			nil nil nil empty w3m-new-session-in-background t))
 	  (when w3m-new-session-in-background
 	    (set-buffer buffer))
-	  (setq w3m-parent-session-buffer parent)
 	  (when empty
 	    (w3m-display-progress-message url)))
       (setq buffer (current-buffer)))
@@ -8011,7 +8003,6 @@ a page in a new buffer with the correct width."
       ;;
       (w3m-history-store-position)
       (set-buffer (setq new (w3m-generate-new-buffer newname (not last))))
-      (w3m-mode)
       ;; Make copies of `w3m-history' and `w3m-history-flat'.
       (w3m-history-copy buffer)
       (setq w3m-current-coding-system coding
@@ -8048,7 +8039,7 @@ a page in a new buffer with the correct width."
 
 (defun w3m-next-buffer (arg &optional buffer)
   "Turn ARG pages of emacs-w3m buffers ahead.
-Switch to BUFFER if it is specified regardless of ARG."
+If BUFFER is specified, switch to it regardless of ARG."
   (interactive "p")
   (when (and (eq major-mode 'w3m-mode)
 	     (or (and (buffer-live-p buffer)
@@ -8096,7 +8087,7 @@ non-nil, it returns to the buffer that launches this buffer."
       (if (w3m-use-tab-p)
 	  (progn
 	    (select-window (or (get-buffer-window cur t) (selected-window)))
-	    (w3m-next-buffer -1 w3m-parent-session-buffer))
+	    (w3m-next-buffer -1))
 	;; List buffers being shown in the other windows of the current frame.
 	(save-current-buffer
 	  (walk-windows (lambda (window)
@@ -9555,10 +9546,7 @@ When the current buffer has already been prepared, it won't bother to
 generate a new buffer."
   (unless (eq major-mode 'w3m-mode)
     (let ((buffer (w3m-alive-p t)))
-      (if buffer
-	  (set-buffer buffer)
-	(set-buffer (w3m-generate-new-buffer "*w3m*"))
-	(w3m-mode))))
+      (set-buffer (or buffer (w3m-generate-new-buffer "*w3m*")))))
   ;; It may have been set to nil for viewing a page source or a header.
   (setq truncate-lines t)
   (w3m-make-local-hook 'pre-command-hook)
@@ -10407,8 +10395,7 @@ interactive command in the batch mode."
     (unless buffer
       ;; It means `new-session' is non-nil or there's no emacs-w3m buffer.
       ;; At any rate, we create a new emacs-w3m buffer in this case.
-      (with-current-buffer (setq buffer (w3m-generate-new-buffer "*w3m*"))
-	(w3m-mode)))
+      (setq buffer (w3m-generate-new-buffer "*w3m*")))
     (w3m-popup-buffer buffer)
     (unless nofetch
       ;; `unwind-protect' is needed since a process may be terminated by C-g.
