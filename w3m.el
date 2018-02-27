@@ -8037,6 +8037,12 @@ a page in a new buffer with the correct width."
 	(set-window-buffer (selected-window) buffer))))
     new))
 
+(defvar w3m-previous-session-buffer nil
+  "A buffer of the session having selected just before this session.
+This will be the session to be selected after `w3m-delete-buffer'
+deletes the current session.")
+(make-variable-buffer-local 'w3m-previous-session-buffer)
+
 (defun w3m-next-buffer (arg &optional buffer)
   "Turn ARG pages of emacs-w3m buffers ahead.
 If BUFFER is specified, switch to it regardless of ARG."
@@ -8057,7 +8063,9 @@ If BUFFER is specified, switch to it regardless of ARG."
 				      len)
 				     buffers)))))))
     (w3m-history-store-position)
-    (switch-to-buffer buffer)
+    (let ((prev (current-buffer)))
+      (switch-to-buffer buffer)
+      (setq w3m-previous-session-buffer prev))
     (w3m-history-restore-position)
     (run-hooks 'w3m-select-buffer-hook)
     (w3m-select-buffer-update)))
@@ -8087,7 +8095,7 @@ non-nil, it returns to the buffer that launches this buffer."
       (if (w3m-use-tab-p)
 	  (progn
 	    (select-window (or (get-buffer-window cur t) (selected-window)))
-	    (w3m-next-buffer -1))
+	    (w3m-next-buffer -1 w3m-previous-session-buffer))
 	;; List buffers being shown in the other windows of the current frame.
 	(save-current-buffer
 	  (walk-windows (lambda (window)

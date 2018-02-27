@@ -461,9 +461,11 @@ Make the new buffer the next of the current buffer if NEXT is non-nil."
 	  (dolist (buf (cdr tailbufs))
 	    (w3m-buffer-set-number buf (setq n (1+ n))))
 	  (setq name (format "%s<%d>" name (1+ new-buffer-number)))))))
-  (let ((new (generate-new-buffer name)))
+  (let ((prev (and (eq major-mode 'w3m-mode) (current-buffer)))
+	(new (generate-new-buffer name)))
     (with-current-buffer new
-      (w3m-mode))
+      (w3m-mode)
+      (setq w3m-previous-session-buffer prev))
     new))
 
 (defun w3m-buffer-name-lessp (x y)

@@ -66,6 +66,7 @@
   (defvar w3m-mode-map)
   (defvar w3m-modeline-process-status-on)
   (defvar w3m-new-session-in-background)
+  (defvar w3m-previous-session-buffer)
   (defvar w3m-process-queue)
   (defvar w3m-show-graphic-icons-in-header-line)
   (defvar w3m-show-graphic-icons-in-mode-line)
@@ -873,7 +874,7 @@ Wobble the selected window to force redisplay of the header-line."
 
 (defun w3m-tab-drag-mouse-function (event buffer)
   (let ((window (posn-window (event-end event)))
-	mpos)
+	mpos prev)
     (when (framep window) ; dropped at outside of the frame.
       (setq window nil
 	    mpos (mouse-position))
@@ -887,15 +888,18 @@ Wobble the selected window to force redisplay of the header-line."
 	(when (one-window-p 'nomini)
 	  (split-window))
 	(setq window (next-window))))
-    (unless (eq (window-buffer window) buffer)
+    (unless (eq (setq prev (window-buffer window)) buffer)
       (select-window window)
       (switch-to-buffer buffer)
+      (setq w3m-previous-session-buffer prev)
       (w3m-force-window-update window))))
 
 (defun w3m-tab-click-mouse-function (event buffer)
-  (let ((window (posn-window (event-start event))))
+  (let* ((window (posn-window (event-start event)))
+	 (prev (window-buffer window)))
     (select-window window)
     (switch-to-buffer buffer)
+    (setq w3m-previous-session-buffer prev)
     (w3m-force-window-update window)))
 
 (defun w3m-tab-double-click-mouse1-function (event buffer)

@@ -1,3 +1,16 @@
+2018-02-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	[emacs-w3m:12929]
+	* w3m.el (w3m-previous-session-buffer):
+	New variable, a successor to w3m-parent-session-buffer.
+	(w3m-next-buffer): Set it.
+	(w3m-delete-buffer): Return to it after deletion.
+
+	* w3m-util.el (w3m-generate-new-buffer): Set it.
+
+	* w3m-ems.el (w3m-tab-drag-mouse-function)
+	(w3m-tab-click-mouse-function): Set it.
+
 2018-02-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	[emacs-w3m:12928]
