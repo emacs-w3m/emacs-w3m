@@ -53,6 +53,7 @@
   (defvar w3m-pop-up-frames)
   (defvar w3m-pop-up-windows)
   (defvar w3m-popup-frame-parameters)
+  (defvar w3m-previous-session-buffer)
   (defvar w3m-refresh-timer)
   (defvar w3m-select-buffer-name)
   (defvar w3m-use-refresh)
