@@ -85,10 +85,10 @@
     (let ((docname (if (= (length url) (match-end 0))
 		       "perl"
 		     (w3m-url-decode-string (substring url (match-end 0)))))
-	  (default-directory w3m-profile-directory)
+	  (default-directory (expand-file-name w3m-profile-directory))
 	  (process-environment (copy-sequence process-environment)))
       ;; To specify the place in which pod2html generates its cache files.
-      (setenv "HOME" (expand-file-name w3m-profile-directory))
+      (setenv "HOME" default-directory)
       (and (let ((coding-system-for-read w3m-perldoc-output-coding-system))
 	     (zerop (call-process w3m-perldoc-command
 				  nil t nil "-u" docname)))
