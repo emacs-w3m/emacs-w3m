@@ -1,6 +1,6 @@
 ;;; sb-mainichi.el --- shimbun backend for Mainichi jp -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2009, 2011-2013, 2015-2017
+;; Copyright (C) 2001-2009, 2011-2013, 2015-2018
 ;; Koichiro Ohba <koichiro@meadowy.org>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
@@ -201,7 +201,7 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 		    (concat
 		     "<a[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*href=\""
 		     ;; 1. url
-		     "\\(\\(?:/[^\"/>]+\\)*/articles/"
+		     "\\(\\(?://?[^\"/>]+\\)*/articles/"
 		     ;; 2. serial number
 		     "\\("
 		     ;; 3. year

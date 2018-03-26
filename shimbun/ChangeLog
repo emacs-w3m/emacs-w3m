@@ -1,3 +1,7 @@
+2018-03-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-mainichi.el (shimbun-mainichi-get-headers-fuchisou): Fix regexp.
+
 2018-02-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-content-start): Don't delete author's name
