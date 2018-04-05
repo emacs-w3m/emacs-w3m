@@ -1,3 +1,12 @@
+2018-04-03  Boruch Baum  <boruch_baum@gmx.com>
+
+	Send a cached ETag to the remote server so as to check whether
+	the server responds with 304 meaning the cache is still up-to-date.
+	[emacs-w3m:12947]
+
+	* w3m.el (w3m-cache-available-p): Fetch Etag.
+	(w3m-w3m-retrieve-1): Send it to the server.
+
 2018-03-05  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3m-perldoc.el (w3m-about-perldoc): Expand "~" before setting
