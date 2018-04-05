@@ -4921,16 +4921,12 @@ BUFFER is nil, all contents will be inserted in the current buffer."
 		 (insert-buffer-substring w3m-cache-buffer beg end))
 	       t))))))
 
-;; FIXME: we need to check whether contents were updated in the remote server.
-;; -> Done: send a cached ETag to the server so as to check whether the server
-;; responds with 304 meaning the cache is still up-to-date.  [emacs-w3m:12947]
+;; FIXME: we need to check whether contents were updated in remote servers.
 (defun w3m-cache-available-p (url)
-  "Return non-nil if a content of URL has already been cached.
-The cdr of the return value would be an Etag value if it exists."
+  "Return non-nil if a content of URL has already been cached."
   (w3m-cache-setup)
   (when (stringp url)
-    (let ((ident (intern (w3m-w3m-canonicalize-url url) w3m-cache-hashtb))
-	  etag)
+    (let ((ident (intern (w3m-w3m-canonicalize-url url) w3m-cache-hashtb)))
       (and
        (memq ident w3m-cache-articles)
        (or
@@ -4966,14 +4962,12 @@ The cdr of the return value would be an Etag value if it exists."
 	       (setq expire (match-string 1 head))
 	       (setq expire (w3m-time-parse-string expire)))
 	      (w3m-time-newer-p expire (current-time)))
-	     ((string-match "^etag:[ \t]\\([^\n]+\\)\n" head)
-	      (setq etag (concat "If-None-Match: " (match-string 1 head))))
 	     (t
 	      ;; Adhoc heuristic rule: pages with neither
 	      ;; Last-Modified header and ETag header are treated as
 	      ;; dynamically-generated pages.
 	      (string-match "^\\(?:last-modified\\|etag\\):" head))))))
-       (cons ident etag)))))
+       ident))))
 
 (defun w3m-read-file-name (&optional prompt dir default existing)
   (unless prompt
@@ -5709,22 +5703,18 @@ It will put the retrieved contents into the current buffer.  See
 
 (defun w3m-w3m-retrieve-1 (url post-data referer no-cache counter handler)
   "A subroutine for `w3m-w3m-retrieve'."
-  (let* ((w3m-command-arguments
-	  (append w3m-command-arguments
-		  (when (member "cookie" w3m-compile-options)
-		    (list "-no-cookie"))
-		  (list "-o" "follow_redirection=0")
-		  (w3m-additional-command-arguments url)))
-	 (cachep (w3m-cache-available-p url))
-	 (etag (cdr cachep))
-	 temp-file)
+  (let ((w3m-command-arguments
+	 (append w3m-command-arguments
+		 (when (member "cookie" w3m-compile-options)
+		   (list "-no-cookie"))
+		 (list "-o" "follow_redirection=0")
+		 (w3m-additional-command-arguments url)))
+	(cachep (w3m-cache-available-p url))
+	temp-file)
     (when (and w3m-broken-proxy-cache
 	       (or no-cache (not cachep)))
       (setq w3m-command-arguments
 	    (append w3m-command-arguments '("-o" "no_cache=1"))))
-    (when etag
-      (setq w3m-command-arguments
-	    (append w3m-command-arguments (list "-header" etag))))
     (setq temp-file
 	  (when (or (eq w3m-type 'w3mmee) post-data)
 	    (make-temp-name

@@ -1,3 +1,8 @@
+2018-04-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-cache-available-p, w3m-w3m-retrieve-1): Revert.
+	See [emacs-w3m:12951].
+
 2018-04-03  Boruch Baum  <boruch_baum@gmx.com>
 
 	Send a cached ETag to the remote server so as to check whether
