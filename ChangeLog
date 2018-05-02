@@ -1,5 +1,8 @@
 2018-05-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* aclocal.m4 (AC_PATH_EMACS): Work for Emacs >= 26 in which
+	the emacs-version variable no longer includes the build number.
+
 	* w3m-favicon.el (w3m-favicon-retrieve): Gunzip data if necessary.
 
 2018-04-05  Katsumi Yamaoka  <yamaoka@jpl.org>

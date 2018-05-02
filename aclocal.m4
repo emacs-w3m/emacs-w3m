@@ -80,13 +80,8 @@ AC_DEFUN(AC_PATH_EMACS,
   AC_EMACS_LISP(flavor,
     (if (featurep (quote xemacs))
 	\"XEmacs\"
-      (concat \"Emacs \"
-	      (mapconcat (function identity)
-			 (nreverse
-			  (cdr (nreverse
-				(split-string emacs-version
-					      (concat (vector 92 46))))))
-			 \".\"))),
+      (let ((vers (split-string emacs-version (concat (vector 92 46)))))
+	(concat \"Emacs \" (car vers) \".\" (nth 1 vers)))),
     noecho)
   case "${flavor}" in
   XEmacs)
