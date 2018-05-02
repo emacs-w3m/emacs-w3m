@@ -1,6 +1,6 @@
 ;;; w3m-image.el --- Image conversion routines.
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2007, 2008, 2009, 2016, 2017
+;; Copyright (C) 2001-2003, 2005, 2007-2009, 2016-2018
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>
@@ -257,7 +257,7 @@ a large number of bits per pixel."
 			  0 255 255 255 0 0 0 0 0 0)
 		  "ico" "xpm")
 	       (error nil))))
-    (and xpm (string-match "\"2 1 2 1\"" xpm) t)))
+    (and xpm (string-match "\" *2 +1 +2 +1 *\"" xpm) t)))
 
 (provide 'w3m-image)
 

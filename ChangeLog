@@ -1,5 +1,7 @@
 2018-05-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-image.el (w3m-favicon-usable-p): Relax the criterion.
+
 	* aclocal.m4 (AC_PATH_EMACS): Work for Emacs >= 26 in which
 	the emacs-version variable no longer includes the build number.
 
