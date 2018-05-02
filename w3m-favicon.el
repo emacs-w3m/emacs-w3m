@@ -1,6 +1,6 @@
 ;;; w3m-favicon.el --- utilities for handling favicon in emacs-w3m
 
-;; Copyright (C) 2001-2005, 2007, 2009, 2011, 2017
+;; Copyright (C) 2001-2005, 2007, 2009, 2011, 2017, 2018
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -320,8 +320,16 @@ stored in the `w3m-favicon-image' buffer-local variable."
 	    (if (and ok
 		     ;; Some broken servers provides empty contents.
 		     (>= (buffer-size) 4))
-		(setq idata (buffer-string)
-		      image (w3m-favicon-convert idata type))
+		(progn
+		  (when (string-equal "\037\213" (buffer-substring 1 3))
+		    (if (fboundp 'zlib-decompress-region)
+			(zlib-decompress-region (point-min) (point-max))
+		      (let ((coding-system-for-read 'binary)
+			    (coding-system-for-write 'binary))
+			(shell-command-on-region (point-min) (point-max)
+						 "gzip -d" nil t))))
+		  (setq idata (buffer-string)
+			image (w3m-favicon-convert idata type)))
 	      (w3m-message "Reading %s...done (no favicon)"
 			   (w3m-url-readable-string url)))
 	    (with-current-buffer target
