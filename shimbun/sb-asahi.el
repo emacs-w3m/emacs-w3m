@@ -1538,6 +1538,11 @@ article contents."
     (when (re-search-forward "\
 [\t\n ]*<!-+[\t\n ]*Outbrain[\t\n ]+TAG[\t\n ]+PC[\t\n ]*-+>" nil t)
       (delete-region (match-end 0) (point-max)))
+    (goto-char (point-min))
+    (while (re-search-forward "<div\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+\
+class=\"ExtendedLinkMod\"" nil t)
+      (when (shimbun-end-of-tag "div" t)
+	(replace-match "\n")))
     ;; Remove Ads.
     (goto-char (point-min))
     (let (st)
