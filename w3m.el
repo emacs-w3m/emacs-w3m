@@ -3501,7 +3501,9 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
     (setq url (w3m-puny-decode-url url))
     (if (string-match "[^\000-\177]" url)
 	url
-      (w3m-url-decode-string url (w3m-url-coding-system url)))))
+      (w3m-url-decode-string url (unless (let ((case-fold-search t))
+					   (string-match "\\`mailto:" url))
+				   (w3m-url-coding-system url))))))
 
 (defun w3m-url-transfer-encode-string (url &optional coding)
   "Encode non-ascii characters in URL into the sequence of escaped octets.
@@ -3681,7 +3683,9 @@ The database is kept in `w3m-entity-table'."
 	    (setq end (match-beginning 0))
 	    (delete-region (match-beginning 1) (match-end 1))
 	    (setq href (w3m-expand-url href))
-	    (unless (w3m-url-local-p href)
+	    (unless (or (w3m-url-local-p href)
+			(let ((case-fold-search t))
+			  (string-match "\\`mailto:" href)))
 	      (w3m-string-match-url-components href)
 	      (setq href (if (match-beginning 8)
 			     (let ((tmp (match-string 9 href)))
@@ -9389,7 +9393,8 @@ It makes the ends of upper and lower three lines visible.  If
 (defun w3m-goto-mailto-url (url &optional post-data)
   (let ((before (nreverse (buffer-list)))
 	comp info body buffers buffer function)
-    (setq url (w3m-decode-entities-string (w3m-url-decode-string url)))
+    (setq url (replace-regexp-in-string "\\(?:\r\\|%0[Dd]\\)+" ""
+					(w3m-url-readable-string url)))
     (save-window-excursion
       (if (and (symbolp w3m-mailto-url-function)
 	       (fboundp w3m-mailto-url-function))
@@ -9742,7 +9747,9 @@ invoked in other than a w3m-mode buffer."
     (setq url (w3m-canonicalize-url url)))
   (set-text-properties 0 (length url) nil url)
   (unless (or (w3m-url-local-p url)
-	      (string-match "\\`about:" url))
+	      (string-match "\\`about:" url)
+	      (let ((case-fold-search t))
+		(string-match "\\`mailto:" url)))
     (w3m-string-match-url-components url)
     (setq url (concat (save-match-data
 			(w3m-url-transfer-encode-string
