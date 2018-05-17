@@ -293,11 +293,7 @@ PROMPT-WITH-DEFAULT instead of string PROMPT."
 WHERE is a string which should have the value \"current\" is the calling
 function intends for the search results to be presented in the current
 buffer, or \"new\" if in a new buffer."
-  (when w3m-current-process
-    (error "%s"
-	   (substitute-command-keys "
-Cannot run two w3m processes simultaneously \
-\(Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)")))
+  (w3m--buffer-busy-error)
   (let* ((prompt-prefix (format "Search in %s buffer. " where))
 	 (search-engine
 	  (if current-prefix-arg

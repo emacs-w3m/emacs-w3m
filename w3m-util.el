@@ -541,7 +541,7 @@ otherwise return an alist."
 	 (nreverse alist)))))
 
 (defun w3m-device-on-window-system-p ()
-  "Return non-nil if the selected frame is on a widnow system"
+  "Return non-nil if the selected frame is on a window system"
   (w3m-static-if (featurep 'xemacs)
       (device-on-window-system-p)
     window-system))
@@ -586,8 +586,7 @@ for not deleting frames made for aims other than emacs-w3m sessions.")
 (make-variable-buffer-local 'w3m-initial-frames)
 
 (defun w3m-popup-buffer (buffer)
-  "Pop up BUFFER as a new window or a new frame
-according to `w3m-pop-up-windows' and `w3m-pop-up-frames' (which see)."
+  "Pop up BUFFER as a new window or a new frame, per the `w3m-display-mode'."
   (let ((window (get-buffer-window buffer t))
 	oframe popup-frame-p frame pop-up-frames buffers other)
     (unless (eq window (selected-window))
@@ -670,7 +669,7 @@ Note that `after-make-frame-hook' doesn't take an argument."
   (unless frame
     (setq frame (selected-frame)))
   ;; Share the opened frame in `w3m-initial-frames' over all emacs-w3m
-  ;; buffers if `w3m-use-tab' is non-nil.  Otherwise, the frame is
+  ;; buffers if using a tabbed display mode.  Otherwise, the frame is
   ;; appended into `w3m-initial-frames' only in the current buffer.
   (with-current-buffer (window-buffer (frame-first-window frame))
     (when (eq major-mode 'w3m-mode)

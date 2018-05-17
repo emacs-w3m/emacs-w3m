@@ -17,11 +17,15 @@
 
 ;;; Commentary:
 ;;
+;; This mode handles the DEDICATED-FRAMES and TABBED-DEDICATED-FRAMES
+;; display options, set in variable `w3m-display-mode' as 'frames or
+;; 'tabbed-frames.
+;;
 ;; With this mode switched on, W3M buffers are associated with the
-;; frame on which they were created.  Only tabs for the current
-;; frame's W3M buffers are shown (with non-nil w3m-use-tab); other
-;; affected commands are w3m-next-buffer w3m-previous-buffer,
-;; w3m-select-buffer and w3m-quit.
+;; frame on which they were created. For TABBED-DEDICATED-FRAMES, only
+;; tabs for the current frame's W3M buffers are shown; other affected
+;; commands are w3m-next-buffer w3m-previous-buffer, w3m-select-buffer
+;; and w3m-quit.
 ;;
 ;; Switch the mode on programmatically with:
 ;;
@@ -175,7 +179,7 @@ This allows frame-local lists of buffers (tabs)."
 	       (prog1
 		   (setq w3m-fb-mode nil)
 		 (message "\
-W3M Frame Buffer mode not activated (non-nil w3m-pop-up-frames)")
+W3M Frame Buffer mode not activated (Hint: `M-x w3m-display-mode').")
 		 (sit-for 2))
 	     t))
       (progn

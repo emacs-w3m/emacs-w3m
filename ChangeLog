@@ -1,3 +1,74 @@
+2018-05-09  Boruch Baum  <boruch_baum@gmx.com>
+
+	Update faces for all navigation cases ([emacs-w3m:12969]).
+
+	* w3m-session.el (w3m--session-update-faces): New function for
+	`pre-command-hook' and `post-command-hook' in w3m-session buffers.
+	(w3m-session-select-mode): Apply it.
+	(w3m-session-select-list-all-sessions, w3m-session-select-next):
+	Don't set the "selected" face, because it is now done by the new hook
+	function.
+
+2018-05-09  Boruch Baum  <boruch_baum@gmx.com>
+
+	Fix two bugs in navigating the w3m-session-select popup window
+	([emacs-w3m:12968]).
+
+	* w3m-session.el (w3m-session-select-list-all-sessions): Fix navigation
+	errors that happen when using functions beginning-of-buffer,
+	end-of-buffer.
+	(w3m-session-select-next): Fix navigation so previous line of first
+	rotates back to last line. Remove unnecessary loop.
+
+2018-05-09  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-mode): Don't visually indicate non-breaking spaces
+	([emacs-w3m:12967]).
+
+2018-05-09  Boruch Baum  <boruch_baum@gmx.com>
+
+	Bugfix for the creation of session pop-up window ([emacs-w3m:12966]).
+
+	* w3m.el (w3m--setup-popup-window): New function.
+	(w3m-select-buffer): Use it.
+	(w3m-select-buffer-horizontal-window): Update documentation.
+
+	* w3m-session.el (w3m-session-select): Use the new function, thus
+	fixing a display bug, and making popup windows consistent.
+
+2018-05-09  Boruch Baum  <boruch_baum@gmx.com>
+
+	Uniform error handling and message presentation ([emacs-w3m:12964]).
+
+	* w3m.el (w3m--buffer-busy-error): New function for uniform error
+	handling and message presentation.
+	(w3m-goto-url): Use it.
+
+	* w3m-search.el (w3m-search-read-variables): Use it.
+
+2018-05-09  Boruch Baum  <boruch_baum@gmx.com>
+
+	Introduce w3m-display-mode ([emacs-w3m:12963]).
+
+	* w3m.el (w3m-display-mode): New user option.
+	(w3m-display-mode): New function.
+	(w3m-use-tab, w3m-use-tab-menubar, w3m-pop-up-windows)
+	(w3m-pop-up-frames, w3m-copy-buffer, w3m-delete-buffer, w3m-doc-view)
+	(w3m, w3m-browse-url, w3m-select-buffer, w3m-use-header-line-title)
+	(w3m-safe-view-this-url): Doc fix.
+
+	* w3m-fb.el (Commentary): Doc fix.
+	(w3m-fb-mode): Fix warning message.
+
+	* w3m-util.el (w3m-popup-buffer): Doc fix.
+	(w3m-add-w3m-initial-frames): Comment fix.
+	(w3m-device-on-window-system-p): Typo fix.
+
+2018-05-08  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-session.el (w3m-session-select-list-all-sessions): Don't display
+	urls in the session select window ([emacs-w3m:12960]).
+
 2018-05-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-image.el (w3m-favicon-usable-p): Relax the criterion.

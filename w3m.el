@@ -1551,10 +1551,14 @@ See the balloon-help.el file for more information."
 	     (w3m-menu-on-forefront value)))))
 
 (defcustom w3m-use-tab t
-  "Non-nil means make emacs-w3m a tab browser.
-It makes it possible to show all emacs-w3m buffers in a single window
-with the tabs line, and you can choose one by clicking a mouse on it.
-See also `w3m-use-tab-menubar'."
+  "Use emacs-w3m in \"Tabbed\" display mode.
+
+This variable is now DEPRECATED! Please use `w3m-display-mode'
+instead.
+
+When non-nil, emacs-w3m will make a reasonable effort to display
+all its buffers in a single window, which has a clickable tab bar
+along the top. See also `w3m-use-tab-menubar'."
   :group 'w3m
   :type 'boolean)
 
@@ -1565,11 +1569,15 @@ See also `w3m-use-tab-menubar'."
 
 (defcustom w3m-use-tab-menubar t
   "Non-nil means use the TAB pull-down menu in the menubar.
-It makes it possible to show all emacs-w3m buffers in a single window,
-and you can choose one by clicking a mouse on it.  This feature
-requires that Emacs has been built to be able to display multilingual
-text in the menubar if you often visit web sites written in non-ascii
-text.  See also `w3m-use-tab'."
+
+This feature makes it possible to see a llst of emacs-w3m buffers in a
+single window, and select one by clicking a mouse on it.
+
+For web page titles written in non-ascii text, this feature
+requires Emacs to have been built to be able to display
+multilingual text in the menubar.
+
+See also `w3m-display-mode'."
   :group 'w3m
   :type 'boolean)
 
@@ -1635,21 +1643,49 @@ meaningless under XEmacs."
   :type 'boolean)
 
 (defcustom w3m-pop-up-windows t
-  "Non-nil means split the windows when a new emacs-w3m session is created.
-This variable is similar to `pop-up-windows' and quite overridden by
-`w3m-pop-up-frames' as if `pop-up-frames' influences.  Furthermore, if
-`w3m-use-tab' is non-nil or there is the buffers selection window (for
-the `w3m-select-buffer' feature), this variable is ignored when
-creating the second or more emacs-w3m session."
+  "Use emacs-w3m in dual-pane mode.
+
+This variable is now DEPRECATED! Please use `w3m-display-mode'
+instead.
+
+When non-nil, once more than one emacs-w3m buffer exists, a
+reasonable attempt is made to present emacs-w3m in two windows on
+the same frame. Any action to open a new emacs-w3m buffer, such
+as `w3m-goto-url-new-session' or `w3m-search-new-session'
+displays the new buffer in the unfocused pane, and transfers
+focus there.
+
+Note that this display mode setting is of the lowest priority, in
+that if either `w3m-pop-up-frames' or `w3m-use-tab' is non-nil,
+this setting will be ignored."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-pop-up-frames nil
-  "Non-nil means pop to a new frame up for an emacs-w3m session.
-This variable is similar to `pop-up-frames' and does override
-`w3m-pop-up-windows'.  If `w3m-use-tab' is non-nil or there is the
-buffers selection window (for the `w3m-select-buffer' feature), this
-variable is ignored when creating the second or more emacs-w3m session."
+  "Use emacs-w3m in a dedicated frame mode.
+
+This variable is now DEPRECATED! Please use `w3m-display-mode'
+instead.
+
+When non-nil, emacs-w3m makes a reasonable attempt to display its
+buffers in dedicated frames, although you can manually subvert
+that if you insist.
+
+There are actually two types of dedicated frame display modes,
+DEDICATED-FRAMES and TABBED-DEDICATED-FRAMES.
+
+DEDICATED-FRAMES mode creates a new single-window frame for each
+new emacs-w3m buffer you create.
+
+TABBED-DEDICATED-FRAMES mode opens new emacs-w3m buffers in the
+same window of the frame from which it was spawned, and those
+buffers are not easily visible to emacs-w3m buffers associated
+with other frames. The window includes a clickable tab bar along
+the top. To enable this variant display mode under the old
+scheme, you need to set this variable and also variable
+`w3m-use-tab'. When using this display mode, you can still
+manually create multiple emacs-w3m frames by using the basic
+command `w3m'."
   :group 'w3m
   :type 'boolean)
 
@@ -7963,19 +7999,21 @@ Return t if highlighting is successful."
 
 (defun w3m-copy-buffer (&optional buffer newname just-copy empty background
 				  last)
-  "Create a copy of the BUFFER where emacs-w3m is running.
-Return a new buffer.
+  "Copy an emacs-w3m BUFFER, and return the new buffer.
 
-If BUFFER is nil, the current buffer is assumed.  If NEWNAME is nil,
-it defaults to the name of the current buffer.  If JUST-COPY is nil,
-this function makes the new buffer the current buffer and pops up as
-a new window or a new frame according to `w3m-pop-up-windows' and
-`w3m-pop-up-frames' (which see), otherwise creates just BUFFER's copy.
-If EMPTY is nil, a page of the same url will be re-rendered in the new
-buffer, otherwise an empty buffer is created.  If BACKGROUND is non-nil,
-you will not leave the current buffer.  If LAST is non-nil, the new
-buffer will be made the last in order of the w3m buffers, otherwise it
-will be made the next of the current buffer.
+If BUFFER is nil, the current buffer is assumed. If NEWNAME is
+nil, it defaults to the name of the current buffer.
+
+If JUST-COPY is nil, then after performing the copy, the new
+buffer becomes the current buffer and pops up as a new window or
+a new frame depending upon the `w3m-display-mode'.
+
+If EMPTY is nil, a page of the same url will be re-rendered in
+the new buffer, otherwise an empty buffer is created. If
+BACKGROUND is non-nil, you will not leave the current buffer. If
+LAST is non-nil, the new buffer will be made the last in order of
+the w3m buffers, otherwise it will be made the next of the
+current buffer.
 
 Note that this function should be called on the window displaying the
 original buffer BUFFER even if JUST-COPY is non-nil in order to render
@@ -8077,10 +8115,12 @@ If BUFFER is specified, switch to it regardless of ARG."
 
 (defun w3m-delete-buffer (&optional force)
   "Delete the current emacs-w3m buffer and switch to the previous one.
-If there is the sole emacs-w3m buffer, it is assumed to be called for
-terminating the emacs-w3m session; the prefix argument FORCE will be
-passed to the `w3m-quit' function (which see).  When `w3m-use-tab' is
-non-nil, it returns to the buffer that launches this buffer."
+
+If there is only one emacs-w3m buffer, assume intent to terminate
+the emacs-w3m session; the prefix argument FORCE will be passed
+to the `w3m-quit' function. When in a tabbed display mode (see
+`w3m-display-mode'), focus is returned to the buffer that
+launched this buffer."
   (interactive "P")
   ;; Bind `w3m-fb-mode' to nil so that this function might not call
   ;; `w3m-quit' when there is only one buffer belonging to the selected
@@ -9014,6 +9054,7 @@ or a list which consists of the following elements:
   ;; Force paragraph direction to be left-to-right.  Don't make it
   ;; bound globally in old Emacsen and XEmacsen.
   (set (make-local-variable 'bidi-paragraph-direction) 'left-to-right)
+  (set (make-local-variable 'nobreak-char-display) nil)
   (setq	truncate-lines t
 	w3m-display-inline-images w3m-default-display-inline-images)
   (when w3m-auto-show
@@ -9407,7 +9448,8 @@ It makes the ends of upper and lower three lines visible.  If
 	  (setq mod (buffer-modified-p))
 	  (goto-char (point-min))
 	  (search-forward (concat "\n" (regexp-quote mail-header-separator)
-				  "\n") nil 'move)
+				  "\n")
+			  nil 'move)
 	  (unless (bolp) (insert "\n"))
 	  (while body
 	    (insert (pop body))
@@ -9477,8 +9519,8 @@ this function will prompt user for it."
 
 (defun w3m-doc-view (url)
   "View PDF/PostScript/DVI files using `doc-view-mode'.
-`w3m-pop-up-windows' and `w3m-pop-up-frames' control how the document
-window turns up."
+
+Where the document is displayed depends upon the `w3m-display-mode'."
   (let* ((basename (file-name-nondirectory (w3m-url-strip-query url)))
 	 (regexp (concat "\\`" (regexp-quote basename) "\\(?:<[0-9]+>\\)?\\'"))
 	 (buffers (buffer-list))
@@ -9640,6 +9682,20 @@ It currently works only with Emacs 22 and newer."
 			       (setq w3m-modeline-title-timer nil))))
 			 (current-buffer)))))))
 
+(defun w3m--buffer-busy-error ()
+  "Uniform error handling for conition of a busy buffer.
+
+Although operations are asynchronous, it makes sense that only
+one GET operation can be performed at any one time in any single
+buffer, so if the user tries to perform a second operation, a
+helpful message is presented and the operation is aborted."
+  (when w3m-current-process
+    (error "%s"
+	   (substitute-command-keys "This buffer is currently busy.
+ `\\<w3m-mode-map>\\[w3m-process-stop]' to abort current operation,
+ `\\<w3m-mode-map>\\[w3m-search-new-session]' to perform a search in a new buffer.
+ `\\<w3m-mode-map>\\[w3m-goto-url-new-session]' to visit a URL in a new buffer."))))
+
 ;;;###autoload
 (defun w3m-goto-url (url &optional reload charset post-data referer handler
 			 element no-popup save-pos)
@@ -9675,11 +9731,7 @@ configuration; i.e. to run `w3m-history-store-position'.
 this will be convenient if a command that calls this function may be
 invoked in other than a w3m-mode buffer."
   (interactive
-   (list (if w3m-current-process
-	     (error "%s"
-		    (substitute-command-keys
-		     "Cannot run two w3m processes simultaneously \
-\(Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)"))
+   (list (unless (w3m--buffer-busy-error)
 	   (w3m-input-url "Open URL in current buffer" nil nil nil
 			  'feeling-searchy 'no-initial))
 	 current-prefix-arg
@@ -9750,11 +9802,7 @@ invoked in other than a w3m-mode buffer."
     (unless no-popup
       (w3m-popup-buffer (current-buffer)))
     (w3m-cancel-refresh-timer (current-buffer))
-    (when w3m-current-process
-      (error "%s"
-	     (substitute-command-keys "
-Cannot run two w3m processes simultaneously \
-\(Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)")))
+    (w3m--buffer-busy-error)
     (w3m-process-stop (current-buffer))	; Stop all processes retrieving images.
     (w3m-idle-images-show-unqueue (current-buffer))
     ;; Store the current position in the history structure if SAVE-POS
@@ -10325,25 +10373,26 @@ defaults to the value of `w3m-home-page' or \"about:\"."
 (defun w3m (&optional url new-session interactive-p)
   "Visit World Wide Web pages using the external w3m command.
 
-When you invoke this command interactively for the first time, it will
-visit a page which is pointed to by a string like url around the
-cursor position or the home page specified by the `w3m-home-page'
-variable, but you will be prompted for a URL if `w3m-quick-start' is
-nil (default t) or `w3m-home-page' is nil.
+If no emacs-w3m session already exists: If POINT is at a url
+string, visit that. Otherwise, if `w3m-home-page' is defined,
+visit that. Otherwise, present a blank page. This behavior can be
+over-ridden by setting variable `w3m-quick-start' to nil, in
+which case you will always be prompted for a URL.
 
-The variables `w3m-pop-up-windows' and `w3m-pop-up-frames' control
-whether this command should pop to a window or a frame up for the
-session.
+If an emacs-w3m session already exists: Pop to one of its windows
+or frames. You can over-ride this behavior by setting
+`w3m-quick-start' to nil, in order to always be prompted for a
+URL.
 
-When an emacs-w3m session has already been opened, this command will
-pop to an existing window or frame, but if `w3m-quick-start' is nil,
-(default t), you will be prompted for a URL (which defaults to `popup'
-meaning to pop to an existing emacs-w3m buffer up).
+In you have set `w3m-quick-start' to nil, but wish to over-ride
+default behavior from the command line, either run this command
+with a prefix argument or enter the empty string for the prompt.
+In such cases, this command will visit a url at the point or,
+lacking that, the URL set in variable `w3m-home-page' or, lacking
+that, the \"about:\" page.
 
-In addition, if the prefix argument is given or you enter the empty
-string for the prompt, this command will visit a url at the point, or
-the home page the `w3m-home-page' variable specifies, or the \"about:\"
-page.
+Any of five display styles are possible. See `w3m-display-mode'
+for a description of those options.
 
 You can also run this command in the batch mode as follows:
 
@@ -10354,7 +10403,7 @@ variables `w3m-pop-up-windows' and `w3m-pop-up-frames' will be ignored
 \(treated as nil) and it will run emacs-w3m at the current (or the
 initial) window.
 
-If the optional NEW-SESSION is non-nil, this function makes a new
+If the optional NEW-SESSION is non-nil, this function creates a new
 emacs-w3m buffer.  Besides that, it also makes a new emacs-w3m buffer
 if `w3m-make-new-session' is non-nil and a user specifies a url string.
 
@@ -10426,9 +10475,7 @@ interactive command in the batch mode."
 (defun w3m-browse-url (url &optional new-session)
   "Ask emacs-w3m to browse URL.
 NEW-SESSION specifies whether to create a new emacs-w3m session.  URL
-defaults to the string looking like a url around the cursor position.
-Pop to a window or a frame up according to `w3m-pop-up-windows' and
-`w3m-pop-up-frames'."
+defaults to the string looking like a url around the cursor position."
   (interactive (progn
 		 (require 'browse-url)
 		 (browse-url-interactive-arg "Emacs-w3m URL: ")))
@@ -10946,7 +10993,7 @@ the link to a page is preferred unless the prefix argument is given."
 
 ;;; Interactive select buffer.
 (defcustom w3m-select-buffer-horizontal-window t
-  "*Non-nil means split windows horizontally to open the selection window."
+  "*Non-nil means split windows horizontally to open selection pop-up windows."
   :group 'w3m
   :type 'boolean)
 
@@ -10975,36 +11022,47 @@ splitting windows vertically."
 	 (window-width))
        (or w3m-fill-column -1))))
 
-(defun w3m-select-buffer (&optional toggle nomsg)
-  "Pop to the emacs-w3m buffers selection window up.
-It provides the feature for switching emacs-w3m buffers using the
-buffer list.  The following command keys are available:
+(defun w3m--setup-popup-window (toggle buffer-name nomsg)
+  "Create a generic w3m popup window and its buffer.
 
-\\{w3m-select-buffer-mode-map}"
-  (interactive "P")
-  (when toggle
-    (setq w3m-select-buffer-horizontal-window
-	  (not w3m-select-buffer-horizontal-window))
-    (when (get-buffer-window w3m-select-buffer-name)
-      (delete-windows-on w3m-select-buffer-name)))
-  (unless (or (eq major-mode 'w3m-mode)
-	      (eq major-mode 'w3m-select-buffer-mode))
-    (let ((buffer (w3m-alive-p t)))
-      (if buffer
-	  (w3m-popup-buffer buffer)
-	(w3m-goto-url (or w3m-home-page "about:")))))
+TOGGLE toggles the position of the window between being below or
+beside the main window."
   (let ((selected-window (selected-window))
 	(current-buffer (current-buffer)))
-    (set-buffer (w3m-get-buffer-create w3m-select-buffer-name))
+    (when toggle
+      (setq w3m-select-buffer-horizontal-window
+	    (not w3m-select-buffer-horizontal-window))
+      (when (get-buffer-window buffer-name)
+	(delete-windows-on buffer-name)))
+    (unless (or (eq major-mode 'w3m-mode)
+		(eq major-mode 'w3m-select-buffer-mode))
+      (let ((buffer (w3m-alive-p t)))
+	(if buffer
+	    (w3m-popup-buffer buffer)
+	  (w3m-goto-url (or w3m-home-page "about:")))))
+    (set-buffer (w3m-get-buffer-create buffer-name))
     (unless (eq nomsg 'update)
       (setq w3m-select-buffer-window selected-window))
-    (let ((w (or (get-buffer-window w3m-select-buffer-name)
+    (let ((w (or (get-buffer-window buffer-name)
 		 (split-window selected-window
 			       (w3m-select-buffer-window-size)
 			       w3m-select-buffer-horizontal-window))))
       (set-window-buffer w (current-buffer))
-      (select-window w))
-    (w3m-select-buffer-generate-contents current-buffer))
+      (select-window w))))
+
+(defun w3m-select-buffer (&optional toggle nomsg)
+  "Pop-up an emacs-w3m buffers selection window.
+
+Allows convenient switching between emacs-w3m buffers. With the
+prefix-argument, toggles the position of the popup window between
+being below or beside the main window.
+
+The following command keys are available:
+
+\\{w3m-select-buffer-mode-map}"
+  (interactive "P")
+  (w3m--setup-popup-window toggle w3m-select-buffer-name nomsg)
+  (w3m-select-buffer-generate-contents (current-buffer))
   (w3m-select-buffer-mode)
   (or nomsg (w3m-message w3m-select-buffer-message)))
 
@@ -11283,8 +11341,11 @@ without prompting for confirmation."
   :type 'boolean)
 
 (defcustom w3m-use-header-line-title nil
-  "Non-nil means display the current title at the header line.
-This variable is effective only when `w3m-use-tab' is nil."
+  "Display the current URI title on the header line.
+
+This variable is ignored when using a tabbed display mode,
+because in such cases the header line is used for the tab
+list. (see `w3m-display-mode')."
   :group 'w3m
   :type 'boolean)
 
@@ -11389,7 +11450,7 @@ or `w3m-goto-url-new-session' is employed to display the page."
 
 (defun w3m-safe-view-this-url (&optional force)
   "View the URL of the link under point.
-This command is quite similar to `w3m-view-this-url' except for the
+This command is quite similar to `w3m-view-this-url' except for
 four differences: [1]don't handle forms, [2]don't consider URL-like
 string under the cursor, [3]compare URL with `w3m-safe-url-regexp'
 first to check whether it is safe, and [4]the arguments list differs;
@@ -11505,6 +11566,77 @@ FROM-COMMAND is defined in `w3m-minor-mode-map' with the same key in
   "*Whether to clean up temporary files when emacs-w3m shutdown."
   :group 'w3m
   :type 'boolean)
+
+(defcustom w3m-display-mode nil
+  "How to display emacs-w3m buffers.
+
+There exist five display modes for emacs-w3m when called
+interactively: Plain, Tabbed, Dual-Pane, Dedicated-Frames, and
+Tabbed-Dedicated-Frames. When emacs-w3m is run in batch mode or
+non-interactively, only the Plain or Tabbed display modes are
+available. In the past, these modes had been set by a combination
+of three variables, `w3m-use-tab', `w3m-pop-up-windows' and
+`w3m-pop-up-frames', but can now be set with this single setting
+`w3m-display-mode'. When this variable is set, the other three
+are ignored.
+
+PLAIN: Each emacs-w3m buffer exists on its own and can appear in
+any window in any frame, although a reasonable attempt will be
+made to re-use an existing window. There is no tab bar. In the
+past, this had been set by the combination: `w3m-use-tab' nil,
+`w3m-pop-up-windows' nil, and `w3m-pop-up-frames' nil.
+
+TABBED: A reasonable attempt is made to keep only one window
+displaying emacs-w3m buffers. That window has a cliackable tab
+bar along the top. Users can manually subvert this by explicitly
+opening an emacs-w3m buffer in any number of other windows. In
+the past, this had been set by the combination: `w3m-use-tab' t
+`w3m-pop-up-windows' ignored, and `w3m-pop-up-frames' nil.
+
+DUAL-PANE: Once more than one emacs-w3m buffer exists, a
+reasonable attempt is made to present emacs-w3m in two windows on
+the same frame. Any action to open a new emacs-w3m buffer, such
+as `w3m-goto-url-new-session' or `w3m-search-new-session'
+displays the new buffer in the unfocused pane, and transfers
+focus there. In the past, this had been set by the combination:
+`w3m-use-tab' nil `w3m-pop-up-windows' t, and `w3m-pop-up-frames'
+nil.
+
+DEDICATED-FRAMES: Each new emacs-w3m buffer is opened in a new
+single-window frame. In the past, this had been set by the
+combination: `w3m-use-tab' nil `w3m-pop-up-windows' ignored, and
+`w3m-pop-up-frames' t.
+
+TABBED-DEDICATED-FRAMES: Each new emacs-w3m buffer is opened in
+the same window of the frame from which it was spawned, and is
+not easily visible to emacs-w3m buffers associated with other
+frames. The window includes a clickable tab bar along the top. In
+the past, this had been set by the combination: `w3m-use-tab' t
+`w3m-pop-up-windows' ignored, and `w3m-pop-up-frames' t."
+  :type '(radio (symbol :format "Nil" nil)
+		(symbol :format "Plain" plain)
+		(symbol :format "Tabbed" tabbed)
+		(symbol :format "Dual-pane" dual-pane)
+		(symbol :format "Dedicated Frames" frames)
+		(symbol :format "Tabbed Dedicated Frames" tabbed-frames)))
+
+(defun w3m-display-mode (style)
+  "Select how to display emacs-w3m buffers.
+
+Refer to variable `w3m-display-mode' for details."
+  (interactive
+   (list
+    (intern
+     (let ((opts '("nil" "plain" "tabbed" "dual-pane" "frames" "tabbed-frames"))
+	   (def (symbol-name w3m-display-mode)))
+       (completing-read "Display mode: " opts nil t nil 'opts def)))))
+  (setq w3m-display-mode style)
+  (setq w3m-use-tab
+	(if (memq style '(tabbed tabbed-frames)) t nil))
+  (setq w3m-pop-up-windows
+	(if (memq style '(dual-pane)) t nil))
+  (setq w3m-pop-up-frames
+	(if (memq style '(frames tabbed-frames)) t nil)))
 
 (defun w3m-cleanup-temp-files ()
   (when w3m-do-cleanup-temp-files

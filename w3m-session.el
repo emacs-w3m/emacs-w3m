@@ -510,7 +510,20 @@ buffer's url history."
 	   buffer-read-only t)
      (setq w3m-session-group-open nil)
      (use-local-map w3m-session-select-mode-map)
-     (w3m-session-select-list-all-sessions))))
+     (w3m-session-select-list-all-sessions)
+     (add-hook 'pre-command-hook 'w3m--session-update-faces t t)
+     (add-hook 'post-command-hook 'w3m--session-update-faces t t))))
+
+(defun w3m--session-update-faces ()
+  "A hook function for `w3m-session-select' buffers.
+Meant for use  with  `pre-command-hook' and `post-command-hook'."
+  (let ((beg (line-beginning-position))
+	(inhibit-read-only t))
+   (put-text-property beg (next-single-property-change beg 'w3m-session-number)
+     'face
+     (if (equal (get-text-property beg 'face) 'w3m-session-select)
+       'w3m-session-selected
+      'w3m-session-select))))
 
 (defun w3m-session-select-list-all-sessions ()
   "List all saved sessions."
@@ -518,7 +531,7 @@ buffer's url history."
 	(num 0)
 	(max 0)
 	(inhibit-read-only t)
-	title titles time times url urls wid pos)
+	title titles time times wid pos)
     (if (not sessions)
 	(progn
 	  (message "No saved session")
@@ -531,26 +544,16 @@ buffer's url history."
 	      (setq titles (cons title titles))
 	      (setq times (cons (format-time-string w3m-session-time-format
 						    (nth 1 x))
-				times))
-	      (setq urls (cons (mapconcat (lambda (url)
-					    (if (stringp url)
-						url
-					      (car url)))
-					  (nth 2 x) ", ")
-			       urls)))
+				times)))
 	    sessions)
       (setq titles (nreverse titles))
       (setq times (nreverse times))
-      (setq urls (nreverse urls))
       (setq max (+ max 2))
       (erase-buffer)
-      (insert "Select session:\n\n")
       (while (and (setq title (car titles))
-		  (setq time (car times))
-		  (setq url (car urls)))
+		  (setq time (car times)))
 	(setq titles (cdr titles))
 	(setq times (cdr times))
-	(setq urls (cdr urls))
 	(setq pos (point))
 	(insert title)
 	(add-text-properties pos (point)
@@ -558,14 +561,9 @@ buffer's url history."
 				    w3m-session-number ,num))
 	(setq num (1+ num))
 	(insert (make-string (- max (string-width title)) ?\ ))
-	(insert time "  " url "\n"))
+	(insert time "\n"))
+      (delete-char -1)
       (goto-char (point-min))
-      (goto-char (next-single-property-change
-		  (point) 'w3m-session-number))
-      (put-text-property (point)
-			 (next-single-property-change
-			  (point) 'w3m-session-number)
-			 'face 'w3m-session-selected)
       (set-buffer-modified-p nil)
       (setq buffer-read-only t))))
 
@@ -625,33 +623,14 @@ buffer in the current session."
   "Move the point to the next session."
   (interactive "p")
   (unless arg (setq arg 1))
-  (let ((positive (< 0 arg))
-	(inhibit-read-only t))
-    (beginning-of-line)
-    (put-text-property (point)
-		       (next-single-property-change
-			(point) 'w3m-session-number)
-		       'face 'w3m-session-select)
-    (while (not (zerop arg))
-      (forward-line (if positive 1 -1))
-      (unless (get-text-property (point) 'w3m-session-number)
-	(if positive
-	    (goto-char (next-single-property-change
-			(point-min) 'w3m-session-number))
-	  (goto-char (previous-single-property-change
-		      (point-max) 'w3m-session-number))))
-      (setq arg (if positive
-		    (1- arg)
-		  (1+ arg))))
-    (beginning-of-line)
-    (put-text-property (point)
-		       (next-single-property-change
-			(point) 'w3m-session-number)
-		       'face 'w3m-session-selected)
+  (let ((target (1+ (mod (1- (+ arg (line-number-at-pos (point))))
+			 (line-number-at-pos (point-max))))))
+    (goto-char (point-min))
+    (forward-line (1- target))
     (set-buffer-modified-p nil)))
 
 (defun w3m-session-select-previous (&optional arg)
-  "the point to the previous session."
+  "Move the point to the previous session."
   (interactive "p")
   (w3m-session-select-next (- arg)))
 
@@ -741,39 +720,22 @@ buffer in the current session."
 			   (- (line-number-at-pos (point-max)) 4)))))))
 
 ;;;###autoload
-(defun w3m-session-select (&optional n)
+(defun w3m-session-select (&optional n toggle nomsg)
   "Select session from session list.
-Position point at N-th session if N is given."
-  (interactive)
+Position point at N-th session if N is given.  With the
+prefix-argument, toggles the position of the popup window between
+being below or beside the main window."
+  (interactive (list nil current-prefix-arg nil))
   (w3m-session-ignore-errors
    (let ((sessions (w3m-load-list w3m-session-file))
 	 (showbuf " *w3m-session select*")
 	 window)
      (if sessions
-	 (let ((wheight (max (+ (length sessions) 5) window-min-height))
-	       last-window)
-	   (setq last-window (previous-window
-			      (w3m-static-if (fboundp 'frame-highest-window)
-				  (frame-highest-window)
-				(frame-first-window))))
-	   (while (minibuffer-window-active-p last-window)
-	     (setq last-window (previous-window last-window)))
-	   (while (and
-		   (not (one-window-p))
-		   (or (< (window-width last-window)
-			  (frame-width))
-		       (< (window-height last-window)
-			  (+ wheight window-min-height))))
-	     (setq window last-window)
-	     (setq last-window (previous-window window))
-	     (delete-window window))
-	   (select-window (split-window last-window))
-	   (condition-case nil
-	       (shrink-window (- (window-height) wheight))
-	     (error nil))
-	   (switch-to-buffer (w3m-get-buffer-create showbuf))
+	 (progn
+	   (w3m--setup-popup-window toggle showbuf nomsg)
 	   (w3m-session-select-mode sessions)
 	   (when n (w3m-session-select-next n)))
+       ;; else, ie. (not sessions)
        (when (setq showbuf (get-buffer showbuf))
 	 (when (setq window (prog1 (get-buffer-window showbuf t)
 			      (kill-buffer showbuf)))
