@@ -9393,8 +9393,11 @@ It makes the ends of upper and lower three lines visible.  If
 (defun w3m-goto-mailto-url (url &optional post-data)
   (let ((before (nreverse (buffer-list)))
 	comp info body buffers buffer function)
-    (setq url (replace-regexp-in-string "\\(?:\r\\|%0[Dd]\\)+" ""
-					(w3m-url-readable-string url)))
+    (setq url (replace-regexp-in-string
+	       "\n" "%0a" ;; `rfc2368-parse-mailto-url' replaces it with "\n".
+	       (replace-regexp-in-string
+		"\\(?:\r\\|%0[Dd]\\)+" ""
+		(w3m-url-readable-string url))))
     (save-window-excursion
       (if (and (symbolp w3m-mailto-url-function)
 	       (fboundp w3m-mailto-url-function))

@@ -5,8 +5,8 @@
 	* w3m.el (w3m-url-readable-string): Make w3m-url-decode-string detect
 	coding system for mailto url instead of using w3m-url-coding-system.
 	(w3m-fontify-anchors, w3m-goto-url): Don't encode mailto url.
-	(w3m-goto-mailto-url): Remove ^M from mailto url; don't decode mailto
-	url containing non-ASCII letters.
+	(w3m-goto-mailto-url): Remove CR from, but preserve LF in mailto url;
+	don't decode mailto url containing non-ASCII letters.
 
 2018-05-09  Boruch Baum  <boruch_baum@gmx.com>
 
