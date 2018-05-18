@@ -1,6 +1,6 @@
 ;;; w3m-proc.el --- Functions and macros to control sub-processes
 
-;; Copyright (C) 2001-2005, 2007-2010, 2012, 2013, 2016, 2017
+;; Copyright (C) 2001-2005, 2007-2010, 2012, 2013, 2016-2018
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -298,9 +298,11 @@ which have no handler."
   (if w3m-process-queue
       (w3m-process-start-queued-processes)
     (when (and w3m-clear-display-while-reading
-	       (progn
-		 (goto-char (point-min))
-		 (looking-at "\n* *Reading [^\n]+\\.\\.\\.\\'")))
+	       (let ((pt (point)))
+		 (prog2
+		     (goto-char (point-min))
+		     (looking-at "\n* *Reading [^\n]+\\.\\.\\.\\'")
+		   (goto-char pt))))
       (let ((inhibit-read-only t))
 	(erase-buffer)
 	(setq w3m-current-url nil

@@ -1,3 +1,7 @@
+2018-05-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-proc.el (w3m-process-stop): Don't move point ([emacs-w3m:12975]).
+
 2018-05-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Work for mailto urls.
