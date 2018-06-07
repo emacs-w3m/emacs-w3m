@@ -1,5 +1,11 @@
 2018-05-23  Boruch Baum  <boruch_baum@gmx.com>
 
+	* w3m.el (w3m-delete-buffer): Perform some operations from a temporary
+	buffer in order not to lose information such as `w3m-current-url'
+	([emacs-w3m:12989]).
+
+2018-05-23  Boruch Baum  <boruch_baum@gmx.com>
+
 	* w3m.el (w3m-select-buffer): Pass correct current buffer value to
 	`w3m-select-buffer-generate-contents' ([emacs-w3m:12988]).
 	(w3m-select-buffer-generate-contents): Variable rename.

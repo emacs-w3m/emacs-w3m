@@ -8194,14 +8194,15 @@ launched this buffer."
 		   (w3m-next-buffer -1)
 		 (unless (one-window-p t)
 		   (delete-window))))))
-      (w3m-session-deleted-save (list cur))
-      (w3m-process-stop cur)
-      (w3m-idle-images-show-unqueue cur)
-      (when w3m-use-form
-	(w3m-form-kill-buffer cur))
-      (let ((frame-auto-delete nil)
-	    (ignore-window-parameters t))
-	(kill-buffer cur))
+      (with-temp-buffer
+	(w3m-session-deleted-save (list cur))
+	(w3m-process-stop cur)
+	(w3m-idle-images-show-unqueue cur)
+	(when w3m-use-form
+	  (w3m-form-kill-buffer cur))
+	(let ((frame-auto-delete nil)
+	      (ignore-window-parameters t))
+	  (kill-buffer cur)))
       ;; A workaround to restore the window positions correctly when
       ;; this command is called by a mouse event.
       (run-at-time 0.1 nil #'w3m-history-restore-position)
