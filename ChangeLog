@@ -1,3 +1,8 @@
+2018-05-19  Kevin Ryde  <user42_kevin@yahoo.com.au>
+
+	* w3m-favicon.el (w3m-favicon-setup): Enable favicons be taken from
+	file://, too ([emacs-w3m:12983]).
+
 2018-05-18  Boruch Baum  <boruch_baum@gmx.com>
 
 	Make progress messages more uniform and more useful
