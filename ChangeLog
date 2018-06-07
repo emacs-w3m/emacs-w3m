@@ -1,3 +1,18 @@
+2018-05-18  Boruch Baum  <boruch_baum@gmx.com>
+
+	Make progress messages more uniform and more useful
+	([emacs-w3m:12980] [emacs-w3m:12986]).
+
+	* w3m.el (w3m-display-progress-message): Combine code from
+	`w3m-retrieve-and-render', separate url from "...", and add
+	user-friendly advice message.
+	(w3m-retrieve-and-render): Replace snippet with call to
+	`w3m-display-progress-message'.
+
+	* w3m-proc.el (w3m-process-stop): Document in the buffer when an
+	operation has been aborted by the user, what that operation was, and
+	remove progress message.
+
 2018-05-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-proc.el (w3m-process-stop): Don't move point ([emacs-w3m:12976]).

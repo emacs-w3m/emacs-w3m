@@ -172,9 +172,9 @@
   `(aref ,handler 3))
 
 (defun w3m-process-push (handler command arguments)
-  "Generate a new `w3m-process' object which is provided by HANDLER,
-ARGUMENTS and this buffer, regist it to `w3m-process-queue', and
-return it."
+  "Generate a new `w3m-process' object.
+The process will be provided by HANDLER, ARGUMENTS and this buffer,
+registered to `w3m-process-queue', and returned."
   (let ((x (assoc (cons command arguments) w3m-process-queue)))
     (unless x
       (setq x (w3m-process-new command arguments (current-buffer)))
@@ -297,16 +297,19 @@ which have no handler."
   (w3m-process-kill-stray-processes)
   (if w3m-process-queue
       (w3m-process-start-queued-processes)
-    (when (and w3m-clear-display-while-reading
-	       (let ((pt (point)))
-		 (prog2
-		     (goto-char (point-min))
-		     (looking-at "\n* *Reading [^\n]+\\.\\.\\.\\'")
-		   (goto-char pt))))
-      (let ((inhibit-read-only t))
-	(erase-buffer)
-	(setq w3m-current-url nil
-	      w3m-current-title nil))))
+    (when w3m-clear-display-while-reading
+      (let ((pt (point)))
+	(goto-char (point-min))
+	(if (re-search-forward "\n*\\( *\\)Reading [^\n]+\\(\\.\\.\\.\\)"
+			       nil t)
+	    (let ((inhibit-read-only t))
+	      (delete-region (match-beginning 2) (point-max))
+	      (insert "\n\n" (match-string 1) "Operation aborted by user.")
+	      (delete-region 1 (min 3 (match-beginning 1)))
+	      (set-buffer-modified-p nil)
+	      (setq w3m-current-url nil
+		    w3m-current-title nil))
+	  (goto-char pt)))))
   (w3m-force-window-update-later buffer))
 
 (defun w3m-process-shutdown ()

@@ -6440,10 +6440,7 @@ called with t as an argument.  Otherwise, it will be called with nil."
     (set-window-hscroll nil 0)
     (let ((inhibit-read-only t))
       (erase-buffer)
-      (insert-char ?\n (/ (window-height) 2))
-      (insert-char ?  (max 0 (/ (- (window-width) (length url) 11) 2)))
-      (insert "Reading " url "...")
-      (sit-for 0)))
+      (w3m-display-progress-message url)))
   (unless (and w3m-current-ssl
 	       w3m-confirm-leaving-secure-page
 	       ;; Permit leaving safe pages without confirmation for
@@ -7229,15 +7226,27 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 
 (defun w3m-display-progress-message (url)
   "Show \"Reading URL...\" message in the middle of a buffer."
-  (insert (make-string (max 0 (/ (1- (window-height)) 2)) ?\n)
-	  "Reading " (w3m-url-readable-string (w3m-url-strip-authinfo url))
-	  "...")
-  (beginning-of-line)
-  (let ((fill-column (window-width)))
-    (center-region (point) (point-max)))
-  (goto-char (point-min))
-  (put-text-property (point) (point-max) 'w3m-progress-message t)
-  (sit-for 0))
+  (let ((indent (make-string (max 0 (/ (- (window-width) (length url) 11) 2))
+			     ? )))
+    (insert-char ?\n (max 0 (- (/ (window-height) 2) 3)))
+    ;; (insert-char ?\n (max 0 (/ (1- (window-height)) 2)))
+    (insert
+     (substitute-command-keys
+      (concat
+       ;; indent "Reading " url " ...\n\n"
+       indent "\
+Reading " (w3m-url-readable-string (w3m-url-strip-authinfo url)) " ...\n\n"
+       indent "\
+`\\<w3m-mode-map>\\[w3m-process-stop]' to abort this operation, or\n"
+       indent "\
+`\\<w3m-mode-map>\\[w3m-search-new-session]' to perform a search\
+ in a new buffer, or\n"
+       indent "\
+`\\<w3m-mode-map>\\[w3m-goto-url-new-session]' to visit a URL\
+ in a new buffer, or\n"
+       indent "do any emacs work in any other buffer, or just wait ... ")))
+    (put-text-property (point-min) (point-max) 'w3m-progress-message t)
+    (sit-for 0)))
 
 (defun w3m-view-this-url-1 (url reload new-session)
   (lexical-let ((url url)
