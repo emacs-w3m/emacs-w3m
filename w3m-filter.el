@@ -82,6 +82,14 @@
      "Generic page header filter"
      "\\`https?://"
      w3m-filter-generic-page-header)
+    (t
+     "Filter top and bottom cruft for stackexchange.com"
+     "\\`https://\\(?:[0-9A-Za-z_~-]+\\.\\)*stackexchange\\.com\\(?:\\'\\|/\\)"
+     w3m-filter-stackexchange)
+    (t
+     "A filter for YouTube"
+     "\\`https://\\(?:[0-9A-Za-z_~-]+\\.\\)*youtube\\.com\\(?:\\'\\|/\\)"
+      w3m-filter-youtube)
     (nil
      ("Remove garbage in http://www.geocities.co.jp/*"
       "http://www.geocities.co.jp/* でゴミを取り除きます")
@@ -1107,6 +1115,169 @@ READ MORE:\\([^<]+\\)\\(</a>\\)?</strong>\\(</p>\\)?"
       (w3m-filter-delete-regions url "<body" "<h4" nil t))
      (goto-char p3)
      (insert "<body>"))))
+
+(defun w3m-filter-stackexchange (url)
+   "Filter top and bottom cruft for stackexchange.com."
+   (w3m-labels ((replace-re (regexp to-string &optional delimited start end)
+			    (perform-replace regexp to-string t t delimited
+					     nil nil start end)))
+     (w3m-filter-delete-regions url "<body.*>" "<h1.*>" t t t nil nil 1)
+     (w3m-filter-delete-regions url
+				"<h2 class=\"space\">Your Answer</h2>"
+				"<h4 id=\"h-related\">Related</h4>"
+				nil t nil nil nil 1)
+     (w3m-filter-delete-regions
+      url
+      "<div id=\"hot-network-questions\" class=\"module tex2jax_ignore\">"
+      "</body>"
+      nil t nil nil nil 1)
+
+     ;; (when (search-forward "<table>" nil t)
+     ;;   (replace-match ""))
+
+     (goto-char (point-min))
+     (w3m-filter-delete-regions url
+				"<a class=\"vote-[ud]"
+				"</a>" nil nil t (point))
+     (goto-char (point-min))
+     (w3m-filter-delete-regions url
+				"<a class=\"star-off"
+				"</td>")
+     (w3m-filter-replace-regexp url
+				"<span itemprop=\"upvoteCount[^>]+>"
+				"Votes: ")
+     (w3m-filter-replace-regexp url
+				"<div class=\"post-text[^>]+>"
+				"<blockquote>")
+     (w3m-filter-replace-regexp url
+				"<div class=\"post-taglist[^>]+>"
+				"</blockquote>")
+     (w3m-filter-delete-regions url
+				"<a name='new-answer'>"
+				"</form>" nil nil nil nil nil 1)
+
+     (w3m-filter-replace-regexp
+      url
+      "<div class=\"spacer\">[^>]+>[^>]+>+?\\([0-9]+\\)</div></a>"
+      "\\1 ")
+     (w3m-filter-delete-regions url
+				"<td class=\"vt\">"
+				"</td>")
+
+     (goto-char (point-min))
+     (while (search-forward "<div class=\"user-info \">" nil t)
+       (let ((p1 (match-end 0))
+	     (p2 (if (search-forward "<li" nil t)
+		     (match-beginning 0)
+		   (point-max))))
+	 (w3m-filter-delete-regions url
+				    "<div class=\"user-details\">"
+				    "</a>" nil nil nil p1 p2)
+	 (replace-re "</?div[^>]*>" "" nil p1 p2)
+	 (replace-re
+	  "<span class=\"reputation-score[^>]*>"
+	  "[rep:" nil p1 p2)
+	 (replace-re
+	  "<span class=\"badge1\">"
+	  "] [gold:" nil p1 p2)
+	 (replace-re
+	  "<span class=\"badge2\">"
+	  "] [silver:" nil p1 p2)
+	 (replace-re
+	  "<span class=\"badge3\">"
+	  "] [bronze:" nil p1 p2)
+	 (replace-re "</?span[^>]*>" "" nil p1 p2)))
+
+     (w3m-filter-replace-regexp url
+				"<td" "<td valign=top")
+
+     (w3m-filter-delete-regions url
+				"<div id=\"tabs\">"
+				"<a name" nil t)
+
+     (goto-char (point-min))
+     (while (search-forward "<div id=\"answer-" nil t)
+       (replace-match "</ul><hr>\\&"))
+
+     (w3m-filter-delete-regions url
+				"<div id=\"comments-link"
+				"</div>")
+
+     (goto-char (point-min))
+     (when (search-forward "<h4 id=\"h-linked\">Linked</h4>" nil t)
+       (replace-match "<p><b>Linked</b><br>")
+       (let ((p1 (match-end 0))
+	     (p2 (progn
+		   (search-forward "<h4" nil t)
+		   (match-beginning 0))))
+	 (replace-re "^\t</a>" "" nil p1 p2)
+	 (replace-re "</a>" "</a><br>" nil p1 p2)
+	 (replace-re "</div>" " " nil p1 p2)
+	 (w3m-filter-delete-regions
+	  url
+	  "<div class=\"spacer\">"
+	  "<div class=\"answer-votes answered-accepted [^>]+>"
+	  nil nil t)))
+
+     (goto-char (point-min))
+     (when (search-forward "<table id=\"qinfo\">" nil t)
+       (replace-match "")
+       (let ((p1 (match-end 0))
+	     (p2 (progn
+		   (search-forward "</table>" nil t)
+		   (replace-match "")
+		   (match-end 0))))
+	 (w3m-filter-replace-regexp url "<tr>" "" p1 p2)
+	 (w3m-filter-replace-regexp url "</tr>" "<br>" p1 p2)
+	 (w3m-filter-replace-regexp url "</?td[^>]*>" "" p1 p2)
+	 (w3m-filter-replace-regexp url "<b>" "" p1 p2)
+	 (w3m-filter-replace-regexp url "<a[^>]+>" "" p1 p2)
+	 (w3m-filter-replace-regexp url "</?p[^>]*>" "" p1 p2)))))
+
+(defun w3m-filter-youtube (url)
+  (w3m-filter-delete-regions url "<head>" "<title>" t t)
+  (w3m-filter-delete-regions url "</title>" "</head>" t t)
+  (insert "<body>")
+  (w3m-filter-delete-regions url
+			     "<body" "<p class=\"num-results" nil t (point))
+  (w3m-filter-delete-regions url
+			     "<div id=\"footer-container\"" "</body>" nil t)
+  (w3m-filter-replace-regexp url "</?h4[^>]*>" "")
+  (goto-char (point-min))
+  (let ((p1 (point)) (p2 (search-forward "<ol" nil t)))
+    (w3m-filter-replace-regexp url "<li>" " | " p1 p2)
+    (w3m-filter-replace-regexp url "<ul>" "" p1 p2)
+    (w3m-filter-replace-regexp url
+			       "<li><div class=\"yt-lockup[^>]*>" "<p><li>" p2)
+    (w3m-filter-replace-regexp url "<button.*</button>" "")
+    (w3m-filter-replace-regexp url "<a aria-hidden[^>]*>" "")
+    (w3m-filter-replace-regexp url "</?h3[^>]*>" "")
+    (goto-char (point-min))
+    (while (search-forward "<ul class=\"yt-lockup-meta-info\">" nil t)
+      (delete-region (match-beginning 0) (match-end 0))
+      (setq p1 (point) p2 (search-forward "</ul>" nil t))
+      (w3m-filter-replace-regexp url "</?li>" " " p1 p2)
+      (w3m-filter-replace-regexp url "</ul>" "" p1 nil 1))
+    (goto-char (point-min))
+    (while (search-forward "<ul class=\"yt-badge-list \">" nil t)
+      (replace-match "")
+      (setq p1 (point) p2 (search-forward "</ul>" nil t))
+      (insert " ")
+      (w3m-filter-replace-regexp url "</?li[^>]*>" " " p1 p2)
+      (w3m-filter-replace-regexp url "</ul>" "" p1 nil 1))
+    (w3m-filter-replace-regexp url
+			       "</div><div class=\"yt-lockup-meta \">" "")
+    (goto-char (point-min))
+    (while (search-forward "<img" nil t)
+      (let ((p1 (match-end 0)) (p2 (search-forward ">" nil t)))
+	(goto-char p1)
+	(when (search-forward "data-thumb=" p2 t)
+	  (goto-char p1)
+	  (when (re-search-forward "src=\"[^\"]*\"" p2 t)
+	    (replace-match "")
+	    (goto-char p1)
+	    (re-search-forward "data-thumb=" p2 t)
+	    (replace-match "src=")))))))
 
 (defun w3m-filter-geocities-remove-garbage (url)
   "Remove garbage in http://www.geocities.co.jp/*."

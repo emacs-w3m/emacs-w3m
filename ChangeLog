@@ -1,3 +1,9 @@
+2018-06-01  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-filter.el (w3m-filter-stackexchange, w3m-filter-youtube):
+	New filters ([emacs-w3m:12999]).
+	(w3m-filter-configuration): Add those filters.
+
 2018-05-30  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-filter.el (w3m-filter-generic-page-header):
