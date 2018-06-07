@@ -11080,10 +11080,11 @@ The following command keys are available:
 
 \\{w3m-select-buffer-mode-map}"
   (interactive "P")
-  (w3m--setup-popup-window toggle w3m-select-buffer-name nomsg)
-  (w3m-select-buffer-generate-contents (current-buffer))
-  (w3m-select-buffer-mode)
-  (or nomsg (w3m-message w3m-select-buffer-message)))
+  (let ((curbuf (current-buffer)))
+    (w3m--setup-popup-window toggle w3m-select-buffer-name nomsg)
+    (w3m-select-buffer-generate-contents curbuf)
+    (w3m-select-buffer-mode)
+    (or nomsg (w3m-message w3m-select-buffer-message))))
 
 (defun w3m-select-buffer-update (&rest args)
   (when (get-buffer-window w3m-select-buffer-name)
@@ -11092,7 +11093,7 @@ The following command keys are available:
   (when w3m-use-tab
     (w3m-force-window-update)))
 
-(defun w3m-select-buffer-generate-contents (current-buffer)
+(defun w3m-select-buffer-generate-contents (curbuf)
   (let ((i 0)
 	(inhibit-read-only t))
     (delete-region (point-min) (point-max))
@@ -11109,7 +11110,7 @@ The following command keys are available:
     (delete-region (point) (point-max))
     (set-buffer-modified-p nil)
     (goto-char (or (text-property-any (point-min) (point-max)
-				      'w3m-select-buffer current-buffer)
+				      'w3m-select-buffer curbuf)
 		   (point-min)))))
 
 (defvar w3m-select-buffer-mode-map nil)

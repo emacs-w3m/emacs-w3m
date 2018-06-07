@@ -1,3 +1,9 @@
+2018-05-23  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-select-buffer): Pass correct current buffer value to
+	`w3m-select-buffer-generate-contents' ([emacs-w3m:12988]).
+	(w3m-select-buffer-generate-contents): Variable rename.
+
 2018-05-19  Kevin Ryde  <user42_kevin@yahoo.com.au>
 
 	* w3m-favicon.el (w3m-favicon-setup): Enable favicons be taken from
