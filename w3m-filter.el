@@ -71,13 +71,17 @@
      w3m-filter-rt)
     (t
      "Filter for slashdot"
-     "\\`http[s]?://\\([a-z]+\\.\\)?slashdot\\.org/"
+     "\\`https?://\\([a-z]+\\.\\)?slashdot\\.org/"
      w3m-filter-slashdot)
     (t
      "GNOME Bugzilla - ignore <pre class=\"bz_comment_text\">
    in order to fold long lines"
      "\\`https://bugzilla\\.gnome\\.org/show_bug\\.cgi\\?id="
      w3m-filter-gnome-bugzilla)
+    (nil
+     "Generic page header filter"
+     "\\`https?://"
+     w3m-filter-generic-page-header)
     (nil
      ("Remove garbage in http://www.geocities.co.jp/*"
       "http://www.geocities.co.jp/* でゴミを取り除きます")
@@ -1076,6 +1080,33 @@ READ MORE:\\([^<]+\\)\\(</a>\\)?</strong>\\(</p>\\)?"
 	    (widen)
 	    t))
 	(replace-match ""))))
+
+(defun w3m-filter-generic-page-header (url)
+  "Generic page header filter."
+  (let (p1 p2 p3 title found)
+    (and
+     (w3m-filter-delete-regions url "<head>" "<title>" t t)
+     (setq p1 (point))
+     (search-forward "</title>" nil t)
+     (setq title (buffer-substring-no-properties
+		  p1 (setq p2 (match-beginning 0))))
+     (w3m-filter-delete-regions url "</title>" "</head>" t t nil p2)
+     (setq p1 (point)
+	   p3 p1)
+     (or
+      (while (and (not found) (re-search-forward "<h[^>]+>\\([^<]+\\)<" nil t))
+	(setq p2 (match-beginning 0))
+	(when (string-match (regexp-quote (match-string 1)) title)
+	  (goto-char p1)
+	  (when (re-search-forward "<body" nil t)
+	    (delete-region (match-beginning 0) p2)
+	    (setq found t))))
+      (w3m-filter-delete-regions url "<body" "<h1" nil t)
+      (w3m-filter-delete-regions url "<body" "<h2" nil t)
+      (w3m-filter-delete-regions url "<body" "<h3" nil t)
+      (w3m-filter-delete-regions url "<body" "<h4" nil t))
+     (goto-char p3)
+     (insert "<body>"))))
 
 (defun w3m-filter-geocities-remove-garbage (url)
   "Remove garbage in http://www.geocities.co.jp/*."

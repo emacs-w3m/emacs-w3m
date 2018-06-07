@@ -1,3 +1,9 @@
+2018-05-30  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-filter.el (w3m-filter-generic-page-header):
+	New filter ([emacs-w3m:12996]).
+	(w3m-filter-configuration): Add it but not activated by default.
+
 2018-05-23  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m-delete-buffer): Perform some operations from a temporary
