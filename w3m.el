@@ -11054,8 +11054,8 @@ beside the main window."
 	    (not w3m-select-buffer-horizontal-window))
       (when (get-buffer-window buffer-name)
 	(delete-windows-on buffer-name)))
-    (unless (or (eq major-mode 'w3m-mode)
-		(eq major-mode 'w3m-select-buffer-mode))
+    (unless (memq major-mode
+		  '(w3m-mode w3m-select-buffer-mode w3m-session-select-mode))
       (let ((buffer (w3m-alive-p t)))
 	(if buffer
 	    (w3m-popup-buffer buffer)

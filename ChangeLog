@@ -1,3 +1,8 @@
+2018-06-07  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m--setup-popup-window): Do not attempt to create new winow
+	for sessions renaming ([emacs-w3m:13000]).
+
 2018-06-01  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-filter.el (w3m-filter-stackexchange, w3m-filter-youtube):
