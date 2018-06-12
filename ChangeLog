@@ -1,3 +1,18 @@
+2018-06-08  Boruch Baum  <boruch_baum@gmx.com>
+
+	Refactor w3m-process-queue memory and redability ([emacs-w3m:13013]).
+
+	* w3m.el (w3m--dump-extra--handler-function)
+	(w3m--retrieve--handler-function, w3m--retrieve-1--handler-function)
+	(defun w3m--retrieve-and-render--handler-function)
+	(w3m--goto-url--handler-function, w3m--goto-url--valid-url):
+	New functions to reduce memory footprint of `w3m-process-queue',
+	aid readability debugging.
+
+	* w3m.el (w3m-w3m-dump-extra, w3m-w3m-retrieve, w3m-w3m-retrieve-1)
+	(w3m-retrieve-and-render, w3m-goto-url):
+	Use the new functions listed above.
+
 2018-06-07  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-filter.el (w3m-filter-stackexchange): Rewite ([emacs-w3m:13010]).
