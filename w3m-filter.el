@@ -1117,122 +1117,136 @@ READ MORE:\\([^<]+\\)\\(</a>\\)?</strong>\\(</p>\\)?"
      (insert "<body>"))))
 
 (defun w3m-filter-stackexchange (url)
-   "Filter top and bottom cruft for stackexchange.com."
-   (w3m-labels ((replace-re (regexp to-string &optional delimited start end)
-			    (perform-replace regexp to-string t t delimited
-					     nil nil start end)))
-     (w3m-filter-delete-regions url "<body.*>" "<h1.*>" t t t nil nil 1)
-     (w3m-filter-delete-regions url
-				"<h2 class=\"space\">Your Answer</h2>"
-				"<h4 id=\"h-related\">Related</h4>"
-				nil t nil nil nil 1)
-     (w3m-filter-delete-regions
-      url
-      "<div id=\"hot-network-questions\" class=\"module tex2jax_ignore\">"
-      "</body>"
-      nil t nil nil nil 1)
+  "Filter top and bottom cruft for stackexchange.com."
+  (w3m-filter-delete-regions url
+			     "<body.*>" "<h1.*>" t t t nil nil 1)
+  (w3m-filter-delete-regions url "<h2 class=\"space\">Your Answer</h2>"
+			     "<h4 id=\"h-related\">Related</h4>"
+			     nil t nil nil nil 1)
+  (w3m-filter-delete-regions
+   url
+   "<div id=\"hot-network-questions\" class=\"module tex2jax_ignore\">"
+   "</body>"
+   nil t nil nil nil 1)
 
-     ;; (when (search-forward "<table>" nil t)
-     ;;   (replace-match ""))
+  ;; (when (search-forward "<table>" nil t)
+  ;;   (replace-match ""))
 
-     (goto-char (point-min))
-     (w3m-filter-delete-regions url
-				"<a class=\"vote-[ud]"
-				"</a>" nil nil t (point))
-     (goto-char (point-min))
-     (w3m-filter-delete-regions url
-				"<a class=\"star-off"
-				"</td>")
-     (w3m-filter-replace-regexp url
-				"<span itemprop=\"upvoteCount[^>]+>"
-				"Votes: ")
-     (w3m-filter-replace-regexp url
-				"<div class=\"post-text[^>]+>"
-				"<blockquote>")
-     (w3m-filter-replace-regexp url
-				"<div class=\"post-taglist[^>]+>"
-				"</blockquote>")
-     (w3m-filter-delete-regions url
-				"<a name='new-answer'>"
-				"</form>" nil nil nil nil nil 1)
+  (goto-char (point-min))
+  (w3m-filter-delete-regions url
+			     "<a class=\"vote-[ud]"
+			     "</a>" nil nil t (point))
+  (goto-char (point-min))
+  (w3m-filter-delete-regions url
+			     "<a class=\"star-off"
+			     "</td>")
+  (w3m-filter-replace-regexp url
+			     "<span itemprop=\"upvoteCount[^>]+>"
+			     "Votes: ")
+  (w3m-filter-replace-regexp url
+			     "<div class=\"post-text[^>]+>"
+			     "<blockquote>")
+  (w3m-filter-replace-regexp url
+			     "<div class=\"post-taglist[^>]+>"
+			     "</blockquote>")
+  (w3m-filter-delete-regions url
+			     "<a name='new-answer'>"
+			     "</form>" nil nil nil nil nil 1)
 
-     (w3m-filter-replace-regexp
-      url
-      "<div class=\"spacer\">[^>]+>[^>]+>+?\\([0-9]+\\)</div></a>"
-      "\\1 ")
-     (w3m-filter-delete-regions url
-				"<td class=\"vt\">"
-				"</td>")
+  (w3m-filter-replace-regexp
+   url
+   "<div class=\"spacer\">[^>]+>[^>]+>+?\\([0-9]+\\)</div></a>"
+   "\\1 ")
+  (w3m-filter-delete-regions url
+			     "<td class=\"vt\">"
+			     "</td>")
 
-     (goto-char (point-min))
-     (while (search-forward "<div class=\"user-info \">" nil t)
-       (let ((p1 (match-end 0))
-	     (p2 (if (search-forward "<li" nil t)
-		     (match-beginning 0)
-		   (point-max))))
-	 (w3m-filter-delete-regions url
-				    "<div class=\"user-details\">"
-				    "</a>" nil nil nil p1 p2)
-	 (replace-re "</?div[^>]*>" "" nil p1 p2)
-	 (replace-re
-	  "<span class=\"reputation-score[^>]*>"
-	  "[rep:" nil p1 p2)
-	 (replace-re
-	  "<span class=\"badge1\">"
-	  "] [gold:" nil p1 p2)
-	 (replace-re
-	  "<span class=\"badge2\">"
-	  "] [silver:" nil p1 p2)
-	 (replace-re
-	  "<span class=\"badge3\">"
-	  "] [bronze:" nil p1 p2)
-	 (replace-re "</?span[^>]*>" "" nil p1 p2)))
+  (goto-char (point-min))
+  ; TODO: FIXME: The following condition-case is a kludge because when
+  ; the `re-search-forward' statements were not finding anything, we
+  ; were getting "error in process sentinel: while: Search failed:". The
+  ; proper solution is likely in the process sentinel (whichever one
+  ; that turns out to be), not here.
+  (condition-case nil
+      (while (search-forward "<div class=\"user-info \">" nil t)
+	(let ((p1 (match-end 0))
+	      (p2 (if (search-forward "<li" nil t)
+		      (match-beginning 0)
+		    (point-max))))
+	  (w3m-filter-delete-regions
+	   url "<div class=\"user-details\">" "</a>" nil nil nil p1 p2)
+	  (goto-char p1)
+	  (while (re-search-forward "</?div[^>]*>" p2 nil)
+	    (replace-match ""))
+	  (goto-char p1)
+	  (while (re-search-forward "<span class=\"reputation-score[^>]*>"
+				    p2 nil)
+	    (replace-match "[rep:"))
+	  (goto-char p1)
+	  (while (re-search-forward "<span class=\"badge1\">" p2 nil)
+	    (replace-match  "] [gold:"))
+	  (goto-char p1)
+	  (while (re-search-forward "<span class=\"badge2\">" p2 nil)
+	    (replace-match  "] [silver:"))
+	  (goto-char p1)
+	  (while (re-search-forward "<span class=\"badge3\">" p2 nil)
+	    (replace-match  "] [bronze:"))
+	  (goto-char p1)
+	  (while (re-search-forward "</?span[^>]*>" p2 nil)
+	    (replace-match  ""))))
+    (error))
 
-     (w3m-filter-replace-regexp url
-				"<td" "<td valign=top")
+  (w3m-filter-replace-regexp url
+			     "<td" "<td valign=top")
 
-     (w3m-filter-delete-regions url
-				"<div id=\"tabs\">"
-				"<a name" nil t)
+  (w3m-filter-delete-regions url
+			     "<div id=\"tabs\">"
+			     "<a name" nil t)
 
-     (goto-char (point-min))
-     (while (search-forward "<div id=\"answer-" nil t)
-       (replace-match "</ul><hr>\\&"))
+  (goto-char (point-min))
+  (while (search-forward "<div id=\"answer-" nil t)
+    (replace-match "</ul><hr>\\&"))
 
-     (w3m-filter-delete-regions url
-				"<div id=\"comments-link"
-				"</div>")
+  (w3m-filter-delete-regions url
+			     "<div id=\"comments-link"
+			     "</div>")
 
-     (goto-char (point-min))
-     (when (search-forward "<h4 id=\"h-linked\">Linked</h4>" nil t)
-       (replace-match "<p><b>Linked</b><br>")
-       (let ((p1 (match-end 0))
-	     (p2 (progn
-		   (search-forward "<h4" nil t)
-		   (match-beginning 0))))
-	 (replace-re "^\t</a>" "" nil p1 p2)
-	 (replace-re "</a>" "</a><br>" nil p1 p2)
-	 (replace-re "</div>" " " nil p1 p2)
-	 (w3m-filter-delete-regions
-	  url
-	  "<div class=\"spacer\">"
-	  "<div class=\"answer-votes answered-accepted [^>]+>"
-	  nil nil t)))
+  (goto-char (point-min))
+  (when (search-forward "<h4 id=\"h-linked\">Linked</h4>" nil t)
+    (replace-match "<p><b>Linked</b><br>")
+    (let ((p1 (match-end 0))
+	  (p2 (progn
+		(search-forward "<h4" nil t)
+		(match-beginning 0))))
+      (goto-char p1)
+      (while (re-search-forward "^\t</a>" p2 nil)
+	(replace-match  ""))
+      (goto-char p1)
+      (while (re-search-forward "</a>" p2 nil)
+	(replace-match "</a><br>"))
+      (goto-char p1)
+      (while (re-search-forward "</div>" p2 nil)
+	(replace-match " "))
+      (w3m-filter-delete-regions
+       url
+       "<div class=\"spacer\">"
+       "<div class=\"answer-votes answered-accepted [^>]+>"
+       nil nil t)))
 
-     (goto-char (point-min))
-     (when (search-forward "<table id=\"qinfo\">" nil t)
-       (replace-match "")
-       (let ((p1 (match-end 0))
-	     (p2 (progn
-		   (search-forward "</table>" nil t)
-		   (replace-match "")
-		   (match-end 0))))
-	 (w3m-filter-replace-regexp url "<tr>" "" p1 p2)
-	 (w3m-filter-replace-regexp url "</tr>" "<br>" p1 p2)
-	 (w3m-filter-replace-regexp url "</?td[^>]*>" "" p1 p2)
-	 (w3m-filter-replace-regexp url "<b>" "" p1 p2)
-	 (w3m-filter-replace-regexp url "<a[^>]+>" "" p1 p2)
-	 (w3m-filter-replace-regexp url "</?p[^>]*>" "" p1 p2)))))
+  (goto-char (point-min))
+  (when (search-forward "<table id=\"qinfo\">" nil t)
+    (replace-match "")
+    (let ((p1 (match-end 0))
+	  (p2 (progn
+		(search-forward "</table>" nil t)
+		(replace-match "")
+		(match-end 0))))
+      (w3m-filter-replace-regexp url "<tr>" "" p1 p2)
+      (w3m-filter-replace-regexp url "</tr>" "<br>" p1 p2)
+      (w3m-filter-replace-regexp url "</?td[^>]*>" "" p1 p2)
+      (w3m-filter-replace-regexp url "<b>" "" p1 p2)
+      (w3m-filter-replace-regexp url "<a[^>]+>" "" p1 p2)
+      (w3m-filter-replace-regexp url "</?p[^>]*>" "" p1 p2))))
 
 (defun w3m-filter-youtube (url)
   (w3m-filter-delete-regions url "<head>" "<title>" t t)
