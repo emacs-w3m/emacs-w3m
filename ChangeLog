@@ -15,7 +15,7 @@
 
 2018-06-07  Boruch Baum  <boruch_baum@gmx.com>
 
-	* w3m-filter.el (w3m-filter-stackexchange): Rewite ([emacs-w3m:13010]).
+	* w3m-filter.el (w3m-filter-stackexchange): Rewrite ([emacs-w3m:13010]).
 
 2018-06-01  Boruch Baum  <boruch_baum@gmx.com>
 
