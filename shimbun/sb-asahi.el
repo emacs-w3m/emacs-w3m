@@ -141,35 +141,30 @@ Every `.' in NAME will be replaced with `/'."
 	       (concat
 		"<item" s1 "rdf:about=\""
 		;; 1. url
-		"\\(http://\\(?:book\\|www\\)\\.asahi\\.com//?"
-		;; 2. extra keyword (en)
-		"\\([^/]+\\)"
-		"\\(?:/update/"
-		;; 3 and 4. serial number
-		"\\([0-9]+\\)\\)?/\\([0-9a-z]+\\)"
+		"\\(http://www.asahi\\.com/articles/"
+		;; 2. serial number
+		"\\([0-9a-z]+\\)"
 		"\\.html\\?ref=rss\\)"
 		"\"" s0 ">" s0 "<title>" s0
-		;; 5. subject
+		;; 3. subject
 		"\\([^<]+\\)"
-		s0 "</title>\\(?:"
-		s0 "\\(?:<[^>]+/>"
-		"\\|<[^>]+>\\(?:<[^]]+\\]+>\\|[^<]+\\)</[^>]+>\\)\\)*"
+		s0 "</title>\\(?:" s0 "<[^>]+>[^<>]*<" s0 "/[^>]+>\\)+"
 		s0 "<dc:subject>" s0
-		;; 6. extra keyword (ja)
+		;; 4. extra keyword (ja)
 		"\\([^<]+\\)"
 		s0 "</dc:subject>" s0 "<dc:date>" s0
-		;; 7. year
+		;; 5. year
 		"\\(20[0-9][0-9]\\)"
 		"-"
-		;; 8. month
+		;; 6. month
 		"\\([01][0-9]\\)"
 		"-"
-		;; 9. day
+		;; 7. day
 		"\\([0-3][0-9]\\)"
 		"T"
-		;; 10. hour:min:sec
+		;; 8. hour:min:sec
 		"\\([012][0-9]:[0-5][0-9]:[0-5][0-9]\\)")
-	       1 3 4 5 7 8 9 10 2 nil 6)))
+	       1 nil 2 3 5 6 7 8 nil nil 4)))
     `(("book" "RSS" "http://www3.asahi.com/rss/book.rdf" ,@rss)
       ("book.column" "コラム")
       ("book.news" "出版ニュース" nil ,@book)
@@ -1103,7 +1098,8 @@ Contents will be saved in the shimbun header as the extra element."
 				  cyear)))
 		    day (string-to-number (match-string (nth 6 numbers)))))
 	    (setq serial (cond (rss-p
-				(if (match-beginning (nth 1 numbers))
+				(if (and (setq num (nth 1 numbers))
+					 (match-beginning num))
 				    (format "%d%s.%s"
 					    year
 					    (match-string (nth 1 numbers))

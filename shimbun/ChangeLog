@@ -1,3 +1,8 @@
+2018-06-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-asahi.el (shimbun-asahi-group-table): Update for rss group.
+	(shimbun-asahi-get-headers): Work for it.
+
 2018-05-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-clear-contents): Remove extra links.
