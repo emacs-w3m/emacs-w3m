@@ -1,3 +1,9 @@
+2018-06-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-user-agent-default-alist): Fix default value;
+	move "Don't send..." item to `w3m-user-agent-change'.
+	(w3m-user-agent-change): Don't sort collection.
+
 2018-06-08  Boruch Baum  <boruch_baum@gmx.com>
 
 	Refactor w3m-process-queue memory and redability ([emacs-w3m:13013]).

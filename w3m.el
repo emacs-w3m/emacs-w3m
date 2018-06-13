@@ -320,10 +320,9 @@ The value of `w3m-user-agent' is used for the field body."
   :type 'boolean)
 
 (defvar w3m-user-agent-default-alist
-  '((cons "Emacs-w3m (user default)" w3m-user-agent)
-    (cons "Emacs-w3m (package default)"
-	  (concat "Emacs-w3m/" emacs-w3m-version " " w3m-version))
-    '("Don't send user agent" . ""))
+  `(("Emacs-w3m (user default)" . w3m-user-agent)
+    ("Emacs-w3m (package default)"
+     . ,(concat "Emacs-w3m/" emacs-w3m-version " " w3m-version)))
   "An default alist of user agent strings.
 This is used when offering the user the opportunity to change user
 agent strings. This should normally not be modified; instead modify
@@ -10185,8 +10184,8 @@ NIL if none match."
   "Return a user-agent string.
 
 Prompt the user to select from entries in
-`w3m-user-agent-default-alist', `w3m-user-agent-alist', or the
-user may manually enter a custom user-agent string.
+`w3m-user-agent-default-alist', `w3m-user-agent-alist',
+or the user may manually enter a custom user-agent string.
 
 When called interactively, variables `w3m-user-agent' and
 `w3m-add-user-agent' are updated, ie. the changes are permanent."
@@ -10194,11 +10193,20 @@ When called interactively, variables `w3m-user-agent' and
   (when (not ua-string)
     (let ((ua-list (append w3m-user-agent-default-alist w3m-user-agent-alist)))
       (setq ua-string
-	    (or (cdr (assoc (setq ua-string
-				  (completing-read "Select a user-agent: "
-						   ua-list))
-			    ua-list))
-		ua-string))))
+	    (or
+	     (cdr
+	      (assoc
+	       (setq ua-string
+		     (completing-read
+		      "Select a user-agent: "
+		      `(lambda (string pred action)
+			 (if (eq action 'metadata)
+			     '(metadata (display-sort-function . identity))
+			   (complete-with-action
+			    action '(,@ua-list ("Don't send user agent" . ""))
+			    string pred)))))
+	       ua-list))
+	     ua-string))))
   (when (string-equal ua-string "")
     (setq ua-string nil))
   (when (called-interactively-p 'interactive)
