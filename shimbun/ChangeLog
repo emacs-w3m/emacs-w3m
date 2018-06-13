@@ -1,3 +1,11 @@
+2018-06-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make Mainichi's some groups work again.
+
+	* sb-mainichi.el (shimbun-mainichi-group-table): Update.
+	(shimbun-mainichi-get-headers): Work.
+	(shimbun-mainichi-clear-contents): Add a special treatment to yoroku.
+
 2018-06-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-asahi.el (shimbun-asahi-group-table): Update for rss group.
