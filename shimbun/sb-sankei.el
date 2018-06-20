@@ -1,6 +1,6 @@
 ;;; sb-sankei.el --- shimbun backend for the Sankei News -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003-2011, 2013-2017 Katsumi Yamaoka
+;; Copyright (C) 2003-2011, 2013-2018 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -327,7 +327,7 @@ This is a subroutine that `shimbun-sankei-get-headers-top' uses."
 \\(20[1-9][0-9]\\)\\.\\([01]?[0-9]\\)\\.\\([0-3]?[0-9]\\)[\t\n ]+\
 \\([012]?[0-9]:[0-5]?[0-9]\\)\
 \\(?:[\t\n ]*<[^>]*>\\)*[\t\n ]*<!-+[\t\n ]*date[\t\n ]+end[\t\n ]*-+>"
-			    nil t)
+			   nil t)
     (shimbun-header-set-date
      header
      (shimbun-make-date-string
@@ -335,63 +335,78 @@ This is a subroutine that `shimbun-sankei-get-headers-top' uses."
       (string-to-number (match-string 2))
       (string-to-number (match-string 3))
       (match-string 4))))
-  ;; Delete useless contents.
-  (let (case-fold-search st)
-    (goto-char (point-min))
-    (while (and (re-search-forward "\
+  (let (images)
+    ;; Delete useless contents.
+    (let (case-fold-search st)
+      (goto-char (point-min))
+      (while (and (re-search-forward
+		   "<span[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"photo\""
+		   nil t)
+		  (shimbun-end-of-tag "span"))
+	(push (buffer-substring (match-beginning 0) (match-end 0)) images))
+      (goto-char (point-min))
+      (while (and (re-search-forward "\
 <\\(ul\\)\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+class=\"socialBox\"\\|\
 <\\(div\\)\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+class=\"socialFloatingFixedBox\""
-				   nil t)
-		(shimbun-end-of-tag (or (match-string 1) (match-string 2)) t))
-      (replace-match "\n"))
-    (goto-char (point-min))
-    (while (re-search-forward "[\t\n ]*<!-+[\t\n ]+\
+				     nil t)
+		  (shimbun-end-of-tag (or (match-string 1) (match-string 2))
+				      t))
+	(replace-match "\n"))
+      (goto-char (point-min))
+      (while (re-search-forward "[\t\n ]*<!-+[\t\n ]+\
 \\([Aa][Dd][\t\n ]+[^\t\n >]+\\(?:[\t\n ]+[^\t\n >]+\\)*\\)[\t\n ]*-+>[\t\n ]*"
-			      nil t)
-      (setq st (match-beginning 0))
-      (when (re-search-forward
-	     (concat "[\t\n ]*<!-+[\t\n ]+"
-		     (regexp-quote (match-string 1))
-		     "[\t\n ]*-+>[\t\n ]*")
-	     nil t)
-	(delete-region st (match-end 0))
-	(insert "\n")))
+				nil t)
+	(setq st (match-beginning 0))
+	(when (re-search-forward
+	       (concat "[\t\n ]*<!-+[\t\n ]+"
+		       (regexp-quote (match-string 1))
+		       "[\t\n ]*-+>[\t\n ]*")
+	       nil t)
+	  (delete-region st (match-end 0))
+	  (insert "\n")))
+      (goto-char (point-min))
+      (while (re-search-forward "[\t\n ]*<!-+[\t\n ]+[Bb][Ee][Gg][Ii][Nn]\
+[\t\n ]+\\([Aa][Dd][\t\n ]+[^\t\n >]+\\(?:[\t\n ]+[^\t\n >]+\\)*\\)[\t\n ]*-+>\
+[\t\n ]*" nil t)
+	(setq st (match-beginning 0))
+	(when (re-search-forward
+	       (concat "[\t\n ]*<!-+[\t\n ]+[Ee][Nn][Dd][\t\n ]+"
+		       (regexp-quote (match-string 1))
+		       "[\t\n ]*-+>[\t\n ]*")
+	       nil t)
+	  (delete-region st (match-end 0))
+	  (insert "\n"))))
     (goto-char (point-min))
-    (while (re-search-forward "[\t\n ]*<!-+[\t\n ]+[Bb][Ee][Gg][Ii][Nn][\t\n ]+\
-\\([Aa][Dd][\t\n ]+[^\t\n >]+\\(?:[\t\n ]+[^\t\n >]+\\)*\\)[\t\n ]*-+>[\t\n ]*"
-			      nil t)
-      (setq st (match-beginning 0))
-      (when (re-search-forward
-	     (concat "[\t\n ]*<!-+[\t\n ]+[Ee][Nn][Dd][\t\n ]+"
-		     (regexp-quote (match-string 1))
-		     "[\t\n ]*-+>[\t\n ]*")
-	     nil t)
-	(delete-region st (match-end 0))
-	(insert "\n"))))
-  (goto-char (point-min))
-  (when (or (and (or (re-search-forward "\
+    (when (or (and (or (re-search-forward "\
 <li[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"boxGp\"" nil t)
-		     (re-search-forward "\
+		       (re-search-forward "\
 <li[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"boxFb\"" nil t)
-		     (re-search-forward "\
+		       (re-search-forward "\
 <li[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"boxTw\"" nil t))
-		 (shimbun-end-of-tag "li" t)
-		 (progn
-		   (when (re-search-forward "\
+		   (shimbun-end-of-tag "li" t)
+		   (progn
+		     (when (re-search-forward "\
 <span[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"pageProperty\"" nil t)
-		     (shimbun-end-of-tag "span"))
-		   t))
-	    ;; Old articles
-	    (and (re-search-forward "\
+		       (shimbun-end-of-tag "span"))
+		     t))
+	      ;; Old articles
+	      (and (re-search-forward "\
 <span[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"pageProperty\"" nil t)
-		 (shimbun-end-of-tag "span"))
-	    (re-search-forward "<!-+[\t\n ]*article[\t\n ]*-+>" nil t))
-    (re-search-forward "\\(?:[\t\n ]*<[!/][^>]+>\\)*[\t\n ]*" nil t)
-    (delete-region (point-min) (point))
-    (when (or (re-search-forward "<!-+[^>]*[ _]article[ _]end[ _]" nil t)
-	      (re-search-forward "[\t\n ]*</article>" nil t))
-      (delete-region (match-beginning 0) (point-max))
-      (insert "\n")))
+		   (shimbun-end-of-tag "span"))
+	      (re-search-forward "<!-+[\t\n ]*article[\t\n ]*-+>" nil t))
+      (re-search-forward "\\(?:[\t\n ]*<[!/][^>]+>\\)*[\t\n ]*" nil t)
+      (delete-region (point-min) (point))
+      (when (or (re-search-forward "<!-+[^>]*[ _]article[ _]end[ _]" nil t)
+		(re-search-forward "[\t\n ]*</article>" nil t))
+	(delete-region (match-beginning 0) (point-max))
+	(insert "\n"))
+      (when images
+	(goto-char (point-min))
+	(unless (re-search-forward
+		 "<span[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"photo\""
+		 nil t)
+	  (insert (mapconcat #'identity (nreverse images) "\n")
+		  "<br>\n")))))
   (unless (memq (shimbun-japanese-hankaku shimbun) '(header subject nil))
     (shimbun-japanese-hankaku-buffer t))
   t)

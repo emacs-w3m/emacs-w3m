@@ -1,3 +1,7 @@
+2018-06-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-clear-contents): Preserve photos.
+
 2018-06-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make Mainichi's some groups work again.
