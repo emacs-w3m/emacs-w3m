@@ -215,14 +215,17 @@ Every `.' in NAME will be replaced with `/'."
       ("digital" "デジタル" "%s/list.html"
        ,@(shimbun-asahi-make-regexp "digital/[^\"/]+"))
       ("editorial" "社説" "news/editorial.html"
-       ,(concat "<p\\(?:" s1 "[^>]+\\)?" s0 ">" s0 "<a" s1 "href=\""
+       ,(concat "<dd" s1 "data-num=\"[0-9]+\">" s0 "<a" s1 "href=\""
 		;; 1. url
 		"\\(/articles/"
 		;; 2. serial
 		"\\([^./]+\\)" "\\.html[^\"]*\\)" "[^>]*>" s0
+		"\\(?:<em>" s0
 		;; 3. subject
-		"\\([^<]+\\)" s0 "</a>")
-       1 2 nil 3)
+		"\\([^<]+\\)" s0 "</em>.+\\|"
+		;; 4. subject
+		"\\([^<]+\\)" s0 "\\)</a>")
+       1 2 nil 3 nil nil nil nil nil nil nil nil nil 4)
       ("edu" "教育" "%s/list.html" ,@edu)
       ("english" "ENGLISH" "%s/index.html"
        ,@(let ((rest (shimbun-asahi-make-regexp "english.Herald-asahi")))
@@ -306,8 +309,9 @@ regexps and numbers.  Where index pages and regexps may contain the
 \"%s\" token which is replaced with group names, numbers point to the
 search result in order of [0]a url, [1,2]a serial number, [3]a subject,
 \[4]a year, [5]a month, [6]a day, [7]an hour:minute, [8,9,10]an extra
-keyword, [11]hour and [12]minute.  If an index page is nil, a group
-name in which \".\" is substituted with \"/\" is used instead.")
+keyword, [11]hour, [12]minute, and [13]an alternative subject.
+If an index page is nil, a group name in which \".\" is substituted with
+\"/\" is used instead.")
 
 (defvar shimbun-asahi-subgroups-alist
   (let* ((s0 "[\t\n 　]*")
@@ -1058,7 +1062,7 @@ Contents will be saved in the shimbun header as the extra element."
 	    (cond ((string-equal group "editorial")
 		   (let ((pt (point)))
 		     (save-match-data
-		       (if (re-search-backward "<dl\\(?:[\t\n ]+[^\t\n >]+\\)*\
+		       (if (re-search-backward "<li\\(?:[\t\n ]+[^\t\n >]+\\)*\
 [\t\n ]+data-date=\"[^\"0-9]*\\([01]?[0-9]\\)[^\"0-9]+\\([0-3]?[0-9]\\)" nil t)
 			   (progn
 			     (goto-char pt)
@@ -1155,7 +1159,8 @@ Contents will be saved in the shimbun header as the extra element."
 				    (match-string (nth 3 numbers))))
 			   ((string-equal group "editorial")
 			    (format "%d/%d %s" month day
-				    (match-string (nth 3 numbers))))
+				    (or (match-string (nth 3 numbers))
+					(match-string (nth 13 numbers)))))
 			   (paper-p ;; tenjin WON'T WORK
 			    (concat jname (format " (%d/%d)" month day)))
 			   (travel-p
@@ -1329,7 +1334,9 @@ article contents."
 		 (goto-char (match-beginning 0))
 		 (insert "\n<!-- End of Kiji -->\n"))))))
      ((member group '("editorial" "tenjin"))
-      )
+      (when (and (re-search-forward "<p class=\"SubTitle\"" nil t)
+		 (shimbun-end-of-tag "p" t))
+	(replace-match "\n")))
      ((string-equal group "food")
       (when (and (re-search-forward (shimbun-content-start shimbun) nil t)
 		 (re-search-forward "[\t\n ]*<!-+[\t\n ]+Creative[\t\n ]+for"

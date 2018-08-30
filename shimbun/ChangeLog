@@ -1,3 +1,11 @@
+2018-08-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make Asahi's editorial group work again.
+
+	* sb-asahi.el (shimbun-asahi-group-table): Update.
+	(shimbun-asahi-get-headers): Work for it.
+	(shimbun-asahi-prepare-article): Delete subtitle.
+
 2018-06-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-clear-contents): Preserve photos.
