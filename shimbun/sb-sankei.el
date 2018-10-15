@@ -127,20 +127,20 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAD1BMVEX8/PwAAAD///+G
 
 (luna-define-method shimbun-get-headers :around ((shimbun shimbun-sankei)
 						 &optional range)
-  (let ((group (shimbun-current-group-internal shimbun)))
-    (cond ((string-equal "top" group)
-	   (shimbun-sankei-get-headers-top shimbun range))
-	  (t
-	   (shimbun-sankei-get-headers shimbun range group)))))
+  (shimbun-sankei-get-headers shimbun range
+			      (shimbun-current-group-internal shimbun)))
 
 (defun shimbun-sankei-get-headers (shimbun range group)
   "Get headers for a categorized group."
   (let ((regexp
 	 (eval-when-compile
 	   (concat
-	    "<li>[\t\n ]*<a[\t\n ]+href=\""
+	    "<article[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"entry[^>]+>"
+	    "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*"
+	    "\\(?:<div[\t\n ]+class=\"entry_content\">[\t\n ]*\\)?"
+	    "\\(?:<[^\t\n >a][^>]+>[\t\n ]*\\)*<a[\t\n ]+href=\""
 	    ;; 1. url
-	    "\\(\\(?:[^\"/]*/\\)+"
+	    "\\([^\">]+/"
 	    ;; 2. year (lower 2 digits)
 	    "\\([1-9][0-9]\\)"
 	    ;; 3. month
@@ -159,254 +159,154 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAD1BMVEX8/PwAAAD///+G
 	(maxyear (1+ (nth 5 (decode-time))))
 	(rgrp (mapconcat 'identity (nreverse (split-string group "\\.")) "."))
 	(index (shimbun-index-url shimbun))
-	done st nd url year month day category id subj old time from headers)
-    (while (not done)
-      (if (re-search-forward regexp nil t)
-	  (progn
-	    (setq st (match-beginning 0)
-		  nd (match-end 0)
-		  url (match-string 1)
-		  year (match-string 2)
-		  month (match-string 3)
-		  day (match-string 4)
-		  category (match-string 5)
-		  id (concat "<" category (match-string 6) "." rgrp "%"
-			     shimbun-sankei-top-level-domain ">")
-		  subj (match-string 7))
-	    (if (shimbun-search-id shimbun id)
-		(setq old t)
-	      (goto-char st)
-	      (setq time nil)
-	      (if (shimbun-end-of-tag "li")
-		  (progn
-		    (goto-char nd)
-		    (if (re-search-forward "\
-<time>[\t\n ]*20[1-9][0-9]\\.[01]?[0-9]\\.[0-3]?[0-9][\t\n ]+\
-\\([0-2][0-9]:[0-5][0-9]\\)[\t\n ]*</time>" (match-end 2) t)
-			(setq time (match-string 1))
-		      (goto-char (match-end 0)))
-		    (goto-char nd)))
-	      (setq from
-		    (concat
-		     (shimbun-server-name shimbun)
-		     " ("
-		     (or (and (string-equal "flash" group)
-			      (cdr (assoc category
-					  shimbun-sankei-category-name-alist)))
-			 (shimbun-current-group-name shimbun))
-		     ")"))
-	      (push (shimbun-create-header
-		     0 subj from
-		     (shimbun-make-date-string
-		      (min (+ 2000 (string-to-number year)) maxyear)
-		      (string-to-number month)
-		      (string-to-number day)
-		      time)
-		     id "" 0 0
-		     (shimbun-expand-url url index))
-		    headers)))
-	(if (and (not old)
-		 (re-search-forward
-		  "<a[\t\n ]+href=\"\\([^\"]+\\)\"[\t\n ]+class=\"pageNext\""
-		  nil t))
-	    (shimbun-retrieve-url (shimbun-expand-url
-				   (prog1
-				       (or (match-string 1) (match-string 2))
-				     (erase-buffer))
-				   index))
-	  (setq done t))))
-    headers))
-
-(defun shimbun-sankei-get-headers-top-1 (shimbun)
-  "Return a header object after the point.
-This is a subroutine that `shimbun-sankei-get-headers-top' uses."
-  (let ((regexp
-	 (eval-when-compile
-	   (concat
-	    "<a[\t\n ]+href=\""
-	    ;; 1. url
-	    "\\(\\(?:[^\"/]*/\\)+"
-	    ;; 2. year (lower 2 digits)
-	    "\\([1-9][0-9]\\)"
-	    ;; 3. month
-	    "\\([01][0-9]\\)"
-	    ;; 4. day
-	    "\\([0-3][0-9]\\)"
-	    "/\\(?:[^\"/]+/\\)*"
-	    ;; 5. category
-	    "\\([a-z]+\\)"
-	    ;; 6. serial number
-	    "\\([^\"/]+\\)"
-	    "-n[0-9]+\\.html\\)" ;; 1. url
-	    "\">[\t\n ]*"
-	    ;; 7. subject
-	    "\\(\\(?:[^\t\n <]+[\t\n ]\\)*[^\t\n <]+\\)")))
-	(maxyear (1+ (nth 5 (decode-time))))
-	(index (shimbun-index-url shimbun))
-	category id url year month day subj time from)
-    (when (re-search-forward regexp nil t)
-      (setq category (match-string 5)
-	    id (concat "<" category (match-string 6) ".top%"
-		       shimbun-sankei-top-level-domain ">"))
-      (unless (shimbun-search-id shimbun id)
-	(setq url (match-string 1)
-	      year (min (+ 2000 (string-to-number (match-string 2))) maxyear)
-	      month (string-to-number (match-string 3))
-	      day (string-to-number (match-string 4))
-	      subj (match-string 7))
-	(goto-char (point-min))
-	(when (re-search-forward "\
-<time>[\t\n ]*\\([012]?[0-9]:[0-5]?[0-9]\\)[\t\n ]*</time>" nil t)
-	  (setq time (match-string 1)))
+	st nd url year month day category id subj old time from headers)
+    (while (re-search-forward regexp nil t)
+      (setq st (match-beginning 0)
+	    nd (match-end 0)
+	    url (match-string 1)
+	    year (match-string 2)
+	    month (match-string 3)
+	    day (match-string 4)
+	    category (match-string 5)
+	    id (concat "<" category (match-string 6) "." rgrp "%"
+		       shimbun-sankei-top-level-domain ">")
+	    subj (match-string 7))
+      (if (shimbun-search-id shimbun id)
+	  (setq old t)
+	(goto-char st)
+	(setq time nil)
+	(if (shimbun-end-of-tag "article")
+	    (progn
+	      (goto-char nd)
+	      (if (re-search-forward "<time[\t\n ]+\
+\\(?:[^\t\n >]+[\t\n ]+\\)*\\(?:datetime=\"20[1-9][0-9]-[01][0-9]-[0-3][0-9]T\
+\\([0-2][0-9]:[0-5][0-9]\\)\
+\\|class=\"time\"[^>]*>[\t\n ]*\\([0-2][0-9]:[0-5][0-9]\\)\\)" (match-end 2) t)
+		  (setq time (or (match-string 1) (match-string 2)))
+		(goto-char (match-end 0)))
+	      (goto-char nd)))
 	(setq from
 	      (concat
 	       (shimbun-server-name shimbun)
 	       " ("
-	       (or (cdr (assoc category
-			       shimbun-sankei-category-name-alist))
+	       (or (and (member group '("top" "flash"))
+			(cdr (assoc category
+				    shimbun-sankei-category-name-alist)))
 		   (shimbun-current-group-name shimbun))
 	       ")"))
-	(shimbun-create-header
-	 0 subj from
-	 (shimbun-make-date-string year month day time)
-	 id "" 0 0
-	 (shimbun-expand-url url index))))))
-
-(defun shimbun-sankei-get-headers-top (shimbun range)
-  "Get headers for the `top' group."
-  (let (header headers)
-    ;; Top news
-    (when (and (search-forward "<article>" nil t)
-	       (shimbun-end-of-tag "article"))
-      (save-restriction
-	(narrow-to-region (goto-char (match-beginning 2)) (match-end 2))
-	(when (setq header (shimbun-sankei-get-headers-top-1 shimbun))
-	  (push header headers))
-	(goto-char (point-max))))
-    ;; Others
-    (while (and (re-search-forward "\
-<section[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\\(?:class\\|id\\)=\"mod" nil t)
-		(shimbun-end-of-tag "section"))
-      (save-restriction
-	(narrow-to-region (goto-char (match-beginning 2)) (match-end 2))
-	(when (and (search-forward "<ul>" nil t)
-		   (shimbun-end-of-tag "ul"))
-	  (save-restriction
-	    (narrow-to-region (goto-char (match-beginning 2)) (match-end 2))
-	    (while (and (search-forward "<li>" nil t)
-			(shimbun-end-of-tag "li"))
-	      (save-restriction
-		(narrow-to-region (goto-char (match-beginning 2)) (match-end 2))
-		(when (setq header (shimbun-sankei-get-headers-top-1 shimbun))
-		  (push header headers))))))
-	(goto-char (point-max))))
-    (shimbun-sort-headers headers)))
+	(push (shimbun-create-header
+	       0 subj from
+	       (shimbun-make-date-string
+		(min (+ 2000 (string-to-number year)) maxyear)
+		(string-to-number month)
+		(string-to-number day)
+		time)
+	       id "" 0 0
+	       (shimbun-expand-url url index))
+	      headers)))
+    headers))
 
 (luna-define-method shimbun-multi-next-url ((shimbun shimbun-sankei)
 					    header url)
   (shimbun-sankei-multi-next-url shimbun header url))
 
 (defun shimbun-sankei-multi-next-url (shimbun header url)
-  (prog1
-      (when (re-search-forward
-	     "<a[\t\n ]+href=\"\\([^\"]+\\)\"[\t\n ]+class=\"pageNext\""
-	     nil t)
-	(let ((next (or (match-string 1) (match-string 2))))
-	  (unless (string-match "/more\\.html\\'" next)
-	    (shimbun-expand-url next url))))
-    (goto-char (point-min))))
+  (let (next)
+    (when (and (re-search-forward "<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
+class=\"pagination\"" nil t)
+	       (shimbun-end-of-tag "div" t))
+      (save-restriction
+	(narrow-to-region (goto-char (match-beginning 0)) (match-end 0))
+	(when (re-search-forward "<a[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
+href=\"\\([^\"]+\\)[^>]+>[\t\n ]*Next[\t\n ]*</a>" nil t)
+	  (if (> (length (setq next (match-string 1))) 1)
+	      (setq next (shimbun-expand-url (match-string 1) url))
+	    (setq next nil)))
+	(delete-region (point-min) (point-max))
+	(insert "\n")))
+    (goto-char (point-min))
+    next))
 
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-sankei)
 						    header)
   (shimbun-sankei-clear-contents shimbun header))
 
 (defun shimbun-sankei-clear-contents (shimbun header)
+  ;; Delete things other than the article.
+  (when (and (re-search-forward "<article[\t\n >]" nil t)
+	     (shimbun-end-of-tag "article"))
+    (delete-region (match-end 2) (point-max))
+    (delete-region (point-min) (match-beginning 2)))
   ;; Update Date header.
-  (when (re-search-forward "\
-<!-+[\t\n ]*date[\t\n ]*-+>\\(?:[\t\n ]*<[^>]*>\\)*[\t\n ]*\
-\\(20[1-9][0-9]\\)\\.\\([01]?[0-9]\\)\\.\\([0-3]?[0-9]\\)[\t\n ]+\
-\\([012]?[0-9]:[0-5]?[0-9]\\)\
-\\(?:[\t\n ]*<[^>]*>\\)*[\t\n ]*<!-+[\t\n ]*date[\t\n ]+end[\t\n ]*-+>"
-			   nil t)
-    (shimbun-header-set-date
-     header
-     (shimbun-make-date-string
-      (string-to-number (match-string 1))
-      (string-to-number (match-string 2))
-      (string-to-number (match-string 3))
-      (match-string 4))))
-  (let (images)
-    ;; Delete useless contents.
-    (let (case-fold-search st)
-      (goto-char (point-min))
-      (while (and (re-search-forward
-		   "<span[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"photo\""
-		   nil t)
-		  (shimbun-end-of-tag "span"))
-	(push (buffer-substring (match-beginning 0) (match-end 0)) images))
-      (goto-char (point-min))
-      (while (and (re-search-forward "\
-<\\(ul\\)\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+class=\"socialBox\"\\|\
-<\\(div\\)\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+class=\"socialFloatingFixedBox\""
-				     nil t)
-		  (shimbun-end-of-tag (or (match-string 1) (match-string 2))
-				      t))
-	(replace-match "\n"))
-      (goto-char (point-min))
-      (while (re-search-forward "[\t\n ]*<!-+[\t\n ]+\
-\\([Aa][Dd][\t\n ]+[^\t\n >]+\\(?:[\t\n ]+[^\t\n >]+\\)*\\)[\t\n ]*-+>[\t\n ]*"
-				nil t)
-	(setq st (match-beginning 0))
-	(when (re-search-forward
-	       (concat "[\t\n ]*<!-+[\t\n ]+"
-		       (regexp-quote (match-string 1))
-		       "[\t\n ]*-+>[\t\n ]*")
-	       nil t)
-	  (delete-region st (match-end 0))
-	  (insert "\n")))
-      (goto-char (point-min))
-      (while (re-search-forward "[\t\n ]*<!-+[\t\n ]+[Bb][Ee][Gg][Ii][Nn]\
-[\t\n ]+\\([Aa][Dd][\t\n ]+[^\t\n >]+\\(?:[\t\n ]+[^\t\n >]+\\)*\\)[\t\n ]*-+>\
-[\t\n ]*" nil t)
-	(setq st (match-beginning 0))
-	(when (re-search-forward
-	       (concat "[\t\n ]*<!-+[\t\n ]+[Ee][Nn][Dd][\t\n ]+"
-		       (regexp-quote (match-string 1))
-		       "[\t\n ]*-+>[\t\n ]*")
-	       nil t)
-	  (delete-region st (match-end 0))
-	  (insert "\n"))))
+  (when (re-search-forward "<time[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
+datetime=\"\\(20[1-9][0-9]\\)-\\([01][0-9]\\)-\\([0-3][0-9]\\)T\
+\\([0-5][0-9]:[0-5][0-9]\\)" nil t)
+    (shimbun-header-set-date header
+			     (shimbun-make-date-string
+			      (string-to-number (match-string 1))
+			      (string-to-number (match-string 2))
+			      (string-to-number (match-string 3))
+			      (match-string 4))))
+  ;; Delete `PR's
+  (let (case-fold-search)
     (goto-char (point-min))
-    (when (or (and (or (re-search-forward "\
-<li[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"boxGp\"" nil t)
-		       (re-search-forward "\
-<li[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"boxFb\"" nil t)
-		       (re-search-forward "\
-<li[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"boxTw\"" nil t))
-		   (shimbun-end-of-tag "li" t)
-		   (progn
-		     (when (re-search-forward "\
-<span[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"pageProperty\"" nil t)
-		       (shimbun-end-of-tag "span"))
-		     t))
-	      ;; Old articles
-	      (and (re-search-forward "\
-<span[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"pageProperty\"" nil t)
-		   (shimbun-end-of-tag "span"))
-	      (re-search-forward "<!-+[\t\n ]*article[\t\n ]*-+>" nil t))
-      (re-search-forward "\\(?:[\t\n ]*<[!/][^>]+>\\)*[\t\n ]*" nil t)
-      (delete-region (point-min) (point))
-      (when (or (re-search-forward "<!-+[^>]*[ _]article[ _]end[ _]" nil t)
-		(re-search-forward "[\t\n ]*</article>" nil t))
-	(delete-region (match-beginning 0) (point-max))
-	(insert "\n"))
-      (when images
-	(goto-char (point-min))
-	(unless (re-search-forward
-		 "<span[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"photo\""
-		 nil t)
-	  (insert (mapconcat #'identity (nreverse images) "\n")
-		  "<br>\n")))))
+    (while (re-search-forward "<\\([a-z]+\\)[^>]*>[\t\n ]*<[^>]+>PR<" nil t)
+      (goto-char (match-beginning 0))
+      (if (shimbun-end-of-tag (match-string 1) t)
+	  (replace-match "\n")
+	(goto-char (match-end 0)))))
+  ;; Collect images.
+  (let (img images)
+    (goto-char (point-min))
+    (while (and (search-forward "<figure>" nil t)
+		(shimbun-end-of-tag "figure" t))
+      (save-restriction
+	(narrow-to-region (goto-char (match-beginning 0)) (match-end 0))
+	(when (re-search-forward "<img[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
+src=\"\\([^\"]+\\)" nil t)
+	  (setq img (match-string 1))
+	  (unless (assoc img images)
+	    (push (cons img (buffer-string)) images)))
+	(delete-region (point-min) (goto-char (point-max)))
+	(insert "\n")))
+    (goto-char (point-min))
+    (while (re-search-forward "\
+[\t\n ]*\\(<img[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
+src=\"\\([^\"]+\\)[^>]+>\\)[\t\n ]*" nil t)
+      (setq img (match-string 2))
+      (unless (assoc img images)
+	(push (cons img (match-string 1)) images))
+      (delete-region (match-beginning 0) (goto-char (match-end 0)))
+      (insert "\n"))
+    ;; Delete garbage.
+    (dolist (class '("post_header" "sns" "post_footer"))
+      (goto-char (point-min))
+      (when (and (re-search-forward
+		  (concat "<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\""
+			  class "\"")
+		  nil t)
+		 (shimbun-end-of-tag "div" t))
+	(replace-match "")
+	(unless (bolp) (insert "\n"))))
+    (goto-char (point-min))
+    (when (and (re-search-forward "<p[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
+class=\"pageNextsubhead\"" nil t)
+	       (shimbun-end-of-tag "p" t))
+      (replace-match "\n"))
+    ;; Restore images.
+    (when images
+      (goto-char (point-min))
+      (narrow-to-region (point) (point))
+      (mapc (lambda (img)
+	      (insert (replace-regexp-in-string
+		       "[\t\n ]*<figcaption>" "<br>\n<figcaption>"
+		       (replace-regexp-in-string
+			"[\t\n ]*alt=\"[^\"]+[\t\n ]*" ""
+			(cdr img)))
+		      "<br>\n"))
+	    (nreverse images))
+      (widen)))
+
   (unless (memq (shimbun-japanese-hankaku shimbun) '(header subject nil))
     (shimbun-japanese-hankaku-buffer t))
   t)

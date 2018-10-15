@@ -1,3 +1,13 @@
+2018-10-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make Sankei work with the renewed site.
+
+	* sb-sankei.el (shimbun-sankei-get-headers)
+	(shimbun-sankei-multi-next-url): Update regexps.
+	(shimbun-sankei-clear-contents): Rewrite.
+	(shimbun-sankei-get-headers-top, shimbun-sankei-get-headers-top-1):
+	Remove.
+
 2018-08-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make Asahi's editorial group work again.
