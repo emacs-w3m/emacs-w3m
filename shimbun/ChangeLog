@@ -1,3 +1,8 @@
+2018-10-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnshimbun.el (gnus-backlog-shutdown): Don't use ad-with-originals
+	that's obsolete since Emacs 27.1.
+
 2018-10-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make Sankei work with the renewed site.

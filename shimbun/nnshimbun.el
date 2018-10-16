@@ -1,6 +1,6 @@
 ;;; nnshimbun.el --- interfacing with web newspapers
 
-;; Copyright (C) 2000-2012, 2016, 2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000-2012, 2016-2018 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          ARISAWA Akihiro    <ari@mbf.sphere.ne.jp>,
@@ -418,16 +418,15 @@ If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
 (eval-and-compile
   (require 'advice)
 
+  (defalias 'nnshimbun-unadvised-gnus-backlog-shutdown
+    (ad-get-orig-definition 'gnus-backlog-shutdown))
+
   (defadvice gnus-backlog-shutdown (after do-it-for-nnshimbun-as-well activate)
     "Do it for nnshimbun as well."
-    (ad-with-originals (gnus-backlog-shutdown)
-      (nnshimbun-backlog (gnus-backlog-shutdown)))
+    (nnshimbun-backlog (nnshimbun-unadvised-gnus-backlog-shutdown))
     (dolist (buffer (buffer-list))
       (when (string-match "\\` \\*nnshimbun backlog " (buffer-name buffer))
-	(kill-buffer buffer))))
-
-  (defalias 'nnshimbun-unadvised-gnus-backlog-shutdown
-    (ad-get-orig-definition 'gnus-backlog-shutdown)))
+	(kill-buffer buffer)))))
 
 (deffoo nnshimbun-close-server (&optional server)
   (when (nnshimbun-server-opened server)
