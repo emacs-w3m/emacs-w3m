@@ -30,7 +30,7 @@
 		   (shimbun-japanese-newspaper shimbun-multi shimbun)
 		   ())
 
-(defvar shimbun-sankei-url "http://www.sankei.com/")
+(defvar shimbun-sankei-url "https://www.sankei.com/")
 
 (defvar shimbun-sankei-top-level-domain "www.sankei.com")
 
@@ -38,53 +38,53 @@
 
 (defvar shimbun-sankei-group-table
   '(("top" "ニュース"
-     "http://www.sankei.com/")
+     "https://www.sankei.com/")
     ("flash" "速報"
-     "http://www.sankei.com/flash/newslist/flash-n1.html")
+     "https://www.sankei.com/flash/newslist/flash-n1.html")
     ("affairs" "事件"
-     "http://www.sankei.com/affairs/newslist/affairs-n1.html")
+     "https://www.sankei.com/affairs/newslist/affairs-n1.html")
     ("politics" "政治"
-     "http://www.sankei.com/politics/newslist/politics-n1.html")
+     "https://www.sankei.com/politics/newslist/politics-n1.html")
     ("world" "国際"
-     "http://www.sankei.com/world/newslist/world-n1.html")
+     "https://www.sankei.com/world/newslist/world-n1.html")
     ("economy" "経済"
-     "http://www.sankei.com/economy/newslist/economy-n1.html")
+     "https://www.sankei.com/economy/newslist/economy-n1.html")
     ("column" "コラム"
-     "http://www.sankei.com/column/newslist/column-n1.html")
+     "https://www.sankei.com/column/newslist/column-n1.html")
     ("column.sankeisyo" "産経抄"
-     "http://www.sankei.com/column/newslist/sankeisyo-n1.html")
+     "https://www.sankei.com/column/newslist/sankeisyo-n1.html")
     ("column.editorial" "主張"
-     "http://www.sankei.com/column/newslist/editorial-n1.html")
+     "https://www.sankei.com/column/newslist/editorial-n1.html")
     ("column.seiron" "正論"
-     "http://www.sankei.com/column/newslist/seiron-n1.html")
+     "https://www.sankei.com/column/newslist/seiron-n1.html")
     ("sports" "スポーツ"
-     "http://www.sankei.com/sports/newslist/sports-n1.html")
+     "https://www.sankei.com/sports/newslist/sports-n1.html")
     ("entertainments" "エンタメ"
-     "http://www.sankei.com/entertainments/newslist/entertainments-n1.html")
+     "https://www.sankei.com/entertainments/newslist/entertainments-n1.html")
     ("life" "ライフ"
-     "http://www.sankei.com/life/newslist/life-n1.html")
+     "https://www.sankei.com/life/newslist/life-n1.html")
     ("region.hokkaido-tohoku" "北海道東北"
-     "http://www.sankei.com/region/newslist/tohoku-n1.html")
+     "https://www.sankei.com/region/newslist/tohoku-n1.html")
     ("region.kanto" "関東"
-     "http://www.sankei.com/region/newslist/kanto-n1.html")
+     "https://www.sankei.com/region/newslist/kanto-n1.html")
     ("region.chubu" "中部"
-     "http://www.sankei.com/region/newslist/chubu-n1.html")
+     "https://www.sankei.com/region/newslist/chubu-n1.html")
     ("region.kinki" "近畿"
-     "http://www.sankei.com/region/newslist/kinki-n1.html")
+     "https://www.sankei.com/region/newslist/kinki-n1.html")
     ("region.chugoku-shikoku" "中国四国"
-     "http://www.sankei.com/region/newslist/chushikoku-n1.html")
+     "https://www.sankei.com/region/newslist/chushikoku-n1.html")
     ("region.kyushu-okinawa" "九州沖縄"
-     "http://www.sankei.com/region/newslist/kyushu-n1.html")
+     "https://www.sankei.com/region/newslist/kyushu-n1.html")
     ("west.flash" "関西速報"
-     "http://www.sankei.com/west/newslist/west-n1.html")
+     "https://www.sankei.com/west/newslist/west-n1.html")
     ("west.affairs" "関西できごと"
-     "http://www.sankei.com/west/newslist/west_affairs-n1.html")
+     "https://www.sankei.com/west/newslist/west_affairs-n1.html")
     ("west.sports" "関西スポーツ"
-     "http://www.sankei.com/west/newslist/west_sports-n1.html")
+     "https://www.sankei.com/west/newslist/west_sports-n1.html")
     ("west.life" "関西ライフ"
-     "http://www.sankei.com/west/newslist/west_life-n1.html")
+     "https://www.sankei.com/west/newslist/west_life-n1.html")
     ("west.economy" "関西経済"
-     "http://www.sankei.com/west/newslist/west_economy-n1.html")))
+     "https://www.sankei.com/west/newslist/west_economy-n1.html")))
 
 (defvar shimbun-sankei-category-name-alist
   '(("afr" . "事件") ("clm" . "コラム") ("ecn" . "経済") ("ent" . "エンタメ")
@@ -160,6 +160,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAD1BMVEX8/PwAAAD///+G
 	(rgrp (mapconcat 'identity (nreverse (split-string group "\\.")) "."))
 	(index (shimbun-index-url shimbun))
 	st nd url year month day category id subj old time from headers)
+    (shimbun-strip-cr)
+    (goto-char (point-min))
     (while (re-search-forward regexp nil t)
       (setq st (match-beginning 0)
 	    nd (match-end 0)

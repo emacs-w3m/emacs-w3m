@@ -1,3 +1,14 @@
+2018-10-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Add a workaround to make Sankei work.
+
+	* shimbun.el (shimbun-retrieve-url):
+	Add a workaround to make Sankei work.  See the FIXME comment.
+
+	* sb-sankei.el (shimbun-sankei-url, shimbun-sankei-group-table):
+	Replace http with https.
+	(shimbun-sankei-get-headers): CRLF -> LF.
+
 2018-10-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnshimbun.el (gnus-backlog-shutdown): Don't use ad-with-originals

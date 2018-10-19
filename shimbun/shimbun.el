@@ -1,6 +1,6 @@
 ;;; shimbun.el --- interfacing with web newspapers -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2001-2014, 2017 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2014, 2017, 2018 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
@@ -279,8 +279,22 @@ Return content-type of URL as string when retrieval succeeded."
 	      (delete-region (point-min) pos))))
       ;; retrieve URL
       (when url
-	(setq type (w3m-retrieve (w3m-url-transfer-encode-string url)
-				 nil no-cache nil referer))))
+	(if (string-match "\\`https://www\\.sankei\\.com" url)
+	    ;; FIXME: Why is this necessary?  --- ky
+	    ;; To make Sankei work, it is necessary to display some
+	    ;; extra buffer while retrieving headers.
+	    (let ((buf (get-buffer-create "*Messages*"))
+		  (cur (current-buffer)))
+	      (save-window-excursion
+		(split-window-vertically)
+		(switch-to-buffer-other-window buf)
+		(shrink-window (max (- (window-height) 3) 0))
+		(set-window-start nil (point-max))
+		(set-buffer cur)
+		(setq type (w3m-retrieve (w3m-url-transfer-encode-string url)
+					 nil no-cache nil referer))))
+	  (setq type (w3m-retrieve (w3m-url-transfer-encode-string url)
+				   nil no-cache nil referer)))))
     (if type
 	(progn
 	  (unless no-decode
