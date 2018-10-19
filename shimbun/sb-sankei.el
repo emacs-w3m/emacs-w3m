@@ -238,7 +238,7 @@ href=\"\\([^\"]+\\)[^>]+>[\t\n ]*Next[\t\n ]*</a>" nil t)
   (when (and (re-search-forward "<article[\t\n >]" nil t)
 	     (shimbun-end-of-tag "article"))
     (delete-region (match-end 2) (point-max))
-    (delete-region (point-min) (match-beginning 2)))
+    (delete-region (goto-char (point-min)) (match-beginning 2)))
   ;; Update Date header.
   (when (re-search-forward "<time[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
 datetime=\"\\(20[1-9][0-9]\\)-\\([01][0-9]\\)-\\([0-3][0-9]\\)T\

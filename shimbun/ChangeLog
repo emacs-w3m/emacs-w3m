@@ -8,6 +8,7 @@
 	* sb-sankei.el (shimbun-sankei-url, shimbun-sankei-group-table):
 	Replace http with https.
 	(shimbun-sankei-get-headers): CRLF -> LF.
+	(shimbun-sankei-clear-contents): Fix start position to find timestamp.
 
 2018-10-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
