@@ -5073,17 +5073,17 @@ value to return if the user enters the empty string."
 This function supports the encoding types gzip, bzip, and deflate."
   (let ((x (and (stringp encoding)
 		(assoc (downcase encoding) w3m-encoding-alist))))
-    (if (and (eq (cdr x) 'gzip) (fboundp 'zlib-available-p) (zlib-available-p))
-	(zlib-decompress-region (point-min) (point-max))
-      (or (not (and x (setq x (cdr (assq (cdr x) w3m-decoder-alist)))))
-	  (let ((coding-system-for-write 'binary)
-		(coding-system-for-read 'binary)
-		(default-process-coding-system (cons 'binary 'binary)))
-	    (w3m-process-with-environment w3m-command-environment
-	      (zerop (apply 'call-process-region
-			    (point-min) (point-max)
-			    (w3m-which-command (car x))
-			    t '(t nil) nil (cadr x)))))))))
+    (or (and (eq (cdr x) 'gzip) (fboundp 'zlib-available-p) (zlib-available-p)
+	     (zlib-decompress-region (point-min) (point-max)))
+	(not (and x (setq x (cdr (assq (cdr x) w3m-decoder-alist)))))
+	(let ((coding-system-for-write 'binary)
+	      (coding-system-for-read 'binary)
+	      (default-process-coding-system (cons 'binary 'binary)))
+	  (w3m-process-with-environment w3m-command-environment
+	    (zerop (apply 'call-process-region
+			  (point-min) (point-max)
+			  (w3m-which-command (car x))
+			  t '(t nil) nil (cadr x))))))))
 
 (defmacro w3m-correct-charset (charset)
   `(or (and ,charset (stringp ,charset)
