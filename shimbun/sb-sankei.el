@@ -56,7 +56,7 @@
     ("column.editorial" "主張"
      "https://www.sankei.com/column/newslist/editorial-n1.html")
     ("column.seiron" "正論"
-     "https://www.sankei.com/column/newslist/seiron-n1.html")
+     "https://special.sankei.com/seiron/")
     ("sports" "スポーツ"
      "https://www.sankei.com/sports/newslist/sports-n1.html")
     ("entertainments" "エンタメ"
@@ -127,8 +127,12 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAD1BMVEX8/PwAAAD///+G
 
 (luna-define-method shimbun-get-headers :around ((shimbun shimbun-sankei)
 						 &optional range)
-  (shimbun-sankei-get-headers shimbun range
-			      (shimbun-current-group-internal shimbun)))
+  (let ((group (shimbun-current-group-internal shimbun)))
+    (cond ((string-match "\\`https://special\\.sankei\\.com/"
+			 (shimbun-index-url shimbun))
+	   (shimbun-sankei-get-headers-special shimbun range group))
+	  (t
+	   (shimbun-sankei-get-headers shimbun range group)))))
 
 (defun shimbun-sankei-get-headers (shimbun range group)
   "Get headers for a categorized group."
@@ -203,6 +207,62 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAD1BMVEX8/PwAAAD///+G
 		(string-to-number month)
 		(string-to-number day)
 		time)
+	       id "" 0 0
+	       (shimbun-expand-url url index))
+	      headers)))
+    headers))
+
+(defun shimbun-sankei-get-headers-special (shimbun range group)
+  "Get headers for the groups in special.sankei.com."
+  (let ((regexp
+	 (eval-when-compile
+	   (concat
+	    "<div\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]+class=\"block_list_head\">"
+	    "\\(?:[\t\n ]*<[^a>][^>]+>\\)*[\t\n ]*<a[\t\n ]+href=\""
+	    ;; 1. url
+	    "\\(\\(?:[^/>]+/\\)+"
+	    ;; 2. seriai 1
+	    "\\([0-9]+\\)" "/"
+	    ;; 3. seriai 2
+	    "\\([0-9]+\\)" "\\.html\\)"
+	    "\">[\t\n ]*"
+	    ;; 4. subject
+	    "\\([^<]+\\)"
+	    "\\(?:[\t\n ]*<[^>]+>\\)+[\t\n ]*<time[\t\n ]+datetime=\""
+	    ;; 5. year
+	    "\\(20[1-9][0-9]\\)" "-"
+	    ;; 6. month
+	    "\\([01][0-9]\\)" "-"
+	    ;; 7. day
+	    "\\([0-3][0-9]\\)" "T"
+	    ;; 8. hh:mm
+	    "\\([012][0-8]:[0-5][0-9]\\)" "\"")))
+	(rgrp (mapconcat 'identity (nreverse (split-string group "\\.")) "."))
+	(index (shimbun-index-url shimbun))
+	url subj year month day hour-min id old from headers)
+    (shimbun-strip-cr)
+    (goto-char (point-min))
+    (while (re-search-forward regexp nil t)
+      (setq url (match-string 1)
+	    subj (match-string 4)
+	    year (match-string 5)
+	    month (match-string 6)
+	    day (match-string 7)
+	    hour-min (match-string 8)
+	    id (concat "<" (match-string 2) "." (match-string 3) "." rgrp "%"
+		       "special.sankei.com>"))
+      (unless (shimbun-search-id shimbun id)
+	(setq from
+	      (concat
+	       (shimbun-server-name shimbun)
+	       " (" (shimbun-current-group-name shimbun) ")"))
+	(push (shimbun-create-header
+	       0 subj from
+	       (shimbun-make-date-string
+		(string-to-number year)
+		(string-to-number month)
+		(string-to-number day)
+		hour-min)
 	       id "" 0 0
 	       (shimbun-expand-url url index))
 	      headers)))

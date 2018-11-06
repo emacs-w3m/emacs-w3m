@@ -1,3 +1,12 @@
+2018-11-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make seiron group work, though an article shows only a few lines
+	because it got to require login.
+
+	* sb-sankei.el (shimbun-sankei-group-table, shimbun-get-headers):
+	Update.
+	(shimbun-sankei-get-headers-special): New function.
+
 2018-10-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Add a workaround to make Sankei work.
