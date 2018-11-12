@@ -52,7 +52,7 @@
     ("column" "コラム"
      "https://www.sankei.com/column/newslist/column-n1.html")
     ("column.sankeisyo" "産経抄"
-     "https://www.sankei.com/column/newslist/sankeisyo-n1.html")
+     "https://special.sankei.com/sankeisyo/")
     ("column.editorial" "主張"
      "https://www.sankei.com/column/newslist/editorial-n1.html")
     ("column.seiron" "正論"
