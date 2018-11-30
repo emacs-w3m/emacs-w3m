@@ -229,7 +229,13 @@ filters before being rendered."
     (let ((rev "$Revision$"))
       (and (string-match " \\([0-9a-f]+\\)\\$\\'" rev)
 	   (match-string 1 rev))))
-  "Git revision string of this package.")
+  "Git revision string of this package.
+In order to keep this constant properly, the following commands
+are required to register filter commands.
+
+    git config filter.revisioner.smudge \"sh revisioner-embed.sh\"
+    git config filter.revisioner.clean \"sh revisioner-clean.sh\"
+")
 
 (defgroup w3m nil
   "Emacs-w3m - the web browser of choice."
