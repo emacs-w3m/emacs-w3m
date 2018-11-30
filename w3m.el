@@ -218,13 +218,18 @@ filters before being rendered."
   (defvar w3m-session-menu-items-pre)
   (defvar w3m-session-menu-items))
 
+;; The version is decided by the final revision 1.1717 which was
+;; hosted by the CVS repository.
 (defconst emacs-w3m-version
+  "1.4.632"
+  "Version number of this package.")
+
+(defconst emacs-w3m-git-revision
   (eval-when-compile
     (let ((rev "$Revision$"))
-      (and (string-match "\\.\\([0-9]+\\) \\$\\'" rev)
-	   (setq rev (- (string-to-number (match-string 1 rev)) 1136))
-	   (format "1.4.%d" (+ rev 50)))))
-  "Version number of this package.")
+      (and (string-match " \\([0-9a-f]+\\)\\$\\'" rev)
+	   (match-string 1 rev))))
+  "Git revision string of this package.")
 
 (defgroup w3m nil
   "Emacs-w3m - the web browser of choice."

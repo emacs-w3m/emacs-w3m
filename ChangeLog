@@ -1,3 +1,8 @@
+2018-12-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3m.el (emacs-w3m-git-revision): New constant.
+	(emacs-w3m-version): Separated from revision string.
+
 2018-10-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-decode-encoded-contents): Use the conventional way if
