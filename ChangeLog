@@ -4,9 +4,8 @@
 
 	* w3mhack.el (w3mhack-insert-git-revision): New function to set the
 	value of `emacs-w3m-git-revision'.
-	(w3mhack-generate-load-file): Call the above.
-	(w3mhack-generate-load-file): Check the timestamp of w3mhack.el to
-	decide necessity of updating w3m-load.el.
+	(w3mhack-generate-load-file): Call the above and check the timestamp of
+	w3mhack.el to decide necessity of updating w3m-load.el.
 
 2018-12-01  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
