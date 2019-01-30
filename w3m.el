@@ -224,19 +224,6 @@ filters before being rendered."
   "1.4.632"
   "Version number of this package.")
 
-(defconst emacs-w3m-git-revision
-  (eval-when-compile
-    (let ((rev "$Revision$"))
-      (and (string-match " \\([0-9a-f]+\\)\\$\\'" rev)
-	   (match-string 1 rev))))
-  "Git revision string of this package.
-In order to keep this constant properly, the following commands
-are required to register filter commands.
-
-    git config filter.revisioner.smudge \"sh revisioner-embed.sh\"
-    git config filter.revisioner.clean \"sh revisioner-clean.sh\"
-")
-
 (defgroup w3m nil
   "Emacs-w3m - the web browser of choice."
   :group 'hypermedia)

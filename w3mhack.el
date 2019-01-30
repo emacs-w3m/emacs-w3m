@@ -941,6 +941,30 @@ NOTE: This function must be called from the top directory."
 	 (dolist (file files)
 	   (update-file-autoloads file)))))
 
+(defun w3mhack-insert-git-revision ()
+  (let ((revision
+	 (with-temp-buffer
+	   (when (and (file-exists-p ".git/config")
+		      (executable-find "git")
+		      (zerop (call-process "git"
+					   nil
+					   t
+					   nil
+					   "log" "--oneline" "-n" "1" ".")))
+	     (goto-char (point-min))
+	     (skip-chars-forward "^ ")
+	     (concat "\"" (buffer-substring (point-min) (point)) "\"")))))
+    (goto-char (point-max))
+    (while (progn
+	     (forward-line -1)
+	     (looking-at ";")))
+    (forward-line 1)
+    (insert "
+(defconst emacs-w3m-git-revision " revision "
+  \"Git revision string of this package.\")
+
+")))
+
 (defun w3mhack-generate-load-file ()
   "Generate a file including all autoload stubs."
   (require 'autoload)
@@ -965,7 +989,7 @@ NOTE: This function must be called from the top directory."
 	(autoload-package-name "emacs-w3m"))
     (if (and (file-exists-p w3mhack-load-file)
 	     (not (catch 'modified
-		    (dolist (file files)
+		    (dolist (file (cons "w3mhack.el" files))
 		      (when (file-newer-than-file-p file w3mhack-load-file)
 			(throw 'modified t))))))
 	(message " `%s' is up to date" w3mhack-load-file)
@@ -1007,6 +1031,7 @@ NOTE: This function must be called from the top directory."
 	(when (re-search-forward "^;; no-byte-compile: t\n" nil t)
 	  (delete-region (match-beginning 0) (match-end 0)))
 
+	(w3mhack-insert-git-revision)
 	(save-buffer)))))
 
 (defun w3mhack-generate-xemacs-load-file (file)
