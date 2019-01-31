@@ -25,6 +25,11 @@
 
 2018-06-08  Boruch Baum  <boruch_baum@gmx.com>
 
+	* w3m.el (w3m-content-type-alist): Remove extraneous fields from two
+	elements (bzip2, gzip) in the alist ([emacs-w3m:13081]).
+
+2018-06-08  Boruch Baum  <boruch_baum@gmx.com>
+
 	Refactor w3m-process-queue memory and redability ([emacs-w3m:13013]).
 
 	* w3m.el (w3m--dump-extra--handler-function)

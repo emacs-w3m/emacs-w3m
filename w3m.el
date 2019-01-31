@@ -1,6 +1,6 @@
 ;;; w3m.el --- an Emacs interface to w3m -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2000-2018 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000-2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -1200,8 +1200,8 @@ is inhibited in those cases even if `w3m-async-exec' is non-nil."
 	   ("application/rdf+xml" "\\.rdf\\'" nil "text/plain")
 	   ("application/rss+xml" "\\.rss\\'" nil "text/plain")
 	   ("application/xhtml+xml" nil nil "text/html")
-	   ("application/x-bzip2" "\\.bz2\\'" nil nil nil)
-	   ("application/x-gzip" "\\.gz\\'" nil nil nil)))
+	   ("application/x-bzip2" "\\.bz2\\'" nil nil)
+	   ("application/x-gzip" "\\.gz\\'" nil nil)))
 	(extensions (copy-sequence mailcap-mime-extensions))
 	elem ext type exts tem viewer rest)
     ;; items w/ file extensions
