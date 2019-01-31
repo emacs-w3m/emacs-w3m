@@ -718,6 +718,116 @@ are accessible by PREV and NEXT operations."
     (setq w3m-history-flat (w3m-history-slimmed-history-flat))
     (w3m-history-tree position)))
 
+(defvar w3m-scrub-command-list
+  '(("/usr/bin/shred" "-fuz") ("/bin/rm" "-f"))
+  "List of methods to use for attempting to securely delete temporary files.
+
+Function `w3m-scrub-command' uses the first entry on the list
+that it finds available on the host OS; if none are found, it
+will use the insecure emacs function `delete-file'.")
+
+(defun w3m-history-scrub ()
+  "Initializes history, cache, cookies, and temp files.
+
+The method used to delete files is configurable to your personal
+level of paranoia, via `w3m-scrub-command-list'.
+
+Note that some operations performed by this function may impact
+operation of the external w3m browser. Also, be advised that
+other emacs features outside the scope of `emacs-w3m' may
+independantly be saving varibles, for example in order to restore
+a crashed emacs session."
+  ; TODO:
+  ; + Use a defcustom or other user-friendly mechanism to allow
+  ;   fine-grained customization of what to scrub.
+  ; + When invoked with a prefix arg, allow the scrub to be limited to a
+  ;   timeframe, for elements that store timestamp information.
+  (interactive)
+  (let* ((w3m-fb-mode nil)
+         (w3m-message-silent t)
+         (stdout-buf (generate-new-buffer "*w3m-scrub-history*"))
+         (cookie-buf (get-buffer " *w3m-cookie-parse-temp*"))
+         (bufs (w3m-list-buffers t))
+         (cmds w3m-scrub-command-list)
+         (cmd (progn
+                (while (and (setq cmd (pop cmds))
+                            (not (file-executable-p (car cmd)))))
+                cmd))
+         (cmd-string (if cmd
+                       (format "%s %s" (car cmd) (cdr cmd))
+                      "emacs' delete-file"))
+         (file "")
+         (files (append
+                  (list w3m-arrived-file w3m-cookie-file)
+                  w3m-form-textarea-post-files
+                  w3m-form-textarea-files
+                  (directory-files
+                    (file-chase-links (expand-file-name w3m-form-textarea-directory))
+                    'full "[^.]" 'nosort)
+                  (directory-files w3m-profile-directory 'full
+                    "^w3m\\(cache\\|cookie\\|el\\|src\\|tmp\\)" 'nosort))))
+   (switch-to-buffer stdout-buf)
+   (insert "Beginning emacs-w3m history scrub "
+           (format-time-string "%Y-%m-%d %H:%M")
+           "\n\nDeleting files ...\n")
+   (if cmd
+     (while files
+       (setq file (pop files))
+       (insert (format "  %s %s\n" cmd-string file))
+       (call-process (car cmd) nil t t (cadr cmd) file))
+    (while files
+      (setq file (pop files))
+      (insert (format "  %s %s\n" cmd-string file))
+      (delete-file file)))
+   (insert "Deleting files ... Complete.\n\nInitializing memory cache ...")
+   (w3m-cache-shutdown)
+   (insert " Complete.\nInitializing cookies from memory ...")
+   (setq w3m-cookies nil)
+   (when cookie-buf
+     (kill-buffer cookie-buf))
+   (insert " Complete.\nInitializing global history from memory ...")
+   (setq w3m-arrived-db nil)
+   (insert " Complete.\nInitializing individual buffer histories and forms ...")
+   (dolist (buf bufs)
+     (with-current-buffer buf
+       (setq w3m-history nil)
+       (setq w3m-history-flat nil)
+       (cond
+        ((or (string-match "^about://\\(cookie\\|history\\|db-history\\)/"  w3m-current-url)
+             w3m-form-input-textarea-mode
+             (eq major-mode 'w3m-form-input-select-mode)
+             (eq major-mode 'w3m-form-input-map-mode))
+         (w3m-reload-this-page nil t))
+
+        ((string-match "*w3m-session select*" (buffer-name))
+         (kill-buffer buf))
+        (t nil))))
+   (insert " Complete.\nScrubbing selected sessions from session database ...")
+   (let ((sessions (w3m-load-list w3m-session-file)))
+     (dolist (session sessions sessions)
+       (cond
+        ((string-match
+           "^\\(Removed\\|Automatic saved\\|Crash recovery\\) sessions"
+           (nth 0 session))
+         (insert "\n  Deleting session named: " (nth 0 session))
+         (setq sessions (delq session sessions)))
+        (t
+         (insert "\n  Examining session named: " (nth 0 session))
+         (dolist (tab (nth 2 session))
+           (when (nth 2 tab)
+             (insert "\n    Removing history from tab: " (nth 3 tab))
+             (setf (nth 2 tab) nil))))))
+     (insert "\nScrubbing selected sessions from session database ... Complete\n")
+     ; NOTE: Each saved session may have form or post data. These wil
+     ; be represented as properties `:forms' and `:post-data', but so
+     ; far I've only seen them in history elements, which are already
+     ; being deleted.
+     (insert "Updating session database on disk ...")
+     (w3m-save-list w3m-session-file sessions))
+   (insert " Complete.\n"
+           (format-time-string "%Y-%m-%d %H:%M"))))
+
+
 (eval-when-compile
   (defvar w3m-arrived-db)
   (autoload 'w3m-goto-url "w3m"))
