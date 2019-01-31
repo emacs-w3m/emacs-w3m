@@ -1,4 +1,3 @@
-
 2018-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-group-table): Update sankeisyo url.
