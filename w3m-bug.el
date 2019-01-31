@@ -1,6 +1,6 @@
 ;;; w3m-bug.el --- command to report emacs-w3m bugs -*- coding: euc-japan -*-
 
-;; Copyright (C) 2002, 2003, 2005, 2007, 2010
+;; Copyright (C) 2002, 2003, 2005, 2007, 2010, 2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
@@ -38,7 +38,11 @@
 
 (defconst report-emacs-w3m-bug-system-informations
   (eval
-   '`(emacs-w3m-version
+   '`(,@(if (boundp 'emacs-w3m-git-revision)
+	    ;; Abnormally built (or perhaps released) emacs-w3m might not
+	    ;; provide this constant.
+	    '(emacs-w3m-git-revision))
+      emacs-w3m-version
       emacs-version
       ,@(if (or (boundp 'mule-version)
 		(functionp 'mule-version))
@@ -100,6 +104,7 @@ Prompts for bug subject.  Leaves you in a mail buffer."
 	     (setq buffer nil)))))
      (list (read-string "Bug Subject: ") buffer)))
   (let (after-load-alist)
+    (load "w3m-load")
     ;; See the comment for `report-emacs-w3m-bug-system-informations'.
     (load "w3m-bug"))
   (compose-mail report-emacs-w3m-bug-address topic nil 'new)
