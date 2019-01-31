@@ -1,6 +1,6 @@
 ;;; sb-sankei.el --- shimbun backend for the Sankei News -*- coding: iso-2022-7bit; -*-
 
-;; Copyright (C) 2003-2011, 2013-2018 Katsumi Yamaoka
+;; Copyright (C) 2003-2011, 2013-2019 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -221,21 +221,21 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAD1BMVEX8/PwAAAD///+G
 	    "\\(?:[\t\n ]*<[^a>][^>]+>\\)*[\t\n ]*<a[\t\n ]+href=\""
 	    ;; 1. url
 	    "\\(\\(?:[^/>]+/\\)+"
-	    ;; 2. seriai 1
-	    "\\([0-9]+\\)" "/"
-	    ;; 3. seriai 2
+	    ;; 2. seriai
 	    "\\([0-9]+\\)" "\\.html\\)"
 	    "\">[\t\n ]*"
-	    ;; 4. subject
+	    ;; 3. subject
 	    "\\([^<]+\\)"
-	    "\\(?:[\t\n ]*<[^>]+>\\)+[\t\n ]*<time[\t\n ]+datetime=\""
-	    ;; 5. year
+	    "[\t\n ]*\\(?:[^<]*<\\(?:[^/>]\\|/[^a>]\\)[^>]*>\\)+[\t\n ]*</a>"
+	    "\\(?:[^<]*<\\(?:/\\|[^t>]\\|t[^i>]\\|ti[^m>]\\)[^>]*>\\)"
+	    "[^<]*<time[\t\n ]+datetime=\""
+	    ;; 4. year
 	    "\\(20[1-9][0-9]\\)" "-"
-	    ;; 6. month
+	    ;; 5. month
 	    "\\([01][0-9]\\)" "-"
-	    ;; 7. day
+	    ;; 6. day
 	    "\\([0-3][0-9]\\)" "T"
-	    ;; 8. hh:mm
+	    ;; 7. hh:mm
 	    "\\([012][0-8]:[0-5][0-9]\\)" "\"")))
 	(rgrp (mapconcat 'identity (nreverse (split-string group "\\.")) "."))
 	(index (shimbun-index-url shimbun))
@@ -244,13 +244,13 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAD1BMVEX8/PwAAAD///+G
     (goto-char (point-min))
     (while (re-search-forward regexp nil t)
       (setq url (match-string 1)
-	    subj (match-string 4)
-	    year (match-string 5)
-	    month (match-string 6)
-	    day (match-string 7)
-	    hour-min (match-string 8)
-	    id (concat "<" (match-string 2) "." (match-string 3) "." rgrp "%"
-		       "special.sankei.com>"))
+	    subj (match-string 3)
+	    year (match-string 4)
+	    month (match-string 5)
+	    day (match-string 6)
+	    hour-min (match-string 7)
+	    id (concat "<" year month day "." (match-string 2) "." rgrp
+		       "%special.sankei.com>"))
       (unless (shimbun-search-id shimbun id)
 	(setq from
 	      (concat

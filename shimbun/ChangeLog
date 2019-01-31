@@ -1,3 +1,9 @@
+2019-01-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make groups from special.sankei.com work again.
+
+	* sb-sankei.el (shimbun-sankei-get-headers-special): Update regexp.
+
 2018-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-group-table): Update sankeisyo url.
