@@ -754,7 +754,7 @@ a crashed emacs session."
                             (not (file-executable-p (car cmd)))))
                 cmd))
          (cmd-string (if cmd
-                       (format "%s %s" (car cmd) (cdr cmd))
+                       (format "%s %s" (car cmd) (cadr cmd))
                       "emacs' delete-file"))
          (file "")
          (files (append
