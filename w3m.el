@@ -10991,8 +10991,10 @@ default. Use 0 to display the entire history on a single page."
     (when (not start) (setq start 0))
     (when (not size)  (setq size w3m-db-history-display-size)))
    (t ; called interactively; possibly indirectly
-    (setq start (read-number "start: " (or w3m-db-history-display-size 0)))
-    (setq size (read-number "size: " (or size 0)))))
+    (setq start (read-number "How far back in the history to start displaying?: "
+                  (or w3m-db-history-display-size 0)))
+    (setq size (read-number "How many entries per page (0 for all on one page)?: "
+                  (or size 0)))))
   (let ((url (format "about://db-history/?start=%d&size=%d"
                (or start 0) (or size 0))))
    (if w3m-history-in-new-buffer
