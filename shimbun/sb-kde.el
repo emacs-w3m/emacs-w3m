@@ -1,4 +1,4 @@
-;;; sb-kde.el --- shimbun backend for www.KDE.gr.jp
+;;; sb-kde.el --- shimbun backend for www.KDE.gr.jp -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2002, 2003 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 

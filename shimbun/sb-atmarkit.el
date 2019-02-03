@@ -1,4 +1,4 @@
-;;; sb-atmarkit.el --- shimbun backend for atmarkit -*- coding: iso-2022-7bit; -*-
+;;; sb-atmarkit.el --- shimbun backend for atmarkit -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2010
 ;; NAKAJIMA Mikio <minakaji@namazu.org>
@@ -39,37 +39,37 @@
 (defvar shimbun-atmarkit-content-end "</body[^>]*>")
 
 (defvar shimbun-atmarkit-group-path-alist
-  '( ;; $B%K%e!<%97O(B
+  '( ;; ニュース系
     ;; NewsInsight
     ("news". "http://www.atmarkit.co.jp/rss/news/rss2dc.xml")
-    ;; $B%U%)!<%i%`7O(B
-    ;; Windows Server Insider$B%U%)!<%i%`(B
+    ;; フォーラム系
+    ;; Windows Server Insiderフォーラム
     ("fwin2k" . "http://www.atmarkit.co.jp/rss/fwin2k/rss2dc.xml")
-    ;; Insider.NET$B%U%)!<%i%`(B
+    ;; Insider.NETフォーラム
     ("fdotnet" . "http://www.atmarkit.co.jp/rss/fdotnet/rss2dc.xml")
-    ;; System Insider$B%U%)!<%i%`(B
+    ;; System Insiderフォーラム
     ("fsys" . "http://www.atmarkit.co.jp/rss/fsys/rss2dc.xml")
-    ;; XML & Web Services$B%U%)!<%i%`(B
+    ;; XML & Web Servicesフォーラム
     ("fxml" . "http://www.atmarkit.co.jp/rss/fxml/rss2dc.xml")
-    ;; Database Expert$B%U%)!<%i%`(B
+    ;; Database Expertフォーラム
     ("fdb". "http://www.atmarkit.co.jp/rss/fdb/rss2dc.xml")
-    ;; Linux Square$B%U%)!<%i%`(B
+    ;; Linux Squareフォーラム
     ("flinux" . "http://www.atmarkit.co.jp/rss/flinux/rss2dc.xml")
-    ;; Master of IP Network$B%U%)!<%i%`(B
+    ;; Master of IP Networkフォーラム
     ("fnetwork" . "http://www.atmarkit.co.jp/rss/fnetwork/rss2dc.xml")
-    ;; Java Solution$B%U%)!<%i%`(B
+    ;; Java Solutionフォーラム
     ("fjava" . "http://www.atmarkit.co.jp/rss/fjava/rss2dc.xml")
-    ;; Security&Trust$B%U%)!<%i%`(B
+    ;; Security&Trustフォーラム
     ("fsecurity". "http://www.atmarkit.co.jp/rss/fsecurity/rss2dc.xml")
-    ;; Web Client & Report$B%U%)!<%i%`(B
+    ;; Web Client & Reportフォーラム
     ("fwcr" . "http://www.atmarkit.co.jp/rss/fwcr/rss2dc.xml")
-    ;; IT Architect$B%U%)!<%i%`(B
+    ;; IT Architectフォーラム
     ("farc" . "http://www.atmarkit.co.jp/rss/farc/rss2dc.xml")
 
-    ;; obsolete $B%U%)!<%i%`7O(B
-    ;; Business Computing$B%U%)!<%i%`(B
+    ;; obsolete フォーラム系
+    ;; Business Computingフォーラム
     ("fbiz"  . "http://www.atmarkit.co.jp/rss/fbiz/rss2dc.xml")
-    ;; $B!w(BIT$B<+J,@oN,8&5f=j(B
+    ;; ＠IT自分戦略研究所
     ("jibun" . "http://jibun.atmarkit.co.jp/rss/rss2dc.xml")
     ))
 

@@ -1,4 +1,4 @@
-;;; sb-hash.el --- shimbun backend for contents hashing -*- coding: iso-2022-7bit -*-
+;;; sb-hash.el --- shimbun backend for contents hashing -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2006, 2009 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 

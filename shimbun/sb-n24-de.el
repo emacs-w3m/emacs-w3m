@@ -1,4 +1,4 @@
-;;; sb-n24-de.el --- shimbun backend for <http://www.n24.de/>
+;;; sb-n24-de.el --- shimbun backend for <http://www.n24.de/> -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2004 Andreas Seltenreich <seltenreich@gmx.de>
 

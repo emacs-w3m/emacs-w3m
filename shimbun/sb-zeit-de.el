@@ -1,4 +1,4 @@
-;;; sb-zeit-de.el --- shimbun backend for <http://www.zeit.de>
+;;; sb-zeit-de.el --- shimbun backend for <http://www.zeit.de> -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2004, 2005, 2006, 2008, 2009, 2010
 ;; Andreas Seltenreich <seltenreich@gmx.de>

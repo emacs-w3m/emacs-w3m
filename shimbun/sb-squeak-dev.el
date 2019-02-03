@@ -1,4 +1,4 @@
-;;; sb-squeak-dev.el --- shimbun backend for Squeak-dev ML archive
+;;; sb-squeak-dev.el --- shimbun backend for Squeak-dev ML archive -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 

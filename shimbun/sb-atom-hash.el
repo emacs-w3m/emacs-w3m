@@ -1,4 +1,4 @@
-;;; sb-atom-hash.el --- shimbun backend for atom content -*- coding: iso-2022-7bit -*-
+;;; sb-atom-hash.el --- shimbun backend for atom content -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2006-2009, 2011 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 

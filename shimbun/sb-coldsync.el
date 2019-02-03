@@ -1,4 +1,4 @@
-;;; sb-coldsync.el --- shimbun backend for www.coldsync.org
+;;; sb-coldsync.el --- shimbun backend for www.coldsync.org -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2003, 2004 NAKAJIMA Mikio  <minakaji@namazu.org>
 

@@ -1,4 +1,4 @@
-;;; sb-haiku-os.el --- shimbun backend for haiku-os.org
+;;; sb-haiku-os.el --- shimbun backend for haiku-os.org -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2004, 2006 Yoichi NAKAYAMA <yoichi@geiin.org>
 

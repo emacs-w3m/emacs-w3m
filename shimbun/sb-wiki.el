@@ -1,4 +1,4 @@
-;;; sb-wiki.el --- shimbun backend for wiki
+;;; sb-wiki.el --- shimbun backend for wiki -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2003, 2004, 2006 NAKAJIMA Mikio <minakaji@namazu.org>
 

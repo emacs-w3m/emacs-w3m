@@ -1,4 +1,4 @@
-;;; sb-palmfan.el --- shimbun backend class for palmfan web site. -*- coding: iso-2022-7bit; -*-
+;;; sb-palmfan.el --- shimbun backend class for palmfan web site. -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2002, 2003, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 
@@ -115,7 +115,7 @@ i$PdWyuHC8!1=KH'r,R=fV])N6uQS")))
 		  shimbun-palmfan-palmwarefan-date-regexp nil t nil))
 	(beginning-of-line 1)
 	(delete-region (point-min) (point)))
-      (when (re-search-forward "^<!--Palmware Release Infomation $B=*N;(B--><BR>$"
+      (when (re-search-forward "^<!--Palmware Release Infomation 終了--><BR>$"
 			       nil t nil)
 	(beginning-of-line 1)
 	(delete-region (point) (point-max)))
@@ -140,8 +140,8 @@ i$PdWyuHC8!1=KH'r,R=fV])N6uQS")))
 		      lastdate date))
 	      (goto-char start)
 	      (re-search-backward
-	       ;;<TD colspan="2"><S><B>SilverScreen 2.7</B></S><IMG src="img/i/jloc.gif" alt="$BF|K\8l%m!<%+%i%$%6$"$j(B" width="31" height="12"><IMG src="img/i/65k.gif" alt="65K$B?'%+%i!<BP1~(B" width="31" height="12"><IMG src="img/i/clie_jog.gif" alt="CLIE $B%8%g%0%@%$%"%kBP1~(B" width="31" height="12"><IMG src="img/i/clie_hires.gif" alt="CLIE $B%O%$%l%>BP1~(B" width="31" height="12"><IMG src="img/i/clie_nrhires.gif" alt="CLIE NR $B%O%$%l%>BP1~(B" width="31" height="12"><IMG src="img/i/i_vfs.gif" alt="VFS$BBP1~(B" width="31" height="12"></TD>
-	       ;;<TD colspan="2"><A href="http://hotspace.jp/%7Ehirock/"><B>PtFtp 0.1.0</B></A><IMG src="img/i/jmenu.gif" alt="$BF|K\8l%a%K%e!<(B" width="31" height="12"><IMG src="img/i/256.gif" alt="256$B?'%+%i!<BP1~(B" width="31" height="12"></TD>
+	       ;;<TD colspan="2"><S><B>SilverScreen 2.7</B></S><IMG src="img/i/jloc.gif" alt="日本語ローカライザあり" width="31" height="12"><IMG src="img/i/65k.gif" alt="65K色カラー対応" width="31" height="12"><IMG src="img/i/clie_jog.gif" alt="CLIE ジョグダイアル対応" width="31" height="12"><IMG src="img/i/clie_hires.gif" alt="CLIE ハイレゾ対応" width="31" height="12"><IMG src="img/i/clie_nrhires.gif" alt="CLIE NR ハイレゾ対応" width="31" height="12"><IMG src="img/i/i_vfs.gif" alt="VFS対応" width="31" height="12"></TD>
+	       ;;<TD colspan="2"><A href="http://hotspace.jp/%7Ehirock/"><B>PtFtp 0.1.0</B></A><IMG src="img/i/jmenu.gif" alt="日本語メニュー" width="31" height="12"><IMG src="img/i/256.gif" alt="256色カラー対応" width="31" height="12"></TD>
 	       "<TD colspan=[^>]+>\\(<A href=\"\\(http://[^>]+\\)\">\\)*\\(<S>\\)*<B>\\([^<]+\\)</B>\\(</S>\\)*\\(</A>\\)*\\(<IMG src=\"\\(.+\\)\">\\)*"
 	       end)
 	      (let (subject addition id body)
@@ -172,7 +172,7 @@ i$PdWyuHC8!1=KH'r,R=fV])N6uQS")))
 				     "<P>" ; insert return
 				     (substring body (match-end 0)))))
                 ;; expand relative path
-                ;;<TD><IMG src="img/i/etsuko.gif" alt="$B!|(B" width="32" height="32"></TD>
+                ;;<TD><IMG src="img/i/etsuko.gif" alt="●" width="32" height="32"></TD>
                 ;;(while (string-match "<IMG src=\"\\(img\\)/" body)
                 ;;  (setq body (concat (substring body 0 (match-beginning 1))
                 ;;                     url "img"
@@ -215,18 +215,18 @@ i$PdWyuHC8!1=KH'r,R=fV])N6uQS")))
       (set-buffer-multibyte t)
       (subst-char-in-region (point-min) (point-max) ?\t ?  t)
       (goto-char (point-min))
-      (when (re-search-forward "^<!--$B%9%]%s%5!<!&%P%J!<$3$3$^$G(B-->$" nil t nil)
+      (when (re-search-forward "^<!--スポンサー・バナーここまで-->$" nil t nil)
 	(forward-line 1)
 	(beginning-of-line 1)
 	(delete-region (point-min) (point)))
-      (when (re-search-forward "$B"#2a5n5-;v0lMw"#(B<BR>$" nil t nil)
+      (when (re-search-forward "■過去記事一覧■<BR>$" nil t nil)
 	(beginning-of-line 1)
 	(delete-region (point) (point-max)))
       (goto-char (point-min))
       (catch 'stop
 	(let (end)
 	  (while (or first-article
-		     (re-search-forward "<!-- *$BF|IU(B *-->" nil t nil))
+		     (re-search-forward "<!-- *日付 *-->" nil t nil))
 	    (let ((start (point))
 		  (count -1)
 		  month day year date)
@@ -238,7 +238,7 @@ i$PdWyuHC8!1=KH'r,R=fV])N6uQS")))
 	      (setq year (car date)
 		    month (car (cdr date))
 		    day (car (cdr (cdr date))))
-	      (setq end (if (re-search-forward "<!-- *$BF|IU(B *-->" nil t nil)
+	      (setq end (if (re-search-forward "<!-- *日付 *-->" nil t nil)
 			    (progn
 			      (goto-char (match-beginning 0))
 			      (forward-char -1)
@@ -247,24 +247,24 @@ i$PdWyuHC8!1=KH'r,R=fV])N6uQS")))
 	      (setq date (format "%02d %s %04d 00:00 +0900" day month year))
 	      (goto-char start)
 	      (while (or (re-search-forward
-			  "^<!-- \\($B%H%T%C%/(B\\|$B%=%U%H(B\\)$B%?%$%H%k(B -->$" end t nil)
-			 ;; <FONT color="#0000AF">$B!|(B</FONT><B>$B$R$H$j$4$H(B</B>
-			 ;; <FONT color="#0000AF">$B!|(B</FONT><B>DCF$B!&(BExif$B!&(BJPEG$B$K$D$$$F(B</B>
+			  "^<!-- \\(トピック\\|ソフト\\)タイトル -->$" end t nil)
+			 ;; <FONT color="#0000AF">●</FONT><B>ひとりごと</B>
+			 ;; <FONT color="#0000AF">●</FONT><B>DCF・Exif・JPEGについて</B>
 			 (re-search-forward
-			  "^<FONT color=\"#0000AF\">$B!|(B</FONT><B>\\(.+\\)</B>" end t nil))
+			  "^<FONT color=\"#0000AF\">●</FONT><B>\\(.+\\)</B>" end t nil))
 		(let (subject id others body)
-		  (if (not (member (match-string 1) '("$B%H%T%C%/(B" "$B%=%U%H(B")))
+		  (if (not (member (match-string 1) '("トピック" "ソフト")))
 		      (progn
 			(setq subject (match-string 1))
-			(unless (string= others "$B$R$H$j$4$H(B")
-			  ;;<FONT color="#0000AF">$B!|(B</FONT><B>DCF$B!&(BExif$B!&(BJPEG$B$K$D$$$F(B</B>
+			(unless (string= others "ひとりごと")
+			  ;;<FONT color="#0000AF">●</FONT><B>DCF・Exif・JPEGについて</B>
 			  (setq others t)))
 		    (setq subject (buffer-substring-no-properties
 				   (progn (forward-char 1) (point))
 				   (progn (re-search-forward "<BLOCKQUOTE>" end t nil)
 					  (beginning-of-line 1) (point)))))
 		  (when (or others
-			    (re-search-forward "^<!--\\($BK\J8(B\\|$B%3%a%s%H(B\\|$B$R$H$j$4$HK\J8(B\\)-->$" end t nil))
+			    (re-search-forward "^<!--\\(本文\\|コメント\\|ひとりごと本文\\)-->$" end t nil))
 		    (setq body (buffer-substring-no-properties
 				(point) (search-forward "</BLOCKQUOTE>" end))
 			  count (1+ count)
@@ -292,10 +292,10 @@ i$PdWyuHC8!1=KH'r,R=fV])N6uQS")))
 
 (defun shimbun-palmfan-get-first-article-date ()
   (let (first-date first-article date)
-    (setq first-date (re-search-forward "<!-- *$BF|IU(B *-->" nil t nil))
+    (setq first-date (re-search-forward "<!-- *日付 *-->" nil t nil))
     (goto-char (point-min))
     (setq first-article
-	  (re-search-forward "^<!-- \\($B%H%T%C%/(B\\|$B%=%U%H(B\\)$B%?%$%H%k(B -->$"
+	  (re-search-forward "^<!-- \\(トピック\\|ソフト\\)タイトル -->$"
 			     nil t nil))
     (goto-char first-date)
     (setq date (shimbun-palmfan-pickup-date))
@@ -314,20 +314,20 @@ i$PdWyuHC8!1=KH'r,R=fV])N6uQS")))
     (setq date-end (re-search-forward "^</B>" nil t nil))
     (goto-char start)
     (catch 'stop
-      ;;2003$BG/(B 3$B7n(B 5$BF|?eMKF|(B
+      ;;2003年 3月 5日水曜日
       (if (re-search-forward "[0-9][0-9][0-9][0-9]" date-end t)
 	  (setq year (string-to-number (match-string 0)))
 	(throw 'stop nil))
       (goto-char start)
-      (if (or (re-search-forward "\\([0-9][0-9]*\\) *$BF|(B" date-end t)
+      (if (or (re-search-forward "\\([0-9][0-9]*\\) *日" date-end t)
 	      (re-search-forward " \\([0-9][0-9]?\\)[,.]*" date-end t))
 	  (setq day (string-to-number (match-string 1)))
 	(throw 'stop nil))
       (goto-char start)
-      (if (re-search-forward "\\(Jan\\|Feb\\|Mar\\|Apr\\|May\\|Jun\\|Jul\\|Aug\\|Sep\\|Oct\\|Nov\\|Dec\\|[0-9]+ *$B7n(B\\)" date-end t)
+      (if (re-search-forward "\\(Jan\\|Feb\\|Mar\\|Apr\\|May\\|Jun\\|Jul\\|Aug\\|Sep\\|Oct\\|Nov\\|Dec\\|[0-9]+ *月\\)" date-end t)
 	  (setq month (match-string 1))
 	(throw 'stop nil))
-      (when (string-match "\\([0-9]+\\) *$B7n(B" month)
+      (when (string-match "\\([0-9]+\\) *月" month)
 	(setq month (car (rassoc (string-to-number (match-string 1 month))
 				 (reverse shimbun-palmfan-month-alist)))))
       (list year month day))))

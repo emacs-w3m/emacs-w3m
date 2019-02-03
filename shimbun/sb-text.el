@@ -1,4 +1,4 @@
-;;; sb-text.el -- shimbun backend class for text content -*- coding: iso-2022-7bit; -*-
+;;; sb-text.el -- shimbun backend class for text content -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2009
 ;; Yuuichi Teranishi <teranisi@gohome.org>
@@ -38,12 +38,12 @@
 (defvar shimbun-fill-column (min 80 (- (frame-width) 4)))
 
 (defconst shimbun-kinsoku-bol-list
-  (append "!)-_~}]:;',.?$B!"!#!$!%!&!'!(!)!*!+!,!-!.!/!0!1!2!3!4!5!6!7(B\
-$B!8!9!:!;!<!=!>!?!@!A!B!C!D!E!G!I!K!M!O!Q!S!U!W!Y![!k!l!m!n$!$#$%$'$)(B\
-$B$C$c$e$g$n%!%#%%%'%)%C%c%e%g%n%u%v(B" nil))
+  (append "!)-_~}]:;',.?、。，．・：；？！゛゜´｀¨＾￣＿ヽヾゝゞ〃\
+仝々〆〇ー―‐／＼〜‖｜…‥’”）〕］｝〉》」』】°′″℃ぁぃぅぇぉ\
+っゃゅょゎァィゥェォッャュョヮヵヶ" nil))
 
 (defconst shimbun-kinsoku-eol-list
-  (append "({[`$B!F!H!J!L!N!P!R!T!V!X!Z!k!l!m!x(B" nil))
+  (append "({[`‘“（〔［｛〈《「『【°′″§" nil))
 
 (defun shimbun-fill-line ()
   (forward-line 0)
