@@ -1,3 +1,8 @@
+2019-02-03  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-filter.el (w3m-filter-xkcd, w3m-filter-github-repo-main-page): New filters.
+	(w3m-filter-configuration): Add the new filters.
+
 2019-01-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bug.el (report-emacs-w3m-bug-system-informations):
