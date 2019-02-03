@@ -134,6 +134,10 @@
     (nil
      "A filter for Wikipedia"
      "\\`http://.*\\.wikipedia\\.org/" w3m-filter-wikipedia)
+    (t "filter for github.com repository main page"
+        "\\`http[s]?://github\\.com/[^/]+/[^/]+[/]?$"
+      w3m-filter-github-repo-main-page)
+    (t "xkcd filter" "\\`http[s]?://xkcd.com/" w3m-filter-xkcd)
     (nil
      ("Remove inline frames in all pages"
       "すべてのページでインラインフレームを取り除きます")
@@ -1070,6 +1074,42 @@ READ MORE:\\([^<]+\\)\\(</a>\\)?</strong>\\(</p>\\)?"
   (goto-char (point-min))
   (while (re-search-forward "\n[\n\t ]+" nil t)
     (replace-match "")))
+
+(defun w3m-filter-github-repo-main-page (url)
+  "filter distractions for the main page of a github repository."
+  (w3m-filter-delete-regions url
+    "<div class=\"d-flex" "</header>" nil t nil nil nil 1)
+  (w3m-filter-delete-regions url
+    "<div class=\"signup-prompt-bg" "<div class=\"f4\">" nil t nil nil nil 1)
+  (insert "<hr>")
+  ; NOTE: There is inconsistency in some pages. Some have DIV element
+  ;       'repository-topics-container', while others have 'overall-summary'.
+  (w3m-filter-delete-regions url
+    "<div class=\"repository-topics-container" "<div class=\"commit-tease" nil t nil nil nil 1)
+  (w3m-filter-delete-regions url
+    "<div class=\"overall-summary" "<div class=\"commit-tease" nil t nil nil nil 1)
+  (w3m-filter-delete-regions url
+    "<div class=\"footer container-lg" "</body>" nil t nil nil nil 1)
+  (goto-char (point-min))
+  (search-forward "<div class=\"commit-tease" nil t)
+  (goto-char (match-beginning 0))
+  (insert "<hr>")
+  (search-forward "<div class=\"file-wrap\">" nil t)
+  (goto-char (match-beginning 0))
+  (insert "<hr>")
+  (search-forward "</table>" nil t)
+  (insert "<hr>")
+  )
+
+(defun w3m-filter-xkcd (url)
+  "filter distractions for xkcd."
+  (w3m-filter-delete-regions url
+    "<body>" "<div ide=\"comic\">" t t :count 1)
+  (w3m-filter-delete-regions url
+    "<div id=\"bottom" "</body>" nil t)
+  (w3m-filter-replace-regexp url "</?\\(li\\|ul\\)[^>]*>" "" (point-min))
+  (w3m-filter-replace-regexp url "<body>" "<body><center>" (point-min))
+  )
 
 (defun w3m-filter-gnome-bugzilla (url)
   "Filter <pre class=\"bz_comment_text\"> to fold long lines in GNOME Bugzilla."
