@@ -1,3 +1,15 @@
+2019-02-03  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-cookie.el (w3m-cookie-shutdown): avoid duplicate get-buffer call.
+
+	* w3m-form.el (w3m-form-textarea-file-cleanup)
+	(w3m-form-textarea-files-remove): use pop instead of (cdr
+	(car x))
+
+	* w3m-session.el (w3m-session-select-sessions): Add docstring
+
+	* w3m.el (w3m-cleanup-temp-files): Add cache and tmp files to list.
+
 2019-01-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bug.el (report-emacs-w3m-bug-system-informations):
