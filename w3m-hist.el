@@ -752,7 +752,7 @@ a crashed emacs session."
           (cookie-buf (get-buffer " *w3m-cookie-parse-temp*"))
           (bufs (w3m-list-buffers t))
           (cmds w3m-scrub-command-list)
-          (cmd (progn
+          cmd (cmd (progn
                  (while (and (setq cmd (pop cmds))
                              (not (file-executable-p (car cmd)))))
                  cmd))
@@ -770,7 +770,7 @@ a crashed emacs session."
                      "^w3m\\(cache\\|cookie\\|el\\|src\\|tmp\\)" 'nosort))))
     (switch-to-buffer stdout-buf)
     (insert "Beginning emacs-w3m history scrub "
-            (format-time-string "%Y-%m-%d %H:%M")
+            (format-time-string "%Y-%m-%d %H:%M:%S.%N")
             "\n\nDeleting files ...\n")
     (if cmd
       (dolist (file files)
@@ -825,7 +825,7 @@ a crashed emacs session."
       (insert "Updating session database on disk ...")
       (w3m-save-list w3m-session-file sessions))
     (insert " Complete.\n\nemacs-w3m history scrub completed "
-            (format-time-string "%Y-%m-%d %H:%M")))))
+            (format-time-string "%Y-%m-%d %H:%M:%S.%N\n")))))
 
 (eval-when-compile
   (defvar w3m-arrived-db)
