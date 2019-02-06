@@ -1535,8 +1535,7 @@ selected rather than \(as usual\) some other window.  See
 				     (nth 7 checktime) ;; dst
 				     (nth 8 checktime)))) ;; zone
       (setq files (directory-files dir 'full "[^.]" 'nosort))
-      (while (setq file (car files))
-	(setq files (cdr files))
+      (while (setq file (pop files))
 	(when (file-writable-p file)
 	  (if (eq checktime t)
 	      (delete-file file)
@@ -1547,8 +1546,7 @@ selected rather than \(as usual\) some other window.  See
 (defun w3m-form-textarea-files-remove ()
   "Remove used files of textarea."
   (let (file)
-    (while (setq file (car w3m-form-textarea-post-files))
-      (setq w3m-form-textarea-post-files (cdr w3m-form-textarea-post-files))
+    (while (setq file (pop w3m-form-textarea-post-files))
       (when (and (member file w3m-form-textarea-files)
 		 (file-exists-p file)
 		 (file-writable-p file))
