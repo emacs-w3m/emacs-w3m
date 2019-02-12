@@ -759,26 +759,32 @@ a crashed emacs session."
           (cmd-string (if cmd
                         (format "%s %s" (car cmd) (cadr cmd))
                        "emacs' delete-file"))
-          (files (append
-                   (list w3m-arrived-file w3m-cookie-file)
-                   w3m-form-textarea-post-files
-                   w3m-form-textarea-files
-                   (directory-files
-                     (file-chase-links (expand-file-name w3m-form-textarea-directory))
-                     'full "[^.]" 'nosort)
-                   (directory-files w3m-profile-directory 'full
-                     "^w3m\\(cache\\|cookie\\|el\\|src\\|tmp\\)" 'nosort))))
+          files)
     (switch-to-buffer stdout-buf)
     (insert "Beginning emacs-w3m history scrub "
             (format-time-string "%Y-%m-%d %H:%M:%S.%N")
             "\n\nDeleting files ...\n")
-    (if cmd
-      (dolist (file files)
-        (insert (format "  %s %s\n" cmd-string file))
-        (call-process (car cmd) nil t t (cadr cmd) file))
-     (dolist (file files)
-       (insert (format "  %s %s\n" cmd-string file))
-       (delete-file file)))
+    (condition-case err
+      (progn
+        (setq files
+          (append (list w3m-arrived-file w3m-cookie-file)
+                  w3m-form-textarea-post-files
+                  w3m-form-textarea-files
+                  (directory-files
+                    (file-chase-links (expand-file-name w3m-form-textarea-directory))
+                    'full "[^.]" 'nosort)
+                  (directory-files w3m-profile-directory 'full
+                    "^w3m\\(cache\\|cookie\\|el\\|src\\|tmp\\)" 'nosort)))
+        (if cmd
+          (dolist (file files)
+            (insert (format "  %s %s\n" cmd-string file))
+              (call-process (car cmd) nil t t (cadr cmd) file))
+         (dolist (file files)
+           (insert (format "  %s %s\n" cmd-string file))
+           (delete-file file))))
+      (error ; Handler for `condition-case'
+        (insert (format "    FAILURE! - %s\n    Aborting..." (error-message-string err)))
+        (error "w3m: history scrub unsuccessful. See buffer for details.")))
     (insert "Deleting files ... Complete.\n\nInitializing memory cache ...")
     (w3m-cache-shutdown)
     (insert " Complete.\nInitializing cookies from memory ...")
@@ -798,7 +804,6 @@ a crashed emacs session."
               (eq major-mode 'w3m-form-input-select-mode)
               (eq major-mode 'w3m-form-input-map-mode))
           (w3m-reload-this-page nil t))
-
          ((string-match "*w3m-session select*" (buffer-name))
           (kill-buffer buf))
          (t nil))))
@@ -823,9 +828,12 @@ a crashed emacs session."
       ; far I've only seen them in history elements, which are already
       ; being deleted.
       (insert "Updating session database on disk ...")
-      (w3m-save-list w3m-session-file sessions))
-    (insert " Complete.\n\nemacs-w3m history scrub completed "
-            (format-time-string "%Y-%m-%d %H:%M:%S.%N\n")))))
+      (if (not (file-writable-p w3m-session-file))
+        (insert (format "\n  FAILURE! - Unable to write to %s\n  Aborting..."
+                  w3m-session-file))
+       (w3m-save-list w3m-session-file sessions)
+       (insert " Complete.\n\nemacs-w3m history scrub completed "))
+      (insert (format-time-string "%Y-%m-%d %H:%M:%S.%N\n"))))))
 
 (eval-when-compile
   (defvar w3m-arrived-db)
