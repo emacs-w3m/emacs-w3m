@@ -435,7 +435,7 @@ If ask, ask user whether accept bad cookies or not."
   (dolist (buffer (w3m-list-buffers t))
     (with-current-buffer buffer
       (when (equal w3m-current-url "about://cookie/")
-	(let ((w3m-message-silent t))
+	(let ((w3m--message-silent t))
 	  (w3m-reload-this-page nil t))))))
 
 (defun w3m-cookie-save (&optional domain)

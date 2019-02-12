@@ -48,7 +48,7 @@
   (defvar w3m-work-buffer-list)
   (autoload 'w3m-expand-url "w3m")
   (autoload 'w3m-load-list "w3m")
-  (autoload 'w3m-message "w3m")
+  (autoload 'w3m--message "w3m")
   (autoload 'w3m-retrieve "w3m")
   (autoload 'w3m-save-list "w3m")
   (autoload 'w3m-url-readable-string "w3m"))
@@ -311,11 +311,11 @@ stored in the `w3m-favicon-image' buffer-local variable."
     (lexical-let ((url url)
 		  (type type)
 		  (target target)
-		  (silent w3m-message-silent))
+		  (silent w3m--message-silent))
       (w3m-process-with-null-handler
 	(w3m-process-do-with-temp-buffer
 	    (ok (w3m-retrieve url 'raw nil nil nil handler))
-	  (let ((w3m-message-silent silent)
+	  (let ((w3m--message-silent silent)
 		idata image)
 	    (if (and ok
 		     ;; Some broken servers provides empty contents.
@@ -330,7 +330,7 @@ stored in the `w3m-favicon-image' buffer-local variable."
 						 "gzip -d" nil t))))
 		  (setq idata (buffer-string)
 			image (w3m-favicon-convert idata type)))
-	      (w3m-message "Reading %s...done (no favicon)"
+	      (w3m--message t t "Reading %s...done (no favicon)"
 			   (w3m-url-readable-string url)))
 	    (with-current-buffer target
 	      (w3m-favicon-set-image image)

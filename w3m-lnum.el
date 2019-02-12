@@ -161,7 +161,7 @@ filtering over an url being matched by the car."
     (?u (lambda (info)
 	  (let ((url (car info)))
 	    (kill-new url)
-	    (w3m-message "%s%s" (let ((im-alt (nth 3 info)))
+	    (w3m--message t t "%s%s" (let ((im-alt (nth 3 info)))
 				  (if (zerop (length im-alt)) ""
 				    (concat im-alt ": ")))
 			 url)))
@@ -271,9 +271,9 @@ enable them.  With no prefix ARG - toggle."
       (if arg
 	  (progn (add-hook 'w3m-mode-hook 'w3m-lnum-mode)
 		 (run-hooks 'w3m-lnum-mode-hook)
-		 (w3m-message "Link numbering keys on"))
+		 (w3m--message t t "Link numbering keys on"))
 	(remove-hook 'w3m-mode-hook 'w3m-lnum-mode)
-	(w3m-message "Link numbering keys off"))
+	(w3m--message t t "Link numbering keys off"))
       ;; change numbering status of all w3m buffers
       (save-current-buffer
 	(dolist (buf (buffer-list))
@@ -726,7 +726,7 @@ Input 0 corresponds to location url."
   (let ((info (w3m-lnum-get-action)))
     (if info (progn (push-mark (point))
 		    (goto-char (cadr info)))
-      (w3m-message "No valid anchor selected"))))
+      (w3m--message t 'w3m-error "No valid anchor selected"))))
 
 (defun w3m-lnum-visit (info &optional new-session edit)
   "Visit URL determined with selection INFO.
@@ -809,7 +809,7 @@ With triple prefix ARG, prompt for url to visit in new session."
 		     (let ((w3m-form-new-session t)
 			   (w3m-form-download nil))
 		       (eval action))))))
-      (w3m-message "No valid anchor selected"))))
+      (w3m--message t 'w3m-error "No valid anchor selected"))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -907,7 +907,7 @@ Function has to take one argument that is selection info."
 	     'restart-selection)
 	    (t (let ((dispatch (assoc-default char action-alist 'eq)))
 		 (if dispatch (funcall (car dispatch) info)
-		   (w3m-message "Invalid selection"))))))))
+		   (w3m--message t 'w3m-error "Invalid selection"))))))))
 
 ;;;###autoload
 (defun w3m-lnum-universal ()
@@ -962,7 +962,7 @@ pressing <return> over the action line or left clicking."
 			   (t (w3m-lnum-universal-dispatch ; form field
 			       info label
 			       w3m-lnum-actions-form-alist))))
-		 (w3m-message "No valid anchor selected"))))))))
+		 (w3m--message t 'w3m-error "No valid anchor selected"))))))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -992,7 +992,7 @@ If no such url, move over image and toggle it."
 		(w3m-toggle-inline-image))
 	    (save-excursion (goto-char (cadr im))
 			    (w3m-toggle-inline-image)))
-	(w3m-message "No image selected")))))
+	(w3m--message t 'w3m-error "No image selected")))))
 
 ;;;###autoload
 (defun w3m-lnum-view-image ()
@@ -1006,7 +1006,7 @@ image."
 	  ((setq im (w3m-lnum-get-action
 		     "Open image url in external viewer: " 2))
 	   (w3m-external-view (nth 2 im)))
-	  (t (w3m-message "No image selected")))))
+	  (t (w3m--message t 'w3m-error "No image selected")))))
 
 ;;;###autoload
 (defun w3m-lnum-save-image ()
@@ -1018,7 +1018,7 @@ The default name will be the original name of the image."
     (cond (im (w3m-download im))
 	  ((setq im (w3m-lnum-get-action "Save image: " 2))
 	   (w3m-download (nth 2 im)))
-	  (t (w3m-message "No image selected")))))
+	  (t (w3m--message t 'w3m-error "No image selected")))))
 
 (defmacro w3m-lnum-zoom-image (rate &optional in)
   "Zoom image under point and interactively resize after that.
@@ -1082,7 +1082,7 @@ If no link at point, turn on link numbers and open selected externally."
 				  "Open in external browser: " 1))))))
     (if url
 	(w3m-view-url-with-browse-url url)
-      (w3m-message "No URL selected"))))
+      (w3m--message t 'w3m-error "No URL selected"))))
 
 ;;;###autoload
 (defun w3m-lnum-edit-this-url ()
@@ -1093,24 +1093,25 @@ If no such, turn on link numbers and edit selected."
 		 (car (w3m-lnum-get-action
 		       "Select link to edit: " 1)))))
     (if url (w3m-edit-url url)
-      (w3m-message "No URL selected"))))
+      (w3m--message t 'w3m-error "No URL selected"))))
 
 ;;;###autoload
 (defun w3m-lnum-print-this-url ()
   "Display the url under point in the echo area and put it into `kill-ring'.
 If no url under point, activate numbering and select one."
+; FIXME - This isn't putting urls into the kill ring!
   (interactive)
   (if (or (w3m-anchor) (w3m-image))
       (w3m-print-this-url t)
     (let ((link (w3m-lnum-get-action "Select URL to copy: " 1)))
       (if link
-	  (let ((url (car link)))
+	  (let ((url (w3m-url-encode-string-2 (car link))))
 	    (kill-new url)
-	    (w3m-message "%s%s" (let ((im-alt (nth 3 link)))
+	    (w3m--message t t "%s%s" (let ((im-alt (nth 3 link)))
 				  (if (zerop (length im-alt)) ""
 				    (concat im-alt ": ")))
 			 url))
-	(w3m-message "No URL selected")))))
+	(w3m--message t 'w3m-error "No URL selected")))))
 
 ;;;###autoload
 (defun w3m-lnum-download-this-url ()
@@ -1125,7 +1126,7 @@ If no point, activate numbering and select andchor to download."
 	  (save-excursion
 	    (goto-char (cadr info))
 	    (w3m-download-this-url))
-	(w3m-message "No anchor selected")))))
+	(w3m--message t 'w3m-error "No anchor selected")))))
 
 ;;;###autoload
 (defun w3m-lnum-bookmark-add-this-url ()
@@ -1140,7 +1141,7 @@ If no link under point, activate numbering and ask for one."
 	    (previous-single-property-change (1+ (point))
 					     'w3m-href-anchor)
 	    (next-single-property-change (point) 'w3m-href-anchor)))
-	  (w3m-message "Added"))
+	  (w3m--message t t "Added"))
      ((setq url (w3m-lnum-get-action "Select URL to bookmark: " 1))
       (w3m-bookmark-add
        (car url)
@@ -1151,8 +1152,8 @@ If no link under point, activate numbering and ask for one."
 	    (previous-single-property-change (1+ pos)
 					     'w3m-href-anchor)
 	    (next-single-property-change pos 'w3m-href-anchor)))))
-      (w3m-message "added"))
-     (t (w3m-message "No url selected")))))
+      (w3m--message t t "added"))
+     (t (w3m--message t 'w3m-error "No url selected")))))
 
 
 ;;; add link action for generic browser
