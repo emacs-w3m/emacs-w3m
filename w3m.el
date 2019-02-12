@@ -3285,6 +3285,26 @@ message."
 		      (not (compiled-function-p (symbol-function fn))))
 	     (byte-compile fn)))))))
 
+(defun w3m--full-window-message (msg)
+  "Present a very obvious message, centered in the current buffer."
+  (let* ((inhibit-read-only t)
+         (pt 1) (max-width 1) (height 0) indent)
+    (erase-buffer)
+    (insert msg "\n")
+    (goto-char (point-min))
+    (while (search-forward "\n" nil t)
+      (setq max-width (max max-width (- (point) pt)))
+      (setq height (1+ height))
+      (setq pt (point)))
+    ; check
+    (when (> (window-width) max-width)
+      (setq indent (make-string (max 0 (/ (- (window-width) max-width) 2)) ? ))
+      (goto-char (point-min))
+      (while (re-search-forward "^" nil t)
+       (insert indent)))
+    (goto-char (point-min))
+    (insert-char ?\n (/ (- (window-height) height) 2))))
+
 (defvar w3m-current-message nil
   "The string currently displayed by `w3m-message' in the echo area.")
 (defvar w3m-message-silent nil
