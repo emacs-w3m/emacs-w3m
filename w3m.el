@@ -3387,49 +3387,48 @@ CODING-SYSTEM is used to read FILE which defaults to the value of
   "Save a LIST form into the emacs-w3m data file FILE.
 Contents will be encoded with CODING-SYSTEM which defaults to the
 value of `w3m-file-coding-system'.  Optional ESCAPE-CTL-CHARS if it is
-non-nil, control chars will be represented with ^ as `cat -v' does."
-  (when (and list (file-writable-p file))
-    (with-temp-buffer
-      (let ((coding-system-for-write (or coding-system w3m-file-coding-system))
-	    (standard-output (current-buffer))
-	    (print-fn (if escape-ctl-chars
-			  'w3m-prin1
-			'prin1))
-	    element print-length print-level)
-	(insert (format "\
-;;; %s  -*- mode: emacs-lisp%s -*-
-;; This file is generated automatically by emacs-w3m v%s.
+non-nil, control chars will be represented with ^ as `cat -v' does.
 
-"
-			(file-name-nondirectory file)
-			(if coding-system-for-write
-			    (format "; coding: %s" coding-system-for-write)
-			  "")
-			emacs-w3m-version))
-	(insert "(")
-	(while list
-	  (setq element (car list)
-		list (cdr list))
-	  (if (consp element)
-	      (progn
-		(insert "(")
-		(funcall print-fn (car element))
-		(insert "\n")
-		(while (setq element (cdr element))
-		  (insert "  ")
-		  (funcall print-fn (car element))
-		  (insert "\n"))
-		(backward-delete-char 1)
-		(insert ")\n "))
-	    (funcall print-fn element)
-	    (insert "\n")))
-	(skip-chars-backward "\n ")
-	(delete-region (point) (point-max))
-	(insert ")\n")
-	(let ((mode (and (file-exists-p file)
-			 (file-modes file))))
-	  (write-region (point-min) (point-max) file nil 'nomsg)
-	  (when mode (set-file-modes file mode)))))))
+Returns non-nil upon a successful write."
+  (if (not (and list (file-writable-p file)))
+    nil ; quick return failure
+   (with-temp-buffer
+     (let ((coding-system-for-write (or coding-system w3m-file-coding-system))
+           (standard-output (current-buffer))
+           (print-fn (if escape-ctl-chars
+                         'w3m-prin1
+                       'prin1))
+           element print-length print-level)
+       (insert (format ";;; %s  -*- mode: emacs-lisp%s -*-\n;; This file is generated automatically by emacs-w3m v%s.\n\n("
+                       (file-name-nondirectory file)
+                       (if coding-system-for-write
+                           (format "; coding: %s" coding-system-for-write)
+                         "")
+                       emacs-w3m-version))
+       (while list
+         (setq element (car list)
+               list (cdr list))
+         (if (consp element)
+             (progn
+               (insert "(")
+               (funcall print-fn (car element))
+               (insert "\n")
+               (while (setq element (cdr element))
+                 (insert "  ")
+                 (funcall print-fn (car element))
+                 (insert "\n"))
+               (backward-delete-char 1)
+               (insert ")\n "))
+           (funcall print-fn element)
+           (insert "\n")))
+       (skip-chars-backward "\n ")
+       (delete-region (point) (point-max))
+       (insert ")\n")
+       (let ((mode (and (file-exists-p file)
+                        (file-modes file))))
+         (write-region (point-min) (point-max) file nil 'nomsg)
+         (when mode (set-file-modes file mode)))))
+   t))
 
 (defun w3m-url-coding-system (url)
   "Return coding system suitable to URL to retrieve."
