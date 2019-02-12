@@ -11668,9 +11668,8 @@ Refer to variable `w3m-display-mode' for details."
 
 (defun w3m-cleanup-temp-files ()
   (when w3m-do-cleanup-temp-files
-    (dolist (f (directory-files w3m-profile-directory))
-      (when (string-match "^w3m\\(el\\|src\\)" f)
-	(delete-file (expand-file-name f w3m-profile-directory))))))
+    (dolist (f (directory-files w3m-profile-directory t "^w3m\\(cache\\|el\\|src\\|tmp\\)" t))
+        (delete-file f))))
 
 (defun w3m-show-form-hint ()
   "Show sending form hint when the cursor is in a form."

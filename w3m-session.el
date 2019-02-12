@@ -482,7 +482,8 @@ buffer's url history."
     (setq w3m-session-select-mode-map map)))
 
 ;;; Local variables
-(defvar w3m-session-select-sessions nil)
+(defvar w3m-session-select-sessions nil
+  "Buffer-local copy of session list.")
 (make-variable-buffer-local 'w3m-session-select-sessions)
 
 (defun w3m-session-select-mode (&optional sessions)
