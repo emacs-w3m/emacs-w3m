@@ -828,10 +828,9 @@ a crashed emacs session."
       ; far I've only seen them in history elements, which are already
       ; being deleted.
       (insert "Updating session database on disk ...")
-      (if (not (file-writable-p w3m-session-file))
+      (if (not (w3m-save-list w3m-session-file sessions))
         (insert (format "\n  FAILURE! - Unable to write to %s\n  Aborting..."
                   w3m-session-file))
-       (w3m-save-list w3m-session-file sessions)
        (insert " Complete.\n\nemacs-w3m history scrub completed "))
       (insert (format-time-string "%Y-%m-%d %H:%M:%S.%N\n"))))))
 
