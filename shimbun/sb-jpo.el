@@ -1,4 +1,4 @@
-;;; sb-jpo.el --- shimbun backend for http://www.jpo.go.jp -*- coding: iso-2022-7bit; -*-
+;;; sb-jpo.el --- shimbun backend for http://www.jpo.go.jp -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 
@@ -30,27 +30,27 @@
 ;; (summaerized page of http://www.jpo.go.jp/sitemap/index.htm) and
 ;; mapped virtual groups.
 ;;
-;; $B"#@)EY$N>R2p(B                          ...lawguide
-;; $B"#=P4j$+$i?3::!"?3H=!"EPO?$^$G(B        ...details
-;; $B"#FC5vD#$N>R2p(B
-;; $B"#FC5vD#$N<h$jAH$_(B
-;;    $B"#%W%l%9H/I=(B                       ...news
-;;    $B"#K!Na2~@5$N$*CN$i$;(B               ...revision
-;;    $B"#9-Js$N9->l(B                       ...news
-;;    $B"#(B...                              ...details
+;; ■制度の紹介                          ...lawguide
+;; ■出願から審査、審判、登録まで        ...details
+;; ■特許庁の紹介
+;; ■特許庁の取り組み
+;;    ■プレス発表                       ...news
+;;    ■法令改正のお知らせ               ...revision
+;;    ■広報の広場                       ...news
+;;    ■...                              ...details
 ;;
-;; $B"#;qNA<<(B                              ...details
-;; $B"#$*Ld$$9g$o$;(B
-;; $B"#99?7MzNr(B
-;; $B"#%/%$%C%/%,%$%I(B
-;; $B"#D4C#>pJs!&8xJg>pJs(B
-;; $B"#0U8+Jg=8!'%Q%V%j%C%/!&%3%a%s%H(B
-;; $B"#FC5vEE;R?^=q4[(B
-;; $B"#FHN)9T@/K!?M!!9)6H=jM-8"Am9g>pJs4[(B
-;; $B"#4XO"%[!<%`%Z!<%8%j%s%/(B
-;; $B"#5lFC5vD#%[!<%`%Z!<%8(B
-;; $B"#EE;R@/I\$NAm9gAk8}!JAmL3>J9T@/4IM}6I!K(B
-;; $B"#$3$N%5%$%H$K$D$$$F(B
+;; ■資料室                              ...details
+;; ■お問い合わせ
+;; ■更新履歴
+;; ■クイックガイド
+;; ■調達情報・公募情報
+;; ■意見募集：パブリック・コメント
+;; ■特許電子図書館
+;; ■独立行政法人　工業所有権総合情報館
+;; ■関連ホームページリンク
+;; ■旧特許庁ホームページ
+;; ■電子政府の総合窓口（総務省行政管理局）
+;; ■このサイトについて
 
 ;;; Code:
 
@@ -60,10 +60,10 @@
 
 (defconst shimbun-jpo-url "http://www.jpo.go.jp/")
 (defvar shimbun-jpo-groups
-  '("news" ;$B"#%W%l%9H/I=(B   $B"#9-Js$N9->l(B
-    "revision" ;$B"#K!Na2~@5$N$*CN$i$;(B
-    "lawguide" ;$B"#@)EY$N>R2p(B
-    "details" ; $B"#=P4j$+$i?3::!"?3H=!"EPO?$^$G(B  $B"#FC5vD#$N<h$jAH$_(B  $B"#;qNA<<(B
+  '("news" ;■プレス発表   ■広報の広場
+    "revision" ;■法令改正のお知らせ
+    "lawguide" ;■制度の紹介
+    "details" ; ■出願から審査、審判、登録まで  ■特許庁の取り組み  ■資料室
     ))
 (defvar shimbun-jpo-from-address "webmaster@jpo.go.jp")
 (defvar shimbun-jpo-coding-system 'japanese-shift-jis)
@@ -114,12 +114,12 @@
   (let ((case-fold-search t)
 	(from (shimbun-from-address shimbun))
 	(group (shimbun-current-group-internal shimbun))
-	(regexp (format "<td><font color=\"[#0-9A-Z]+\"><a href=\"\\(%s\\.html*\\)\">\\(.*\\)</a>[$B!!(B ]*\\([.0-9]+\\)" (or urlregexp "\\(.*\\)")))
+	(regexp (format "<td><font color=\"[#0-9A-Z]+\"><a href=\"\\(%s\\.html*\\)\">\\(.*\\)</a>[　 ]*\\([.0-9]+\\)" (or urlregexp "\\(.*\\)")))
 	(urlprefix
 	 (when (string-match "^\\(http:\/\/.+\\/\\)[^\/]+\\.html*" origurl)
 	   (match-string 1 origurl)))
 	headers id pagename subject tempdate date url)
-    ;; <td><font color="#2346AB"><a href="h1504_pat_kijitu.htm">$BFC5vK!Ey$N0lIt$r2~@5$9$kK!N'$N0lIt$N;\9T4|F|$rDj$a$k@/Na0F$K$D$$$F(B</a>$B!!(B2003.4.21</font></td>
+    ;; <td><font color="#2346AB"><a href="h1504_pat_kijitu.htm">特許法等の一部を改正する法律の一部の施行期日を定める政令案について</a>　2003.4.21</font></td>
     ;; getting URL and SUBJECT
     (goto-char (point-min))
     (while (re-search-forward regexp nil t)
@@ -140,7 +140,7 @@
 	    (throw 'next nil) ; unknown date format
 	  (setq tempdate (list (string-to-number (match-string 1 date))
 			       (string-to-number (match-string 2 date))))
-	  (setq date (nconc tempdate 
+	  (setq date (nconc tempdate
 			    (list
 			     (if (not (match-string 3 date))
 				1
@@ -185,12 +185,12 @@
 			   (shimbun-jpo-headers-1
 			    shimbun url nil
 			    (when exceptions
-			      (concat "\\(" 
+			      (concat "\\("
 				      (mapconcat 'regexp-quote exceptions "\\|")
 				      "\\)")))))
       (goto-char (point-min))
       (while (re-search-forward
-	      ;;<td><font color="#2346AB"><a href="puresu/puresu_list.htm">$B%W%l%9H/I=(B</a></font></td>
+	      ;;<td><font color="#2346AB"><a href="puresu/puresu_list.htm">プレス発表</a></font></td>
 	      "<td><font color=\"[#0-9A-Z]+\"><a href=\"\\(.*\\.htm\\)\">[^<>]+<\/a><\/font><\/td>"
 	      nil t nil)
 	;; getting sub-categories.
@@ -219,10 +219,10 @@
   (when (luna-call-next-method)
     (goto-char (point-min))
     (when (re-search-forward
-	   ;;$B#E!](Bmail$B!'(B<a href="mailto:PA0A00@jpo.go.jp">PA0A00@jpo.go.jp<br>
-	   ;;E-mail$B!'(B<a href="mailto:PA0420@jpo.go.jp">PA0420@jpo.go.jp</a></font>
-	   ;;$B!!(BE-mail:<a href="mailto:PA0A00@jpo.go.jp"> PA0A00@jpo.go.jp</a></font>
-	   "\\($BEE;R%a!<%k(B\\|[$B#E#e(BEe][$B!](B-]*[$B#M#m(BMm][$B#A#a(BAa][$B#I#i(BIi][$B#L#l(BLl]\\)[$B!'(B:$B!!(B] *<a href=\"mailto:\\(.*@.*jpo.go.jp\\)\"> *\\2"
+	   ;;Ｅ−mail：<a href="mailto:PA0A00@jpo.go.jp">PA0A00@jpo.go.jp<br>
+	   ;;E-mail：<a href="mailto:PA0420@jpo.go.jp">PA0420@jpo.go.jp</a></font>
+	   ;;　E-mail:<a href="mailto:PA0A00@jpo.go.jp"> PA0A00@jpo.go.jp</a></font>
+	   "\\(電子メール\\|[ＥｅEe][−-]*[ＭｍMm][ＡａAa][ＩｉIi][ＬｌLl]\\)[：:　] *<a href=\"mailto:\\(.*@.*jpo.go.jp\\)\"> *\\2"
 	   nil t nil)
       (shimbun-header-set-from header (match-string 2)))
     (shimbun-jpo-cleanup-article)
@@ -232,20 +232,20 @@
   (save-excursion
     (let ((case-fold-search t))
       (goto-char (point-min))
-      ;; <td align="center"><a href="#top"><img src="images/gotop.gif" width="89" height="13" border="0" vspace="10" alt="$B%Z!<%8$N@hF,$X(B"></a></td>
+      ;; <td align="center"><a href="#top"><img src="images/gotop.gif" width="89" height="13" border="0" vspace="10" alt="ページの先頭へ"></a></td>
       (while (re-search-forward
-	      "<img src=\"images/gotop.gif\" .*alt=\"$B%Z!<%8$N@hF,$X(B\">"
+	      "<img src=\"images/gotop.gif\" .*alt=\"ページの先頭へ\">"
 	      nil t nil)
 	(delete-region (progn (beginning-of-line) (point)) (progn (end-of-line) (point))))
       (goto-char (point-min))
-      ;; <td align="left"><a href="../../../indexj.htm" target="_top">HOME</a> &gt; <a href="../../torikumi_list.htm">$BFC5vD#$N<h$jAH$_!JFC5vK!Bh#3#0>rEy?75,@-$NAS<:$NNc30!K$NE,MQ$K4X$7$F!K(B</a> &gt;<br><br></td>
-      ;; <td align="left"><a href="../../indexj.htm" target="_top">HOME</a> &gt; <a href="../torikumi_list.htm">$BFC5vD#(B
+      ;; <td align="left"><a href="../../../indexj.htm" target="_top">HOME</a> &gt; <a href="../../torikumi_list.htm">特許庁の取り組み（特許法第３０条等新規性の喪失の例外）の適用に関して）</a> &gt;<br><br></td>
+      ;; <td align="left"><a href="../../indexj.htm" target="_top">HOME</a> &gt; <a href="../torikumi_list.htm">特許庁
       (while (re-search-forward
 	      "<td align=\"left\"><a href=\"\\(\\.\\./\\)+indexj.htm\" target=\"_top\">HOME<\/a> *\\&gt;"
 	      nil t nil)
 	(delete-region (match-beginning 0) (progn (end-of-line) (point))))
       (goto-char (point-min))
-      (while (re-search-forward 
+      (while (re-search-forward
 	      "<tr>\n+<td align=\"left\"><img src=\"\\(\\.\\./\\)?images/title\\.gif\" *[^<>]+\">\\(<\/a>\\)?<\/td>\n+<\/tr>"
 	      nil t nil)
 	(delete-region (match-beginning 0) (match-end 0)))
@@ -256,12 +256,12 @@
 	(delete-region (match-beginning 0) (progn (end-of-line) (point))))
       (goto-char (point-min))
       (while (re-search-forward
-	      ;; PDF$B%U%!%$%k$r=i$a$F$*;H$$$K$J$kJ}$O!"(BAdobe Acrobat Reader$B%@%&%s%m!<%I%Z!<%8$X(B   
-	      "Adobe Acrobat Reader *$B%@%&%s%m!<%I%Z!<%8(B"
+      ;; PDFファイルを初めてお使いになる方は、Adobe Acrobat Readerダウンロードページへ
+      "Adobe Acrobat Reader *ダウンロードページ"
 	      nil t nil)
 	(delete-region (progn (beginning-of-line) (point)) (progn (end-of-line) (point))))
       (goto-char (point-min))
-      (while (re-search-forward 
+      (while (re-search-forward
 	      "<tr>\n+<td align=\"center\"><a href=\"#top\">\
 <img src=\"\\(\\.\\.\/\\)?images/gotop\\.gif\" [^<>]+\">\\(<\/a>\\)?<\/td>\n+<\/tr>"
 	      nil t nil)

@@ -1,4 +1,4 @@
-;;; sb-slashdot.el --- slashdot.org shimbun backend
+;;; sb-slashdot.el --- slashdot.org shimbun backend -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2008, 2009 David Engster
 

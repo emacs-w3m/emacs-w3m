@@ -1,4 +1,4 @@
-;;; sb-wincefan.el --- shimbun backend for WindowsCE FAN -*- coding: iso-2022-7bit; -*-
+;;; sb-wincefan.el --- shimbun backend for WindowsCE FAN -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
@@ -34,8 +34,8 @@
 (defvar shimbun-wincefan-groups '("news"))
 (defconst shimbun-wincefan-from-address "webmaster@wince.ne.jp")
 (defvar shimbun-wincefan-coding-system 'japanese-shift-jis)
-(defvar shimbun-wincefan-content-start "\\(<!-- *$B%=%U%H>\:Y>pJs(B *-->\\|<B>$B"#%H%T%C%/%9$NFbMF(B<\/B>\\)")
-(defvar shimbun-wincefan-content-end "<!-- \\/*\\($B5-;v(B\\|$B%=%U%H>\:Y>pJs(B\\)-->")
+(defvar shimbun-wincefan-content-start "\\(<!-- *ソフト詳細情報 *-->\\|<B>■トピックスの内容<\/B>\\)")
+(defvar shimbun-wincefan-content-end "<!-- \\/*\\(記事\\|ソフト詳細情報\\)-->")
 (defvar shimbun-wincefan-expiration-days 14)
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-wincefan)
@@ -56,8 +56,8 @@
 	(delete-region (point-max) (point)))
       (goto-char (point-min))
       (while (re-search-forward
-	      ;;<FONT SIZE="-1" COLOR="#008000">1$B7n(B30$BF|(B($BF|(B)</FONT>
-	      "<FONT [^<>]+>\\([0-9]+\\)$B7n(B\\([0-9]+\\)$BF|(B(\\($B7n(B\\|$B2P(B\\|$B?e(B\\|$BLZ(B\\|$B6b(B\\|$BEZ(B\\|$BF|(B\\))<\/FONT>"
+	      ;;<FONT SIZE="-1" COLOR="#008000">1月30日(日)</FONT>
+	      "<FONT [^<>]+>\\([0-9]+\\)月\\([0-9]+\\)日(\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\))<\/FONT>"
 	      nil t nil)
 	(let* ((month (string-to-number (match-string-no-properties 1)))
 	       (day (string-to-number (match-string-no-properties 2)))
@@ -67,21 +67,21 @@
 			 (format "%04d%02d%02d"year month day)))
 	       (end (save-excursion
 		      (or (re-search-forward
-			   "<FONT [^<>]+>\\([0-9]+\\)$B7n(B\\([0-9]+\\)$BF|(B(\\($B7n(B\\|$B2P(B\\|$B?e(B\\|$BLZ(B\\|$B6b(B\\|$BEZ(B\\|$BF|(B\\))<\/FONT>"
+			   "<FONT [^<>]+>\\([0-9]+\\)月\\([0-9]+\\)日(\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\))<\/FONT>"
 			   nil t nil)
 			  (point-max))))
 	       (count -1)
 	       subject id)
 	  (while (re-search-forward
-		  ;;<TD><A HREF="/frame.asp?/soft2002/detail.asp?PID=3141" TARGET="_top"><FONT SIZE="-1" >$B$/$i$I$%(B vA20($B%i%8%'%s%@MQ(B ToDo)</FONT></A></TD>
-		  ;;<TD><A HREF="/NewsLink/" TARGET="_top"><FONT SIZE="-1" COLOR="#FF0000">$B!Z(BNews$B![(B</FONT><BR></A><A HREF="http://www.wince.ne.jp/snap/cnBoard.asp?PID=1376" TARGET="_top"><FONT SIZE="-1" >$B%7%c!<%W$,(B HDD $BHsEk:\$NNw2AHG(B SL $B%6%&%k%9!V(BSL-C1000$B!W$rH/Gd(B</FONT><BR></A><FONT SIZE="-1" ></FONT></TD>
+		  ;;<TD><A HREF="/frame.asp?/soft2002/detail.asp?PID=3141" TARGET="_top"><FONT SIZE="-1" >くらどぅ vA20(ラジェンダ用 ToDo)</FONT></A></TD>
+		  ;;<TD><A HREF="/NewsLink/" TARGET="_top"><FONT SIZE="-1" COLOR="#FF0000">【News】</FONT><BR></A><A HREF="http://www.wince.ne.jp/snap/cnBoard.asp?PID=1376" TARGET="_top"><FONT SIZE="-1" >シャープが HDD 非搭載の廉価版 SL ザウルス「SL-C1000」を発売</FONT><BR></A><FONT SIZE="-1" ></FONT></TD>
 		  "<A HREF=\"\\([^\"]+\\)\" TARGET=\"_top\"><FONT SIZE=[^<>]+>\\([^<>]+\\)<\\/FONT>"
 		  end t nil)
 	    (setq url (match-string-no-properties 1)
 		  subject (match-string-no-properties 2))
-	    ;; ("/NewsLink/" "$B!Z(BNews$B![(B")
+	    ;; ("/NewsLink/" "【News】")
 	    (when (not (and (string-match "^/.*/$" url)
-			    (string-match "^$B!Z(B.*$B![(B$" subject)))
+			    (string-match "^【.*】$" subject)))
 	      (setq count (1+ count))
 	      ;; building ID
 	      (setq id (format "<%02d%08d%%%s@%s>" count rawdate group baseurl))

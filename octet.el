@@ -1,4 +1,4 @@
-;;; octet.el --- An octet stream viewer.
+;;; octet.el --- An octet stream viewer. -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2000, 2002, 2003, 2004, 2005, 2010, 2014, 2016, 2017
 ;; Yuuichi Teranishi <teranisi@gohome.org>

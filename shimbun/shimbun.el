@@ -1,4 +1,4 @@
-;;; shimbun.el --- interfacing with web newspapers -*- coding: iso-2022-7bit; -*-
+;;; shimbun.el --- interfacing with web newspapers -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001-2014, 2017, 2018 Yuuichi Teranishi <teranisi@gohome.org>
 
@@ -1259,17 +1259,17 @@ integer n:    Retrieve n pages of header indices.")
 (luna-define-method shimbun-footer ((shimbun shimbun-japanese-newspaper) header
 				    &optional html)
   (if html
-      (concat "<div align=\"left\">\n--&nbsp;<br>\n$B$3$N5-;v$NCx:n8"$O!"(B"
+      (concat "<div align=\"left\">\n--&nbsp;<br>\nこの記事の著作権は、"
 	      (shimbun-server-name shimbun)
-	      "$B<R$K5"B0$7$^$9!#(B<br>\n$B86J*$O(B <a href=\""
+	      "社に帰属します。<br>\n原物は <a href=\""
 	      (shimbun-article-base-url shimbun header) "\">&lt;"
 	      (shimbun-article-base-url shimbun header)
-	      "&gt;</a> $B$G8x3+$5$l$F$$$^$9!#(B\n</div>\n")
-    (concat "-- \n$B$3$N5-;v$NCx:n8"$O!"(B"
+	      "&gt;</a> で公開されています。\n</div>\n")
+    (concat "-- \nこの記事の著作権は、"
 	    (shimbun-server-name shimbun)
-	    "$B<R$K5"B0$7$^$9!#(B\n$B86J*$O(B <"
+	    "社に帰属します。\n原物は <"
 	    (shimbun-article-base-url shimbun header)
-	    "> $B$G8x3+$5$l$F$$$^$9!#(B\n")))
+	    "> で公開されています。\n")))
 
 ;;; Misc Functions
 (defun shimbun-header-insert-and-buffer-string (shimbun header
@@ -1550,23 +1550,23 @@ buffer."
       (narrow-to-region start end)
       (goto-char start)
       (when quote
-	(while (re-search-forward "$B!c(B\\(?:[ $B!!(B]\\|&nbsp;\\)?" nil t)
+	(while (re-search-forward "＜\\(?:[ 　]\\|&nbsp;\\)?" nil t)
 	  (replace-match "&lt;"))
 	(goto-char start)
-	(while (re-search-forward "\\(?:[ $B!!(B]\\|&nbsp;\\)?$B!d(B" nil t)
+	(while (re-search-forward "\\(?:[ 　]\\|&nbsp;\\)?＞" nil t)
 	  (replace-match "&gt;"))
 	(goto-char start)
-	(while (search-forward "$B!u(B" nil t)
+	(while (search-forward "＆" nil t)
 	  (replace-match "&amp;"))
 	(goto-char start))
       (while (re-search-forward "\
-\\(?:[$B#F#f(B][$B#I#i(B][$B#L#l(B][$B#E#e(B]\\|[$B#F#f(B][$B#T#t(B][$B#P#p(B]\
-\\|[$B#H#h(B][$B#T#t(B][$B#T#t(B][$B#P#p(B][$B#S#s(B]?\\|[$B#M#m(B][$B#A#a(B][$B#I#i(B][$B#L#l(B][$B#T#t(B][$B#O#o(B]\\)\
-$B!'(B\\cj+"
+\\(?:[Ｆｆ][Ｉｉ][Ｌｌ][Ｅｅ]\\|[Ｆｆ][Ｔｔ][Ｐｐ]\
+\\|[Ｈｈ][Ｔｔ][Ｔｔ][Ｐｐ][Ｓｓ]?\\|[Ｍｍ][Ａａ][Ｉｉ][Ｌｌ][Ｔｔ][Ｏｏ]\\)\
+：\\cj+"
 				nil t)
 	(japanese-hankaku-region (match-beginning 0) (match-end 0) t))
       (goto-char start)
-      (while (re-search-forward "\\([^0-9$B#0(B-$B#9(B]\\)$B!'(B\\|$B!'(B\\([^ 0-9$B!!#0(B-$B#9(B]\\)"
+      (while (re-search-forward "\\([^0-9０-９]\\)：\\|：\\([^ 0-9　０-９]\\)"
 				nil t)
 	(if (match-beginning 1)
 	    (replace-match "\\1:")
@@ -1575,63 +1575,63 @@ buffer."
 	(unless (looking-at "&nbsp;")
 	  (insert " ")))
       (goto-char start)
-      (while (search-forward "$B!((B" nil t)
+      (while (search-forward "；" nil t)
 	(replace-match ";")
-	(unless (looking-at "[ $B!!(B]\\|&nbsp;")
+	(unless (looking-at "[ 　]\\|&nbsp;")
 	  (insert " ")))
       (goto-char start)
-      ;; $B#Z!w#Z(B -> $B#Z(B@$B#Z(B
-      ;; where $B#Z(B is a zenkaku alphanumeric, $B!w(B is a zenkaku symbol.
-      (while (re-search-forward "\\cA[$B!%!-!.!0!2!=!>!?!@!C!G!w(B]\\cA" nil t)
+      ;; Ｚ＠Ｚ -> Ｚ@Ｚ
+      ;; where Ｚ is a zenkaku alphanumeric, ＠ is a zenkaku symbol.
+      (while (re-search-forward "\\cA[．´｀＾＿―‐／＼｜’＠]\\cA" nil t)
 	(backward-char 2)
 	(insert (prog1
 		    (cdr (assq (char-after)
-			       '((?$B!%(B . ?.) (?$B!-(B . ?') (?$B!.(B . ?`)
-				 (?$B!0(B . ?^) (?$B!2(B . ?_) (?$B!=(B . ?-)
-				 (?$B!>(B . ?-) (?$B!?(B . ?/) (?$B!@(B . ?\\)
-				 (?$B!C(B . ?|) (?$B!G(B . ?') (?$B!w(B . ?@))))
+			       '((?． . ?.) (?´ . ?') (?｀ . ?`)
+				 (?＾ . ?^) (?＿ . ?_) (?― . ?-)
+				 (?‐ . ?-) (?／ . ?/) (?＼ . ?\\)
+				 (?｜ . ?|) (?’ . ?') (?＠ . ?@))))
 		  (delete-char 1))))
       (goto-char start)
-      ;; Replace Chinese hyphen with "$B!](B".
+      ;; Replace Chinese hyphen with "−".
       (condition-case nil
 	  (let ((regexp (concat "[" (list (make-char 'chinese-gb2312 35 45)
 					  (make-char 'chinese-big5-1 34 49))
 				"]")))
 	    (while (re-search-forward regexp nil t)
-	      (replace-match "$B!](B")))
+	      (replace-match "−")))
 	(error))
       (goto-char start)
       (while (re-search-forward
-	      "[^$B!!!"!#!$!%!2!<!=!>!A!A!F!G!H!I!J!K!N!O!P!Q!R!S!a!l!m!o(B]+"
+	      "[^　、。，．＿ー―‐〜〜‘’“”（）［］｛｝〈〉＝′″￥]+"
 	      nil t)
 	(japanese-hankaku-region (match-beginning 0) (match-end 0) t))
       (goto-char start)
-      ;; Exclude ">$B!!(B" in order not to break paragraph start.
-      (while (re-search-forward "\\([!-=?-~]\\)$B!!(B\\|$B!!(B\\([!-~]\\)" nil t)
+      ;; Exclude ">　" in order not to break paragraph start.
+      (while (re-search-forward "\\([!-=?-~]\\)　\\|　\\([!-~]\\)" nil t)
 	(if (match-beginning 1)
 	    (replace-match "\\1 ")
 	  (unless (memq (char-before (match-beginning 0)) '(nil ?\n ?>))
 	    (replace-match " \\2"))
 	  (backward-char 1)))
       (goto-char start)
-      (while (re-search-forward "\\([!-~]\\)$B!"(B[ $B!!(B]*\\([!-~]\\)" nil t)
+      (while (re-search-forward "\\([!-~]\\)、[ 　]*\\([!-~]\\)" nil t)
 	(replace-match "\\1, \\2")
 	(backward-char 1))
       (goto-char start)
-      (while (re-search-forward "$B!$(B\\(\\cj\\)" nil t)
-	(replace-match "$B!"(B\\1")
+      (while (re-search-forward "，\\(\\cj\\)" nil t)
+	(replace-match "、\\1")
 	(backward-char 1))
       (goto-char start)
-      (while (re-search-forward "\\(\\cj\\)$B!$(B" nil t)
-	(replace-match "\\1$B!"(B"))
+      (while (re-search-forward "\\(\\cj\\)，" nil t)
+	(replace-match "\\1、"))
       (goto-char start)
-      (while (re-search-forward "\\([0-9]\\)$B!$(B\\([0-9][0-9][0-9][^0-9]\\)"
+      (while (re-search-forward "\\([0-9]\\)，\\([0-9][0-9][0-9][^0-9]\\)"
 				nil t)
 	(replace-match "\\1,\\2")
 	(backward-char 2))
       (goto-char start)
       (while (re-search-forward "\
-\\([0-9]\\)\\(?:\\($B!%(B\\)\\|\\($B!2(B\\)\\|\\($B!=(B\\)\\|\\($B!>(B\\)\\)\\([0-9]\\)"
+\\([0-9]\\)\\(?:\\(．\\)\\|\\(＿\\)\\|\\(―\\)\\|\\(‐\\)\\)\\([0-9]\\)"
 				nil t)
 	(replace-match (cond ((match-beginning 2)
 			      "\\1.\\6")
@@ -1642,9 +1642,9 @@ buffer."
 	(backward-char 1))
       (when (eq w3m-output-coding-system 'utf-8)
 	(goto-char start)
-	(while (re-search-forward "\\([$A!.!0$B!F!H(B]\\)\\|[$A!c$B!G!I!k!l!m(B]" nil t)
+	(while (re-search-forward "\\([$A!.!0‘“]\\)\\|[$A!c’”°′″]" nil t)
 	  (if (match-beginning 1)
-	      (or (memq (char-before (match-beginning 1)) '(?  ?$B!!(B))
+	      (or (memq (char-before (match-beginning 1)) '(?  ?　))
 		  (string-equal (buffer-substring
 				 (match-beginning 1)
 				 (max (- (match-beginning 1) 6)
@@ -1654,19 +1654,19 @@ buffer."
 		    (backward-char 1)
 		    (insert " ")
 		    (forward-char 1)))
-	    (unless (looking-at "?:[ $B!!(B]\\|&nbsp;")
+	    (unless (looking-at "?:[ 　]\\|&nbsp;")
 	      (insert " ")))))
 
       ;; Do wakachi-gaki.
-      ;; FIXME:$B!H2V$NCf(B 3$B%H%j%*!I!H%Y%9%H(B 8$B?J=P!I(B
+      ;; FIXME:“花の中 3トリオ”“ベスト 8進出”
       (goto-char start)
       (while (re-search-forward
-	      "\\(\\cj\\)\\(?:[ $B!!(B]\\|&nbsp;\\)\\([])>}]\
+	      "\\(\\cj\\)\\(?:[ 　]\\|&nbsp;\\)\\([])>}]\
 \\|&#\\(?:62\\|187\\|8217\\|8221\\|8250\\|8969\\|8971\\|9002\\);\
 \\|&\\(?:gt\\|raquo\\|rsquo\\|rdquo\\|rsaquo\\|rceil\\|rfloor\\|rang\\);\\)\
 \\|\\([(<[{]\\|&#\\(?:60\\|171\\|8216\\|8220\\|8249\\|8968\\|8970\\|9001\\);\
 \\|&\\(?:lt\\|laquo\\|lsquo\\|ldquo\\|lsaquo\\|lceil\\|lfloor\\|lang\\);\\)\
-\\(?:[ $B!!(B]\\|&nbsp;\\)\\(\\cj\\)"
+\\(?:[ 　]\\|&nbsp;\\)\\(\\cj\\)"
 	      nil t)
 	(replace-match (if (match-beginning 1) "\\1\\2" "\\3\\4"))
 	(backward-char 1))
@@ -1688,14 +1688,14 @@ buffer."
 	 ((match-beginning 1)
 	  (unless (or
 		   (and (member (match-string 1)
-				'("$BL@<#(B" "$BBg@5(B" "$B><OB(B" "$BJ?@.(B"))
-			(eq (char-before) ?$BG/(B))
-		   (and (member (match-string 1) '("$B8aA0(B" "$B8a8e(B"))
-			(eq (char-before) ?$B;~(B))
+				'("明治" "大正" "昭和" "平成"))
+			(eq (char-before) ?年))
+		   (and (member (match-string 1) '("午前" "午後"))
+			(eq (char-before) ?時))
 		   (memq (char-before (match-end 1))
-			 '(?$B!!(B ?$B!\(B ?$B!](B ?$B!^(B ?$B!_(B ?$B!`(B ?$B!a(B ?$B!b(B ?$B!e(B ?$B!f(B ?$B-p(B
-			       ?$B"c(B ?$B"d(B))
-		   (and (memq (char-before (match-end 1)) '(?$BBh(B ?$BLs(B))
+			 '(?　 ?＋ ?− ?± ?× ?÷ ?＝ ?≠ ?≦ ?≧ ?
+			       ?≪ ?≫))
+		   (and (memq (char-before (match-end 1)) '(?第 ?約))
 			(memq ?j
 			      (shimbun-char-category-list (char-before)))))
 	    (replace-match "\\1 \\2"))
@@ -1704,11 +1704,11 @@ buffer."
 	  (replace-match "\\3 \\4")
 	  (goto-char (match-end 3)))
 	 ((match-beginning 5)
-	  (unless (memq (char-after (match-beginning 6)) '(?$B$D(B))
+	  (unless (memq (char-after (match-beginning 6)) '(?つ))
 	    (replace-match "\\5 \\6"))
 	  (goto-char (match-end 5)))
 	 ((match-beginning 7)
-	  (unless (eq (char-after (match-beginning 7)) ?$B!!(B)
+	  (unless (eq (char-after (match-beginning 7)) ?　)
 	    (replace-match "\\7 \\8"))
 	  (goto-char (match-end 7)))
 	 (t
@@ -1726,29 +1726,29 @@ buffer."
 	       "\\(\\cg\\)\\(\\cj\\)\\|\\(\\cj\\)\\(\\cg\\)")))
 	(while (re-search-forward regexp nil t)
 	  (if (match-beginning 1)
-	      (unless (eq (char-before) ?$B!!(B)
+	      (unless (eq (char-before) ?　)
 		(replace-match "\\1 \\2"))
-	    (unless (eq (char-after (match-beginning 3)) ?$B!!(B)
+	    (unless (eq (char-after (match-beginning 3)) ?　)
 	      (replace-match "\\3 \\4")))
 	  (backward-char 1)))
 
       ;; Finally strip useless space.
       (goto-char start)
-      (while (re-search-forward "\\($B"((B\\) \\([0-9]\\)" nil t)
+      (while (re-search-forward "\\(※\\) \\([0-9]\\)" nil t)
 	(replace-match "\\1\\2"))
       (goto-char start)
       (let ((regexp
 	     (if (eq w3m-output-coding-system 'utf-8)
 		 (eval-when-compile
-		   (let ((chars "$A!2!4!6!8!:!<!>$B|~$A#($B!"!#!$!%!&!+!,!1!3!4!5!6!7(B\
-$B!A!J!K!L!M!N!O!P!Q!R!S!T!U!V!W!X!Y!Z![(B"))
-		     (concat "\\(?:[ $B!!(B]\\|&nbsp;\\)\\([" chars "$A!f$B!9!n(B]\\)"
-			     "\\|\\([" chars "]\\)\\(?:[ $B!!(B]\\|&nbsp;\\)")))
+		   (let ((chars "$A!2!4!6!8!:!<!>ち、。，．・゛゜￣ヽヾゝゞ〃\
+〜（）〔〕［］｛｝〈〉《》「」『』【】"))
+		     (concat "\\(?:[ 　]\\|&nbsp;\\)\\([" chars "$A!f々℃]\\)"
+			     "\\|\\([" chars "]\\)\\(?:[ 　]\\|&nbsp;\\)")))
 	       (eval-when-compile
-		 (let ((chars "$A!.!0!2!4!6!8!:!<!>!c!d!e!l$B|~$A#($B!"!#!$!%!&!+!,!/(B\
-$B!1!3!4!5!6!7!A!B!D!E!F!G!H!I!J!K!L!M!N!O!P!Q!R!S!T!U!V!W!X!Y!Z![!k!l!m!x(B"))
-		   (concat "\\(?:[ $B!!(B]\\|&nbsp;\\)\\([" chars "$A!f$B!9!n(B]\\)"
-			   "\\|\\([" chars "]\\)\\(?:[ $B!!(B]\\|&nbsp;\\)"))))))
+		 (let ((chars "$A!.!0!2!4!6!8!:!<!>!c!d!e!lち、。，．・゛゜¨\
+￣ヽヾゝゞ〃〜‖…‥‘’“”（）〔〕［］｛｝〈〉《》「」『』【】°′″§"))
+		   (concat "\\(?:[ 　]\\|&nbsp;\\)\\([" chars "$A!f々℃]\\)"
+			   "\\|\\([" chars "]\\)\\(?:[ 　]\\|&nbsp;\\)"))))))
 	(while (re-search-forward regexp nil t)
 	  (goto-char (match-beginning 0))
 	  (if (match-beginning 1)
@@ -1767,7 +1767,7 @@ buffer."
 (defun shimbun-japanese-hankaku-region (start end &optional quote)
   "Convert Japanese zenkaku ASCII chars between START and END into hankaku.
 There are exceptions; some chars and the ones in links aren't converted,
-and \"$B!c(B\", \"$B!d(B\" and \"$B!u(B\" are quoted if QUOTE is non-nil."
+and \"＜\", \"＞\" and \"＆\" are quoted if QUOTE is non-nil."
   (setq end (set-marker (make-marker) end))
   (while start
     (goto-char start)
@@ -1789,8 +1789,8 @@ and \"$B!c(B\", \"$B!d(B\" and \"$B!u(B\" are quoted if QUOTE is non-nil."
 (defun shimbun-japanese-hankaku-buffer (&optional quote)
   "Convert Japanese zenkaku ASCII chars in the current buffer into hankaku.
 Sections surrounded by the <pre>...</pre> tags are not processed.
-There are exceptions; some chars aren't converted, and \"$B!c(B\", \"$B!d(B\" and
-\"$B!u(B\" are quoted if QUOTE is non-nil."
+There are exceptions; some chars aren't converted, and \"＜\", \"＞\" and
+\"＆\" are quoted if QUOTE is non-nil."
   (let ((start (goto-char (point-min))))
     (while (search-forward "<pre>" nil t)
       (when (> (match-beginning 0) start)

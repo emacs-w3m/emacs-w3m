@@ -1,4 +1,4 @@
-;;; sb-rss.el --- shimbun backend for RSS (Rich Site Summary).
+;;; sb-rss.el --- shimbun backend for RSS (Rich Site Summary). -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2003-2011, 2013 Koichiro Ohba <koichiro@meadowy.org>
 ;; Copyright (C) 2003-2011, 2013 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>

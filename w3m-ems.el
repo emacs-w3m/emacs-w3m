@@ -1,4 +1,4 @@
-;;; w3m-ems.el --- GNU Emacs stuff for emacs-w3m
+;;; w3m-ems.el --- GNU Emacs stuff for emacs-w3m -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001-2013, 2016-2018 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

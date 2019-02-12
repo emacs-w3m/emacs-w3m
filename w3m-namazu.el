@@ -1,4 +1,4 @@
-;;; w3m-namazu.el --- The add-on program to search files with Namazu.
+;;; w3m-namazu.el --- The add-on program to search files with Namazu. -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2009, 2017
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

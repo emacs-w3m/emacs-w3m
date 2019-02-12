@@ -1,4 +1,4 @@
-;;; sb-nikkansports.el --- shimbun backend for www.nikkansports.com -*- coding: iso-2022-7bit; -*-
+;;; sb-nikkansports.el --- shimbun backend for www.nikkansports.com -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2008, 2017
 ;; MIYOSHI Masanori <miyoshi@meadowy.org>
@@ -38,38 +38,38 @@
 
 (defvar shimbun-nikkansports-url "http://www.nikkansports.com/")
 
-(defvar shimbun-nikkansports-server-name "$BF|4)%9%]!<%D(B")
+(defvar shimbun-nikkansports-server-name "日刊スポーツ")
 
 (defvar shimbun-nikkansports-group-table
-  '(("flash" "$B:G?7%K%e!<%9(B" "flash/flash-news.html")
-    ("baseball" "$BLn5e(B" "baseball/news/backnumber-baseball.html")
-    ("baseball.highschool" "$B9b9;Ln5e(B"
+  '(("flash" "最新ニュース" "flash/flash-news.html")
+    ("baseball" "野球" "baseball/news/backnumber-baseball.html")
+    ("baseball.highschool" "高校野球"
      "baseball/highschool/news/backnumber-highschool.html")
-    ("baseball.amateur" "$BBg3X!&<R2q?MLn5e(B"
+    ("baseball.amateur" "大学・社会人野球"
      "baseball/amateur/news/backnumber-amateur.html")
-    ("baseball.mlb" "$B#M#L#B(B" "baseball/mlb/news/backnumber-mlb.html")
-    ("soccer" "$B%5%C%+!<(B" "soccer/news/backnumber-soccer.html")
-    ("soccer.japan" "$B%5%C%+!<F|K\BeI=(B"
+    ("baseball.mlb" "ＭＬＢ" "baseball/mlb/news/backnumber-mlb.html")
+    ("soccer" "サッカー" "soccer/news/backnumber-soccer.html")
+    ("soccer.japan" "サッカー日本代表"
      "soccer/japan/news/backnumber-japan.html")
-    ("soccer.world" "$B3$30%5%C%+!<(B" "soccer/world/news/backnumber-world.html")
-    ("sports" "$B%9%]!<%D(B" "sports/news/backnumber-sports.html")
-    ("sumo" "$BBgAjKP(B" "sports/sumo/news/backnumber-sumo.html")
-    ("nba" "$B#N#B#A(B" "sports/nba/news/backnumber-nba.html")
-    ("nfl" "$B#N#F#L(B" "sports/nfl/news/backnumber-nfl.html")
-    ("nhl" "$B#N#H#L(B" "sports/nhl/news/backnumber-nhl.html")
-    ("rugby" "$B%i%0%S!<(B" "sports/rugby/news/backnumber-rugby.html")
-    ("golf" "$B%4%k%U(B" "sports/golf/news/backnumber-golf.html")
-    ("motor" "$B%b!<%?!<%9%]!<%D(B" "sports/motor/news/backnumber-motor.html")
-    ("battle" "$B3JF.5;(B" "battle/news/backnumber-battle.html")
-    ("race" "$B6%GO(B" "race/news/backnumber-race.html")
-    ("race.kka" "$B6%NX!&6%Dz!&%*!<%H(B" "race/kka/news/backnumber-kka.html")
-    ("entertainment" "$B7]G=(B" "entertainment/news/backnumber-entertainment.html")
-    ("cinema" "$B%7%M%^(B" "entertainment/cinema/news/backnumber-cinema.html")
-    ("general" "$B<R2q(B" "general/news/backnumber-general.html")))
+    ("soccer.world" "海外サッカー" "soccer/world/news/backnumber-world.html")
+    ("sports" "スポーツ" "sports/news/backnumber-sports.html")
+    ("sumo" "大相撲" "sports/sumo/news/backnumber-sumo.html")
+    ("nba" "ＮＢＡ" "sports/nba/news/backnumber-nba.html")
+    ("nfl" "ＮＦＬ" "sports/nfl/news/backnumber-nfl.html")
+    ("nhl" "ＮＨＬ" "sports/nhl/news/backnumber-nhl.html")
+    ("rugby" "ラグビー" "sports/rugby/news/backnumber-rugby.html")
+    ("golf" "ゴルフ" "sports/golf/news/backnumber-golf.html")
+    ("motor" "モータースポーツ" "sports/motor/news/backnumber-motor.html")
+    ("battle" "格闘技" "battle/news/backnumber-battle.html")
+    ("race" "競馬" "race/news/backnumber-race.html")
+    ("race.kka" "競輪・競艇・オート" "race/kka/news/backnumber-kka.html")
+    ("entertainment" "芸能" "entertainment/news/backnumber-entertainment.html")
+    ("cinema" "シネマ" "entertainment/cinema/news/backnumber-cinema.html")
+    ("general" "社会" "general/news/backnumber-general.html")))
 
 (defvar shimbun-nikkansports-content-start
   "<[\t\n ]*![\t\n ]*-+[\t\n ]*\\++[\t\n ]*\
-$B%K%e!<%9K\J8(B[\t\n ]*\\++[\t\n ]*-+[\t\n ]*>[\t\n ]*\
+ニュース本文[\t\n ]*\\++[\t\n ]*-+[\t\n ]*>[\t\n ]*\
 \\(?:\\(?:<[\t\n ]*/?[\t\n ]*[ads][^>]+>\
 \\|<[\t\n ]*h[0-9]+[\t\n ]*>[^<]+<[\t\n ]*/[\t\n ]*h[0-9]+[\t\n ]*>\\)\
 \[\t\n ]*\\)*")
@@ -77,7 +77,7 @@
 (defvar shimbun-nikkansports-content-end
   "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
 <[\t\n ]*![\t\n ]*-+[\t\n ]*/[\t\n ]*\\++[\t\n ]*\
-$B%K%e!<%9K\J8(B[\t\n ]*\\++[\t\n ]*-+[\t\n ]*>")
+ニュース本文[\t\n ]*\\++[\t\n ]*-+[\t\n ]*>")
 
 (defvar shimbun-nikkansports-expiration-days 17)
 
@@ -121,7 +121,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUDKpy11PIeeNv///+
 	    "[^.]+\\)\\.html\\)\">[\t ]*"
 	    ;; 6. subject
 	    "\\([^<]+\\)"
-	    "[\t ]*</a>[^\n]+\\[[\t ]*[0-9]+$BF|(B[\t ]*"
+	    "[\t ]*</a>[^\n]+\\[[\t ]*[0-9]+日[\t ]*"
 	    ;; 7. time
 	    "\\([012][0-9]:[0-5][0-9]\\)"
 	    "[\t ]*\\]")))

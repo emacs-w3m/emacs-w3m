@@ -1,4 +1,4 @@
-;;; sb-emacs-w3m.el --- shimbun backend for emacs-w3m ml
+;;; sb-emacs-w3m.el --- shimbun backend for emacs-w3m ml -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004 Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 

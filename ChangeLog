@@ -1,5 +1,11 @@
 2019-02-03  Boruch Baum  <boruch_baum@gmx.com>
 
+	* Refactor entire codebase for utf-8. There were a zillion changes in
+	this commit, spread over very many files. See the git commit extended
+	message for details.
+  
+2019-02-03  Boruch Baum  <boruch_baum@gmx.com>
+
 	* w3m-cookie.el (w3m-cookie-shutdown): avoid duplicate get-buffer call.
 
 	* w3m-form.el (w3m-form-textarea-file-cleanup)

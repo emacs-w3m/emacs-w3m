@@ -1,4 +1,4 @@
-;;; w3m-tabmenu.el --- Functions for TAB menu browsing -*- coding: iso-2022-7bit; -*-
+;;; w3m-tabmenu.el --- Functions for TAB menu browsing -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001-2007, 2009, 2011-2012
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -173,7 +173,7 @@
 		     w3m-tab-menubar-items-sub-coeff))
 	(if (< total max)
 	    (setq menu (w3m-tab-menubar-make-items-1 buflst))
-	  (setq menu (list `(,(w3m-make-menu-item "$B%?%V$NA*Br(B"
+	  (setq menu (list `(,(w3m-make-menu-item "タブの選択"
 						  "Select TAB")
 			     ,@(w3m-tab-menubar-make-items-1 buflst)))))
 	(setq w3m-tab-menubar-make-items-preitems

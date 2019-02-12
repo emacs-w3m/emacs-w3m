@@ -1,4 +1,4 @@
-;;; sb-jpilot.el --- shimbun backend for www.jpilot.org
+;;; sb-jpilot.el --- shimbun backend for www.jpilot.org -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 

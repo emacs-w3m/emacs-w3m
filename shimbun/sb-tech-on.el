@@ -1,4 +1,4 @@
-;;; sb-tech-on.el --- shimbun backend for Tech-On! -*- coding: iso-2022-7bit -*-
+;;; sb-tech-on.el --- shimbun backend for Tech-On! -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2007-2011 Katsumi Yamaoka
 
@@ -47,29 +47,29 @@ will never log in.  See also `shimbun-tech-on-user-name'.")
 (defvar shimbun-tech-on-url "http://techon.nikkeibp.co.jp/")
 
 (defvar shimbun-tech-on-group-table
-  '(("latestnews" "Tech-On$B!*(B" "/rss/index.rdf")
-    ("mobile" "$B%b%P%$%k(B" "/mobile/index.rdf")
-    ("bbint" "$BDL?.(B" "/bbint/index.rdf")
-    ("d-ce" "$B%G%8%?%k2HEE(B" "/d-ce/index.rdf")
+  '(("latestnews" "Tech-On！" "/rss/index.rdf")
+    ("mobile" "モバイル" "/mobile/index.rdf")
+    ("bbint" "通信" "/bbint/index.rdf")
+    ("d-ce" "デジタル家電" "/d-ce/index.rdf")
     ("AT" "Automotive Technology" "/AT/index.rdf")
     ("edaonline" "EDA Online" "/edaonline/index.rdf")
-    ("device" "$BEE;RItIJ%F%/%N%m%8(B" "/device/index.rdf")
-    ("lsi" "LSI$B>pJs6I(B" "/lsi/index.rdf")
+    ("device" "電子部品テクノロジ" "/device/index.rdf")
+    ("lsi" "LSI情報局" "/lsi/index.rdf")
     ("silicon" "Silicon Online" "/silicon/index.rdf")
-    ("observer" "$B;:6HF08~%*%V%6!<%P(B" "/observer/index.rdf")
+    ("observer" "産業動向オブザーバ" "/observer/index.rdf")
     ("fpd" "FPD International" "/fpd/index.rdf")
-    ("mono" "$B$b$N$E$/$j$H(BIT" "/mono/index.rdf")
-    ("embedded" "$BAH$_9~$_3+H/(B" "/embedded/index.rdf")
-    ("mecha" "$B5!3#!&%a%+%H%m%K%/%9(B" "/mecha/index.rdf")
+    ("mono" "ものづくりとIT" "/mono/index.rdf")
+    ("embedded" "組み込み開発" "/embedded/index.rdf")
+    ("mecha" "機械・メカトロニクス" "/mecha/index.rdf")
     ("MEMS" "MEMS International" "/MEMS/index.rdf")
-    ("nano" "$B%J%N%F%/(I%$B?7AG:`(B" "/nano/index.rdf")
-    ("carele" "$B%+!<%(%l%/%H%m%K%/%9(B" "/carele/index.rdf")
-    ("board" "$BF|7P%\!<%I>pJs(B" "/board/index.rdf")
-    ("mcu" "$B%^%$%3%s(B" "/mcu/index.rdf")
+    ("nano" "ナノテク疋新素材" "/nano/index.rdf")
+    ("carele" "カーエレクトロニクス" "/carele/index.rdf")
+    ("board" "日経ボード情報" "/board/index.rdf")
+    ("mcu" "マイコン" "/mcu/index.rdf")
     ("PLM" "PLM" "/PLM/index.rdf")
-    ("memory" "$B%a%b%j(B" "/memory/index.rdf")
-    ("measurement" "$B7WB,(B" "/measurement/index.rdf")
-    ("column.mot" "$B5;=Q7P1D@oN,9M(B" "/column/mot/index.rdf")))
+    ("memory" "メモリ" "/memory/index.rdf")
+    ("measurement" "計測" "/measurement/index.rdf")
+    ("column.mot" "技術経営戦略考" "/column/mot/index.rdf")))
 
 (defvar shimbun-tech-on-server-name "Tech-On!")
 
@@ -153,8 +153,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAADFBMVEUAAAB/gP+ttr7///8
 	  (goto-char (point-min))
 	  (setq shimbun-tech-on-logged-in
 		(not (re-search-forward "\
-\\(?:$B%f!<%6!<L>(B\\|$B%Q%9%o!<%I(B\\).*$B$K8m$j$,$"$j$^$9!#(B\
-\\|$B2q0wEPO?$,9T$o$l$F$$$^$;$s!#(B\
+\\(?:ユーザー名\\|パスワード\\).*に誤りがあります。\
+\\|会員登録が行われていません。\
 \\|ACTION=\"/login/login\\.jsp\\?MODE=LOGIN_EXEC\""
 					nil t))))
 	(if shimbun-tech-on-logged-in
@@ -171,9 +171,9 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAADFBMVEUAAAB/gP+ttr7///8
 (luna-define-method shimbun-multi-next-url ((shimbun shimbun-tech-on)
 					    header url)
   (goto-char (point-min))
-  (when (re-search-forward "[\t\n ]*\\(?:$B!J(B[\t\n ]*\\)*<a[\t\n ]+\
+  (when (re-search-forward "[\t\n ]*\\(?:（[\t\n ]*\\)*<a[\t\n ]+\
 \\(?:[^\t\n >]+[\t\n ]+\\)*href=\"\\([^\"]+\\)\"\
-\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>[\t\n ]*$B<!$N(B?$B%Z!<%8$X(B[^<]*</a>"
+\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>[\t\n ]*次の?ページへ[^<]*</a>"
 		   nil t)
     (shimbun-expand-url (match-string 1) url)))
 
@@ -221,10 +221,10 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAADFBMVEUAAAB/gP+ttr7///8
 (luna-define-method shimbun-footer :around ((shimbun shimbun-tech-on)
 					    header &optional html)
   (concat "<div align=\"left\">\n--&nbsp;<br>\n\
-$B$3$N5-;v$NCx:n8"$OF|7P(BBP$B<R!"$^$?$O$=$N>pJsDs6!<T$K5"B0$7$^$9!#(B\
-$B86J*$O(B<a href=\""
+この記事の著作権は日経BP社、またはその情報提供者に帰属します。\
+原物は<a href=\""
 	  (shimbun-article-base-url shimbun header)
-	  "\"><u>$B$3$3(B</u></a>$B$G8x3+$5$l$F$$$^$9!#(B\n</div>\n"))
+	  "\"><u>ここ</u></a>で公開されています。\n</div>\n"))
 
 (luna-define-method shimbun-article :before ((shimbun shimbun-tech-on)
 					     &rest args)

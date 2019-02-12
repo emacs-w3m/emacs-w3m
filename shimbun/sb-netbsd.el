@@ -1,4 +1,4 @@
-;;; sb-netbsd.el --- shimbun backend for netbsd.org
+;;; sb-netbsd.el --- shimbun backend for netbsd.org -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
 
