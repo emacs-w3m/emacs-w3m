@@ -1,4 +1,5 @@
 language: emacs-lisp
+dist: xenial
 env:
   - EMACS=emacs24
   - EMACS=emacs25
