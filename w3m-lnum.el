@@ -1074,7 +1074,9 @@ interactively resize."
 ;;;###autoload
 (defun w3m-lnum-external-view-this-url ()
   "Launch the external browser and display the link at point.
-If no link at point, turn on link numbers and open selected externally."
+
+If there is no link at point, this function activates numbering
+of visible links, and prompts the user to select one to open externally."
   (interactive)
   (let ((url (w3m-url-valid (or (w3m-anchor) (w3m-image)
 				(car
@@ -1087,7 +1089,9 @@ If no link at point, turn on link numbers and open selected externally."
 ;;;###autoload
 (defun w3m-lnum-edit-this-url ()
   "Edit the page linked from the anchor under the cursor.
-If no such, turn on link numbers and edit selected."
+
+If there is no link at point, this function activates numbering
+of visible links, and promopts the user to select one to edit."
   (interactive)
   (let ((url (or (w3m-url-valid (w3m-anchor))
 		 (car (w3m-lnum-get-action
@@ -1097,8 +1101,11 @@ If no such, turn on link numbers and edit selected."
 
 ;;;###autoload
 (defun w3m-lnum-print-this-url ()
-  "Display the url under point in the echo area and put it into `kill-ring'.
-If no url under point, activate numbering and select one."
+  "Display the url under point in the echo area.
+
+Also, put it into the `kill-ring' and the OS clipboard.
+If there is no url under point, this function activates numbering
+of visible URLs and prompts the user to select one."
   (interactive)
   (if (or (w3m-anchor) (w3m-image))
       (w3m-print-this-url t)
@@ -1106,6 +1113,7 @@ If no url under point, activate numbering and select one."
       (if link
 	  (let ((url (car link)))
 	    (kill-new url)
+            (w3m--send-to-gui-clipboard url)
 	    (w3m-message "%s%s" (let ((im-alt (nth 3 link)))
 				  (if (zerop (length im-alt)) ""
 				    (concat im-alt ": ")))
@@ -1115,7 +1123,9 @@ If no url under point, activate numbering and select one."
 ;;;###autoload
 (defun w3m-lnum-download-this-url ()
   "Download the file or the page pointed to by the link under point.
-If no point, activate numbering and select andchor to download."
+
+If there is no link under point,  this function activates numbering
+of visible links and prompts the user to select one to download."
   (interactive)
   (if (or (w3m-anchor) (w3m-image) (w3m-action))
       (w3m-download-this-url)
@@ -1130,7 +1140,9 @@ If no point, activate numbering and select andchor to download."
 ;;;###autoload
 (defun w3m-lnum-bookmark-add-this-url ()
   "Add link under cursor to bookmarks.
-If no link under point, activate numbering and ask for one."
+
+If there is no link under point, this function activates numbering
+of visible URLs and prompts the user to select one."
   (interactive)
   (let ((url (w3m-anchor)))
     (cond

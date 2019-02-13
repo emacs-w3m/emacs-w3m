@@ -1833,6 +1833,33 @@ rather than relying on `lexical-binding'.
 	  (buffer-substring-no-properties (point-min) (point-max))))
     url))
 
+(defcustom w3m-gui-clipboard-commands
+  '((gnu/linux . "printf '%s' | xsel -i -b"))
+  "How to send text to your system clipboard.
+
+When entering the command string, use \"%s\" to denote the actual
+data to be copied."
+  :group 'w3m
+  :type '(repeat
+           (cons :indent 4
+              (radio :indent 8
+	        (symbol :format "GNU/Linux\n"         gnu/linux)
+                (symbol :format "GNU Hurd\n"          gnu)
+	        (symbol :format "GNU/FreeBSD\n"       gnu/kfreebsd )
+	        (symbol :format "Darwin (MacOS)\n"    darwin)
+	        (symbol :format "MS-DOS\n"            ms-dos)
+	        (symbol :format "Windows NT 32-bit\n" windows-nt)
+	        (symbol :format "Cygwin\n"            cygwin))
+              (string :indent 8 :format "Command string: %v" ))))
+
+(defun w3m--send-to-gui-clipboard (content)
+  (let ((cmd (cdr (assq system-type w3m-gui-clipboard-commands))))
+    (if (not cmd)
+      (w3m--message t 'w3m-warning "No command to copy to gui clipboard.")
+     (if (not (string-match "%s" cmd))
+       (w3m--message t 'w3m-error "Malformed variable w3m-gui-clipboard-commands.")
+      (shell-command (replace-match (substring-no-properties content) t t cmd))))))
+
 (provide 'w3m-util)
 
 ;;; w3m-util.el ends here
