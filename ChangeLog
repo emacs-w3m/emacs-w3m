@@ -13,6 +13,9 @@
 	w3m-lnum-print-this-url, w3m-lnum-edit-this-url,
 	w3m-lnum-external-view-this-url): Alter docstring.
 
+* w3m-dtree.el (w3m-dtree-create-sub): BUGFIX: don't abort if a subdir
+	denies permission to read.
+
 2019-02-03  Boruch Baum  <boruch_baum@gmx.com>
 
 	* Refactor entire codebase for utf-8. There were a zillion changes in
