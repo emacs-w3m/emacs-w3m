@@ -1,4 +1,4 @@
-;;; sb-dennou.el --- shimbun backend class for $BEEG>39$N8=>l%l%]!<%H(B web page. -*- coding: iso-2022-7bit; -*-
+;;; sb-dennou.el --- shimbun backend class for 電脳街の現場レポート web page. -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2003, 2004 NAKAJIMA Mikio <minakaji@namazu.org>
 
@@ -68,8 +68,8 @@
       (goto-char (point-min))
       (catch 'stop
 	(while (re-search-forward "^<!-- *report start *-->" nil t nil)
-	  ;; <td><b>$B"#(B2$B7n(B19$BF|!J?e!K(B $B$H$j$"$($:$N;n1?E>!%!%(B<font color="red">$B!ZDI2C99?7$"$j![(B</font></b></td>
-	  (re-search-forward "<td><b>$B"#(B\\([0-9]+\\)$B7n(B\\([0-9]+\\)$BF|!J(B\\($B7n(B\\|$B2P(B\\|$B?e(B\\|$BLZ(B\\|$B6b(B\\|$BEZ(B\\|$BF|(B\\)$B!K(B\\(.+\\)</b></td>" nil t nil)
+	  ;; <td><b>■2月19日（水） とりあえずの試運転．．<font color="red">【追加更新あり】</font></b></td>
+	  (re-search-forward "<td><b>■\\([0-9]+\\)月\\([0-9]+\\)日（\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\)）\\(.+\\)</b></td>" nil t nil)
 	  (setq month (match-string 1)
 		day (match-string 2)
 		subject (match-string 4)

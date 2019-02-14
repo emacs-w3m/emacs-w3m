@@ -1,4 +1,4 @@
-;;; sb-yomiuri.el --- shimbun backend for www.yomiuri.co.jp -*- coding: iso-2022-7bit; -*-
+;;; sb-yomiuri.el --- shimbun backend for www.yomiuri.co.jp -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001-2008, 2017
 
@@ -68,13 +68,13 @@
 	     "\"[^>]*>" s0
 	     ;; 5. subject
 	     "\\([^<]+\\)"
-	     s0 "</a>[^<$B!J(B]*$B!J(B" s0
+	     s0 "</a>[^<（]*（" s0
 	     ;; 6. month
 	     "\\([01]?[0-9]\\)"
-	     s0 "$B7n(B" s0
+	     s0 "月" s0
 	     ;; 7. day
 	     "\\([0-3]?[0-9]\\)"
-	     s0 "$BF|(B" s0
+	     s0 "日" s0
 	     ;; 8. hour:minute
 	     "\\([012][0-9]:[0-5][0-9]\\)")
 	    1 2 4 3 5 6 7 8))
@@ -100,16 +100,16 @@
 	     s0 "<span" s1 "class=\"m\">" s0
 	     ;; 6. month
 	     "\\([01]?[0-9]\\)"
-	     s0 "$B7n(B" s0 "</span>" s0 "<span" s1 "class=\"d\">" s0
+	     s0 "月" s0 "</span>" s0 "<span" s1 "class=\"d\">" s0
 	     ;; 7. day
 	     "\\([0-3]?[0-9]\\)"
-	     s0 "$BF|(B" s0 "</span>")
+	     s0 "日" s0 "</span>")
 	    1 2 4 3 5 6 7))
 	 (kyoiku
 	  (cons (format (car default2) "kyoiku\\(?:/[^\"./]+\\)+")
 		(cdr default2))))
-    `(("atmoney" "$B%^%M!<!&7P:Q(B")
-      ("editorial" "$B<R@b!&%3%i%`(B" ""
+    `(("atmoney" "マネー・経済")
+      ("editorial" "社説・コラム" ""
        ,(concat "<a" s1 "href=\"/"
 		;; 1. url
 		"\\(%s/news/"
@@ -124,18 +124,18 @@
 		"\"[^>]*>" s0
 		;; 5. month
 		;; 6. ja month
-		"\\(?:\\([01]?[0-9]\\)\\|\\([$B#0#1(B]?[$B#0(B-$B#9(B]\\)\\)"
-		"$B7n(B"
+		"\\(?:\\([01]?[0-9]\\)\\|\\([０１]?[０-９]\\)\\)"
+		"月"
 		;; 7. day
 		;; 8. ja day
-		"\\(?:\\([0-3]?[0-9]\\)\\|\\([$B#0(B-$B#3(B]?[$B#0(B-$B#9(B]\\)\\)"
-		"$BF|IU(B[\t\n $B!!!&(B]*"
+		"\\(?:\\([0-3]?[0-9]\\)\\|\\([０-３]?[０-９]\\)\\)"
+		"日付[\t\n 　・]*"
 		;; 9. subject
 		"\\([^<]+\\)"
 		s0)
        1 2 4 3 9 5 7 nil 6 8)
-      ("entertainment" "$B%(%s%?!<%F%$%s%a%s%H(B")
-      ("iryou" "$B0eNE$H2p8n(B" "news/"
+      ("entertainment" "エンターテインメント")
+      ("iryou" "医療と介護" "news/"
        ,(concat ">" s0
 		;; 1. ja genre
 		"\\(\\cj+\\)"
@@ -162,19 +162,19 @@
 		"\\([^<]+\\)"
 		s0)
        2 4 8 5 9 6 7 nil nil nil 3 1)
-      ("kyoiku" "$B650i(B" "" ,@kyoiku)
-      ("kyoiku.children" "$B$3$I$b(B")
-      ("kyoiku.english" "$B1Q8l(B"
+      ("kyoiku" "教育" "" ,@kyoiku)
+      ("kyoiku.children" "こども")
+      ("kyoiku.english" "英語"
        "http://www.yomiuri.co.jp/kyoiku/learning/english/"
        ,@kyoiku)
-      ("kyoiku.qanda" "$B650i(BQ&A")
-      ("kyoiku.renaissance" "$B650i%k%M%5%s%9(B"
+      ("kyoiku.qanda" "教育Q&A")
+      ("kyoiku.renaissance" "教育ルネサンス"
        "http://www.yomiuri.co.jp/kyoiku/renai/")
-      ("kyoiku.special" "$BFC=8(B")
-      ("national" "$B<R2q(B" "" ,@default)
-      ("politics" "$B@/<#(B" "" ,@default)
-      ("science" "$B2J3X(B" "" ,@default)
-      ("sports" "$B%9%]!<%D(B" ""
+      ("kyoiku.special" "特集")
+      ("national" "社会" "" ,@default)
+      ("politics" "政治" "" ,@default)
+      ("science" "科学" "" ,@default)
+      ("sports" "スポーツ" ""
        ,(concat
 	 "<a" s1 "href=\"/"
 	 ;; 1. url
@@ -193,17 +193,17 @@
 	 "\"[^>]*>" s0
 	 ;; 6. subject
 	 "\\([^<]+\\)"
-	 "\\(?:" s0 "<img" s0 "[^>]+>\\)?" s0 "</a>[^<$B!J(B]*$B!J(B" s0
+	 "\\(?:" s0 "<img" s0 "[^>]+>\\)?" s0 "</a>[^<（]*（" s0
 	 ;; 7. month
 	 "\\([01]?[0-9]\\)"
-	 s0 "$B7n(B" s0
+	 s0 "月" s0
 	 ;; 8. day
 	 "\\([0-3]?[0-9]\\)"
-	 s0 "$BF|(B" s0
+	 s0 "日" s0
 	 ;; 9. hour:minute
 	 "\\([012][0-9]:[0-5][0-9]\\)")
        1 3 5 4 6 7 8 9 nil nil 2)
-      ("world" "$B9q:](B" "" ,@default)))
+      ("world" "国際" "" ,@default)))
   "Alist of group names, their Japanese translations, index pages,
 regexps and numbers.
 Regexp may contain the \"%s\" token which is replaced with a
@@ -212,7 +212,7 @@ of [0]url, [1,2]serial numbers, [3]year, [4]subject, [5]month, [6]day,
 \[7]hour:minute, [8]ja month, [9]ja day, [10]genre and [11]ja genre.")
 
 (defvar shimbun-yomiuri-subgroups-alist
-  (let* ((s0 "[\t\n $B!!(B]*")
+  (let* ((s0 "[\t\n 　]*")
 	 (s1 "[\t\n ]+")
 	 (default
 	   (list
@@ -231,13 +231,13 @@ of [0]url, [1,2]serial numbers, [3]year, [4]subject, [5]month, [6]day,
 	     "\"[^>]*>" s0
 	     ;; 5. subject
 	     "\\([^<]+\\)"
-	     s0 "</a>[^<$B!J(B]*$B!J(B" s0
+	     s0 "</a>[^<（]*（" s0
 	     ;; 6. month
 	     "\\([01]?[0-9]\\)"
-	     s0 "$B7n(B" s0
+	     s0 "月" s0
 	     ;; 7. day
 	     "\\([0-3]?[0-9]\\)"
-	     s0 "$BF|(B\\(?:" s0
+	     s0 "日\\(?:" s0
 	     ;; 8. hour:minute
 	     "\\([012][0-9]:[0-5][0-9]\\)\\)?")
 	    1 2 4 3 5 6 7 8))
@@ -312,10 +312,10 @@ of [0]url, [1,2]serial numbers, [3]year, [4]subject, [5]month, [6]day,
 	     s0 "<span" s1 "class=\"m\">" s0
 	     ;; 6. month
 	     "\\([01]?[0-9]\\)"
-	     s0 "$B7n(B" s0 "</span>" s0 "<span" s1 "class=\"d\">" s0
+	     s0 "月" s0 "</span>" s0 "<span" s1 "class=\"d\">" s0
 	     ;; 7. day
 	     "\\([0-3]?[0-9]\\)"
-	     s0 "$BF|(B" s0 "</span>")
+	     s0 "日" s0 "</span>")
 	    1 2 4 3 5 6 7))
 	 (entertainment
 	  (list
@@ -340,27 +340,27 @@ of [0]url, [1,2]serial numbers, [3]year, [4]subject, [5]month, [6]day,
 	    "\"[^>]*>" s0
 	    ;; 7. subject
 	    "\\([^<]+\\)"
-	    s0 "</a>[^<$B!J(B]*$B!J(B" s0
+	    s0 "</a>[^<（]*（" s0
 	    ;; 8. month
 	    "\\([01]?[0-9]\\)"
-	    s0 "$B7n(B" s0
+	    s0 "月" s0
 	    ;; 9. day
 	    "\\([0-3]?[0-9]\\)"
-	    s0 "$BF|(B")
+	    s0 "日")
 	   2 4 6 5 7 8 9 nil nil nil 3 1)))
     `(("atmoney"
-       ("$BJu$/$8(B" "lottery" "http://www.yomiuri.co.jp/atmoney/lottery/"
+       ("宝くじ" "lottery" "http://www.yomiuri.co.jp/atmoney/lottery/"
 	,(format (car default2) "atmoney/lottery") ,@(cdr default2))
-       ("$B6bM;%K%e!<%9(B" "mnews" "http://www.yomiuri.co.jp/atmoney/mnews/"
+       ("金融ニュース" "mnews" "http://www.yomiuri.co.jp/atmoney/mnews/"
 	,(format (car default) "atmoney/mnews") ,@(cdr default))
-       ("$B7P:Q%K%e!<%9(B" "news" "http://www.yomiuri.co.jp/atmoney/news/"
+       ("経済ニュース" "news" "http://www.yomiuri.co.jp/atmoney/news/"
 	,(format (car default) "atmoney/news") ,@(cdr default))
-       ("$B?7@=IJ>pJs(B" "pnews" "http://www.yomiuri.co.jp/atmoney/pnews/"
+       ("新製品情報" "pnews" "http://www.yomiuri.co.jp/atmoney/pnews/"
 	,(format (car default) "atmoney/pnews") ,@(cdr default)))
       ("entertainment"
-       ("$B1G2h(B" nil "http://www.yomiuri.co.jp/entertainment/cinema/"
+       ("映画" nil "http://www.yomiuri.co.jp/entertainment/cinema/"
 	,(format (car entertainment) "cinema") ,@(cdr entertainment))
-       ("$B#d#o#n#n#a(B" "donna" "http://www.yomiuri.co.jp/donna/"
+       ("ｄｏｎｎａ" "donna" "http://www.yomiuri.co.jp/donna/"
 	,(concat
 	  "<a" s1 "href=\"/"
 	  ;; 1. url
@@ -382,9 +382,9 @@ of [0]url, [1,2]serial numbers, [3]year, [4]subject, [5]month, [6]day,
 	  ;; 7. subject
 	  "\\([^<]+\\)")
 	1 2 3 4 7 5 6)
-       ("DVD$B>pJs(B" "dvd" "http://www.yomiuri.co.jp/entertainment/cinema/dvd/"
+       ("DVD情報" "dvd" "http://www.yomiuri.co.jp/entertainment/cinema/dvd/"
 	,(format (car default) "entertainment/cinema/dvd") ,@(cdr default))
-       ("$B%8%V%j$r$$$C$Q$$(B" "ghibli"
+       ("ジブリをいっぱい" "ghibli"
 	"http://www.yomiuri.co.jp/entertainment/ghibli/"
 	,(concat
 	  "<a" s1 "href=\""
@@ -401,71 +401,71 @@ of [0]url, [1,2]serial numbers, [3]year, [4]subject, [5]month, [6]day,
 	  "[^>]*>" s0
 	  ;; 5. subject
 	  "\\([^<]+\\)"
-	  "</a>" s0 "$B!J(B"
+	  "</a>" s0 "（"
 	  ;; 6. year
-	  "\\(20[0-9][0-9]\\)" "$BG/(B"
+	  "\\(20[0-9][0-9]\\)" "年"
 	  ;; 7. month
-	  "\\([01]?[0-9]\\)" "$B7n(B"
+	  "\\([01]?[0-9]\\)" "月"
 	  ;; 8. day
-	  "\\([0-3]?[0-9]\\)" "$BF|(B")
+	  "\\([0-3]?[0-9]\\)" "日")
 	1 3 4 6 5 7 8 nil nil nil 2)
-       ("$B%X%6!<$N1G2h4[(B" "heather"
+       ("ヘザーの映画館" "heather"
 	"http://www.yomiuri.co.jp/entertainment/heather/"
 	,(format (car entertainment) "heather") ,@(cdr entertainment))
-       ("$B2;3Z(B" "music" "http://www.yomiuri.co.jp/entertainment/music/"
+       ("音楽" "music" "http://www.yomiuri.co.jp/entertainment/music/"
 	,(format (car default3) "entertainment/music") ,@(cdr default3))
-       ("$B%K%e!<%9(B" "news" "http://www.yomiuri.co.jp/entertainment/news/"
+       ("ニュース" "news" "http://www.yomiuri.co.jp/entertainment/news/"
 	,(format (car default) "entertainment/news") ,@(cdr default))
-       ("$BIqBf(B" "stage" "http://www.yomiuri.co.jp/entertainment/stage/"
+       ("舞台" "stage" "http://www.yomiuri.co.jp/entertainment/stage/"
 	,(format (car entertainment) "stage") ,@(cdr entertainment))
-       ("$B#T#V(B" "tv" "http://www.yomiuri.co.jp/entertainment/tv/"
+       ("ＴＶ" "tv" "http://www.yomiuri.co.jp/entertainment/tv/"
 	,(format (car default) "entertainment/tv") ,@(cdr default))
-       ("$B#Y!u#Y%F%l%S(B" "yy" "http://www.yomiuri.co.jp/entertainment/yy/"
+       ("Ｙ＆Ｙテレビ" "yy" "http://www.yomiuri.co.jp/entertainment/yy/"
 	,(format (car default3) "entertainment/yy") ,@(cdr default3)))
       ("kyoiku"
-       ("$B%K%e!<%9(B" nil "http://www.yomiuri.co.jp/kyoiku/news/"
+       ("ニュース" nil "http://www.yomiuri.co.jp/kyoiku/news/"
 	,(format (car default4) "kyoiku/news") ,@(cdr default4))
-       ("$B650i9T@/(B" nil "http://www.yomiuri.co.jp/kyoiku/news2/06.htm"
+       ("教育行政" nil "http://www.yomiuri.co.jp/kyoiku/news2/06.htm"
 	,(format (car default4) "kyoiku/news2") ,@(cdr default4))
-       ("$B%\%i%s%F%#%"!&$=$NB>(B" nil
+       ("ボランティア・その他" nil
 	"http://www.yomiuri.co.jp/kyoiku/news2/08.htm"
 	,(format (car default4) "kyoiku/news2") ,@(cdr default4)))
       ("kyoiku.children"
-       ("$B#J%-%C%:DL?.(B" "jkids"
+       ("Ｊキッズ通信" "jkids"
 	"http://www.yomiuri.co.jp/kyoiku/children/jkids/"
 	,(format (car default4) "kyoiku/children/jkids") ,@(cdr default4))
-       ("$B;R$I$b$N?4(B" "kodomo.hagukumu"
+       ("子どもの心" "kodomo.hagukumu"
 	"http://www.yomiuri.co.jp/kyoiku/hagukumu/kodomo/"
 	,(format (car default4) "kyoiku/hagukumu/kodomo") ,@(cdr default4))
-       ("$B%K%e!<%9%&%#!<%/%j!<(B" "weekly"
+       ("ニュースウィークリー" "weekly"
 	"http://www.yomiuri.co.jp/kyoiku/children/weekly/"
 	,(format (car default4) "kyoiku/children/weekly") ,@(cdr default4)))
       ("kyoiku.qanda"
-       ("$B650iAjCL(B" "consul" "http://www.yomiuri.co.jp/kyoiku/qanda/consul/"
+       ("教育相談" "consul" "http://www.yomiuri.co.jp/kyoiku/qanda/consul/"
 	,(format (car default4) "kyoiku/qanda/consul") ,@(cdr default4))
-       ("$BG:$_$N$A@2$l(B" "worries"
+       ("悩みのち晴れ" "worries"
 	"http://www.yomiuri.co.jp/kyoiku/qanda/worries/"
 	,(format (car default4) "kyoiku/qanda/worries") ,@(cdr default4)))
       ("kyoiku.special"
-       ("$B<u83#A#B#C(B" "s06" "http://www.yomiuri.co.jp/kyoiku/special/s06/"
+       ("受験ＡＢＣ" "s06" "http://www.yomiuri.co.jp/kyoiku/special/s06/"
 	,(format (car default4) "kyoiku/special/s06") ,@(cdr default4)))
       ("national"
-       ("$BJ82=(B" "culture" "http://www.yomiuri.co.jp/national/culture/"
+       ("文化" "culture" "http://www.yomiuri.co.jp/national/culture/"
 	,(format (car default) "national/culture/news") ,@(cdr default))
-       ("$B$*$/$d$_(B" "obit" "http://www.yomiuri.co.jp/national/obit/"
+       ("おくやみ" "obit" "http://www.yomiuri.co.jp/national/obit/"
 	,(format (car default2) "national/obit/news") ,@(cdr default2)))
       ("sports"
-       ("$B%(%H%;%H%i(B" "etc" "http://www.yomiuri.co.jp/sports/etc/"
+       ("エトセトラ" "etc" "http://www.yomiuri.co.jp/sports/etc/"
 	,(format (car default) "sports/etc/news") ,@(cdr default))
-       ("$B%4%k%U(B" "golf" "http://www.yomiuri.co.jp/sports/golf/"
+       ("ゴルフ" "golf" "http://www.yomiuri.co.jp/sports/golf/"
 	,(format (car default) "sports/golf/news") ,@(cdr default))
-       ("$BBg%j!<%0(B" "mlb" "http://www.yomiuri.co.jp/sports/mlb/"
+       ("大リーグ" "mlb" "http://www.yomiuri.co.jp/sports/mlb/"
 	,(format (car default) "sports/mlb/news") ,@(cdr default))
-       ("$B%W%mLn5e(B" "npb" "http://www.yomiuri.co.jp/sports/npb/"
+       ("プロ野球" "npb" "http://www.yomiuri.co.jp/sports/npb/"
 	,(format (car default) "sports/npb/news") ,@(cdr default))
-       ("$B%5%C%+!<(B" "soccer" "http://www.yomiuri.co.jp/sports/soccer/"
+       ("サッカー" "soccer" "http://www.yomiuri.co.jp/sports/soccer/"
 	,(format (car default) "sports/soccer/news") ,@(cdr default))
-       ("$BEl5~O;Bg3XLn5e(B07" "ubb07" "http://www.yomiuri.co.jp/sports/ubb07/"
+       ("東京六大学野球07" "ubb07" "http://www.yomiuri.co.jp/sports/ubb07/"
 	,(format (car default) "sports/ubb07/news") ,@(cdr default)))))
   "Alist of parent groups and lists of subgenres and tables for subgroups.
 Each table is the same as the `cdr' of the element of
@@ -474,7 +474,7 @@ Each table is the same as the `cdr' of the element of
 (defvar shimbun-yomiuri-content-start
   "\n<!--// contents_area_start //-->\n\
 \\|\n<!--// article_start //-->\n\
-\\|\n<!-- $B"'<L??%F!<%V%k"'(B -->\n\
+\\|\n<!-- ▼写真テーブル▼ -->\n\
 \\|\n<!--  honbun start  -->\n")
 
 (defvar shimbun-yomiuri-content-end
@@ -498,7 +498,7 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 
 (luna-define-method initialize-instance :after ((shimbun shimbun-yomiuri)
 						&rest init-args)
-  (shimbun-set-server-name-internal shimbun "$Bl&Gd?7J9(B")
+  (shimbun-set-server-name-internal shimbun "讀売新聞")
   (shimbun-set-from-address-internal shimbun "nobody@example.com")
   ;; To share class variables between `shimbun-yomiuri' and its
   ;; successor `shimbun-yomiuri-html'.
@@ -528,8 +528,8 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 
 (defun shimbun-yomiuri-japanese-string-to-number (string)
   "Convert a Japanese zenkaku number to just a number."
-  (let ((alist '((?$B#0(B . 0) (?$B#1(B . 1) (?$B#2(B . 2) (?$B#3(B . 3) (?$B#4(B . 4)
-		 (?$B#5(B . 5) (?$B#6(B . 6) (?$B#7(B . 7) (?$B#8(B . 8) (?$B#9(B . 9)))
+  (let ((alist '((?０ . 0) (?１ . 1) (?２ . 2) (?３ . 3) (?４ . 4)
+		 (?５ . 5) (?６ . 6) (?７ . 7) (?８ . 8) (?９ . 9)))
 	(len (length string))
 	(idx 0)
 	(num 0))
@@ -582,16 +582,16 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 		   (eval-when-compile
 		     (let ((s0 "[\t\n ]*"))
 		       (concat
-			">" s0 "$B!J(B" s0
+			">" s0 "（" s0
 			;; 1. month
 			"\\([01]?[0-9]\\)"
-			s0 "$B7n(B" s0
+			s0 "月" s0
 			;; 2. day
 			"\\([0-3]?[0-9]\\)"
-			s0 "$BF|(B" s0
+			s0 "日" s0
 			;; 3. hour:minute
 			"\\([012][0-9]:[0-5][0-9]\\)"
-			s0 "$B!K(B" s0 "<")))
+			s0 "）" s0 "<")))
 		   nil t)
 	      (list (shimbun-create-header
 		     0
@@ -653,7 +653,7 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 			  "%02d/%02d %s"
 			  month day
 			  (save-match-data
-			    (if (string-match "\\`$B!N(B\\(.+\\)$B!O!V(B\\(.+\\)$B!W(B\\'"
+			    (if (string-match "\\`［\\(.+\\)］「\\(.+\\)」\\'"
 					      subject)
 				(replace-match "\\1: \\2" nil nil subject)
 			      subject)))))
@@ -684,7 +684,7 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 		     id "" 0 0
 		     (shimbun-expand-url
 		      (match-string (nth 0 numbers))
-		      (if (string-match "$B%8%V%j$r$$$C$Q$$(B" from)
+		      (if (string-match "ジブリをいっぱい" from)
 			  "http://www.yomiuri.co.jp/entertainment/ghibli/"
 			shimbun-yomiuri-url)))
 		    headers))))
@@ -729,9 +729,9 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 <a[\t\n ]+href=\"/\\(kyoiku/renai/\\(20[0-9][0-9][01][0-9][0-3][0-9]\\)\
 \\([^.]+\\)[^\"]+\\)\"[^>]*>[\t\n ]*\\([^<]+\\)[\t\n ]*</a>[\t\n ]*\
 <span[\t\n ]+class=\"date\">[\t\n ]*<span[\t\n ]+class=\"y\">[\t\n ]*\
-\\(20[0-9][0-9]\\)[\t\n ]*$BG/(B[\t\n ]*</span>[\t\n ]*<span[\t\n ]+class=\"m\">\
-\[\t\n ]*\\([01]?[0-9]\\)[\t\n ]*$B7n(B[\t\n ]*</span>[\t\n ]*\
-<span[\t\n ]+class=\"d\">[\t\n ]*\\([0-3]?[0-9]\\)[\t\n ]*$BF|(B[\t\n ]*</span>"
+\\(20[0-9][0-9]\\)[\t\n ]*年[\t\n ]*</span>[\t\n ]*<span[\t\n ]+class=\"m\">\
+\[\t\n ]*\\([01]?[0-9]\\)[\t\n ]*月[\t\n ]*</span>[\t\n ]*\
+<span[\t\n ]+class=\"d\">[\t\n ]*\\([0-3]?[0-9]\\)[\t\n ]*日[\t\n ]*</span>"
 				end t)
 	(setq id (concat "<" (match-string 2) "." (match-string 3)
 			 "%renai.kyoiku." shimbun-yomiuri-top-level-domain
@@ -767,19 +767,19 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 	       "<!--" s0 "//" s1 "date_start" s1 "//" s0 "-->" s0
 	       ;; 1. year
 	       "\\(20[0-9][0-9]\\)"
-	       s0 "$BG/(B" s0
+	       s0 "年" s0
 	       ;; 2. month
 	       "\\([01]?[0-9]\\)"
-	       s0 "$B7n(B" s0
+	       s0 "月" s0
 	       ;; 3. day
 	       "\\([0-3]?[0-9]\\)"
-	       s0 "$BF|(B" s0
+	       s0 "日" s0
 	       ;; 4. hour
 	       "\\([012]?[0-9]\\)"
-	       s0 "$B;~(B" s0
+	       s0 "時" s0
 	       ;; 5. minute
 	       "\\([0-5]?[0-9]\\)"
-	       s0 "$BJ,(B" s0 "<!--" s0 "//" s1 "date_end" s1 "//" s0 "-->")))
+	       s0 "分" s0 "<!--" s0 "//" s1 "date_end" s1 "//" s0 "-->")))
 	  nil t)
      (shimbun-header-set-date
       header
@@ -791,7 +791,7 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 	       (string-to-number (match-string 4))
 	       (string-to-number (match-string 5)))))
      (goto-char (point-min)))
-   ;; Remove the $B%U%)%H%K%e!<%9(B, the $B<L??$N3HBg(B buttons, etc.
+   ;; Remove the フォトニュース, the 写真の拡大 buttons, etc.
    (while (re-search-forward
 	   (eval-when-compile
 	     (let ((s0 "[\t\n ]*")
@@ -805,7 +805,7 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 		"\\(?:" s1 n1 "\\)*" s0 ">"
 		"\\|"
 		"<img\\(?:" s1 n1 "\\)*" s1
-		"\\(?:alt=\"$B%U%)%H%K%e!<%9(B\"\\|class=\"photo-el\"\\)"
+		"\\(?:alt=\"フォトニュース\"\\|class=\"photo-el\"\\)"
 		"\\(?:" s1 n1 "\\)*" s0 ">"
 		"\\|"
 		"<div" s1
@@ -821,13 +821,13 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 	   nil t)
      (delete-region (match-beginning 0) (match-end 0)))
    (goto-char (point-min))
-   ;; Replace $B<L??$N3HBg(B with $B<L??(B.
+   ;; Replace 写真の拡大 with 写真.
    (while (re-search-forward
 	   (eval-when-compile
 	     (let ((s1 "[\t\n ]+")
 		   (n1 "[^\t\n >]+"))
 	       (concat "<img\\(?:" s1 n1 "\\)*" s1
-		       "alt=\"$B<L??(B\\($B$N3HBg(B\\)\"")))
+		       "alt=\"写真\\(の拡大\\)\"")))
 	   nil t)
      (delete-region (match-beginning 1) (match-end 1)))
    ;; Remove javascripts which will appear in text/plain articles.
@@ -837,14 +837,14 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
    (let ((group (shimbun-current-group-internal shimbun)))
      (cond ((string-equal group "editorial")
 	    ;; Break continuous lines.
-	    (when (string-match " \\(?:$B$h$_$&$j@#I>(B\\|$BJT=8<jD"(B\\)\\'"
+	    (when (string-match " \\(?:よみうり寸評\\|編集手帳\\)\\'"
 				(shimbun-header-subject header 'no-encode))
-	      (while (search-forward "$B"!(B" nil t)
-		(replace-match "$B!#(B<br><br>\n$B!!(B"))))
+	      (while (search-forward "◆" nil t)
+		(replace-match "。<br><br>\n　"))))
 	   ((string-equal group "entertainment")
 	    ;; Remove trailing garbage.
 	    (when (re-search-forward "[\t\n ]*\
-<!-+<p[\t\n ]+class=\"align-c\">$B!~(B+</p>-+>[\t\n ]*"
+<!-+<p[\t\n ]+class=\"align-c\">◇+</p>-+>[\t\n ]*"
 				     nil t)
 	      (delete-region (match-beginning 0) (match-end 0)))
 	    ;; Remove nav and track-back button, etc.

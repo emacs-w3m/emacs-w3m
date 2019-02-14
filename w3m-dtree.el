@@ -1,4 +1,4 @@
-;;; w3m-dtree.el --- The add-on program to display local directory tree.
+;;; w3m-dtree.el --- The add-on program to display local directory tree. -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2009, 2017
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -65,12 +65,7 @@ If you care for another style, set manually and try it :-).
 	  (vector
 	   :convert-widget w3m-widget-type-convert-widget
 	   (let ((defaults (if (equal w3m-language "Japanese")
-			       (vconcat
-				(mapcar
-				 (lambda (s)
-				   (decode-coding-string s 'iso-2022-7bit))
-				 '("\e$B('\e(B" "\e$B(&\e(B"
-				   "\e$B(\"\e(B" "\e$B!!\e(B")))
+			       (vconcat '("├" "└" "│" "　"))
 			     ["|-" "+-" "|  " "   "])))
 	     `(:format "Others:\n%v" :indent 4
 		       (string :format "%{|-%}          %v\n"
@@ -96,11 +91,7 @@ over the 'w3m-dtree-directory-depth'."
 	  (vector
 	   :convert-widget w3m-widget-type-convert-widget
 	   (let ((defaults (if (equal w3m-language "Japanese")
-			       (vconcat
-				(mapcar
-				 (lambda (s)
-				   (decode-coding-string s 'iso-2022-7bit))
-				 '("\e$B(<\e(B" "\e$B(1\e(B")))
+			       (vconcat '("┝" "┗"))
 			     ["|=" "+="])))
 	     `(:format "Others:\n%v" :indent 4
 		       (string :format "|=          %{|=%}              %v\n"
@@ -136,7 +127,9 @@ over the 'w3m-dtree-directory-depth'."
 	  (/= (nth 1 (file-attributes ,path)) 2))))
 
 (defun w3m-dtree-create-sub (path allfiles dirprefix fileprefix indent depth)
-  (let* ((files (directory-files path t))
+  (let* ((files (condition-case err
+                  (directory-files path t)
+                  (error (list "----"))))
 	 (limit (and (integerp w3m-dtree-directory-depth)
 		     (>= depth w3m-dtree-directory-depth)))
 	 (indent-sub1 (if limit

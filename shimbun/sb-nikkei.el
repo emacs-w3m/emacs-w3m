@@ -1,4 +1,4 @@
-;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp -*- coding: iso-2022-7bit; -*-
+;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001-2007, 2009-2011, 2017
 ;; Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>
@@ -45,77 +45,77 @@
   "Name of the parent url.")
 
 (defvar shimbun-nikkei-group-table
-  `(("top" "$B%H%C%W(B" ,shimbun-nikkei-url
+  `(("top" "トップ" ,shimbun-nikkei-url
      shimbun-nikkei-get-headers-top
      shimbun-nikkei-prepare-article-default)
-    ("main" "$B<gMW(B" ,(concat shimbun-nikkei-url "news/main/")
+    ("main" "主要" ,(concat shimbun-nikkei-url "news/main/")
      shimbun-nikkei-get-headers-default
      shimbun-nikkei-prepare-article-default)
-    ("keizai" "$B7P:Q(B" ,(concat shimbun-nikkei-url "news/keizai/")
+    ("keizai" "経済" ,(concat shimbun-nikkei-url "news/keizai/")
      shimbun-nikkei-get-headers-default
      shimbun-nikkei-prepare-article-default)
-    ("sangyo" "$B4k6H(B" ,(concat shimbun-nikkei-url "news/sangyo/")
+    ("sangyo" "企業" ,(concat shimbun-nikkei-url "news/sangyo/")
      shimbun-nikkei-get-headers-default
      shimbun-nikkei-prepare-article-default)
-    ("tento" "$B%Y%s%A%c!<(B" ,(concat shimbun-nikkei-url "news/tento/")
+    ("tento" "ベンチャー" ,(concat shimbun-nikkei-url "news/tento/")
      shimbun-nikkei-get-headers-default2
      shimbun-nikkei-prepare-article-default2)
-    ("kansai" "$B4X@>(B" ,(concat shimbun-nikkei-url "kansai/")
+    ("kansai" "関西" ,(concat shimbun-nikkei-url "kansai/")
      shimbun-nikkei-get-headers-kansai
      shimbun-nikkei-prepare-article-kansai)
-    ("it.business" "IT$B%S%8%M%9(B"
+    ("it.business" "ITビジネス"
      "http://it.nikkei.co.jp/business/news/index.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.busi_gyoukai" "$B6H3&F08~(B(IT$B%S%8%M%9(B)"
+    ("it.busi_gyoukai" "業界動向(ITビジネス)"
      "http://it.nikkei.co.jp/business/news/busi_gyoukai.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.biz-system" "$B4k6H>pJs%7%9%F%`(B"
+    ("it.biz-system" "企業情報システム"
      "http://it.nikkei.co.jp/business/news/busi_system.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.sox" "$B@9$j>e$,$k#S#O#XK!%S%8%M%9(B"
+    ("it.sox" "盛り上がるＳＯＸ法ビジネス"
      "http://it.nikkei.co.jp/business/special/sox.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.data" "$B%G!<%?$GFI$`#I#T;T>l(B"
+    ("it.data" "データで読むＩＴ市場"
      "http://it.nikkei.co.jp/business/column/data.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.taidan" "$B%H%C%WBPCL(B"
+    ("it.taidan" "トップ対談"
      "http://it.nikkei.co.jp/business/column/taidan.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.internet" "$B%$%s%?!<%M%C%H(B"
+    ("it.internet" "インターネット"
      "http://it.nikkei.co.jp/internet/news/index.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.broad" "$B%V%m!<%I%P%s%I(B"
+    ("it.broad" "ブロードバンド"
      "http://it.nikkei.co.jp/internet/news/broadband.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.net_gyoukai" "$B6H3&F08~(B($B%$%s%?!<%M%C%H(B)"
+    ("it.net_gyoukai" "業界動向(インターネット)"
      "http://it.nikkei.co.jp/internet/news/net_gyoukai.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.iptel" "$BB?5!G=2=$9$k#I#PEEOC(B"
+    ("it.iptel" "多機能化するＩＰ電話"
      "http://it.nikkei.co.jp/internet/special/iptel.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.tele" "$BJ|Aw!&%M%C%HM;9g(B"
+    ("it.tele" "放送・ネット融合"
      "http://it.nikkei.co.jp/internet/special/tele.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.broadcast" "$BCO>e%G%8%?%kJ|Aw(B"
+    ("it.broadcast" "地上デジタル放送"
      "http://it.nikkei.co.jp/internet/special/d_broadcast.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.internet-column" "$B%$%s%?!<%M%C%H(B:$B%3%i%`(B"
+    ("it.internet-column" "インターネット:コラム"
      "http://it.nikkei.co.jp/internet/column/koike.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.contents" "$B%3%s%F%s%D%S%8%M%9(B"
+    ("it.contents" "コンテンツビジネス"
      "http://it.nikkei.co.jp/internet/column/contents.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
@@ -123,317 +123,317 @@
      "http://it.nikkei.co.jp/internet/news/ec.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.policy" "$B@/:v!&E}7W(B"
+    ("it.policy" "政策・統計"
      "http://it.nikkei.co.jp/internet/news/seisaku.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.e-gov" "$B9T@/$N#I#T2=(B"
+    ("it.e-gov" "行政のＩＴ化"
      "http://it.nikkei.co.jp/business/special/e-gov.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.mobile" "$B%b%P%$%k(B"
+    ("it.mobile" "モバイル"
      "http://it.nikkei.co.jp/mobile/news/index.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.mob_gyoukai" "$B6H3&F08~(B($B%b%P%$%k(B)"
+    ("it.mob_gyoukai" "業界動向(モバイル)"
      "http://it.nikkei.co.jp/mobile/news/gyoukai.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.mobsoft" "$B%5!<%S%9(B"
+    ("it.mobsoft" "サービス"
      "http://it.nikkei.co.jp/mobile/news/soft.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.mobcon" "$B%3%s%F%s%D(B"
+    ("it.mobcon" "コンテンツ"
      "http://it.nikkei.co.jp/mobile/news/contents.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.money" "$B7HBS%-%c%j%"$N6bM;%S%8%M%9(B"
+    ("it.money" "携帯キャリアの金融ビジネス"
      "http://it.nikkei.co.jp/mobile/special/money.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.one" "$B%o%s%;%0$O%F%l%S$rJQ$($k$+(B"
+    ("it.one" "ワンセグはテレビを変えるか"
      "http://it.nikkei.co.jp/mobile/special/one.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.security" "$B%;%-%e%j%F%#(B"
+    ("it.security" "セキュリティ"
      "http://it.nikkei.co.jp/security/news/index.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.net_crime" "$B%M%C%HHH:a(B"
+    ("it.net_crime" "ネット犯罪"
      "http://it.nikkei.co.jp/security/news/net_crime.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.digital" "$B%G%8%?%k2HEE!u%(%s%?%a(B"
+    ("it.digital" "デジタル家電＆エンタメ"
      "http://it.nikkei.co.jp/digital/news/index.aspx"
      shimbun-nikkei-get-headers-it-default
      shimbun-nikkei-prepare-article-default)
-    ("it.pc" "PC$B!u%G%8%?%k%+%a%i(B"
+    ("it.pc" "PC＆デジタルカメラ"
      "http://it.nikkei.co.jp/pc/news/index.aspx"
      shimbun-nikkei-get-headers-it-pc
      shimbun-nikkei-prepare-article-default2)
-    ("kokunai" "$B;T>l3567(B" "http://markets.nikkei.co.jp/kokunai/summary.aspx"
+    ("kokunai" "市場概況" "http://markets.nikkei.co.jp/kokunai/summary.aspx"
      shimbun-nikkei-get-headers-stock
      shimbun-nikkei-prepare-article-default4)
-    ("markets" "$B3$303t3567(B" "http://markets.nikkei.co.jp/kaigai/summary.aspx"
+    ("markets" "海外株概況" "http://markets.nikkei.co.jp/kaigai/summary.aspx"
      shimbun-nikkei-get-headers-stock
      shimbun-nikkei-prepare-article-default4)
-    ("kawase" "$B0YBX3567(B" "http://markets.nikkei.co.jp/kawase/summary.aspx"
+    ("kawase" "為替概況" "http://markets.nikkei.co.jp/kawase/summary.aspx"
      shimbun-nikkei-get-headers-stock
      shimbun-nikkei-prepare-article-default4)
-    ("kinri" "$BC;4|6bMx!&:D8"!&#C#B3567(B"
+    ("kinri" "短期金利・債権・ＣＢ概況"
      "http://markets.nikkei.co.jp/kawase/kinri.aspx"
      shimbun-nikkei-get-headers-stock
      shimbun-nikkei-prepare-article-default4)
-    ("ft" "$B1Q%U%#%J%s%7%c%k!&%?%$%`%:(B"
+    ("ft" "英フィナンシャル・タイムズ"
      "http://markets.nikkei.co.jp/kaigai/ft.aspx"
      shimbun-nikkei-get-headers-ft
      shimbun-nikkei-prepare-article-default4)
-    ("dj" "$BJF%@%&!&%8%g!<%s%:(B" "http://markets.nikkei.co.jp/kaigai/dj.aspx"
+    ("dj" "米ダウ・ジョーンズ" "http://markets.nikkei.co.jp/kaigai/dj.aspx"
      shimbun-nikkei-get-headers-dj
      shimbun-nikkei-prepare-article-default4)
-    ("ngyoseki" "$B4k6H6H@S%K%e!<%9(B"
+    ("ngyoseki" "企業業績ニュース"
      "http://markets.nikkei.co.jp/kokunai/gyoseki.aspx"
      shimbun-nikkei-get-headers-stock
      shimbun-nikkei-prepare-article-default4)
-    ("gyosuuchi" "$B6H@S?tCM(B"
+    ("gyosuuchi" "業績数値"
      "http://markets.nikkei.co.jp/kokunai/bunkatsu2.aspx?genre=m4"
      shimbun-nikkei-get-headers-gyosuuchi
      shimbun-nikkei-prepare-article-default4)
-    ("gyoseki" "$B3$304k6H6H@S(B" "http://markets.nikkei.co.jp/kaigai/gyoseki.aspx"
+    ("gyoseki" "海外企業業績" "http://markets.nikkei.co.jp/kaigai/gyoseki.aspx"
      shimbun-nikkei-get-headers-stock
      shimbun-nikkei-prepare-article-default4)
-    ("china" "$BCf9q%S%8%M%9;v>p(B" ,(concat shimbun-nikkei-url "china/news/")
+    ("china" "中国ビジネス事情" ,(concat shimbun-nikkei-url "china/news/")
      shimbun-nikkei-get-headers-china
      shimbun-nikkei-prepare-article-default4)
-    ("market" "$B3t!&0YBX(B" ,(concat shimbun-nikkei-url "news/market/")
+    ("market" "株・為替" ,(concat shimbun-nikkei-url "news/market/")
      shimbun-nikkei-get-headers-market
      shimbun-nikkei-prepare-article-market)
-    ("kaigai" "$B9q:](B" ,(concat shimbun-nikkei-url "news/kaigai/")
+    ("kaigai" "国際" ,(concat shimbun-nikkei-url "news/kaigai/")
      shimbun-nikkei-get-headers-default
      shimbun-nikkei-prepare-article-default)
-    ("seiji" "$B@/<#(B" ,(concat shimbun-nikkei-url "news/seiji/")
+    ("seiji" "政治" ,(concat shimbun-nikkei-url "news/seiji/")
      shimbun-nikkei-get-headers-default
      shimbun-nikkei-prepare-article-default)
-    ("shakai" "$B<R2q(B" ,(concat shimbun-nikkei-url "news/shakai/")
+    ("shakai" "社会" ,(concat shimbun-nikkei-url "news/shakai/")
      shimbun-nikkei-get-headers-default
      shimbun-nikkei-prepare-article-default)
-    ("retto" "$BCO0h7P:Q(B" ,(concat shimbun-nikkei-url "news/retto/")
+    ("retto" "地域経済" ,(concat shimbun-nikkei-url "news/retto/")
      shimbun-nikkei-get-headers-retto
      shimbun-nikkei-prepare-article-default4)
-    ("sports" "$B%9%]!<%D(B" "http://sports.nikkei.co.jp/"
+    ("sports" "スポーツ" "http://sports.nikkei.co.jp/"
      shimbun-nikkei-get-headers-sports
      shimbun-nikkei-prepare-article-sports)
-    ("newpro" "$B?7@=IJ(B" ,(concat shimbun-nikkei-url "newpro/news/")
+    ("newpro" "新製品" ,(concat shimbun-nikkei-url "newpro/news/")
      shimbun-nikkei-get-headers-newpro
      shimbun-nikkei-prepare-article-newpro)
-    ("release" "$B%W%l%9%j%j!<%9(B" "http://release.nikkei.co.jp/"
+    ("release" "プレスリリース" "http://release.nikkei.co.jp/"
      shimbun-nikkei-get-headers-release
      shimbun-nikkei-prepare-article-release)
-    ("release.it.comp" "$B%W%l%9%j%j!<%9(B($B#I#T!(%3%s%T%e!<%?!<(B)"
+    ("release.it.comp" "プレスリリース(ＩＴ；コンピューター)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=1&sindID=1"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.it.peri" "$B%W%l%9%j%j!<%9(B($B#I#T!(<~JU5!4o(B)"
+    ("release.it.peri" "プレスリリース(ＩＴ；周辺機器)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=1&sindID=2"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.it.sys" "$B%W%l%9%j%j!<%9(B($B#I#T!(%7%9%F%`!&%=%U%H3+H/(B)"
+    ("release.it.sys" "プレスリリース(ＩＴ；システム・ソフト開発)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=1&sindID=3"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.it.cont" "$B%W%l%9%j%j!<%9(B($B#I#T!(>pJs!&%3%s%F%s%D(B)"
+    ("release.it.cont" "プレスリリース(ＩＴ；情報・コンテンツ)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=1&sindID=4"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.it.net" "$B%W%l%9%j%j!<%9(B($B#I#T!(DL?.!&%$%s%?!<%M%C%H(B)"
+    ("release.it.net" "プレスリリース(ＩＴ；通信・インターネット)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=1&sindID=5"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.it.lsi" "$B%W%l%9%j%j!<%9(B($B#I#T!(H>F3BN(B)"
+    ("release.it.lsi" "プレスリリース(ＩＴ；半導体)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=1&sindID=6"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.it.game" "$B%W%l%9%j%j!<%9(B($B#I#T!(%2!<%`!&8d3Z(B)"
+    ("release.it.game" "プレスリリース(ＩＴ；ゲーム・娯楽)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=1&sindID=7"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.it.etc" "$B%W%l%9%j%j!<%9(B($B#I#T!($=$NB>#I#T4XO"(B)"
+    ("release.it.etc" "プレスリリース(ＩＴ；その他ＩＴ関連)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=1&sindID=8"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.dist.depart" "$B%W%l%9%j%j!<%9(B($BN.DL!(I42_E9!&%9!<%Q!<(B)"
+    ("release.dist.depart" "プレスリリース(流通；百貨店・スーパー)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=9"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.dist.ryohan" "$B%W%l%9%j%j!<%9(B($BN.DL!(NLHNE9(B)"
+    ("release.dist.ryohan" "プレスリリース(流通；量販店)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=10"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.dist.zakka" "$B%W%l%9%j%j!<%9(B($BN.DL!(@83h;(2_(B)"
+    ("release.dist.zakka" "プレスリリース(流通；生活雑貨)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=11"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.dist.cosme" "$B%W%l%9%j%j!<%9(B($BN.DL!(0eLtIJ!&2=>QIJ(B)"
+    ("release.dist.cosme" "プレスリリース(流通；医薬品・化粧品)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=12"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.dist.car" "$B%W%l%9%j%j!<%9(B($BN.DL!(<+F0<V(B)"
+    ("release.dist.car" "プレスリリース(流通；自動車)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=13"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.dist.book" "$B%W%l%9%j%j!<%9(B($BN.DL!(=q@R(B)"
+    ("release.dist.book" "プレスリリース(流通；書籍)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=14"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.dist.record" "$B%W%l%9%j%j!<%9(B($BN.DL!(%l%3!<%I!&%2!<%`(B)"
+    ("release.dist.record" "プレスリリース(流通；レコード・ゲーム)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=15"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.dist.food" "$B%W%l%9%j%j!<%9(B($BN.DL!(?)IJ!&0{NA(B)"
+    ("release.dist.food" "プレスリリース(流通；食品・飲料)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=16"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.dist.mercha" "$B%W%l%9%j%j!<%9(B($BN.DL!(>&<R!&27Gd6H(B)"
+    ("release.dist.mercha" "プレスリリース(流通；商社・卸売業)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=17"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.dist.mail" "$B%W%l%9%j%j!<%9(B($BN.DL!(DL?.!&K,LdHNGd(B)"
+    ("release.dist.mail" "プレスリリース(流通；通信・訪問販売)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=18"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.dist.netshop" "$B%W%l%9%j%j!<%9(B($BN.DL!(%M%C%H%7%g%C%T%s%0(B)"
+    ("release.dist.netshop" "プレスリリース(流通；ネットショッピング)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=19"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.dist.etc" "$B%W%l%9%j%j!<%9(B($BN.DL!($=$NB>>&6H(B)"
+    ("release.dist.etc" "プレスリリース(流通；その他商業)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=2&sindID=20"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.money.bank" "$B%W%l%9%j%j!<%9(B($B6bM;!(6d9T!&?.6b(B)"
+    ("release.money.bank" "プレスリリース(金融；銀行・信金)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=3&sindID=57"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.money.sec" "$B%W%l%9%j%j!<%9(B($B6bM;!(>Z7t2q<R(B)"
+    ("release.money.sec" "プレスリリース(金融；証券会社)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=3&sindID=58"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.money.am" "$B%W%l%9%j%j!<%9(B($B6bM;!(Ej;q?.Bw1?MQ2q<R(B)"
+    ("release.money.am" "プレスリリース(金融；投資信託運用会社)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=3&sindID=59"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.money.insu" "$B%W%l%9%j%j!<%9(B($B6bM;!(J]812q<R(B)"
+    ("release.money.insu" "プレスリリース(金融；保険会社)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=3&sindID=60"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.money.etc" "$B%W%l%9%j%j!<%9(B($B6bM;!($=$NB>6bM;(B)"
+    ("release.money.etc" "プレスリリース(金融；その他金融)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=3&sindID=61"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.maker.chemi" "$B%W%l%9%j%j!<%9(B($B%a!<%+!<!(2=3X!&0eLtIJ(B)"
+    ("release.maker.chemi" "プレスリリース(メーカー；化学・医薬品)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=4&sindID=31"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.maker.mecha" "$B%W%l%9%j%j!<%9(B($B%a!<%+!<!(5!3#!&6bB0(B)"
+    ("release.maker.mecha" "プレスリリース(メーカー；機械・金属)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=4&sindID=32"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.maker.car" "$B%W%l%9%j%j!<%9(B($B%a!<%+!<!(<+F0<V!&<+F0<VItIJ(B)"
+    ("release.maker.car" "プレスリリース(メーカー；自動車・自動車部品)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=4&sindID=33"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.maker.elec" "$B%W%l%9%j%j!<%9(B($B%a!<%+!<!(2HEE!&EE5!(B)"
+    ("release.maker.elec" "プレスリリース(メーカー；家電・電機)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=4&sindID=34"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.maker.food" "$B%W%l%9%j%j!<%9(B($B%a!<%+!<!(?)IJ!&0{NA(B)"
+    ("release.maker.food" "プレスリリース(メーカー；食品・飲料)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=4&sindID=35"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.maker.sports" "$B%W%l%9%j%j!<%9(B($B%a!<%+!<!(%9%]!<%D!&8d3ZMQIJ(B)"
+    ("release.maker.sports" "プレスリリース(メーカー；スポーツ・娯楽用品)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=4&sindID=36"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.maker.apparel" "$B%W%l%9%j%j!<%9(B($B%a!<%+!<!(%"%Q%l%k!&@83hMQIJ(B)"
+    ("release.maker.apparel" "プレスリリース(メーカー；アパレル・生活用品)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=4&sindID=37"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.maker.commu" "$B%W%l%9%j%j!<%9(B($B%a!<%+!<!(DL?.5!4o!&@:L)5!3#(B)"
+    ("release.maker.commu" "プレスリリース(メーカー；通信機器・精密機械)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=4&sindID=38"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.maker.etc" "$B%W%l%9%j%j!<%9(B($B%a!<%+!<!($=$NB>%a!<%+!<(B)"
+    ("release.maker.etc" "プレスリリース(メーカー；その他メーカー)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=4&sindID=39"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.service.medic" "$B%W%l%9%j%j!<%9(B($B%5!<%S%9!(0eNE!&J!;c(B)"
+    ("release.service.medic" "プレスリリース(サービス；医療・福祉)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=40"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.service.rest" "$B%W%l%9%j%j!<%9(B($B%5!<%S%9!(0{?)(B)"
+    ("release.service.rest" "プレスリリース(サービス；飲食)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=41"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.service.trans" "$B%W%l%9%j%j!<%9(B($B%5!<%S%9!(1?M"!&1?Aw(B)"
+    ("release.service.trans" "プレスリリース(サービス；運輸・運送)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=42"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.service.energy" "$B%W%l%9%j%j!<%9(B($B%5!<%S%9!(%(%M%k%.!<(B)"
+    ("release.service.energy" "プレスリリース(サービス；エネルギー)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=43"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.service.enter" "$B%W%l%9%j%j!<%9(B($B%5!<%S%9!(%(%s%?!<%F%$%s%a%s%H(B)"
+    ("release.service.enter" "プレスリリース(サービス；エンターテインメント)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=44"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.service.env" "$B%W%l%9%j%j!<%9(B($B%5!<%S%9!(4D6-(B)"
+    ("release.service.env" "プレスリリース(サービス；環境)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=45"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.service.consul" "$B%W%l%9%j%j!<%9(B($B%5!<%S%9!(%3%s%5%k%F%#%s%0(B)"
+    ("release.service.consul" "プレスリリース(サービス；コンサルティング)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=46"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.service.edu" "$B%W%l%9%j%j!<%9(B($B%5!<%S%9!(650i!&8&=$(B)"
+    ("release.service.edu" "プレスリリース(サービス；教育・研修)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=47"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.service.haken" "$B%W%l%9%j%j!<%9(B($B%5!<%S%9!(?M:`GI8/(B)"
+    ("release.service.haken" "プレスリリース(サービス；人材派遣)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=48"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.service.life" "$B%W%l%9%j%j!<%9(B($B%5!<%S%9!(@83h4XO"(B)"
+    ("release.service.life" "プレスリリース(サービス；生活関連)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=49"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.service.media" "$B%W%l%9%j%j!<%9(B($B%5!<%S%9!(%a%G%#%"(B)"
+    ("release.service.media" "プレスリリース(サービス；メディア)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=50"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.service.lease" "$B%W%l%9%j%j!<%9(B($B%5!<%S%9!(%j!<%9(B)"
+    ("release.service.lease" "プレスリリース(サービス；リース)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=51"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.service.travel" "$B%W%l%9%j%j!<%9(B($B%5!<%S%9!(N99T!&%[%F%k(B)"
+    ("release.service.travel" "プレスリリース(サービス；旅行・ホテル)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=52"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.service.etc" "$B%W%l%9%j%j!<%9(B($B%5!<%S%9!($=$NB>%5!<%S%96H(B)"
+    ("release.service.etc" "プレスリリース(サービス；その他サービス業)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=53"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.const.const" "$B%W%l%9%j%j!<%9(B($B%5!<%S%9!(7z@_!&EZLZ(B)"
+    ("release.const.const" "プレスリリース(サービス；建設・土木)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=6&sindID=54"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.const.house" "$B%W%l%9%j%j!<%9(B($B%5!<%S%9!(=;Bp(B)"
+    ("release.const.house" "プレスリリース(サービス；住宅)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=6&sindID=56"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("release.const.etc" "$B%W%l%9%j%j!<%9(B($B%5!<%S%9!($=$NB>7z@_4XO"(B)"
+    ("release.const.etc" "プレスリリース(サービス；その他建設関連)"
      "http://release.nikkei.co.jp/isclassList.cfm?lindID=5&sindID=53"
      shimbun-nikkei-get-headers-release2
      shimbun-nikkei-prepare-article-release2)
-    ("shasetsu" "$B<R@b!&=U=)(B"
+    ("shasetsu" "社説・春秋"
      "http://www.nikkei.co.jp/news/shasetsu/childKijiIchiran.js"
      ;; The contents of IndexKijiIchiran.js will be appended afterward.
      shimbun-nikkei-get-headers-shasetsu
@@ -442,7 +442,7 @@
 Each parameters include a Japanese group name, an index page, a
 function used to get headers and a function used to prepare an article.")
 
-(defvar shimbun-nikkei-server-name "$BF|K\7P:Q?7J9(B")
+(defvar shimbun-nikkei-server-name "日本経済新聞")
 (defvar shimbun-nikkei-from-address "nobody@example.com")
 (defvar shimbun-nikkei-content-start
   "<!--emacs-w3m-shimbun-nikkei-content-start-->")
@@ -630,7 +630,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
     ;; Get headers for the retto group.
     (while (re-search-forward "<a[\t\n ]+href=\"/\\(news/retto/\
 \\(\\(20[0-9][0-9]\\)\\([01][0-9]\\)\\([0-3][0-9]\\)\\)\\([^.]+\\)\
-\\.html\\)\">[\t\n ]*\\([^<]+\\):[\n\t $B!!(B]*\\([^<]+\\)" nil t)
+\\.html\\)\">[\t\n ]*\\([^<]+\\):[\n\t 　]*\\([^<]+\\)" nil t)
       (push (shimbun-create-header
 	     0
 	     (concat "[" (match-string 7) "] " (match-string 8)) ;; subject
@@ -690,7 +690,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
   (let ((date (if (re-search-forward "\
 <div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"topicpath[\t\n ]+updatetime\"\
 \[^>]*>[\t\n ]*\\(20[0-9][0-9]\\)/\\([01]?[0-9]\\)/\\([0-3]?[0-9]\\)\
-\[\t\n $B!!(B]+$B99?7(B[\t\n ]*</div>"
+\[\t\n 　]+更新[\t\n ]*</div>"
 				     nil t)
 		  (prog1
 		      (shimbun-make-date-string
@@ -777,8 +777,8 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	(if (and (or (not pages)
 		     (< (setq count (1+ count)) pages))
 		 (re-search-forward "\
-<a href=\"\\([^\"]+\\)\">&gt;&gt; $B2a5n5-;v0lMw(B</a>\
-\\|<a href=\"\\([^\"]+\\)\">$B<!$X(B&gt;</a>"
+<a href=\"\\([^\"]+\\)\">&gt;&gt; 過去記事一覧</a>\
+\\|<a href=\"\\([^\"]+\\)\">次へ&gt;</a>"
 				    nil t))
 	    (progn
 	      (shimbun-retrieve-url (prog1
@@ -813,7 +813,7 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 			     "\\([^<]+\\)"
 			     s0 "</a>")))
 		 nil t)
-		(not (string-match "\\`[\t\n $B!!(B]*\\'" (match-string 6))))
+		(not (string-match "\\`[\t\n 　]*\\'" (match-string 6))))
       (push (shimbun-create-header
 	     0
 	     (match-string 6)
@@ -910,13 +910,13 @@ http://markets\\.nikkei\\.co\\.jp/kaigai/ft\\.aspx"
 			"\"" s0 ">" s0
 			;; 4. subject
 			"\\([^<]+\\)"
-			s0 "[($B!J(B]"
+			s0 "[(（]"
 			;; 5. month
 			"\\([01]?[0-9]\\)"
 			"/"
 			;; 6. day
 			"\\([0-3]?[0-9]\\)"
-			"[)$B!K(B]")))
+			"[)）]")))
 	    nil t)
       (push (shimbun-create-header
 	     0
@@ -959,13 +959,13 @@ http://markets\\.nikkei\\.co.jp/kaigai/dj\\.aspx"
 			"\"" s0 ">\\(?:<DJ>\\)?" s0
 			;; 4. subject
 			"\\([^<]+\\)"
-			s0 "[($B!J(B]"
+			s0 "[(（]"
 			;; 5. month
 			"\\([01]?[0-9]\\)"
 			"/"
 			;; 6. day
 			"\\([0-3]?[0-9]\\)"
-			"[)$B!K(B]" s0 "</a>")))
+			"[)）]" s0 "</a>")))
 	    nil t)
       (push (shimbun-create-header
 	     0
@@ -1052,13 +1052,13 @@ http://markets.nikkei.co.jp/kokunai/bunkatsu3.aspx" (match-string 1)) folder))
 		     ;; 1. subtitle
 		     "\\([^\t\n <]+\\)"
 		     ".+class=\"sub_bar_time\"" s0 ">" s0
-		     "$B99?7(B" s0 "$B!'(B" s0
+		     "更新" s0 "：" s0
 		     ;; 2. month
 		     "\\([01]?[0-9]\\)"
-		     "$B7n(B"
+		     "月"
 		     ;; 3. day
 		     "\\([0-3]?[0-9]\\)"
-		     "$BF|(B\\(?:" s1
+		     "日\\(?:" s1
 		     ;; 4. hour:minute
 		     "\\([012]?[0-9]:[0-5]?[0-9]\\)"
 		     "\\)?"))))
@@ -1244,7 +1244,7 @@ http://markets.nikkei.co.jp/kokunai/bunkatsu3.aspx" (match-string 1)) folder))
   "Function used to fetch headers for the sports group."
   ;; Skip headlinenews.
   (re-search-forward "\
-<span[\t\n ]+class=\"sub_bar_time\">[\t\n ]*$B99?7!'(B[01]?[0-9]$B7n(B[0-3]?[0-9]$BF|(B"
+<span[\t\n ]+class=\"sub_bar_time\">[\t\n ]*更新：[01]?[0-9]月[0-3]?[0-9]日"
 		     nil t)
   (let (category headers)
     (while (re-search-forward
@@ -1291,7 +1291,7 @@ http://markets.nikkei.co.jp/kokunai/bunkatsu3.aspx" (match-string 1)) folder))
 
 (defun shimbun-nikkei-get-headers-newpro (group folder shimbun range)
   "Function used to fetch headers for the newpro group."
-  (when (re-search-forward ">[\t\n ]*$B:G?7?7@=IJ%K%e!<%9(B[\t\n ]*<" nil t)
+  (when (re-search-forward ">[\t\n ]*最新新製品ニュース[\t\n ]*<" nil t)
     (narrow-to-region (point) (or (search-forward "</ul>" nil t)
 				  (point-max)))
     (goto-char (point-min))
@@ -1424,7 +1424,7 @@ http://markets.nikkei.co.jp/kokunai/bunkatsu3.aspx" (match-string 1)) folder))
 		   (goto-char (point-min))
 		   (re-search-forward "<a[\t\n ]+href=\"\
 \\(isclassList\\.cfm\\?page=[0-9]+&lindID=[0-9]+&sindID=[0-9]+\\)\
-\[\t\n ]*\"[\t\n ]*>[\t\n ]*$B<!$X(B[\t\n ]*&gt;[\t\n ]*</a>"
+\[\t\n ]*\"[\t\n ]*>[\t\n ]*次へ[\t\n ]*&gt;[\t\n ]*</a>"
 				      nil t)))
 	    (progn
 	      (shimbun-retrieve-url (prog1
@@ -1461,20 +1461,20 @@ http://markets.nikkei.co.jp/kokunai/bunkatsu3.aspx" (match-string 1)) folder))
 			"\\.html\\)"
 			"\\\\\"[^>]*>" s0
 			;; 4. subject
-			"\\(\\(?:$B<R@b(B\\|$B=U=)(B\\)[^<]*[($B!J(B]" s0
+			"\\(\\(?:社説\\|春秋\\)[^<]*[(（]" s0
 			;; 5. month
 			"\\([01]?[0-9]\\)"
 			s0 "/" s0
 			;; 6. day
 			"\\([0-3]?[0-9]\\)"
-			s0 "[)$B!K(B]\\)"
+			s0 "[)）]\\)"
 			s0 "</a>")))
 	    nil t)
       (push (shimbun-create-header
 	     0
 	     (shimbun-subst-char-in-string
-	      ?\$B!K(B ?\)
-	      (shimbun-subst-char-in-string ?\$B!J(B ?\( (match-string 4)))
+	      ?\） ?\)
+	      (shimbun-subst-char-in-string ?\（ ?\( (match-string 4)))
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
 	      (string-to-number (match-string 3))
@@ -1498,7 +1498,7 @@ http://markets.nikkei.co.jp/kokunai/bunkatsu3.aspx" (match-string 1)) folder))
     (while (re-search-forward "[\t\n ]*\\(?:\
 <ul\\(?:[\t\n ]+[^>]+\\)?>\
 \\|</ul>\
-\\|<a[\t\n ]+[^>]+>[\t\n ]*$B!c3HBg(B\\(?:$B2hA|(B\\)?$B!d(B[\t\n ]*</a>\
+\\|<a[\t\n ]+[^>]+>[\t\n ]*＜拡大\\(?:画像\\)?＞[\t\n ]*</a>\
 \\|\\(?:<div[\t\n ]+[^>]+>[\t\n ]*\\)?<img[\t\n ]+src=\"[^\"]+/s\\.gif\"\
 \[^>]+>\\(?:[\t\n ]*</div>\\)?\
 \\)[\t\n ]*"
@@ -1557,8 +1557,8 @@ Please visit <a href=\""
 		   (progn
 		     (setq body (point))
 		     (re-search-forward "\
-\\(?:[\t\n $B!!(B]*<\\(?:p\\|p[\t\n $B!!(B]+[^>]+\\|/p\\|/p[\t\n $B!!(B]+[^>]+\\)>\\)*\
-\[\t\n $B!!(B]*<!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\""
+\\(?:[\t\n 　]*<\\(?:p\\|p[\t\n 　]+[^>]+\\|/p\\|/p[\t\n 　]+[^>]+\\)>\\)*\
+\[\t\n 　]*<!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\""
 					nil t)))
 	      ;; The following section will be used for the `main' group.
 	      (and (re-search-forward "\
@@ -1582,7 +1582,7 @@ Please visit <a href=\""
 	(goto-char body))
       (goto-char (point-min))
       (if (and (re-search-forward "<table[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
-\\(?:class=\"photo\\|summary=\"$B<L??(B\\)"
+\\(?:class=\"photo\\|summary=\"写真\\)"
 				  nil t)
 	       (shimbun-end-of-tag "table" t))
 	  (progn
@@ -1598,31 +1598,31 @@ Please visit <a href=\""
   (let (start end)
     (if (or
 	 (when (re-search-forward
-		"<!-+[\t\n ]*$B%3%s%F%s%DOH(B[\t\n ]*-+>[\t\n ]*"
+		"<!-+[\t\n ]*コンテンツ枠[\t\n ]*-+>[\t\n ]*"
 		nil t)
 	   (setq start (match-end 0))
 	   (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
-<!-+[\t\n ]*//$B%3%s%F%s%DOH(B[\t\n ]*-+>[\t\n ]*"
+<!-+[\t\n ]*//コンテンツ枠[\t\n ]*-+>[\t\n ]*"
 				  nil t)
 	       (prog1 nil (goto-char (point-min)))))
 	 (when (re-search-forward
-		"<!-+[\t\n ]*$BJT@.%3%s%F%s%DOH(B[\t\n ]*-+>[\t\n ]*"
+		"<!-+[\t\n ]*編成コンテンツ枠[\t\n ]*-+>[\t\n ]*"
 		nil t)
 	   (setq start (match-end 0))
 	   (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
-<!-+[\t\n ]*//$BJT@.%3%s%F%s%DOH(B[\t\n ]*-+>[\t\n ]*"
+<!-+[\t\n ]*//編成コンテンツ枠[\t\n ]*-+>[\t\n ]*"
 				  nil t)
 	       (prog1 nil (goto-char (point-min)))))
 	 (when (re-search-forward "<!--photo-->[\t\n ]*" nil t)
 	   (setq start (match-end 0))
 	   (or (re-search-forward "\
-\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\\[[01]?[0-9]$B7n(B[0-3]?[0-9]$BF|(B[/$B!?(B][^]]+\\]"
+\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\\[[01]?[0-9]月[0-3]?[0-9]日[/／][^]]+\\]"
 				  nil t)
 	       (prog1 nil (goto-char (point-min)))))
 	 (when (re-search-forward "\
 \\(<!-+[\t\n ]*Photo[\t\n _]+news[\t\n ]*-+>[\t\n ]*\\)\
 \\|<\\([^\t\n >]+\\)[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
-\\(?:class=\"photo\"\\|summary=\"$B<L??%K%e!<%9(B\"\\)[^>]*>[\t\n ]*\
+\\(?:class=\"photo\"\\|summary=\"写真ニュース\"\\)[^>]*>[\t\n ]*\
 \\|<!-+[\t\n ]*FJZONE[\t\n ]+START[\t\n ]+NAME[\t\n ]*\
 =[\t\n ]*\"[\t\n ]*HONBUN[\t\n ]*\"[\t\n ]*-+>[\t\n ]*"
 				  nil t)
@@ -1653,13 +1653,13 @@ Please visit <a href=\""
 				  nil t)
 	       (prog1 nil (goto-char (point-min)))))
 	 (when (or (re-search-forward
-		    "<!-+[\t\n ]*$BFC=85-;vBg(B[\t\n ]*-+>[\t\n ]*"
+		    "<!-+[\t\n ]*特集記事大[\t\n ]*-+>[\t\n ]*"
 		    nil t)
-		   (re-search-forward "<!-+[\t\n ]*$B5-;v(B[\t\n ]*-+>[\t\n ]*"
+		   (re-search-forward "<!-+[\t\n ]*記事[\t\n ]*-+>[\t\n ]*"
 				      nil t))
 	   (setq start (match-end 0))
 	   (or (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
-<!-+[\t\n ]*\\(?://$B5-;v(B\\|$BFC=85-;v%U%C%?(B\\)[\t\n ]*-+>"
+<!-+[\t\n ]*\\(?://記事\\|特集記事フッタ\\)[\t\n ]*-+>"
 				  nil t)
 	       (prog1 nil (goto-char (point-min)))))
 	 (setq end (shimbun-nikkei-prepare-article-default-0 header))
@@ -1667,7 +1667,7 @@ Please visit <a href=\""
 
 	 ;; Filters having a potential to mistakenly extract the body follow.
 	 (when (or (re-search-forward "\
-<a[\t\n ]+href=\"\\./\">[\t\n ]*$B%H%C%W(B[\t\n ]*</a>[\t\n ]*"
+<a[\t\n ]+href=\"\\./\">[\t\n ]*トップ[\t\n ]*</a>[\t\n ]*"
 				      nil t)
 		   (re-search-forward "\
 <div[\t\n ]+class=\"title[^\"]*\">\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*"
@@ -1682,15 +1682,15 @@ Please visit <a href=\""
 				  nil t)
 	       (prog1 nil (goto-char (point-min)))))
 	 (when (or (re-search-forward "\
-<!-+[\t\n ]*$B<L??(B[\t\n ]*-+>\\(?:[\t\n ]*<[^i][^>]*>\\)*[\t\n ]*"
+<!-+[\t\n ]*写真[\t\n ]*-+>\\(?:[\t\n ]*<[^i][^>]*>\\)*[\t\n ]*"
 				      nil t)
-		   (re-search-forward "<!-+[\t\n ]*$BK\J8(B[\t\n ]*-+>" nil t)
+		   (re-search-forward "<!-+[\t\n ]*本文[\t\n ]*-+>" nil t)
 		   (re-search-forward "<div[\t\n ]+class=[^>]+>[\t\n ]*"
 				      nil t))
 	   (setq start (match-end 0))
 	   (set-match-data nil)
 	   (while (re-search-forward "[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*\
-<!-+[\t\n ]*$BK\J8(B[\t\n ]*-+>"
+<!-+[\t\n ]*本文[\t\n ]*-+>"
 				     nil t))
 	   (or (match-beginning 0)
 	       (prog1 nil (goto-char (point-min))))))
@@ -1702,7 +1702,7 @@ Please visit <a href=\""
 	    (insert shimbun-nikkei-content-start))
 	  t)
       (when (and (re-search-forward "\
-<a[\t\n ]+[^>]+>[\t\n ]*$B!d!d5-;v$rFI$`(B[\t\n ]*</a>"
+<a[\t\n ]+[^>]+>[\t\n ]*＞＞記事を読む[\t\n ]*</a>"
 				    nil t)
 		 (re-search-backward "href=\"\\([^\"]+\\)"
 				     (match-beginning 0) t))
@@ -1738,8 +1738,8 @@ Please visit <a href=\""
 			   nil t)
     (insert shimbun-nikkei-content-start)
     (when (re-search-forward "\
-\\(?:[\t\n $B!!(B]*<\\(?:p\\|p[\t\n $B!!(B]+[^>]+\\|/p\\|/p[\t\n $B!!(B]+[^>]+\\)>\\)*\
-\[\t\n $B!!(B]*<!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-+>\
+\\(?:[\t\n 　]*<\\(?:p\\|p[\t\n 　]+[^>]+\\|/p\\|/p[\t\n 　]+[^>]+\\)>\\)*\
+\[\t\n 　]*<!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-+>\
 \\|<a[\t\n ]+name=\"newslist\"></a>\n"
 			     nil t)
       (goto-char (match-beginning 0))
@@ -1749,7 +1749,7 @@ Please visit <a href=\""
 (defun shimbun-nikkei-prepare-article-kansai (header)
   "Function used to prepare contents of an article for the kansai group."
   (let ((date (when (re-search-forward "[\t\n ]*\
-\\(20[0-9][0-9]\\)/\\([01]?[0-9]\\)/\\([0-3][0-9]\\)[\t\n ]*$BG[?.(B[\t\n ]*<"
+\\(20[0-9][0-9]\\)/\\([01]?[0-9]\\)/\\([0-3][0-9]\\)[\t\n ]*配信[\t\n ]*<"
 				       nil t)
 		(prog1
 		    (shimbun-nikkei-make-date-string
@@ -1773,7 +1773,7 @@ Please visit <a href=\""
   "Function used to prepare contents of an article for the sports group."
   (when (re-search-forward "\
 <\\([^\t\n >]+\\)[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
-\\(?:class=\"photo\"\\|summary=\"$B<L??%K%e!<%9(B\"\\)[^>]*>[\t\n ]*\
+\\(?:class=\"photo\"\\|summary=\"写真ニュース\"\\)[^>]*>[\t\n ]*\
 \\|<!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"MIDASHI\"[\t\n ]*-+>[\t\n ]*"
 			   nil t)
     (let ((start (match-end 0))
@@ -1839,7 +1839,7 @@ Please visit <a href=\""
 
 (defun shimbun-nikkei-prepare-article-release2 (&rest args)
   "Function used to prepare contents of an article for the release groups."
-  (when (re-search-forward ">[\t\n ]*$B$3$N%Z!<%8$r%W%j%s%H$9$k(B[\t\n ]*\
+  (when (re-search-forward ">[\t\n ]*このページをプリントする[\t\n ]*\
 \\(?:\\(?:<[^>]+>*[\t\n ]*\\)*<h[0-9]+\\(?:[\t\n ]+[^>]+\\)*\
 \[\t\n ]+[^\t\n >]+[\t\n ]*=[\t\n ]*\"[\t\n ]*heading[\t\n ]*\"[^>]*>\
 \[^<]+</h[0-9]+>\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\\)?"

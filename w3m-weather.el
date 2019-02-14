@@ -1,4 +1,4 @@
-;;; w3m-weather.el --- Look weather forecast -*- coding: iso-2022-7bit; -*-
+;;; w3m-weather.el --- Look weather forecast -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2005, 2012
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -50,164 +50,164 @@
   (eval-when-compile
     (let* ((format "http://weather.yahoo.co.jp/weather/jp/%s.html")
 	   (alist
-	    '(;; URL$B$N0lIt(B, $B4A;zI=5-(B, $B%m!<%^;zI=5-(B, $BJLL>(B
-	      ;; ($B%m!<%^;zI=5-$G$OD92;$r>JN,$7$J$$$3$H(B)
-	      ("1a/1100" "$BF;KL!&=!C+(B" "douhokusouya" "souya")
-	      ("1a/1200" "$BF;KL!&>e@n(B" "douhokukamikawa" "kamikawa")
-	      ("1a/1300" "$BF;KL!&N1K((B" "douhokurumoi" "rumoi")
-	      ("1c/1710" "$BF;El!&LVAv(B" "doutouabashiri" "abashiri")
-	      ("1c/1720" "$BF;El!&KL8+(B" "doutoukitami" "kitami")
-	      ("1c/1730" "$BF;El!&LfJL(B" "doutoumonbetsu" "monbetsu")
-	      ("1c/1800" "$BF;El!&:,<<(B" "doutounemuro" "nemuro")
-	      ("1c/1900" "$BF;El!&6|O)(B" "doutoukushiro" "kushiro")
-	      ("1c/2000" "$BF;El!&==>!(B" "doutoutokachi" "tokachi")
-	      ("1b/1400" "$BF;1{!&@P<m(B" "dououishikari" "ishikari")
-	      ("1b/1500" "$BF;1{!&6uCN(B" "douousorachi" "sorachi")
-	      ("1b/1600" "$BF;1{!&8e;V(B" "dououshiribeshi" "shiribeshi")
-	      ("1d/2400" "$BF;Fn!&I0;3(B" "dounanhiyama" "hiyama")
-	      ("1d/2100" "$BF;Fn!&C@?6(B" "dounaniburi" "iburi")
-	      ("1d/2200" "$BF;Fn!&F|9b(B" "dounanhidaka" "hidaka")
-	      ("1d/2300" "$BF;Fn!&EOEg(B" "dounanoshima" "oshima")
-	      ("1d/2400" "$BF;Fn!&[X;3(B" "dounanhiyama" "hiyama")
-	      ("2/3110" "$B@D?98)!&DE7Z(B" "aomorikentsugaru" "tsugaru")
-	      ("2/3120" "$B@D?98)!&2<KL(B" "aomorikenshimokita" "shimokita")
-	      ("2/3130" "$B@D?98)!&;0H,>eKL(B"
+	    '(;; URLの一部, 漢字表記, ローマ字表記, 別名
+	      ;; (ローマ字表記では長音を省略しないこと)
+	      ("1a/1100" "道北・宗谷" "douhokusouya" "souya")
+	      ("1a/1200" "道北・上川" "douhokukamikawa" "kamikawa")
+	      ("1a/1300" "道北・留萌" "douhokurumoi" "rumoi")
+	      ("1c/1710" "道東・網走" "doutouabashiri" "abashiri")
+	      ("1c/1720" "道東・北見" "doutoukitami" "kitami")
+	      ("1c/1730" "道東・紋別" "doutoumonbetsu" "monbetsu")
+	      ("1c/1800" "道東・根室" "doutounemuro" "nemuro")
+	      ("1c/1900" "道東・釧路" "doutoukushiro" "kushiro")
+	      ("1c/2000" "道東・十勝" "doutoutokachi" "tokachi")
+	      ("1b/1400" "道央・石狩" "dououishikari" "ishikari")
+	      ("1b/1500" "道央・空知" "douousorachi" "sorachi")
+	      ("1b/1600" "道央・後志" "dououshiribeshi" "shiribeshi")
+	      ("1d/2400" "道南・桧山" "dounanhiyama" "hiyama")
+	      ("1d/2100" "道南・胆振" "dounaniburi" "iburi")
+	      ("1d/2200" "道南・日高" "dounanhidaka" "hidaka")
+	      ("1d/2300" "道南・渡島" "dounanoshima" "oshima")
+	      ("1d/2400" "道南・檜山" "dounanhiyama" "hiyama")
+	      ("2/3110" "青森県・津軽" "aomorikentsugaru" "tsugaru")
+	      ("2/3120" "青森県・下北" "aomorikenshimokita" "shimokita")
+	      ("2/3130" "青森県・三八上北"
 	       "aomorikensanpachikamikita" "sanpachikamikita")
-	      ("3/3310" "$B4d<j8)!&FbN&It(B" "iwatekennairikubu")
-	      ("3/3320" "$B4d<j8)!&1h4_KLIt(B" "iwatekenenganhokubu")
-	      ("3/3330" "$B4d<j8)!&1h4_FnIt(B" "iwatekenengannanbu")
-	      ("5/3210" "$B=)ED8)!&1h4_It(B" "akitakenenganbu")
-	      ("5/3220" "$B=)ED8)!&FbN&It(B" "akitakennairikubu")
-	      ("4/3410" "$B5\>k8)!&ElIt(B" "miyagikentoubu")
-	      ("4/3420" "$B5\>k8)!&@>It(B" "miyagikenseibu")
-	      ("6/3510" "$B;37A8)!&B<;3(B" "yamagatakenmurayama" "murayama")
-	      ("6/3520" "$B;37A8)!&CV;r(B" "yamagatakenokitama" "okitama")
-	      ("6/3530" "$B;37A8)!&>1Fb(B" "yamagatakenshonai" "shounai")
-	      ("6/3540" "$B;37A8)!&:G>e(B" "yamagatakenmogami" "mogami")
-	      ("7/3610" "$BJ!Eg8)!&CfDL$j(B" "hukushimakennakadoori" "nakadoori")
-	      ("7/3620" "$BJ!Eg8)!&IMDL$j(B" "hukushimakenhamadoori" "hamadoori")
-	      ("7/3630" "$BJ!Eg8)!&2qDE(B" "hukushimakenaidu" "aidu")
-	      ("8/4010" "$B0q>k8)!&KLIt(B" "ibaragikenhokubu")
-	      ("8/4020" "$B0q>k8)!&FnIt(B" "ibaragikennanbu")
-	      ("9/4110" "$BFJLZ8)!&FnIt(B" "tochigikennanbu")
-	      ("9/4120" "$BFJLZ8)!&KLIt(B" "tochigikenhokubu")
-	      ("10/4210" "$B72GO8)!&FnIt(B" "gunmakennanbu")
-	      ("10/4220" "$B72GO8)!&KLIt(B" "gunmakenhokubu")
-	      ("11/4310" "$B:k6L8)!&FnIt(B" "saitamakennanbu")
-	      ("11/4320" "$B:k6L8)!&KLIt(B" "saitamakenhokubu")
-	      ("11/4330" "$B:k6L8)!&CaIc(B" "saitamakenchichibu")
-	      ("12/4510" "$B@iMU8)!&KL@>It(B" "chibakenhokuseibu")
-	      ("12/4520" "$B@iMU8)!&KLElIt(B" "chibakenhokutoubu")
-	      ("12/4530" "$B@iMU8)!&FnIt(B" "chibakennanbu")
-	      ("13/4410" "$BEl5~ET!&El5~(B" "toukyoutotoukyou" "toukyou")
-	      ("13/4420" "$BEl5~ET!&0KF&=tEgKLIt(B"
+	      ("3/3310" "岩手県・内陸部" "iwatekennairikubu")
+	      ("3/3320" "岩手県・沿岸北部" "iwatekenenganhokubu")
+	      ("3/3330" "岩手県・沿岸南部" "iwatekenengannanbu")
+	      ("5/3210" "秋田県・沿岸部" "akitakenenganbu")
+	      ("5/3220" "秋田県・内陸部" "akitakennairikubu")
+	      ("4/3410" "宮城県・東部" "miyagikentoubu")
+	      ("4/3420" "宮城県・西部" "miyagikenseibu")
+	      ("6/3510" "山形県・村山" "yamagatakenmurayama" "murayama")
+	      ("6/3520" "山形県・置賜" "yamagatakenokitama" "okitama")
+	      ("6/3530" "山形県・庄内" "yamagatakenshonai" "shounai")
+	      ("6/3540" "山形県・最上" "yamagatakenmogami" "mogami")
+	      ("7/3610" "福島県・中通り" "hukushimakennakadoori" "nakadoori")
+	      ("7/3620" "福島県・浜通り" "hukushimakenhamadoori" "hamadoori")
+	      ("7/3630" "福島県・会津" "hukushimakenaidu" "aidu")
+	      ("8/4010" "茨城県・北部" "ibaragikenhokubu")
+	      ("8/4020" "茨城県・南部" "ibaragikennanbu")
+	      ("9/4110" "栃木県・南部" "tochigikennanbu")
+	      ("9/4120" "栃木県・北部" "tochigikenhokubu")
+	      ("10/4210" "群馬県・南部" "gunmakennanbu")
+	      ("10/4220" "群馬県・北部" "gunmakenhokubu")
+	      ("11/4310" "埼玉県・南部" "saitamakennanbu")
+	      ("11/4320" "埼玉県・北部" "saitamakenhokubu")
+	      ("11/4330" "埼玉県・秩父" "saitamakenchichibu")
+	      ("12/4510" "千葉県・北西部" "chibakenhokuseibu")
+	      ("12/4520" "千葉県・北東部" "chibakenhokutoubu")
+	      ("12/4530" "千葉県・南部" "chibakennanbu")
+	      ("13/4410" "東京都・東京" "toukyoutotoukyou" "toukyou")
+	      ("13/4420" "東京都・伊豆諸島北部"
 	       "toukyoutoizushotouhokubu" "izushotouhokubu")
-	      ("13/100" "$BEl5~ET!&0KF&=tEgFnIt(B"
+	      ("13/100" "東京都・伊豆諸島南部"
 	       "toukyoutoizushotounanbu" "izushotounanbu")
-	      ("13/9600" "$BEl5~ET!&>.3^86=tEg(B"
+	      ("13/9600" "東京都・小笠原諸島"
 	       "toukyoutoogasawarashotou" "ogasawarashotou")
-	      ("14/4610" "$B?@F`@n8)!&ElIt(B" "kanagawakentoubu")
-	      ("14/4620" "$B?@F`@n8)!&@>It(B" "kanagawakenseibu")
-	      ("15/5410" "$B?73c8)!&2<1[(B" "niigatakenkaetsu" "kaetsu")
-	      ("15/5420" "$B?73c8)!&Cf1[(B" "niigatakenchuuetsu" "chuuetsu")
-	      ("15/5430" "$B?73c8)!&>e1[(B" "niigatakenjouetsu" "jouetsu")
-	      ("15/5440" "$B?73c8)!&:4EO(B" "niigatakensado" "sado")
-	      ("16/5510" "$BIY;38)!&ElIt(B" "toyamakentoubu")
-	      ("16/5520" "$BIY;38)!&@>It(B" "toyamakenseibu")
-	      ("17/5610" "$B@P@n8)!&2C2l(B" "ishikawakenkaga" "kaga")
-	      ("17/5620" "$B@P@n8)!&G=EP(B" "ishikawakennoto" "noto")
-	      ("18/5710" "$BJ!0f8)!&NfKL(B" "hukuikenreihoku" "reihoku")
-	      ("18/5720" "$BJ!0f8)!&NfFn(B" "hukuikenreinan" "reinan")
-	      ("19/4910" "$B;3M|8)!&Cf@>It(B" "yamanashikenchuuseibu")
-	      ("19/4920" "$B;3M|8)!&IY;N8^8P(B" "yamanashikenhujigoko" "hujigoko")
-	      ("20/4810" "$BD9Ln8)!&KLIt(B" "naganokenhokubu")
-	      ("20/4820" "$BD9Ln8)!&CfIt(B" "naganokenchuubu")
-	      ("20/4830" "$BD9Ln8)!&FnIt(B" "naganokennanbu")
-	      ("21/5210" "$B4tIl8)!&H~G;(B" "gihukenmino" "mino")
-	      ("21/5220" "$B4tIl8)!&HtBM(B" "gihukenhida" "hida")
-	      ("22/5010" "$B@E2,8)!&CfIt(B" "shizuokakenchuubu")
-	      ("22/5020" "$B@E2,8)!&0KF&(B" "shizuokakenizu" "izu")
-	      ("22/5030" "$B@E2,8)!&ElIt(B" "shizuokakentoubu")
-	      ("22/5040" "$B@E2,8)!&@>It(B" "shizuokakenseibu")
-	      ("23/5110" "$B0&CN8)!&@>It(B" "aichikenseibu")
-	      ("23/5120" "$B0&CN8)!&ElIt(B" "aichikentoubu")
-	      ("24/5310" "$B;0=E8)!&KLCfIt(B" "miekenhokuchuubu")
-	      ("24/5320" "$B;0=E8)!&FnIt(B" "miekennanbu")
-	      ("25/6010" "$B<"2l8)!&FnIt(B" "shigakennanbu")
-	      ("25/6020" "$B<"2l8)!&KLIt(B" "shigakenhokubu")
-	      ("26/400" "$B5~ETI\!&KLIt(B" "kyoutohuhokubu")
-	      ("26/6100" "$B5~ETI\!&FnIt(B" "kyoutohunanbu")
-	      ("27/6200" "$BBg:eI\(B" "oosakahu" "oosaka")
-	      ("28/500" "$BJ<8K8)!&KLIt(B" "hyougokenhokubu")
-	      ("28/6300" "$BJ<8K8)!&FnIt(B" "hyougokennanbu")
-	      ("29/6410" "$BF`NI8)!&KLIt(B" "narakenhokubu")
-	      ("29/6420" "$BF`NI8)!&FnIt(B" "narakennanbu")
-	      ("30/6510" "$BOB2N;38)!&KLIt(B" "wakayamakenhokubu")
-	      ("30/6520" "$BOB2N;38)!&FnIt(B" "wakayamakennanbu")
-	      ("31/6910" "$BD;<h8)!&ElIt(B" "tottorikentoubu")
-	      ("31/6920" "$BD;<h8)!&@>It(B" "tottorikenseibu")
-	      ("32/600" "$BEg:,8)!&1#4t(B" "shimanekenoki" "oki")
-	      ("32/6810" "$BEg:,8)!&ElIt(B" "shimanekentoubu")
-	      ("32/6820" "$BEg:,8)!&@>It(B" "shimanekenseibu")
-	      ("33/6610" "$B2,;38)!&FnIt(B" "okayamakennanbu")
-	      ("33/6620" "$B2,;38)!&KLIt(B" "okayamakenhokubu")
-	      ("34/6710" "$B9-Eg8)!&FnIt(B" "hiroshimakennanbu")
-	      ("34/6720" "$B9-Eg8)!&KLIt(B" "hiroshimakenhokubu")
-	      ("35/8110" "$B;38}8)!&@>It(B" "yamaguchikenseibu")
-	      ("35/8120" "$B;38}8)!&CfIt(B" "yamaguchikenchuubu")
-	      ("35/8140" "$B;38}8)!&KLIt(B" "yamaguchikenhokubu")
-	      ("35/8130" "$B;38}8)!&ElIt(B" "yamaguchikentoubu")
-	      ("36/7110" "$BFAEg8)!&KLIt(B" "tokushimakenhokubu")
-	      ("36/7120" "$BFAEg8)!&FnIt(B" "tokushimakennanbu")
-	      ("37/7200" "$B9a@n8)(B" "kagawaken" "kagawa")
-	      ("38/7320" "$B0&I28)!&ElM=(B" "ehimekentouyo" "touyo")
-	      ("38/7330" "$B0&I28)!&FnM=(B" "ehimekennanyo" "nanyo")
-	      ("38/7310" "$B0&I28)!&CfM=(B" "ehimekenchuuyo" "chuuyo")
-	      ("39/7410" "$B9bCN8)!&CfIt(B" "kouchikenchuubu")
-	      ("39/7420" "$B9bCN8)!&ElIt(B" "kouchikentoubu")
-	      ("39/7430" "$B9bCN8)!&@>It(B" "kouchikenseibu")
-	      ("40/8210" "$BJ!2,8)!&J!2,(B" "hukuokakenhukuoka" "hukuoka")
-	      ("40/8220" "$BJ!2,8)!&KL6e=#(B" "hukuokakenkitakyushu" "kitakyuushu")
-	      ("40/8230" "$BJ!2,8)!&C^K-(B" "hukuokakenchikuhou" "chikuhou")
-	      ("40/8240" "$BJ!2,8)!&C^8e(B" "hukuokakenchikugo" "chikugo")
-	      ("41/8510" "$B:42l8)!&FnIt(B" "sagakennanbu")
-	      ("41/8520" "$B:42l8)!&KLIt(B" "sagakenhokubu")
-	      ("42/700" "$BD9:j8)!&0m4tBPGO(B"
+	      ("14/4610" "神奈川県・東部" "kanagawakentoubu")
+	      ("14/4620" "神奈川県・西部" "kanagawakenseibu")
+	      ("15/5410" "新潟県・下越" "niigatakenkaetsu" "kaetsu")
+	      ("15/5420" "新潟県・中越" "niigatakenchuuetsu" "chuuetsu")
+	      ("15/5430" "新潟県・上越" "niigatakenjouetsu" "jouetsu")
+	      ("15/5440" "新潟県・佐渡" "niigatakensado" "sado")
+	      ("16/5510" "富山県・東部" "toyamakentoubu")
+	      ("16/5520" "富山県・西部" "toyamakenseibu")
+	      ("17/5610" "石川県・加賀" "ishikawakenkaga" "kaga")
+	      ("17/5620" "石川県・能登" "ishikawakennoto" "noto")
+	      ("18/5710" "福井県・嶺北" "hukuikenreihoku" "reihoku")
+	      ("18/5720" "福井県・嶺南" "hukuikenreinan" "reinan")
+	      ("19/4910" "山梨県・中西部" "yamanashikenchuuseibu")
+	      ("19/4920" "山梨県・富士五湖" "yamanashikenhujigoko" "hujigoko")
+	      ("20/4810" "長野県・北部" "naganokenhokubu")
+	      ("20/4820" "長野県・中部" "naganokenchuubu")
+	      ("20/4830" "長野県・南部" "naganokennanbu")
+	      ("21/5210" "岐阜県・美濃" "gihukenmino" "mino")
+	      ("21/5220" "岐阜県・飛騨" "gihukenhida" "hida")
+	      ("22/5010" "静岡県・中部" "shizuokakenchuubu")
+	      ("22/5020" "静岡県・伊豆" "shizuokakenizu" "izu")
+	      ("22/5030" "静岡県・東部" "shizuokakentoubu")
+	      ("22/5040" "静岡県・西部" "shizuokakenseibu")
+	      ("23/5110" "愛知県・西部" "aichikenseibu")
+	      ("23/5120" "愛知県・東部" "aichikentoubu")
+	      ("24/5310" "三重県・北中部" "miekenhokuchuubu")
+	      ("24/5320" "三重県・南部" "miekennanbu")
+	      ("25/6010" "滋賀県・南部" "shigakennanbu")
+	      ("25/6020" "滋賀県・北部" "shigakenhokubu")
+	      ("26/400" "京都府・北部" "kyoutohuhokubu")
+	      ("26/6100" "京都府・南部" "kyoutohunanbu")
+	      ("27/6200" "大阪府" "oosakahu" "oosaka")
+	      ("28/500" "兵庫県・北部" "hyougokenhokubu")
+	      ("28/6300" "兵庫県・南部" "hyougokennanbu")
+	      ("29/6410" "奈良県・北部" "narakenhokubu")
+	      ("29/6420" "奈良県・南部" "narakennanbu")
+	      ("30/6510" "和歌山県・北部" "wakayamakenhokubu")
+	      ("30/6520" "和歌山県・南部" "wakayamakennanbu")
+	      ("31/6910" "鳥取県・東部" "tottorikentoubu")
+	      ("31/6920" "鳥取県・西部" "tottorikenseibu")
+	      ("32/600" "島根県・隠岐" "shimanekenoki" "oki")
+	      ("32/6810" "島根県・東部" "shimanekentoubu")
+	      ("32/6820" "島根県・西部" "shimanekenseibu")
+	      ("33/6610" "岡山県・南部" "okayamakennanbu")
+	      ("33/6620" "岡山県・北部" "okayamakenhokubu")
+	      ("34/6710" "広島県・南部" "hiroshimakennanbu")
+	      ("34/6720" "広島県・北部" "hiroshimakenhokubu")
+	      ("35/8110" "山口県・西部" "yamaguchikenseibu")
+	      ("35/8120" "山口県・中部" "yamaguchikenchuubu")
+	      ("35/8140" "山口県・北部" "yamaguchikenhokubu")
+	      ("35/8130" "山口県・東部" "yamaguchikentoubu")
+	      ("36/7110" "徳島県・北部" "tokushimakenhokubu")
+	      ("36/7120" "徳島県・南部" "tokushimakennanbu")
+	      ("37/7200" "香川県" "kagawaken" "kagawa")
+	      ("38/7320" "愛媛県・東予" "ehimekentouyo" "touyo")
+	      ("38/7330" "愛媛県・南予" "ehimekennanyo" "nanyo")
+	      ("38/7310" "愛媛県・中予" "ehimekenchuuyo" "chuuyo")
+	      ("39/7410" "高知県・中部" "kouchikenchuubu")
+	      ("39/7420" "高知県・東部" "kouchikentoubu")
+	      ("39/7430" "高知県・西部" "kouchikenseibu")
+	      ("40/8210" "福岡県・福岡" "hukuokakenhukuoka" "hukuoka")
+	      ("40/8220" "福岡県・北九州" "hukuokakenkitakyushu" "kitakyuushu")
+	      ("40/8230" "福岡県・筑豊" "hukuokakenchikuhou" "chikuhou")
+	      ("40/8240" "福岡県・筑後" "hukuokakenchikugo" "chikugo")
+	      ("41/8510" "佐賀県・南部" "sagakennanbu")
+	      ("41/8520" "佐賀県・北部" "sagakenhokubu")
+	      ("42/700" "長崎県・壱岐対馬"
 	       "nagasakikenikitsushima" "iki" "tsushima" "ikitsushima")
-	      ("42/800" "$BD9:j8)!&8^Eg(B" "nagasakikengotou" "gotou")
-	      ("42/8410" "$BD9:j8)!&FnIt(B" "nagasakikennanbu")
-	      ("42/8420" "$BD9:j8)!&KLIt(B" "nagasakikenhokubu")
-	      ("43/8610" "$B7'K\8)!&7'K\(B" "kumamotokenkumamoto" "kumamoto")
-	      ("43/8620" "$B7'K\8)!&0$AI(B" "kumamotokenaso" "aso")
-	      ("43/8630" "$B7'K\8)!&E7Ap02KL(B"
+	      ("42/800" "長崎県・五島" "nagasakikengotou" "gotou")
+	      ("42/8410" "長崎県・南部" "nagasakikennanbu")
+	      ("42/8420" "長崎県・北部" "nagasakikenhokubu")
+	      ("43/8610" "熊本県・熊本" "kumamotokenkumamoto" "kumamoto")
+	      ("43/8620" "熊本県・阿蘇" "kumamotokenaso" "aso")
+	      ("43/8630" "熊本県・天草芦北"
 	       "kumamotokenamakusaashikita" "amakusa" "ashikita" "amakusaashikita")
-	      ("43/8640" "$B7'K\8)!&5eKa(B" "kumamotokenkuma" "kuma")
-	      ("44/8310" "$BBgJ,8)!&CfIt(B" "ooitakenchuubu")
-	      ("44/8320" "$BBgJ,8)!&KLIt(B" "ooitakenhokubu")
-	      ("44/8330" "$BBgJ,8)!&@>It(B" "ooitakenseibu")
-	      ("44/8340" "$BBgJ,8)!&FnIt(B" "ooitakennanbu")
-	      ("45/8710" "$B5\:j8)!&FnItJ?LnIt(B" "miyazakikennanbuheiyabu")
-	      ("45/8720" "$B5\:j8)!&KLItJ?LnIt(B" "miyazakikenhokubuheiyabu")
-	      ("45/8730" "$B5\:j8)!&FnIt;31h$$(B" "miyazakikennanbuyamazoi")
-	      ("45/8740" "$B5\:j8)!&KLIt;31h$$(B" "miyazakikenhokubuyamazoi")
-	      ("46/8810" "$B</;yEg8)!&;'K`(B" "kagoshimakensatsuma" "satsuma")
-	      ("46/8820" "$B</;yEg8)!&Bg6y(B" "kagoshimakenoosumi" "oosumi")
-	      ("46/900" "$B</;yEg8)!&<o;REg!&205WEg(B"
+	      ("43/8640" "熊本県・球磨" "kumamotokenkuma" "kuma")
+	      ("44/8310" "大分県・中部" "ooitakenchuubu")
+	      ("44/8320" "大分県・北部" "ooitakenhokubu")
+	      ("44/8330" "大分県・西部" "ooitakenseibu")
+	      ("44/8340" "大分県・南部" "ooitakennanbu")
+	      ("45/8710" "宮崎県・南部平野部" "miyazakikennanbuheiyabu")
+	      ("45/8720" "宮崎県・北部平野部" "miyazakikenhokubuheiyabu")
+	      ("45/8730" "宮崎県・南部山沿い" "miyazakikennanbuyamazoi")
+	      ("45/8740" "宮崎県・北部山沿い" "miyazakikenhokubuyamazoi")
+	      ("46/8810" "鹿児島県・薩摩" "kagoshimakensatsuma" "satsuma")
+	      ("46/8820" "鹿児島県・大隅" "kagoshimakenoosumi" "oosumi")
+	      ("46/900" "鹿児島県・種子島・屋久島"
 	       "kagoshimakentanegashimayakushima" "tanegashima" "yakushima" "tanegashimayakushima")
-	      ("46/1000" "$B</;yEg8)!&1bH~(B" "kagoshimakenamami" "amami")
-	      ("47/9110" "$B2-Fl8)!&K\EgCfFnIt(B"
+	      ("46/1000" "鹿児島県・奄美" "kagoshimakenamami" "amami")
+	      ("47/9110" "沖縄県・本島中南部"
 	       "okinawakenhontouchuunanbu" "hontouchuunanbu")
-	      ("47/9120" "$B2-Fl8)!&K\EgKLIt(B"
+	      ("47/9120" "沖縄県・本島北部"
 	       "okinawakenhontouhokubu" "hontouhokubu")
-	      ("47/9130" "$B2-Fl8)!&5WJFEg(B" "okinawakenkumejima" "kumejima")
-	      ("47/9200" "$B2-Fl8)!&BgElEg(B" "okinawakendaitoujima" "daitoujima")
-	      ("47/9300" "$B2-Fl8)!&5\8EEg(B" "okinawakenmiyakojima" "miyakojima")
-	      ("47/9400" "$B2-Fl8)!&@P3@Eg(B"
+	      ("47/9130" "沖縄県・久米島" "okinawakenkumejima" "kumejima")
+	      ("47/9200" "沖縄県・大東島" "okinawakendaitoujima" "daitoujima")
+	      ("47/9300" "沖縄県・宮古島" "okinawakenmiyakojima" "miyakojima")
+	      ("47/9400" "沖縄県・石垣島"
 	       "okinawakenishigakijima" "ishigakijima")
-	      ("47/9500" "$B2-Fl8)!&M?Fa9qEg(B"
+	      ("47/9500" "沖縄県・与那国島"
 	       "okinawakenyonagunijima" "yonagunijima")))
 	   (table)
-	   ;; $B%X%\%s<0$H71Na<0$NBP1~I=(B
+	   ;; ヘボン式と訓令式の対応表
 	   (hepburn-table
 	    (let (table)
 	      (dolist (x '(("si" "shi")
@@ -225,11 +225,11 @@
 		  (push (list (concat (car x) y) (concat (cdr x) y)) table)
 		  (push (list (concat (cdr x) y) (concat (car x) y)) table)))
 	      table))
-	   ;; $BBP1~I=$K>h$C$F$$$kJ8;zNs$rC5$9@55,I=8=(B
+	   ;; 対応表に乗っている文字列を探す正規表現
 	   (hepburn-regexp
 	    (format "\\(?:\\`\\|[aiueo]\\)\\(n\\([^aiueoy]\\)\\|%s\\)"
 		    (regexp-opt (mapcar (function car) hepburn-table))))
-	   ;; $BD92;$NM-L5$K$h$kGI@87A$NI=(B
+	   ;; 長音の有無による派生形の表
 	   (prolonged-table
 	    (let (table)
 	      (dolist (x '("k" "ky"
@@ -258,13 +258,13 @@
 		(push (list (concat x "uu") (concat x "u"))
 		      table))
 	      table))
-	   ;; $BGI@87A$NI=$K>h$C$F$$$kJ8;zNs$rC5$9@55,I=8=(B
+	   ;; 派生形の表に乗っている文字列を探す正規表現
 	   (prolonged-regexp (format "\\(?:\\`\\|[aiueo]\\)\\(%s\\)"
 				     (regexp-opt (mapcar (function car)
 							 prolonged-table)))))
       (w3m-labels ((hepburn-candidates
 		    (str)
-		    "$B%X%\%s<0$H71Na<0$N:9$K$h$C$F@8$8$kGI@87A$rF@$k(B"
+		    "ヘボン式と訓令式の差によって生じる派生形を得る"
 		    (if (string-match hepburn-regexp str)
 			(let ((prefix (substring str 0 (match-beginning 1)))
 			      (candidates (if (match-beginning 2)
@@ -283,7 +283,7 @@
 		      (list str)))
 		   (prolonged-candidates
 		    (str)
-		    "$BD92;$NM-L5$K$h$C$F@8$8$kGI@87A$rF@$k(B"
+		    "長音の有無によって生じる派生形を得る"
 		    (let (buf)
 		      (if (string-match prolonged-regexp str)
 			  (let ((prefix (substring str 0 (match-beginning 1)))
@@ -304,7 +304,7 @@
 		      buf))
 		   (romaji-candidates
 		    (str)
-		    "$BA4$F$NGI@87A$rF@$k(B"
+		    "全ての派生形を得る"
 		    (let (buf)
 		      (dolist (x (hepburn-candidates str))
 			(dolist (y (prolonged-candidates x))
@@ -321,7 +321,7 @@
   "Completion table of areas and urls.")
 
 (defcustom w3m-weather-default-area
-  "$B5~ETI\!&FnIt(B"
+  "京都府・南部"
   "Default region to check weather."
   :group 'w3m
   :type (cons 'radio
@@ -380,7 +380,9 @@
 		romaji-partial (concat romaji suffix))))
       (let ((collection)
 	    (regexp
-	     (and (string-match "$B!&(B\\'" kanji)
+; UTF DEBUG NOTE: This string-match was originaly:
+;            (and (string-match "!&\\'" kanji)
+	     (and (string-match "・\\'" kanji)
 		  (string-match "[aiueo]n\\'" romaji)
 		  (concat "\\`" romaji "n[^aiueoy]"))))
 	(dolist (x (all-completions romaji-partial w3m-weather-completion-table))
@@ -488,10 +490,10 @@
   (insert "</body>"))
 
 (defun w3m-weather-expand-anchors (area url &rest args)
-  ;; FIXME: $BE75$M=Js%Z!<%8$K4^$^$l$F$$$kAjBP%j%s%/$r@dBP%j%s%/$K=q$-49(B
-  ;; $B$($k$?$a$N4X?t!%$3$l$i$NAjBP%j%s%/$r0BA4$K<h$j07$&$?$a$K$O!$(Bbase
-  ;; URL $B$rJV$;$k$h$&$K!$(Babout:// $B$N9=B$$r=q$-D>$9I,MW$,$"$k$H9M$($i$l(B
-  ;; $B$k$,!$$H$j$"$($:8e2s$7!%(B
+  ;; FIXME: 天気予報ページに含まれている相対リンクを絶対リンクに書き換
+  ;; えるための関数．これらの相対リンクを安全に取り扱うためには，base
+  ;; URL を返せるように，about:// の構造を書き直す必要があると考えられ
+  ;; るが，とりあえず後回し．
   (goto-char (point-min))
   (while (re-search-forward
 	  (eval-when-compile

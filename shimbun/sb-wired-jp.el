@@ -1,4 +1,4 @@
-;;; sb-wired-jp.el --- shimbun backend for Hotwired Japan -*- coding: iso-2022-7bit; -*-
+;;; sb-wired-jp.el --- shimbun backend for Hotwired Japan -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2005, 2006 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -114,8 +114,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAQBAMAAACigOGCAAAABGdBTUEAALGPC/xhBQAAADB
     (when (string-match "/news/print/[0-9]+\\.html\\'"
 			(shimbun-article-url shimbun header))
       (goto-char (point-min))
-      (when (re-search-forward "<font[^>]*>\\([0-9]+\\)$BG/(B\\([0-9]+\\)$B7n(B\
-\\([0-9]+\\)$BF|(B +\\([0-9]+\\):\\([0-9]+\\)\\([ap]m\\) +\\([A-Z]+\\)</font>"
+      (when (re-search-forward "<font[^>]*>\\([0-9]+\\)年\\([0-9]+\\)月\
+\\([0-9]+\\)日 +\\([0-9]+\\):\\([0-9]+\\)\\([ap]m\\) +\\([A-Z]+\\)</font>"
 			       nil t)
 	(setq start (match-end 0))
 	(shimbun-header-set-date header

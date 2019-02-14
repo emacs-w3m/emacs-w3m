@@ -1,4 +1,4 @@
-;;; w3m-ccl.el --- CCL programs to process Unicode and internal characters.
+;;; w3m-ccl.el --- CCL programs to process Unicode and internal characters. -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2003-2007, 2011 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

@@ -1,4 +1,4 @@
-;;; w3m-lnum.el --- Operations using link numbers
+;;; w3m-lnum.el --- Operations using link numbers -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2004-2014, 2016, 2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

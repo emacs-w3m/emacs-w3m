@@ -1,4 +1,4 @@
-;;; sb-fau.el --- Freie ArbeiterInnen Union shimbun backend
+;;; sb-fau.el --- Freie ArbeiterInnen Union shimbun backend -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2005, 2006, 2007 David Hansen
 

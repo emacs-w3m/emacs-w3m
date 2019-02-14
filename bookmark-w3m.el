@@ -1,4 +1,4 @@
-;;; bookmark-w3m.el --- bridging between emacs's bookmark.el and emacs-w3m
+;;; bookmark-w3m.el --- bridging between emacs's bookmark.el and emacs-w3m -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2010 Masatake YAMATO
 ;;

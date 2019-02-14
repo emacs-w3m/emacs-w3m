@@ -1,4 +1,4 @@
-;;; mime-w3m.el --- mime-view content filter for text
+;;; mime-w3m.el --- mime-view content filter for text -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001-2005, 2009, 2010, 2012, 2013, 2017
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
