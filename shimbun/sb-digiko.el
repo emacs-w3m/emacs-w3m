@@ -1,4 +1,4 @@
-;;; sb-digiko.el --- shimbun backend for digiko-ML.
+;;; sb-digiko.el --- shimbun backend for digiko-ML. -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2007
 ;; Akihiro Arisawa <ari@mbf.sphere.ne.jp>

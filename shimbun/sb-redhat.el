@@ -1,4 +1,4 @@
-;;; sb-redhat.el --- shimbun backend for sources.redhat.com mailing lists
+;;; sb-redhat.el --- shimbun backend for sources.redhat.com mailing lists -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2002, 2003 OHASHI Akira <bg66@koka-in.org>
 

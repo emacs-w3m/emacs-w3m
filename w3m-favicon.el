@@ -1,4 +1,4 @@
-;;; w3m-favicon.el --- utilities for handling favicon in emacs-w3m
+;;; w3m-favicon.el --- utilities for handling favicon in emacs-w3m -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001-2005, 2007, 2009, 2011, 2017, 2018
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

@@ -1,4 +1,4 @@
-;; mew-w3m.el --- View Text/Html content with w3m in Mew
+;;; mew-w3m.el --- View Text/Html content with w3m in Mew -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2008, 2009, 2010
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

@@ -1,4 +1,4 @@
-;;; w3m.el --- an Emacs interface to w3m -*- coding: iso-2022-7bit; -*-
+;;; w3m.el --- an Emacs interface to w3m -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2000-2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -2037,15 +2037,15 @@ Here are some predefined functions which can be used for those ways:
      ,(concat "<a[^>]+?href=" w3m-html-string-regexp "[^>]*>[\t\n ]*"
 	      "\\(?:\\(?:</?span[^>]*>[\t\n ]*\\)*<span[^>]+>Next</span>"
 	      "\\|\\(?:</?span[^>]*>[\t\n ]*\\)*\\(?:<b>\\)?"
-	      "\\(?:$B2<0lJG(B\\|&#19979;&#19968;&#38913;"
-	      "\\|$B<!$X(B\\|&#27425;&#12408;"
-	      "\\|$(C4Y@=(B\\|&#45796;&#51020;\\)[\t\n ]*<\\)")
+	      "\\(?:下一頁\\|&#19979;&#19968;&#38913;"
+	      "\\|次へ\\|&#27425;&#12408;"
+	      "\\|다음\\|&#45796;&#51020;\\)[\t\n ]*<\\)")
      ,(concat "<a[^>]+?href=" w3m-html-string-regexp "[^>]*>[\t\n ]*"
 	      "\\(?:\\(?:</?span[^>]*>[\t\n ]*\\)*<span[^>]+>Previous</span>"
 	      "\\|\\(?:</?span[^>]*>[\t\n ]*\\)*\\(?:<b>\\)?"
-	      "\\(?:$B>e0lJG(B\\|&#19978;&#19968;&#38913;"
-	      "\\|$BA0$X(B\\|&#21069;&#12408;"
-	      "\\|$(C@L@|(B\\|&#51060;&#51204;\\)[\t\n ]*<\\)")
+	      "\\(?:上一頁\\|&#19978;&#19968;&#38913;"
+	      "\\|前へ\\|&#21069;&#12408;"
+	      "\\|이전\\|&#51060;&#51204;\\)[\t\n ]*<\\)")
      nil nil)
     (w3m-relationship-simple-estimate
      "\\`https?://www\\.google\\.[^/]+/gwt/n\\?u="
@@ -2063,8 +2063,8 @@ Here are some predefined functions which can be used for those ways:
      nil nil)
     (w3m-relationship-simple-estimate
      "\\`http://www\\.zdnet\\.co\\.jp/news/"
-     ,(concat "<a href=" w3m-html-string-regexp ">$B<!$N%Z!<%8(B</a>")
-     ,(concat "<a href=" w3m-html-string-regexp ">$BA0$N%Z!<%8(B</a>")
+     ,(concat "<a href=" w3m-html-string-regexp ">次のページ</a>")
+     ,(concat "<a href=" w3m-html-string-regexp ">前のページ</a>")
      nil nil)
     (w3m-relationship-oddmuse-estimate)
     (w3m-relationship-magicpoint-estimate)
@@ -2572,35 +2572,35 @@ nil value means it has not been initialized.")
 
 (defconst w3m-toolbar
   (if (equal "Japanese" w3m-language)
-      (let ((a (decode-coding-string "\e$B%\"\e(B" 'iso-2022-jp))) ;; $B%"(B
+      (let ((a "ア"))
 	`([w3m-toolbar-back-icon w3m-view-previous-page
 				 (w3m-history-previous-link-available-p)
-				 "$BA0$N%Z!<%8$KLa$k(B"]
+				 "前のページに戻る"]
 	  [w3m-toolbar-parent-icon w3m-view-parent-page
 				   (w3m-parent-page-available-p)
-				   "$B>e$N%G%#%l%/%H%j$X0\F0$9$k(B"]
+				   "上のディレクトリへ移動する"]
 	  [w3m-toolbar-forward-icon w3m-view-next-page
 				    (w3m-history-next-link-available-p)
-				    "$B<!$N%Z!<%8$K?J$`(B"]
+				    "次のページに進む"]
 	  [w3m-toolbar-reload-icon w3m-reload-this-page
 				   w3m-current-url
-				   "$B%5!<%P$+$i%Z!<%8$r$b$&0lEYFI$_9~$`(B"]
-	  [w3m-toolbar-open-icon w3m-goto-url t "URL $B$rF~NO$7$F%Z!<%8$r3+$/(B"]
+				   "サーバからページをもう一度読み込む"]
+	  [w3m-toolbar-open-icon w3m-goto-url t "URL を入力してページを開く"]
 	  [w3m-toolbar-home-icon w3m-gohome w3m-home-page
-				 "$B%[!<%`%Z!<%8$X%8%c%s%W(B"]
-	  [w3m-toolbar-search-icon w3m-search t "$B%$%s%?!<%M%C%H>e$r8!:w(B"]
+				 "ホームページへジャンプ"]
+	  [w3m-toolbar-search-icon w3m-search t "インターネット上を検索"]
 	  [w3m-toolbar-image-icon w3m-toggle-inline-images t
-				  "$B2hA|$NI=<($r%H%0%k$9$k(B"]
+				  "画像の表示をトグルする"]
 	  [w3m-toolbar-copy-icon w3m-copy-buffer t
-				 "$B$3$N%;%C%7%g%s$N%3%T!<$r:n$k(B"]
-	  [w3m-toolbar-weather-icon w3m-weather t "$BE75$M=Js$r8+$k(B"]
+				 "このセッションのコピーを作る"]
+	  [w3m-toolbar-weather-icon w3m-weather t "天気予報を見る"]
 	  [w3m-toolbar-antenna-icon w3m-antenna t
-				    ,(concat a "$B%s%F%J$G<u?.$9$k(B")]
+				    ,(concat a "ンテナで受信する")]
 	  [w3m-toolbar-save-icon w3m-save-buffer (w3m-url-savable-p)
-				 "$B%;!<%V(B..."]
-	  [w3m-toolbar-history-icon w3m-history t "$B%R%9%H%j!<(B"]
+				 "セーブ..."]
+	  [w3m-toolbar-history-icon w3m-history t "ヒストリー"]
 	  [w3m-toolbar-db-history-icon w3m-db-history t
-				       "$B2a5n$KK,Ld$7$?(B URL $B$NMzNr$r8+$k(B"]))
+				       "過去に訪問した URL の履歴を見る"]))
     '([w3m-toolbar-back-icon w3m-view-previous-page
 			     (w3m-history-previous-link-available-p)
 			     "Back to Previous Page"]
@@ -2628,133 +2628,132 @@ nil value means it has not been initialized.")
 ;; "View" is page viewing
 ;; "Show" is link list showing
 (defconst w3m-menubar
-  (let ((a (when w3m-use-japanese-menu
-	     (decode-coding-string "\e$B%\"\e(B" 'iso-2022-jp)))) ;; $B%"(B
+  (let ((a (when w3m-use-japanese-menu "ア")))
     `("w3m"
-      [,(w3m-make-menu-item "$B$3$N(B URL $B$r?7$7$$%;%C%7%g%s$G3+$/(B"
+      [,(w3m-make-menu-item "この URL を新しいセッションで開く"
 	  "Open This URL in a new session")
        w3m-view-this-url-new-session (or (w3m-anchor) (w3m-image))]
-      [,(w3m-make-menu-item "$B$3$N(B URL $B$r%@%&%s%m!<%I$9$k(B" "Download This URL")
+      [,(w3m-make-menu-item "この URL をダウンロードする" "Download This URL")
        w3m-download-this-url (or (w3m-anchor) (w3m-image))]
-      [,(w3m-make-menu-item "$B%@%&%s%m!<%I(B..." "Download to...")
+      [,(w3m-make-menu-item "ダウンロード..." "Download to...")
        w3m-download t]
-      [,(w3m-make-menu-item "$B$3$N(B URL $B$r%;!<%V$9$k(B..." "Save to...")
+      [,(w3m-make-menu-item "この URL をセーブする..." "Save to...")
        w3m-save-buffer (w3m-url-savable-p)]
       "----" ;; separator
-      [,(w3m-make-menu-item "$BA0$N%Z!<%8$KLa$k(B" "Back to Previous Page")
+      [,(w3m-make-menu-item "前のページに戻る" "Back to Previous Page")
        w3m-view-previous-page
        (w3m-history-previous-link-available-p)]
-      [,(w3m-make-menu-item "$B<!$N%Z!<%8$K0\F0$9$k(B" "Forward to Next Page")
+      [,(w3m-make-menu-item "次のページに移動する" "Forward to Next Page")
        w3m-view-next-page
        (w3m-history-next-link-available-p)]
-      [,(w3m-make-menu-item "$B>e$N3,AX$K0\F0$9$k(B" "Up to Parent Page")
+      [,(w3m-make-menu-item "上の階層に移動する" "Up to Parent Page")
        w3m-view-parent-page
        (w3m-parent-page-available-p)]
       "----" ;; separator
-      [,(w3m-make-menu-item "$B8=:_$N%Z!<%8$r(B browse-url $B$G3+$/(B"
+      [,(w3m-make-menu-item "現在のページを browse-url で開く"
 	  "Open The Current Page using browse-url")
        w3m-view-url-with-browse-url w3m-current-url]
-      [,(w3m-make-menu-item "$B$3$N%j%s%/$r(B browse-url $B$G3+$/(B"
+      [,(w3m-make-menu-item "このリンクを browse-url で開く"
 	  "Open This Link using browse-url")
        w3m-view-url-with-browse-url (or (w3m-anchor) (w3m-image))]
-      [,(w3m-make-menu-item "$B$3$N%Z!<%8$N%=!<%9$r%3%^%s%I$KAw$k(B..."
+      [,(w3m-make-menu-item "このページのソースをコマンドに送る..."
 	  "Pipe Page Source to Command...")
        w3m-pipe-source  w3m-current-url]
       "----" ;; separator
-      (,(w3m-make-menu-item "$B:FI=<((B" "Redisplay")
-       [,(w3m-make-menu-item "$B$3$N%Z!<%8$r:F<hF@$9$k(B" "Reload This Page")
+      (,(w3m-make-menu-item "再表示" "Redisplay")
+       [,(w3m-make-menu-item "このページを再取得する" "Reload This Page")
 	w3m-reload-this-page w3m-current-url]
-       [,(w3m-make-menu-item "$B$9$Y$F$N%Z!<%8$r:F<hF@$9$k(B" "Reload All Pages")
+       [,(w3m-make-menu-item "すべてのページを再取得する" "Reload All Pages")
        w3m-reload-all-pages (cdr (w3m-list-buffers))]
        "----" ;; separator
-       [,(w3m-make-menu-item "$B2hA|I=<($N@ZBX(B($BA4It(B)" "Toggle Images")
+       [,(w3m-make-menu-item "画像表示の切替(全部)" "Toggle Images")
 	w3m-toggle-inline-images (w3m-display-graphic-p)]
-       [,(w3m-make-menu-item "$B2hA|I=<($N@ZBX(B($B$3$N2hA|(B)" "Toggle This Image")
+       [,(w3m-make-menu-item "画像表示の切替(この画像)" "Toggle This Image")
 	w3m-toggle-inline-image (w3m-image)]
-       [,(w3m-make-menu-item "$B2hA|I=<($r;_$a$k(B" "Turn off Images")
+       [,(w3m-make-menu-item "画像表示を止める" "Turn off Images")
 	w3m-turnoff-inline-images (w3m-display-graphic-p)]
        "----" ;; separator
-       [,(w3m-make-menu-item "$B:FIA2h$9$k(B" "Redisplay This Page")
+       [,(w3m-make-menu-item "再描画する" "Redisplay This Page")
 	w3m-redisplay-this-page w3m-current-url]
-       [,(w3m-make-menu-item "Charset $B$r;XDj$7$F:FIA2h$9$k(B"
+       [,(w3m-make-menu-item "Charset を指定して再描画する"
 	   "Redisplay This Page with Charset")
 	w3m-redisplay-with-charset w3m-current-url]
-       [,(w3m-make-menu-item "Content-type $B$r;XDj$7$F:FIA2h$9$k(B"
+       [,(w3m-make-menu-item "Content-type を指定して再描画する"
 	   "Redisplay This Page with Content-type")
 	w3m-redisplay-with-content-type w3m-current-url]
-       [,(w3m-make-menu-item "$B;XDj$7$?(B Charset $B$H(B Content-type $B$rGK4~$9$k(B"
+       [,(w3m-make-menu-item "指定した Charset と Content-type を破棄する"
 	   "Reset Charset and Content-type")
 	w3m-redisplay-and-reset w3m-current-url]
        ) ;; end redisplay
-      [,(w3m-make-menu-item "$B%[!<%`%Z!<%8$X0\F0(B" "Go to Home Page")
+      [,(w3m-make-menu-item "ホームページへ移動" "Go to Home Page")
        w3m-gohome w3m-home-page]
-      (,(w3m-make-menu-item "$B%V%C%/%^!<%/(B" "Bookmark")
-       [,(w3m-make-menu-item "$B%V%C%/%^!<%/$rI=<((B" "View Bookmark")
+      (,(w3m-make-menu-item "ブックマーク" "Bookmark")
+       [,(w3m-make-menu-item "ブックマークを表示" "View Bookmark")
 	w3m-bookmark-view t]
-       [,(w3m-make-menu-item "$B?7$7$$%;%C%7%g%s$G%V%C%/%^!<%/$rI=<((B"
+       [,(w3m-make-menu-item "新しいセッションでブックマークを表示"
 			     "View Bookmark in a New Session")
 	w3m-bookmark-view-new-session t])
-      [,(w3m-make-menu-item "$B0\F0(B..." "Go to...")
+      [,(w3m-make-menu-item "移動..." "Go to...")
        w3m-goto-url t]
       "----" ;; separator
-      (,(w3m-make-menu-item "$BMzNr(B" "History")
-       [,(w3m-make-menu-item "$BLZ9=B$$GMzNr$rI=<((B" "Show a Visited URLs Tree")
+      (,(w3m-make-menu-item "履歴" "History")
+       [,(w3m-make-menu-item "木構造で履歴を表示" "Show a Visited URLs Tree")
 	w3m-history t]
-       [,(w3m-make-menu-item "$B%j%9%H$GMzNr$rI=<((B" "Show an Arrived URLs List")
+       [,(w3m-make-menu-item "リストで履歴を表示" "Show an Arrived URLs List")
 	w3m-db-history t]
        ) ;; end history
-      [,(w3m-make-menu-item "$B%$%s%?!<%M%C%H$G$N8!:w(B..."
+      [,(w3m-make-menu-item "インターネットでの検索..."
 			    "Search the Internet...")
        w3m-search t]
-      [,(w3m-make-menu-item "$B?7$7$$%;%C%7%g%s$G8!:w(B..."
+      [,(w3m-make-menu-item "新しいセッションで検索..."
 			    "Search the Internet in a New Session...")
        w3m-search-new-session t]
-      [,(w3m-make-menu-item "$BE75$M=Js(B" "Weather Forecast")
+      [,(w3m-make-menu-item "天気予報" "Weather Forecast")
        w3m-weather t]
-      [,(w3m-make-menu-item (concat a "$B%s%F%J$G<hF@(B")
+      [,(w3m-make-menu-item (concat a "ンテナで取得")
 			    "Investigate with Antenna")
        w3m-antenna t]
-      (,(w3m-make-menu-item "$B%X%k%W(B" "Resource")
-       [,(w3m-make-menu-item "$B%W%m%;%9$rCf;_$9$k(B" "Cancel Process")
+      (,(w3m-make-menu-item "ヘルプ" "Resource")
+       [,(w3m-make-menu-item "プロセスを中止する" "Cancel Process")
 	w3m-process-stop w3m-current-process]
-       [,(w3m-make-menu-item "$B%=!<%9$r8+$k(B" "View Source")
+       [,(w3m-make-menu-item "ソースを見る" "View Source")
 	w3m-view-source t]
-       [,(w3m-make-menu-item "$B%X%C%@!<$r8+$k(B" "View Header")
+       [,(w3m-make-menu-item "ヘッダーを見る" "View Header")
 	w3m-view-header t]
        ) ;; end resource
       "----" ;; separator
-      [,(w3m-make-menu-item "$B$3$N%Z!<%8$r%a!<%k$GAw$k(B" "Mail this page")
+      [,(w3m-make-menu-item "このページをメールで送る" "Mail this page")
        w3m-mail (memq mail-user-agent w3m-mail-user-agents)]
       "----" ;; separator
-      [,(w3m-make-menu-item "$B%P%0%l%]!<%H$rAw$k(B" "Send a Bug Report")
+      [,(w3m-make-menu-item "バグレポートを送る" "Send a Bug Report")
        report-emacs-w3m-bug t]
       "----" ;; separator
-      [,(w3m-make-menu-item "$B$3$N(B URL $B$rI=<($9$k(B" "Print the Current URL")
+      [,(w3m-make-menu-item "この URL を表示する" "Print the Current URL")
        w3m-print-current-url t]
-      [,(w3m-make-menu-item "w3m $B$rJD$8$k(B" "Close w3m")
+      [,(w3m-make-menu-item "w3m を閉じる" "Close w3m")
        w3m-close-window t]
-      [,(w3m-make-menu-item "w3m $B$r=*N;$9$k(B" "Quit w3m")
+      [,(w3m-make-menu-item "w3m を終了する" "Quit w3m")
        w3m-quit t]
       )) ;; end w3m
   "Menubar definition for emacs-w3m.")
 
 (defvar w3m-rmouse-menubar
   `("w3m"
-    [,(w3m-make-menu-item "$BA0$N%Z!<%8$KLa$k(B" "Back to Previous Page")
+    [,(w3m-make-menu-item "前のページに戻る" "Back to Previous Page")
      w3m-view-previous-page
      (w3m-history-previous-link-available-p)]
-    [,(w3m-make-menu-item "$B<!$N%Z!<%8$K0\F0$9$k(B" "Forward to Next Page")
+    [,(w3m-make-menu-item "次のページに移動する" "Forward to Next Page")
      w3m-view-next-page
      (w3m-history-next-link-available-p)]
-    [,(w3m-make-menu-item "$B>e$N3,AX$K0\F0$9$k(B" "Up to Parent Page")
+    [,(w3m-make-menu-item "上の階層に移動する" "Up to Parent Page")
      w3m-view-parent-page
      (w3m-parent-page-available-p)]
     "----" ;; separator
-    [,(w3m-make-menu-item "$B$3$N%Z!<%8$r:F<hF@$9$k(B" "Reload This Page")
+    [,(w3m-make-menu-item "このページを再取得する" "Reload This Page")
      w3m-reload-this-page w3m-current-url]
-    [,(w3m-make-menu-item "$B$9$Y$F$N%Z!<%8$r:F<hF@$9$k(B" "Reload All Pages")
+    [,(w3m-make-menu-item "すべてのページを再取得する" "Reload All Pages")
      w3m-reload-all-pages (cdr (w3m-list-buffers))]
-    [,(w3m-make-menu-item "$B%W%m%;%9$rCf;_$9$k(B" "Cancel Process")
+    [,(w3m-make-menu-item "プロセスを中止する" "Cancel Process")
      w3m-process-stop w3m-current-process])
   "*Menubar for click the right mouse button.")
 
@@ -4506,7 +4505,7 @@ If optional KEEP-PROPERTIES is non-nil, text property is reserved."
     ;; intentionally by the author or not.  So, we decided to remove only
     ;; that one at the beginning of the buffer though it is unwillingness.
     (goto-char (point-min))
-    (skip-chars-forward "\t\n $B!!(B")
+    (skip-chars-forward "\t\n 　")
     (delete-region (point-min) (point-at-bol))
 
     (w3m-header-line-insert)
@@ -4665,13 +4664,13 @@ a url of the current page as the last resort."
 			 (region-beginning) (region-end))))
 	    (with-temp-buffer
 	      (insert string)
-	      (skip-chars-backward "\t\n\f\r $B!!(B")
+	      (skip-chars-backward "\t\n\f\r 　")
 	      (delete-region (point) (point-max))
 	      (goto-char (point-min))
-	      (skip-chars-forward "\t\n\f\r $B!!(B")
+	      (skip-chars-forward "\t\n\f\r 　")
 	      (delete-region (point-min) (point))
 	      (while (re-search-forward "\
-\\(?:[\t\f\r $B!!(B]+\n[\t\f\r $B!!(B]*\\|[\t\f\r $B!!(B]*\n[\t\f\r $B!!(B]+\\)+" nil t)
+\\(?:[\t\f\r 　]+\n[\t\f\r 　]*\\|[\t\f\r 　]*\n[\t\f\r 　]+\\)+" nil t)
 		(delete-region (match-beginning 0) (match-end 0)))
 	      (buffer-string)))
 	(w3m-deactivate-region))
@@ -5397,10 +5396,10 @@ Return a list which includes:
        ((string-match (eval-when-compile
 			(concat "\\`\\("
 				(regexp-opt
-				 '(;; MEMO: $B%U%!%$%k$r%@%&%s%m!<%I$9$k(B
-				   ;; $B$H$-$N(B $BE,@Z$J%G%U%)%k%HL>$r7hDj(B
-				   ;; $B$9$k$?$a$K$O(B content-disposition
-				   ;; $B$N2r<a$,I,MW!%(B
+				 '(;; MEMO: ファイルをダウンロードする
+				   ;; ときの 適切なデフォルト名を決定
+				   ;; するためには content-disposition
+				   ;; の解釈が必要．
 				   "content-disposition"
 				   "content-encoding"
 				   "content-length"
@@ -6907,13 +6906,13 @@ when the URL of the retrieved page matches the REGEXP."
   (when (string-match "\\`http://eow\\.alc\\.co\\.jp/[^/]+/UTF-8/" url)
     (when (re-search-forward
 	   (concat "<a href=\\\"http://eow\\.alc\\.co\\.jp/[^/]+/UTF-8/"
-		   "\\(\\?pg=[0-9]+\\)\\\">$BA0$X(B</a>")
+		   "\\(\\?pg=[0-9]+\\)\\\">前へ</a>")
 	   nil t)
       (setq w3m-previous-url
 	    (w3m-expand-url (match-string 1) url)))
     (when (re-search-forward
 	   (concat "<a href=\\\"http://eow\\.alc\\.co\\.jp/[^/]+/UTF-8/"
-		   "\\(\\?pg=[0-9]+\\)\\\">$B<!$X(B</a>")
+		   "\\(\\?pg=[0-9]+\\)\\\">次へ</a>")
 	   nil t)
       (setq w3m-next-url
 	    (w3m-expand-url (match-string 1) url)))
@@ -6921,12 +6920,12 @@ when the URL of the retrieved page matches the REGEXP."
       ;; no use filter
       (goto-char (point-min))
       (when (re-search-forward
-	     "<a href='javascript:goPage(\"\\([0-9+]\\)\")'>$BA0$X(B</a>"
+	     "<a href='javascript:goPage(\"\\([0-9+]\\)\")'>前へ</a>"
 	     nil t)
 	(setq w3m-previous-url
 	      (w3m-expand-url (format "?pg=%s" (match-string 1)) url)))
       (when (re-search-forward
-	     "<a href='javascript:goPage(\"\\([0-9+]\\)\")'>$B<!$X(B</a>"
+	     "<a href='javascript:goPage(\"\\([0-9+]\\)\")'>次へ</a>"
 	     nil t)
 	(setq w3m-next-url
 	      (w3m-expand-url (format "?pg=%s" (match-string 1)) url))))))
@@ -8790,49 +8789,49 @@ See also `w3m-quit'."
 	(many2p '(and w3m-tab-button-menu-current-buffer
 		      (cdr (w3m-list-buffers)))))
     `((w3m-goto-url-new-session
-       ,(w3m-make-menu-item "$B?7$7$$%?%V(B" "New Tab")
+       ,(w3m-make-menu-item "新しいタブ" "New Tab")
        t ,w3m-new-session-in-background w3m-new-session-url)
       (w3m-copy-buffer
-       ,(w3m-make-menu-item "$B%?%V$rJ#@=(B" "Copy Tab")
+       ,(w3m-make-menu-item "タブを複製" "Copy Tab")
        ,currentp ,w3m-new-session-in-background)
       -
       (w3m-reload-this-page
-       ,(w3m-make-menu-item "$B%?%V$r:FFI$_9~$_(B" "Reload Tab")
+       ,(w3m-make-menu-item "タブを再読み込み" "Reload Tab")
        ,currentp)
       (w3m-reload-all-pages
-       ,(w3m-make-menu-item "$B$9$Y$F$N%?%V$r:FFI$_9~$_(B" "Reload All Tabs")
+       ,(w3m-make-menu-item "すべてのタブを再読み込み" "Reload All Tabs")
        ,manyp)
       -
       (w3m-delete-buffer
-       ,(w3m-make-menu-item "$B$3$N%?%V$rJD$8$k(B" "Close This Tab")
+       ,(w3m-make-menu-item "このタブを閉じる" "Close This Tab")
        ,currentp)
       -
       (w3m-delete-other-buffers
-       ,(w3m-make-menu-item "$BB>$N%?%V$r$9$Y$FJD$8$k(B" "Close Other Tabs")
+       ,(w3m-make-menu-item "他のタブをすべて閉じる" "Close Other Tabs")
        ,many2p)
       (w3m-delete-left-tabs
-       ,(w3m-make-menu-item "$B:8B&$N%?%V$r$9$Y$FJD$8$k(B" "Close Left Tabs")
+       ,(w3m-make-menu-item "左側のタブをすべて閉じる" "Close Left Tabs")
        ,leftp)
       (w3m-delete-right-tabs
-       ,(w3m-make-menu-item "$B1&B&$N%?%V$r$9$Y$FJD$8$k(B" "Close Right Tabs")
+       ,(w3m-make-menu-item "右側のタブをすべて閉じる" "Close Right Tabs")
        ,rightp)
       -
       (w3m-view-url-with-browse-url
-       ,(w3m-make-menu-item "browse-url $B$G3+$/(B" "View with browse-url")
+       ,(w3m-make-menu-item "browse-url で開く" "View with browse-url")
        ,currentp ,w3m-new-session-in-background w3m-current-url)
       -
       (w3m-session-save
-       ,(w3m-make-menu-item "$B$9$Y$F$N%?%V$rJ]B8$9$k(B" "Save All Tabs...")
+       ,(w3m-make-menu-item "すべてのタブを保存する" "Save All Tabs...")
        t)
       (w3m-session-select
-       ,(w3m-make-menu-item "$B%?%V%j%9%H$rA*Br$9$k(B" "Select List of Tabs...")
+       ,(w3m-make-menu-item "タブリストを選択する" "Select List of Tabs...")
        t)
       (w3m-bookmark-add-current-url
-       ,(w3m-make-menu-item "$B$3$N%?%V$r%V%C%/%^!<%/(B" "Bookmark This Tab...")
+       ,(w3m-make-menu-item "このタブをブックマーク" "Bookmark This Tab...")
        ,currentp ,w3m-new-session-in-background)
       (w3m-bookmark-add-all-urls
        ,(w3m-make-menu-item
-	 "$B$9$Y$F$N%?%V$r%V%C%/%^!<%/(B" "Bookmark All Tabs..." )
+	 "すべてのタブをブックマーク" "Bookmark All Tabs..." )
        ,manyp)))
   "List of commands invoked by the tab button menu.
 Each item is the symbol `-' which is a separator,
@@ -8874,29 +8873,29 @@ or a list which consists of the following elements:
 
 (easy-menu-define w3m-link-menu w3m-link-map "w3m link menu."
   `("Link" ;; This cannot be omitted for at least MacOS.
-    [,(w3m-make-menu-item "$B%j%s%/$r$3$N%;%C%7%g%s$G3+$/(B"
+    [,(w3m-make-menu-item "リンクをこのセッションで開く"
 			  "Open Link in This Session")
      w3m-view-this-url (w3m-anchor (point))]
-    [,(w3m-make-menu-item "$B%j%s%/$r?7$7$$%;%C%7%g%s$G3+$/(B"
+    [,(w3m-make-menu-item "リンクを新しいセッションで開く"
 			  "Open Link in New Session")
      w3m-view-this-url-new-session (w3m-anchor (point))]
-    [,(w3m-make-menu-item "$B%j%s%/$r(B browse-url $B$G3+$/(B"
+    [,(w3m-make-menu-item "リンクを browse-url で開く"
 			  "Open Link using browse-url")
      w3m-view-url-with-browse-url (w3m-anchor (point))]
     "-"
-    [,(w3m-make-menu-item "$B$3$N%j%s%/$r%V%C%/%^!<%/(B..."
+    [,(w3m-make-menu-item "このリンクをブックマーク..."
 			  "Bookmark This Link...")
      w3m-bookmark-add-this-url (w3m-anchor (point))]
-    [,(w3m-make-menu-item "$BL>A0$rIU$1$F%j%s%/@h$rJ]B8(B..."
+    [,(w3m-make-menu-item "名前を付けてリンク先を保存..."
 			  "Save Link As...")
      w3m-download-this-url (w3m-anchor (point))]
-    [,(w3m-make-menu-item "$BL>A0$rIU$1$F2hA|$rJ]B8(B..."
+    [,(w3m-make-menu-item "名前を付けて画像を保存..."
 			  "Save Image As...")
      w3m-download-this-image (w3m-image (point))]
-    [,(w3m-make-menu-item "$B%j%s%/$N(B URL $B$r%3%T!<(B"
+    [,(w3m-make-menu-item "リンクの URL をコピー"
 			  "Copy Link Location")
      w3m-print-this-url (w3m-anchor (point))]
-    [,(w3m-make-menu-item "$B2hA|$N(B URL $B$r%3%T!<(B"
+    [,(w3m-make-menu-item "画像の URL をコピー"
 			  "Copy Image Location")
      w3m-print-this-image-url (w3m-image (point))]))
 
@@ -10809,7 +10808,7 @@ A history page is invoked by the `w3m-about-history' command.")
 			    (if about "&lt;" "")
 			    (if (or (not title)
 				    (string-equal "<no-title>" title)
-				    (string-match "^[\t $B!!(B]*$" title))
+				    (string-match "^[\t 　]*$" title))
 				url
 			      (w3m-encode-specials-string title))
 			    (if about "&gt;" "")
@@ -11692,9 +11691,8 @@ Refer to variable `w3m-display-mode' for details."
 
 (defun w3m-cleanup-temp-files ()
   (when w3m-do-cleanup-temp-files
-    (dolist (f (directory-files w3m-profile-directory))
-      (when (string-match "^w3m\\(el\\|src\\)" f)
-	(delete-file (expand-file-name f w3m-profile-directory))))))
+    (dolist (f (directory-files w3m-profile-directory t "^w3m\\(cache\\|el\\|src\\|tmp\\)" t))
+        (delete-file f))))
 
 (defun w3m-show-form-hint ()
   "Show sending form hint when the cursor is in a form."

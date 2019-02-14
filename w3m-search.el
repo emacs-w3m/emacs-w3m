@@ -1,4 +1,4 @@
-;;; w3m-search.el --- functions convenient to access web search engines
+;;; w3m-search.el --- functions convenient to access web search engines -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001--2012, 2017, 2018 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

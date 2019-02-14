@@ -1,4 +1,4 @@
-;;; w3m-fb.el --- frame-local buffers support for Emacs-w3m
+;;; w3m-fb.el --- frame-local buffers support for Emacs-w3m -*- coding: utf-8; -*-
 
 ;;; Copyright (C) 2005, 2006, 2018 Matthew P. Hodges
 

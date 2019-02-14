@@ -1,4 +1,4 @@
-;;; sb-yahoo.el --- shimbun backend for news.yahoo.co.jp -*- coding: iso-2022-7bit -*-
+;;; sb-yahoo.el --- shimbun backend for news.yahoo.co.jp -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2009, 2010
 ;; Kazuyoshi KOREEDA
@@ -62,27 +62,27 @@
 		    ;; 6. subject
 		    "\\([^<]+\\)"
 		    "\\(?:" s0 "</strong>\\)?"
-		    s0 "</a>\\(?:\\(?:[^\n<$B!J(B]*\\|[\t\n ]*\\)<[^>]+>\\)*" s0
-		    "\\(?:$B!J(B" s0 "\\(?:<a" s1 "[^>]+>" s0 "\\)?"
+		    s0 "</a>\\(?:\\(?:[^\n<（]*\\|[\t\n ]*\\)<[^>]+>\\)*" s0
+		    "\\(?:（" s0 "\\(?:<a" s1 "[^>]+>" s0 "\\)?"
 		    ;; 7. source
-		    "\\([^<$B!K(B]+\\)"
+		    "\\([^<）]+\\)"
 		    s0 "\\(?:</a>" s0 "\\)?"
-		    s0 "$B!K(B"
+		    s0 "）"
 		    "\\(?:" s0 "-\\(?:[^<]+\)\\)?\
 \\|" s0 "\\(?:<[^>]+>" s0 "\\)?\
-\\(?:[01]?[0-9]$B7n(B\\)?[0-3]?[0-9]$BF|(B\\(?:([$BF|7n2P?eLZ6bEZ(B])\\)?\\)?\
-\\|[01]?[0-9]$B7n(B[0-3]?[0-9]$BF|(B\\(?:([$BF|7n2P?eLZ6bEZ(B])\\)?\\)"
+\\(?:[01]?[0-9]月\\)?[0-3]?[0-9]日\\(?:([日月火水木金土])\\)?\\)?\
+\\|[01]?[0-9]月[0-3]?[0-9]日\\(?:([日月火水木金土])\\)?\\)"
 		    s0
 		    ;; 8. hour
 		    "\\([012]?[0-9]\\)"
-		    s0 "$B;~(B" s0
+		    s0 "時" s0
 		    ;; 9. minute
 		    "\\([0-5]?[0-9]\\)"
-		    s0 "$BJ,(B"
+		    s0 "分"
 		    "\\(?:\\(?:" s0 "</[^>]+>\\)?[^<]+<a" s1
 		    "href=\"[^\">]+\">" s0
 		    ;; 10. source
-		    "\\([^<$B!K(B]+\\)"
+		    "\\([^<）]+\\)"
 		    s0 "</a>\\)?")
 		   1 2 3 4 5 6 7 8 9 10))
 	 (topnews (list
@@ -108,72 +108,72 @@
 		    ".+)" s0
 		    ;; 8. hour
 		    "\\([012]?[0-9]\\)"
-		    s0 "$B;~(B" s0
+		    s0 "時" s0
 		    ;; 9. minute
 		    "\\([0-5]?[0-9]\\)"
-		    s0 "$BJ,G[?.(B")
+		    s0 "分配信")
 		   1 2 3 4 5 6 7 8 9)))
-    `(("topnews" "$B%H%C%W(B" "topnews" ,@topnews)
-      ("news" "$B%K%e!<%9(B" news ,@default)
-      ("politics" "$B@/<#(B" "pol" ,@default)
-      ("society" "$B<R2q(B" "soci" ,@default)
-      ("people" "$B?M(B" "peo" ,@default)
-      ("business-all" "$B7P:QAm9g(B" "bus_all" ,@default)
-      ("market" "$B;T67(B" "brf" ,@default)
-      ("stock" "$B3t<0(B" "biz" ,@default)
-      ("industry" "$B;:6H(B" "ind" ,@default)
-      ("international" "$B3$30(B" "int" ,@default)
-      ("entertainment" "$B%(%s%?!<%F%$%s%a%s%H(B" "ent" ,@default)
-      ("sports" "$B%9%]!<%D(B" "spo" ,@default)
-      ("computer" "$B%3%s%T%e!<%?(B" "sci" ,@default)
-      ("zenkoku" "$BA49q(B" "loc" ,@default)
-      ("hokkaido" "$BKL3$F;(B" "hok" ,@default)
-      ("aomori" "$B@D?9(B" "l02" ,@default) ;; not "102" but "l02" ;-)
-      ("iwate" "$B4d<j(B" "l03" ,@default)
-      ("miyagi" "$B5\>k(B" "l04" ,@default)
-      ("akita" "$B=)ED(B" "l05" ,@default)
-      ("yamagata" "$B;37A(B" "l06" ,@default)
-      ("fukushima" "$BJ!Eg(B" "l07" ,@default)
-      ("tokyo" "$BEl5~(B" "l13" ,@default)
-      ("kanagawa" "$B?@F`@n(B" "l14" ,@default)
-      ("chiba" "$B@iMU(B" "l12" ,@default)
-      ("saitama" "$B:k6L(B" "l11" ,@default)
-      ("ibaraki" "$B0q>k(B" "l08" ,@default)
-      ("tochigi" "$BFJLZ(B" "l09" ,@default)
-      ("gunma" "$B72GO(B" "l10" ,@default)
-      ("yamanashi" "$B;3M|(B" "l19" ,@default)
-      ("nagano" "$BD9Ln(B" "l20" ,@default)
-      ("niigata" "$B?73c(B" "l15" ,@default)
-      ("toyama" "$BIY;3(B" "l16" ,@default)
-      ("ishikawa" "$B@P@n(B" "l17" ,@default)
-      ("fukui" "$BJ!0f(B" "l18" ,@default)
-      ("aichi" "$B0&CN(B" "l23" ,@default)
-      ("gifu" "$B4tIl(B" "l21" ,@default)
-      ("shizuoka" "$B@E2,(B" "l22" ,@default)
-      ("mie" "$B;0=E(B" "l24" ,@default)
-      ("osaka" "$BBg:e(B" "l27" ,@default)
-      ("hyogo" "$BJ<8K(B" "l28" ,@default)
-      ("kyoto" "$B5~ET(B" "l26" ,@default)
-      ("shiga" "$B<"2l(B" "l25" ,@default)
-      ("nara" "$BF`NI(B" "l29" ,@default)
-      ("wakayama" "$BOB2N;3(B" "l30" ,@default)
-      ("tottori" "$BD;<h(B" "l31" ,@default)
-      ("shimane" "$BEg:,(B" "l32" ,@default)
-      ("okayama" "$B2,;3(B" "l33" ,@default)
-      ("hiroshima" "$B9-Eg(B" "l34" ,@default)
-      ("yamaguchi" "$B;38}(B" "l35" ,@default)
-      ("tokushima" "$BFAEg(B" "l36" ,@default)
-      ("kagawa" "$B9a@n(B" "l37" ,@default)
-      ("ehime" "$B0&I2(B" "l38" ,@default)
-      ("kochi" "$B9bCN(B" "l39" ,@default)
-      ("fukuoka" "$BJ!2,(B" "l40" ,@default)
-      ("saga" "$B:42l(B" "l41" ,@default)
-      ("nagasaki" "$BD9:j(B" "l42" ,@default)
-      ("kumamoto" "$B7'K\(B" "l43" ,@default)
-      ("oita" "$BBgJ,(B" "l44" ,@default)
-      ("miyazaki" "$B5\:j(B" "l45" ,@default)
-      ("kagoshima" "$B</;yEg(B" "l46" ,@default)
-      ("okinawa" "$B2-Fl(B" "oki" ,@default)))
+    `(("topnews" "トップ" "topnews" ,@topnews)
+      ("news" "ニュース" news ,@default)
+      ("politics" "政治" "pol" ,@default)
+      ("society" "社会" "soci" ,@default)
+      ("people" "人" "peo" ,@default)
+      ("business-all" "経済総合" "bus_all" ,@default)
+      ("market" "市況" "brf" ,@default)
+      ("stock" "株式" "biz" ,@default)
+      ("industry" "産業" "ind" ,@default)
+      ("international" "海外" "int" ,@default)
+      ("entertainment" "エンターテインメント" "ent" ,@default)
+      ("sports" "スポーツ" "spo" ,@default)
+      ("computer" "コンピュータ" "sci" ,@default)
+      ("zenkoku" "全国" "loc" ,@default)
+      ("hokkaido" "北海道" "hok" ,@default)
+      ("aomori" "青森" "l02" ,@default) ;; not "102" but "l02" ;-)
+      ("iwate" "岩手" "l03" ,@default)
+      ("miyagi" "宮城" "l04" ,@default)
+      ("akita" "秋田" "l05" ,@default)
+      ("yamagata" "山形" "l06" ,@default)
+      ("fukushima" "福島" "l07" ,@default)
+      ("tokyo" "東京" "l13" ,@default)
+      ("kanagawa" "神奈川" "l14" ,@default)
+      ("chiba" "千葉" "l12" ,@default)
+      ("saitama" "埼玉" "l11" ,@default)
+      ("ibaraki" "茨城" "l08" ,@default)
+      ("tochigi" "栃木" "l09" ,@default)
+      ("gunma" "群馬" "l10" ,@default)
+      ("yamanashi" "山梨" "l19" ,@default)
+      ("nagano" "長野" "l20" ,@default)
+      ("niigata" "新潟" "l15" ,@default)
+      ("toyama" "富山" "l16" ,@default)
+      ("ishikawa" "石川" "l17" ,@default)
+      ("fukui" "福井" "l18" ,@default)
+      ("aichi" "愛知" "l23" ,@default)
+      ("gifu" "岐阜" "l21" ,@default)
+      ("shizuoka" "静岡" "l22" ,@default)
+      ("mie" "三重" "l24" ,@default)
+      ("osaka" "大阪" "l27" ,@default)
+      ("hyogo" "兵庫" "l28" ,@default)
+      ("kyoto" "京都" "l26" ,@default)
+      ("shiga" "滋賀" "l25" ,@default)
+      ("nara" "奈良" "l29" ,@default)
+      ("wakayama" "和歌山" "l30" ,@default)
+      ("tottori" "鳥取" "l31" ,@default)
+      ("shimane" "島根" "l32" ,@default)
+      ("okayama" "岡山" "l33" ,@default)
+      ("hiroshima" "広島" "l34" ,@default)
+      ("yamaguchi" "山口" "l35" ,@default)
+      ("tokushima" "徳島" "l36" ,@default)
+      ("kagawa" "香川" "l37" ,@default)
+      ("ehime" "愛媛" "l38" ,@default)
+      ("kochi" "高知" "l39" ,@default)
+      ("fukuoka" "福岡" "l40" ,@default)
+      ("saga" "佐賀" "l41" ,@default)
+      ("nagasaki" "長崎" "l42" ,@default)
+      ("kumamoto" "熊本" "l43" ,@default)
+      ("oita" "大分" "l44" ,@default)
+      ("miyazaki" "宮崎" "l45" ,@default)
+      ("kagoshima" "鹿児島" "l46" ,@default)
+      ("okinawa" "沖縄" "oki" ,@default)))
   "Alist of group names, their Japanese translations, index pages,
 regexps and numbers.  Where numbers point to the search result in order
 of [0]url, [1]serial number, [2]year, [3]month, [4]day, [5]subject,
@@ -185,7 +185,7 @@ may not be presented).")
 
 (defvar shimbun-yahoo-from-address "nobody@example.com")
 (defvar shimbun-yahoo-content-start
-  "[012]?[0-9]$B;~(B[0-5]?[0-9]$BJ,G[?.(B[\t\n\r ]*\\(?:</[^>]+>[\t\n\r ]*\\)*")
+  "[012]?[0-9]時[0-5]?[0-9]分配信[\t\n\r ]*\\(?:</[^>]+>[\t\n\r ]*\\)*")
 
 (defvar shimbun-yahoo-content-end "[\t\n\r ]*\\(<br>[\t\n\r ]*\\)*\
 <!-+[\t\n\r ]*interest_match_relevant_zone_end[\t\n\r ]*-+>")
@@ -219,7 +219,7 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
 ;;(defun shimbun-yahoo-get-headers (shimbun range)
 ;;;</DEBUG>
   (let* ((case-fold-search t)
-	 (from "Yahoo!$B%K%e!<%9(B")
+	 (from "Yahoo!ニュース")
 	 (group (shimbun-current-group-internal shimbun))
 	 (numbers (cdr (assoc group shimbun-yahoo-groups-table)))
 	 (jname (pop numbers))
@@ -241,13 +241,13 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
 		(delete-region (match-beginning 0) (point-max))
 		(delete-region (point-min) start)
 		(goto-char (point-min)))
-	      (when (and (re-search-forward ">[\t\n ]*$B<L??%K%e!<%9(B[\t\n ]*</a>\
+	      (when (and (re-search-forward ">[\t\n ]*写真ニュース[\t\n ]*</a>\
 \\(?:[\t\n ]*</[^>]+>\\)+[\y\n ]*\\(<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
 class=\"ymuiContainer\"\\)" nil t)
 			 (shimbun-end-of-tag "div"))
 		(delete-region (match-beginning 0) (match-end 0))))
-	  (shimbun-remove-tags "<!-+[\t\n ]*$B%"%/%;%9%i%s%-%s%0(B[\t\n ]*-+>"
-			       "<!-+[\t\n ]*/$B%"%/%;%9%i%s%-%s%0(B[\t\n ]*-+>"))
+	  (shimbun-remove-tags "<!-+[\t\n ]*アクセスランキング[\t\n ]*-+>"
+			       "<!-+[\t\n ]*/アクセスランキング[\t\n ]*-+>"))
 	(goto-char (point-min))
 	(while (re-search-forward regexp nil t)
 	  (setq id (concat "<"
@@ -263,7 +263,7 @@ class=\"ymuiContainer\"\\)" nil t)
 			   (throw 'stop nil)
 			 t))
 	    (if (save-match-data
-		  (string-match "$B5-;vA4J8(B[\t\n ]*\\'"
+		  (string-match "記事全文[\t\n ]*\\'"
 				(match-string (nth 5 numbers))))
 		(goto-char (match-end (nth 5 numbers)))
 	      (push (shimbun-create-header
@@ -295,17 +295,17 @@ class=\"ymuiContainer\"\\)" nil t)
 		 (shimbun-retrieve-url
 		  "http://headlines.yahoo.co.jp/hl?c=flash"
 		  t)))
-	      ((re-search-forward "<a href=\"\\([^\"]+\\)\">$B<!$N%Z!<%8(B</a>"
+	      ((re-search-forward "<a href=\"\\([^\"]+\\)\">次のページ</a>"
 				  nil t)
 	       (shimbun-retrieve-url (prog1
 					 (match-string 1)
 				       (erase-buffer))
 				     t))
-	      ((and (re-search-forward "<!-+[\t\n ]*$B2a5n5-;v(B[\t\n ]*-+>"
+	      ((and (re-search-forward "<!-+[\t\n ]*過去記事[\t\n ]*-+>"
 				       nil t)
 		    (progn
 		      (setq start (match-end 0))
-		      (re-search-forward "<!-+[\t\n ]*/$B2a5n5-;v(B[\t\n ]*-+>"
+		      (re-search-forward "<!-+[\t\n ]*/過去記事[\t\n ]*-+>"
 					 nil t))
 		    (progn
 		      (narrow-to-region start (match-beginning 0))

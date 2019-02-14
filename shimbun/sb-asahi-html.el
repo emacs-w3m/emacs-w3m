@@ -1,4 +1,4 @@
-;;; sb-asahi-html.el --- shimbun backend for asahi.com (HTML version)
+;;; sb-asahi-html.el --- shimbun backend for asahi.com (HTML version) -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005
 ;; Yuuichi Teranishi <teranisi@gohome.org>

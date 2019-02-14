@@ -1,4 +1,4 @@
-;;; w3m-cookie.el --- Functions for cookie processing
+;;; w3m-cookie.el --- Functions for cookie processing -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2002, 2003, 2005, 2006, 2008, 2009, 2010, 2017
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -486,8 +486,9 @@ When DOMAIN is non-nil, only save cookies whose domains match it."
 	  (w3m-cookie-save))
 	(setq w3m-cookie-init nil)
 	(w3m-cookie-clear)
-	(if (get-buffer " *w3m-cookie-parse-temp*")
-	    (kill-buffer (get-buffer " *w3m-cookie-parse-temp*"))))
+        (let ((buf (get-buffer " *w3m-cookie-parse-temp*")))
+         (when buf
+           (kill-buffer buf))))
     (error
      (if interactive-p
 	 (signal (car err) (cdr err))

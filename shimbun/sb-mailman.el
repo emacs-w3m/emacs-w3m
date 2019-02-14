@@ -1,4 +1,4 @@
-;;; sb-mailman.el --- shimbun backend class for mailman archiver -*- coding: iso-2022-7bit; -*-
+;;; sb-mailman.el --- shimbun backend class for mailman archiver -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2002, 2003 NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Copyright (C) 2002, 2008 Katsumi Yamaoka <yamaoka@jpl.org>
@@ -169,12 +169,12 @@
 			     end t nil)
       (setq name (match-string 1)
 	    address (match-string 3))
-      ;; Yoshiki.Ohshima $B!w(B acm.org
-      (when (string-match " \\($B!w(B\\|at\\) " name)
+      ;; Yoshiki.Ohshima ＠ acm.org
+      (when (string-match " \\(＠\\|at\\) " name)
 	(setq name (concat (substring name 0 (match-beginning 0))
 			   "@"
 			   (substring name (match-end 0)))))
-      (when (string-match " \\($B!w(B\\|at\\) " address)
+      (when (string-match " \\(＠\\|at\\) " address)
 	(setq address (concat (substring address 0 (match-beginning 0))
 			      "@"
 			      (substring address (match-end 0)))))
@@ -182,15 +182,15 @@
        header
        (shimbun-mime-encode-string (concat name " <" address ">")))
 
-      (when (re-search-forward "<I>\\([0-9][0-9][0-9][0-9]\\)$BG/(B\
- *\\([0-9][0-9]*\\)$B7n(B\
- *\\([0-9][0-9]*\\)$BF|(B\
- (\\($B7n(B\\|$B2P(B\\|$B?e(B\\|$BLZ(B\\|$B6b(B\\|$BEZ(B\\|$BF|(B\\))\
+      (when (re-search-forward "<I>\\([0-9][0-9][0-9][0-9]\\)年\
+ *\\([0-9][0-9]*\\)月\
+ *\\([0-9][0-9]*\\)日\
+ (\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\))\
  \\([:0-9]+\\)\
  \\([A-Z]+\\)</I>"
 			       end t nil)
 	;; <I>Sat, 12 Apr 2003 17:29:51 +0900 (JST)</I> ;; mailman original
-	;; <I>2003$BG/(B 4$B7n(B 11$BF|(B ($B6b(B) 02:43:25 CEST</I> ;; squeak-ja
+	;; <I>2003年 4月 11日 (金) 02:43:25 CEST</I> ;; squeak-ja
 	(setq date (shimbun-make-date-string
 		    (string-to-number (match-string-no-properties 1))
 		    (string-to-number (match-string-no-properties 2))
@@ -205,7 +205,7 @@
       (let ((case-fold-search t))
 	(goto-char (point-min))
 	(while (re-search-forward "\
-<a +href=[^>]+>\\([^<]+\\) \\(?:$B!w(B\\|at\\) \\([^<]+\\)</a>" nil t)
+<a +href=[^>]+>\\([^<]+\\) \\(?:＠\\|at\\) \\([^<]+\\)</a>" nil t)
 	  (replace-match "\\1@\\2")))
       (shimbun-header-insert-and-buffer-string shimbun header nil t))))
 

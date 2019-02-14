@@ -1,4 +1,4 @@
-;;; sb-gnome.el --- shimbun backend for mail.gnome.org
+;;; sb-gnome.el --- shimbun backend for mail.gnome.org -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004 Yuuichi Teranishi <teranisi@gohome.org>
 

@@ -1,4 +1,4 @@
-;;; sb-tcup.el --- shimbun backend for www.tcup.com -*- coding: iso-2022-7bit; -*-
+;;; sb-tcup.el --- shimbun backend for www.tcup.com -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2005 Yuuichi Teranishi <teranisi@gohome.org>
 
@@ -59,9 +59,9 @@ BODY-END-REGEXP: `shimbun-tcup-body-end-regexp'")
 	    s0 "</b>" s0 "</font>"))
   "Default regexp for subject.
  This have a one parenthesized expression match for subject.")
-(defvar shimbun-tcup-from-start-regexp "$BEj9F<T!'(B[\t\n ]*"
+(defvar shimbun-tcup-from-start-regexp "投稿者：[\t\n ]*"
   "Default regexp for from start string.")
-(defvar shimbun-tcup-date-start-regexp "$BEj9FF|!'(B[\t\n ]*"
+(defvar shimbun-tcup-date-start-regexp "投稿日：[\t\n ]*"
   "Default regexp for date start string.")
 (defvar shimbun-tcup-body-start-regexp
   "<blockquote>\\([\t\n ]*<[^>]+>\\)*[\t\n ]*"
@@ -124,14 +124,14 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 (defun shimbun-tcup-make-time ()
   (let (yr mon day hr min sec dow tm)
     (looking-at
-     "\\([ 0-9]+\\)$B7n(B\\([ 0-9]+\\)$BF|(B(\\(.\\))\\([ 0-9]+\\)$B;~(B\\([ 0-9]+\\)$BJ,(B\\([ 0-9]+\\)$BIC(B")
+     "\\([ 0-9]+\\)月\\([ 0-9]+\\)日(\\(.\\))\\([ 0-9]+\\)時\\([ 0-9]+\\)分\\([ 0-9]+\\)秒")
     (setq mon (string-to-number (match-string 1))
 	  day (string-to-number (match-string 2))
 	  dow (match-string 3)
 	  hr  (string-to-number (match-string 4))
 	  min (string-to-number (match-string 5))
 	  sec (string-to-number (match-string 6)))
-    (setq dow (string-match dow "$BF|7n2P?eLZ6bEZ(B"))
+    (setq dow (string-match dow "日月火水木金土"))
     (setq yr (nth 5 (decode-time (current-time))))
     (setq tm (encode-time sec min hr day mon yr))
     (while (not (eq dow (nth 6 (decode-time tm))))
@@ -217,7 +217,7 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 		headers))
 	(goto-char (point-min))
 	(if (re-search-forward "<a[\t\n ]+href=\"\\([^\"]+\\)\"[^>]*>[\t\n ]*\
-$B<!$N%Z!<%8(B[\t\n ]*</a>"
+次のページ[\t\n ]*</a>"
 			       nil t)
 	    (progn
 	      (shimbun-retrieve-url

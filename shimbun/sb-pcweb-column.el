@@ -1,4 +1,4 @@
-;;; sb-pcweb-column.el --- shimbun backend for PC WEB COLUMN Square
+;;; sb-pcweb-column.el --- shimbun backend for PC WEB COLUMN Square -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007
 ;; OHASHI Akira <bg66@koka-in.org>

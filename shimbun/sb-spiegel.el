@@ -1,4 +1,4 @@
-;;; sb-spiegel.el --- spiegel online shimbun backend
+;;; sb-spiegel.el --- spiegel online shimbun backend -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2004, 2006, 2008 David Hansen
 

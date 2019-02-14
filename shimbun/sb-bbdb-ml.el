@@ -1,4 +1,4 @@
-;;; sb-bbdb-ml.el --- shimbun backend for bbdb-ml
+;;; sb-bbdb-ml.el --- shimbun backend for bbdb-ml -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2005 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
 ;; Copyright (C) 2001, 2005 Yuuichi Teranishi <teranisi@gohome.org>

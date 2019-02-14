@@ -1,4 +1,4 @@
-;;; sb-rakuten.el --- shimbun backend for rakuten diary -*- coding: iso-2022-7bit; -*-
+;;; sb-rakuten.el --- shimbun backend for rakuten diary -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2003, 2004, 2006 NAKAJIMA Mikio <minakaji@namazu.org>
 
@@ -78,11 +78,11 @@
   (save-excursion
     (let ((string
 	   (format
-	    ">$B46A[$r=q$/(B</a>$B("(B\
-<a href=\"http://plaza.rakuten.co.jp/%s/bbs/\">$B7G<(HD$X(B</a>$B("(B"
+	    ">感想を書く</a>│\
+<a href=\"http://plaza.rakuten.co.jp/%s/bbs/\">掲示板へ</a>│"
 	    (shimbun-current-group-internal shimbun))))
       (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
-      (while (re-search-forward ">$B46A[$r=q$/(B<\\/a>$B("(B" nil t nil)
+      (while (re-search-forward ">感想を書く<\\/a>│" nil t nil)
 	  (replace-match string)))))
 
 (provide 'sb-rakuten)
