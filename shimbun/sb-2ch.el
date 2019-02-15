@@ -1,4 +1,4 @@
-;;; sb-2ch.el --- shimbun backend for 2ch.net -*- coding: iso-2022-7bit; -*-
+;;; sb-2ch.el --- shimbun backend for 2ch.net -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005 by (not 1)
 
@@ -76,7 +76,7 @@ If optional NO-BREAK is non-nil, don't stop even when header found."
 	num uname uaddr uid subject date id
 	references body st point from)
     (goto-char (point-max))
-    (while (re-search-backward "<dt>\\([0-9]+\\) $B!'(B" nil t)
+    (while (re-search-backward "<dt>\\([0-9]+\\) ：" nil t)
       (goto-char (match-end 0))
       (setq point (match-beginning 0)
 	    num (string-to-number (match-string 1)))
@@ -89,7 +89,7 @@ If optional NO-BREAK is non-nil, don't stop even when header found."
        ((looking-at "<b>\\([^<]+\\)<")
 	(setq uaddr (match-string 1))))
       (when (re-search-forward "\
-$B!'(B\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)\\(\([^\)]\)\\)? \\([0-9]+:[0-9]+\\)"
+：\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)\\(\([^\)]\)\\)? \\([0-9]+:[0-9]+\\)"
 			       nil t)
 	(setq date (shimbun-make-date-string (string-to-number
 					      (match-string 1))
@@ -124,7 +124,7 @@ If optional NO-BREAK is non-nil, don't stop even when header found."
 		(when (or (re-search-forward "<a href=\\([0-9]+\\)" nil t)
 			  (re-search-forward ">>\\([0-9]+\\)[^0-9]" nil t)
 			  (re-search-forward "[^a-z]>\\([0-9]+\\)[^0-9]" nil t)
-			  (re-search-forward "$B!d(B\\([0-9]+\\)[^0-9]" nil t)
+			  (re-search-forward "＞\\([0-9]+\\)[^0-9]" nil t)
 			  (re-search-forward "&gt;\\([0-9]+\\)[^0-9]" nil t))
 		  (setq references
 			(format "<%s.%s@%s.2ch.net>"

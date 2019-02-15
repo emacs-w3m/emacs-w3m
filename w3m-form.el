@@ -1,4 +1,4 @@
-;;; w3m-form.el --- Stuffs to handle <form> tag
+;;; w3m-form.el --- Stuffs to handle <form> tag -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001-2014, 2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

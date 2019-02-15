@@ -1,4 +1,4 @@
-;;; w3m-image.el --- Image conversion routines.
+;;; w3m-image.el --- Image conversion routines. -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001-2003, 2005, 2007-2009, 2016-2018
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

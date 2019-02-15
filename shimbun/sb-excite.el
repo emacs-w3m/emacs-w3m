@@ -1,4 +1,4 @@
-;;; sb-excite.el --- shimbun backend for excite -*- coding: iso-2022-7bit; -*-
+;;; sb-excite.el --- shimbun backend for excite -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2004, 2005, 2006, 2010 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
@@ -46,7 +46,7 @@
 (defvar shimbun-excite-from-address (concat "nobody@"
 					    shimbun-excite-top-level-domain))
 (defvar shimbun-excite-content-start
-  "<font[^>]*>\\[ *[0-9]*$BG/(B[0-9]*$B7n(B[0-9]*$BF|(B *[0-9]*$B;~(B[0-9]*$BJ,(B *\\]</font>")
+  "<font[^>]*>\\[ *[0-9]*年[0-9]*月[0-9]*日 *[0-9]*時[0-9]*分 *\\]</font>")
 (defvar shimbun-excite-content-end
   "<center")
 

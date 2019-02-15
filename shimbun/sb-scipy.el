@@ -1,4 +1,4 @@
-;;; sb-scipy.el --- shimbun backend for scipy mailing lists
+;;; sb-scipy.el --- shimbun backend for scipy mailing lists -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2005, 2006 S V N Vishwanathan <vishketan@yahoo.com>
 

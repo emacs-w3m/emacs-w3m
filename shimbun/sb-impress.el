@@ -1,4 +1,4 @@
-;;; sb-impress.el --- shimbun backend for www.watch.impress.co.jp -*- coding: iso-2022-7bit; -*-
+;;; sb-impress.el --- shimbun backend for www.watch.impress.co.jp -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2008, 2009
 ;; Yuuichi Teranishi <teranisi@gohome.org>
@@ -37,45 +37,45 @@
 (defvar shimbun-impress-groups-alist
   '( ;; group (rss | link-regexp) start end address?
     ("enterprise" rss
-     "<!-- $BK\J83+;O(B -->" "<!-- $BK\J8=*N;(B -->"
+     "<!-- 本文開始 -->" "<!-- 本文終了 -->"
      "http://enterprise.watch.impress.co.jp/cda/rss/enterprise.rdf")
     ("pc" rss
-     "<!-- $B5-;v8+=P$7(B -->" "<!-- /$B5-;v=pL>(B -->"
+     "<!-- 記事見出し -->" "<!-- /記事署名 -->"
      "http://pc.watch.impress.co.jp/sublink/pc.rdf")
     ("dc" rss
-     "<!-- $BK\J83+;O(B -->" "<!-- $BK\J8=*N;(B -->"
+     "<!-- 本文開始 -->" "<!-- 本文終了 -->"
      "http://dc.watch.impress.co.jp/cda/rss/digicame.rdf")
     ("akiba" "<a href=\"\\(hotline/\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)\
 \\([0-9][0-9]\\)/\\([^>]*\\)\\)\">"
-     "<!-- $B",",!!!z(B2002/10/01 Modify End$B!z!!",",(B -->"
-     "\\(<!-- $B"-"-!!!z(B2002/10/01 Modify start$B!z!!"-"-(B -->\\|<!-- 500x144 -->\\)")
+     "<!-- ↑↑　★2002/10/01 Modify End★　↑↑ -->"
+     "\\(<!-- ↓↓　★2002/10/01 Modify start★　↓↓ -->\\|<!-- 500x144 -->\\)")
     ("av" rss
-     "\\(<!-- title -->\\|<hr size=3>\\)" "\\(<!-- /$B5-;v=pL>(B -->\\|<!-- 500x144 -->\\)"
+     "\\(<!-- title -->\\|<hr size=3>\\)" "\\(<!-- /記事署名 -->\\|<!-- 500x144 -->\\)"
      "http://www.watch.impress.co.jp/av/sublink/av.rdf")
     ("game" rss
-     "<!-- $B5-;vCf1{3+;O(B -->" "\\(<!-- $B5-;vCf1{=*N;(B -->\\|<!-- /$B5-;v=pL>(B -->\\)"
+     "<!-- 記事中央開始 -->" "\\(<!-- 記事中央終了 -->\\|<!-- /記事署名 -->\\)"
      "http://www.watch.impress.co.jp/game/sublink/game.rdf")
     ("k-tai" rss
-     "<!-- ?$BK\J83+;O(B ?-->" "<!-- ?$BK\J8=*N;(B ?-->"
+     "<!-- ?本文開始 ?-->" "<!-- ?本文終了 ?-->"
      "http://k-tai.impress.co.jp/cda/rss/ktai.rdf")
     ("internet" rss
-     "<!-- $BK\J83+;O(B -->" "<!-- $BK\J8=*N;(B -->"
+     "<!-- 本文開始 -->" "<!-- 本文終了 -->"
      "http://internet.watch.impress.co.jp/cda/rss/internet.rdf")
     ("bb" rss
-     "<!-- ?$BK\J83+;O(B ?-->" "<!-- ?$BK\J8=*N;(B ?-->"
+     "<!-- ?本文開始 ?-->" "<!-- ?本文終了 ?-->"
      "http://bb.watch.impress.co.jp/cda/rss/broadband.rdf")
     ("forest" rss
-     "<!-- ?\\($B"%"%"%%@%$%l%/%H4XO""%"%"%(B\\|$BK\J83+;O(B\\) ?-->"
-     "<!-- ?\\($BK\J8=*N;(B\\|$B"#"#"#"#K\J8%;%k1&%9%Z!<%9%;%k"#"#"#"#(B\\|$B"#(Bgoostick$B3+;O"#(B\\) ?-->"
+     "<!-- ?\\(▲▲▲ダイレクト関連▲▲▲\\|本文開始\\) ?-->"
+     "<!-- ?\\(本文終了\\|■■■■本文セル右スペースセル■■■■\\|■goostick開始■\\) ?-->"
      "http://www.forest.impress.co.jp/rss.xml")
     ("robot" rss
-     "<!-- $BK\J83+;O(B -->" "<!-- $BK\J8=*N;(B -->"
+     "<!-- 本文開始 -->" "<!-- 本文終了 -->"
      "http://robot.watch.impress.co.jp/cda/rss/robot.rdf")
     ("kaden" rss
-     "<!-- $BK\J83+;O(B -->" "<!-- $BK\J8=*N;(B -->"
+     "<!-- 本文開始 -->" "<!-- 本文終了 -->"
      "http://kaden.watch.impress.co.jp/cda/rss/kaden.rdf")
     ("car" rss
-     "<!-- $BK\J83+;O(B -->" "<!-- $BK\J8=*N;(B -->"
+     "<!-- 本文開始 -->" "<!-- 本文終了 -->"
      "http://car.watch.impress.co.jp/docs/car.rdf")
     ))
 
@@ -122,7 +122,7 @@ JzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r\
 		subject (with-temp-buffer
 			  (insert subject)
 			  (goto-char (point-min))
-			  (when (re-search-forward "<br>\\($B!](B\\|$B!A(B\\).*" nil t)
+			  (when (re-search-forward "<br>\\(−\\|〜\\).*" nil t)
 			    (replace-match "")
 			    (goto-char (point-min)))
 			  (while (re-search-forward "[\r\n]" nil t)
@@ -177,9 +177,9 @@ JzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r\
 	    nil t)
       (replace-match "<\\1 \\2=\"/"))
     (goto-char (point-min))
-    (when  (and (re-search-forward "<!--\\($B"#(B*$B5-;v8x3+F|"#(B*\\| *$B8x3+F|(B *\\| *date *\\)-->" nil t)
-		(or (re-search-forward "[^($B!J(B]*[($B!J(B]\\([0-9][0-9]\\)/\
-\\([0-9][0-9]\\)/\\([0-9][0-9]\\)[ $B!!(B]*\\([0-9][0-9]:[0-9][0-9]\\)?" nil t)
+    (when  (and (re-search-forward "<!--\\(■*記事公開日■*\\| *公開日 *\\| *date *\\)-->" nil t)
+		(or (re-search-forward "[^(（]*[(（]\\([0-9][0-9]\\)/\
+\\([0-9][0-9]\\)/\\([0-9][0-9]\\)[ 　]*\\([0-9][0-9]:[0-9][0-9]\\)?" nil t)
 		    (re-search-forward "[^<]*<br ?/?>[^0-9]*\\([0-9][0-9][0-9][0-9]\\)/\
 \\([0-9][0-9]\\)/\\([0-9][0-9]\\) *\\([0-9][0-9]:[0-9][0-9]\\)?" nil t)
 		    (re-search-forward "\\([0-9][0-9][0-9][0-9]\\)/\

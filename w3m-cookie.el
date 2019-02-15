@@ -1,4 +1,4 @@
-;;; w3m-cookie.el --- Functions for cookie processing
+;;; w3m-cookie.el --- Functions for cookie processing -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2002, 2003, 2005, 2006, 2008, 2009, 2010, 2017
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

@@ -1,4 +1,4 @@
-;;; sb-yahoo-sports.el --- shimbun backend for sports.yahoo.co.jp -*- coding: iso-2022-7bit -*-
+;;; sb-yahoo-sports.el --- shimbun backend for sports.yahoo.co.jp -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2005
 ;; MIYOSHI Masanori <miyoshi@meadowy.org>
@@ -105,7 +105,7 @@ PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
 			   url))
 		  headers)))
 	(if (re-search-forward
-	     "<a href=\\(/hl\\?c=[^&]+&[^>]+\\)>$B<!$N%Z!<%8(B</a>" nil t)
+	     "<a href=\\(/hl\\?c=[^&]+&[^>]+\\)>次のページ</a>" nil t)
 	    (progn
 	      (shimbun-retrieve-url
 	       (prog1

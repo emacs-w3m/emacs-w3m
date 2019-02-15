@@ -1,4 +1,4 @@
-;;; w3m-perldoc.el --- The add-on program to view Perl documents.
+;;; w3m-perldoc.el --- The add-on program to view Perl documents. -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2017
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

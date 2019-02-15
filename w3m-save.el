@@ -1,4 +1,4 @@
-;;; w3m-save.el --- Save the page to the local files
+;;; w3m-save.el --- Save the page to the local files -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2015-2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

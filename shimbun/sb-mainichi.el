@@ -1,4 +1,4 @@
-;;; sb-mainichi.el --- shimbun backend for Mainichi jp -*- coding: iso-2022-7bit; -*-
+;;; sb-mainichi.el --- shimbun backend for Mainichi jp -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001-2009, 2011-2013, 2015-2018
 ;; Koichiro Ohba <koichiro@meadowy.org>
@@ -42,7 +42,7 @@
 
 (defvar shimbun-mainichi-top-level-domain "mainichi.jp")
 
-(defvar shimbun-mainichi-server-name "$BKhF|?7J9(B")
+(defvar shimbun-mainichi-server-name "毎日新聞")
 
 (defvar shimbun-mainichi-prefer-text-plain nil
   "*Non-nil means prefer text/plain articles rather than html articles.")
@@ -54,34 +54,34 @@
   (shimbun-rss-initialize-ignored-subject shimbun))
 
 (defvar shimbun-mainichi-group-table
-  '(("flash" "$B%K%e!<%9B.Js(B($BAm9g(B)"
+  '(("flash" "ニュース速報(総合)"
      "https://mainichi.jp/rss/etc/mainichi-flash.rss")
-    ("sports" "$B%9%]!<%D(B"
+    ("sports" "スポーツ"
      "https://mainichi.jp/rss/etc/mainichi-sports.rss")
-    ("entertainment" "$B%(%s%?%a(B"
+    ("entertainment" "エンタメ"
      "https://mainichi.jp/rss/etc/mainichi-enta.rss")
-    ("opinion" "$B<R@b!&2r@b!&%3%i%`(B"
+    ("opinion" "社説・解説・コラム"
      "https://mainichi.jp/rss/etc/opinion.rss")
     ;; Non-RSS groups.
-    ("opinion.editorial" "$B<R@b(B"
+    ("opinion.editorial" "社説"
      "https://mainichi.jp/editorial/")
-    ("opinion.yoroku" "$BM>O?(B"
+    ("opinion.yoroku" "余録"
      "https://mainichi.jp/yoroku/")
-    ("opinion.hasshinbako" "$BH/?.H"(B"
+    ("opinion.hasshinbako" "発信箱"
      "https://mainichi.jp/hasshinbako/")
-    ("opinion.eye" "$B5-<T$NL\(B"
+    ("opinion.eye" "記者の目"
      "https://mainichi.jp/kishanome/")
-    ("opinion.hito" "$B$R$H(B"
+    ("opinion.hito" "ひと"
      "https://mainichi.jp/hito/")
-    ("opinion.kinji" "$B6a;vJR!9(B"
+    ("opinion.kinji" "近事片々"
      "https://mainichi.jp/kinji/")
-    ("opinion.yuraku" "$BM+3ZD"(B"
+    ("opinion.yuraku" "憂楽帳"
      "https://mainichi.jp/yurakucho/")
-    ("opinion.jidainokaze" "$B;~Be$NIw(B"
+    ("opinion.jidainokaze" "時代の風"
      "https://mainichi.jp/jidainokaze/")
-    ("entertainment.art" "$B7]=Q!&J82=(B"
+    ("entertainment.art" "芸術・文化"
      "https://mainichi.jp/art/")
-    ("fuchisou" "$BIwCNAp(B"
+    ("fuchisou" "風知草"
      "http://mainichi.jp/fuchisou/")))
 
 (defvar shimbun-mainichi-x-face-alist
@@ -180,7 +180,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
       (while t
 	(shimbun-strip-cr)
 	(goto-char (point-min))
-	(when (and (or (search-forward "<!--<h2>$B:G?7$N5-;v(B</h2>-->" nil t)
+	(when (and (or (search-forward "<!--<h2>最新の記事</h2>-->" nil t)
 		       (search-forward "<!--| main-box BGN |-->" nil t))
 		   (re-search-forward "\
 <ul[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"list-typeD\""
@@ -352,7 +352,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
   (when (re-search-forward "\
 <span[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"More\"[^<]+\
 <a[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*href=\"\\([^\"]+\\)\"[^>]*>\
-\[\t\n ]*$BB3$-$rFI$`(B[\t\n ]*</a>[\t\n ]*</span>" nil t)
+\[\t\n ]*続きを読む[\t\n ]*</a>[\t\n ]*</span>" nil t)
     (let ((orig (buffer-string)))
       (unless (shimbun-fetch-url shimbun (prog1
 					     (match-string 1)
@@ -403,8 +403,8 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 	      (insert "\n"))))
 	(when (string-equal group "opinion.yoroku")
 	  (goto-char (point-min))
-	  (while (search-forward "$B"%(B" nil t)
-	    (replace-match "$B!#(B</p><p>$B!!(B")))
+	  (while (search-forward "▲" nil t)
+	    (replace-match "。</p><p>　")))
 	;; Convert Japanese zenkaku ASCII chars into hankaku.
 	(when (and hankaku (not (memq hankaku '(header subject))))
 	  (shimbun-japanese-hankaku-buffer t))
@@ -416,13 +416,13 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 \\(?:[^\t\n >]+[\t\n ]+\\)*alt=\"\\)[^\"]+"
 					     nil t)
 			  (shimbun-end-of-tag nil t))
-		(replace-match "\n&lt;$B<L??(B&gt;\n"))))
+		(replace-match "\n&lt;写真&gt;\n"))))
 	t)
 ;;    (erase-buffer)
 ;;    (insert "<html><body>\
-;;$B$3$N5-;v$O$b$&$"$j$^$;$s!#(B<br>\n\
-;;\($B$5$b$J$1$l$PDL>o$H$O0[$J$k7A<0$r;H$C$F$$$k$+!"(B<br>\n\
-;;&nbsp;$B$^$?$O<hF@$K<:GT$7$?$N$+$b$7$l$^$;$s!#(B)</body></html>\n")
+;;この記事はもうありません。<br>\n\
+;;\(さもなければ通常とは異なる形式を使っているか、<br>\n\
+;;&nbsp;または取得に失敗したのかもしれません。)</body></html>\n")
     nil))
 
 (luna-define-method shimbun-multi-clear-contents :around ((shimbun

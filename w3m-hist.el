@@ -1,4 +1,4 @@
-;;; w3m-hist.el --- the history management system for emacs-w3m
+;;; w3m-hist.el --- the history management system for emacs-w3m -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001-2012 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

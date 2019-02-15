@@ -1,4 +1,4 @@
-;;; w3m-bookmark.el --- Functions to operate bookmark file of w3m
+;;; w3m-bookmark.el --- Functions to operate bookmark file of w3m -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001-2003, 2005-2012, 2017
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -451,30 +451,29 @@ With prefix argument, kill that many entries from point."
 
 ;; Bookmark menu
 (defvar w3m-bookmark-menu-items
-  (let ((etsu (when w3m-use-japanese-menu
-		(decode-coding-string "\e$B1\\\e(B" 'iso-2022-jp)))) ;; $B1\(B
-    `(([,(w3m-make-menu-item (concat "$B%V%C%/%^!<%/$N(B" etsu "$BMw(B") "View Bookmark")
+  (let ((etsu (when w3m-use-japanese-menu "閲")))
+    `(([,(w3m-make-menu-item (concat "ブックマークの" etsu "覧") "View Bookmark")
 	w3m-bookmark-view t]
-       [,(w3m-make-menu-item (concat "$B?7%;%C%7%g%s$G%V%C%/%^!<%/$N(B" etsu "$BMw(B")
+       [,(w3m-make-menu-item (concat "新セッションでブックマークの" etsu "覧")
 			     "View Bookmark in a New Session")
 	w3m-bookmark-view-new-session t]
-       [,(w3m-make-menu-item "$B%V%C%/%^!<%/$NJT=8(B" "Edit Bookmark")
+       [,(w3m-make-menu-item "ブックマークの編集" "Edit Bookmark")
 	w3m-bookmark-edit t]
        "----"
-       [,(w3m-make-menu-item "$B$3$N%Z!<%8$r%V%C%/%^!<%/(B" "Add Current URL to Bookmark")
+       [,(w3m-make-menu-item "このページをブックマーク" "Add Current URL to Bookmark")
 	w3m-bookmark-add-current-url t]
-       [,(w3m-make-menu-item "$B$9$Y$F$N(B URL $B$r%V%C%/%^!<%/(B" "Add These URLs to Bookmark")
+       [,(w3m-make-menu-item "すべての URL をブックマーク" "Add These URLs to Bookmark")
 	w3m-bookmark-add-current-url-group t]
-       [,(w3m-make-menu-item "$B$3$N(B URL $B$r%V%C%/%^!<%/(B" "Add This URL to Bookmark")
+       [,(w3m-make-menu-item "この URL をブックマーク" "Add This URL to Bookmark")
 	w3m-bookmark-add-this-url (w3m-anchor)])
       .
-      ([,(w3m-make-menu-item "$B$3$N%(%s%H%j$r>C5n(B" "Kill Current Entry")
+      ([,(w3m-make-menu-item "このエントリを消去" "Kill Current Entry")
 	w3m-bookmark-kill-entry
 	(text-property-not-all (point-at-bol) (point-at-eol)
 			       'w3m-href-anchor nil)]
-       [,(w3m-make-menu-item "$B$b$H$KLa$9(B" "Undo")
+       [,(w3m-make-menu-item "もとに戻す" "Undo")
 	w3m-bookmark-undo t]
-       [,(w3m-make-menu-item "$B%V%C%/%^!<%/$NJT=8(B" "Edit Bookmark")
+       [,(w3m-make-menu-item "ブックマークの編集" "Edit Bookmark")
 	w3m-bookmark-edit t])))
   "*List of the bookmark menu items.
 The car is used if `w3m-bookmark-mode' is nil, otherwise the cdr is used.")

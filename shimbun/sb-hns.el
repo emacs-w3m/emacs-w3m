@@ -1,4 +1,4 @@
-;;; sb-hns.el --- shimbun backend for Hyper Nikki System.
+;;; sb-hns.el --- shimbun backend for Hyper Nikki System. -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2004 Yuuichi Teranishi <teranisi@gohome.org>
 

@@ -1,4 +1,4 @@
-;;; w3m-antenna.el --- Utility to detect changes of WEB
+;;; w3m-antenna.el --- Utility to detect changes of WEB -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2017
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

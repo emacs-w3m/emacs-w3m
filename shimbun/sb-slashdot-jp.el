@@ -1,4 +1,4 @@
-;;; sb-slashdot-jp.el --- shimbun backend for slashdot.jp -*- coding: iso-2022-7bit; -*-
+;;; sb-slashdot-jp.el --- shimbun backend for slashdot.jp -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2010, 2017
 ;; NAKAJIMA Mikio <minakaji@namazu.org>
@@ -195,7 +195,7 @@
     (let ((url (shimbun-slashdot-jp-comment-url (shimbun-header-xref header))))
       (when url
 	(goto-char (point-max))
-	(insert "\n<p align=left>[<a href=\"" url "\">$B$b$C$HFI$`!D(B</a>]</p>")))
+	(insert "\n<p align=left>[<a href=\"" url "\">もっと読む…</a>]</p>")))
     t))
 
 (provide 'sb-slashdot-jp)
