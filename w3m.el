@@ -4281,49 +4281,35 @@ You are retrieving non-secure image(s).  Continue? ")
   "Interactively resize IMAGE.
 If RATE is not given, use `w3m-resize-image-scale'.
 CHANGED-RATE is currently changed rate / 100."
-  (let ((char (w3m-static-if (featurep 'xemacs)
-		  (progn
-		    (message
-		     "Resize: [+ =] enlarge [-] shrink [0] original [q] quit")
-		    (read-char-exclusive))
-		(read-char-exclusive
-		 (propertize
-		  "Resize: [+ =] enlarge [-] shrink [0] original [q] quit"
-		  'face 'w3m-lnum-minibuffer-prompt))))
-	(changed-rate (or changed-rate 1)))
-    (w3m-static-if (featurep 'xemacs)
-	(setq char (char-octet char)))
-    (while (memq char '(?+ ?- ?= ?0))
-      (cond ((memq char '(?+ ?=))
-	     (let ((percent (+ 100 (or rate
-				       w3m-resize-image-scale))))
-	       (w3m-resize-inline-image-internal image percent)
-	       (setq changed-rate (* changed-rate
-				     (/ percent 100.0)))))
-	    ((eq char ?-)
-	     (let ((percent (/ 10000.0 (+ 100 (if rate
-						  (if (> rate 99) 99
-						    rate)
-						w3m-resize-image-scale)))))
-	       (w3m-resize-inline-image-internal image percent)
-	       (setq changed-rate (* changed-rate
-				     (/ percent 100.0)))))
-	    ((eq char ?0)
-	     (w3m-resize-inline-image-internal image
-					       (/ 100.0 changed-rate))
-	     (setq changed-rate 1)))
-      (setq char
-	    (w3m-static-if (featurep 'xemacs)
-		(progn
-		  (message
-		   "Resize: [+ =] enlarge [-] shrink [0] original [q] quit")
-		  (read-char-exclusive))
-	      (read-char-exclusive
-	       (propertize
-		"Resize: [+ =] enlarge [-] shrink [0] original [q] quit"
-		'face 'w3m-lnum-minibuffer-prompt))))
-      (w3m-static-if (featurep 'xemacs)
-	  (setq char (char-octet char))))))
+  (let* ((msg-prompt "Resize: [+ =] enlarge [-] shrink [0] original [q] quit")
+         (changed-rate (or changed-rate 1))
+         (rate (or (and rate (min rate 99)) w3m-resize-image-scale))
+         char)
+    (while
+      (cond
+       ((memq
+          (setq char
+            (w3m-static-if (featurep 'xemacs)
+              (progn
+                 (w3m-message msg-prompt)
+                 (char-octet (read-char-exclusive)))
+             (read-char-exclusive
+               (propertize msg-prompt 'face 'w3m-lnum-minibuffer-prompt))))
+          '(?+ ?=))
+        (let ((percent (+ 100 rate)))
+          (w3m-resize-inline-image-internal image percent)
+          (setq changed-rate (* changed-rate
+                                (/ percent 100.0)))))
+       ((eq char ?-)
+        (let ((percent (/ 10000.0 (+ 100 rate))))
+          (w3m-resize-inline-image-internal image percent)
+          (setq changed-rate (* changed-rate
+                                (/ percent 100.0)))))
+       ((eq char ?0)
+        (w3m-resize-inline-image-internal image
+                                          (/ 100.0 changed-rate))
+        (setq changed-rate 1))
+       (t nil)))))
 
 (defun w3m-zoom-in-image (&optional rate)
   "Zoom in an image on the point.
