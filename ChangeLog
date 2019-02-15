@@ -1,3 +1,8 @@
+2019-02-14  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-resize-image-interactive): Refactor function to remove
+	code duplications.
+
 2019-02-03  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-cookie.el (w3m-cookie-shutdown): avoid duplicate get-buffer call.
