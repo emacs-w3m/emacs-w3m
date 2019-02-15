@@ -1006,7 +1006,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 
 (defun w3m-form-input-password (form id name)
   (if (get-text-property (point) 'w3m-form-readonly)
-      (message "This input box is read-only.")
+      (w3m--message t 'w3m-error "This input box is read-only.")
     (let* ((fvalue (w3m-form-get form id))
 	   (input (save-excursion
 		    (read-passwd (concat "PASSWORD"
@@ -1227,7 +1227,7 @@ character."
       (kill-buffer buffer)
       (if (not (buffer-live-p w3mbuffer))
 	  (and (eq this-command 'w3m-form-input-textarea-set)
-	       (message "No current w3m buffer"))
+	       (w3m--message t 'w3m-error "No current w3m buffer"))
 	(pop-to-buffer w3mbuffer)
 	(set-window-configuration wincfg)
 	(when (and form point)
@@ -1249,7 +1249,7 @@ character."
     (kill-buffer buffer)
     (if (not (buffer-live-p w3mbuffer))
 	(and (eq this-command 'w3m-form-input-textarea-exit)
-	     (message "No current w3m buffer"))
+	     (w3m--message t 'w3m-error "No current w3m buffer"))
       (pop-to-buffer w3mbuffer)
       (set-window-configuration wincfg)
       (when point (goto-char point)))))
@@ -1296,7 +1296,7 @@ positive, otherwise text-mode."
 	(if (null arg)
 	    (not w3m-form-textarea-use-org-mode-p)
 	  (> (prefix-numeric-value arg) 0)))
-  (message "Edit textarea in Org-mode %s"
+  (w3m--message t t "Edit textarea in Org-mode %s"
 	   (if w3m-form-textarea-use-org-mode-p "enabled" "disabled")))
 
 (eval-when-compile (require 'outline))

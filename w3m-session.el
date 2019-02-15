@@ -317,14 +317,14 @@ buffer's url history."
 				  w3m-current-title)
 			    urls)))))
      (if (not urls)
-	 (message "%s: no buffers saved...done" title)
+	 (w3m--message t t "%s: no buffers saved...done" title)
        (setq len (length urls))
        (setq urls (nreverse urls))
        (when (assoc title sessions)
 	 (setq sessions (delq (assoc title sessions) sessions)))
        (setq sessions (cons (list title (current-time) urls cnum) sessions))
        (w3m-save-list w3m-session-file sessions)
-       (message "%s: %d buffer%s saved...done" title len (if (= len 1) "" "s"))
+       (w3m--message t t "%s: %d buffer%s saved...done" title len (if (= len 1) "" "s"))
        (when (and (setq buf (get-buffer " *w3m-session select*"))
 		  (get-buffer-window buf 'visible))
 	 (save-selected-window (w3m-session-select)))))))
@@ -535,7 +535,7 @@ Meant for use  with  `pre-command-hook' and `post-command-hook'."
 	title titles time times wid pos)
     (if (not sessions)
 	(progn
-	  (message "No saved session")
+	  (w3m--message t 'w3m-error "No saved session")
 	  (w3m-session-select-quit))
       (mapc (lambda (x)
 	      (setq title (format "%s[%d]" (nth 0 x) (length (nth 2 x))))
@@ -673,7 +673,7 @@ buffer in the current session."
   (let ((num (or arg (get-text-property (point) 'w3m-session-number)))
 	wheight)
     (if (consp num)
-	(message "This is not a session group.")
+	(w3m--message t 'w3m-error "This is not a session group.")
       (setq w3m-session-group-open num)
       (setq wheight
 	    (max (+ (length (caddr (nth num w3m-session-select-sessions))) 6)
@@ -743,7 +743,7 @@ being below or beside the main window."
 	   (save-selected-window
 	     (select-window window)
 	     (or (one-window-p t t) (delete-window window)))))
-       (message "No saved session")))))
+       (w3m--message t 'w3m-error "No saved session")))))
 
 (defun w3m-session-goto-session (session)
   "Goto URLs."
@@ -753,7 +753,7 @@ being below or beside the main window."
 	(i 0)
 	(w3m-async-exec (and w3m-async-exec-with-many-urls w3m-async-exec))
 	url cbuf buf pos history)
-    (message "Session goto(%s)..." title)
+    (w3m--message nil t "Session goto(%s)..." title)
     (while (setq url (car urls))
       (setq urls (cdr urls))
       (unless (stringp url)
@@ -772,7 +772,7 @@ being below or beside the main window."
       (setq i (1+ i)))
     (when (and cbuf (eq major-mode 'w3m-mode))
       (set-window-buffer (selected-window) cbuf))
-    (message "Session goto(%s)...done" title)))
+    (w3m--message t t "Session goto(%s)...done" title)))
 
 (defun w3m-session-rename (sessions num)
   "Rename an entry (either a session or a buffer).

@@ -392,7 +392,7 @@ If ask, ask user whether accept bad cookies or not."
 			    :expires expires
 			    :secure secure)))
        (t
-	(message "%s tried to set a cookie for domain %s - rejected."
+	(w3m--message t 'w3m-error "%s tried to set a cookie for domain %s - rejected."
 		 (w3m-http-url-host http-url) domain))))))
 
 ;;; Version 1 cookie.
@@ -492,7 +492,7 @@ When DOMAIN is non-nil, only save cookies whose domains match it."
     (error
      (if interactive-p
 	 (signal (car err) (cdr err))
-       (message "Error while running w3m-cookie-shutdown: %s"
+       (w3m--message t 'w3m-error "Error while running w3m-cookie-shutdown: %s"
 		(error-message-string err))))))
 
 (add-hook 'kill-emacs-hook 'w3m-cookie-shutdown)

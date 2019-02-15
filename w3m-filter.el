@@ -337,9 +337,10 @@ toggle with completion (a function toggled last will first appear)."
       ;; toggle state for all filters
       (progn
 	(setq w3m-use-filter (not w3m-use-filter))
-	(message (concat
-		  "web page filtering now "
-		  (if w3m-use-filter "enabled" "disabled"))))
+	(w3m--message t t
+          (concat
+            "web page filtering now "
+            (if w3m-use-filter "enabled" "disabled"))))
     ;; the remainder of this function if for the case of toggling
     ;; an individual filter
     (let* ((selection-list (delq nil (mapcar
@@ -363,9 +364,10 @@ toggle with completion (a function toggled last will first appear)."
 	    (setcar elem (not (car elem)))
 	    (when (car elem)
 	      (setq w3m-use-filter t))
-	    (message "filter `%s' now %s"
-		     choice
-		     (if (car elem) "enabled" "disabled"))))))))
+            (w3m--message t t
+              "filter `%s' now %s"
+              choice
+              (if (car elem) "enabled" "disabled"))))))))
 
 (defmacro w3m-filter-delete-regions (url start end
 					 &optional without-start without-end

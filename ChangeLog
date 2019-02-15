@@ -1,3 +1,54 @@
+2019-02-14  Boruch Baum  <boruch_baum@gmx.com>
+
+	* mime-w3m.el (mime-w3m-preview-text/html): Convert
+	message to w3m--message.
+
+	* mew-w3m.el (mew-w3m-ext-url-fetch, w3m-mail-compose-with-mew):
+	Convert message to w3m--message.
+
+	* w3m.el (w3m-arrived-shutdown, w3m-load-list)
+	(w3m-toggle-inline-images-internal, )
+	(w3m-resize-inline-image-internal, w3m-download)
+	(w3m-search-name-anchor, w3m-view-previous-page)
+	(w3m-view-url-with-external-browser, w3m-move-unseen-buffer)
+	(w3m-goto-ftp-url, w3m-goto-new-session-url)
+	(w3m-resize-image-interactive): Convert message to w3m--message.
+
+	* w3m-bookmark.el (w3m-bookmark-add-this-url)
+	(w3m-bookmark-add-current-url, w3m-bookmark-add-current-url-group)
+	(w3m-bookmark-view, w3m-bookmark-add-all-urls): Convert message to
+	w3m--message.
+
+	* w3m-cookie.el (w3m-cookie-1-set, w3m-cookie-shutdown): Convert
+	message to w3m--message.
+
+	* w3m-fb.el (w3m-fb-mode): Convert message to w3m--message.
+
+	* w3m-filter.el (w3m-toggle-filtering): Convert message to
+	w3m--message.
+
+	* w3m-form.el (w3m-form-input-password, w3m-form-input-textarea-set)
+	(w3m-form-input-textarea-exit, w3m-form-textarea-toggle-major-mode):
+	Convert message to w3m--message.
+
+	* w3m-hist.el (w3m-history-add-properties)
+	(w3m-history-store-position, w3m-history-restore-position): Convert
+	message to w3m--message.
+
+	* w3m-image.el (w3m-imagick-convert-program-available-p)
+	(w3m-imagick-convert-buffer): Convert message to w3m--message.
+
+	* w3m-session.el (w3m-session-save)
+	(w3m-session-select-list-all-sessions)
+	(w3m-session-select-open-session-group, w3m-session-select)
+	(w3m-session-goto-session): Convert message to w3m--message.
+
+	* w3m-util.el (read-number): Convert message to w3m--message.
+
+	* w3m-xmas.el (w3m-create-image)
+	(w3m-form-coding-system-accept-region-p): Convert message to
+	w3m--message.
+
 2019-02-12  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m--message): Renamed function w3m-message, added two

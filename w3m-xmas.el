@@ -372,7 +372,7 @@ Third optional argument SIZE is currently ignored."
       (w3m-process-do-with-temp-buffer
 	  (type (condition-case err
 		    (w3m-retrieve url nil no-cache nil referer handler)
-		  (error (message "While retrieving %s: %s" url err) nil)))
+		  (error (w3m--message t 'w3m-error "While retrieving %s: %s" url err) nil)))
 	(goto-char (point-min))
 	(when (w3m-image-type-available-p
 	       (setq type
@@ -959,7 +959,7 @@ necessarily solve the problem completely."
 		      (encode-coding-string string coding-system)
 		      coding-system)
 		     string)
-      (message "Warning: this text may cause coding-system problem."))
+      (w3m--message t 'w3m-warning "Warning: this text may cause coding-system problem."))
     t))
 
 (provide 'w3m-xmas)

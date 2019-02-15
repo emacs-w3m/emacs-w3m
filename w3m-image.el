@@ -123,7 +123,7 @@ nil forcibly."
 	 t)
 	(t
 	 (when w3m-imagick-convert-program
-	   (message "ImageMagick's `convert' program is not available")
+	   (w3m--message t 'w3m-error "ImageMagick's `convert' program is not available")
 	   (sit-for 1))
 	 (setq w3m-imagick-convert-program nil
 	       w3m-resize-images nil)
@@ -163,7 +163,7 @@ nil forcibly."
       (if (and (numberp return)
 	       (zerop return))
 	  t
-	(message "Image conversion failed (code `%s')" return)
+	(w3m--message t 'w3m-error "Image conversion failed (code `%s')" return)
 	nil))))
 
 (defun w3m-imagick-convert-data (data from-type to-type &rest args)

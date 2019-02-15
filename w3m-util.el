@@ -1505,7 +1505,7 @@ The value of DEFAULT is inserted into PROMPT."
 			   ((stringp str) (read str))))
 		(error nil)))
 	    (unless (numberp n)
-	      (message "Please enter a number.")
+	      (w3m--message t 'w3m-error "Please enter a number.")
 	      (sit-for 1)
 	      t)))
       n)))

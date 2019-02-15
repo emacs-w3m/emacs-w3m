@@ -308,14 +308,14 @@ Optional argument TITLE is title of link."
   "Add link under cursor to bookmark."
   (interactive)
   (if (null (w3m-anchor))
-      (message "No anchor")		; nothing to do
+      (w3m--message t 'w3m-error "No anchor")		; nothing to do
     (let ((url (w3m-anchor))
 	  (title (buffer-substring-no-properties
 		  (previous-single-property-change (1+ (point))
 						   'w3m-href-anchor)
 		  (next-single-property-change (point) 'w3m-href-anchor))))
       (w3m-bookmark-add url title))
-    (message "Added")))
+    (w3m--message t t "Added")))
 
 ;;;###autoload
 (defun w3m-bookmark-add-current-url (&optional arg)
@@ -324,7 +324,7 @@ With prefix, ask for a new url instead of the present one."
   (interactive "P")
   (w3m-bookmark-add (if arg (w3m-input-url) w3m-current-url)
 		    w3m-current-title)
-  (message "Added"))
+  (w3m--message t t "Added"))
 
 ;;;###autoload
 (defun w3m-bookmark-add-all-urls ()
@@ -338,7 +338,7 @@ With prefix, ask for a new url instead of the present one."
 	  (condition-case nil
 	      (w3m-bookmark-add-current-url)
 	    (quit)))
-      (message
+      (w3m--message t 'w3m-warning
        "Use the `%s' command instead"
        (key-description (car (where-is-internal 'w3m-bookmark-add-current-url
 						w3m-mode-map)))))))
@@ -355,7 +355,7 @@ With prefix, ask for a new url instead of the present one."
 		      (with-current-buffer buffer w3m-current-url))
 		    (w3m-list-buffers))
 	    "&")))
-  (message "Added as URL group"))
+  (w3m--message t t "Added as URL group"))
 
 ;;;###autoload
 (defun w3m-bookmark-view (&optional reload)
@@ -366,17 +366,17 @@ With prefix, ask for a new url instead of the present one."
 	;; Store the current position in the history structure.
 	(w3m-history-store-position)
 	(w3m-goto-url "about://bookmark/" reload))
-    (message "No bookmark file is available")))
+    (w3m--message t 'w3m-error "No bookmark file is available")))
 
 ;;;###autoload
 (defun w3m-bookmark-view-new-session (&optional reload)
   "Display the bookmark list in a new buffer."
   (interactive "P")
   (if (not (eq major-mode 'w3m-mode))
-      (message "This command can be used in w3m mode only")
+      (w3m--message t 'w3m-error "This command can be used in w3m mode only")
     (if (file-exists-p w3m-bookmark-file)
 	(w3m-view-this-url-1 "about://bookmark/" reload 'new-session)
-      (message "No bookmark file is available"))))
+      (w3m--message t 'w3m-error "No bookmark file is available"))))
 
 ;;;###autoload
 (defun w3m-about-bookmark (&rest args)

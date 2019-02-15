@@ -608,7 +608,7 @@ evaluated in a temporary buffer."
 		  "\\(?:Accept [^\n]+\n\\)*\\([^\n]+: accept\\? \\)(y/n)")
 		 (= (match-end 0) (point-max)))
 	    ;; SSL certificate
-	    (message "")
+	    (message nil)
 	    (let ((yn (w3m-process-y-or-n-p w3m-current-url (match-string 1))))
 	      (ignore-errors
 		(process-send-string process (if yn "y\n" "n\n"))

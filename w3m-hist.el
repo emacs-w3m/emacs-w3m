@@ -596,8 +596,8 @@ added to the global properties instead."
 	    (unless (car properties) ;; check whether it is `(nil nil)'.
 	      (setq properties nil))
 	    (setcdr (cddr element) properties))
-	(message "\
-Warning: the history database in this session seems corrupted.")
+	(w3m--message t 'w3m-warning
+          "Warning: the history database in this session seems corrupted.")
 	(sit-for 1)
 	nil))))
 
@@ -651,7 +651,7 @@ position.  Naturally, those should be treated as buffer-local."
 	     :position (cons (count-lines (point-min) (point-at-bol)) column)
 	     :window-hscroll hscroll)))
     (when (w3m-interactive-p)
-      (message "The current cursor position saved"))))
+      (w3m--message t t "The current cursor position saved"))))
 
 (defun w3m-history-restore-position ()
   "Restore the saved cursor position in the page.
@@ -675,7 +675,7 @@ it works although it may not be perfect."
 	       (let ((deactivate-mark nil))
 		 (run-hooks 'w3m-after-cursor-move-hook))))
 	    ((w3m-interactive-p)
-	     (message "No cursor position saved"))))))
+	     (w3m--message t 'w3m-warning "No cursor position saved"))))))
 
 (defun w3m-history-minimize ()
   "Minimize the history so that there may be the current page only."
@@ -734,7 +734,7 @@ debugging w3m-hist.el.)"
 	     (prog1
 		 (yes-or-no-p
 		  "Are you sure you really want to destroy the history? ")
-	       (message "")))
+	       (message nil)))
     (setq w3m-history nil
 	  w3m-history-flat nil)
     (let ((w3m-history-reuse-history-elements t)
