@@ -2275,13 +2275,6 @@ for the words."
   "*Alist of (numeric . string) pairs for numeric character reference
 other than ISO 10646.")
 
-(defconst w3m-entity-reverse-table
-  (let ((table (make-hash-table :test 'equal)))
-    (maphash (lambda (key val) (puthash val key table))
-	     w3m-entity-table)
-    table)
-  "Revision table of html character entities and values.")
-
 (defconst w3m-entity-regexp
   (let (buf)
     (maphash (lambda (key val) (push key buf))
@@ -4400,17 +4393,13 @@ If optional KEEP-PROPERTIES is non-nil, text property is reserved."
 
 (defun w3m-encode-specials-string (str)
   "Encode special characters in the string STR."
-  (let ((pos 0)
-        (buf))
-    (while (string-match "[<>&]" str pos)
-      (setq buf
-        (concat
-          buf (substring str pos (match-beginning 0))
-          "&" (gethash (match-string 0 str) w3m-entity-reverse-table) ";"))
-      (setq pos (match-end 0)))
-    (if buf
-      (concat buf (substring str pos))
-     str)))
+  (replace-regexp-in-string "[<>&]"
+    (lambda (x)
+      (cond
+       ((equal "<" x) "&lt;")
+       ((equal ">" x) "&gt;")
+       ((equal "&" x) "&amp;")))
+    str))
 
 (defun w3m-fontify ()
   "Fontify the current buffer."

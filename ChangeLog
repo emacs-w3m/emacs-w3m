@@ -1,6 +1,7 @@
 2019-02-18  Boruch Baum  <boruch_baum@gmx.com>
 
-	* w3m.el (w3m-encode-specials-string): Simplify, remove need for nreverse.
+	* w3m.el (w3m-encode-specials-string): Simplify, remove need for
+	nreverse, remove need for constant w3m-entity-reverse-table.
 
 2019-02-14  Boruch Baum  <boruch_baum@gmx.com>
 
