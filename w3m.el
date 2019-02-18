@@ -4401,18 +4401,16 @@ If optional KEEP-PROPERTIES is non-nil, text property is reserved."
 (defun w3m-encode-specials-string (str)
   "Encode special characters in the string STR."
   (let ((pos 0)
-	(buf))
+        (buf))
     (while (string-match "[<>&]" str pos)
       (setq buf
-	    (cons ";"
-		  (cons (gethash (match-string 0 str) w3m-entity-reverse-table)
-			(cons "&"
-			      (cons (substring str pos (match-beginning 0))
-				    buf))))
-	    pos (match-end 0)))
+        (concat
+          buf (substring str pos (match-beginning 0))
+          "&" (gethash (match-string 0 str) w3m-entity-reverse-table) ";"))
+      (setq pos (match-end 0)))
     (if buf
-	(apply 'concat (nreverse (cons (substring str pos) buf)))
-      str)))
+      (concat buf (substring str pos))
+     str)))
 
 (defun w3m-fontify ()
   "Fontify the current buffer."
