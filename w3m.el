@@ -4372,7 +4372,10 @@ If optional KEEP-PROPERTIES is non-nil, text property is reserved."
 	    (w3m-add-text-properties start (point) prop)))))))
 
 (defun w3m-decode-entities-string (str)
+  "Decode entities in the string STR."
   (save-match-data
+    ;; Character entity references are case-sensitive.
+    ;; cf. http://www.w3.org/TR/1999/REC-html401-19991224/charset.html#h-5.3.2
     (let ((case-fold-search))
       (replace-regexp-in-string
         w3m-entity-regexp
