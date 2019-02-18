@@ -4098,9 +4098,8 @@ non-nil, cached data will not be used."
 	    (when (and (< p end)
 		       (setq iurl (w3m-image p))
 		       (not (assoc iurl toggle-list)))
-	    (setq toggle-list (cons (cons iurl p) toggle-list)))))
-      (setq toggle-list (and (w3m-image)
-			     `(,(cons (w3m-image) (point))))))
+	    (push (cons iurl p) toggle-list))))
+      (setq toggle-list (and (w3m-image) (cons (w3m-image) (point)))))
     (if toggle-list
 	(dolist (x toggle-list)
 	  (let* ((url (car x))

@@ -312,16 +312,17 @@ If no field in forward, return nil without moving."
 	(cond
 	 ((and (consp value)
 	       (eq (car value) 'file))
-	  (setq bufs (cons (cons number (cons name value)) bufs)))
+	  (push (list number name value) bufs))
 	 ((and (consp value)
 	       (consp (cdr value))
 	       (consp (cadr value)))	; select.
-	  (setq bufs (cons (cons number (cons name (car value))) bufs)))
+	  (push (list number name (car value)) bufs))
 	 ((consp value)			; checkbox
-	  (setq bufs (append (mapcar (lambda (x) (cons number (cons name x))) value)
-			     bufs)))
+          (push (append
+                  (mapcar (lambda (x) (list number name x)) value)
+	        bufs)))
 	 (value
-	  (setq bufs (cons (cons number (cons name value)) bufs))))
+	  (push (list number name value) bufs)))
 	(setq plist (cddr plist))))
     (when bufs
       (setq bufs (sort bufs #'car-less-than-car))
@@ -439,7 +440,7 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
 		    (let ((hseq (nth 2 (w3m-action (point))))
 			  (value (w3m-form-get form id)))
 		      (when (> hseq 0)
-			(setq textareas (cons (cons hseq value) textareas)))
+			(push textareas (cons hseq value) textareas))
 		      (unless (eq form cform)
 			(w3m-form-put cform id name value))))
 		   ((string= type "file")
@@ -678,7 +679,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			  (if enctype
 			      (intern enctype)
 			    'application/x-www-form-urlencoded)))
-	      (setq forms (cons (cons fid form) forms))))))
+	      (push (cons fid form) forms)))))
        ((string= tag "map")
 	(let (candidates)
 	  (w3m-parse-attributes (name)
@@ -689,8 +690,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	      (goto-char (match-end 1))
 	      (w3m-parse-attributes (href alt)
 		(when href
-		  (setq candidates (cons (cons href (or alt href))
-					 candidates)))))
+		  (push (cons href (or alt href)) candidates))))
 	    (unless maps (setq maps (w3m-form-new "map" ".")))
 	    (when candidates
 	      (w3m-form-put maps
@@ -739,9 +739,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		(setq form (nth fid forms))
 	      (setq form (cdr (assq fid forms))))
 	    (unless form
-	      (setq forms (cons (cons fid (setq form
-						(w3m-form-new nil nil)))
-				forms)))
+	      (push (cons fid (setq form (w3m-form-new nil nil))) forms))
 	    (cond
 	     ((and (string= type "hidden")
 		   (string= name "link"))

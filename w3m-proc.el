@@ -142,7 +142,7 @@
 (put 'w3m-process-new 'edebug-form-spec '(form form form &optional form form))
 (defmacro w3m-process-new (command arguments buffer &optional process handlers)
   "Return a new `w3m-process' object."
-  `(cons (cons ,command ,arguments)
+  `(list ,command ,arguments
 	 (vector 'w3m-process-object
 		 ,buffer
 		 ,process

@@ -285,12 +285,12 @@ buffer's url history."
 	 (i 0)
 	 title titles urls len buf cbuf)
      (mapc (lambda (x)
-	     (setq titles (cons (cons (car x) (car x)) titles)))
+	     (push (cons (car x) (car x)) titles))
 	   sessions)
      (setq title (or w3m-current-title
 		     (with-current-buffer (car bufs)
 		       w3m-current-title)))
-     (setq titles (cons (cons title title) titles))
+     (push (cons title title) titles)
      (catch 'loop
        (while t
 	 ;; A devious way to emulate INITIAL-INPUT that is deprecated.

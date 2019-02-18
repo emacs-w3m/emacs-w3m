@@ -1,5 +1,15 @@
 2019-02-18  Boruch Baum  <boruch_baum@gmx.com>
 
+	* w3m-form.el (w3m-form-make-form-data, w3m-form-resume)
+	(w3m-form-parse-and-fontify), w3m-hist.el
+	(w3m-history-slimmed-history-flat), w3m-mail.el
+	(w3m-mail-compose-with-semi), w3m-proc.el (w3m-process-new),
+	w3m-session.el (w3m-session-save), w3m-util.el
+	(w3m-make-menu-commands), w3m.el (w3m-toggle-inline-image): Simplify
+	forms '(setq x (cons (cons ...  ) x))'
+
+2019-02-18  Boruch Baum  <boruch_baum@gmx.com>
+
 	* w3m.el (w3m-encode-specials-string): Simplify, remove need for
 	nreverse, remove need for constant w3m-entity-reverse-table.
 
