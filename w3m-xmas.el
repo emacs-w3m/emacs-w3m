@@ -1,4 +1,4 @@
-;;; w3m-xmas.el --- XEmacs stuff for emacs-w3m
+;;; w3m-xmas.el --- XEmacs stuff for emacs-w3m -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001-2010, 2012, 2013
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

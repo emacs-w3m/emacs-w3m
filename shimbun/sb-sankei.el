@@ -1,4 +1,4 @@
-;;; sb-sankei.el --- shimbun backend for the Sankei News -*- coding: iso-2022-7bit; -*-
+;;; sb-sankei.el --- shimbun backend for the Sankei News -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2003-2011, 2013-2019 Katsumi Yamaoka
 
@@ -34,63 +34,63 @@
 
 (defvar shimbun-sankei-top-level-domain "www.sankei.com")
 
-(defvar shimbun-sankei-server-name "$B;:7P%K%e!<%9(B")
+(defvar shimbun-sankei-server-name "")
 
 (defvar shimbun-sankei-group-table
-  '(("top" "$B%K%e!<%9(B"
+  '(("top" "ニュース"
      "https://www.sankei.com/")
-    ("flash" "$BB.Js(B"
+    ("flash" "速報"
      "https://www.sankei.com/flash/newslist/flash-n1.html")
-    ("affairs" "$B;v7o(B"
+    ("affairs" "事件"
      "https://www.sankei.com/affairs/newslist/affairs-n1.html")
-    ("politics" "$B@/<#(B"
+    ("politics" "政治"
      "https://www.sankei.com/politics/newslist/politics-n1.html")
-    ("world" "$B9q:](B"
+    ("world" "国際"
      "https://www.sankei.com/world/newslist/world-n1.html")
-    ("economy" "$B7P:Q(B"
+    ("economy" "経済"
      "https://www.sankei.com/economy/newslist/economy-n1.html")
-    ("column" "$B%3%i%`(B"
+    ("column" "コラム"
      "https://www.sankei.com/column/newslist/column-n1.html")
-    ("column.sankeisyo" "$B;:7P>6(B"
+    ("column.sankeisyo" "産経抄"
      "https://special.sankei.com/sankeisyo/")
-    ("column.editorial" "$B<gD%(B"
+    ("column.editorial" "主張"
      "https://www.sankei.com/column/newslist/editorial-n1.html")
-    ("column.seiron" "$B@5O@(B"
+    ("column.seiron" "正論"
      "https://special.sankei.com/seiron/")
-    ("sports" "$B%9%]!<%D(B"
+    ("sports" "スポーツ"
      "https://www.sankei.com/sports/newslist/sports-n1.html")
-    ("entertainments" "$B%(%s%?%a(B"
+    ("entertainments" "エンタメ"
      "https://www.sankei.com/entertainments/newslist/entertainments-n1.html")
-    ("life" "$B%i%$%U(B"
+    ("life" "ライフ"
      "https://www.sankei.com/life/newslist/life-n1.html")
-    ("region.hokkaido-tohoku" "$BKL3$F;ElKL(B"
+    ("region.hokkaido-tohoku" "北海道東北"
      "https://www.sankei.com/region/newslist/tohoku-n1.html")
-    ("region.kanto" "$B4XEl(B"
+    ("region.kanto" "関東"
      "https://www.sankei.com/region/newslist/kanto-n1.html")
-    ("region.chubu" "$BCfIt(B"
+    ("region.chubu" "中部"
      "https://www.sankei.com/region/newslist/chubu-n1.html")
-    ("region.kinki" "$B6a5&(B"
+    ("region.kinki" "近畿"
      "https://www.sankei.com/region/newslist/kinki-n1.html")
-    ("region.chugoku-shikoku" "$BCf9q;M9q(B"
+    ("region.chugoku-shikoku" "中国四国"
      "https://www.sankei.com/region/newslist/chushikoku-n1.html")
-    ("region.kyushu-okinawa" "$B6e=#2-Fl(B"
+    ("region.kyushu-okinawa" "九州沖縄"
      "https://www.sankei.com/region/newslist/kyushu-n1.html")
-    ("west.flash" "$B4X@>B.Js(B"
+    ("west.flash" "関西速報"
      "https://www.sankei.com/west/newslist/west-n1.html")
-    ("west.affairs" "$B4X@>$G$-$4$H(B"
+    ("west.affairs" "関西できごと"
      "https://www.sankei.com/west/newslist/west_affairs-n1.html")
-    ("west.sports" "$B4X@>%9%]!<%D(B"
+    ("west.sports" "関西スポーツ"
      "https://www.sankei.com/west/newslist/west_sports-n1.html")
-    ("west.life" "$B4X@>%i%$%U(B"
+    ("west.life" "関西ライフ"
      "https://www.sankei.com/west/newslist/west_life-n1.html")
-    ("west.economy" "$B4X@>7P:Q(B"
+    ("west.economy" "関西経済"
      "https://www.sankei.com/west/newslist/west_economy-n1.html")))
 
 (defvar shimbun-sankei-category-name-alist
-  '(("afr" . "$B;v7o(B") ("clm" . "$B%3%i%`(B") ("ecn" . "$B7P:Q(B") ("ent" . "$B%(%s%?%a(B")
-    ("etc" . "$B$=$NB>(B") ("gqj" . "GQ JAPAN") ("lif" . "$B%i%$%U(B") ("plt" . "$B@/<#(B")
-    ("prm" . "$B%W%l%_%"%`(B") ("spo" . "$B%9%]!<%D(B") ("wor" . "$B9q:](B")
-    ("wst" . "$B4X@>(B"))
+  '(("afr" . "事件") ("clm" . "コラム") ("ecn" . "経済") ("ent" . "エンタメ")
+    ("etc" . "その他") ("gqj" . "GQ JAPAN") ("lif" . "ライフ") ("plt" . "政治")
+    ("prm" . "プレミアム") ("spo" . "スポーツ") ("wor" . "国際")
+    ("wst" . "関西"))
   "Alist used to convert author's name in the top and the flash groups.")
 
 (defvar shimbun-sankei-x-face-alist
@@ -376,7 +376,7 @@ class=\"pageNextsubhead\"" nil t)
 (luna-define-method shimbun-footer :around ((shimbun shimbun-sankei)
 					    header &optional html)
   (concat "<div align=\"left\">\n--&nbsp;<br>\n\
-$B$3$N5-;v$NCx:n8"$O;:7P?7J9<R$K5"B0$7$^$9!#%*%j%8%J%k$O$3$A$i!'(B<br>\n\
+この記事の著作権は産経新聞社に帰属します。オリジナルはこちら：<br>\n\
 <a href=\""
 	  (shimbun-article-base-url shimbun header) "\">&lt;"
 	  (shimbun-article-base-url shimbun header) "&gt;</a>\n</div>\n"))

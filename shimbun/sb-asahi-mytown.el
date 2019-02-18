@@ -1,4 +1,4 @@
-;;; sb-asahi-mytown.el --- mytown.asahi.com -*- coding: iso-2022-7bit; -*-
+;;; sb-asahi-mytown.el --- mytown.asahi.com -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2003, 2004, 2005, 2006, 2007 Katsumi Yamaoka
 
@@ -32,57 +32,57 @@
 		   (shimbun-japanese-newspaper shimbun) ())
 
 (defvar shimbun-asahi-mytown-group-table
-  '(("hokkaido" "$BKL3$F;(B" "0100000")
-    ("aomori" "$B@D?9(B" "0200000")
-    ("iwate" "$B4d<j(B" "0300000")
-    ("miyagi" "$B5\>k(B" "0400000")
-    ("akita" "$B=)ED(B" "0500000")
-    ("yamagata" "$B;37A(B" "0600000")
-    ("fukushima" "$BJ!Eg(B" "0700000")
-    ("ibaraki" "$B0q>k(B" "0800000")
-    ("tochigi" "$BFJLZ(B" "0900000")
-    ("gunma" "$B72GO(B" "1000000")
-    ("saitama" "$B:k6L(B" "1100000")
-    ("chiba" "$B@iMU(B" "1200000")
-    ("tokyo" "$BEl5~(B" "1300000")
-    ("tama" "$BB?K`(B" "1400000")
-    ("kanagawa" "$B?@F`@n(B" "1500000")
-    ("niigata" "$B?73c(B" "1600000")
-    ("toyama" "$BIY;3(B" "1700000")
-    ("ishikawa" "$B@P@n(B" "1800000")
-    ("fukui" "$BJ!0f(B" "1900000")
-    ("yamanashi" "$B;3M|(B" "2000000")
-    ("nagano" "$BD9Ln(B" "2100000")
-    ("gifu" "$B4tIl(B" "2200000")
-    ("shizuoka" "$B@E2,(B" "2300000")
-    ("aichi" "$B0&CN(B" "2400000")
-    ("mie" "$B;0=E(B" "2500000")
-    ("shiga" "$B<"2l(B" "2600000")
-    ("kyoto" "$B5~ET(B" "2700000")
-    ("osaka" "$BBg:e(B" "2800000")
-    ("hyogo" "$BJ<8K(B" "2900000")
-    ("nara" "$BF`NI(B" "3000000")
-    ("wakayama" "$BOB2N;3(B" "3100000")
-    ("tottori" "$BD;<h(B" "3200000")
-    ("shimane" "$BEg:,(B" "3300000")
-    ("okayama" "$B2,;3(B" "3400000")
-    ("hiroshima" "$B9-Eg(B" "3500000")
-    ("yamaguchi" "$B;38}(B" "3600000")
-    ("tokushima" "$BFAEg(B" "3700000")
-    ("kagawa" "$B9a@n(B" "3800000")
-    ("ehime" "$B0&I2(B" "3900000")
-    ("kochi" "$B9bCN(B" "4000000")
-    ("fukuoka" "$BJ!2,!&KL6e=#(B" "4100000")
-    ("saga" "$B:42l(B" "4200000")
-    ("nagasaki" "$BD9:j(B" "4300000")
-    ("kumamoto" "$B7'K\(B" "4400000")
-    ("oita" "$BBgJ,(B" "4500000")
-    ("miyazaki" "$B5\:j(B" "4600000")
-    ("kagoshima" "$B</;yEg(B" "4700000")
-    ("okinawa" "$B2-Fl(B" "4800000"))
+  '(("hokkaido" "北海道" "0100000")
+    ("aomori" "青森" "0200000")
+    ("iwate" "岩手" "0300000")
+    ("miyagi" "宮城" "0400000")
+    ("akita" "秋田" "0500000")
+    ("yamagata" "山形" "0600000")
+    ("fukushima" "福島" "0700000")
+    ("ibaraki" "茨城" "0800000")
+    ("tochigi" "栃木" "0900000")
+    ("gunma" "群馬" "1000000")
+    ("saitama" "埼玉" "1100000")
+    ("chiba" "千葉" "1200000")
+    ("tokyo" "東京" "1300000")
+    ("tama" "多摩" "1400000")
+    ("kanagawa" "神奈川" "1500000")
+    ("niigata" "新潟" "1600000")
+    ("toyama" "富山" "1700000")
+    ("ishikawa" "石川" "1800000")
+    ("fukui" "福井" "1900000")
+    ("yamanashi" "山梨" "2000000")
+    ("nagano" "長野" "2100000")
+    ("gifu" "岐阜" "2200000")
+    ("shizuoka" "静岡" "2300000")
+    ("aichi" "愛知" "2400000")
+    ("mie" "三重" "2500000")
+    ("shiga" "滋賀" "2600000")
+    ("kyoto" "京都" "2700000")
+    ("osaka" "大阪" "2800000")
+    ("hyogo" "兵庫" "2900000")
+    ("nara" "奈良" "3000000")
+    ("wakayama" "和歌山" "3100000")
+    ("tottori" "鳥取" "3200000")
+    ("shimane" "島根" "3300000")
+    ("okayama" "岡山" "3400000")
+    ("hiroshima" "広島" "3500000")
+    ("yamaguchi" "山口" "3600000")
+    ("tokushima" "徳島" "3700000")
+    ("kagawa" "香川" "3800000")
+    ("ehime" "愛媛" "3900000")
+    ("kochi" "高知" "4000000")
+    ("fukuoka" "福岡・北九州" "4100000")
+    ("saga" "佐賀" "4200000")
+    ("nagasaki" "長崎" "4300000")
+    ("kumamoto" "熊本" "4400000")
+    ("oita" "大分" "4500000")
+    ("miyazaki" "宮崎" "4600000")
+    ("kagoshima" "鹿児島" "4700000")
+    ("okinawa" "沖縄" "4800000"))
   "Alist of group names, their Japanese translations and ids.")
 
-(defvar shimbun-asahi-mytown-server-name "$BD+F|?7J9(B")
+(defvar shimbun-asahi-mytown-server-name "朝日新聞")
 
 (defvar shimbun-asahi-mytown-top-level-domain "mytown.asahi.com"
   "Name of the top level domain for the Mytown Asahi Shimbun.")
@@ -94,11 +94,11 @@
 (defvar shimbun-asahi-mytown-expiration-days 6)
 
 (defvar shimbun-asahi-mytown-content-start
-  "<!--[\t\n ]*Start of photo[\t\n ]*-->\\|<!--$B!z!z<L??$3$3$+$i!z!z(B-->\
-\\|<!--[\t\n ]*Start of Kiji[\t\n ]*-->\\|<!--$B!z!zK\J8$3$3$+$i!z!z(B-->")
+  "<!--[\t\n ]*Start of photo[\t\n ]*-->\\|<!--★★写真ここから★★-->\
+\\|<!--[\t\n ]*Start of Kiji[\t\n ]*-->\\|<!--★★本文ここから★★-->")
 
 (defvar shimbun-asahi-mytown-content-end
-  "<!--$B!z!zK\J8$3$3$^$G!z!z(B-->\\|<!--[\t\n ]*End of Kiji[\t\n ]*-->")
+  "<!--★★本文ここまで★★-->\\|<!--[\t\n ]*End of Kiji[\t\n ]*-->")
 
 (defvar shimbun-asahi-mytown-x-face-alist
   '(("default" . "X-Face: +Oh!C!EFfmR$+Zw{dwWW]1e_>S0rnNCA*CX|\
@@ -109,7 +109,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
   (mapcar 'car shimbun-asahi-mytown-group-table))
 
 (luna-define-method shimbun-current-group-name ((shimbun shimbun-asahi-mytown))
-  (concat "$BD+F|%^%$%?%&%s(B ("
+  (concat "朝日マイタウン ("
 	  (nth 1 (assoc (shimbun-current-group-internal shimbun)
 			shimbun-asahi-mytown-group-table))
 	  ")"))
@@ -132,7 +132,7 @@ bIy3rr^<Q#lf&~ADU:X!t5t>gW5)Q]N{Mmn\n L]suPpL|gFjV{S|]a-:)\\FR\
 	  cyear (nth 5 cyear))
     (while (re-search-forward
 	    (eval-when-compile
-	      (let ((s0 "[\t\n $B!!(B]*")
+	      (let ((s0 "[\t\n 　]*")
 		    (s1 "[\t\n ]+")
 		    (no-nl "[^\n<>]+"))
 		(concat

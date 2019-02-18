@@ -24,6 +24,12 @@
 
 2019-02-03  Boruch Baum  <boruch_baum@gmx.com>
 
+	* Refactor entire codebase for utf-8. There were a zillion changes in
+	this commit, spread over very many files. See the git commit extended
+	message for details.
+
+2019-02-03  Boruch Baum  <boruch_baum@gmx.com>
+
 	* w3m-cookie.el (w3m-cookie-shutdown): avoid duplicate get-buffer call.
 
 	* w3m-form.el (w3m-form-textarea-file-cleanup)
@@ -33,6 +39,11 @@
 	* w3m-session.el (w3m-session-select-sessions): Add docstring
 
 	* w3m.el (w3m-cleanup-temp-files): Add cache and tmp files to list.
+
+2019-02-03  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-filter.el (w3m-filter-xkcd, w3m-filter-github-repo-main-page): New filters.
+	(w3m-filter-configuration): Add the new filters.
 
 2019-01-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 

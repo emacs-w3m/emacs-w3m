@@ -1,4 +1,4 @@
-;;; sb-vinelinux.el --- shimbun backend class for vinelinux web site. -*- coding: iso-2022-7bit; -*-
+;;; sb-vinelinux.el --- shimbun backend class for vinelinux web site. -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2006, 2009
 ;; NAKAJIMA Mikio <minakaji@namazu.org>
@@ -70,7 +70,7 @@
 	start end headers url id date subject)
     (subst-char-in-region (point-min) (point-max) ?\t ?  t)
     (setq start (progn
-		  (search-forward "</font>$B$N99?7(B/$B>c32>pJs$G$9(B</h4>" nil t nil)
+		  (search-forward "</font>の更新/障害情報です</h4>" nil t nil)
 		  (search-forward "<table>" nil t nil)
 		  (point))
 	  end (progn (search-forward "</table>" nil t nil)
@@ -79,8 +79,8 @@
     ;; Use entire archive.
     (catch 'stop
       (while (re-search-forward
-	      ;; <td><a href="20010501.html">quota $B$N99?7(B</a></td>
-	      ;; <td><a href="20010501-3.html">Vine Linux 2.1.5 $B$K%"%C%W%0%l!<%I$7$?;~$N(B xdvi $B$d(B tgif $BEy$NF|K\8lI=<($NIT6q9g(B</a></td>
+	      ;; <td><a href="20010501.html">quota の更新</a></td>
+	      ;; <td><a href="20010501-3.html">Vine Linux 2.1.5 にアップグレードした時の xdvi や tgif 等の日本語表示の不具合</a></td>
 	      "^<td><a href=\"\\(\\([0-9]+\\)\\(-[0-9]+\\)*\\.html\\)\">\\(.+\\)</a></td>"
 	      end t)
 	(setq url (shimbun-expand-url (match-string-no-properties 1)
@@ -102,10 +102,10 @@
     headers))
 
 (luna-define-method shimbun-make-contents ((shimbun shimbun-vinelinux) header)
-  ;;<h4>$B!|(B2002,1,22(2002,1,24 $B99?7(B)$B!|(B ppxp $B%Q%C%1!<%8$N=$@5(B</h4>
-  ;; <h3>[ 2003,01,29 ] telnet $B$K%P%0(B</h4> ;; start with h3 and end with h4...f(^^;;;
+  ;;<h4>●2002,1,22(2002,1,24 更新)● ppxp パッケージの修正</h4>
+  ;; <h3>[ 2003,01,29 ] telnet にバグ</h4> ;; start with h3 and end with h4...f(^^;;;
   (if (not (re-search-forward
-	    "^<h4>$B!|(B[,0-9]+.*$B!|(B.*</h4>\\|^<h[34]>\\[ [,0-9]+ \\] .+</h[34]>"
+	    "^<h4>●[,0-9]+.*●.*</h4>\\|^<h[34]>\\[ [,0-9]+ \\] .+</h[34]>"
 	    nil t nil))
       nil
     (delete-region (progn (forward-line 1) (point)) (point-min))

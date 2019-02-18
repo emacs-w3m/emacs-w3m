@@ -1,4 +1,4 @@
-;;; w3m-session.el --- Functions to operate session of w3m -*- coding: iso-2022-7bit; -*-
+;;; w3m-session.el --- Functions to operate session of w3m -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001-2003, 2005-2013, 2017, 2018
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -139,7 +139,7 @@ is identical to a 'session' that has more than one 'buffer'.")
 (defcustom w3m-session-time-format
   (if (and (equal "Japanese" w3m-language)
 	   (not (featurep 'xemacs)))
-      "%Y$BG/(B%m$B7n(B%d$BF|(B(%a) %H:%M"
+      "%Y年%m月%d日(%a) %H:%M"
     "%Y-%m-%d (%a) %H:%M")
   "*Format of saved time."
   :group 'w3m
@@ -147,7 +147,7 @@ is identical to a 'session' that has more than one 'buffer'.")
 
 (defcustom w3m-session-automatic-title
   (if (equal "Japanese" w3m-language)
-      "$B<+F0J]B8(B"
+      "自動保存"
     "Automatic saved sessions")
   "*String of title to save session automatically."
   :group 'w3m
@@ -155,7 +155,7 @@ is identical to a 'session' that has more than one 'buffer'.")
 
 (defcustom w3m-session-deleted-title
   (if (equal "Japanese" w3m-language)
-      "$B:o=|%;%C%7%g%s(B"
+      "削除セッション"
     "Removed sessions")
   "*String of title to save session when buffer delete."
   :group 'w3m
@@ -163,7 +163,7 @@ is identical to a 'session' that has more than one 'buffer'.")
 
 (defcustom w3m-session-crash-recovery-title
   (if (equal "Japanese" w3m-language)
-      "$B%/%i%C%7%e2sI|(B"
+      "クラッシュ回復"
     "Crash recovery sessions")
   "*String of title to save session to use for crash recovering."
   :group 'w3m
@@ -850,30 +850,30 @@ delete the buffer entry."
 	(delete-file file)))))
 
 (defvar w3m-session-menu-items
-  `([,(w3m-make-menu-item "$B?7$7$$%;%C%7%g%s$r:n$k(B..."
+  `([,(w3m-make-menu-item "新しいセッションを作る..."
 			  "Create New Session...")
      w3m-goto-new-session-url t]
-    [,(w3m-make-menu-item "$B$3$N%;%C%7%g%s$rJ#@=$9$k(B" "Copy This Session")
+    [,(w3m-make-menu-item "このセッションを複製する" "Copy This Session")
      w3m-copy-buffer w3m-current-url]
     "----" ;; separator
-    [,(w3m-make-menu-item "$BA0$N%;%C%7%g%s$K0\F0$9$k(B"
+    [,(w3m-make-menu-item "前のセッションに移動する"
 			  "Move Previous Session")
      w3m-previous-buffer
      (> (safe-length (w3m-list-buffers)) 1)]
-    [,(w3m-make-menu-item "$B<!$N%;%C%7%g%s$K0\F0$9$k(B" "Move Next Session")
+    [,(w3m-make-menu-item "次のセッションに移動する" "Move Next Session")
      w3m-next-buffer
      (> (safe-length (w3m-list-buffers)) 1)]
     "----" ;; separator
-    [,(w3m-make-menu-item "$B$3$N%;%C%7%g%s$rJD$8$k(B" "Close This Session")
+    [,(w3m-make-menu-item "このセッションを閉じる" "Close This Session")
      w3m-delete-buffer
      (> (safe-length (w3m-list-buffers)) 1)]
-    [,(w3m-make-menu-item "$BB>$N%;%C%7%g%s$rJD$8$k(B" "Close Other Sessions")
+    [,(w3m-make-menu-item "他のセッションを閉じる" "Close Other Sessions")
      w3m-delete-other-buffers
      (> (safe-length (w3m-list-buffers)) 1)]
-    [,(w3m-make-menu-item "$B8=:_$N%;%C%7%g%s$rJ]B8$9$k(B"
+    [,(w3m-make-menu-item "現在のセッションを保存する"
 			  "Save Displayed Sessions")
      w3m-session-save t]
-    [,(w3m-make-menu-item "$B%;%C%7%g%s$rA*Br$9$k(B" "Select Sessions")
+    [,(w3m-make-menu-item "セッションを選択する" "Select Sessions")
      w3m-session-select t])
   "*List of the session menu items.")
 

@@ -1,4 +1,4 @@
-;;; sb-yahoo-auctions.el --- shimbun backend for Yahoo! AUCTIONS -*- coding: iso-2022-7bit; -*-
+;;; sb-yahoo-auctions.el --- shimbun backend for Yahoo! AUCTIONS -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2005, 2006, 2008, 2011, 2013
 ;; ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
@@ -50,7 +50,7 @@ URL is the URL for category or search result."
   t)
 
 (luna-define-method shimbun-from-address ((shimbun shimbun-yahoo-auctions))
-  (format "Yahoo!$B%*!<%/%7%g%s(B (%s)" (shimbun-current-group shimbun)))
+  (format "Yahoo!オークション (%s)" (shimbun-current-group shimbun)))
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-yahoo-auctions))
   (let* ((group (shimbun-current-group shimbun))

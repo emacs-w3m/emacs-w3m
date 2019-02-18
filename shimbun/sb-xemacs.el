@@ -1,4 +1,4 @@
-;;; sb-xemacs.el --- shimbun backend for xemacs.org
+;;; sb-xemacs.el --- shimbun backend for xemacs.org -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002 Akihiro Arisawa    <ari@mbf.sphere.ne.jp>
 ;; Copyright (C) 2001, 2002 Yuuichi Teranishi  <teranisi@gohome.org>

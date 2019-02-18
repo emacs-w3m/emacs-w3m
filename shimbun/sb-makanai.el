@@ -1,4 +1,4 @@
-;;; sb-makanai.el --- shimbun backend for www.makanai.com -*- coding: iso-2022-7bit -*-
+;;; sb-makanai.el --- shimbun backend for www.makanai.com -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
 ;; MIYOSHI Masanori <miyoshi@meadowy.org>
@@ -61,7 +61,7 @@
 	      (id (match-string 2))
 	      (subject (match-string 3)))
 	  (save-excursion
-	    (when (re-search-backward "<div>\\([0-9]+\\)$BG/(B\\([0-9]+\\)$B7n(B\\([0-9]+\\)$BF|(B(.*)</div><blockquote>" nil t)
+	    (when (re-search-backward "<div>\\([0-9]+\\)年\\([0-9]+\\)月\\([0-9]+\\)日(.*)</div><blockquote>" nil t)
 	      (let ((year (match-string 1))
 		    (month (match-string 2))
 		    (day (match-string 3))

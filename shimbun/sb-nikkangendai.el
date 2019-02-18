@@ -41,16 +41,16 @@
   (concat "http://" shimbun-nikkangendai-top-level-domain "/")
   "Name of the root url.")
 
-(defvar shimbun-nikkangendai-server-name "日刊ゲンダイ")
+(defvar shimbun-nikkangendai-server-name "")
 
 (defvar shimbun-nikkangendai-group-table
   '(("top" "TOP")
-    ("news" "ニュース")
-    ("geino" "芸能")
-    ("sports" "スポーツ")
-    ("life" "ライフ")
+    ("news" "")
+    ("geino" "")
+    ("sports" "")
+    ("life" "")
     ("book" "BOOKS")
-    ("gourmet" "グルメ")))
+    ("gourmet" "")))
 
 (defvar shimbun-nikkangendai-x-face-alist
   '(("default" . "\
@@ -250,7 +250,7 @@ datetime=\"\\(20[1-9][0-9]\\)-\\([01]?[0-9]\\)-\\([0-3]?[0-9]\\)\"" nil t))
 ;;(defun shimbun-nikkangendai-multi-next-url (shimbun header url)
   (goto-char (point-min))
   (when (re-search-forward "<a[\t\n\r ]+\\(?:[^\t\n\r >]+[\t\n\r ]+\\)*\
-href=\"\\([^\"]+\\)\"[^>]*>[\t\n\r ]*次へ[\t\n\r ]*\
+href=\"\\([^\"]+\\)\"[^>]*>[\t\n\r ]*[\t\n\r ]*\
 \\(?:<[^>]+>[\t\n\r ]*\\)?&gt;&gt;" nil t)
     (shimbun-expand-url (match-string 1) url)))
 
@@ -308,9 +308,9 @@ class=\"full-text\"" nil t)
 	(insert "<br>\n")
 	(goto-char (match-beginning 1))
 	(if (re-search-forward "alt=\"\\([^\"]*\\)\"" (match-end 1) t)
-	    (replace-match "alt=\"[写真]\"")
+	    (replace-match "alt=\"[]\"")
 	  (goto-char (match-end 1))
-	  (insert " alt=\"[写真]\"")))
+	  (insert " alt=\"[]\"")))
       (unless (memq (shimbun-japanese-hankaku shimbun)
 		    '(header subject nil))
 	(shimbun-japanese-hankaku-buffer t))
@@ -321,9 +321,9 @@ class=\"full-text\"" nil t)
 ;;  (shimbun-nikkangendai-footer shimbun header))
 ;;(defun shimbun-nikkangendai-footer (shimbun header)
   (concat "<div align=\"left\">\n--&nbsp;<br>\n\
-この記事の著作権は株式会社・日刊現代に帰属します。<br>\n原物は <a href=\""
+<br>\n <a href=\""
 	  (shimbun-article-base-url shimbun header)
-	  "\">ここ</a> で公開されています。\n</div>\n"))
+	  "\"></a> \n</div>\n"))
 
 (provide 'sb-nikkangendai)
 

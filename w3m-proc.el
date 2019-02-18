@@ -1,4 +1,4 @@
-;;; w3m-proc.el --- Functions and macros to control sub-processes
+;;; w3m-proc.el --- Functions and macros to control sub-processes -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001-2005, 2007-2010, 2012, 2013, 2016-2018
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -408,36 +408,36 @@ which will wait for the end of the evaluation."
 
 ;;; Explanation of w3m-process-do in Japanese:
 ;;
-;; w3m-process-do $B$O!"HsF14|=hM}$r4JC1$K=q$/$?$a$N%^%/%m$G$"$k!#Nc$($P!"(B
+;; w3m-process-do は、非同期処理を簡単に書くためのマクロである。例えば、
 ;;
 ;;    (w3m-process-do
 ;;        (var (async-form...))
 ;;      post-body...)
 ;;
-;; $B$H$$$&$h$&$K=q$/$H!"0J2<$N=g=x$G=hM}$,9T$o$l$k!#(B
+;; というように書くと、以下の順序で処理が行われる。
 ;;
-;;   (1) async-form $B$rI>2A(B
-;;       --> async-form $BFb$GHsF14|%W%m%;%9$,@8@.$5$l$?>l9g$O!"$=$NHsF1(B
-;;           $B4|%W%m%;%9=*N;8e$K(B post-body $B$,I>2A$5$l$k$h$&$K!"%O%s%I%i(B
-;;           $B$KDI2C(B
-;;       --> $BHsF14|%W%m%;%9$,@8@.$5$l$J$+$C$?>l9g$O!"C1$K<!$N%9%F%C%W(B
-;;           $B$K?J$`(B(= post-body $B$rI>2A$9$k(B)$B!#(B
-;;   (2) post-body $B$rI>2A(B
+;;   (1) async-form を評価
+;;       --> async-form 内で非同期プロセスが生成された場合は、その非同
+;;           期プロセス終了後に post-body が評価されるように、ハンドラ
+;;           に追加
+;;       --> 非同期プロセスが生成されなかった場合は、単に次のステップ
+;;           に進む(= post-body を評価する)。
+;;   (2) post-body を評価
 ;;
-;; $B$J$*!"(Basync-form / post-body $B$,I>2A$5$l$k;~!"$=$NFbIt$GHsF14|%W%m%;(B
-;; $B%9$,@8@.$5$l$?>l9g$K!"$=$NJV$jCM$r=hM}$9$k$?$a$N%O%s%I%i$,!"JQ?t(B
-;; handler $B$K@_Dj$5$l$F$$$k!#HsF14|$J=hM}$r9T$&4X?t$r8F$S=P$9>l9g$K$O!"(B
-;; $B$=$N4X?t$N0z?t$H$7$FI,$:(B handler $B$rEO$5$J$1$l$P$J$i$J$$!#(B
+;; なお、async-form / post-body が評価される時、その内部で非同期プロセ
+;; スが生成された場合に、その返り値を処理するためのハンドラが、変数
+;; handler に設定されている。非同期な処理を行う関数を呼び出す場合には、
+;; その関数の引数として必ず handler を渡さなければならない。
 ;;
-;; $B$^$?!"(Bw3m-process-do $B$O!"8=:_$N%O%s%I%i$NFbMF$rD4$Y$k$?$a!"$=$N%^%/(B
-;; $B%m$,8F$S=P$5$l$F$$$k4D6-$NJQ?t(B handler $B$r;2>H$9$k!#Nc$($P!"(B
+;; また、w3m-process-do は、現在のハンドラの内容を調べるため、そのマク
+;; ロが呼び出されている環境の変数 handler を参照する。例えば、
 ;;
 ;;    (let (handler) (w3m-process-do ...))
 ;;
-;; $B$HJQ?t(B handler $B$r(B nil $B$KB+G{$7$F$*$/$H!"!V8=;~E@$N%O%s%I%i$O6u$G$"(B
-;; $B$k(B = $BHsF14|%W%m%;%9<B9T8e$KI,MW$J=hM}$OB8:_$7$J$$!W$H$$$&0UL#$K$J$j!"(B
-;; w3m-process-do() $B$O!"HsF14|%W%m%;%9$,@8@.$5$l$?>l9g$K$OC1$K(B nil $B$r(B
-;; $BJV$7!"$=$l0J30$N>l9g$O(B post-body $B$NCM$rJV$9!#(B
+;; と変数 handler を nil に束縛しておくと、「現時点のハンドラは空であ
+;; る = 非同期プロセス実行後に必要な処理は存在しない」という意味になり、
+;; w3m-process-do() は、非同期プロセスが生成された場合には単に nil を
+;; 返し、それ以外の場合は post-body の値を返す。
 ;;
 (defmacro w3m-process-do (spec &rest body)
   "(w3m-process-do (VAR FORM) BODY...): Eval the body BODY asynchronously.

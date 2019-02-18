@@ -114,12 +114,12 @@
 			     end t nil)
       (setq name (match-string 1)
 	    address (match-string 3))
-      ;; Yoshiki.Ohshima ＠ acm.org
-      (when (string-match " \\(＠\\|at\\|w\\|a\\|en\\) " name)
+      ;; Yoshiki.Ohshima @acm.org
+      (when (string-match " \\(@\\|at\\|w\\|a\\|en\\) " name)
 	(setq name (concat (substring name 0 (match-beginning 0))
 			   "@"
 			   (substring name (match-end 0)))))
-      (when (string-match " \\(＠\\|at\\|w\\|a\\|en\\) " address)
+      (when (string-match " \\(@\\|at\\|w\\|a\\|en\\) " address)
 	(setq address (concat (substring address 0 (match-beginning 0))
 			      "@"
 			      (substring address (match-end 0)))))
@@ -188,8 +188,8 @@
 
 (defun shimbun-wikimedia-ja-date-decode (date-string)
   "Decode date function for Japnese localized"
-  (if (string-match " *\\([0-9][0-9][0-9][0-9]\\)年 *\\([0-9][0-9]*\\)月 *\\([0-9][0-9]*\\)日 *(\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\)) *\\([:0-9]+\\) *\\([A-Z]+\\) *" date-string)
-      ;; <I>2003年 4月 11日 (金) 02:43:25 CEST</I> ;; squeak-ja
+  (if (string-match " *\\([0-9][0-9][0-9][0-9]\\) *\\([0-9][0-9]*\\) *\\([0-9][0-9]*\\) *(\\(\\|\\|\\|\\|\\|\\|\\)) *\\([:0-9]+\\) *\\([A-Z]+\\) *" date-string)
+      ;; <I>2003 4 11 () 02:43:25 CEST</I> ;; squeak-ja
       (shimbun-make-date-string
        (string-to-number (match-string 1 date-string))
        (string-to-number (match-string 2 date-string))

@@ -1,4 +1,4 @@
-;;; sb-asahi.el --- shimbun backend for asahi.com -*- coding: iso-2022-7bit; -*-
+;;; sb-asahi.el --- shimbun backend for asahi.com -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001-2011, 2013-2018 Yuuichi Teranishi <teranisi@gohome.org>
 
@@ -53,7 +53,7 @@
 (defun shimbun-asahi-make-regexp (name)
   "Return a list of a regexp and numbers for the group NAME.
 Every `.' in NAME will be replaced with `/'."
-  (list (let ((s0 "[\t\n $B!!(B]*")
+  (list (let ((s0 "[\t\n 　]*")
 	      (s1 "[\t\n ]+")
 	      (no-nl "[^\n<>]+"))
 	  (concat "<a" s1 "href=\"/"
@@ -76,7 +76,7 @@ Every `.' in NAME will be replaced with `/'."
 	1 nil 2 6 3 4 5))
 
 (defvar shimbun-asahi-group-table
-  (let* ((s0 "[\t\n $B!!(B]*")
+  (let* ((s0 "[\t\n 　]*")
 	 (s1 "[\t\n ]+")
 	 (no-nl "[^\n<>]+")
 	 (default (list
@@ -166,11 +166,11 @@ Every `.' in NAME will be replaced with `/'."
 		"\\([012][0-9]:[0-5][0-9]:[0-5][0-9]\\)")
 	       1 nil 2 3 5 6 7 8 nil nil 4)))
     `(("book" "RSS" "http://www3.asahi.com/rss/book.rdf" ,@rss)
-      ("book.column" "$B%3%i%`(B")
-      ("book.news" "$B=PHG%K%e!<%9(B" nil ,@book)
-      ("book.paperback" "$BJ88K!&?7=q(B")
-      ("book.review" "$B=qI>(B" nil ,@book)
-      ("book.special" "$BFC=8(B" nil
+      ("book.column" "コラム")
+      ("book.news" "出版ニュース" nil ,@book)
+      ("book.paperback" "文庫・新書")
+      ("book.review" "書評" nil ,@book)
+      ("book.special" "特集" nil
        ,(concat
 	 "<a" s1 "href=\"\\(?:http://book\\.asahi\\.com\\)?/"
 	 ;; 1. url
@@ -189,9 +189,9 @@ Every `.' in NAME will be replaced with `/'."
 	 ;; 6. subject
 	 "\\(" no-nl "\\)")
        1 2 nil 6 3 4 5)
-      ("business" "$B%S%8%M%9(B" "%s/list.html" ,@default)
-      ("car" "$B0&<V(B" "%s/news/" ,@(shimbun-asahi-make-regexp "car.news"))
-      ("culture" "$BJ82=!&7]G=(B" "%s/list.html"
+      ("business" "ビジネス" "%s/list.html" ,@default)
+      ("car" "愛車" "%s/news/" ,@(shimbun-asahi-make-regexp "car.news"))
+      ("culture" "文化・芸能" "%s/list.html"
        ,(concat "<a" s1 "href=\"/"
 		;; 1. url
 		"\\(culture/"
@@ -212,9 +212,9 @@ Every `.' in NAME will be replaced with `/'."
 		s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>" s0
 		"<\\(?:/dt\\|span\\)")
        1 nil 2 6 3 4 5)
-      ("digital" "$B%G%8%?%k(B" "%s/list.html"
+      ("digital" "デジタル" "%s/list.html"
        ,@(shimbun-asahi-make-regexp "digital/[^\"/]+"))
-      ("editorial" "$B<R@b(B" "news/editorial.html"
+      ("editorial" "社説" "news/editorial.html"
        ,(concat "<dd" s1 "data-num=\"[0-9]+\">" s0 "<a" s1 "href=\""
 		;; 1. url
 		"\\(/articles/"
@@ -226,53 +226,53 @@ Every `.' in NAME will be replaced with `/'."
 		;; 4. subject
 		"\\([^<]+\\)" s0 "\\)</a>")
        1 2 nil 3 nil nil nil nil nil nil nil nil nil 4)
-      ("edu" "$B650i(B" "%s/list.html" ,@edu)
+      ("edu" "教育" "%s/list.html" ,@edu)
       ("english" "ENGLISH" "%s/index.html"
        ,@(let ((rest (shimbun-asahi-make-regexp "english.Herald-asahi")))
 	   (cons (concat
 		  (car rest)
 		  "\\(?:" s0 "<[^>]+>\\)*" s0 "([01]?[0-9]/[0-3]?[0-9])")
 		 (cdr rest))))
-      ("food" "$B?)(B" "%s/news/" ,@(shimbun-asahi-make-regexp "food.news"))
-      ("health" "$B7r9/(B" "%s/list.html"
+      ("food" "食" "%s/news/" ,@(shimbun-asahi-make-regexp "food.news"))
+      ("health" "健康" "%s/list.html"
        ,@(shimbun-asahi-make-regexp "health.news"))
-      ("housing" "$B=;$^$$(B" "%s/news/"
+      ("housing" "住まい" "%s/news/"
        ,@(shimbun-asahi-make-regexp "housing.news"))
-      ("igo" "$B0O8k(B" "%s/news/" ,@(shimbun-asahi-make-regexp "igo.news"))
-      ("international" "$B9q:](B" "%s/list.html" ,@default)
-      ("international.asia" "$B%"%8%"(B" "international/asia.html" ,@international)
-      ("international.column" "$B%3%i%`(B")
-      ("international.special" "$BFC=8(B")
-      ("international.world" "$B@$3&(B")
-      ("job" "$B="?&!&E>?&(B" "%s/news/"
+      ("igo" "囲碁" "%s/news/" ,@(shimbun-asahi-make-regexp "igo.news"))
+      ("international" "国際" "%s/list.html" ,@default)
+      ("international.asia" "アジア" "international/asia.html" ,@international)
+      ("international.column" "コラム")
+      ("international.special" "特集")
+      ("international.world" "世界")
+      ("job" "就職・転職" "%s/news/"
        ,@(shimbun-asahi-make-regexp "job.news"))
-      ("kansai" "$B4X@>(B" "%s/news/" ,@(shimbun-asahi-make-regexp "kansai.news"))
-      ("kansai.entertainment" "$B3Z$7$`(B")
-      ("kansai.kokoro" "$B$3$3$m(B")
-      ("kansai.sumai" "$B=;$^$$(B")
-      ("kansai.taberu" "$B?)$Y$k(B")
-      ("komimi" "$B%3%_%_8}%3%_(B" "%s/list.html" ,@default2)
-      ("life" "$BJk$i$7(B" "%s/list.html" ,@default)
-      ("life.column" "$B%3%i%`(B")
-      ("national" "$B<R2q(B" "%s/list.html" ,@default)
-      ("politics" "$B@/<#(B" "%s/list.html" ,@default)
+      ("kansai" "関西" "%s/news/" ,@(shimbun-asahi-make-regexp "kansai.news"))
+      ("kansai.entertainment" "楽しむ")
+      ("kansai.kokoro" "こころ")
+      ("kansai.sumai" "住まい")
+      ("kansai.taberu" "食べる")
+      ("komimi" "コミミ口コミ" "%s/list.html" ,@default2)
+      ("life" "暮らし" "%s/list.html" ,@default)
+      ("life.column" "コラム")
+      ("national" "社会" "%s/list.html" ,@default)
+      ("politics" "政治" "%s/list.html" ,@default)
       ("rss" "RSS" "http://www3.asahi.com/rss/index.rdf" ,@rss)
-      ("science" "$B%5%$%(%s%9(B" "%s/list.html" ,@default)
-      ("shopping" "$B%7%g%C%T%s%0(B" "%s/news/"
+      ("science" "サイエンス" "%s/list.html" ,@default)
+      ("shopping" "ショッピング" "%s/news/"
        ,@(shimbun-asahi-make-regexp "shopping.news"))
-      ("shopping.column" "$B%3%i%`(B")
-      ("shopping.yakimono" "$B$d$-$b$N(B")
-      ("shougi" "$B>-4}(B")
-      ("sports" "$B%9%]!<%D(B" "%s/list.html" ,@default)
-      ("sports.baseball" "$BLn5e(B")
-      ("sports.battle" "$B3JF.5;!&AjKP(B")
-      ("sports.etc" "$B$=$NB>(B")
-      ("sports.football" "$B%5%C%+!<(B")
-      ("sports.golf" "$B%4%k%U(B")
-      ("sports.rugby" "$B%i%0%S!<(B")
-      ("sports.usa" "$BJF%W%m%9%]!<%D(B")
-      ("sports.winter" "$B%&%$%s%?!<%9%]!<%D(B")
-      ("tenjin" "$BE7@<?M8l(B" "paper/column.html" ;; WON'T WORK
+      ("shopping.column" "コラム")
+      ("shopping.yakimono" "やきもの")
+      ("shougi" "将棋")
+      ("sports" "スポーツ" "%s/list.html" ,@default)
+      ("sports.baseball" "野球")
+      ("sports.battle" "格闘技・相撲")
+      ("sports.etc" "その他")
+      ("sports.football" "サッカー")
+      ("sports.golf" "ゴルフ")
+      ("sports.rugby" "ラグビー")
+      ("sports.usa" "米プロスポーツ")
+      ("sports.winter" "ウインタースポーツ")
+      ("tenjin" "天声人語" "paper/column.html" ;; WON'T WORK
        ,(concat "<meta" s1 "\\(?:[^\t\n >]+" s1 "\\)*name=\"RELEASE_DATE\""
 		s1 "\\(?:[^\t\n >]+" s1 "\\)*CONTENT=\""
 		;; 1. year
@@ -282,9 +282,9 @@ Every `.' in NAME will be replaced with `/'."
 		;; 3. day
 		"\\([0-3]?[0-9]\\)\"")
        nil nil nil nil 1 2 3)
-      ("travel" "$B%H%i%Y%k(B" "%s/news/"
+      ("travel" "トラベル" "%s/news/"
        ,@(shimbun-asahi-make-regexp "travel.news"))
-      ("wakata" "$B<cED$5$s$-$\$&BZ:_5-(B" "%s/"
+      ("wakata" "若田さんきぼう滞在記" "%s/"
        ,(concat
 	 "<a" s1 "href=\"/"
 	 ;; 1. url
@@ -314,7 +314,7 @@ If an index page is nil, a group name in which \".\" is substituted with
 \"/\" is used instead.")
 
 (defvar shimbun-asahi-subgroups-alist
-  (let* ((s0 "[\t\n $B!!(B]*")
+  (let* ((s0 "[\t\n 　]*")
 	 (s1 "[\t\n ]+")
 	 (no-nl "[^\n<>]+")
 	 (default (list
@@ -507,127 +507,127 @@ If an index page is nil, a group name in which \".\" is substituted with
 			  s0 "\\(?:<img" s1 "[^>]+>" s0 "\\)?</a>")
 		  1 nil 2 6 3 4 5)))
     `(("book.column"
-       ("$BCx<T$K2q$$$?$$(B" "http://book.asahi.com/author/"
+       ("著者に会いたい" "http://book.asahi.com/author/"
 	,(format (car book1) "author") ,@(cdr book1))
-       ("$BGd$l$F$kK\(B" "http://book.asahi.com/bestseller/"
+       ("売れてる本" "http://book.asahi.com/bestseller/"
 	,(format (car book1) "bestseller") ,@(cdr book1))
-       ("$B0&$G$?$$J88K(B" "http://book.asahi.com/bunko/"
+       ("愛でたい文庫" "http://book.asahi.com/bunko/"
 	,(format (car book1) "bunko") ,@(cdr book1))
-       ("$B%S%8%M%9=q(B" "http://book.asahi.com/business/"
+       ("ビジネス書" "http://book.asahi.com/business/"
 	,(format (car book1) "business") ,@(cdr book1))
-       ("$B%3%_%C%/%,%$%I(B" "http://book.asahi.com/comic/"
+       ("コミックガイド" "http://book.asahi.com/comic/"
 	,(format (car book1) "comic") ,@(cdr book1))
-       ("$BOCBj$NK\C*(B" "http://book.asahi.com/hondana/"
+       ("話題の本棚" "http://book.asahi.com/hondana/"
 	,(format (car book1) "hondana") ,@(cdr book1))
-       ("$BJk$i$7$N$*LrN)$A(B" "http://book.asahi.com/life/"
+       ("暮らしのお役立ち" "http://book.asahi.com/life/"
 	,(format (car book1) "life") ,@(cdr book1))
-       ("$B$?$$$;$D$JK\(B" "http://book.asahi.com/mybook/"
+       ("たいせつな本" "http://book.asahi.com/mybook/"
 	,(format (car book1) "mybook") ,@(cdr book1))
-       ("$B%K%e!<%9$J?74)(B" "http://book.asahi.com/newstar/"
+       ("ニュースな新刊" "http://book.asahi.com/newstar/"
 	,(format (car book1) "newstar") ,@(cdr book1))
-       ("$B?7=q$N7j(B" "http://book.asahi.com/shinsho/"
+       ("新書の穴" "http://book.asahi.com/shinsho/"
 	,(format (car book1) "shinsho") ,@(cdr book1))
-       ("$B%K%e!<%9$JK\(B" "http://book.asahi.com/topics/"
+       ("ニュースな本" "http://book.asahi.com/topics/"
 	,(format (car book1) "topics") ,@(cdr book1))
-       ("$B%G%8%?%kFI=q(B" "http://book.asahi.com/trendwatch/"
+       ("デジタル読書" "http://book.asahi.com/trendwatch/"
 	,(format (car book1) "trendwatch") ,@(cdr book1)))
       ("book.news"
-       ("$BD+F|?7J9<R$N?74)(B" "http://book.asahi.com/asahi/"
+       ("朝日新聞社の新刊" "http://book.asahi.com/asahi/"
 	,(format (car book1) "asahi") ,@(cdr book1))
-       ("$B$R$H!&N.9T!&OCBj(B" "http://book.asahi.com/clip/"
+       ("ひと・流行・話題" "http://book.asahi.com/clip/"
 	,(format (car book1) "clip") ,@(cdr book1))
-       ("$B%*%s%i%$%s%V%C%/%U%'%"(B" "http://book.asahi.com/fair/"
+       ("オンラインブックフェア" "http://book.asahi.com/fair/"
 	,(format (car book1) "fair") ,@(cdr book1)))
       ("book.paperback"
-       ("$BJ88K(B" "http://book.asahi.com/paperback/bunko.html" ,@paperback)
-       ("$B?7=q(B" "http://book.asahi.com/paperback/shinsho.html" ,@paperback))
+       ("文庫" "http://book.asahi.com/paperback/bunko.html" ,@paperback)
+       ("新書" "http://book.asahi.com/paperback/shinsho.html" ,@paperback))
       ("book.review"
-       ("$B%S%8%M%9(B" "http://book.asahi.com/review/business.html" ,@book2)
-       ("$B%G%8%?%k(B" "http://book.asahi.com/review/digital.html" ,@book2)
-       ("$B650i(B ($B;yF8=q(B)" "http://book.asahi.com/review/edu.html" ,@book2)
-       ("$B9q:](B" "http://book.asahi.com/review/international.html" ,@book2)
-       ("$BJk$i$7(B" "http://book.asahi.com/review/life.html" ,@book2))
+       ("ビジネス" "http://book.asahi.com/review/business.html" ,@book2)
+       ("デジタル" "http://book.asahi.com/review/digital.html" ,@book2)
+       ("教育 (児童書)" "http://book.asahi.com/review/edu.html" ,@book2)
+       ("国際" "http://book.asahi.com/review/international.html" ,@book2)
+       ("暮らし" "http://book.asahi.com/review/life.html" ,@book2))
       ("book.special"
        ("BOOK TIMES" "http://book.asahi.com/booktimes/"
 	,(format (car book1) "booktimes") ,@(cdr book1))
-       ("$BGd$l6Z%i%s%-%s%0(B" "http://book.asahi.com/ranking/"
+       ("売れ筋ランキング" "http://book.asahi.com/ranking/"
 	,(format (car book1) "ranking") ,@(cdr book1)))
       ("business"
-       ("$B#A#E#R#AH/%^%M!<(B" "http://www.asahi.com/business/aera/"
+       ("ＡＥＲＡ発マネー" "http://www.asahi.com/business/aera/"
 	,(format (car business) "aera") ,@(cdr business))
-       ("$BEj;q?.Bw(B" "http://www.asahi.com/business/fund/"
+       ("投資信託" "http://www.asahi.com/business/fund/"
 	,(format (car business) "fund") ,@(cdr business))
-       ("$B>&IJ%U%!%$%k(B" "http://www.asahi.com/business/products/"
+       ("商品ファイル" "http://www.asahi.com/business/products/"
 	,(format (car business) "products") ,@(cdr business))
-       ("$B%m%$%?!<%K%e!<%9(B" "http://www.asahi.com/business/list_reuters.html"
+       ("ロイターニュース" "http://www.asahi.com/business/list_reuters.html"
 	,(format (car business) "reuters") ,@(cdr business))
-       ("$B:#F|$N;kE@(B" "http://www.asahi.com/business/today_eye/"
+       ("今日の視点" "http://www.asahi.com/business/today_eye/"
 	,(format (car business) "today_eye") ,@(cdr business))
-       ("$B:#F|$N;T67(B" "http://www.asahi.com/business/today_shikyo/"
+       ("今日の市況" "http://www.asahi.com/business/today_shikyo/"
 	,(format (car business) "today_shikyo") ,@(cdr business))
-       ("$B7P:Q$rFI$`(B" "http://www.asahi.com/business/topics/"
+       ("経済を読む" "http://www.asahi.com/business/topics/"
 	,(format (car business) "topics") ,@(cdr business))
-       ("$BElMN7P:Q%K%e!<%9(B" "http://www.asahi.com/business/list_toyo.html"
+       ("東洋経済ニュース" "http://www.asahi.com/business/list_toyo.html"
 	,(format (car business) "toyo") ,@(cdr business)))
       ("car"
-       ("$B?7<VH/I=2q(B" "http://www.asahi.com/car/cg/"
+       ("新車発表会" "http://www.asahi.com/car/cg/"
 	,@(shimbun-asahi-make-regexp "car.cg"))
-       ("$B%$%?%j%"H/%"%b!<%l!*%b%H!<%l!*(B"
+       ("イタリア発アモーレ！モトーレ！"
 	"http://www.asahi.com/car/italycolumn/"
 	,@(shimbun-asahi-make-regexp "car.italycolumn"))
-       ("$B%b!<%?!<%9%]!<%D(B" "http://www.asahi.com/car/motorsports/"
+       ("モータースポーツ" "http://www.asahi.com/car/motorsports/"
 	,@(shimbun-asahi-make-regexp "car.motorsports"))
-       ("$B?7<V>pJs(B" "http://www.asahi.com/car/newcar/"
+       ("新車情報" "http://www.asahi.com/car/newcar/"
 	,@(shimbun-asahi-make-regexp "car.newcar")))
       ("culture"
-       ("$BJ82=(B" "http://www.asahi.com/culture/list_culture.html" ,@culture)
-       ("$B7]G=(B" "http://www.asahi.com/culture/list_entertainment.html"
+       ("文化" "http://www.asahi.com/culture/list_culture.html" ,@culture)
+       ("芸能" "http://www.asahi.com/culture/list_entertainment.html"
 	,@culture)
-       ("$BF#Bt<~J?$N@$3&(B" "http://www.asahi.com/culture/fujisawa/"
+       ("藤沢周平の世界" "http://www.asahi.com/culture/fujisawa/"
 	,@(shimbun-asahi-make-regexp "culture.fujisawa"))
-       ("$B?M4V9qJu(B" "http://www.asahi.com/culture/kokuhou/"
+       ("人間国宝" "http://www.asahi.com/culture/kokuhou/"
 	,@(shimbun-asahi-make-regexp "culture.kokuhou"))
-       ("$B$$$D$+$OL>?M2q(B" "http://www.asahi.com/culture/column/rakugo/guide/"
+       ("いつかは名人会" "http://www.asahi.com/culture/column/rakugo/guide/"
 	,@(shimbun-asahi-make-regexp "culture.column.rakugo.guide"))
-       ("$BMn8l$C$F(B" "http://www.asahi.com/culture/column/rakugo/kyosu/"
+       ("落語って" "http://www.asahi.com/culture/column/rakugo/kyosu/"
 	,@(shimbun-asahi-make-regexp "culture.column.rakugo.kyosu"))
-       ("$B%i%/%4%m%/(B" "http://www.asahi.com/culture/column/rakugo/rakugoroku/"
+       ("ラクゴロク" "http://www.asahi.com/culture/column/rakugo/rakugoroku/"
 	,@(shimbun-asahi-make-regexp "culture.column.rakugo.rakugoroku"))
-       ("$BO":\5-;v(B" "http://www.asahi.com/culture/serial_backnumber.html"
+       ("連載記事" "http://www.asahi.com/culture/serial_backnumber.html"
 	,@culture)
-       ("$B$f$k$f$k%U%'%_%K%s(B" "http://www.asahi.com/culture/column/yurufemi/"
+       ("ゆるゆるフェミニン" "http://www.asahi.com/culture/column/yurufemi/"
 	,@(shimbun-asahi-make-regexp "culture.column.yurufemi")))
       ("digital"
-       ("$B5!4o(B" "http://www.asahi.com/digital/av/"
+       ("機器" "http://www.asahi.com/digital/av/"
 	,@(shimbun-asahi-make-regexp "digital.av"))
-       ("e-$B%S%8%M%9>pJs(B ($BDs6!(B: BCN)" "http://www.asahi.com/digital/bcnnews/"
+       ("e-ビジネス情報 (提供: BCN)" "http://www.asahi.com/digital/bcnnews/"
 	,@(shimbun-asahi-make-regexp "digital.bcnnews"))
-       ("$B%3%i%`(B" "http://www.asahi.com/digital/column01/"
+       ("コラム" "http://www.asahi.com/digital/column01/"
 	,@(shimbun-asahi-make-regexp "digital.column01"))
-       ("$B%M%C%H!&%&%$%k%9(B" "http://www.asahi.com/digital/internet/"
+       ("ネット・ウイルス" "http://www.asahi.com/digital/internet/"
 	,@(shimbun-asahi-make-regexp "digital.internet"))
-       ("$B7HBSEEOC(B" "http://www.asahi.com/digital/mobile/"
+       ("携帯電話" "http://www.asahi.com/digital/mobile/"
 	,@(shimbun-asahi-make-regexp "digital.mobile"))
-       ("$BF|4)9)6H?7J9%K%e!<%9(B" "http://www.asahi.com/digital/nikkanko/"
+       ("日刊工業新聞ニュース" "http://www.asahi.com/digital/nikkanko/"
 	,@(shimbun-asahi-make-regexp "digital.nikkanko"))
-       ("$B#P#C!&%2!<%`(B" "http://www.asahi.com/digital/pc/"
+       ("ＰＣ・ゲーム" "http://www.asahi.com/digital/pc/"
 	,@(shimbun-asahi-make-regexp "digital.pc")))
       ("edu"
-       ("$BF~;n(B" "http://www.asahi.com/edu/news/examination.html" ,@edu)
-       ("$B$f$-09$N;R0i$F1~1g%(%C%;!<(B" "http://www.asahi.com/edu/column/ikuji/"
+       ("入試" "http://www.asahi.com/edu/news/examination.html" ,@edu)
+       ("ゆき姐の子育て応援エッセー" "http://www.asahi.com/edu/column/ikuji/"
 	,@(shimbun-asahi-make-regexp "edu.column.ikuji"))
-       ("$B650iLdBj(B" "http://www.asahi.com/edu/news/issue.html" ,@edu)
-       ("$B$3$N5-;v$r<j$,$+$j$K(B" "http://www.asahi.com/edu/nie/kiji/"
+       ("教育問題" "http://www.asahi.com/edu/news/issue.html" ,@edu)
+       ("この記事を手がかりに" "http://www.asahi.com/edu/nie/kiji/"
 	,@(shimbun-asahi-make-regexp "edu.nie.kiji.kiji"))
-       ("$B;R0i$F(B" "http://www.asahi.com/edu/news/kosodate.html" ,@edu)
-       ("$B650i@)EY!&OCBj(B" "http://www.asahi.com/edu/news/system.html" ,@edu)
-       ("$B$N$N$A$c$s$N#D#O2J3X(B" "http://www.asahi.com/edu/nie/tamate/"
+       ("子育て" "http://www.asahi.com/edu/news/kosodate.html" ,@edu)
+       ("教育制度・話題" "http://www.asahi.com/edu/news/system.html" ,@edu)
+       ("ののちゃんのＤＯ科学" "http://www.asahi.com/edu/nie/tamate/"
 	,@(shimbun-asahi-make-regexp "edu.nie.tamate.kiji"))
-       ("$BBg3X(B" "http://www.asahi.com/edu/news/university.html" ,@edu))
+       ("大学" "http://www.asahi.com/edu/news/university.html" ,@edu))
       ("food"
-       ("$B5(@a$N$*$$$7$$%3%i%`(B" "http://www.asahi.com/food/cooking/"
+       ("季節のおいしいコラム" "http://www.asahi.com/food/cooking/"
 	,@(shimbun-asahi-make-regexp "food.cooking"))
-       ("$B4_D+;R!VJk$i$7$r3Z$7$`$*<h$j4s$;!W(B"
+       ("岸朝子「暮らしを楽しむお取り寄せ」"
 	"http://www.asahi.com/shopping/food/kishi/"
 	,(concat "<a" s1 "href=\"/"
 		 ;; 1. url
@@ -647,57 +647,57 @@ If an index page is nil, a group name in which \".\" is substituted with
 		 "\\(" no-nl "\\)"
 		 "\\(?:" s0 "<[^>]+>\\)*[^<]*([01]?[0-9]/[0-3]?[0-9])")
 	1 nil 2 6 3 4 5)
-       ("$BNAM}%a%b(B" "http://www.asahi.com/food/memo/"
+       ("料理メモ" "http://www.asahi.com/food/memo/"
 	,@(shimbun-asahi-make-regexp "food.memo"))
-       ("$B!V?@$N<6!W:n<T$N%N%`%j%(F|5-(B"
+       ("「神の雫」作者のノムリエ日記"
 	"http://www.asahi.com/food/column/nommelier/"
 	,@(shimbun-asahi-make-regexp "food.column.nommelier"))
-       ("$B$*$$$7$5H/8+(B" "http://www.asahi.com/food/column/oishisa/"
+       ("おいしさ発見" "http://www.asahi.com/food/column/oishisa/"
 	,@(shimbun-asahi-make-regexp "food.column.oishisa"))
-       ("$BO@$h$j!"$*$d$D(B" "http://www.asahi.com/food/column/oyatsu/"
+       ("論より、おやつ" "http://www.asahi.com/food/column/oyatsu/"
 	,@(shimbun-asahi-make-regexp "food.column.oyatsu"))
-       ("$B%9%$!<%D$N?4F@(B" "http://www.asahi.com/food/column/sweets/"
+       ("スイーツの心得" "http://www.asahi.com/food/column/sweets/"
 	,@(shimbun-asahi-make-regexp "food.column.sweets"))
-       ("$B%o%$%s$N:P;~5-(B" "http://www.asahi.com/food/column/wine_saijiki/"
+       ("ワインの歳時記" "http://www.asahi.com/food/column/wine_saijiki/"
 	,@(shimbun-asahi-make-regexp "food.column.wine_saijiki")))
       ("health"
-       ("$B7r9/!&@83h(B" "http://www.asahi.com/health/news/" ,@health)
-       ("$BJ!;c!&9bNp(B" "http://www.asahi.com/health/news/aged.html" ,@health)
-       ("$BG'CN>IFC=8(B" "http://www.asahi.com/health/news/alz.html" ,@health)
-       ("$B0eNE!&IB5$(B" "http://www.asahi.com/health/news/medical.html" ,@health))
+       ("健康・生活" "http://www.asahi.com/health/news/" ,@health)
+       ("福祉・高齢" "http://www.asahi.com/health/news/aged.html" ,@health)
+       ("認知症特集" "http://www.asahi.com/health/news/alz.html" ,@health)
+       ("医療・病気" "http://www.asahi.com/health/news/medical.html" ,@health))
       ("housing"
-       ("$B8M7z$F(B" "http://www.asahi.com/ad/clients/kodatenavi/news/"
+       ("戸建て" "http://www.asahi.com/ad/clients/kodatenavi/news/"
 	,@(shimbun-asahi-make-regexp "ad.clients.kodatenavi.news"))
-       ("$B%^%s%7%g%s(B" "http://www.asahi.com/ad/clients/mansionnavi/news/"
+       ("マンション" "http://www.asahi.com/ad/clients/mansionnavi/news/"
 	,@(shimbun-asahi-make-regexp "ad.clients.mansionnavi.news"))
-       ("$BE7Ln>4$N$$$$2H$$$$2HB2(B" "http://www.asahi.com/housing/amano/"
+       ("天野彰のいい家いい家族" "http://www.asahi.com/housing/amano/"
 	,@(shimbun-asahi-make-regexp "housing.amano"))
-       ("$B=;$^$$$N$*LrN)$A%3%i%`(B" "http://www.asahi.com/housing/column/"
+       ("住まいのお役立ちコラム" "http://www.asahi.com/housing/column/"
 	,@(shimbun-asahi-make-regexp "housing.column"))
-       ("$B>.$5$J2H$N@83hF|5-(B" "http://www.asahi.com/housing/diary/"
+       ("小さな家の生活日記" "http://www.asahi.com/housing/diary/"
 	,@(shimbun-asahi-make-regexp "housing.diary"))
-       ("$B=;Bp?7Js<R%K%e!<%9(B" "http://www.asahi.com/housing/jutaku-s/"
+       ("住宅新報社ニュース" "http://www.asahi.com/housing/jutaku-s/"
 	,@(shimbun-asahi-make-regexp "housing.jutaku-s"))
-       ("$B$3$3$,CN$j$?$$(B" "http://www.asahi.com/housing/soudan/index_s.html"
+       ("ここが知りたい" "http://www.asahi.com/housing/soudan/index_s.html"
 	,@(shimbun-asahi-make-regexp "housing.soudan"))
-       ("$B@$3&$N%&%A(B" "http://www.asahi.com/housing/world/"
+       ("世界のウチ" "http://www.asahi.com/housing/world/"
 	,@(shimbun-asahi-make-regexp "housing.world")))
       ("igo"
-       ("$B%H%T%C%/%9(B" "http://www.asahi.com/igo/topics/"
+       ("トピックス" "http://www.asahi.com/igo/topics/"
 	,@(shimbun-asahi-make-regexp "igo.topics")))
       ("international.asia"
-       ("$B%"%8%"$N393Q(B" "http://www.asahi.com/international/asiamachi/"
+       ("アジアの街角" "http://www.asahi.com/international/asiamachi/"
 	,@(shimbun-asahi-make-regexp "international.asiamachi"))
-       ("$B?ML1F|Js(B" "http://www.asahi.com/international/jinmin/"
+       ("人民日報" "http://www.asahi.com/international/jinmin/"
 	,@(shimbun-asahi-make-regexp "international.jinmin"))
-       ("$B%3%j%"$&$a!<$d!*!*(B" "http://www.asahi.com/international/korea/"
+       ("コリアうめーや！！" "http://www.asahi.com/international/korea/"
 	,@(shimbun-asahi-make-regexp "international.korea"))
-       ("$B%9%Q%$%7!<!*%=%&%k(B" "http://www.asahi.com/international/seoul/"
+       ("スパイシー！ソウル" "http://www.asahi.com/international/seoul/"
 	,@(shimbun-asahi-make-regexp "international.seoul"))
-       ("$B=54)%"%8%"(B" "http://www.asahi.com/international/weekly-asia/"
+       ("週刊アジア" "http://www.asahi.com/international/weekly-asia/"
 	,@(shimbun-asahi-make-regexp "international.weekly-asia")))
       ("international.column"
-       ("$BA%66MN0l$N@$3&%V%j!<%U%#%s%0(B"
+       ("船橋洋一の世界ブリーフィング"
 	"http://opendoors.asahi.com/syukan/briefing/index.shtml"
 	,(concat
 	  "<a href=\""
@@ -706,25 +706,25 @@ If an index page is nil, a group name in which \".\" is substituted with
 	  ;; 2. serial number
 	  "\\([0-9]+\\)"
 	  "\\.shtml\\)"
-	  "\">No\\.[0-9]+$B!!(B\\[ $B=54)D+F|(B"
+	  "\">No\\.[0-9]+　\\[ 週刊朝日"
 	  ;; 3. year
 	  "\\(20[0-9][0-9]\\)"
-	  "$BG/(B"
+	  "年"
 	  ;; 4. month
 	  "\\([01]?[0-9]\\)"
-	  "$B7n(B"
+	  "月"
 	  ;; 5. day
 	  "\\([0-3]?[0-9]\\)"
 	  "[^]]+\\] <br>"
 	  ;; 6. subject
 	  "\\([^<]+\\)")
 	1 2 nil 6 3 4 5)
-       ("$B;Q7n$"$5$H$N!VFH$j8@!W(B" "http://www.asahi.com/international/shizuki/"
+       ("姿月あさとの「独り言」" "http://www.asahi.com/international/shizuki/"
 	,@(shimbun-asahi-make-regexp "international.shizuki")))
       ("international.special"
-       ("$B9q:];Y1g$N8=>l$+$i(B" "http://www.asahi.com/international/shien/"
+       ("国際支援の現場から" "http://www.asahi.com/international/shien/"
 	,(concat
-	  "$B!Z!w(B[^$B![(B]+$B![(B[\t\n -]*<a" s1 "href=\"/"
+	  "【＠[^】]+】[\t\n -]*<a" s1 "href=\"/"
 	  ;; 1. url
 	  "\\(international/shien/"
 	  ;; 2. serial number
@@ -741,182 +741,182 @@ If an index page is nil, a group name in which \".\" is substituted with
 	  ;; 6. subject
 	  "\\([^\n<>]+\\)")
 	1 nil 2 6 3 4 5)
-       ("$BD;%$%s%U%k%(%s%6(B" "http://www.asahi.com/special/051102/"
+       ("鳥インフルエンザ" "http://www.asahi.com/special/051102/"
 	,@(shimbun-asahi-make-regexp "special.051102"))
-       ("$BF|Cf4X78(B" "http://www.asahi.com/special/050410/"
+       ("日中関係" "http://www.asahi.com/special/050410/"
 	,@(shimbun-asahi-make-regexp "special.050410"))
-       ("$BCO5e4D6-(B" "http://www.asahi.com/special/070110/"
+       ("地球環境" "http://www.asahi.com/special/070110/"
 	,@(shimbun-asahi-make-regexp "special.070110"))
-       ("$BKLD+A/YGCW;v7o(B" "http://www.asahi.com/special/abductees/"
+       ("北朝鮮拉致事件" "http://www.asahi.com/special/abductees/"
 	,@(shimbun-asahi-make-regexp "special.abductees"))
-       ("$B#B#S#ELdBj(B" "http://www.asahi.com/special/bse/"
+       ("ＢＳＥ問題" "http://www.asahi.com/special/bse/"
 	,@(shimbun-asahi-make-regexp "special.bse"))
-       ("$B%$%i%/>p@*(B" "http://www2.asahi.com/special/iraq/"
+       ("イラク情勢" "http://www2.asahi.com/special/iraq/"
 	,@(shimbun-asahi-make-regexp "special.iraq"))
-       ("$BCfElOBJ?(B" "http://www.asahi.com/special/MiddleEast/"
+       ("中東和平" "http://www.asahi.com/special/MiddleEast/"
 	,@(shimbun-asahi-make-regexp "special.MiddleEast"))
-       ("$BKLD+A/3KLdBj(B" "http://www.asahi.com/special/nuclear/"
+       ("北朝鮮核問題" "http://www.asahi.com/special/nuclear/"
 	,@(shimbun-asahi-make-regexp "special.nuclear"))
-       ("$BCf9qFC=8(B" "http://www.asahi.com/world/china/"
+       ("中国特集" "http://www.asahi.com/world/china/"
 	,@(shimbun-asahi-make-regexp "world.china.news")))
       ("international.world"
-       ("$B%"%U%j%+(B" "http://www.asahi.com/international/africa.html"
+       ("アフリカ" "http://www.asahi.com/international/africa.html"
 	,@international)
-       ("$B9qO"!&$=$NB>(B" "http://www.asahi.com/international/etc.html"
+       ("国連・その他" "http://www.asahi.com/international/etc.html"
 	,@international)
-       ("$B%h!<%m%C%Q(B" "http://www.asahi.com/international/europe.html"
+       ("ヨーロッパ" "http://www.asahi.com/international/europe.html"
 	,@international)
-       ("$BCfEl(B" "http://www.asahi.com/international/middleeast.html"
+       ("中東" "http://www.asahi.com/international/middleeast.html"
 	,@international)
-       ("$BKLJF(B" "http://www.asahi.com/international/namerica.html"
+       ("北米" "http://www.asahi.com/international/namerica.html"
 	,@international)
-       ("$B%*%;%"%K%"(B" "http://www.asahi.com/international/oceania.html"
+       ("オセアニア" "http://www.asahi.com/international/oceania.html"
 	,@international)
-       ("$BCfFnJF(B" "http://www.asahi.com/international/samerica.html"
+       ("中南米" "http://www.asahi.com/international/samerica.html"
 	,@international))
       ("job"
-       ("$B=54)D+F|!&#A#E#R#A$+$i(B" "http://www.asahi.com/job/special/"
+       ("週刊朝日・ＡＥＲＡから" "http://www.asahi.com/job/special/"
 	,@(let ((def (shimbun-asahi-make-regexp "job.special")))
 	    (cons (concat (car def)
-			  "\\(?:" s0 "<[^>]+>\\)*" s0 "$B!J(B" s0
+			  "\\(?:" s0 "<[^>]+>\\)*" s0 "（" s0
 			  ;; 7. extra
 			  "\\(" no-nl "\\)"
-			  "$B!'(B")
+			  "：")
 		  (append (cdr def) '(nil 7))))))
       ("kansai"
-       ("$B4X@>7]G=%K%e!<%9(B" "http://www.asahi.com/kansai/entertainment/news/"
+       ("関西芸能ニュース" "http://www.asahi.com/kansai/entertainment/news/"
 	,@(shimbun-asahi-make-regexp "kansai.entertainment.news"))
-       ("$B%$%Y%s%H(B" "http://www.asahi.com/kansai/event/"
+       ("イベント" "http://www.asahi.com/kansai/event/"
 	,@(shimbun-asahi-make-regexp "kansai.event")))
       ("kansai.entertainment"
-       ("$BJFD+8}$^$+$;(B" "http://www.asahi.com/kansai/entertainment/beichou/"
+       ("米朝口まかせ" "http://www.asahi.com/kansai/entertainment/beichou/"
 	,@(shimbun-asahi-make-regexp "kansai.entertainment.beichou"))
-       ("$B>!<j$K4X@>@$3&0d;:(B"
+       ("勝手に関西世界遺産"
 	"http://www.asahi.com/kansai/entertainment/kansaiisan/"
 	,@(shimbun-asahi-make-regexp "kansai.entertainment.kansaiisan"))
-       ("$B65$($F!*4X@>$C;R(B"
+       ("教えて！関西っ子"
 	"http://www.asahi.com/kansai/entertainment/kansaikko/"
 	,@(shimbun-asahi-make-regexp "kansai.entertainment.kansaikko"))
-       ("$B;0;^$N>P%&%$%s%I%&(B"
+       ("三枝の笑ウインドウ"
 	"http://www.asahi.com/kansai/entertainment/sanshi/"
 	,@(shimbun-asahi-make-regexp "kansai.entertainment.sanshi"))
-       ("$B@i5RK|:P!*(B" "http://www.asahi.com/kansai/entertainment/senkyaku/"
+       ("千客万歳！" "http://www.asahi.com/kansai/entertainment/senkyaku/"
 	,@(shimbun-asahi-make-regexp "kansai.entertainment.senkyaku")))
       ("kansai.kokoro"
-       ("$B!{!{$N$R$_$D(B" "http://www.asahi.com/kansai/kokoro/himitsu/"
+       ("○○のひみつ" "http://www.asahi.com/kansai/kokoro/himitsu/"
 	,@(shimbun-asahi-make-regexp "kansai.kokoro.himitsu"))
-       ("$B5'$j$NH~(B" "http://www.asahi.com/kansai/kokoro/inori/"
+       ("祈りの美" "http://www.asahi.com/kansai/kokoro/inori/"
 	,@(shimbun-asahi-make-regexp "kansai.kokoro.inori"))
-       ("$B%T%s%[!<%k$NL\(B" "http://www.asahi.com/kansai/kokoro/pinhole/"
+       ("ピンホールの目" "http://www.asahi.com/kansai/kokoro/pinhole/"
 	,@(shimbun-asahi-make-regexp "kansai.kokoro.pinhole"))
-       ("$B8l$j$"$&(B" "http://www.asahi.com/kansai/kokoro/taidan/"
+       ("語りあう" "http://www.asahi.com/kansai/kokoro/taidan/"
 	,@(shimbun-asahi-make-regexp "kansai.kokoro.taidan"))
-       ("$B$H$_$3$&$_(B" "http://www.asahi.com/kansai/kokoro/tomikoumi/"
+       ("とみこうみ" "http://www.asahi.com/kansai/kokoro/tomikoumi/"
 	,@(shimbun-asahi-make-regexp "kansai.kokoro.tomikoumi")))
       ("kansai.sumai"
-       ("$B$W$i$C$H1h@~5*9T(B" "http://www.asahi.com/kansai/sumai/ensen/"
+       ("ぷらっと沿線紀行" "http://www.asahi.com/kansai/sumai/ensen/"
 	,@(shimbun-asahi-make-regexp "kansai.sumai.ensen"))
-       ("$B39$rNx$&(B" "http://www.asahi.com/kansai/sumai/machi/"
+       ("街を恋う" "http://www.asahi.com/kansai/sumai/machi/"
 	,@(shimbun-asahi-make-regexp "kansai.sumai.machi"))
-       ("$B4X@>$N=;$^$$(B" "http://www.asahi.com/kansai/sumai/news/"
+       ("関西の住まい" "http://www.asahi.com/kansai/sumai/news/"
 	,@(shimbun-asahi-make-regexp "kansai.sumai.news")))
       ("kansai.taberu"
-       ("$B%G%QCO2<#N#E#W#S(B" "http://www.asahi.com/kansai/taberu/depa/"
+       ("デパ地下ＮＥＷＳ" "http://www.asahi.com/kansai/taberu/depa/"
 	,@(shimbun-asahi-make-regexp "kansai.taberu.depa"))
-       ("$B5(8l$r$$$?$@$/(B" "http://www.asahi.com/kansai/taberu/kigo/"
+       ("季語をいただく" "http://www.asahi.com/kansai/taberu/kigo/"
 	,@(shimbun-asahi-make-regexp "kansai.taberu.kigo"))
-       ("$B$^$s$W$/2q$N%i%s%A%?%$%`(B"
+       ("まんぷく会のランチタイム"
 	"http://www.asahi.com/kansai/taberu/manpuku/"
 	,@(shimbun-asahi-make-regexp "kansai.taberu.manpuku"))
-       ("$B%Q!<%s$H%9%$!<%D(B" "http://www.asahi.com/kansai/taberu/pan_sweets/"
+       ("パーンとスイーツ" "http://www.asahi.com/kansai/taberu/pan_sweets/"
 	,@(shimbun-asahi-make-regexp "kansai.taberu.pan_sweets"))
-       ("$B$d$5$7$$:h(B" "http://www.asahi.com/kansai/taberu/sakana/"
+       ("やさしい肴" "http://www.asahi.com/kansai/taberu/sakana/"
 	,@(shimbun-asahi-make-regexp "kansai.taberu.sakana")))
       ("life.column"
-       ("$B?4CO$h$$@83h$NCN7C(B" "http://www.asahi.com/life/column/chie/"
+       ("心地よい生活の知恵" "http://www.asahi.com/life/column/chie/"
 	,@(shimbun-asahi-make-regexp "life.column.chie"))
-       ("$B;d$N%_%+%?(B" "http://www.asahi.com/life/column/mikata/"
+       ("私のミカタ" "http://www.asahi.com/life/column/mikata/"
 	,@(shimbun-asahi-make-regexp "life.column.mikata\\(?:/sasaki\\)?"))
-       ("$B2.86Gn;R$N!H$,$s$P$l!*2H7W!I(B"
+       ("荻原博子の“がんばれ！家計”"
 	"http://www.asahi.com/life/column/ogiwara/"
 	,@(shimbun-asahi-make-regexp "life.column.ogiwara")))
       ("national"
-       ("$B:R32!&8rDL>pJs(B" "http://www.asahi.com/national/calamity.html"
+       ("災害・交通情報" "http://www.asahi.com/national/calamity.html"
 	,@national)
-       ("$B$=$NB>!&OCBj(B" "http://www.asahi.com/national/etc.html" ,@national)
-       ("$B;v7o!&;v8N(B" "http://www.asahi.com/national/incident.html" ,@national)
-       ("$B:[H=(B" "http://www.asahi.com/national/trial.html" ,@national)
-       ("$B$*$/$d$_(B" "http://www.asahi.com/obituaries/"
+       ("その他・話題" "http://www.asahi.com/national/etc.html" ,@national)
+       ("事件・事故" "http://www.asahi.com/national/incident.html" ,@national)
+       ("裁判" "http://www.asahi.com/national/trial.html" ,@national)
+       ("おくやみ" "http://www.asahi.com/obituaries/"
 	,(format (car default) "obituaries") ,@(cdr default)))
       ("politics"
-       ("$B9q@/(B" "http://www.asahi.com/politics/government.html" ,@politics)
-       ("$BCOJ}@/<#(B" "http://www.asahi.com/politics/local.html" ,@politics))
+       ("国政" "http://www.asahi.com/politics/government.html" ,@politics)
+       ("地方政治" "http://www.asahi.com/politics/local.html" ,@politics))
       ("shopping.column"
-       ("$B3ZE7$3$@$o$jE9D9$KJ9$/(B" "http://www.asahi.com/shopping/column/master/"
+       ("楽天こだわり店長に聞く" "http://www.asahi.com/shopping/column/master/"
 	,@shopping)
-       ("$BJk$i$7$r3Z$7$`(B" "http://www.asahi.com/shopping/column/tatsujin/"
+       ("暮らしを楽しむ" "http://www.asahi.com/shopping/column/tatsujin/"
 	,@shopping))
       ("shopping.yakimono"
-       ("$B>.Ln8x5W!V$d$-$b$N%,%$%I!W(B"
+       ("小野公久「やきものガイド」"
 	"http://www.asahi.com/shopping/yakimono/ono/" ,@shopping2)
-       ("$B%m%P!<%H!&%$%(%j%s!V$d$-$b$N;6JbF;!W(B"
+       ("ロバート・イエリン「やきもの散歩道」"
 	"http://www.asahi.com/shopping/yakimono/yellin/" ,@shopping2))
       ("shougi"
-       ("$BK\(B" "http://www.asahi.com/shougi/books/"
+       ("本" "http://www.asahi.com/shougi/books/"
 	,@(shimbun-asahi-make-regexp "shougi.books"))
-       ("$B%K%e!<%9(B" "http://www.asahi.com/shougi/news/"
+       ("ニュース" "http://www.asahi.com/shougi/news/"
 	,@(shimbun-asahi-make-regexp "shougi.news"))
-       ("$B%H%T%C%/%9(B" "http://www.asahi.com/shougi/topics/"
+       ("トピックス" "http://www.asahi.com/shougi/topics/"
 	,@(shimbun-asahi-make-regexp "shougi.topics")))
       ("sports.baseball"
-       ("$B%"%^%A%e%"Ln5e(B" "http://www.asahi.com/sports/bb/ama.html" ,@baseball)
-       ("$BBg%j!<%0(B" "http://www.asahi.com/sports/bb/mlb.html" ,@baseball)
-       ("$B%W%mLn5e(B" "http://www.asahi.com/sports/bb/pro.html" ,@baseball))
+       ("アマチュア野球" "http://www.asahi.com/sports/bb/ama.html" ,@baseball)
+       ("大リーグ" "http://www.asahi.com/sports/bb/mlb.html" ,@baseball)
+       ("プロ野球" "http://www.asahi.com/sports/bb/pro.html" ,@baseball))
       ("sports.battle"
-       ("$B3JF.5;(B" "http://www.asahi.com/sports/spo/battle.html"
+       ("格闘技" "http://www.asahi.com/sports/spo/battle.html"
 	,@(shimbun-asahi-make-regexp "sports.\\(?:column\\|spo\\)"))
-       ("$BAjKP(B" "http://www.asahi.com/sports/spo/sumo.html" ,@sports))
+       ("相撲" "http://www.asahi.com/sports/spo/sumo.html" ,@sports))
       ("sports.etc"
-       ("$B%3%i%`(B" "http://www.asahi.com/sports/column/"
+       ("コラム" "http://www.asahi.com/sports/column/"
 	,@(shimbun-asahi-make-regexp "sports.column"))
-       ("$B9q300lHL%9%]!<%D(B" "http://www.asahi.com/sports/spo/kaigai.html"
+       ("国外一般スポーツ" "http://www.asahi.com/sports/spo/kaigai.html"
 	,@sports)
-       ("$B9qFb0lHL%9%]!<%D(B" "http://www.asahi.com/sports/spo/kokunai.html"
+       ("国内一般スポーツ" "http://www.asahi.com/sports/spo/kokunai.html"
 	,@sports)
-       ("$B%l!<%7%s%0(B" "http://www.asahi.com/sports/spo/motor.html" ,@sports))
+       ("レーシング" "http://www.asahi.com/sports/spo/motor.html" ,@sports))
       ("sports.football"
-       ("$BF|K\BeI=(B" "http://www.asahi.com/sports/fb/japan/list.html"
+       ("日本代表" "http://www.asahi.com/sports/fb/japan/list.html"
 	,@(shimbun-asahi-make-regexp "sports.fb.japan"))
-       ("$B#J%j!<%0!&9qFb(B" "http://www.asahi.com/sports/fb/national.html"
+       ("Ｊリーグ・国内" "http://www.asahi.com/sports/fb/national.html"
 	,@football)
-       ("$B3$30(B" "http://www.asahi.com/sports/fb/world.html" ,@football))
+       ("海外" "http://www.asahi.com/sports/fb/world.html" ,@football))
       ("sports.golf"
-       ("$BCK;R%4%k%U(B" "http://www.asahi.com/sports/spo/golf_man.html" ,@sports)
-       ("$B=w;R%4%k%U(B" "http://www.asahi.com/sports/spo/golf_woman.html"
+       ("男子ゴルフ" "http://www.asahi.com/sports/spo/golf_man.html" ,@sports)
+       ("女子ゴルフ" "http://www.asahi.com/sports/spo/golf_woman.html"
 	,@sports))
       ("sports.rugby"
-       ("$BF|K\BeI=(B" "http://www.asahi.com/sports/spo/rugby_japan.html" ,@sports)
-       ("$B9qFb!&$=$NB>(B" "http://www.asahi.com/sports/spo/rugby_national.html"
+       ("日本代表" "http://www.asahi.com/sports/spo/rugby_japan.html" ,@sports)
+       ("国内・その他" "http://www.asahi.com/sports/spo/rugby_national.html"
 	,@sports))
       ("sports.usa"
-       ("$B#N#B#A(B" "http://www.asahi.com/sports/spo/nba.html" ,@sports)
-       ("$B#N#F#L(B" "http://www.asahi.com/sports/spo/nfl.html" ,@sports)
-       ("$B#N#H#L(B" "http://www.asahi.com/sports/spo/nhl.html" ,@sports))
+       ("ＮＢＡ" "http://www.asahi.com/sports/spo/nba.html" ,@sports)
+       ("ＮＦＬ" "http://www.asahi.com/sports/spo/nfl.html" ,@sports)
+       ("ＮＨＬ" "http://www.asahi.com/sports/spo/nhl.html" ,@sports))
       ("sports.winter"
-       ("$B%9%1!<%H!&I9>e6%5;(B" "http://www.asahi.com/sports/spo/skate.html"
+       ("スケート・氷上競技" "http://www.asahi.com/sports/spo/skate.html"
 	,@sports)
-       ("$B%9%-!<!&@c>e6%5;(B" "http://www.asahi.com/sports/spo/ski.html"
+       ("スキー・雪上競技" "http://www.asahi.com/sports/spo/ski.html"
 	,@sports))
       ("travel"
-       ("$BN9$9$k?M$N%"%Z%j%F%#%U(B" "http://www.asahi.com/travel/aperitif/"
+       ("旅する人のアペリティフ" "http://www.asahi.com/travel/aperitif/"
 	,(format (car travel) "travel/aperitif") ,@(cdr travel))
-       ("$B$]$l$]$l%5%U%!%j(B" "http://www.asahi.com/travel/porepore/"
+       ("ぽれぽれサファリ" "http://www.asahi.com/travel/porepore/"
 	,@(shimbun-asahi-make-regexp "travel.porepore"))
-       ("$BEgN9$?$S(B" "http://www.asahi.com/travel/shima/"
+       ("島旅たび" "http://www.asahi.com/travel/shima/"
 	,(format (car travel) "travel/shima") ,@(cdr travel))
-       ("$B=54)%7%k%/%m!<%I5*9T(B" "http://www.asahi.com/travel/silkroad/"
+       ("週刊シルクロード紀行" "http://www.asahi.com/travel/silkroad/"
 	,@(shimbun-asahi-make-regexp "travel.silkroad"))
-       ("$B0&$NN9?M(B" "http://www.asahi.com/travel/traveler/"
+       ("愛の旅人" "http://www.asahi.com/travel/traveler/"
 	,(format (car travel) "travel/traveler") ,@(cdr travel)))))
   "Alist of parent groups and lists of tables for subgroups.
 Each table is the same as the `cdr' of the element of
@@ -950,7 +950,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAEIAAAAQBAMAAABQPLQnAAAAElBMVEX8rKjd3Nj+7utdXFr
 
 (luna-define-method initialize-instance :after ((shimbun shimbun-asahi)
 						 &rest init-args)
-  (shimbun-set-server-name-internal shimbun "$BD+F|?7J9(B")
+  (shimbun-set-server-name-internal shimbun "朝日新聞")
   (shimbun-set-from-address-internal shimbun "nobody@example.com")
   ;; To share class variables between `shimbun-asahi' and its
   ;; successor `shimbun-asahi-html'.
@@ -989,7 +989,7 @@ Contents will be saved in the shimbun header as the extra element."
 	   (goto-char (point-min))
 	   (when (and (re-search-forward "\
 <div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"ArticleBody\"" nil t)
-		      (search-forward "$B"'(B" nil t)
+		      (search-forward "▼" nil t)
 		      (re-search-backward
 		       "<p\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>" nil t)
 		      (shimbun-end-of-tag "p" t))
@@ -997,8 +997,8 @@ Contents will be saved in the shimbun header as the extra element."
 		   (concat "<p>\n"
 			   (mapconcat 'identity
 				      (split-string (match-string 3)
-						    "[\t\n $B!!(B]*$B"'(B[\t\n $B!!(B]*" t)
-				      "$B!#(B\n</p>\n<p>\n$B!!(B")
+						    "[\t\n 　]*▼[\t\n 　]*" t)
+				      "。\n</p>\n<p>\n　")
 			   "\n</p>\n")))
 	   (goto-char (point-max))))
     (with-temp-buffer
@@ -1131,7 +1131,7 @@ Contents will be saved in the shimbun header as the extra element."
 				    ".")
 		  id (if (and extra
 			      (not (save-match-data
-				     (string-match "$B=54)D+F|!&#A#E#R#A$+$i(B"
+				     (string-match "週刊朝日・ＡＥＲＡから"
 						   from))))
 			 (concat "<" serial "%" extra "." rgroup "."
 				 shimbun-asahi-top-level-domain ">")
@@ -1167,7 +1167,7 @@ Contents will be saved in the shimbun header as the extra element."
 			    (save-match-data
 			      (shimbun-replace-in-string
 			       (match-string (nth 3 numbers))
-			       "\\(?:[\t\n $B!!(B]*&#[0-9]+;\\)*[\t\n $B!!(B]*" "")))
+			       "\\(?:[\t\n 　]*&#[0-9]+;\\)*[\t\n 　]*" "")))
 			   (t
 			    (match-string (nth 3 numbers))))
 		     ;; from
@@ -1177,9 +1177,9 @@ Contents will be saved in the shimbun header as the extra element."
 			 (save-match-data
 			   (when (and book-p
 				      (string-match
-				       "\\`$B=qI>!!(B\\[$BI><T(B\\]\\($B$=$NB>(B\\)?" num))
+				       "\\`書評　\\[評者\\]\\(その他\\)?" num))
 			     (setq num (if (match-beginning 1)
-					   "$B=qI>(B"
+					   "書評"
 					 (substring num (match-end 0)))))
 			   (shimbun-replace-in-string
 			    from "(RSS" (concat "(" num)))
@@ -1209,7 +1209,7 @@ Contents will be saved in the shimbun header as the extra element."
 			(match-string (nth 0 numbers))
 			(cond (book-p
 			       "http://book.asahi.com/")
-			      ((string-match "$BA%66MN0l$N@$3&%V%j!<%U%#%s%0(B"
+			      ((string-match "船橋洋一の世界ブリーフィング"
 					     from)
 			       "http://opendoors.asahi.com/syukan/briefing/")
 			      (iraq-p
@@ -1219,14 +1219,14 @@ Contents will be saved in the shimbun header as the extra element."
 		     ;; extra
 		     extra)
 		    headers)))
-	  (when (string-match "$B;d$N%_%+%?(B" from)
+	  (when (string-match "私のミカタ" from)
 	    (setq headers (nreverse headers))))
 	(if subgroups
 	    (progn
 	      (erase-buffer)
 	      (setq from (concat (shimbun-server-name shimbun)
 				 " (" (caar subgroups) ")")
-		    iraq-p (string-equal (caar subgroups) "$B%$%i%/>p@*(B"))
+		    iraq-p (string-equal (caar subgroups) "イラク情勢"))
 	      (shimbun-retrieve-url (cadar subgroups))
 	      (setq regexp (caddar subgroups)
 		    numbers (cdddar subgroups)
@@ -1247,7 +1247,7 @@ Contents will be saved in the shimbun header as the extra element."
     (let ((end (match-beginning 0)))
       (prog1
 	  (when (re-search-backward "\
-<a[\t\n ]+href=\"\\([^\"]+\\)\"[^>]*>[\t\n ]*$B<!%Z!<%8(B[\t\n ]*</a>"
+<a[\t\n ]+href=\"\\([^\"]+\\)\"[^>]*>[\t\n ]*次ページ[\t\n ]*</a>"
 				    end 'move)
 	    (goto-char end)
 	    (shimbun-expand-url (match-string 1) url))
@@ -1308,9 +1308,9 @@ article contents."
     (cond
      ((string-equal group "car")
       (shimbun-remove-tags "\
-\[\t\n ]*<![\t\n ]*-+[\t\n ]*[$B!z!y(B]+[\t\n ]*AD[\t\n ]*[$B!z!y(B]+[\t\n ]*-+>"
+\[\t\n ]*<![\t\n ]*-+[\t\n ]*[★☆]+[\t\n ]*AD[\t\n ]*[★☆]+[\t\n ]*-+>"
 			   "\
-<![\t\n ]*-+[\t\n ]*/[\t\n ]*[$B!z!y(B]+[\t\n ]*AD[\t\n ]*[$B!z!y(B]+[\t\n ]*-+>\
+<![\t\n ]*-+[\t\n ]*/[\t\n ]*[★☆]+[\t\n ]*AD[\t\n ]*[★☆]+[\t\n ]*-+>\
 \[\t\n ]*")
       (goto-char (point-min))
       (when (and (re-search-forward (shimbun-content-start shimbun) nil t)
@@ -1321,15 +1321,15 @@ article contents."
 	(insert "\n<!-- End of Kiji -->\n")))
      ((string-equal group "digital")
       (shimbun-remove-tags "\
-\[\t\n ]*<![\t\n ]*-+[\t\n ]*[$B!z!y(B]+[\t\n ]*AD[\t\n ]*[$B!z!y(B]+[\t\n ]*-+>"
+\[\t\n ]*<![\t\n ]*-+[\t\n ]*[★☆]+[\t\n ]*AD[\t\n ]*[★☆]+[\t\n ]*-+>"
 			   "\
-<![\t\n ]*-+[\t\n ]*/[\t\n ]*[$B!z!y(B]+[\t\n ]*AD[\t\n ]*[$B!z!y(B]+[\t\n ]*-+>\
+<![\t\n ]*-+[\t\n ]*/[\t\n ]*[★☆]+[\t\n ]*AD[\t\n ]*[★☆]+[\t\n ]*-+>\
 \[\t\n ]*")
-      (cond ((string-match "$B%3%i%`(B" from)
+      (cond ((string-match "コラム" from)
 	     (unless (re-search-forward (shimbun-content-end shimbun) nil t)
 	       (when (re-search-forward "\\(?:[\t\b ]*<[^>]+>\\)*[\t\n ]*\
-\\(?:<img[\t\n ]+src=\"[^>]*[\t\n ]*alt=\"$B%W%m%U%#!<%k(B\"\
-\\|<h[0-9]>$B%W%m%U%#!<%k(B</h[0-9]>\\)"
+\\(?:<img[\t\n ]+src=\"[^>]*[\t\n ]*alt=\"プロフィール\"\
+\\|<h[0-9]>プロフィール</h[0-9]>\\)"
 					nil t)
 		 (goto-char (match-beginning 0))
 		 (insert "\n<!-- End of Kiji -->\n"))))))
@@ -1345,9 +1345,9 @@ article contents."
 	(insert "\n<!-- End of Kiji -->\n")))
      ((string-equal group "housing")
       (shimbun-remove-tags
-       "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<!--$B9-9p%9%-%C%W(B -->"
-       "<!--/$B9-9p%9%-%C%W$N$H$S@h(B-->[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*")
-      (when (string-match "$B%^%s%7%g%s(B\\|$B8M7z$F(B" from)
+       "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*<!--広告スキップ -->"
+       "<!--/広告スキップのとび先-->[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*")
+      (when (string-match "マンション\\|戸建て" from)
 	(goto-char (point-min))
 	(re-search-forward "<td[\t\n ]+valign=\"top\">[\t\n ]*\
 \\(?:<[^>]+>[\t\n ]*\\)*"
@@ -1369,18 +1369,18 @@ article contents."
       (when (re-search-forward "\
 <!-+[\t\n ]*end[\t\n ]+of[\t\n ]+headline[\t\n ]*-+>[\t\n ]*\
 <p[\t\n ]+class=[^>]+>[\t\n ]*\\([^<]+\\)</p>[\t\n ]*\
-<p[\t\n ]+id=\"date\">[\t\n ]*20[0-9][0-9]$BG/(B[01]?[0-9]$B7n(B[0-3]*[0-9]$BF|(B[\t\n ]*\
+<p[\t\n ]+id=\"date\">[\t\n ]*20[0-9][0-9]年[01]?[0-9]月[0-3]*[0-9]日[\t\n ]*\
 </p>[\t\n ]*"
 			       nil t)
 	(replace-match "<!-- Start of Kiji -->\\1<br>\n")))
-     ((string-match "$B$N$N$A$c$s$N#D#O2J3X(B" from)
+     ((string-match "ののちゃんのＤＯ科学" from)
       ;; Remove furigana.
-      (while (re-search-forward "\\(\\cj\\)$B!J(B\\cH+$B!K(B" nil t)
+      (while (re-search-forward "\\(\\cj\\)（\\cH+）" nil t)
 	(replace-match "\\1")))
-     ((string-match "$B$f$k$f$k%U%'%_%K%s(B" from)
+     ((string-match "ゆるゆるフェミニン" from)
       (let (comics)
 	(while (re-search-forward
-		"<img[\t\n ]+src=\"[^>]+alt=\"$B%^%s%,(B\"[^>]*>"
+		"<img[\t\n ]+src=\"[^>]+alt=\"マンガ\"[^>]*>"
 		nil t)
 	  (push (match-string 0) comics))
 	(erase-buffer)
@@ -1388,23 +1388,23 @@ article contents."
 	  (insert "<!-- Start of Kiji -->\n"
 		  (mapconcat 'identity comics "<br>\n")
 		  "\n<!-- End of Kiji -->\n"))))
-     ((string-match "$BA%66MN0l$N@$3&%V%j!<%U%#%s%0(B" from)
+     ((string-match "船橋洋一の世界ブリーフィング" from)
       (when (re-search-forward "\
-<img[\t\n ]+src=\"[^>]+[\t\n ]+alt=\"$BA%66MN0l4i<L??(B\">"
+<img[\t\n ]+src=\"[^>]+[\t\n ]+alt=\"船橋洋一顔写真\">"
 			       nil t)
 	(goto-char (match-beginning 0))
 	(insert "<!-- Start of Kiji -->")
 	(when (re-search-forward "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\
 \\(?:<TD[\t\n ]+id=\"sidebar\">\
 \\|<a[\t\n ]+href=\"http://opendoors\\.asahi\\.com/data/detail/\
-\\|<!-+[\t\n ]*$B%H%T%C%/%9(B[\t\n ]*-+>\\)"
+\\|<!-+[\t\n ]*トピックス[\t\n ]*-+>\\)"
 				 nil t)
 	  (goto-char (match-beginning 0))
 	  (insert "\n<!-- End of Kiji -->"))))
-     ((string-match "$BCf9qFC=8(B" from)
+     ((string-match "中国特集" from)
       (let (start)
 	(when (and (re-search-forward "\
-<H2>$BCf9q:G?7%K%e!<%9(B</H2>[\t\n ]*<H1>[^>]+</H1>[\t\n ]*"
+<H2>中国最新ニュース</H2>[\t\n ]*<H1>[^>]+</H1>[\t\n ]*"
 				      nil t)
 		   (progn
 		     (setq start (match-end 0))
@@ -1415,19 +1415,19 @@ article contents."
 	  (insert "\n<!-- End of Kiji -->")
 	  (delete-region (point-min) (goto-char start))
 	  (insert "<!-- Start of Kiji -->\n"))))
-     ((string-match "$BElMN7P:Q%K%e!<%9(B" from)
+     ((string-match "東洋経済ニュース" from)
       ;; Insert newlines.
       (shimbun-with-narrowed-article
        shimbun
-       (while (re-search-forward "$B!#!!(B?\\(\\cj\\)" nil t)
-	 (replace-match "$B!#(B<br><br>$B!!(B\\1"))))
-     ((string-match "$BF#Bt<~J?$N@$3&(B\\|$B?M4V9qJu(B" from)
+       (while (re-search-forward "。　?\\(\\cj\\)" nil t)
+	 (replace-match "。<br><br>　\\1"))))
+     ((string-match "藤沢周平の世界\\|人間国宝" from)
       (when (re-search-forward "\
 <div[\t\n ]+\\(?:class=\"kiji\"\\|id=\"kokuhou-waza\"\\)>[\t\n ]*"
 			       nil t)
 	(insert "\n<!-- Start of Kiji -->\n")
 	(when (re-search-forward "\
-\\(?:[\t\n ]*<[^>]+>\\)?\\(?:[\t\n ]*20[0-9][0-9]$BG/(B[01]?[0-9]$B7n(B[0-3]?[0-9]$BF|(B\
+\\(?:[\t\n ]*<[^>]+>\\)?\\(?:[\t\n ]*20[0-9][0-9]年[01]?[0-9]月[0-3]?[0-9]日\
 \\(?:[\t\n ]*<[^>]+>\\)*\\)?[\t\n ]*<!-+[\t\n ]*google"
 				 nil t)
 	  (goto-char (match-beginning 0))
@@ -1436,31 +1436,31 @@ article contents."
      shimbun
      ;; Remove sitesearch area.
      (when (re-search-forward "[\t\n ]*\\(?:<div[\t\n ]+[^>]+>[\t\n ]*\\)+\
-$B$3$N5-;v$N4XO">pJs$r%"%5%R!&%3%`Fb$G8!:w$9$k(B"
+この記事の関連情報をアサヒ・コム内で検索する"
 			      nil t)
        (goto-char (match-beginning 0))
        (insert "\n<!-- End of Kiji -->"))
      ;; Remove ads.
      (goto-char (point-min))
      (when (re-search-forward "[\t\n ]*<p[\t\n ]+class=\"hide\">[\t\n ]\
-*$B$3$3$+$i9-9p$G$9(B[\t\n ]*</p>"
+*ここから広告です[\t\n ]*</p>"
 			      nil t)
        (let ((start (match-beginning 0)))
 	 (when (re-search-forward "<p[\t\n ]+class=\"hide\">[\t\n ]*\
-$B9-9p=*$o$j(B\\(?:[\t\n ]*</p>[\t\n ]*\\|\\'\\)"
+広告終わり\\(?:[\t\n ]*</p>[\t\n ]*\\|\\'\\)"
 				  nil t)
 	   (delete-region start (match-end 0)))))
      ;; Remove trailing garbage.
      (goto-char (point-min))
-     (when (and (not (string-match "$B$f$k$f$k%U%'%_%K%s(B" from))
+     (when (and (not (string-match "ゆるゆるフェミニン" from))
 		(re-search-forward
-		 "\\(?:</p>\\)?\\(\\(?:[\t\n $B!!(B]*<[^>]+>\\)+[\t\n $B!!(B]*\\'\\)"
+		 "\\(?:</p>\\)?\\(\\(?:[\t\n 　]*<[^>]+>\\)+[\t\n 　]*\\'\\)"
 		 nil t))
        (goto-char (match-beginning 0))
-       (while (or (and (looking-at "[\t\n $B!!(B]*\\(</[^>]+>\\)[\t\n $B!!(B]*")
+       (while (or (and (looking-at "[\t\n 　]*\\(</[^>]+>\\)[\t\n 　]*")
 		       ;; Don't remove close tags.
 		       (progn (replace-match "\\1") t))
-		  (and (looking-at "[\t\n $B!!(B]*<[^>]+>[\t\n $B!!(B]*\\|[\t\n $B!!(B]+")
+		  (and (looking-at "[\t\n 　]*<[^>]+>[\t\n 　]*\\|[\t\n 　]+")
 		       (progn (replace-match "") t))))
        (goto-char (point-max))
        (unless (bolp) (insert "\n"))))))

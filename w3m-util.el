@@ -1,4 +1,4 @@
-;;; w3m-util.el --- Utility macros and functions for emacs-w3m
+;;; w3m-util.el --- Utility macros and functions for emacs-w3m -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001-2014, 2016-2018 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

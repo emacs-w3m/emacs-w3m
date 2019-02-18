@@ -1,4 +1,4 @@
-;;; sb-airs.el --- shimbun backend for lists.airs.net
+;;; sb-airs.el --- shimbun backend for lists.airs.net -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2005, 2007
 ;; Yuuichi Teranishi <teranisi@gohome.org>

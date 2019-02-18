@@ -1,4 +1,4 @@
-;;; w3m-ucs.el --- CCL programs to process Unicode.
+;;; w3m-ucs.el --- CCL programs to process Unicode. -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2001, 2005, 2007 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

@@ -1,4 +1,4 @@
-;;; sb-itmedia.el --- shimbun backend for ITmedia -*- coding: iso-2022-7bit -*-
+;;; sb-itmedia.el --- shimbun backend for ITmedia -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2004-2011, 2013 Yuuichi Teranishi <teranisi@gohome.org>
 
@@ -58,19 +58,19 @@
     ,@(mapcar
        (lambda (def)
 	 (nconc (list (concat "+D.lifestyle.column." (car def)) nil) def))
-       '(("asakura" "$BKcARNg;N(B"
+       '(("asakura" "麻倉怜士"
 	  "http://www.itmedia.co.jp/keywords/emma.html")
-	 ("honda" "$BK\ED2m0l(B")
-	 ("kobayashi" "$B$3$P$d$7$f$?$+(B")
-	 ("kodera" "$B>.;{?.NI(B"
+	 ("honda" "本田雅一")
+	 ("kobayashi" "こばやしゆたか")
+	 ("kodera" "小寺信良"
 	  "http://www.itmedia.co.jp/keywords/kodera_nobuyoshi.html")
-	 ("nishi" "$B@>@5(B")
-	 ("ogikubo" "$B2.7&7=(B"
+	 ("nishi" "西正")
+	 ("ogikubo" "荻窪圭"
 	  "http://plusd.itmedia.co.jp/lifestyle/features/satuei/")
-	 ("tachibana" "$B5L==FA(B"
+	 ("tachibana" "橘十徳"
 	  "http://plusd.itmedia.co.jp/lifestyle/features/jibara/")
-	 ("takemura" "$BC]B<>y(B")
-	 ("unakami" "$B3$>eG&(B"
+	 ("takemura" "竹村譲")
+	 ("unakami" "海上忍"
 	  "http://plusd.itmedia.co.jp/lifestyle/features/keyword/")))))
 
 (defvar shimbun-itmedia-x-face-alist
@@ -167,8 +167,8 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 					    header url)
   (goto-char (point-min))
   (when (re-search-forward
-	 "<b><a href=\"\\([^\"]+\\)\">$B<!$N%Z!<%8(B</a></b>\
-\\|<span id=\"next\"><a href=\"\\([^\"]+\\)\">$B<!$N%Z!<%8$X(B</a></span>" nil t)
+	 "<b><a href=\"\\([^\"]+\\)\">次のページ</a></b>\
+\\|<span id=\"next\"><a href=\"\\([^\"]+\\)\">次のページへ</a></span>" nil t)
     (let ((next (or (match-string 1) (match-string 2))))
       (prog1
 	  (shimbun-expand-url next url)
@@ -193,7 +193,7 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
     (when (and (not has-previous-page)
 	       (progn
 		 (goto-char (point-min))
-		 (re-search-forward "<!--$B"#%/%l%8%C%H(B-->[\t\n ]*" nil t))
+		 (re-search-forward "<!--■クレジット-->[\t\n ]*" nil t))
 	       (looking-at "<p\\( [^\n>]+>[^\n]+</\\)p>"))
       (setq credit (match-string 1))
       (when (string-match "<b>\\[ITmedia\\]</b>" credit)
@@ -208,7 +208,7 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 				     nil t)
 		  (shimbun-end-of-tag "div" t)
 		  (save-match-data
-		    (re-search-backward "[$B<!A0(B]$B$N%Z!<%8$X(B"
+		    (re-search-backward "[次前]のページへ"
 					(match-beginning 0) t)))
 	(replace-match "\n"))
       (goto-char (point-min))
@@ -237,7 +237,7 @@ id=\"cms\\(?:Abstract\\|Byline\\|\\(Body\\)\\)\"" nil t)
 		   (shimbun-end-of-tag "div" t))
 	  (setq end (match-end 1))
 	  (goto-char start)
-	  (delete-region (if (re-search-forward "[\t\n ]*<h[0-9]>[\t\n ]*$B4XO"(B"
+	  (delete-region (if (re-search-forward "[\t\n ]*<h[0-9]>[\t\n ]*関連"
 						end t)
 			     (match-beginning 0)
 			   end)
@@ -288,8 +288,8 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>")
 
 (luna-define-method shimbun-make-contents :before ((shimbun shimbun-itmedia)
 						   header)
-  (when (re-search-forward "\\([0-9]+\\)$BG/(B\\([0-9]+\\)$B7n(B\\([0-9]+\\)$BF|(B \
-\\([0-9]+\\)$B;~(B\\([0-9]+\\)$BJ,(B $B99?7(B" nil t)
+  (when (re-search-forward "\\([0-9]+\\)年\\([0-9]+\\)月\\([0-9]+\\)日 \
+\\([0-9]+\\)時\\([0-9]+\\)分 更新" nil t)
     (shimbun-header-set-date
      header
      (shimbun-make-date-string
@@ -302,13 +302,13 @@ a1100\\.g\\.akamai\\.net\\)/[^>]+>[^<]*</A>")
 					    header &optional html)
   (if html
       (concat "<div align=\"left\">\n--&nbsp;<br>\n\
-$B$3$N5-;v$N=t8"Mx$O(B&nbsp;ITmedia&nbsp;$B$^$?$O>pJs$NDs6!85$K5"B0$7$^$9!#(B<br>
-$B86J*$O(B<a href=\""
+この記事の諸権利は&nbsp;ITmedia&nbsp;または情報の提供元に帰属します。<br>
+原物は<a href=\""
 	      (shimbun-article-base-url shimbun header)
-	      "\"><u>$B$3$3(B</u></a>$B$G8x3+$5$l$F$$$^$9!#(B\n</div>\n")
+	      "\"><u>ここ</u></a>で公開されています。\n</div>\n")
     (concat "-- \n\
-$B$3$N5-;v$N=t8"Mx$O(B ITmedia $B$^$?$O>pJs$NDs6!85$K5"B0$7$^$9!#(B\n\
-$B86J*$O0J2<$N>l=j$G8x3+$5$l$F$$$^$9(B:\n"
+この記事の諸権利は ITmedia または情報の提供元に帰属します。\n\
+原物は以下の場所で公開されています:\n"
 	    (shimbun-article-base-url shimbun header) "\n")))
 
 (provide 'sb-itmedia)

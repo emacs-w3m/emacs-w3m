@@ -1,4 +1,4 @@
-;;; sb-exconn.el --- shimbun backend for eXperts Connection
+;;; sb-exconn.el --- shimbun backend for eXperts Connection -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2004, 2005, 2006 Yoichi NAKAYAMA <yoichi@geiin.org>
 

@@ -1,4 +1,4 @@
-;;; w3m-rss.el --- RSS functions
+;;; w3m-rss.el --- RSS functions -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2004, 2005, 2012 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

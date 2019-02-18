@@ -1,4 +1,4 @@
-;;; sb-yoshirin.el --- shimbun backend for Yoshinori Kobayashi Official Site -*- coding: iso-2022-7bit; -*-
+;;; sb-yoshirin.el --- shimbun backend for Yoshinori Kobayashi Official Site -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2015, 2016 Katsumi Yamaoka
 
@@ -33,13 +33,13 @@
 (defvar shimbun-yoshirin-url
   (concat "http://" shimbun-yoshirin-top-level-domain "/"))
 
-(defvar shimbun-yoshirin-server-name "$B>.NS$h$7$N$j8x<0%5%$%H(B")
+(defvar shimbun-yoshirin-server-name "小林よしのり公式サイト")
 
 (defvar shimbun-yoshirin-group-table
   '(("blog" "BLOG" "http://yoshinori-kobayashi.com/category/blog/"
-     "$B>.NS$h$7$N$j(B")
+     "小林よしのり")
     ("topics" "TOPICS" "http://yoshinori-kobayashi.com/category/topics/"
-     "$B$h$7$j$s4k2h(B")))
+     "よしりん企画")))
 
 (defvar shimbun-yoshirin-index-range 20
   "*The number of indices that should be checked to detect new articles.
@@ -98,14 +98,14 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAADFBMVEUAAAD///9fX1/d3d1
   (shimbun-yoshirin-footer shimbun header))
 (defun shimbun-yoshirin-footer (shimbun header)
   (concat "<div align=\"left\">\n--&nbsp;<br>\n\
-$B$3$N5-;v$N=t8"Mx$O(B"
+この記事の諸権利は"
 	  (if (equal (shimbun-current-group-internal shimbun) "blog")
-	      "$B>.NS$h$7$N$j$5$s(B"
-	    "$B>.NS$h$7$N$j$5$s!"$^$?$O$h$7$j$s4k2h(B")
-	  "$B$K5"B0$9$k$O$:$G$9!#(B<br>
-$B86J*$O(B<a href=\""
+	      "小林よしのりさん"
+	    "小林よしのりさん、またはよしりん企画")
+	  "に帰属するはずです。<br>
+原物は<a href=\""
 	  (shimbun-article-base-url shimbun header)
-	  "\"><u>$B$3$3(B</u></a>$B$G8x3+$5$l$F$$$^$9!#(B\n</div>\n"))
+	  "\"><u>ここ</u></a>で公開されています。\n</div>\n"))
 
 (defvar shimbun-yoshirin-header-regexp
   (concat

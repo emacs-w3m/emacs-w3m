@@ -1,4 +1,4 @@
-;;; sb-sponichi.el --- shimbun backend for www.sponichi.co.jp -*- coding: iso-2022-7bit -*-
+;;; sb-sponichi.el --- shimbun backend for www.sponichi.co.jp -*- coding: utf-8 -*-
 
 ;; Copyright (C) 2001, 2002, 2003 Tatsuya Ichikawa
 ;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
@@ -38,20 +38,20 @@
 		   (shimbun-japanese-newspaper shimbun) ())
 
 (defvar shimbun-sponichi-url "http://www.sponichi.co.jp/")
-(defvar shimbun-sponichi-server-name "$B%9%]!<%D%K%C%]%s?7J9Bg:eK\<R(B")
+(defvar shimbun-sponichi-server-name "スポーツニッポン新聞大阪本社")
 (defvar shimbun-sponichi-group-table
-  '(("baseball" . "$BLn5e(B")
-    ("soccer" . "$B%5%C%+!<(B")
-    ("usa" . "$B%"%a%j%+(B")
-    ("others" . "$B$=$NB>(B")
-    ("society" . "$B<R2q(B")
-    ("entertainment" . "$B7]G=(B")
-    ("horseracing" . "$B6%GO(B")
-    ("golf" . "$B%4%k%U(B")
-    ("battle" . "$B3JF.5;(B")))
+  '(("baseball" . "野球")
+    ("soccer" . "サッカー")
+    ("usa" . "アメリカ")
+    ("others" . "その他")
+    ("society" . "社会")
+    ("entertainment" . "芸能")
+    ("horseracing" . "競馬")
+    ("golf" . "ゴルフ")
+    ("battle" . "格闘技")))
 (defvar shimbun-sponichi-from-address "webmaster@www.sponichi.co.jp")
-(defvar shimbun-sponichi-content-start "<!--$B%K%e!<%95-;v$3$3$+$i(B -->")
-(defvar shimbun-sponichi-content-end "<!--$B%K%e!<%95-;v$3$3$^$G(B -->")
+(defvar shimbun-sponichi-content-start "<!--ニュース記事ここから -->")
+(defvar shimbun-sponichi-content-end "<!--ニュース記事ここまで -->")
 (defvar shimbun-sponichi-expiration-days 7)
 
 (luna-define-method shimbun-groups ((shimbun shimbun-sponichi))
@@ -63,7 +63,7 @@
 
 (luna-define-method shimbun-from-address ((shimbun shimbun-sponichi))
   (shimbun-mime-encode-string
-   (format "$B%9%]%K%A(B (%s) <%s>"
+   (format "スポニチ (%s) <%s>"
 	   (shimbun-current-group-name shimbun)
 	   (shimbun-from-address-internal shimbun))))
 

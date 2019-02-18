@@ -1,4 +1,4 @@
-;;; sb-pocketgames.el --- shimbun backend class for www.pocketgames.jp. -*- coding: iso-2022-7bit; -*-
+;;; sb-pocketgames.el --- shimbun backend class for www.pocketgames.jp. -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2003, 2004, 2005, 2008 NAKAJIMA Mikio <minakaji@namazu.org>
 
@@ -63,7 +63,7 @@
 	(goto-char start)
 	(unless
 	    (re-search-forward
-	     "Posted by: \\(.+\\) on \\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\) (\\($B7n(B\\|$B2P(B\\|$B?e(B\\|$BLZ(B\\|$B6b(B\\|$BEZ(B\\|$BF|(B\\))  - \\([0-9][0-9]:[0-9][0-9]\\) JST <\/font>"
+	     "Posted by: \\(.+\\) on \\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\) (\\(月\\|火\\|水\\|木\\|金\\|土\\|日\\))  - \\([0-9][0-9]:[0-9][0-9]\\) JST <\/font>"
 	     end t nil)
 	  (throw 'quit nil))
 	(setq from (shimbun-mime-encode-string (match-string 1))
