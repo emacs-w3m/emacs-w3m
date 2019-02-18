@@ -440,7 +440,7 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
 		    (let ((hseq (nth 2 (w3m-action (point))))
 			  (value (w3m-form-get form id)))
 		      (when (> hseq 0)
-			(push textareas (cons hseq value) textareas))
+			(push (cons hseq value) textareas))
 		      (unless (eq form cform)
 			(w3m-form-put cform id name value))))
 		   ((string= type "file")
