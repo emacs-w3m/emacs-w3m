@@ -22,6 +22,11 @@
 	* w3m.el (w3m-resize-image-interactive): Refactor function to remove
 	code duplications.
 
+2019-02-12  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-dtree.el (w3m-dtree-create-sub): BUGFIX: don't abort if a subdir
+	denies permission to read.
+
 2019-02-03  Boruch Baum  <boruch_baum@gmx.com>
 
 	* Refactor entire codebase for utf-8. There were a zillion changes in
