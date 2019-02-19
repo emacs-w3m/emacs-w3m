@@ -62,19 +62,24 @@ install:
   - if [ "$TRAVIS_OS_NAME" = 'osx' ]; then
        if [ "$EMACS" = 'xemacs21' ]; then
           brew version xemacs21 &&
-          brew install xemacs21;
+          brew install xemacs21 &&
+          brew install w3m;
        elif [ "$EMACS" = 'aquamacs' ]; then
           brew version aquamacs &&
-          brew install aquamacs;
+          brew install aquamacs &&
+          brew install w3m;
        elif [ "$EMACS" = 'emacs25' ]; then
+          brew install w3m &&
           wget https://emacsformacosx.com/emacs-builds/Emacs-25.2-universal.dmg &&
           hdiutil attach Emacs-25.2-universal.dmg &&
           sudo ln -s /Volumes/Emacs/Emacs.app/Contents/MacOS/Emacs /usr/local/bin/emacs;
        elif [ "$EMACS" = 'emacs26' ]; then
           brew versions emacs &&
-          brew install emacs  --with-cocoa;
+          brew install emacs  --with-cocoa &&
+          brew install w3m;
        elif [ "$EMACS" = 'emacs-snapshot' ]; then
-          brew install emacs --HEAD --devel --use-git-head --with-cocoa;
+          brew install emacs --HEAD --devel --use-git-head --with-cocoa &&
+          brew install w3m;
        fi;
     fi
 
