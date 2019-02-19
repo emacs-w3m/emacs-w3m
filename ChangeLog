@@ -1,3 +1,12 @@
+2019-02-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Add some tweaks to Boruch Baum's changes
+
+	* w3m.el (w3m-db-history-fix-indentation): New function.
+	(w3m-create-text-page): Use it to fix indentation in db history.
+	(w3m-about-db-history): Don't fold Time/Date string.
+	(w3m-db-history): Raise GUI dialog box if called from GUI.
+
 2019-02-19  Boruch Baum  <boruch_baum@gmx.com>
 
 	Improve history display
@@ -48,7 +57,8 @@
 
 2019-02-03  Boruch Baum  <boruch_baum@gmx.com>
 
-	* w3m-filter.el (w3m-filter-xkcd, w3m-filter-github-repo-main-page): New filters.
+	* w3m-filter.el (w3m-filter-xkcd, w3m-filter-github-repo-main-page):
+	New filters.
 	(w3m-filter-configuration): Add the new filters.
 
 2019-01-31  Katsumi Yamaoka  <yamaoka@jpl.org>
