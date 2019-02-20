@@ -1,3 +1,8 @@
+2019-02-20  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-print-this-url): BUGFIX: should not time-out current url
+	message.
+
 2019-02-14  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m-resize-image-interactive): refactor function to remove
