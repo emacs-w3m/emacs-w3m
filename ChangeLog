@@ -1,3 +1,11 @@
+2019-02-19  Boruch Baum  <boruch_baum@gmx.com>
+
+	* .travis.yaml: Add support for multiple emacs versions and 
+	multiple operating systems.
+  
+	* READMME.md: Add the file as a stub, with example "badge"
+	picture for travis building and GPL licensing.
+
 2019-02-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Add some tweaks to Boruch Baum's changes
