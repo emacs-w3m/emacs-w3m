@@ -1,10 +1,10 @@
 2019-02-19  Boruch Baum  <boruch_baum@gmx.com>
 
-  * .travis.yaml: Add support for multiple emacs versions
-  and multiple operating systems.
+	* .travis.yaml: Add support for multiple emacs versions and 
+	multiple operating systems.
   
-  * READMME.md: Add the file as a stub, with example "badge"
-  picture for travis building and GPL licensing.
+	* READMME.md: Add the file as a stub, with example "badge"
+	picture for travis building and GPL licensing.
 
 2019-02-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -39,6 +39,11 @@
 
 	* w3m.el (w3m-resize-image-interactive): Refactor function to remove
 	code duplications.
+
+2019-02-12  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-dtree.el (w3m-dtree-create-sub): BUGFIX: don't abort if a subdir
+	denies permission to read.
 
 2019-02-03  Boruch Baum  <boruch_baum@gmx.com>
 
