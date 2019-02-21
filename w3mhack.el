@@ -943,17 +943,18 @@ NOTE: This function must be called from the top directory."
 
 (defun w3mhack-insert-git-revision ()
   (let ((revision
-	 (with-temp-buffer
-	   (when (and (file-exists-p ".git/config")
-		      (executable-find "git")
-		      (zerop (call-process "git"
-					   nil
-					   t
-					   nil
-					   "log" "--oneline" "-n" "1" ".")))
-	     (goto-char (point-min))
-	     (skip-chars-forward "^ ")
-	     (concat "\"" (buffer-substring (point-min) (point)) "\"")))))
+	 (or (with-temp-buffer
+	       (when (and (file-exists-p ".git")
+		          (executable-find "git")
+		          (zerop (call-process "git"
+					       nil
+					       t
+					       nil
+					       "log" "--oneline" "-n" "1" ".")))
+	         (goto-char (point-min))
+	         (skip-chars-forward "^ ")
+	         (concat "\"" (buffer-substring (point-min) (point)) "\"")))
+             "unknown")))
     (goto-char (point-max))
     (while (progn
 	     (forward-line -1)
