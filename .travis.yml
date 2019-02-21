@@ -137,12 +137,3 @@ script:
     printf "$bad_msg" &&
     emacs -Q --batch -l w3mhack.el NONE -f w3mhack-nonunix-install ;
   fi
-
-# notifications:
-#   slack:
-#     secure: KI95ZGXKWu2Bj2ee7xPovGQicL3opDLRwmkJszcW/6VjMbaSBKTM0KUOI97q0UgLbYCAJYa3/Upszbh64D+EOrIseynxmsD3ZC9VKB9YElyVoOr7wre+Kmh0F979pHNS/xqj5qabX8P+wA0zttW0zpSrT6yayntVHSS5Q7VOAzmTwr5MvEBv8SMQgI3LTwiXiRkrPs3bvjUom2NJAAG4Ir6OgzjSI0D0F9NfkWVDeckoX2YQzS/vW5GTbTedEQxXGpxWivWOkqwwW7XNSJY4rPQ6l66Jx+iT7wgNYX0RgWJTG63AbGEGSXX7urOROdzDm/9P7vh8n707wK0Fbf0hVc3zZGJG0HfpllvkiPbA9CTKSgsTbWpXlzkx8HFoAc7TC/j9jvdTYO0KktojCdADtne0A3Ms18nFxdHrn1bFowIWBSvdwlvVx0IWEy69bl8yui8Ecs/a60LL48BEm9lUxvQzn2NB4ku/oQsTQOfWTbnZPUzqC74N20i/80w7xS/LjsDx2fBMPGoedZ2Si+CW4ODTZ0S6C9b3sTiuDsDRiatfac01b/VGXL/oRVrSgiVhcsYqlb7TBd2u87HqbZ8BbAB4K6e2weUVnJD/+PdsFUgBQ4q/bcFvil9L7BK2x96LitdkYvxCjWuI8AYeMSsmGMGTFP9B3JhY4doC0gxmufg=
-
-branches:
-  only:
-   - master
-   - bb_travis
