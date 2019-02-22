@@ -39,7 +39,7 @@
 
 (defconst shimbun-kinsoku-bol-list
   (append "!)-_~}]:;',.?、。，．・：；？！゛゜´｀¨＾￣＿ヽヾゝゞ〃\
-仝々〆〇ー―‐／＼〜‖｜…‥’”）〕］｝〉》」』】°′″℃ぁぃぅぇぉ\
+仝々〆〇ー—‐／＼〜‖｜…‥’”）〕］｝〉》」』】°′″℃ぁぃぅぇぉ\
 っゃゅょゎァィゥェォッャュョヮヵヶ" nil))
 
 (defconst shimbun-kinsoku-eol-list

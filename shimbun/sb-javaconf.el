@@ -1,4 +1,4 @@
-;;; sb-javaconf.el --- shimbun backend class for java-conference archive. -*- coding: utf-8; -*-
+;;; sb-javaconf.el --- shimbun backend class for java-conference archive.
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2007 ABE Yasushi <yasushi@stbbs.net>
 

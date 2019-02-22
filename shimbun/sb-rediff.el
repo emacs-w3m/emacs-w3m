@@ -1,4 +1,4 @@
-;;; sb-rediff.el --- shimbun backend for rediff.com -*- coding: utf-8; -*-
+;;; sb-rediff.el --- shimbun backend for rediff.com
 
 ;; Copyright (C) 2004, 2005, 2006, 2010 S V N Vishwanathan <vishketan@yahoo.com>
 

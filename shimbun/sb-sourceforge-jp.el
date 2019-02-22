@@ -1,4 +1,4 @@
-;;; sb-sourceforge-jp.el --- shimbun backend for lists.sourceforge.jp -*- coding: utf-8; -*-
+;;; sb-sourceforge-jp.el --- shimbun backend for lists.sourceforge.jp
 
 ;; Copyright (C) 2003, 2004, 2005, 2007, 2017
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

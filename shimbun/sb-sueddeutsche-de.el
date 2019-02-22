@@ -1,4 +1,4 @@
-;;; sb-sueddeutsche-de.el --- sueddeutsche.de shimbun backend -*- coding: utf-8; -*-
+;;; sb-sueddeutsche-de.el --- sueddeutsche.de shimbun backend
 
 ;; Copyright (C) 2008, 2009, 2010 David Engster
 

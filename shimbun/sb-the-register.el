@@ -1,4 +1,4 @@
-;;; sb-the-register.el --- The Register shimbun backend -*- coding: utf-8; -*-
+;;; sb-the-register.el --- The Register shimbun backend
 
 ;; Copyright (C) 2004, 2005, 2006, 2007, 2008 David Hansen
 

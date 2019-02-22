@@ -1,4 +1,4 @@
-;;; sb-fml.el --- shimbun backend class for fml archiver. -*- coding: utf-8; -*-
+;;; sb-fml.el --- shimbun backend class for fml archiver.
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2009, 2010
 ;; Akihiro Arisawa <ari@mbf.sphere.ne.jp>

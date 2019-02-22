@@ -1,4 +1,4 @@
-;;; sb-plucker.el --- shimbun backend for Plucker mailing lists. -*- coding: utf-8; -*-
+;;; sb-plucker.el --- shimbun backend for Plucker mailing lists.
 
 ;; Copyright (C) 2003, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 

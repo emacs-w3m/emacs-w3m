@@ -944,7 +944,7 @@ NOTE: This function must be called from the top directory."
 (defun w3mhack-insert-git-revision ()
   (let ((revision
 	 (with-temp-buffer
-	   (when (and (file-exists-p ".git/config")
+	   (when (and (file-directory-p ".git")
 		      (executable-find "git")
 		      (zerop (call-process "git"
 					   nil

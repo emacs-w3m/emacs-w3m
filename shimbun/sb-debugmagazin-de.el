@@ -1,4 +1,4 @@
-;;; sb-debugmagazin-de.el --- de-bug.de shimbun backend -*- coding: utf-8; -*-
+;;; sb-debugmagazin-de.el --- de-bug.de shimbun backend
 
 ;; Copyright (C) 2008, 2009 David Engster
 

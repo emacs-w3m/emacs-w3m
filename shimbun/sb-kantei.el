@@ -155,9 +155,9 @@ jp/m-magazine/backnumber/hukuda.html")
 	  ((string-equal group "blog-ja.kan")
 	   "菅直人")
 	  ((string-equal group "m-magazine-cn.hatoyama")
-	   "$Ap/山由ち射夫")
+	   "鸠山由纪夫")
 	  ((string-equal group "m-magazine-kr.hatoyama")
-	   "$(CGOEd>_86 $(C@/E0?@")
+	   "하토야마 유키오")
 	  ((string-equal group "m-magazine-en.hatoyama")
 	   "Yukio Hatoyama")
 	  ((string-equal group "m-magazine-ja.hatoyama")
@@ -532,8 +532,8 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 				    1)
 				   ((member from '("Yukio Hatoyama"
 						   "鳩山由紀夫"
-						   "$Ap/山由ち射夫"
-						   "$(CGOEd>_86 $(C@/E0?@"))
+						   "鸠山由纪夫"
+						   "하토야마 유키오"))
 				    2)
 				   ((member from '("Taro Aso"
 						   "麻生太郎"))
