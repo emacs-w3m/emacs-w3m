@@ -1,3 +1,8 @@
+2019-02-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-db-history): Remove GUI stuff; prompt a user for `start'
+	and `size' only when it is called interactively.
+
 2019-02-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* w3mhack.el (w3mhack-insert-git-revision): Check the existence of
