@@ -1,4 +1,4 @@
-;;; sb-arch-bluegate.el --- shimbun backend for arch.bluegate.org -*- coding: utf-8; -*-
+;;; sb-arch-bluegate.el --- shimbun backend for arch.bluegate.org
 
 ;; Copyright (C) 2005 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 

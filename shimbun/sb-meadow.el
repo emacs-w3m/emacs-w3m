@@ -1,4 +1,4 @@
-;;; sb-meadow.el --- shimbun backend for meadow-ml -*- coding: utf-8; -*-
+;;; sb-meadow.el --- shimbun backend for meadow-ml
 
 ;; Copyright (C) 2001, 2002, 2003, 2004
 ;; Akihiro Arisawa <ari@mbf.sphere.ne.jp>

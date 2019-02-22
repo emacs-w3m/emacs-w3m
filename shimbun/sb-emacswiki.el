@@ -1,4 +1,4 @@
-;;; sb-emacswiki.el --- emacswiki shimbun backend -*- coding: utf-8; -*-
+;;; sb-emacswiki.el --- emacswiki shimbun backend
 
 ;; Copyright (C) 2004, 2005 David Hansen
 

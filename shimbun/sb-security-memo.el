@@ -1,4 +1,4 @@
-;;; sb-security-memo.el --- shimbun backend for security-memo ML. -*- coding: utf-8; -*-
+;;; sb-security-memo.el --- shimbun backend for security-memo ML.
 
 ;; Copyright (C) 2001, 2003, 2004 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

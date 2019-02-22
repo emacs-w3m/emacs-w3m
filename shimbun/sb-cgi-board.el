@@ -1,4 +1,4 @@
-;;; sb-cgi-board.el --- Shimbun backend for CGI_Board bulletin board systems -*- coding: utf-8; -*-
+;;; sb-cgi-board.el --- Shimbun backend for CGI_Board bulletin board systems
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: shimbun

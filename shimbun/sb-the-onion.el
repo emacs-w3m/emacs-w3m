@@ -1,4 +1,4 @@
-;;; sb-the-onion.el --- The Onion shimbun backend -*- coding: utf-8; -*-
+;;; sb-the-onion.el --- The Onion shimbun backend
 
 ;; Copyright (C) 2006 David Hansen
 
