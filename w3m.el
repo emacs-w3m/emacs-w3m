@@ -11007,24 +11007,7 @@ default. Use 0 to display the entire history on a single page."
     (setq start (read-number "How far back in the history to start displaying?: "
                   0))
     (setq size (read-number "How many entries per page (0 for all on one page)?: "
-                  (or size 0)))
-    (when (zerop size)
-      (let* ((len 0)
-             (max-page-size (or w3m-db-history-display-size 0))
-             (page-size
-               (progn
-                 (mapatoms
-                   (lambda (sym)
-                     (and sym (symbol-value sym) (incf len)))
-                   w3m-arrived-db)
-               (- len start))))
-        (when (> page-size max-page-size)
-          (when (not (y-or-n-p
-            (format "That would be a very large single page of %d entries.
-Press 'y' to continue anyway, 'n' to display %d entries per page,
-or 'C-g' to abort. "
-            page-size max-page-size)))
-            (setq size max-page-size)))))))
+                  (or size w3m-db-history-display-size 0)))))
   (let ((url (format "about://db-history/?start=%d&size=%d"
                (or start 0) (or size 0))))
    (if w3m-history-in-new-buffer
