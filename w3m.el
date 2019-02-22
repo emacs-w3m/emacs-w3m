@@ -10952,8 +10952,7 @@ It does manage history position data as well."
 	(goto-char start)))
     (set-buffer-modified-p nil)))
 
-(defcustom w3m-db-history-display-size
-  (and (> w3m-keep-arrived-urls 500) 500)
+(defcustom w3m-db-history-display-size 100
   "*Maximum number of arrived URLs which are displayed per page."
   :group 'w3m
   :type '(radio (const :tag "All entries are displayed in single page." nil)
@@ -10996,18 +10995,41 @@ which to begin displaying, where 0 is the most recent entry.
 SIZE is the maximum number of arrived URLs which are displayed
 per page. Variable `w3m-db-history-display-size' sets the
 default. Use 0 to display the entire history on a single page."
-  (interactive (list (read-number
-		      "How far back in the history to start displaying: "
-		      0)
-		     (read-number
-		      "How many entries per page (0 for all on one page): "
-		      (or w3m-db-history-display-size 0))))
-  (or start (setq start 0))
-  (or size (setq size (or w3m-db-history-display-size 0)))
-  (let ((url (format "about://db-history/?start=%d&size=%d" start size)))
-    (if w3m-history-in-new-buffer
-	(w3m-goto-url-new-session url)
-      (w3m-goto-url url nil nil nil nil nil nil nil t))))
+  (interactive)
+  (cond
+   ((or executing-kbd-macro noninteractive)
+    (or start (setq start 0))
+    (or size (setq size (or w3m-db-history-display-size 0))))
+   (t ; called interactively; possibly indirectly
+      ; NOTE: This is expected to be the common and default case, with
+      ; this function being called by the interactive function
+      ; `w3m-history' using the keybinding `C-u h'.
+    (setq start (read-number "How far back in the history to start displaying?: "
+                  0))
+    (setq size (read-number "How many entries per page (0 for all on one page)?: "
+                  (or size 0)))
+    (when (zerop size)
+      (let* ((len 0)
+             (max-page-size (or w3m-db-history-display-size 0))
+             (page-size
+               (progn
+                 (mapatoms
+                   (lambda (sym)
+                     (and sym (symbol-value sym) (incf len)))
+                   w3m-arrived-db)
+               (- len start))))
+        (when (> page-size max-page-size)
+          (when (not (y-or-n-p
+            (format "That would be a very large single page of %d entries.
+Press 'y' to continue anyway, 'n' to display %d entries per page,
+or 'C-g' to abort. "
+            page-size max-page-size)))
+            (setq size max-page-size)))))))
+  (let ((url (format "about://db-history/?start=%d&size=%d"
+               (or start 0) (or size 0))))
+   (if w3m-history-in-new-buffer
+     (w3m-goto-url-new-session url)
+    (w3m-goto-url url nil nil nil nil nil nil nil t))))
 
 (defun w3m-history (&optional arg)
   "Display the current buffer's browsing history tree.
