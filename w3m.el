@@ -10815,12 +10815,17 @@ A history page is invoked by the `w3m-about-history' command.")
   ;; unnecessary arguments because this function is one of several
   ;; called by `w3m-about-retrieve' using a generically constructed
   ;; `funcall'.
-  (let ((start 0)
-	(size 0)
-	(print-all t)
-	(width (- (w3m-display-width) 21))
-	(now (current-time))
-	title time alist prev next page total)
+  (let* ((start 0)
+         (size 0)
+         (print-all t)
+         (width (- (w3m-display-width) 21)) ; magic number is time-stamp length
+         (lt-char "❬") ; nice unicode replacement for &lt;
+         (rt-char "❭") ; nice unicode replacement for &lt;
+         (ellipsis "…")
+         (adjusted-width-a (- width (1- (string-width (concat lt-char rt-char ellipsis)))))
+         (adjusted-width-b (- width (1- (string-width ellipsis))))
+         (now (current-time))
+         title time alist prev next page total)
     (when (string-match "\\`about://db-history/\\?" url)
       (dolist (s (split-string (substring url (match-end 0)) "&"))
 	(when (string-match "\\`\\(?:size\\|\\(start\\)\\)=" s)
@@ -10891,16 +10896,16 @@ A history page is invoked by the `w3m-about-history' command.")
 	 ((or (null title) (string= "<no-title>" title))
 	  (setq title
 		(concat
-		 "&lt;"
+		 lt-char
 		 (if (> (string-width url) width)
-		     (w3m-truncate-string url (- width 2) nil ?  "…")
+		     (w3m-truncate-string url adjusted-width-a nil ? ellipsis)
 		   url)
-		 "&gt")))
+		 rt-char)))
 	 (t
 	  (setq title
 		(w3m-encode-specials-string
 		 (if (> (string-width title) width)
-		     (w3m-truncate-string title width nil ?  "…")
+		     (w3m-truncate-string title adjusted-width-b nil ? ellipsis)
 		   title)))))
 	(insert (format "<tr><td><a href=\"%s\">%s</a></td>"
 			url title))
@@ -10908,6 +10913,9 @@ A history page is invoked by the `w3m-about-history' command.")
 	  (insert "<td>"
 		  (if (<= (w3m-time-lapse-seconds time now)
 			  64800) ;; = (* 60 60 18) 18hours.
+                    ;; NOTE: If you change this time-string format,
+                    ;; you need to also change the regexp in function
+                    ;; `w3m-db-history-fix-indentation'
 		      (format-time-string "%H:%M:%S&nbsp;Today" time)
 		    (format-time-string "%H:%M:%S&nbsp;%Y-%m-%d" time))
 		  "</td>"))
