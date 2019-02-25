@@ -1582,12 +1582,12 @@ buffer."
       (goto-char start)
       ;; Ｚ＠Ｚ -> Ｚ@Ｚ
       ;; where Ｚ is a zenkaku alphanumeric, ＠ is a zenkaku symbol.
-      (while (re-search-forward "\\cA[．´｀＾＿―‐／＼｜’＠]\\cA" nil t)
+      (while (re-search-forward "\\cA[．´｀＾＿—‐／＼｜’＠]\\cA" nil t)
 	(backward-char 2)
 	(insert (prog1
 		    (cdr (assq (char-after)
 			       '((?． . ?.) (?´ . ?') (?｀ . ?`)
-				 (?＾ . ?^) (?＿ . ?_) (?― . ?-)
+				 (?＾ . ?^) (?＿ . ?_) (?— . ?-)
 				 (?‐ . ?-) (?／ . ?/) (?＼ . ?\\)
 				 (?｜ . ?|) (?’ . ?') (?＠ . ?@))))
 		  (delete-char 1))))
@@ -1602,7 +1602,7 @@ buffer."
 	(error))
       (goto-char start)
       (while (re-search-forward
-	      "[^　、。，．＿ー―‐〜〜‘’“”（）［］｛｝〈〉＝′″￥]+"
+	      "[^　、。，．＿ー—‐〜〜‘’“”（）［］｛｝〈〉＝′″￥]+"
 	      nil t)
 	(japanese-hankaku-region (match-beginning 0) (match-end 0) t))
       (goto-char start)
@@ -1631,7 +1631,7 @@ buffer."
 	(backward-char 2))
       (goto-char start)
       (while (re-search-forward "\
-\\([0-9]\\)\\(?:\\(．\\)\\|\\(＿\\)\\|\\(―\\)\\|\\(‐\\)\\)\\([0-9]\\)"
+\\([0-9]\\)\\(?:\\(．\\)\\|\\(＿\\)\\|\\(—\\)\\|\\(‐\\)\\)\\([0-9]\\)"
 				nil t)
 	(replace-match (cond ((match-beginning 2)
 			      "\\1.\\6")
@@ -1642,7 +1642,7 @@ buffer."
 	(backward-char 1))
       (when (eq w3m-output-coding-system 'utf-8)
 	(goto-char start)
-	(while (re-search-forward "\\([$A!.!0‘“]\\)\\|[$A!c’”°′″]" nil t)
+	(while (re-search-forward "\\([‘“‘“]\\)\\|[°’”°′″]" nil t)
 	  (if (match-beginning 1)
 	      (or (memq (char-before (match-beginning 1)) '(?  ?　))
 		  (string-equal (buffer-substring
@@ -1693,7 +1693,7 @@ buffer."
 		   (and (member (match-string 1) '("午前" "午後"))
 			(eq (char-before) ?時))
 		   (memq (char-before (match-end 1))
-			 '(?　 ?＋ ?− ?± ?× ?÷ ?＝ ?≠ ?≦ ?≧ ?
+			 '(?　 ?＋ ?− ?± ?× ?÷ ?＝ ?≠ ?≦ ?≧ ?≒
 			       ?≪ ?≫))
 		   (and (memq (char-before (match-end 1)) '(?第 ?約))
 			(memq ?j
@@ -1740,14 +1740,14 @@ buffer."
       (let ((regexp
 	     (if (eq w3m-output-coding-system 'utf-8)
 		 (eval-when-compile
-		   (let ((chars "$A!2!4!6!8!:!<!>ち、。，．・゛゜￣ヽヾゝゞ〃\
+		   (let ((chars "〔〈《「『〖【＂（、。，．・゛゜￣ヽヾゝゞ〃\
 〜（）〔〕［］｛｝〈〉《》「」『』【】"))
-		     (concat "\\(?:[ 　]\\|&nbsp;\\)\\([" chars "$A!f々℃]\\)"
+		     (concat "\\(?:[ 　]\\|&nbsp;\\)\\([" chars "℃々℃]\\)"
 			     "\\|\\([" chars "]\\)\\(?:[ 　]\\|&nbsp;\\)")))
 	       (eval-when-compile
-		 (let ((chars "$A!.!0!2!4!6!8!:!<!>!c!d!e!lち、。，．・゛゜¨\
+		 (let ((chars "‘“〔〈《「『〖【°′″§＂（、。，．・゛゜¨\
 ￣ヽヾゝゞ〃〜‖…‥‘’“”（）〔〕［］｛｝〈〉《》「」『』【】°′″§"))
-		   (concat "\\(?:[ 　]\\|&nbsp;\\)\\([" chars "$A!f々℃]\\)"
+		   (concat "\\(?:[ 　]\\|&nbsp;\\)\\([" chars "℃々℃]\\)"
 			   "\\|\\([" chars "]\\)\\(?:[ 　]\\|&nbsp;\\)"))))))
 	(while (re-search-forward regexp nil t)
 	  (goto-char (match-beginning 0))

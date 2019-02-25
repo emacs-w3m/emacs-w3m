@@ -1,4 +1,4 @@
-;;; sb-macosx-jp.el --- shimbun backend for macosx-jp -*- coding: utf-8; -*-
+;;; sb-macosx-jp.el --- shimbun backend for macosx-jp
 
 ;; Copyright (C) 2002 OHASHI Akira <bg66@koka-in.org>
 

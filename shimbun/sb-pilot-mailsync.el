@@ -1,4 +1,4 @@
-;;; sb-pilot-mailsync.el --- shimbun backend for http://lists.gnu-designs.com/pipermail/pilot-mailsync/ -*- coding: utf-8; -*-
+;;; sb-pilot-mailsync.el --- shimbun backend for http://lists.gnu-designs.com/pipermail/pilot-mailsync/
 
 ;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 

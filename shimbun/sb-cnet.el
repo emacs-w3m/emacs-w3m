@@ -1,4 +1,4 @@
-;;; sb-cnet.el --- shimbun backend for CNET -*- coding: utf-8; -*-
+;;; sb-cnet.el --- shimbun backend for CNET
 
 ;; Copyright (C) 2004, 2006, 2009, 2010
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

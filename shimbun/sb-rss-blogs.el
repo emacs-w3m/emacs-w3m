@@ -1,4 +1,4 @@
-;;; sb-rss-blogs.el --- Back end for RSS feeds with unpublished content -*- coding: utf-8; -*-
+;;; sb-rss-blogs.el --- Back end for RSS feeds with unpublished content
 
 ;; Copyright (C) 2008, 2010 David Engster
 

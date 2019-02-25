@@ -1,4 +1,4 @@
-;;; sb-ffii.el --- shimbun backend for <http://www.ffii.org/news/rss/> -*- coding: utf-8; -*-
+;;; sb-ffii.el --- shimbun backend for <http://www.ffii.org/news/rss/>
 
 ;; Copyright (C) 2004, 2005
 ;; Felix E. Klee <felix.klee@inka.de>

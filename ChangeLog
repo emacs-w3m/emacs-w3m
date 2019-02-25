@@ -1,7 +1,87 @@
 2019-02-25  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-favicon.el (w3m-favicon-convert): bugfix: check string bounds
-	before use (Andr,Ai(Bs Ram,Am(Brez <rrandresf@gmail.com> [emacs-w3m:13266])
+	before use (Andres Ramirez <rrandresf@gmail.com> [emacs-w3m:13266])
+
+2019-02-25  Boruch Baum  <boruch_baum@gmx.com>, TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* octet.el: Documentation update
+
+2019-02-25  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-decode-entities-string): Simplify function.
+
+2019-02-25  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-form.el (w3m-form-make-form-data, w3m-form-resume)
+	(w3m-form-parse-and-fontify), w3m-hist.el
+	(w3m-history-slimmed-history-flat), w3m-mail.el
+	(w3m-mail-compose-with-semi), w3m-proc.el (w3m-process-new),
+	w3m-session.el (w3m-session-save), w3m-util.el
+	(w3m-make-menu-commands), w3m.el (w3m-toggle-inline-image): Simplify
+	forms '(setq x (cons (cons ...  ) x))'
+
+2019-02-25  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-encode-specials-string): Simplify, remove need for
+	nreverse, remove need for constant w3m-entity-reverse-table.
+
+2019-02-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-db-history): Remove GUI stuff; prompt a user for `start'
+	and `size' only when it is called interactively.
+
+2019-02-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3mhack.el (w3mhack-insert-git-revision): Check the existence of
+	'.git' instead of '.git/config'.  This change is proposed by
+	<clemens@endorphin.org>.
+
+2019-02-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_EMACS_LISP): Use a file to pass ELisp program to Emacs.
+
+2019-02-19  Boruch Baum  <boruch_baum@gmx.com>
+
+	* .travis.yaml: Add support for multiple emacs versions and
+	multiple operating systems.
+
+	* READMME.md: Add the file as a stub, with example "badge"
+	picture for travis building and GPL licensing.
+
+2019-02-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Add some tweaks to Boruch Baum's changes
+
+	* w3m.el (w3m-db-history-fix-indentation): New function.
+	(w3m-create-text-page): Use it to fix indentation in db history.
+	(w3m-about-db-history): Don't fold Time/Date string.
+	(w3m-db-history): Raise GUI dialog box if called from GUI.
+
+2019-02-19  Boruch Baum  <boruch_baum@gmx.com>
+
+	Improve history display
+
+	Fix the handling of the START and SIZE args for the global history
+	display, applies cosmetic changes to that display, and adds an option
+	for all forms of history display to be done in a new buffer.
+
+	* w3m.el (w3m-history-in-new-buffer): New option.
+	(w3m-db-history): Apply the new option.  Add details to docstring.
+	Allow interactive user to set function options START and SIZE.
+	(w3m-history): Apply the new option.  Improve docstring.
+	(w3m-about-history): Add programmer's note.  Modify Docstring.
+	(w3m-about-db-history): Add programmer's note.  Modify Docstring.
+	Properly handle START and SIZE arguments.
+	Modify html output for: clarity, date display format, use of ellipsis,
+	maximum use of page width, center heading, align page navigation links
+	to page edges, remove extraneous ';' after url's, add ellipsis when
+	truncating url's.
+
+2019-02-14  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-resize-image-interactive): Refactor function to remove
+	code duplications.
 
 2019-02-12  Boruch Baum  <boruch_baum@gmx.com>
 
@@ -28,7 +108,8 @@
 
 2019-02-03  Boruch Baum  <boruch_baum@gmx.com>
 
-	* w3m-filter.el (w3m-filter-xkcd, w3m-filter-github-repo-main-page): New filters.
+	* w3m-filter.el (w3m-filter-xkcd, w3m-filter-github-repo-main-page):
+	New filters.
 	(w3m-filter-configuration): Add the new filters.
 
 2019-01-31  Katsumi Yamaoka  <yamaoka@jpl.org>

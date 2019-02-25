@@ -2275,13 +2275,6 @@ for the words."
   "*Alist of (numeric . string) pairs for numeric character reference
 other than ISO 10646.")
 
-(defconst w3m-entity-reverse-table
-  (let ((table (make-hash-table :test 'equal)))
-    (maphash (lambda (key val) (puthash val key table))
-	     w3m-entity-table)
-    table)
-  "Revision table of html character entities and values.")
-
 (defconst w3m-entity-regexp
   (let (buf)
     (maphash (lambda (key val) (push key buf))
@@ -4104,9 +4097,8 @@ non-nil, cached data will not be used."
 	    (when (and (< p end)
 		       (setq iurl (w3m-image p))
 		       (not (assoc iurl toggle-list)))
-	    (setq toggle-list (cons (cons iurl p) toggle-list)))))
-      (setq toggle-list (and (w3m-image)
-			     `(,(cons (w3m-image) (point))))))
+	    (push (cons iurl p) toggle-list))))
+      (setq toggle-list (and (w3m-image) (cons (w3m-image) (point)))))
     (if toggle-list
 	(dolist (x toggle-list)
 	  (let* ((url (car x))
@@ -4281,49 +4273,35 @@ You are retrieving non-secure image(s).  Continue? ")
   "Interactively resize IMAGE.
 If RATE is not given, use `w3m-resize-image-scale'.
 CHANGED-RATE is currently changed rate / 100."
-  (let ((char (w3m-static-if (featurep 'xemacs)
-		  (progn
-		    (message
-		     "Resize: [+ =] enlarge [-] shrink [0] original [q] quit")
-		    (read-char-exclusive))
-		(read-char-exclusive
-		 (propertize
-		  "Resize: [+ =] enlarge [-] shrink [0] original [q] quit"
-		  'face 'w3m-lnum-minibuffer-prompt))))
-	(changed-rate (or changed-rate 1)))
-    (w3m-static-if (featurep 'xemacs)
-	(setq char (char-octet char)))
-    (while (memq char '(?+ ?- ?= ?0))
-      (cond ((memq char '(?+ ?=))
-	     (let ((percent (+ 100 (or rate
-				       w3m-resize-image-scale))))
-	       (w3m-resize-inline-image-internal image percent)
-	       (setq changed-rate (* changed-rate
-				     (/ percent 100.0)))))
-	    ((eq char ?-)
-	     (let ((percent (/ 10000.0 (+ 100 (if rate
-						  (if (> rate 99) 99
-						    rate)
-						w3m-resize-image-scale)))))
-	       (w3m-resize-inline-image-internal image percent)
-	       (setq changed-rate (* changed-rate
-				     (/ percent 100.0)))))
-	    ((eq char ?0)
-	     (w3m-resize-inline-image-internal image
-					       (/ 100.0 changed-rate))
-	     (setq changed-rate 1)))
-      (setq char
-	    (w3m-static-if (featurep 'xemacs)
-		(progn
-		  (message
-		   "Resize: [+ =] enlarge [-] shrink [0] original [q] quit")
-		  (read-char-exclusive))
-	      (read-char-exclusive
-	       (propertize
-		"Resize: [+ =] enlarge [-] shrink [0] original [q] quit"
-		'face 'w3m-lnum-minibuffer-prompt))))
-      (w3m-static-if (featurep 'xemacs)
-	  (setq char (char-octet char))))))
+  (let* ((msg-prompt "Resize: [+ =] enlarge [-] shrink [0] original [q] quit")
+         (changed-rate (or changed-rate 1))
+         (rate (or (and rate (min rate 99)) w3m-resize-image-scale))
+         char)
+    (while
+      (cond
+       ((memq
+          (setq char
+            (w3m-static-if (featurep 'xemacs)
+              (progn
+                 (w3m-message msg-prompt)
+                 (char-octet (read-char-exclusive)))
+             (read-char-exclusive
+               (propertize msg-prompt 'face 'w3m-lnum-minibuffer-prompt))))
+          '(?+ ?=))
+        (let ((percent (+ 100 rate)))
+          (w3m-resize-inline-image-internal image percent)
+          (setq changed-rate (* changed-rate
+                                (/ percent 100.0)))))
+       ((eq char ?-)
+        (let ((percent (/ 10000.0 (+ 100 rate))))
+          (w3m-resize-inline-image-internal image percent)
+          (setq changed-rate (* changed-rate
+                                (/ percent 100.0)))))
+       ((eq char ?0)
+        (w3m-resize-inline-image-internal image
+                                          (/ 100.0 changed-rate))
+        (setq changed-rate 1))
+       (t nil)))))
 
 (defun w3m-zoom-in-image (&optional rate)
   "Zoom in an image on the point.
@@ -4398,34 +4376,21 @@ If optional KEEP-PROPERTIES is non-nil, text property is reserved."
   (save-match-data
     ;; Character entity references are case-sensitive.
     ;; cf. http://www.w3.org/TR/1999/REC-html401-19991224/charset.html#h-5.3.2
-    (let ((case-fold-search) (pos 0) (buf))
-      (while (string-match w3m-entity-regexp str pos)
-	(setq buf (cons (or (w3m-entity-value (match-string 1 str))
-			    (match-string 1 str))
-			(cons (substring str pos (match-beginning 0))
-			      buf))
-	      pos (if (eq (aref str (match-end 1)) ?\;)
-		      (match-end 0)
-		    (match-end 1))))
-      (if buf
-	  (apply 'concat (nreverse (cons (substring str pos) buf)))
-	str))))
+    (let ((case-fold-search))
+      (replace-regexp-in-string
+        w3m-entity-regexp
+        (lambda (x) (w3m-entity-value (substring x 1 -1)))
+        str))))
 
 (defun w3m-encode-specials-string (str)
   "Encode special characters in the string STR."
-  (let ((pos 0)
-	(buf))
-    (while (string-match "[<>&]" str pos)
-      (setq buf
-	    (cons ";"
-		  (cons (gethash (match-string 0 str) w3m-entity-reverse-table)
-			(cons "&"
-			      (cons (substring str pos (match-beginning 0))
-				    buf))))
-	    pos (match-end 0)))
-    (if buf
-	(apply 'concat (nreverse (cons (substring str pos) buf)))
-      str)))
+  (replace-regexp-in-string "[<>&]"
+    (lambda (x)
+      (cond
+       ((equal "<" x) "&lt;")
+       ((equal ">" x) "&gt;")
+       ((equal "&" x) "&amp;")))
+    str))
 
 (defun w3m-fontify ()
   "Fontify the current buffer."
@@ -6690,7 +6655,10 @@ If so return \"text/html\", otherwise \"text/plain\"."
 	(goto-char (point-min))
 	(w3m-copy-local-variables result-buffer)
 	(set-buffer-file-coding-system w3m-current-coding-system)
-	(when (string= "text/html" type) (w3m-fontify))
+	(when (string= "text/html" type)
+	  (w3m-fontify)
+	  (when (string-match "\\`about://db-history/" url)
+	    (w3m-db-history-fix-indentation)))
 	'text-page))))
 
 (defsubst w3m-image-page-displayed-p ()
@@ -9908,6 +9876,7 @@ helpful message is presented and the operation is aborted."
 	  (w3m--goto-url--handler-function
 	   url reload charset post-data referer redisplay name reuse-history
 	   action orig history-position))))))
+
 ;;;###autoload
 (defun w3m-goto-url (url &optional reload charset post-data referer handler
 			 element no-popup save-pos)
@@ -10732,7 +10701,11 @@ a number.")
 A history page is invoked by the `w3m-about-history' command.")
 
 (defun w3m-about-history (&rest args)
-  "Show a tree-structured history."
+  "Render the current buffer's tree-structured browsing history in HTML."
+  ;; ARGS is not used.  It is necessary in order to >/dev/null
+  ;; unnecessary arguments because this function is one of several
+  ;; called by `w3m-about-retrieve' using a generically constructed
+  ;; `funcall'.
   (let (start history current)
     (with-current-buffer w3m-current-buffer
       (setq history w3m-history-flat
@@ -10816,16 +10789,24 @@ A history page is invoked by the `w3m-about-history' command.")
     "text/html"))
 
 (defun w3m-about-db-history (url &rest args)
+  "Render a flat chronological HTML list of all buffers' browsing history."
+  ;; ARGS is not used. It is necessary in order to >/dev/null
+  ;; unnecessary arguments because this function is one of several
+  ;; called by `w3m-about-retrieve' using a generically constructed
+  ;; `funcall'.
   (let ((start 0)
-	(size nil)
-	(width (- (w3m-display-width) 18))
+	(size 0)
+	(print-all t)
+	(width (- (w3m-display-width) 21))
 	(now (current-time))
 	title time alist prev next page total)
     (when (string-match "\\`about://db-history/\\?" url)
       (dolist (s (split-string (substring url (match-end 0)) "&"))
-	(when (string-match "\\`\\(?:start\\|\\(size\\)\\)=" s)
-	  (set (if (match-beginning 1) 'size 'start)
-	       (string-to-number (substring s (match-end 0)))))))
+	(when (string-match "\\`\\(?:size\\|\\(start\\)\\)=" s)
+	  (if (match-beginning 1)
+	      (setq start (string-to-number (substring s (match-end 0))))
+	    (setq size (string-to-number (substring s (match-end 0))))
+	    (unless (zerop size) (setq print-all nil))))))
     (when w3m-arrived-db
       (mapatoms
        (lambda (sym)
@@ -10840,7 +10821,7 @@ A history page is invoked by the `w3m-about-history' command.")
 			  (w3m-time-newer-p (cdr a) (cdr b))))))
     (setq total (length alist))
     (setq alist (nthcdr start alist))
-    (when size
+    (unless (zerop size)
       (when (> start 0)
 	(setq prev
 	      (format "about://db-history/?start=%d&size=%d"
@@ -10855,48 +10836,59 @@ A history page is invoked by the `w3m-about-history' command.")
     (insert "<html><head><title>URL history in DataBase</title>"
 	    (if prev (format "<link rel=\"prev\" href=\"%s\">\n" prev) "")
 	    (if next (format "<link rel=\"next\" href=\"%s\">\n" next) "")
-	    (format
-	     "</head>\n<body>\n<h1>Arrived URL history in DataBase%s</h1>\n"
-	     (if (and page total)
-		 (format " (%d/%d)" page total) "")))
+	    (format "</head><body>\
+<center><h1>Global URL history for all w3m buffers%s</h1></center>\n"
+		    (if (and page total)
+			(format " (page %d/%d)" page total) "")))
     (setq prev
 	  (if (or prev next)
 	      (setq next
 		    (concat
-		     "<p align=\"left\">"
+		     "<table width=100%><tr>"
 		     (if prev
-			 (format "[<a href=\"%s\">Prev History</a>]" prev)
-		       "")
+			 (format "\
+<td width=50%% align=\"left\">[<a href=\"%s\">Prev Page</a>]</td>" prev)
+		       "<td width=50%%></td>")
 		     (if next
-			 (format "[<a href=\"%s\">Next History</a>]" next)
-		       "")
-		     "</p>\n"))
+			 (format "\
+<td width=50%% align=\"right\">[<a href=\"%s\">Next Page</a>]</td>" next)
+		       "<td width=50%%></td>")
+		     "</tr></table>\n"))
 	    ""))
     (if (null alist)
 	(insert "<em>Nothing in DataBase.</em>\n")
-      (insert prev "<table cellpadding=0>
-<tr><td><h2> Title/URL </h2></td><td><h2>Time/Date</h2></td></tr>\n")
-      (while (and alist
-		  (or (not size)
-		      (>= (decf size) 0)))
+      (insert prev "<table width=100% cellpadding=0>
+<tr><td><h2>Title/URL</h2></td><td><h2>Time/Date</h2></td></tr>\n")
+      (while (and alist (or (>= (decf size) 0) print-all))
 	(setq url (car (car alist))
 	      time (cdr (car alist))
 	      alist (cdr alist)
 	      title (w3m-arrived-title url))
-	(if (or (null title)
-		(string= "<no-title>" title))
-	    (setq title (concat "<" (w3m-truncate-string url width) ">"))
-	  (when (>= (string-width title) width)
-	    (setq title (concat (w3m-truncate-string title width) "..."))))
+	;; Note that truncation might not take place in the desired position
+	;; if it is in the middle of a wide char or unsuitable font is used.
+	(cond
+	 ((or (null title) (string= "<no-title>" title))
+	  (setq title
+		(concat
+		 "&lt;"
+		 (if (> (string-width url) width)
+		     (w3m-truncate-string url (- width 2) nil ?  "…")
+		   url)
+		 "&gt")))
+	 (t
+	  (setq title
+		(w3m-encode-specials-string
+		 (if (> (string-width title) width)
+		     (w3m-truncate-string title width nil ?  "…")
+		   title)))))
 	(insert (format "<tr><td><a href=\"%s\">%s</a></td>"
-			url
-			(w3m-encode-specials-string title)))
+			url title))
 	(when time
 	  (insert "<td>"
 		  (if (<= (w3m-time-lapse-seconds time now)
 			  64800) ;; = (* 60 60 18) 18hours.
-		      (format-time-string "%H:%M:%S" time)
-		    (format-time-string "%Y-%m-%d" time))
+		      (format-time-string "%H:%M:%S&nbsp;Today" time)
+		    (format-time-string "%H:%M:%S&nbsp;%Y-%m-%d" time))
 		  "</td>"))
 	(insert "</tr>\n"))
       (insert "</table>"
@@ -10946,22 +10938,77 @@ It does manage history position data as well."
   :type '(radio (const :tag "All entries are displayed in single page." nil)
 		(integer :format "%t: %v\n")))
 
+(defcustom w3m-history-in-new-buffer nil
+  "Whether to display URL histories in the current buffer."
+  :group 'w3m
+  :type 'boolean)
+
+(defun w3m-db-history-fix-indentation ()
+  "Fix wrong indentation that `w3m -halfdump' may produce in db history."
+  (let ((min-column 9999)
+	(regexp "[012][0-9]:[0-5][0-9]:[0-5][0-9] \
+\\(?:20[1-9][0-9]-[01][0-9]-[0-3][0-9]\\|Today\\) *$")
+	(inhibit-read-only t))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward regexp nil t)
+	(goto-char (match-beginning 0))
+	(setq min-column (min min-column (current-column)))
+	(forward-line 1))
+      (goto-char (point-min))
+      (while (re-search-forward regexp nil t)
+	(goto-char (match-beginning 0))
+	(delete-char (min 0 (- min-column (current-column))))
+	(forward-line 1)))))
+
 (defun w3m-db-history (&optional start size)
-  "Display arrived URLs."
-  (interactive
-   (list nil w3m-db-history-display-size))
-  (w3m-goto-url (concat
-		 (format "about://db-history/?start=%d" (or start 0))
-		 (if size (format "&size=%d" size) ""))
-		 nil nil nil nil nil nil nil t))
+  "Display a flat chronological list of all buffers' browsing history.
+
+This is a flat (not hierarchial) presentation of all URLs visited
+by ALL w3m buffers, and includes a timestamp for when the URL was
+visited. The list is presented in reverse-chronological order,
+ie. most recent URL first.
+
+START is a positive integer for the point in the history list at
+which to begin displaying, where 0 is the most recent entry.
+
+SIZE is the maximum number of arrived URLs which are displayed
+per page. Variable `w3m-db-history-display-size' sets the
+default. Use 0 to display the entire history on a single page."
+  (interactive (list (read-number
+		      "How far back in the history to start displaying: "
+		      0)
+		     (read-number
+		      "How many entries per page (0 for all on one page): "
+		      (or w3m-db-history-display-size 0))))
+  (or start (setq start 0))
+  (or size (setq size (or w3m-db-history-display-size 0)))
+  (let ((url (format "about://db-history/?start=%d&size=%d" start size)))
+    (if w3m-history-in-new-buffer
+	(w3m-goto-url-new-session url)
+      (w3m-goto-url url nil nil nil nil nil nil nil t))))
 
 (defun w3m-history (&optional arg)
-  "Display the history of all the links you have visited in the session.
-If it is called with the prefix argument, display the arrived URLs."
+  "Display the current buffer's browsing history tree.
+
+If called with the prefix argument, display a flat chronological
+list of ALL buffers' browsing history.
+
+A buffer's history tree is a hierarchal presentation of all
+URLs visited by the current buffer and its \"parents\", meaning
+that if the buffer was spawned using a command such as
+`w3m-goto-url-new-session', its history will include that of the
+prior w3m buffer.
+
+The flat chronological list is not hierarchial, but includes all
+URLs visited by ALL w3m buffers, as well as a timestamp for when
+the URL was visited. "
   (interactive "P")
-  (if (null arg)
-      (w3m-goto-url "about://history/" nil nil nil nil nil nil nil t)
-    (w3m-db-history nil w3m-db-history-display-size)))
+  (if arg
+      (w3m-db-history nil w3m-db-history-display-size)
+    (if w3m-history-in-new-buffer
+	(w3m-goto-url-new-session "about://history/")
+      (w3m-goto-url "about://history/" nil nil nil nil nil nil nil t))))
 
 (defun w3m-w32-browser-with-fiber (url)
   (let ((proc (start-process "w3m-w32-browser-with-fiber"

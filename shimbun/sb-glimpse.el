@@ -1,4 +1,4 @@
-;;; sb-glimpse.el --- shimbun backend class for Glimpse archive -*- coding: utf-8; -*-
+;;; sb-glimpse.el --- shimbun backend class for Glimpse archive
 
 ;; Copyright (C) 2001, 2002, 2003 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 

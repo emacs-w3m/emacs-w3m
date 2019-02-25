@@ -1,4 +1,4 @@
-;;; sb-m17n.el --- shimbun backend for m17n.org -*- coding: utf-8; -*-
+;;; sb-m17n.el --- shimbun backend for m17n.org
 
 ;; Copyright (C) 2001, 2002, 2003, 2006, 2009
 ;; Akihiro Arisawa <ari@mbf.sphere.ne.jp>

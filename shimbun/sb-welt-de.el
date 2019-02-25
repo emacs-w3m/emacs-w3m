@@ -1,4 +1,4 @@
-;;; sb-welt-de.el --- shimbun backend for <http://www.welt.de> -*- coding: utf-8; -*-
+;;; sb-welt-de.el --- shimbun backend for <http://www.welt.de>
 
 ;; Copyright (C) 2004, 2005, 2006, 2010
 ;; Andreas Seltenreich <seltenreich@gmx.de>

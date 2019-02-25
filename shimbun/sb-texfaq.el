@@ -1,4 +1,4 @@
-;;; sb-texfaq.el --- shimbun backend for TeX Q&A Bullettein Board. -*- coding: utf-8; -*-
+;;; sb-texfaq.el --- shimbun backend for TeX Q&A Bullettein Board.
 
 ;; Copyright (C) 2002, 2004 Hidetaka Iwai <tyuyu@mb6.seikyou.ne.jp>
 

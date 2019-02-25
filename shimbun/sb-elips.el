@@ -1,4 +1,4 @@
-;;; sb-elips.el --- shimbun backend for the Elips mailing list -*- coding: utf-8; -*-
+;;; sb-elips.el --- shimbun backend for the Elips mailing list
 
 ;; Copyright(C) 2003, 2008 Katsumi Yamaoka
 

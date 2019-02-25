@@ -1,4 +1,4 @@
-;;; sb-debian-jp.el --- shimbun backend for debian.or.jp -*- coding: utf-8; -*-
+;;; sb-debian-jp.el --- shimbun backend for debian.or.jp
 
 ;; Copyright (C) 2001, 2002, 2003 OHASHI Akira <bg66@koka-in.org>
 

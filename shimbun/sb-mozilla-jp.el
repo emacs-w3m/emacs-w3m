@@ -1,4 +1,4 @@
-;;; sb-moz-users.el --- shimbun backend for moz-users -*- coding: utf-8; -*-
+;;; sb-moz-users.el --- shimbun backend for moz-users
 
 ;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
 
