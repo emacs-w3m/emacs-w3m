@@ -1,4 +1,4 @@
-;;; sb-laut-de.el --- shimbun backend for <http://www.laut.de/> -*- coding: utf-8; -*-
+;;; sb-laut-de.el --- shimbun backend for <http://www.laut.de/>
 
 ;; Copyright (C) 2004, 2005, 2006, 2010
 ;; Andreas Seltenreich <seltenreich@gmx.de>

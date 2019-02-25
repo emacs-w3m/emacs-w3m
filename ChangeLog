@@ -1,12 +1,12 @@
-2019-02-19  Boruch Baum  <boruch_baum@gmx.com>, TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+2019-02-25  Boruch Baum  <boruch_baum@gmx.com>, TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* octet.el: Documentation update
 
-2019-02-19  Boruch Baum  <boruch_baum@gmx.com>
+2019-02-25  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m-decode-entities-string): Simplify function.
 
-2019-02-19  Boruch Baum  <boruch_baum@gmx.com>
+2019-02-25  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-form.el (w3m-form-make-form-data, w3m-form-resume)
 	(w3m-form-parse-and-fontify), w3m-hist.el
@@ -16,10 +16,33 @@
 	(w3m-make-menu-commands), w3m.el (w3m-toggle-inline-image): Simplify
 	forms '(setq x (cons (cons ...  ) x))'
 
-2019-02-19  Boruch Baum  <boruch_baum@gmx.com>
+2019-02-25  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m-encode-specials-string): Simplify, remove need for
 	nreverse, remove need for constant w3m-entity-reverse-table.
+
+2019-02-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-db-history): Remove GUI stuff; prompt a user for `start'
+	and `size' only when it is called interactively.
+
+2019-02-21  TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* w3mhack.el (w3mhack-insert-git-revision): Check the existence of
+	'.git' instead of '.git/config'.  This change is proposed by
+	<clemens@endorphin.org>.
+
+2019-02-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_EMACS_LISP): Use a file to pass ELisp program to Emacs.
+
+2019-02-19  Boruch Baum  <boruch_baum@gmx.com>
+
+	* .travis.yaml: Add support for multiple emacs versions and
+	multiple operating systems.
+
+	* READMME.md: Add the file as a stub, with example "badge"
+	picture for travis building and GPL licensing.
 
 2019-02-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 

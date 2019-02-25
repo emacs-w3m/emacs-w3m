@@ -1,4 +1,4 @@
-;;; sb-mailarc.el --- shimbun backend class for mailarc -*- coding: utf-8; -*-
+;;; sb-mailarc.el --- shimbun backend class for mailarc
 
 ;; Copyright (C) 2002, 2003  Free Software Foundation, Inc.
 

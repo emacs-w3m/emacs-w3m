@@ -1,4 +1,4 @@
-;;; sb-pilot-link.el --- shimbun backend for pilot-link -*- coding: utf-8; -*-
+;;; sb-pilot-link.el --- shimbun backend for pilot-link
 
 ;; Copyright (C) 2002, 2003, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 

@@ -1,4 +1,4 @@
-;;; nnshimbun.el --- interfacing with web newspapers -*- coding: utf-8; -*-
+;;; nnshimbun.el --- interfacing with web newspapers
 
 ;; Copyright (C) 2000-2012, 2016-2018 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

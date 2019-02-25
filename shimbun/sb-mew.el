@@ -1,4 +1,4 @@
-;;; sb-mew.el --- shimbun backend for mew.org -*- coding: utf-8; -*-
+;;; sb-mew.el --- shimbun backend for mew.org
 
 ;; Copyright (C) 2001, 2002, 2005 Yuuichi Teranishi <teranisi@gohome.org>
 ;; Copyright (C) 2001, 2002, 2005 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>

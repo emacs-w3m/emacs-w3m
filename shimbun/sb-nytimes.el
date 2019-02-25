@@ -1,4 +1,4 @@
-;;; sb-nytimes.el --- shimbun backend for The New York Times -*- coding: utf-8; -*-
+;;; sb-nytimes.el --- shimbun backend for The New York Times
 
 ;; Copyright (C) 2007, 2008, 2009, 2010 Katsumi Yamaoka
 

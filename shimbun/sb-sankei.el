@@ -34,7 +34,7 @@
 
 (defvar shimbun-sankei-top-level-domain "www.sankei.com")
 
-(defvar shimbun-sankei-server-name "")
+(defvar shimbun-sankei-server-name "産経ニュース")
 
 (defvar shimbun-sankei-group-table
   '(("top" "ニュース"

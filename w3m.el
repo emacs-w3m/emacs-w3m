@@ -10975,35 +10975,14 @@ which to begin displaying, where 0 is the most recent entry.
 SIZE is the maximum number of arrived URLs which are displayed
 per page. Variable `w3m-db-history-display-size' sets the
 default. Use 0 to display the entire history on a single page."
-  (interactive)
-  (cond
-   ((or executing-kbd-macro noninteractive)
-    (or start (setq start 0))
-    (or size (setq size w3m-db-history-display-size)))
-   (t ; called interactively; possibly indirectly
-    (or (prog1 size ;; honor specified size
-	  (or start (setq start 0)))
-	(and (display-popup-menus-p) last-input-event
-	     (listp last-nonmenu-event) use-dialog-box
-	     ;; called from GUI
-	     (let ((len 0))
-	       (mapatoms (lambda (sym)
-			   (and sym (symbol-value sym) (incf len)))
-			 w3m-arrived-db)
-	       (or
-		;; not so many
-		(<= (- len start) (/ w3m-keep-arrived-urls 2))
-		(prog1
-		    ;; raise y/n dialog box
-		    (y-or-n-p (format "Too many history (%d); continue? "
-				      (- len start)))
-		  (setq size (or w3m-db-history-display-size 0))))))
-	(setq start (read-number
-		     "How far back in the history to start displaying: "
-		     start)
-	      size (read-number
-		    "How many entries per page (0 for all on one page): "
-		    (or w3m-db-history-display-size 0))))))
+  (interactive (list (read-number
+		      "How far back in the history to start displaying: "
+		      0)
+		     (read-number
+		      "How many entries per page (0 for all on one page): "
+		      (or w3m-db-history-display-size 0))))
+  (or start (setq start 0))
+  (or size (setq size (or w3m-db-history-display-size 0)))
   (let ((url (format "about://db-history/?start=%d&size=%d" start size)))
     (if w3m-history-in-new-buffer
 	(w3m-goto-url-new-session url)

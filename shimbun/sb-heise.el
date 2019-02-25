@@ -1,4 +1,4 @@
-;;; sb-heise.el --- heise online shimbun backend -*- coding: utf-8; -*-
+;;; sb-heise.el --- heise online shimbun backend
 
 ;; Copyright (C) 2004, 2005, 2008, 2009 David Hansen
 

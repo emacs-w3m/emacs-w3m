@@ -1,4 +1,4 @@
-;;; sb-aljazeera.el --- Al Jazeera shimbun backend -*- coding: utf-8; -*-
+;;; sb-aljazeera.el --- Al Jazeera shimbun backend
 
 ;; Copyright (C) 2007, 2008 David Hansen
 

@@ -1,4 +1,4 @@
-;;; sb-multi.el --- Virtual shimbun class to retrieve multiple pages. -*- coding: utf-8; -*-
+;;; sb-multi.el --- Virtual shimbun class to retrieve multiple pages.
 
 ;; Copyright (C) 2006-2009, 2011 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

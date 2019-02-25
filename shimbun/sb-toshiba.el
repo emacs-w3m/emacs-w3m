@@ -1,4 +1,4 @@
-;;; sb-toshiba.el --- shimbun backend for TOSHIBA Linux users ML -*- coding: utf-8; -*-
+;;; sb-toshiba.el --- shimbun backend for TOSHIBA Linux users ML
 
 ;; Copyright (C) 2001, 2005 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
