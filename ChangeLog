@@ -1,3 +1,8 @@
+2019-02-25  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-favicon.el (w3m-favicon-convert): bugfix: check string bounds
+	before use (Andr,Ai(Bs Ram,Am(Brez <rrandresf@gmail.com> [emacs-w3m:13266])
+
 2019-02-12  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-dtree.el (w3m-dtree-create-sub): BUGFIX: don't abort if a subdir
