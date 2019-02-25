@@ -1,3 +1,26 @@
+2019-02-25  Boruch Baum  <boruch_baum@gmx.com>, TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
+
+	* octet.el: Documentation update
+
+2019-02-25  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-decode-entities-string): Simplify function.
+
+2019-02-25  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-form.el (w3m-form-make-form-data, w3m-form-resume)
+	(w3m-form-parse-and-fontify), w3m-hist.el
+	(w3m-history-slimmed-history-flat), w3m-mail.el
+	(w3m-mail-compose-with-semi), w3m-proc.el (w3m-process-new),
+	w3m-session.el (w3m-session-save), w3m-util.el
+	(w3m-make-menu-commands), w3m.el (w3m-toggle-inline-image): Simplify
+	forms '(setq x (cons (cons ...  ) x))'
+
+2019-02-25  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-encode-specials-string): Simplify, remove need for
+	nreverse, remove need for constant w3m-entity-reverse-table.
+
 2019-02-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-db-history): Remove GUI stuff; prompt a user for `start'

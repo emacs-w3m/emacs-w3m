@@ -307,8 +307,7 @@ the one such as \"text/html\", and the rest are the same as those of
 		(setq charset (detect-mime-charset-region (point-min)
 							  (point-max))))
 	      (when charset
-		(setq parameters (cons (cons "charset" (symbol-name charset))
-				       parameters))
+		(push (cons "charset" (symbol-name charset)) parameters)
 		(encode-mime-charset-region (point-min) (point-max) charset)))
 	  (set-buffer-multibyte nil)
 	  (insert source))
