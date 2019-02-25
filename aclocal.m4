@@ -27,14 +27,8 @@ fi
 AC_CACHE_VAL(EMACS_cv_SYS_$1,[
 	OUTPUT=./conftest-$$
 	EL=./conftest-$$.el
-	echo "(message \"--- %s ---\" \"${EL}\") (let ((x ${elisp})) (write-region (format \"%s\" x) nil \"${OUTPUT}\" nil 5) (delete-file \"${EL}\"))" >& ${EL} 2>&1
-	echo ''
-	echo ':::::::: '${EL}' :::::::'
-	cat ${EL}
-	echo ':::::::: shell command :::::::'
-	echo "${XEMACSDEBUG} '${EMACS}' ${VANILLA_FLAG} -batch -l ${EL} >& AC_FD_CC"
-	echo '::::::::'
-	eval "${XEMACSDEBUG} '${EMACS}' ${VANILLA_FLAG} -batch -l ${EL}" >& AC_FD_CC
+	echo "(let ((x ${elisp})) (write-region (format \"%s\" x) nil \"${OUTPUT}\" nil 5) (delete-file \"${EL}\"))" >& ${EL} 2>&1
+	eval "${XEMACSDEBUG} '${EMACS}' ${VANILLA_FLAG} -batch -l ${EL}" >& AC_FD_CC 2>&1
 	retval="`cat ${OUTPUT}`"
 	echo "=> ${retval}" >& AC_FD_CC 2>&1
 	rm -f ${OUTPUT}
