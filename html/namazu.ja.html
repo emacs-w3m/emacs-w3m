@@ -1,0 +1,376 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-2022-jp">
+<meta name="description" content="emacs internet web browser
+                                  full-featured modern
+                                  2018 images secure">
+<title>Emacs-w3m | 現代的かつ完全装備で安全なEmacsインターネットブラウザ(2018)</title>
+<style> * {max-width: 40em;} </style>
+</head>
+<body bgcolor="#EEEEEE">
+<p align="right">[<a href="index-en.html">English</a> / Japanese]</p>
+
+<h1>Emacs-w3m、シンプルな w3m への Emacs インターフェース</h1>
+
+Emacs を使う完全装備で安全なインターネットブラウザです<br>
+(Javascript には対応しません)。
+
+<p>
+<ul>
+ <li><a href="image/screenshot-ja.html">スクリーンショット</a>
+ <li><a href="#features">機能</a>
+ <li><a href="#history">歴史</a>
+ <li><a href="#download">ダウンロード</a>
+ <li><a href="#requirements">動作環境</a>
+ <li><a href="#installation">インストール</a>
+ <li><a href="#configuration">設定</a>
+ <li><a href="info/emacs-w3m.html">使い方</a>
+ <li><a href="#mailing_list">メーリングリスト</a>
+ <li><a href="#link">リンク集</a>
+ <li><a href="#contact">連絡先</a>
+</ul>
+
+
+<hr>
+<h2><a name="features">機能</a></h2>
+<ul>
+ <li>タブ</li>
+ <li>画像</li>
+ <li>HTTPS 優先</li>
+ <li>ブックマーク管理</li>
+ <li>クッキー管理</li>
+ <li>セッション管理</li>
+ <li>履歴の管理</li>
+ <li>非同期動作</li>
+ <li>Greasemonkey 風フィルタ</li>
+ <li>クイック検索</li>
+ <li>Elisp スクリプト</li>
+ <li>もっと ...</li>
+</ul>
+
+<hr>
+<h2><a name="history">歴史</a></h2>
+
+このプロジェクトは 2000年から活発に開発を続けています。
+<p>
+かつて Emacs/W3 という独自のプロジェクトがあり、その時代の Emacs
+で最も人気のあるウェブ・ブラウザだったのですが、
+その遅い動作に苦しめられました。そこで、<b>伊藤彰則さん</b>による WWW
+の機能があるテキストモードのペイジャー
+<a href="http://w3m.sourceforge.net/index.ja.html">w3m</a>
+を使って代替品を作ろうということになったのです。
+
+2018年現在、プロジェクトは活発に開発を続け、
+20年近くに渡って持続していますが、2005年からは CVS
+リポジトリーから直接
+<a href="https://ja.wikipedia.org/wiki/ローリング・リリース">
+ローリング・リリース</a> による更新を行なっています
+(もっとも第三者による非公式なミラーが
+<a href=https://melpa.org/#/w3m>MELPA</a> と
+<a href=https://github.com/ecbrown/emacs-w3m>github</a> にありますが)。
+以下は過去に<i>安定版</i>のリリースが行なわれた経過点の歴史です:
+<ul>
+ <li>CVS ローリング・リリース (2005年〜2018年およびそれ以降)
+
+ <li><a href="ml/7990">emacs-w3m-1.4.4 公開</a> (2005年3月25日)
+ <li><a href="ml/7039">emacs-w3m-1.4.3 公開</a> (2004年8月17日)
+ <li><a href="ml/7004">emacs-w3m-1.4.2 公開</a> (2004年7月14日)
+ <li><a href="ml/6989">emacs-w3m-1.4.1 公開</a> (2004年7月7日)
+ <li>サービスの復旧が完了 (2004年6月23日)<br>
+     全てのコンテンツおよび CVS レポジトリの正当性は検証済み
+ <li><a href="announce-ja.txt">このサイトがクラックされる</a> (2004年05月23日)
+ <li><a href="ml/6759">emacs-w3m-1.4 公開</a> (2004年4月29日)
+</ul>
+
+
+<hr>
+<h2><a name="download">ダウンロード</a></h2>
+
+公式の最新版が、いつでも CVS リポジトリから利用することができます。
+もっとも、
+ダウンロードと更新をユーザーにとってもっと便利に行なうことができる、
+第三者による非公式なミラーが、
+<a href=https://melpa.org/#/w3m>MELPA</a> および
+<a href=https://github.com/ecbrown/emacs-w3m>github</a>
+として存在することを確認していますが。<br>
+(ひとつ言っておかなければなりません。
+それらのミラーはこのプロジェクトの管理下にないので、
+その信頼性または問題がないことを、私たちは知る由がありません。)
+<p>
+このプロジェクトは
+<a href=http://www.nongnu.org/cvs/>cvs</a><font size=1>[<a href=https://en.wikipedia.org/wiki/Concurrent_Versions_System>1</a>]</font>
+バージョン管理システムを使っているので、
+公式な供給元から最新版をダウンロードするためには、
+cvs をインストールしておかなければなりません。
+</p>
+<blockquote>
+<pre>
+% cvs -d :pserver:anonymous@cvs.namazu.org:/storage/cvsroot login
+CVS password:
+# パスワードは設定されていません．単に Enter/Return キーを押して下さい。
+% cvs -d :pserver:anonymous@cvs.namazu.org:/storage/cvsroot co emacs-w3m
+</pre>
+</blockquote>
+<p>
+<a href="http://cvs.namazu.org/Development/emacs-w3m/">ViewVC</a>
+でソースを見ることもできます。
+</p>
+
+<ul>
+ <li>過去のバージョン:
+     <ul>
+      <li><code><a href="emacs-w3m-1.4.4.tar.gz">emacs-w3m-1.4.4.tar.gz</a></code> (2005年3月25日)
+      <li><code><a href="emacs-w3m-1.4.3.tar.gz">emacs-w3m-1.4.3.tar.gz</a></code> (2004年8月17日)
+      <li><code><a href="emacs-w3m-1.4.2.tar.gz">emacs-w3m-1.4.2.tar.gz</a></code> (2004年7月14日)
+      <li><code><a href="emacs-w3m-1.4.1.tar.gz">emacs-w3m-1.4.1.tar.gz</a></code> (2004年7月7日)
+      <li><code><a href="emacs-w3m-1.4.tar.gz">emacs-w3m-1.4.tar.gz</a></code> (2004年4月29日)
+      <li><code><a href="emacs-w3m-1.3.6.tar.gz">emacs-w3m-1.3.6.tar.gz</a></code> (2003年7月18日)
+      <li><code><a href="emacs-w3m-1.3.5.tar.gz">emacs-w3m-1.3.5.tar.gz</a></code> (2003年7月5日)
+      <li><code><a href="emacs-w3m-1.3.4.tar.gz">emacs-w3m-1.3.4.tar.gz</a></code> (2003年6月18日)
+      <li><code><a href="emacs-w3m-1.3.3.tar.gz">emacs-w3m-1.3.3.tar.gz</a></code> (2002年10月25日)
+      <li><code><a href="emacs-w3m-1.3.2.tar.gz">emacs-w3m-1.3.2.tar.gz</a></code> (2002年9月3日)
+      <li><code><a href="w3m_el-1.3.1.tar.gz">w3m_el-1.3.1.tar.gz</a></code> (2002年7月17日)
+      <li><code><a href="w3m_el-1.3.tar.gz">w3m_el-1.3.tar.gz</a></code> (2002年7月7日)
+      <li><code><a href="w3m_el-1.2.8.tar.gz">w3m_el-1.2.8.tar.gz</a></code> (2002年6月20日)
+      <li><code><a href="w3m_el-1.2.7.tar.gz">w3m_el-1.2.7.tar.gz</a></code> (2002年6月3日)
+      <li><code><a href="w3m_el-1.2.6.tar.gz">w3m_el-1.2.6.tar.gz</a></code> (2002年3月12日)
+      <li><code><a href="w3m_el-1.2.5.tar.gz">w3m_el-1.2.5.tar.gz</a></code> (2002年3月2日)
+      <li><code><a href="w3m_el-1.2.4.tar.gz">w3m_el-1.2.4.tar.gz</a></code> (2002年1月8日)
+      <li><code><a href="w3m_el-1.2.3.tar.gz">w3m_el-1.2.3.tar.gz</a></code> (2001年12月21日)
+      <li><code><a href="w3m_el-1.2.2.tar.gz">w3m_el-1.2.2.tar.gz</a></code> (2001年12月6日)
+      <li><code><a href="w3m_el-1.2.1.tar.gz">w3m_el-1.2.1.tar.gz</a></code> (2001年11月12日)
+      <li><code><a href="w3m_el-1.2.tar.gz">w3m_el-1.2.tar.gz</a></code> (2001年11月6日)
+      <li><code><a href="w3m_el-1.0.tar.gz">w3m_el-1.0.tar.gz</a></code> (2001年5月9日)
+     </ul>
+</ul>
+<p>
+
+<hr>
+<h2><a name="requirements">動作環境</a></h2>
+<ul>
+<li>Emacs のバージョン
+  <p>Emacs-w3m は安定版で最新の 2つのメジャーバージョンの Emacs
+    をサポートします。つまり、もし最新の安定版の Emacs が 26.1
+    であるならば、emacs-w3m は 26.1、25.3、25.2、および 25.1
+    をサポートするということです。</p>
+
+  <p>古いバージョンの Emacs でも、まだ現行版の emacs-w3m
+    を問題なく使うことができるかもしれません。しかし最新の emacs-w3m
+    は、最新の Emacs や Elisp 自体がいろいろな機能について行なう変更や、
+    非推奨にしたり削除することを追いかけているでしょうから、古いバージョンの
+    Emacs で走らせていると、序々に機能しなくなっていくでしょう。</p>
+
+  <p>コードを最新の状態に維持しようとしているので、リリース前の
+    Emacs や開発中のもののスナップショットでさえも非公式にサポートしています。
+    したがって最先端の Emacs を使っていて問題にぶつかったら、
+    そのバグをメーリングリストで知らせてください。</p>
+    
+<li>w3m
+  <p>Emacs-w3m には最新版の
+    <a href="https://salsa.debian.org/debian/w3m">w3m</a>
+    が必要です。</p>
+
+<li>APEL and FLIM
+  <p>もし emacs-w3m の配布に含まれている
+    <a href="info/goto.cgi?file=emacs-w3m&node=Shimbun+Library">
+      新聞ライブラリ</a>
+    を使いたいならば、Emacs パッケージ
+    <a href="https://github.com/wanderlust/apel">APEL</a> と
+    <a href="https://github.com/wanderlust/flim">FLIM</a>
+    をインストールしなければなりません。
+  </p>
+</ul>
+
+<hr>
+<h2><a name="installation">インストール</a></h2>
+もし (非公式な第三者の) MELPA からインストールするのであれば、
+インストールの手順は標準の MELPA のやり方に従ってください。
+この章の後半では、
+どのように手作業でソースからインストールするかを説明します。
+<p>
+Emacs-w3m をインストールする前に、あなたのシステムが
+<a href="#requirements">動作環境</a>
+に見合うかどうかを確認してください。
+</p>
+<dl>
+ <dt><h3><a name="installation_unix">UNIX 系の環境でインストールする</a></h3>
+ <dd><p>
+     初めに <code>configure</code> スクリプトを実行してください。
+     </p>
+<blockquote>
+<pre>
+% ./configure
+</pre>
+</blockquote>
+     <p>
+     APEL や FLIM などがデフォルトの <code>load-path</code>
+     以外の標準的ではないディレクトリにインストールされている場合は、
+     次のように <em>--with-addpath</em> オプションを使って、
+     それらを指定しなければなりません。
+     </p>
+<blockquote>
+<pre>
+% ./configure --with-addpath=/opt/share/apel:/opt/share/flim
+</pre>
+</blockquote>
+     <p>
+     次に emacs-w3m を適当なディレクトリにインストールするため、
+     以下ののコマンドを実行してください。
+     </p>
+<blockquote>
+<pre>
+% make
+# make install
+</pre>
+</blockquote>
+
+ <dt><h3><a name="installation_nonunix">非 UNIX 系の環境でインストールする</a></h3>
+ <dd><p>
+     あなたのシステムで <code>configure</code>
+     スクリプトを実行できないか、または
+     <code>make</code> コマンドが利用できない場合は、
+     以下のコマンドを実行してください。
+     </p>
+<blockquote>
+<pre>
+# emacs -batch -q -no-site-file -l w3mhack.el NONE -f w3mhack-nonunix-install
+</pre>
+</blockquote>
+     <p>
+     APEL や FLIM など (または他のどんなライブラリでも)
+     が通常の場所にインストールされていないと、
+     インストーラはそれらを無視してしまいます。そのような場合は
+     以下に示すように、
+     それらの場所をインストーラに教えてあげることが必要です。
+     </p>
+<blockquote>
+<pre>
+# emacs -batch -q -no-site-file -l w3mhack.el //c/share/apel://c/share/flim -f w3mhack-nonunix-install
+</pre>
+</blockquote>
+</dl>
+
+
+<hr>
+<h2><a name="configuration">設定</a></h2>
+<p>
+Emacs-w3m にはたくさんの設定オプションがありますが、最低限度必要なのはこの行を
+<code>~/.emacs</code> ファイルに、ただ置いてこくことです。
+</p>
+<blockquote>
+<pre>
+(require 'w3m-load)
+</pre>
+</blockquote>
+<p>
+これで単に <i>M-x w3m</i> とタイプすれば、emacs-w3m を使うことができます。
+</p>
+<p>
+Wanderlust のような SEMI MUA に text/html
+パートを扱うことができるようにするには、以下の行を
+<code>~/.emacs</code> ファイルに追加してください。
+</p>
+<blockquote>
+<pre>
+(require 'mime-w3m)
+</pre>
+</blockquote>
+<p>
+詳しくは <a href="info/emacs-w3m-ja.html">Info</a> を参照するか、Emacs
+でカスタマイズの emacs-w3m グループを眺めてみてください。
+</p>
+
+<hr>
+<h2><a name="mailing_list">メーリングリスト</a></h2>
+<p>
+プロジェクトのメーリングリスト <code>emacs-w3m&#64;namazu.org</code>
+は日本語と英語のバイリンガルです。
+これは一般に公開されていて、過去のメールは
+<a href="ml/index.html">emacs-w3m メーリングリスト アーカイブ</a>
+で読むことができます。
+また、このメーリングリストと双方向で接続している gmane.emacs.w3m
+ニュースグループを講読することもできます (nntp で news.gmane.org
+に接続してください)。
+</p>
+<p>
+このリストに参加したい場合は
+<a href="http://www.namazu.org/disclaimer.html.ja">免責事項</a>
+を確認してから、本文に
+</p>
+<blockquote>
+<pre>
+subscribe Your Name
+</pre>
+</blockquote>
+<p>
+(あなたのメールアドレスではありません) と書いたメールを
+<code>emacs-w3m-ctl&#64;namazu.org</code> に送ってください
+(上記サンプル中の「Your Name」という部分は実際の名前に置き換えてください)。
+退会するには、本文に
+</p>
+<blockquote>
+<pre>
+# bye
+</pre>
+</blockquote>
+<p>
+とだけ書いて <code>emacs-w3m-ctl&#64;namazu.org</code> に送ってください。
+</p>
+
+<hr>
+<h2><a name="link">リンク集</a></h2>
+<ul>
+ <li><a href="https://www.emacswiki.org/emacs/emacs-w3m">emacs-w3m</a>
+   (EmacsWiki)
+ <li><a href="http://w3m.sourceforge.net/index.en.html">w3m</a>
+ <li><a href="https://github.com/wanderlust/apel">APEL</a>
+ <li><a href="https://github.com/wanderlust/flim">FLIM</a>
+ <li><a href="https://github.com/vermiculus/sx.el">sx.el</a>,
+ StackExchange の Emacs インターフェース
+ <li><a href="https://github.com/vermiculus/magithub">magithub</a>,
+ Github の Emacs インターフェース
+</ul>
+
+
+<hr>
+<h2><a name="members">開発者</a></h2>
+(50音順)
+<ul>
+ <li>有沢&nbsp;明宏
+ <li>大橋&nbsp;彰
+ <li>大場&nbsp;光一郎
+ <li>後藤&nbsp;俊一
+ <li>是枝&nbsp;和義
+ <li>白井&nbsp;秀行
+ <li>菅原&nbsp;泰樹
+ <li><a href="http://namazu.org/~satoru/">高林&nbsp;哲</a>
+ <li><a href="http://namazu.org/~tsuchiya/">土屋&nbsp;雅稔</a>
+ <li>寺西&nbsp;裕一
+ <li>長&nbsp;毅
+ <li>中島&nbsp;幹夫
+ <li>中山&nbsp;洋一
+ <li>西田&nbsp;圭介
+ <li>野宮&nbsp;賢
+ <li>バラック&nbsp;バウム&nbsp;(Boruch&nbsp;Baum)
+ <li>三好&nbsp;雅則
+ <li><a href="https://www.yamaoka.cc/">山岡&nbsp;克美</a>
+</ul>
+<p>
+他の多くのみなさんの多大な貢献に感謝します。
+</p>
+
+
+<hr>
+<h2><a name="contact">連絡先</a></h2>
+<p>
+私たちに連絡したいときは <code>emacs-w3m&#64;namazu.org</code>
+にメールを送ってください。この
+<a href="#mailing_list">メーリングリスト</a>
+は gmane.emacs.w3m
+ニュースグループと双方向で接続されていて、
+登録ユーザー以外の人から送信されたメールも受け付けます。
+</p>
+
+</body>
+</html>
