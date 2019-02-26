@@ -1,3 +1,8 @@
+2019-02-25  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-favicon.el (w3m-favicon-convert): bugfix: check string bounds
+	before use (Andres Ramirez <rrandresf@gmail.com> [emacs-w3m:13266])
+
 2019-02-25  Boruch Baum  <boruch_baum@gmx.com>, TSUCHIYA Masatoshi  <tsuchiya@namazu.org>
 
 	* octet.el: Documentation update
