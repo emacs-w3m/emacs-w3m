@@ -1,3 +1,8 @@
+2019-02-26  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3mhack.el (w3mhack-insert-git-revision): bugfix: Only define the
+	constant emacs-w3m-git-revision when a git revision is found.
+
 2019-02-25  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-favicon.el (w3m-favicon-convert): bugfix: check string bounds
