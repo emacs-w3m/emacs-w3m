@@ -1,0 +1,398 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+<meta name="description" content="emacs internet web browser
+                                  full-featured modern
+                                  2018 images secure">
+<title>Emacs-w3m | Emacs internet web browser, modern, full-featured and secure (2018)</title>
+<style> * {max-width: 40em;} </style>
+</head>
+<body bgcolor="#EEEEEE">
+<p align="right">[English / <a href="index-ja.html">Japanese</a>]</p>
+
+<h1>
+<img height="32" width="32" src="https://download-mirror.savannah.gnu.org/releases/emacs/icons/emacs6-128.png"></img>
+Emacs-w3m<br>
+<i><font size=3>a simple Emacs interface to w3m</font></i>
+</h1>
+
+Use Emacs as a full-featured and secure internet browser!<br>
+(Does not support javascript).
+
+<a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html">
+   <img alt="license: GPL 2.0" src="https://img.shields.io/badge/License-GPL%20v2-blue.svg"></img></a>
+
+<p>
+<table border=1 cellpadding=10><tr><td>
+<b>NEWS! (2019-02)</b>: We are now on github!<br>
+<ul>
+<li><a href="http://github.com/emacs-w3m/emacs-w3m/">Repository home
+  page</a><br>
+<li><a href="https://emacs-w3m.github.io">Project home page</a><br>
+<li><a href="https://github.com/emacs-w3m/emacs-w3m/wiki">Wiki @ github</a>
+(but <a href="https://www.emacswiki.org/emacs/emacs-w3m">emacswiki</a> is still our primary)
+</ul></td></tr></table>
+</p>
+
+
+<p>
+<ul>
+ <li><a href="image/screenshot-en.html">Screenshots</a>
+ <li><a href="#features">Features</a>
+ <li><a href="#history">History</a>
+ <li><a href="#download">Download</a>
+ <li><a href="#requirements">Requirements</a>
+ <li><a href="#installation">Installation</a>
+ <li><a href="#configuration">Configuration</a>
+ <li><a href="info/emacs-w3m.html">Usage</a>
+ <li><a href="#mailing_list">Mailing List</a>
+ <li><a href="#link">Links</a>
+ <li><a href="#contact">Contact</a>
+</ul>
+
+
+<hr>
+<h2><a name="features">Features</a></h2>
+<ul>
+ <li>Tabs</li>
+ <li>Images</li>
+ <li>Forms</li>
+ <li>HTTPS preferred</li>
+ <li>Bookmark management</li>
+ <li>Cookie management</li>
+ <li>Session management</li>
+ <li>History management</li>
+ <li>Asynchronous operations</li>
+ <li>Greasemonkey-type filtering</li>
+ <li>Quick-search</li>
+ <li>ELisp scripting</li>
+ <li>More ...</li>
+</ul>
+
+<hr>
+<h2><a name="history">History</a></h2>
+
+This project has been in active development continuously since 2000.
+<p>
+Originally, there had been a separate project <i>Emacs/W3</i> which in its
+time was the most popular web browser on Emacs, but it suffered from
+slow operation. The decision was made to create this alternative,
+based upon <b>Akinori Ito</b>'s
+<a href="http://w3m.sourceforge.net/index.en.html">w3m</a> text-mode
+pager which had WWW capability.
+<p>
+As of 2019, the project has been actively developed and supported for
+nearly two decades, but since 2005 it has been releasing updates in
+a "rolling" manner, directly from its CVS repository. Since early
+2019, the project has also been hosted on <a href=https://melpa.org/#/w3m>MELPA</a>
+and <a href=https://github.com/emacs-w3m/emacs-w3m>github</a>.
+<p>
+ Here's the history of the old milestones under the prior system of
+issuing '<i>stable</i>' releases:
+</p>
+<ul>
+ <li>github rolling release, from 2019
+ <li>CVS rolling release, from 2005 to 2018+
+ <li><a href="ml/7990">Emacs-w3m-1.4.4 was released</a> on March 25th, 2005.
+ <li><a href="ml/7039">Emacs-w3m-1.4.3 was released</a> on August 17th, 2004.
+ <li><a href="ml/7004">Emacs-w3m-1.4.2 was released</a> on July 14th, 2004.
+ <li><a href="ml/6989">Emacs-w3m-1.4.1 was released</a> on July 7th, 2004.
+ <li>All services were restored on June 23rd, 2004.
+      All contents of this site and CVS repository had been throughly inspected.
+ <li><a href="announce-en.txt">This site was cracked</a> on May 23rd, 2004.
+ <li><a href="ml/6759">Emacs-w3m-1.4 was released</a> on April 29th, 2004.
+</ul>
+
+
+<hr>
+<h2><a name="download">Download</a></h2>
+
+Since 2019, the official current version is always available from
+<a href=https://melpa.org/#/w3m>MELPA</a> and
+<a href=https://github.com/emacs-w3m/emacs-w3m>github</a>, as well as
+from our legacy CVS repository. For most users, it will probably be
+most convenient to download, install, and maintain the package from
+within emacs via MELPA.
+<p>
+For people who would like to use the legacy
+<a href=http://www.nongnu.org/cvs/>cvs</a><font size=1>[<a href=https://en.wikipedia.org/wiki/Concurrent_Versions_System>1</a>]</font>
+repository, the following commands will download the package once you
+have cvs installed.
+</p>
+<blockquote>
+<pre>
+% cvs -d :pserver:anonymous@cvs.namazu.org:/storage/cvsroot login
+CVS password: # No password is set.  Just hit Enter/Return key.
+% cvs -d :pserver:anonymous@cvs.namazu.org:/storage/cvsroot co emacs-w3m
+</pre>
+</blockquote>
+<p>
+Source code access to the legacy cvs repository with <a href="http://cvs.namazu.org/Development/emacs-w3m/">ViewVC</a>
+is also available.
+</p>
+
+<ul>
+ <li>Historical versions:
+     <ul>
+      <li><code><a href="emacs-w3m-1.4.4.tar.gz">emacs-w3m-1.4.4.tar.gz</a></code> (March 25th, 2005)
+      <li><code><a href="emacs-w3m-1.4.3.tar.gz">emacs-w3m-1.4.3.tar.gz</a></code> (August 17th, 2004)
+      <li><code><a href="emacs-w3m-1.4.2.tar.gz">emacs-w3m-1.4.2.tar.gz</a></code> (July 14th, 2004)
+      <li><code><a href="emacs-w3m-1.4.1.tar.gz">emacs-w3m-1.4.1.tar.gz</a></code> (July 7th, 2004)
+      <li><code><a href="emacs-w3m-1.4.tar.gz">emacs-w3m-1.4.tar.gz</a></code> (April 29th, 2004)
+      <li><code><a href="emacs-w3m-1.3.6.tar.gz">emacs-w3m-1.3.6.tar.gz</a></code> (July 18th, 2003)
+      <li><code><a href="emacs-w3m-1.3.5.tar.gz">emacs-w3m-1.3.5.tar.gz</a></code> (July 5th, 2003)
+      <li><code><a href="emacs-w3m-1.3.4.tar.gz">emacs-w3m-1.3.4.tar.gz</a></code> (June 18th, 2003)
+      <li><code><a href="emacs-w3m-1.3.3.tar.gz">emacs-w3m-1.3.3.tar.gz</a></code> (October 25th, 2002)
+      <li><code><a href="emacs-w3m-1.3.2.tar.gz">emacs-w3m-1.3.2.tar.gz</a></code> (September 3rd, 2002)
+      <li><code><a href="w3m_el-1.3.1.tar.gz">w3m_el-1.3.1.tar.gz</a></code> (July 17th, 2002)
+      <li><code><a href="w3m_el-1.3.tar.gz">w3m_el-1.3.tar.gz</a></code> (July 7th, 2002)
+      <li><code><a href="w3m_el-1.2.8.tar.gz">w3m_el-1.2.8.tar.gz</a></code> (June 20th, 2002)
+      <li><code><a href="w3m_el-1.2.7.tar.gz">w3m_el-1.2.7.tar.gz</a></code> (June 3rd, 2002)
+      <li><code><a href="w3m_el-1.2.6.tar.gz">w3m_el-1.2.6.tar.gz</a></code> (March 12th, 2002)
+      <li><code><a href="w3m_el-1.2.5.tar.gz">w3m_el-1.2.5.tar.gz</a></code> (March 2nd, 2002)
+      <li><code><a href="w3m_el-1.2.4.tar.gz">w3m_el-1.2.4.tar.gz</a></code> (January 8th, 2002)
+      <li><code><a href="w3m_el-1.2.3.tar.gz">w3m_el-1.2.3.tar.gz</a></code> (December 21st, 2001)
+      <li><code><a href="w3m_el-1.2.2.tar.gz">w3m_el-1.2.2.tar.gz</a></code> (December 6th, 2001)
+      <li><code><a href="w3m_el-1.2.1.tar.gz">w3m_el-1.2.1.tar.gz</a></code> (November 12th, 2001)
+      <li><code><a href="w3m_el-1.2.tar.gz">w3m_el-1.2.tar.gz</a></code> (November 6th, 2001)
+      <li><code><a href="w3m_el-1.0.tar.gz">w3m_el-1.0.tar.gz</a></code> (May 9th, 2001)
+     </ul>
+</ul>
+<p>
+
+<hr>
+<h2><a name="requirements">Requirements</a></h2>
+<ul>
+<li>Emacs versions
+  <p>Emacs-w3m supports the latest two major stable versions of Emacs.
+     Thus, when the latest stable Emacs was 26.1, Emacs-w3m was
+     supporting versions 26.1, 25.3, 25.2, and 25.1.</p>
+
+  <p>Older versions of Emacs may still be able to successfully use the
+    current version of emacs-w3m, but as the current versions of
+    Emacs or ELisp themselves change, deprecate, or remove features,
+    the latest version of emacs-w3m can be expected to keep pace,
+    and thus will gradually lose functionality when run in older
+    Emacs versions.</p>
+
+  <p>Pre-release versions of Emacs and even development snapshots are
+    unofficially supported, as we do try to keep the code up-to-date,
+    so if you are using a "bleeding edge" Emacs version and do
+    experience a problem, please do file a bug report by contacting
+    us on our mailing list!</p>
+
+<li>w3m
+  <p>Emacs-w3m requires the latest version of <a href="https://salsa.debian.org/debian/w3m">w3m</a>.</p>
+</ul>
+
+Optionally, if you would like to use
+the <a href="info/goto.cgi?file=emacs-w3m&node=Shimbun+Library">shimbun
+library</a> included in the emacs-w3m distribution, you have to
+install the Emacs
+packages <a href="https://github.com/wanderlust/apel">APEL</a> and
+<a href="https://github.com/wanderlust/flim">FLIM</a>.</p>
+</ul>
+
+<hr>
+<h2><a name="installation">Installation</a></h2>
+If you are installing from the  MELPA
+repository, the install process follows the standard MELPA procedure.
+The rest of this section describes how to install manually from source.
+<p>
+Before installing emacs-w3m, check whether your environment
+meets <a href="#requirements">the requirements</a>.
+</p>
+<dl>
+ <dt><h3><a name="installation_unix">Installing emacs-w3m on UNIX-like systems</a></h3>
+ <dd><p>
+     First, run the <code>configure</code> script.
+     </p>
+<blockquote>
+<pre>
+% ./configure
+</pre>
+</blockquote>
+     <p>
+     However, if you've installed APEL and FLIM in non-standard
+     directories (ie. somewhere not on the <b>default</b>
+     <code>load-path</code>), you must specify them
+     using the <em>--with-addpath</em> option as follows:
+     </p>
+<blockquote>
+<pre>
+% ./configure --with-addpath=/your/path/to//apel:/your/path/to/flim
+</pre>
+</blockquote>
+     <p>
+     Next, execute the following commands to install emacs-w3m to an
+     appropriate directory.
+     </p>
+<blockquote>
+<pre>
+% make
+# make install
+</pre>
+</blockquote>
+
+ <dt><h3><a name="installation_nonunix">Installing on non-UNIX-like systems</a></h3>
+ <dd><p>
+     If you cannot execute the <code>configure</code> script on your
+     system, or if no <code>make</code> command is available, execute
+     the following command:
+     </p>
+<blockquote>
+<pre>
+# emacs -batch -q -no-site-file -l w3mhack.el NONE -f w3mhack-nonunix-install
+</pre>
+</blockquote>
+     <p>
+     However, if APEL, FLIM (or any other library) are installed in
+     non-standard directories (ie. somewhere not on the <b>default</b>
+     <code>load-path</code>), the installer won't find them.  In such a
+     case, it is necessary to tell the installer where they are, as
+     shown below:
+     </p>
+<blockquote>
+<pre>
+# emacs -batch -q -no-site-file -l w3mhack.el //c/your/path/to/apel://c/your/path/to/flim -f w3mhack-nonunix-install
+</pre>
+</blockquote>
+</dl>
+
+
+<hr>
+<h2><a name="configuration">Configuration</a></h2>
+<p>
+Emacs-w3m has many configuration options, but the minimum that is required
+is just to put this line into your <code>~/.emacs</code> file:
+</p>
+<blockquote>
+<pre>
+(require 'w3m-load)
+</pre>
+</blockquote>
+<p>
+Just type <i>M-x w3m</i>, and you can use emacs-w3m.
+</p>
+<p>
+In order to handle text/html part with emacs-w3m under SEMI MUAs such as
+Wanderlust, put the following line in your
+<code>~/.emacs</code> file:
+</p>
+<blockquote>
+<pre>
+(require 'mime-w3m)
+</pre>
+</blockquote>
+<p>
+For more details, see <a href="info/emacs-w3m.html">Info manual</a>,
+or browse the emacs-w3m customization group within Emacs.
+</p>
+
+<hr>
+<h2><a name="mailing_list">Mailing List</a></h2>
+<p>
+The project mailing list, <code>emacs-w3m&#64;namazu.org</code>, is
+bi-lingual Japanese / English. It is open to the public, and its
+archive is accessible via <a href="ml/index.html">the emacs-w3m
+mailing list archive</a>. You can also subscribe to the
+gmane.emacs.w3m newsgroup which is gateway'd to this list
+bidirectionally (connect to news.gmane.org using nntp).
+</p>
+<p>
+If you want to subscribe to this list, check
+<a href="http://www.namazu.org/disclaimer.html.en">the disclaimer</a>
+and send a mail containing
+</p>
+<blockquote>
+<pre>
+subscribe Your Name
+</pre>
+</blockquote>
+<p>
+(not your email address) in the body to
+<code>emacs-w3m-ctl&#64;namazu.org</code>.
+To unsubscribe, send a mail containing just
+</p>
+<blockquote>
+<pre>
+# bye
+</pre>
+</blockquote>
+<p>
+in the body to <code>emacs-w3m-ctl&#64;namazu.org</code>.
+</p>
+<hr>
+<h3>Follow us on github</h3>
+If you have a github account, you can use github's features
+to 'watch' and 'star' the project.
+<hr>
+<h2><a name="link">Related Links</a></h2>
+<ul>
+ <li><a href="https://www.emacswiki.org/emacs/emacs-w3m">emacs-w3m</a>
+   (EmacsWiki)
+ <li><a href="http://w3m.sourceforge.net/index.en.html">w3m</a>
+ <li><a href="https://github.com/wanderlust/apel">APEL</a>
+ <li><a href="https://github.com/wanderlust/flim">FLIM</a>
+ <li><a href="https://github.com/vermiculus/sx.el">sx.el</a>,
+  StackExchange interface for Emacs
+ <li><a href="https://github.com/vermiculus/magithub">magithub</a>,
+ Github interface for Emacs
+</ul>
+
+
+<hr>
+<h2><a name="members">Authors</a></h2>
+(alphabetical order in the family names)
+<ul>
+ <li>Akihiro Arisawa
+ <li>Boruch Baum
+ <li>Tsuyoshi CHO
+ <li>Shun-ichi GOTO
+ <li>Kazuyoshi KOREEDA
+ <li>MIYOSHI Masanori
+ <li>Mikio NAKAJIMA
+ <li>Yoichi NAKAYAMA
+ <li>Keisuke Nishida
+ <li>Masaru Nomiya
+ <li>OHASHI Akira
+ <li>Koichiro Ohba
+ <li>Hideyuki SHIRAI
+ <li>Taiki SUGAWARA
+ <li><a href="http://namazu.org/~satoru/">Satoru Takabayashi</a>
+ <li>Yuuichi Teranishi
+ <li><a href="http://namazu.org/~tsuchiya/">TSUCHIYA Masatoshi</a>
+ <li><a href="https://www.yamaoka.cc/">Katsumi Yamaoka</a>
+</ul>
+<p>
+Thanks to the many other people for their great contributions.
+</p>
+
+
+<hr>
+<h2><a name="contact">Contact</a></h2>
+<p>
+In order to contact us, please send a mail to
+<code>emacs-w3m&#64;namazu.org</code>.  This
+<a href="#mailing_list">mailing list</a> is gateway'd to the
+gmane.emacs.w3m newsgroup bidirectionally and accepts even messages
+posted from nonsubscribers.
+</p>
+
+<hr>
+<h3>Bug reports and feature requests</h3>
+Now that the project is on github, you can there submit bug reports or
+feature requests, using the github
+'<a href="https://github.com/emacs-w3m/emacs-w3m/issues">issues</a>'
+interface.
+
+<hr>
+<h3>Code contributions</h3>
+Prior to migratng to git, the project accepted patch files via email.
+While that is still possible, in most casses it's probably best for
+all concerned to post submissions via github, prferably as a pull request.
+<p>
+<font size=-1><i>last updated 2019-02-19</i></font>
+</body>
+</html>
