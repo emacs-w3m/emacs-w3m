@@ -954,16 +954,17 @@ NOTE: This function must be called from the top directory."
 	     (goto-char (point-min))
 	     (skip-chars-forward "^ ")
 	     (concat "\"" (buffer-substring (point-min) (point)) "\"")))))
-    (goto-char (point-max))
-    (while (progn
-	     (forward-line -1)
-	     (looking-at ";")))
-    (forward-line 1)
-    (insert "
+    (when revision
+      (goto-char (point-max))
+      (while (progn
+  	     (forward-line -1)
+  	     (looking-at ";")))
+      (forward-line 1)
+      (insert "
 (defconst emacs-w3m-git-revision " revision "
   \"Git revision string of this package.\")
 
-")))
+"))))
 
 (defun w3mhack-generate-load-file ()
   "Generate a file including all autoload stubs."
