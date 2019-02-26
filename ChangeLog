@@ -1,3 +1,19 @@
+2019-02-26  Boruch Baum  <boruch_baum@gmx.com>
+
+	* BUGS, BUGS.ja: Deleted this file. It was 12 years old, and seems to
+	have been a pre-release checklist.
+
+	* NEWS, NEWS.ja: Renamed to NEWS.2007, NEWS.ja.2007. "This file is
+	about changes in emacs-w3m version 1.5."
+
+	* NEWS, NEWS.ja: Changed to a stub for potential future use, or for
+	deletion. Improved copyright notice.
+
+	* html/namazu.html, etc: new directory, containing html for the project
+	page at http://emacs-w3m.namazu.org/
+
+	* Update READE.md
+
 2019-02-25  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-favicon.el (w3m-favicon-convert): bugfix: check string bounds
