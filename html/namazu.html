@@ -11,10 +11,30 @@
 <body bgcolor="#EEEEEE">
 <p align="right">[English / <a href="index-ja.html">Japanese</a>]</p>
 
-<h1>Emacs-w3m, a simple Emacs interface to w3m.</h1>
+<h1>
+<img height="32" width="32" src="https://download-mirror.savannah.gnu.org/releases/emacs/icons/emacs6-128.png"></img>
+Emacs-w3m<br>
+<i><font size=3>a simple Emacs interface to w3m</font></i>
+</h1>
 
 Use Emacs as a full-featured and secure internet browser!<br>
 (Does not support javascript).
+
+<a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html">
+   <img alt="license: GPL 2.0" src="https://img.shields.io/badge/License-GPL%20v2-blue.svg"></img></a>
+
+<p>
+<table border=1 cellpadding=10><tr><td>
+<b>NEWS! (2019-02)</b>: We are now on github!<br>
+<ul>
+<li><a href="http://github.com/emacs-w3m/emacs-w3m/">Repository home
+  page</a><br>
+<li><a href="https://emacs-w3m.github.io">Project home page</a><br>
+<li><a href="https://github.com/emacs-w3m/emacs-w3m/wiki">Wiki @ github</a>
+(but <a href="https://www.emacswiki.org/emacs/emacs-w3m">emacswiki</a> is still our primary)
+</ul></td></tr></table>
+</p>
+
 
 <p>
 <ul>
@@ -62,16 +82,17 @@ based upon <b>Akinori Ito</b>'s
 <a href="http://w3m.sourceforge.net/index.en.html">w3m</a> text-mode
 pager which had WWW capability.
 <p>
-As of 2018, the project has been actively developed and supported for
+As of 2019, the project has been actively developed and supported for
 nearly two decades, but since 2005 it has been releasing updates in
-a "rolling" manner, directly from its CVS repository (although
-un-official third-party mirrors exist on <a href=https://melpa.org/#/w3m>MELPA</a>
-and <a href=https://github.com/ecbrown/emacs-w3m>github</a>).
+a "rolling" manner, directly from its CVS repository. Since early
+2019, the project has also been hosted on <a href=https://melpa.org/#/w3m>MELPA</a>
+and <a href=https://github.com/emacs-w3m/emacs-w3m>github</a>.
 <p>
  Here's the history of the old milestones under the prior system of
 issuing '<i>stable</i>' releases:
 </p>
 <ul>
+ <li>github rolling release, from 2019
  <li>CVS rolling release, from 2005 to 2018+
  <li><a href="ml/7990">Emacs-w3m-1.4.4 was released</a> on March 25th, 2005.
  <li><a href="ml/7039">Emacs-w3m-1.4.3 was released</a> on August 17th, 2004.
@@ -87,20 +108,17 @@ issuing '<i>stable</i>' releases:
 <hr>
 <h2><a name="download">Download</a></h2>
 
-The official current version is always available from our own CVS
-repository. However, we recognize that it may be more convenient for
-users to download and update the package using the un-official
-third-party mirrors that exist on
+Since 2019, the official current version is always available from
 <a href=https://melpa.org/#/w3m>MELPA</a> and
-<a href=https://github.com/ecbrown/emacs-w3m>github</a>. We need to
-say that those mirrors are not controlled by this project and we have
-no way of knowing or guaranteeing their reliability or integrity.
+<a href=https://github.com/emacs-w3m/emacs-w3m>github</a>, as well as
+from our legacy CVS repository. For most users, it will probably be
+most convenient to download, install, and maintain the package from
+within emacs via MELPA.
 <p>
-This project uses the
+For people who would like to use the legacy
 <a href=http://www.nongnu.org/cvs/>cvs</a><font size=1>[<a href=https://en.wikipedia.org/wiki/Concurrent_Versions_System>1</a>]</font>
-version control system, so in order to download the current version
-from the official source, you need to have cvs installed.
-
+repository, the following commands will download the package once you
+have cvs installed.
 </p>
 <blockquote>
 <pre>
@@ -110,7 +128,7 @@ CVS password: # No password is set.  Just hit Enter/Return key.
 </pre>
 </blockquote>
 <p>
-Source code access with <a href="http://cvs.namazu.org/Development/emacs-w3m/">ViewVC</a>
+Source code access to the legacy cvs repository with <a href="http://cvs.namazu.org/Development/emacs-w3m/">ViewVC</a>
 is also available.
 </p>
 
@@ -178,7 +196,7 @@ packages <a href="https://github.com/wanderlust/apel">APEL</a> and
 
 <hr>
 <h2><a name="installation">Installation</a></h2>
-If you are installing from the un-official third-party MELPA
+If you are installing from the  MELPA
 repository, the install process follows the standard MELPA procedure.
 The rest of this section describes how to install manually from source.
 <p>
@@ -305,8 +323,10 @@ To unsubscribe, send a mail containing just
 <p>
 in the body to <code>emacs-w3m-ctl&#64;namazu.org</code>.
 </p>
-
-
+<hr>
+<h3>Follow us on github</h3>
+If you have a github account, you can use github's features
+to 'watch' and 'star' the project.
 <hr>
 <h2><a name="link">Related Links</a></h2>
 <ul>
@@ -356,10 +376,23 @@ Thanks to the many other people for their great contributions.
 In order to contact us, please send a mail to
 <code>emacs-w3m&#64;namazu.org</code>.  This
 <a href="#mailing_list">mailing list</a> is gateway'd to the
-gmane.emacs.w3m newsgroup bidirectionally  and accepts even messages
+gmane.emacs.w3m newsgroup bidirectionally and accepts even messages
 posted from nonsubscribers.
 </p>
 
+<hr>
+<h3>Bug reports and feature requests</h3>
+Now that the project is on github, you can there submit bug reports or
+feature requests, using the github
+'<a href="https://github.com/emacs-w3m/emacs-w3m/issues">issues</a>'
+interface.
 
+<hr>
+<h3>Code contributions</h3>
+Prior to migratng to git, the project accepted patch files via email.
+While that is still possible, in most casses it's probably best for
+all concerned to post submissions via github, prferably as a pull request.
+<p>
+<font size=-1><i>last updated 2019-02-19</i></font>
 </body>
 </html>
