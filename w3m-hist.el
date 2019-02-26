@@ -695,7 +695,7 @@ it works although it may not be perfect."
 	flat-map new-flat)
     (dolist (l w3m-history-flat)
       (push (cons (nth 2 l) l) flat-map))
-    (setq new-flat (cdr (assoc position flat-map)))
+    (setq new-flat (cons (cdr (assoc position flat-map)) nil))
     (let ((pos (w3m-history-previous-position position)))
       (while pos
 	(push (cdr (assoc pos flat-map)) new-flat)
