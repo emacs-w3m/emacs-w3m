@@ -394,7 +394,7 @@ COUNT is the maximum number of deletions to make."
 			     '(match-beginning 0)
 			   '(match-end 0)))
        (setq i (1+ i)))
-     (> i 0)))
+     (setq i (> i 0))))
 
 (defmacro w3m-filter-replace-regexp (url regexp to-string
 					 &optional start-pos end-pos count)
@@ -410,7 +410,7 @@ the replacements."
 	       `#1#)
        (replace-match ,to-string nil nil)
        (setq i (1+ i)))
-     (> i 0)))
+     (setq i (> i 0))))
 
 ;; Filter functions:
 (defun w3m-filter-google-click-tracking (url)

@@ -43,12 +43,16 @@
 	(defvar font-ccl-encoder-alist nil)
 	(require 'un-define))))
 
-(require 'un-define)
+; (require 'un-define)
 (require 'w3m-ccl)
 
 (eval-and-compile
   (autoload 'w3m-make-ccl-coding-system "w3m"))
 
+; FIXME: This function is separately and differently defined once in
+; file w3m-ems, and (get this) FIVE times in file w3m-xmas.el !! This
+; version of the definition raises a compiler warning "function
+; ‘ucs-to-char’ is not known to be defined."
 (defun w3m-ucs-to-char (codepoint)
   (condition-case nil
       (or (ucs-to-char codepoint) ?~)

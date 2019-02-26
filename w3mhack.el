@@ -70,7 +70,10 @@ nil means that all icons are installed to the default directory.")
   "*Non-nil means that print the commands to install programs and datas,
 but do not execute them.")
 
-(require 'cl)
+(eval-when-compile
+  (require 'cl)
+  (require 'texinfmt))
+
 (condition-case nil (require 'seq) (error))
 
 ;; Check whether the shell command can be used.
@@ -368,22 +371,23 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
   (dolist (module (w3mhack-module-list))
     (princ (format "%sc " module))))
 
-(if (featurep 'emacs)
-    (defun w3mhack-compile-file (file)
-      "Byte-compile FILE after reporting that it's being compiled."
-      ;; The byte compiler in Emacs >=25 doesn't say much.
-      (message "Compiling %s..." (file-name-nondirectory file))
-      (if (string-equal (file-name-nondirectory file) "w3m-filter.el")
-	  ;; Silence the warning "value returned from (> i 0) is unused".
-	  ;; See `w3m-filter-delete-regions', `w3m-filter-replace-regexp',
-	  ;; and the filter functions that use those macros.
-	  (let ((val (get '> 'side-effect-free)))
-	    (put '> 'side-effect-free 'error-free)
-	    (unwind-protect
-		(byte-compile-file file)
-	      (put '> 'side-effect-free val)))
-	(byte-compile-file file)))
-  (defalias 'w3mhack-compile-file 'byte-compile-file))
+(eval-when-compile
+  (if (featurep 'emacs)
+      (defun w3mhack-compile-file (file)
+        "Byte-compile FILE after reporting that it's being compiled."
+        ;; The byte compiler in Emacs >=25 doesn't say much.
+        (message "Compiling %s..." (file-name-nondirectory file))
+        (if (string-equal (file-name-nondirectory file) "w3m-filter.el")
+  	  ;; Silence the warning "value returned from (> i 0) is unused".
+  	  ;; See `w3m-filter-delete-regions', `w3m-filter-replace-regexp',
+  	  ;; and the filter functions that use those macros.
+  	  (let ((val (get '> 'side-effect-free)))
+  	    (put '> 'side-effect-free 'error-free)
+  	    (unwind-protect
+  		(byte-compile-file file)
+  	      (put '> 'side-effect-free val)))
+  	(byte-compile-file file)))
+    (defalias 'w3mhack-compile-file 'byte-compile-file)))
 
 (defun w3mhack-compile ()
   "Byte-compile the w3m modules."
@@ -442,7 +446,8 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 
 ;; Byte optimizers and version specific functions.
 (condition-case nil
-    (char-after)
+  (let (dummy-var-needed-to-avoid-compiler-warning)
+    (setq dummy-var-needed-to-avoid-compiler-warning (char-after)))
   (wrong-number-of-arguments
    (put 'char-after 'byte-optimizer
 	(lambda (form)
@@ -451,7 +456,8 @@ Error: You have to install APEL before building emacs-w3m, see manuals.
 	    '(char-after (point)))))))
 
 (condition-case nil
-    (char-before)
+  (let (dummy-var-needed-to-avoid-compiler-warning)
+    (setq dummy-var-needed-to-avoid-compiler-warning (char-before)))
   (wrong-number-of-arguments
    (put 'char-before 'byte-optimizer
 	(lambda (form)
