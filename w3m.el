@@ -11351,9 +11351,9 @@ without prompting for confirmation."
       (run-hooks 'w3m-delete-buffer-hook)
       (w3m-select-buffer-generate-contents
        (w3m-select-buffer-current-buffer))
-      (w3m-select-buffer-show-this-line)
       (goto-char (min pos (point-max)))
-      (beginning-of-line))))
+      (beginning-of-line)
+      (w3m-select-buffer-show-this-line))))
 
 (defun w3m-select-buffer-delete-other-buffers ()
   "Delete emacs-w3m buffers except for the buffer on the current menu."
