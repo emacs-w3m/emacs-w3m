@@ -694,15 +694,18 @@ it works although it may not be perfect."
   (let ((position (cadar w3m-history))
 	flat-map new-flat)
     (dolist (l w3m-history-flat)
-      (push (cons (nth 2 l) l) flat-map))
-    (setq new-flat (cdr (assoc position flat-map)))
+      (setq flat-map (cons (cons (nth 2 l) l)
+			   flat-map)))
+    (setq new-flat (cons (cdr (assoc position flat-map)) nil))
     (let ((pos (w3m-history-previous-position position)))
       (while pos
-	(push (cdr (assoc pos flat-map)) new-flat)
+	(setq new-flat (cons (cdr (assoc pos flat-map))
+			     new-flat))
 	(setq pos (w3m-history-previous-position pos))))
     (let ((pos (w3m-history-next-position position)))
       (while pos
-	(push (cdr (assoc pos flat-map)) new-flat)
+	(setq new-flat (cons (cdr (assoc pos flat-map))
+			     new-flat))
 	(setq pos (w3m-history-next-position pos))))
     new-flat))
 

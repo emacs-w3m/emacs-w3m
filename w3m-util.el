@@ -1541,8 +1541,10 @@ The value of DEFAULT is inserted into PROMPT."
 			 (cdr (assq (car c) w3m-make-menu-commands-keys)))
 		    (let ((key (where-is-internal (car c) w3m-mode-map)))
 		      (when key
-			(push (cons (car c) (key-description (car key)))
-			    w3m-make-menu-commands-keys)
+			(setq w3m-make-menu-commands-keys
+			      (cons (cons (car c)
+					  (key-description (car key)))
+				    w3m-make-menu-commands-keys))
 			(cdr (car w3m-make-menu-commands-keys))))))
        (symbol-name c)))
    menu-commands))
