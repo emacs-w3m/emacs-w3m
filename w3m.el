@@ -2275,6 +2275,13 @@ for the words."
   "*Alist of (numeric . string) pairs for numeric character reference
 other than ISO 10646.")
 
+(defconst w3m-entity-reverse-table
+  (let ((table (make-hash-table :test 'equal)))
+    (maphash (lambda (key val) (puthash val key table))
+	     w3m-entity-table)
+    table)
+  "Revision table of html character entities and values.")
+
 (defconst w3m-entity-regexp
   (let (buf)
     (maphash (lambda (key val) (push key buf))
@@ -4097,8 +4104,9 @@ non-nil, cached data will not be used."
 	    (when (and (< p end)
 		       (setq iurl (w3m-image p))
 		       (not (assoc iurl toggle-list)))
-	    (push (cons iurl p) toggle-list))))
-      (setq toggle-list (and (w3m-image) (cons (w3m-image) (point)))))
+	    (setq toggle-list (cons (cons iurl p) toggle-list)))))
+      (setq toggle-list (and (w3m-image)
+			     `(,(cons (w3m-image) (point))))))
     (if toggle-list
 	(dolist (x toggle-list)
 	  (let* ((url (car x))
@@ -4376,21 +4384,34 @@ If optional KEEP-PROPERTIES is non-nil, text property is reserved."
   (save-match-data
     ;; Character entity references are case-sensitive.
     ;; cf. http://www.w3.org/TR/1999/REC-html401-19991224/charset.html#h-5.3.2
-    (let ((case-fold-search))
-      (replace-regexp-in-string
-        w3m-entity-regexp
-        (lambda (x) (w3m-entity-value (substring x 1 -1)))
-        str))))
+    (let ((case-fold-search) (pos 0) (buf))
+      (while (string-match w3m-entity-regexp str pos)
+	(setq buf (cons (or (w3m-entity-value (match-string 1 str))
+			    (match-string 1 str))
+			(cons (substring str pos (match-beginning 0))
+			      buf))
+	      pos (if (eq (aref str (match-end 1)) ?\;)
+		      (match-end 0)
+		    (match-end 1))))
+      (if buf
+	  (apply 'concat (nreverse (cons (substring str pos) buf)))
+	str))))
 
 (defun w3m-encode-specials-string (str)
   "Encode special characters in the string STR."
-  (replace-regexp-in-string "[<>&]"
-    (lambda (x)
-      (cond
-       ((equal "<" x) "&lt;")
-       ((equal ">" x) "&gt;")
-       ((equal "&" x) "&amp;")))
-    str))
+  (let ((pos 0)
+	(buf))
+    (while (string-match "[<>&]" str pos)
+      (setq buf
+	    (cons ";"
+		  (cons (gethash (match-string 0 str) w3m-entity-reverse-table)
+			(cons "&"
+			      (cons (substring str pos (match-beginning 0))
+				    buf))))
+	    pos (match-end 0)))
+    (if buf
+	(apply 'concat (nreverse (cons (substring str pos) buf)))
+      str)))
 
 (defun w3m-fontify ()
   "Fontify the current buffer."
