@@ -10,7 +10,12 @@
 
 2019-02-26  Boruch Baum  <boruch_baum@gmx.com>
 
-	* w3m-proc.el (w3m-process-new): BUGFIX: gihub issue #20 (reverts part
+  * w3m-filter.el (w3m-filter-replace-regexp)
+	(w3m-filter-delete-regions), w3mhack.el:Fix byte-compile warnings.
+
+  * w3m-ucs.el: Un-fixed compiler warning noted.
+
+  * w3m-proc.el (w3m-process-new): BUGFIX: gihub issue #20 (reverts part
 	of commit 99db1df).
 
 	* w3m-hist.el (w3m-history-slimmed-history-flat): BUGFIX: gihub issue
