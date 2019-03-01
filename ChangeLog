@@ -1,3 +1,13 @@
+2019-03-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-display-hook): Add w3m-db-history-fix-indentation.
+	(w3m-create-text-page): Don't run w3m-db-history-fix-indentation there.
+	(w3m-db-history-align-to-column): New internal variable.
+	(w3m-about-db-history): Widen contents' width as much as possible;
+	pass it to w3m-db-history-fix-indentation.
+	(w3m-db-history-fix-indentation): Use variable width space to indent.
+	(w3m-db-history): Fix interactive spec so normally not to prompt a user.
+
 2019-02-26  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-proc.el (w3m-process-new): BUGFIX: gihub issue #20 (reverts part
