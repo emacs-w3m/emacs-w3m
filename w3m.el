@@ -1117,7 +1117,8 @@ This hook is evaluated by the `w3m-fontify' function."
 
 (defcustom w3m-display-hook
   '(w3m-move-point-for-localcgi
-    w3m-history-highlight-current-url)
+    w3m-history-highlight-current-url
+    w3m-db-history-fix-indentation)
   "*Hook run after displaying pages in emacs-w3m buffers.
 Each function is called with a url string as the argument.  This hook
 is evaluated by the `w3m-goto-url' function."
@@ -6676,10 +6677,7 @@ If so return \"text/html\", otherwise \"text/plain\"."
 	(goto-char (point-min))
 	(w3m-copy-local-variables result-buffer)
 	(set-buffer-file-coding-system w3m-current-coding-system)
-	(when (string= "text/html" type)
-	  (w3m-fontify)
-	  (when (string-match "\\`about://db-history/" url)
-	    (w3m-db-history-fix-indentation)))
+	(when (string= "text/html" type) (w3m-fontify))
 	'text-page))))
 
 (defsubst w3m-image-page-displayed-p ()
@@ -10809,6 +10807,8 @@ A history page is invoked by the `w3m-about-history' command.")
     (insert "</pre></body>")
     "text/html"))
 
+(defvar w3m-db-history-align-to-column nil)
+
 (defun w3m-about-db-history (url &rest args)
   "Render a flat chronological HTML list of all buffers' browsing history."
   ;; ARGS is not used. It is necessary in order to >/dev/null
@@ -10816,16 +10816,12 @@ A history page is invoked by the `w3m-about-history' command.")
   ;; called by `w3m-about-retrieve' using a generically constructed
   ;; `funcall'.
   (let* ((start 0)
-         (size 0)
-         (print-all t)
-         (width (- (w3m-display-width) 21)) ; magic number is time-stamp length
-         (lt-char "❬") ; nice unicode replacement for &lt;
-         (rt-char "❭") ; nice unicode replacement for &lt;
-         (ellipsis "…")
-         (adjusted-width-a (- width (1- (string-width (concat lt-char rt-char ellipsis)))))
-         (adjusted-width-b (- width (1- (string-width ellipsis))))
-         (now (current-time))
-         title time alist prev next page total)
+	 (size 0)
+	 (print-all t)
+	 (width (- (w3m-display-width) (if (w3m-display-graphic-p) 18 19)))
+	 (now (current-time))
+	 (ellipsis "…")
+	 title time alist prev next page total)
     (when (string-match "\\`about://db-history/\\?" url)
       (dolist (s (split-string (substring url (match-end 0)) "&"))
 	(when (string-match "\\`\\(?:size\\|\\(start\\)\\)=" s)
@@ -10890,24 +10886,22 @@ A history page is invoked by the `w3m-about-history' command.")
 	      time (cdr (car alist))
 	      alist (cdr alist)
 	      title (w3m-arrived-title url))
-	;; Note that truncation might not take place in the desired position
-	;; if it is in the middle of a wide char or unsuitable font is used.
 	(cond
 	 ((or (null title) (string= "<no-title>" title))
 	  (setq title
 		(concat
-		 lt-char
-		 (if (> (string-width url) width)
-		     (w3m-truncate-string url adjusted-width-a nil ? ellipsis)
+		 "&lt;"
+		 (if (> (string-width url) (- width 2))
+		     (w3m-truncate-string url (- width 3) nil ?  ellipsis)
 		   url)
 		 rt-char)))
 	 (t
 	  (setq title
 		(w3m-encode-specials-string
 		 (if (> (string-width title) width)
-		     (w3m-truncate-string title adjusted-width-b nil ? ellipsis)
+		     (w3m-truncate-string title (1- width) nil ?  ellipsis)
 		   title)))))
-	(insert (format "<tr><td><a href=\"%s\">%s</a></td>"
+	(insert (format "<tr><td><nobr><a href=\"%s\">%s</a></nobr></td>"
 			url title))
 	(when time
 	  (insert "<td>"
@@ -10923,7 +10917,8 @@ A history page is invoked by the `w3m-about-history' command.")
       (insert "</table>"
 	      (if next "\n<br>\n<hr>\n" "")
 	      prev))
-    (insert "</body></html>\n"))
+    (insert "</body></html>\n")
+    (setq w3m-db-history-align-to-column width))
   "text/html")
 
 (defun w3m-history-highlight-current-url (url)
@@ -10971,56 +10966,64 @@ It does manage history position data as well."
   :group 'w3m
   :type 'boolean)
 
-(defun w3m-db-history-fix-indentation ()
-  "Fix wrong indentation that `w3m -halfdump' may produce in db history."
-  (let ((min-column 9999)
-	(regexp "[012][0-9]:[0-5][0-9]:[0-5][0-9] \
-\\(?:20[1-9][0-9]-[01][0-9]-[0-3][0-9]\\|Today\\) *$")
-	(inhibit-read-only t))
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward regexp nil t)
-	(goto-char (match-beginning 0))
-	(setq min-column (min min-column (current-column)))
-	(forward-line 1))
-      (goto-char (point-min))
-      (while (re-search-forward regexp nil t)
-	(goto-char (match-beginning 0))
-	(delete-char (min 0 (- min-column (current-column))))
-	(forward-line 1)))))
+(defun w3m-db-history-fix-indentation (url)
+  "Fix wrong indentation that `w3m -halfdump' may produce in db history.
+Time/Date columns might nevertheless not align depending on the fonts
+especially on TTY."
+  (when (string-match "\\`about://db-history/" url)
+    (let ((regexp "\\( +\\)\\(?:[012][0-9]:[0-5][0-9]:[0-5][0-9] \
+\\(?:20[1-9][0-9]-[01][0-9]-[0-3][0-9]\\|Today\\)\\|Time/Date\\) *$")
+	  (inhibit-read-only t)
+	  (aspace (propertize
+		  " " 'display
+		  `(space :align-to ,w3m-db-history-align-to-column)))
+	  (inhibit-read-only t)
+	  num)
+      (save-excursion
+	(goto-char (point-min))
+	(while (re-search-forward regexp nil t)
+	  (delete-region (match-beginning 1) (goto-char (match-end 1)))
+	  (when (> (setq num (- w3m-db-history-align-to-column
+				(current-column)))
+		   0)
+	    (insert-char ?  (1- num))
+	    (insert aspace))))
+      (set-buffer-modified-p nil))))
 
 (defun w3m-db-history (&optional start size)
   "Display a flat chronological list of all buffers' browsing history.
 
 This is a flat (not hierarchial) presentation of all URLs visited
 by ALL w3m buffers, and includes a timestamp for when the URL was
-visited. The list is presented in reverse-chronological order,
-ie. most recent URL first.
+visited.  The list is presented in reverse-chronological order,
+i.e., most recent URL first.
 
 START is a positive integer for the point in the history list at
 which to begin displaying, where 0 is the most recent entry.
 
 SIZE is the maximum number of arrived URLs which are displayed
-per page. Variable `w3m-db-history-display-size' sets the
-default. Use 0 to display the entire history on a single page."
-  (interactive)
-  (cond
-   ((or executing-kbd-macro noninteractive)
-    (or start (setq start 0))
-    (or size (setq size (or w3m-db-history-display-size 0))))
-   (t ; called interactively; possibly indirectly
-      ; NOTE: This is expected to be the common and default case, with
-      ; this function being called by the interactive function
-      ; `w3m-history' using the keybinding `C-u h'.
-    (setq start (read-number "How far back in the history to start displaying?: "
-                  0))
-    (setq size (read-number "How many entries per page (0 for all on one page)?: "
-                  (or size w3m-db-history-display-size 0)))))
-  (let ((url (format "about://db-history/?start=%d&size=%d"
-               (or start 0) (or size 0))))
-   (if w3m-history-in-new-buffer
-     (w3m-goto-url-new-session url)
-    (w3m-goto-url url nil nil nil nil nil nil nil t))))
+per page.  Variable `w3m-db-history-display-size' sets the
+default.  Use 0 to display the entire history on a single page.
+
+If this function is called interactively with the prefix argument,
+prompt a user for START and SIZE if the prefix argument is not a
+number (i.e., `C-u').  Otherwise if the prefix argument is a number
+(i.e., `C-u NUM'), use it as START and leave SIZE nil, that will be
+overridden by `w3m-db-history-display-size' or 0."
+  (interactive "P")
+  (when (and (w3m-interactive-p) start (not (natnump start)))
+    (setq start (read-number
+		 "How far back in the history to start displaying: "
+		 0)
+	  size (read-number
+		"How many entries per page (0 for all on one page): "
+		(or w3m-db-history-display-size 0))))
+  (or start (setq start 0))
+  (or size (setq size (or w3m-db-history-display-size 0)))
+  (let ((url (format "about://db-history/?start=%d&size=%d" start size)))
+    (if w3m-history-in-new-buffer
+	(w3m-goto-url-new-session url)
+      (w3m-goto-url url nil nil nil nil nil nil nil t))))
 
 (defun w3m-history (&optional arg)
   "Display the current buffer's browsing history tree.
