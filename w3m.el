@@ -10894,7 +10894,7 @@ A history page is invoked by the `w3m-about-history' command.")
 		 (if (> (string-width url) (- width 2))
 		     (w3m-truncate-string url (- width 3) nil ?  ellipsis)
 		   url)
-		 rt-char)))
+		 "&gt;")))
 	 (t
 	  (setq title
 		(w3m-encode-specials-string
