@@ -25,17 +25,6 @@ if test -z "$3"; then
 	AC_MSG_CHECKING(for $1)
 fi
 AC_CACHE_VAL(EMACS_cv_SYS_$1,[
-dnl <probe>
-  echo ''
-  echo ''
-  echo '::::::: which '"${EMACS}"' :::::::'
-  which "${EMACS}"
-  echo '::::::: /bin/which '"${EMACS}"' :::::::'
-  /bin/which "${EMACS}"
-  echo '::::::: /usr/bin/which '"${EMACS}"' :::::::'
-  /usr/bin/which "${EMACS}"
-  echo ''
-dnl </probe>
 	OUTPUT=./conftest-$$
 	EL=./conftest-$$.el
 	echo "(let ((x ${elisp})) (write-region (format \"%s\" x) nil \"${OUTPUT}\" nil 5) (delete-file \"${EL}\"))" >& ${EL} 2>&1
