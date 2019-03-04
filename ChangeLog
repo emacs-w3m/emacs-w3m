@@ -1,3 +1,10 @@
+2019-03-04  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-history): Remove option for prefix arg, and modify
+	documentation.
+	(w3m-db-history): Minor documentation changes.
+	(w3m-lynx-like-map): Change 'H' keybinding to w3m-db-history
+
 2019-03-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-display-hook): Add w3m-db-history-fix-indentation.
