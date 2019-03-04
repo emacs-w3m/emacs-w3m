@@ -8441,7 +8441,7 @@ for users.  See Info node `(elisp)Key Binding Conventions'.")
     (define-key map "[" 'w3m-previous-form)
     (define-key map "}" 'w3m-next-image)
     (define-key map "{" 'w3m-previous-image)
-    (define-key map "H" 'w3m-gohome)
+    (define-key map "H" 'w3m-db-history)
     (define-key map "A" 'w3m-antenna)
     (define-key map "W" 'w3m-weather)
     (define-key map "s" 'w3m-search)
@@ -10894,7 +10894,7 @@ A history page is invoked by the `w3m-about-history' command.")
 		 (if (> (string-width url) (- width 2))
 		     (w3m-truncate-string url (- width 3) nil ?  ellipsis)
 		   url)
-		 "&gt")))
+		 "&gt;")))
 	 (t
 	  (setq title
 		(w3m-encode-specials-string
@@ -10907,6 +10907,9 @@ A history page is invoked by the `w3m-about-history' command.")
 	  (insert "<td>"
 		  (if (<= (w3m-time-lapse-seconds time now)
 			  64800) ;; = (* 60 60 18) 18hours.
+                    ;; NOTE: If you change this time-string format,
+                    ;; you need to also change the regexp in function
+                    ;; `w3m-db-history-fix-indentation'
 		      (format-time-string "%H:%M:%S&nbsp;Today" time)
 		    (format-time-string "%H:%M:%S&nbsp;%Y-%m-%d" time))
 		  "</td>"))
@@ -10952,8 +10955,7 @@ It does manage history position data as well."
 	(goto-char start)))
     (set-buffer-modified-p nil)))
 
-(defcustom w3m-db-history-display-size
-  (and (> w3m-keep-arrived-urls 500) 500)
+(defcustom w3m-db-history-display-size 100
   "*Maximum number of arrived URLs which are displayed per page."
   :group 'w3m
   :type '(radio (const :tag "All entries are displayed in single page." nil)
@@ -10992,9 +10994,9 @@ especially on TTY."
   "Display a flat chronological list of all buffers' browsing history.
 
 This is a flat (not hierarchial) presentation of all URLs visited
-by ALL w3m buffers, and includes a timestamp for when the URL was
-visited.  The list is presented in reverse-chronological order,
-i.e., most recent URL first.
+by ALL w3m buffers and includes a timestamp for when the URL was
+most recently visited. The list is presented in
+reverse-chronological order, i.e., most recent URL first.
 
 START is a positive integer for the point in the history list at
 which to begin displaying, where 0 is the most recent entry.
@@ -11007,7 +11009,11 @@ If this function is called interactively with the prefix argument,
 prompt a user for START and SIZE if the prefix argument is not a
 number (i.e., `C-u').  Otherwise if the prefix argument is a number
 (i.e., `C-u NUM'), use it as START and leave SIZE nil, that will be
-overridden by `w3m-db-history-display-size' or 0."
+overridden by `w3m-db-history-display-size' or 0.
+
+Note that the data in this list is maintained in parallel with
+and separately from the histories of the individual emacs-w3m
+buffers."
   (interactive "P")
   (when (and (w3m-interactive-p) start (not (natnump start)))
     (setq start (read-number
@@ -11026,24 +11032,19 @@ overridden by `w3m-db-history-display-size' or 0."
 (defun w3m-history (&optional arg)
   "Display the current buffer's browsing history tree.
 
-If called with the prefix argument, display a flat chronological
-list of ALL buffers' browsing history.
+This is a hierarchal presentation of all URLs visited by the
+current buffer and its \"parents\", meaning that if the buffer
+was spawned using a command such as `w3m-goto-url-new-session',
+its history will include that of the prior w3m buffer.
 
-A buffer's history tree is a hierarchal presentation of all
-URLs visited by the current buffer and its \"parents\", meaning
-that if the buffer was spawned using a command such as
-`w3m-goto-url-new-session', its history will include that of the
-prior w3m buffer.
-
-The flat chronological list is not hierarchial, but includes all
-URLs visited by ALL w3m buffers, as well as a timestamp for when
-the URL was visited. "
+For the flat chronological list that is not hierarchial but that
+includes all URLs visited by ALL w3m buffers, as well as a
+timestamp for when the URL was most recently visited, use
+function `w3m-db-history'. "
   (interactive "P")
-  (if arg
-      (w3m-db-history nil w3m-db-history-display-size)
-    (if w3m-history-in-new-buffer
-	(w3m-goto-url-new-session "about://history/")
-      (w3m-goto-url "about://history/" nil nil nil nil nil nil nil t))))
+  (if w3m-history-in-new-buffer
+    (w3m-goto-url-new-session "about://history/")
+   (w3m-goto-url "about://history/" nil nil nil nil nil nil nil t)))
 
 (defun w3m-w32-browser-with-fiber (url)
   (let ((proc (start-process "w3m-w32-browser-with-fiber"
