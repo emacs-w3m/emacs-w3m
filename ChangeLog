@@ -1,3 +1,20 @@
+2019-03-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make travis CI work for emacs25 on osx
+
+	(Successful but emacs26 on osx got to fail; should be fixed...)
+
+	Developers should note that the environment variable EMACS
+	will be passed to the configure script as if it is specified with:
+
+	./configure --with-emacs=${EMACS}
+
+	* .travis.yml (install): Make the name of a symbolic-link linked to
+	the real Emacs that of the environment variable EMACS when building
+	emacs-w3m on osx.
+	(before_script, script): Use the value of the environment variable
+	EMACS rather than just "emacs" as the name of Emacs to run.
+
 2019-03-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-display-hook): Add w3m-db-history-fix-indentation.
