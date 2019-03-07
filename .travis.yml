@@ -117,7 +117,7 @@ before_script:
   - make --version
   - w3m -version
   - file $(which emacs)
-  - emacs -Q --batch --eval='
+  - ${EMACS} -Q --batch --eval='
     (progn
       (message "%s" emacs-version)
       (require (quote package))
@@ -135,5 +135,5 @@ script:
     printf "$good_msg";
   elif [ "$TRAVIS_OS_NAME" = 'osx' ]; then
     printf "$bad_msg" &&
-    emacs -Q --batch -l w3mhack.el NONE -f w3mhack-nonunix-install ;
+    ${EMACS} -Q --batch -l w3mhack.el NONE -f w3mhack-nonunix-install ;
   fi
