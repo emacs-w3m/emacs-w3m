@@ -93,13 +93,13 @@ install:
       wget "${download_path}" &&
       hdiutil attach "$(basename ${download_path})" &&
       ls /Volumes/A* &&
-      sudo ln -s /Volumes/Aquamacs/Aquamacs.app/Contents/MacOS/Aquamacs /usr/local/bin/emacs;
+      sudo ln -s /Volumes/Aquamacs/Aquamacs.app/Contents/MacOS/Aquamacs /usr/local/bin/${EMACS};
     fi
   - if [ "$TRAVIS_OS_NAME--$EMACS" = 'osx--emacs25' ]; then
       brew install w3m &&
       wget https://emacsformacosx.com/emacs-builds/Emacs-25.2-universal.dmg &&
       hdiutil attach Emacs-25.2-universal.dmg &&
-      sudo ln -s /Volumes/Emacs/Emacs.app/Contents/MacOS/Emacs /usr/local/bin/emacs;
+      sudo ln -s /Volumes/Emacs/Emacs.app/Contents/MacOS/Emacs /usr/local/bin/${EMACS};
     fi
   - if [ "$TRAVIS_OS_NAME--$EMACS" = 'osx--emacs26' ]; then
       brew install emacs  &&
