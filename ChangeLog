@@ -1,3 +1,12 @@
+2019-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Improve the travis build
+
+	* .travis.yml: Separate the env var EMACS to EMACS and EMACS_EXE
+	that are a common name and an executable name respectively.
+
+	* aclocal.m4 (AC_CHECK_TEXINFO): Remove useless uppercase conversion.
+
 2019-03-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make travis CI work for emacs25 on osx
