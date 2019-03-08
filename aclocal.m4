@@ -297,8 +297,7 @@ AC_DEFUN(AC_COMPRESS_INSTALL,
 AC_DEFUN(AC_CHECK_TEXINFO,
  [dnl Check the existence and the version of a texinfo command.
   command=$1
-  name=`echo $command| tr a-z A-Z`
-  if test "${name}" != no; then
+  if test "${command}" != no; then
     AC_MSG_CHECKING([if ${command} version >= 6.3])
     version=`${command} --version\
       | awk 'BEGIN {zero=0}\
