@@ -94,7 +94,7 @@ install:
       wget "http://ftp.xemacs.org/pub/xemacs/stable/${file_name}.tar.gz" &&
       gzip -dc "${file_name}.tar.gz" | tar xf - &&
       cd "${file_name}" &&
-      ./configure && make && sudo make install &&
+      ./configure --with-emacs=${EMACS_EXE} && make && sudo make install &&
       cd /usr/local/lib/xemacs/xemacs-packages/ &&
       pkg_url="http://ftp.xemacs.org/pub/xemacs/packages/" &&
       for pkg_name in xemacs-base-2.46 efs-1.37 apel-1.36 ; do
@@ -136,7 +136,7 @@ before_script:
   - export bad_msg="\n\nconfiguration and make failed;\nattempting w3m-hack install\n\n";
 
 script:
-  if autoconf && ./configure && make ; then
+  if autoconf && ./configure --with-emacs=${EMACS_EXE} && make ; then
     printf "$good_msg";
   elif [ "$TRAVIS_OS_NAME" = 'osx' ]; then
     printf "$bad_msg" &&
