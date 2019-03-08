@@ -38,6 +38,9 @@ matrix:
       osx_image: xcode10.1
       env: EMACS=aquamacs
   allow_failures:
+    - os: osx
+      osx_image: xcode10.1
+      env: EMACS=emacs-snapshot
     - env: EMACS=xemacs21
     - env: EMACS=aquamacs
 
