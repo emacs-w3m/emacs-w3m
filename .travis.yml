@@ -12,9 +12,6 @@ matrix:
   include:
     - os: linux
       dist: xenial
-      env: EMACS=xemacs21
-    - os: linux
-      dist: xenial
       env: EMACS=emacs25
     - os: linux
       dist: xenial
@@ -24,9 +21,6 @@ matrix:
       env: EMACS=emacs-snapshot
     - os: osx
       osx_image: xcode10.1
-      env: EMACS=xemacs21
-    - os: osx
-      osx_image: xcode10.1
       env: EMACS=emacs25
     - os: osx
       osx_image: xcode10.1
@@ -34,44 +28,66 @@ matrix:
     - os: osx
       osx_image: xcode10.1
       env: EMACS=emacs-snapshot
+    - os: linux
+      dist: xenial
+      env: EMACS=xemacs21
+    - os: osx
+      osx_image: xcode10.1
+      env: EMACS=xemacs21
     - os: osx
       osx_image: xcode10.1
       env: EMACS=aquamacs
   allow_failures:
     - env: EMACS=xemacs21
     - env: EMACS=aquamacs
-    - os: osx
-      osx_image: xcode10.1
-      env: EMACS=emacs25
-    - os: osx
-      osx_image: xcode10.1
-      env: EMACS=emacs-snapshot
 
 install:
-  - if [ "$TRAVIS_OS_NAME--$EMACS" = 'linux--xemacs21' ]; then
-      sudo apt-get -qq update &&
-      sudo apt-get -qq -f install &&
-      sudo apt-get -qq install xemacs21;
-    fi
-  - if [ "$TRAVIS_OS_NAME--$EMACS" = 'linux--emacs25' ]; then
+  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'linux--emacs25' ]; then
+      export EMACS_EXE=emacs25;
       sudo add-apt-repository -y ppa:kelleyk/emacs &&
       sudo apt-get -qq update &&
       sudo apt-get -qq -f install &&
       sudo apt-get -qq install emacs25 emacs25-el;
     fi
-  - if [ "$TRAVIS_OS_NAME--$EMACS" = 'linux--emacs26' ]; then
+  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'linux--emacs26' ]; then
+      export EMACS_EXE=emacs26;
       sudo add-apt-repository -y ppa:kelleyk/emacs &&
       sudo apt-get -qq update &&
       sudo apt-get -qq -f install &&
       sudo apt-get -qq install emacs26 emacs26-el;
     fi
-  - if [ "$TRAVIS_OS_NAME--$EMACS" = 'linux--emacs-snapshot' ]; then
+  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'linux--emacs-snapshot' ]; then
+      export EMACS_EXE=emacs-snapshot;
       sudo add-apt-repository -y ppa:ubuntu-elisp/ppa &&
       sudo apt-get -qq update &&
       sudo apt-get -qq -f install &&
       sudo apt-get -qq install emacs-snapshot emacs-snapshot-el;
     fi
-  - if [ "$TRAVIS_OS_NAME--$EMACS" = 'osx--xemacs21' ]; then
+  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'osx--emacs25' ]; then
+      export EMACS_EXE=emacs25;
+      brew install w3m &&
+      wget https://emacsformacosx.com/emacs-builds/Emacs-25.2-universal.dmg &&
+      hdiutil attach Emacs-25.2-universal.dmg &&
+      sudo ln -s /Volumes/Emacs/Emacs.app/Contents/MacOS/Emacs /usr/local/bin/${EMACS_EXE};
+    fi
+  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'osx--emacs26' ]; then
+      export EMACS_EXE=emacs;
+      brew install emacs  &&
+      brew install w3m;
+    fi
+  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'osx--emacs-snapshot' ]; then
+      export EMACS_EXE=emacs;
+      brew install emacs --HEAD &&
+      brew install w3m;
+    fi
+  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'linux--xemacs21' ]; then
+      export EMACS_EXE=xemacs21;
+      sudo apt-get -qq update &&
+      sudo apt-get -qq -f install &&
+      sudo apt-get -qq install xemacs21;
+    fi
+  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'osx--xemacs21' ]; then
+      export EMACS_EXE=xemacs21;
       brew install gcc &&
       orig_dir="${PWD}" &&
       file_name="xemacs-21.4.24" &&
@@ -87,27 +103,14 @@ install:
       done &&
       cd "${orig_dir}" ;
     fi
-  - if [ "$TRAVIS_OS_NAME--$EMACS" = 'osx--aquamacs' ]; then
+  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'osx--aquamacs' ]; then
+      export EMACS_EXE=aquamacs;
       download_path=$(curl -s "https://api.github.com/repos/davidswelt/aquamacs-emacs/releases/latest" | grep 'browser_' |  sed 's/.* .//;s/.$//') &&
       echo "${download_path}" &&
       wget "${download_path}" &&
       hdiutil attach "$(basename ${download_path})" &&
       ls /Volumes/A* &&
-      sudo ln -s /Volumes/Aquamacs/Aquamacs.app/Contents/MacOS/Aquamacs /usr/local/bin/${EMACS};
-    fi
-  - if [ "$TRAVIS_OS_NAME--$EMACS" = 'osx--emacs25' ]; then
-      brew install w3m &&
-      wget https://emacsformacosx.com/emacs-builds/Emacs-25.2-universal.dmg &&
-      hdiutil attach Emacs-25.2-universal.dmg &&
-      sudo ln -s /Volumes/Emacs/Emacs.app/Contents/MacOS/Emacs /usr/local/bin/${EMACS};
-    fi
-  - if [ "$TRAVIS_OS_NAME--$EMACS" = 'osx--emacs26' ]; then
-      brew install emacs  &&
-      brew install w3m;
-    fi
-  - if [ "$TRAVIS_OS_NAME--$EMACS" = 'osx--emacs-snapshot' ]; then
-      brew install emacs --HEAD &&
-      brew install w3m;
+      sudo ln -s /Volumes/Aquamacs/Aquamacs.app/Contents/MacOS/Aquamacs /usr/local/bin/${EMACS_EXE};
     fi
 
 before_script:
@@ -116,8 +119,10 @@ before_script:
   - gcc --version
   - make --version
   - w3m -version
-  - file $(which emacs)
-  - ${EMACS} -Q --batch --eval='
+  - echo EMACS_EXE=${EMACS_EXE}
+  - which ${EMACS_EXE}
+  - file $(which ${EMACS_EXE})
+  - ${EMACS_EXE} -Q --batch --eval='
     (progn
       (message "%s" emacs-version)
       (require (quote package))
@@ -135,5 +140,5 @@ script:
     printf "$good_msg";
   elif [ "$TRAVIS_OS_NAME" = 'osx' ]; then
     printf "$bad_msg" &&
-    ${EMACS} -Q --batch -l w3mhack.el NONE -f w3mhack-nonunix-install ;
+    ${EMACS_EXE} -Q --batch -l w3mhack.el NONE -f w3mhack-nonunix-install ;
   fi
