@@ -527,6 +527,6 @@ specifies not using the cached data."
       (list (w3m-active-region-or-url-at-point) nil current-prefix-arg nil nil t))
     (t
      (list nil nil current-prefix-arg))))
-     (if (executable-find "wget")
-       (w3m-download-using-wget url filename no-cache interactive)
-      (w3m-download-using-w3m url filename no-cache handler post-data)))
+  (if (executable-find "wget")
+    (w3m-download-using-wget url filename no-cache interactive)
+   (w3m-download-using-w3m url filename no-cache handler post-data)))
