@@ -12,6 +12,11 @@
 	* w3m.el (w3m-cache-request-contents): don't eval current-buffer when
 	we know what it is.
 
+2019-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-insert-git-revision): Allow git-revision
+	no matter what kind of object it is, including nil.
+
 2019-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Improve the travis build
