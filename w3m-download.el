@@ -530,3 +530,8 @@ specifies not using the cached data."
   (if (executable-find "wget")
     (w3m-download-using-wget url filename no-cache interactive)
    (w3m-download-using-w3m url filename no-cache handler post-data)))
+
+
+
+;;; Provide this feature
+(provide 'w3m-download)
