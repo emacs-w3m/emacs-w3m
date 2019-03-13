@@ -30,9 +30,9 @@
 
 ;; This file provides download features for the `emacs-w3m' project.
 ;; Although the project is meant to be a front-end to the `w3m'
-;; browser, this code uses elisp and external back-end programs
-;; (currently `wget') in order to offer additional download features
-;; not native to `w3m':
+;; browser, this code uses elisp and, when available, external
+;; back-end programs (currently just `wget') in order to offer
+;; additional download features not native to `w3m':
 ;;
 ;;   1) Individual detailed download progress logs in dedicated
 ;;      buffers, automatically deleted upon successful completion.
@@ -53,12 +53,24 @@
 ;;           caption are:
 ;;             exiv2 -g "Exif.Image.ImageDescription" foo.png
 ;;             exif --ifd=0 -t0x010e  foo.jpg |grep value
+;;
+;; This file also absorbed most of the legacy download functions,
+;; those which were basically wrappers for `w3m-download', to keep all
+;; (most) functionality in one place. The functions and defcustom not
+;; moved here are:
+;;
+;;   --FILE--
+;;   mew-w3m.el    mew-w3m-ext-url-fetch (dummy url)
+;;   w3m.el        w3m-external-view (url &optional no-cache handler)
+;;   w3m-lnum.el   w3m-lnum-actions-image-alist
+;;   w3m-lnum.el   w3m-lnum-save-image ()
 
 
 
 ;;; TODO
-;; + integrate the code into the main-line
-;; + danger of 'feature-creep':
+;; + danger of 'feature-creep': None of these-items are necessary, and
+;;   at some point the project should consider turning to a en external
+;;   program which specializes in downlaoding, but anyway ...
 ;;   + files in the process of being downloaded should have a
 ;;     temporary extension `.part' appended to their name, which would
 ;;     be removed upon successful completion, and possibly upon the
@@ -85,8 +97,6 @@
 
 
 ;;; Code
-
-
 
 ;;; Temporary compatability operation(s)
 
@@ -198,11 +208,6 @@ the operation is perfomed directly by
     (shell-command w3m--download-metadata-operation t))
 
 (defun w3m--download-check-and-use-cache (url save-path metadata)
-  ;; TODO: Add to quibbles: this function is based largely upon
-  ;; `w3m-cache-request-contents'. There, the line
-  ;;   (1+ beg) 'w3m-cache (current-buffer) (point-max)))
-  ;; should be:
-  ;;   (1+ beg) 'w3m-cache w3m-cache-buffer (point-max)))
   (let* (beg end
         (buffer (current-buffer))
         (ident (intern (w3m-w3m-canonicalize-url url) w3m-cache-hashtb)))
@@ -329,6 +334,62 @@ order to over-write its prior message. "
 
 ;;; Interactive and user-facing functions
 
+(defun w3m-download-this-url ()
+  "Download the file or the page pointed to by the link under point."
+  (interactive)
+  (let ((url (or (w3m-anchor) (w3m-image))) act)
+    (cond
+     ((w3m-url-valid url)
+      (lexical-let ((pos (point-marker))
+                    (curl w3m-current-url))
+        (w3m-process-with-null-handler
+          (w3m-process-do
+              (success (w3m-download url nil nil handler))
+            (and success
+                 (buffer-name (marker-buffer pos))
+                 (with-current-buffer (marker-buffer pos)
+                   (when (equal curl w3m-current-url)
+                     (goto-char pos)
+                     (w3m-refontify-anchor))))))))
+     ((setq act (w3m-action))
+      (let ((w3m-form-download t))
+        (eval act)))
+     (t
+      (w3m-message "No URL at point")))))
+
+(defun w3m-download-this-image ()
+  "Download the image under point."
+  (interactive)
+  (let ((url (w3m-image)) act)
+    (cond
+     ((w3m-url-valid url)
+      (lexical-let ((pos (point-marker))
+                    (curl w3m-current-url))
+        (w3m-process-with-null-handler
+          (w3m-process-do
+              (success (w3m-download url nil nil handler))
+            (and success
+                 (buffer-name (marker-buffer pos))
+                 (with-current-buffer (marker-buffer pos)
+                   (when (equal curl w3m-current-url)
+                     (goto-char pos)
+                     (w3m-refontify-anchor))))))))
+     ((setq act (w3m-action))
+      (let ((w3m-form-download t))
+        (eval act)))
+     (t
+      (w3m-message "No image at point")))))
+
+(defun w3m-save-image ()
+  "Save the image under point to a file.
+The default name will be the original name of the image."
+  (interactive)
+  (let ((url (w3m-url-valid (w3m-image))))
+    (if url
+        (w3m-download url)
+      (w3m-message "No image at point"))))
+
+;;;###autoload
 (defun w3m-download-using-wget (url &optional save-path no-cache interactive)
   "Download URL to `w3m-default-save-directory'.
 With prefix argument, prompt for an alternate SAVE-PATH,
@@ -400,48 +461,72 @@ Are you trying to resume an aborted partial download? ")))
       ((y-or-n-p (format "Overwrite? (%s)" save-path))
        (w3m--download-using-wget url save-path nil no-cache metadata))))))
 
+;;;###autoload
+(defun w3m-download-using-w3m (url &optional filename no-cache handler post-data)
+  "Download contents of URL to a file named FILENAME.
+NO-CACHE (which the prefix argument gives when called interactively)
+specifies not using the cached data."
+  (interactive (list nil nil current-prefix-arg))
+  (unless url
+    (while (string-equal (setq url (w3m-input-url
+                                    "Download URL: " nil
+                                    (or (w3m-active-region-or-url-at-point) "")
+                                    nil nil 'no-initial))
+                         "")
+      (message "A url is required")
+      (sit-for 1)))
+  (unless filename
+    (let ((basename (file-name-nondirectory (w3m-url-strip-query url))))
+      (when (string-match "^[\t ]*$" basename)
+        (when (string-match "^[\t ]*$"
+                            (setq basename (file-name-nondirectory url)))
+          (setq basename "index.html")))
+      (setq filename
+            (w3m-read-file-name (format "Download %s to: " url)
+                                w3m-default-save-directory basename))))
+  (if (and w3m-use-ange-ftp (string-match "\\`ftp://" url))
+      (w3m-goto-ftp-url url filename)
+    (lexical-let ((url url)
+                  (filename filename)
+                  (page-buffer (current-buffer)))
+      (w3m-process-do-with-temp-buffer
+          (type (progn
+                  (w3m-clear-local-variables)
+                  (setq w3m-current-url url)
+                  (w3m-retrieve url t no-cache post-data nil handler)))
+        (if type
+            (let ((buffer-file-coding-system 'binary)
+                  (coding-system-for-write 'binary)
+                  jka-compr-compression-info-list
+                  format-alist)
+              (when (or (not (file-exists-p filename))
+                        (prog1 (y-or-n-p
+                                (format "File(%s) already exists. Overwrite? "
+                                        filename))
+                          (message nil)))
+                (write-region (point-min) (point-max) filename)
+                (w3m-touch-file filename (w3m-last-modified url))
+                t))
+          (ding)
+          (with-current-buffer page-buffer
+            (message "Cannot retrieve URL: %s%s" url
+                     (cond ((and w3m-process-exit-status
+                                 (not (equal w3m-process-exit-status 0)))
+                            (format " (exit status: %s)"
+                                    w3m-process-exit-status))
+                           (w3m-http-status
+                            (format " (http status: %s)" w3m-http-status))
+                           (t ""))))
+          nil)))))
 
-
-;;; Development
-
-
-
-;;; lgrep: uses of original function w3m-download
-;;
-;;    Conclusions: Most uses enable pulling target from the cache,
-;;                 which isn't supported in my version.
-;;
-;; (defun mew-w3m-ext-url-fetch (dummy url)
-;;   mew-w3m.el 378: (w3m-download url nil nil handler)
-;;
-;; (defun w3m-external-view (url &optional no-cache handler)
-;;   w3m.el 7421: (w3m-download url nil no-cache handler)))
-;;   w3m.el 7441: (success (w3m-download url file no-cache handler))
-;;   w3m.el 7447: (w3m-download url nil no-cache handler))))))))))))
-;;
-;; (defun w3m-save-image ()
-;;   w3m.el 7503: (w3m-download url)
-;;
-;; (defun w3m-download-this-url ()
-;;   w3m.el 7567: (success (w3m-download url nil nil handler))
-;;
-;; (defun w3m-download-this-image ()
-;;   w3m.el 7590: (success (w3m-download url nil nil handler))
-;;
-;; (defcustom w3m-lnum-actions-image-alist
-;;   w3m-lnum.el 126: (?S (lambda (info) (w3m-download (nth 2 info))) "Save")
-;;
-;; (defun w3m-lnum-save-image ()
-;;   w3m-lnum.el 1018: (cond (im (w3m-download im))
-;;   w3m-lnum.el 1020: (w3m-download (nth 2 im)))
-
-(defun w3m-cache-size ()
-  (interactive)
-  (w3m--message nil nil "w3m cache currently has %s characters"
-    (nreverse
-      (replace-regexp-in-string
-        "[0-9][0-9][0-9]"
-        (lambda (x) (concat x ","))
-        (nreverse (format "%s"
-          (with-current-buffer w3m-cache-buffer
-            (point-max))))))))
+;;;###autoload
+(defun w3m-download (url &optional filename no-cache handler post-data interactive)
+  (interactive
+    (cond
+     ((executable-find "wget")
+      (list (w3m-active-region-or-url-at-point) nil current-prefix-arg nil nil t))
+    (t
+     (list nil nil current-prefix-arg))))
+     (if (executable-find "wget")
+       (w3m-download-using-wget url filename no-cache interactive)
+      (w3m-download-using-w3m url filename no-cache handler post-data)))

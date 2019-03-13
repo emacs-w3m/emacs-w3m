@@ -4934,7 +4934,7 @@ BUFFER is nil, all contents will be inserted in the current buffer."
 			 (point-min) (point-max) 'w3m-cache ident))
 	      ;; Find the end (i.e., the beginning of the next article).
 	      (setq end (next-single-property-change
-			 (1+ beg) 'w3m-cache (current-buffer) (point-max)))
+			 (1+ beg) 'w3m-cache w3m-cache-buffer (point-max)))
 	    ;; It wasn't in the cache after all.
 	    (setq w3m-cache-articles (delq ident w3m-cache-articles))))
 	(and beg
@@ -6060,64 +6060,6 @@ POST-DATA and REFERER will be sent to the web server with a request."
 				  "-t"
 				  (format-time-string "%Y%m%d%H%M.%S" time)
 				  file)))))))
-
-;;;###autoload
-(defun w3m-download (&optional url filename no-cache handler post-data)
-  "Download contents of URL to a file named FILENAME.
-NO-CACHE (which the prefix argument gives when called interactively)
-specifies not using the cached data."
-  (interactive (list nil nil current-prefix-arg))
-  (unless url
-    (while (string-equal (setq url (w3m-input-url
-				    "Download URL: " nil
-				    (or (w3m-active-region-or-url-at-point) "")
-				    nil nil 'no-initial))
-			 "")
-      (message "A url is required")
-      (sit-for 1)))
-  (unless filename
-    (let ((basename (file-name-nondirectory (w3m-url-strip-query url))))
-      (when (string-match "^[\t ]*$" basename)
-	(when (string-match "^[\t ]*$"
-			    (setq basename (file-name-nondirectory url)))
-	  (setq basename "index.html")))
-      (setq filename
-	    (w3m-read-file-name (format "Download %s to: " url)
-				w3m-default-save-directory basename))))
-  (if (and w3m-use-ange-ftp (string-match "\\`ftp://" url))
-      (w3m-goto-ftp-url url filename)
-    (lexical-let ((url url)
-		  (filename filename)
-		  (page-buffer (current-buffer)))
-      (w3m-process-do-with-temp-buffer
-	  (type (progn
-		  (w3m-clear-local-variables)
-		  (setq w3m-current-url url)
-		  (w3m-retrieve url t no-cache post-data nil handler)))
-	(if type
-	    (let ((buffer-file-coding-system 'binary)
-		  (coding-system-for-write 'binary)
-		  jka-compr-compression-info-list
-		  format-alist)
-	      (when (or (not (file-exists-p filename))
-			(prog1 (y-or-n-p
-				(format "File(%s) already exists. Overwrite? "
-					filename))
-			  (message nil)))
-		(write-region (point-min) (point-max) filename)
-		(w3m-touch-file filename (w3m-last-modified url))
-		t))
-	  (ding)
-	  (with-current-buffer page-buffer
-	    (message "Cannot retrieve URL: %s%s" url
-		     (cond ((and w3m-process-exit-status
-				 (not (equal w3m-process-exit-status 0)))
-			    (format " (exit status: %s)"
-				    w3m-process-exit-status))
-			   (w3m-http-status
-			    (format " (http status: %s)" w3m-http-status))
-			   (t ""))))
-	  nil)))))
 
 ;;; Retrieve data:
 (w3m-make-ccl-coding-system
@@ -7494,15 +7436,6 @@ image."
 	(w3m-external-view url)
       (w3m-message "No image at point"))))
 
-(defun w3m-save-image ()
-  "Save the image under point to a file.
-The default name will be the original name of the image."
-  (interactive)
-  (let ((url (w3m-url-valid (w3m-image))))
-    (if url
-	(w3m-download url)
-      (w3m-message "No image at point"))))
-
 (defun w3m-external-view-this-url ()
   "Launch the external browser and display the link an point."
   ;; This command was listed in the menu bar and a link menu till
@@ -7553,52 +7486,6 @@ of the url currently displayed.  The browser is defined in
 	(w3m-message "Browsing %s..." url)
 	(browse-url url))
     (w3m-message "No url at point")))
-
-(defun w3m-download-this-url ()
-  "Download the file or the page pointed to by the link under point."
-  (interactive)
-  (let ((url (or (w3m-anchor) (w3m-image))) act)
-    (cond
-     ((w3m-url-valid url)
-      (lexical-let ((pos (point-marker))
-		    (curl w3m-current-url))
-	(w3m-process-with-null-handler
-	  (w3m-process-do
-	      (success (w3m-download url nil nil handler))
-	    (and success
-		 (buffer-name (marker-buffer pos))
-		 (with-current-buffer (marker-buffer pos)
-		   (when (equal curl w3m-current-url)
-		     (goto-char pos)
-		     (w3m-refontify-anchor))))))))
-     ((setq act (w3m-action))
-      (let ((w3m-form-download t))
-	(eval act)))
-     (t
-      (w3m-message "No URL at point")))))
-
-(defun w3m-download-this-image ()
-  "Download the image under point."
-  (interactive)
-  (let ((url (w3m-image)) act)
-    (cond
-     ((w3m-url-valid url)
-      (lexical-let ((pos (point-marker))
-		    (curl w3m-current-url))
-	(w3m-process-with-null-handler
-	  (w3m-process-do
-	      (success (w3m-download url nil nil handler))
-	    (and success
-		 (buffer-name (marker-buffer pos))
-		 (with-current-buffer (marker-buffer pos)
-		   (when (equal curl w3m-current-url)
-		     (goto-char pos)
-		     (w3m-refontify-anchor))))))))
-     ((setq act (w3m-action))
-      (let ((w3m-form-download t))
-	(eval act)))
-     (t
-      (w3m-message "No image at point")))))
 
 (defun w3m-print-current-url ()
   "Display the current url in the echo area and put it into `kill-ring'."

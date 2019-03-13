@@ -1,3 +1,17 @@
+2019-03-13  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el: New file with new features for better downloads,
+	using wget, and collecting download functions from other files.
+	(w3m-download-this-url, w3m-download-this-image, w3m-save-image): moved
+	from w3m.el.
+	(w3m-download-using-wget): The entry function for the new features.
+	(w3m-download-using-w3m): The old function w3m-download.
+	(w3m-download): Now a wrapper function.
+	(w3m-download-save-metadata): defcustom whether to save captions.
+
+	* w3m.el (w3m-cache-request-contents): don't eval current-buffer when
+	we know what it is.
+
 2019-03-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Improve the travis build
