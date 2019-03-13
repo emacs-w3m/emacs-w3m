@@ -112,6 +112,24 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABsAAAAbBAMAAAB/+ulmAAAAD1BMVEX8/PwAAAD///+G
 
 (defvar shimbun-sankei-expiration-days 7)
 
+(defvar shimbun-sankei-login-url "https://special.sankei.com/login"
+  "*Url to login to special.sankei.com.")
+
+(defvar shimbun-sankei-logout-url "https://special.sankei.com/logout"
+  "*Url to logout from special.sankei.com.")
+
+(defcustom shimbun-sankei-login-name nil
+  "Login name used to login to special.sankei.com.
+To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
+  :group 'shimbun
+  :type '(choice (const :tag "None" nil) (string :tag "User name")))
+
+(defcustom shimbun-sankei-login-password nil
+  "Password used to login to special.sankei.com.
+To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
+  :group 'shimbun
+  :type '(choice (const :tag "None" nil) (string :tag "Password")))
+
 (luna-define-method shimbun-groups ((shimbun shimbun-sankei))
   (mapcar 'car shimbun-sankei-group-table))
 
@@ -380,6 +398,177 @@ class=\"pageNextsubhead\"" nil t)
 <a href=\""
 	  (shimbun-article-base-url shimbun header) "\">&lt;"
 	  (shimbun-article-base-url shimbun header) "&gt;</a>\n</div>\n"))
+
+(eval-when-compile
+  (require 'cl)
+  (require 'w3m-cookie)
+  (require 'w3m-form))
+
+(autoload 'password-cache-add "password-cache")
+(autoload 'password-read-from-cache "password-cache")
+
+(defun shimbun-sankei-login (&optional name password interactive-p)
+  "Login to special.sankei.com with NAME and PASSWORD.
+NAME and PASSWORD default to `shimbun-sankei-login-name' and
+`shimbun-sankei-login-password' respectively.  `password-data', if
+cached, overrides `shimbun-sankei-login-password'.  If the prefix
+argument is given, you will be prompted for new NAME and PASSWORD."
+  (interactive (let ((pass (copy-sequence shimbun-sankei-login-password))
+		     name default password)
+		 (unless (and w3m-use-cookies w3m-use-form)
+		   (error "\
+You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
+		 (setq name (if current-prefix-arg
+				(completing-read
+				 "Login name: "
+				 (cons shimbun-sankei-login-name nil)
+				 nil nil shimbun-sankei-login-name)
+			      shimbun-sankei-login-name))
+		 (when (and name (string-match "\\`[\t ]*\\'" name))
+		   (setq name nil))
+		 (setq default (and name
+				    (or (password-read-from-cache name)
+					;; `password-cache' will expire
+					;; the password by filling it with
+					;; C-@'s, so we use a copy of
+					;; the original.
+					(copy-sequence
+					 shimbun-sankei-login-password)))
+		       password (and name
+				     (if current-prefix-arg
+					 (read-passwd
+					  (concat "Password"
+						  (when default
+						    (concat " (default "
+							    (make-string
+							     (length default)
+							     ?*)
+							    ")"))
+						  ": ")
+					  nil default)
+				       default)))
+		 (when (and password (string-match "\\`[\t ]*\\'" password))
+		   (setq name nil
+			 password nil))
+		 (list name password t)))
+  (unless interactive-p
+    (if (or name (setq name shimbun-sankei-login-name))
+	(or password
+	    (setq password
+		  (or (password-read-from-cache name)
+		      (copy-sequence shimbun-sankei-login-password)))
+	    (setq name nil))
+      (setq password nil)))
+  (if (not (and w3m-use-cookies w3m-use-form name password))
+      (when interactive-p (message "Quit"))
+    (when interactive-p (message "Logging in to special.sankei.com..."))
+    (require 'w3m-cookie)
+    (require 'w3m-form)
+    (let ((cache (buffer-live-p w3m-cache-buffer))
+	  (num 0)
+	  (w3m-message-silent t)
+	  temp form action handler)
+      (condition-case err
+	  (w3m-process-do-with-temp-buffer
+	      (type (progn
+		      (setq temp (current-buffer))
+		      (w3m-retrieve shimbun-sankei-login-url nil t)))
+	    (if (not type)
+		(when interactive-p (message "Failed to login"))
+	      (goto-char (point-min))
+	      (if (not (re-search-forward "\
+<input[\t\n ]+\\(?:[^\t\n ]+[\t\n ]+\\)*name=\"LOGIN_ID\"" nil t))
+		  (when interactive-p (message "Already logged in"))
+		(w3m-buffer)
+		(setq form (car w3m-current-forms))
+		(if (not (string-match "login\\.php\\'"
+				       (setq action (w3m-form-action form))))
+		    (when interactive-p (message "Already logged in"))
+		  (setq form (w3m-form-make-form-data form))
+		  (while (string-match "\
+&\\(?:LOGIN\\|LOGIN_ID\\|LOGIN_PASSWORD\\|STAY_LOGGED_IN\\)=[^&]*" form)
+		    (setq form (replace-match "" nil nil form)))
+		  (setq form (concat form
+				     "&LOGIN=&LOGIN_ID="
+				     (shimbun-url-encode-string name)
+				     "&LOGIN_PASSWORD="
+				     (shimbun-url-encode-string password)
+				     "&STAY_LOGGED_IN=1"))
+		  (erase-buffer)
+		  (set-buffer-multibyte t)
+		  (w3m-process-with-wait-handler
+		    (w3m-retrieve-and-render
+		     action t nil form
+		     (w3m-real-url shimbun-sankei-login-url)
+		     handler))
+		  (if (not (and (setq form (car w3m-current-forms))
+				(eq (w3m-form-method form) 'post)
+				(setq action (w3m-form-action form))
+				(string-match "/login\\'" action)))
+		      (when interactive-p (message "Failed to login"))
+		    (erase-buffer)
+		    (w3m-process-with-wait-handler
+		      (w3m-retrieve-and-render
+		       action t nil (w3m-form-make-form-data form)
+		       w3m-current-url handler))
+		    (if (not (equal "https://special.sankei.com/"
+				    w3m-current-url))
+			(when interactive-p (message "Failed to login"))
+		      (when interactive-p (message "Logged in"))
+		      (password-cache-add name password)
+		      (when w3m-cookie-save-cookies (w3m-cookie-save)))))))
+	    (when (get-buffer " *w3m-cookie-parse-temp*")
+	      (kill-buffer (get-buffer " *w3m-cookie-parse-temp*")))
+	    (unless cache (w3m-cache-shutdown)))
+	(error (if (or interactive-p debug-on-error)
+		   (signal (car err) (cdr err))
+		 (message "Error while logging in to special.sankei.com:\n %s"
+			  (error-message-string err))
+		 (when (buffer-live-p temp) (kill-buffer temp))))))))
+
+(defun shimbun-sankei-logout (&optional interactive-p)
+  "Logout from special.sankei.com."
+  (interactive (list t))
+  (require 'w3m-cookie)
+  (require 'w3m-form)
+  (let ((cache (buffer-live-p w3m-cache-buffer))
+	(w3m-message-silent t)
+	temp handler)
+    (when interactive-p (message "Logging out from special.sankei.com..."))
+    (condition-case err
+	(w3m-process-do-with-temp-buffer
+	    (type (progn
+		    (setq temp (current-buffer))
+		    (w3m-retrieve shimbun-sankei-login-url nil t)))
+	  (if (not type)
+	      (when interactive-p (message "Failed to logout"))
+	    (goto-char (point-min))
+	    (if (re-search-forward "\
+<input[\t\n ]+\\(?:[^\t\n ]+[\t\n ]+\\)*name=\"LOGIN_ID\"" nil t)
+		(when interactive-p (message "Already logged out"))
+	      (erase-buffer)
+	      (set-buffer-multibyte t)
+	      (w3m-process-with-wait-handler
+		(w3m-retrieve-and-render shimbun-sankei-logout-url
+					 t nil nil nil handler))
+	      (erase-buffer)
+	      (if (and (w3m-retrieve shimbun-sankei-login-url nil t)
+		       (progn
+			 (goto-char (point-min))
+			 (re-search-forward "\
+<input[\t\n ]+\\(?:[^\t\n ]+[\t\n ]+\\)*name=\"LOGIN_ID\"" nil t)))
+		  (when interactive-p (message "Logged out"))
+		(when interactive-p (message "Already logged out")))))
+	  (when (get-buffer " *w3m-cookie-parse-temp*")
+	    (kill-buffer (get-buffer " *w3m-cookie-parse-temp*")))
+	  (unless cache (w3m-cache-shutdown)))
+      (error (if (or interactive-p debug-on-error)
+		 (signal (car err) (cdr err))
+	       (message "Error while logging out from special.sankei.com:\n %s"
+			(error-message-string err))
+	       (when (buffer-live-p temp) (kill-buffer temp)))))))
+
+(shimbun-sankei-login)
 
 (provide 'sb-sankei)
 
