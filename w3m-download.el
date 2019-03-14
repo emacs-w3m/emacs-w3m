@@ -71,10 +71,6 @@
 ;; + danger of 'feature-creep': None of these-items are necessary, and
 ;;   at some point the project should consider turning to a en external
 ;;   program which specializes in downlaoding, but anyway ...
-;;   + files in the process of being downloaded should have a
-;;     temporary extension `.part' appended to their name, which would
-;;     be removed upon successful completion, and possibly upon the
-;;     pesky error code 1.
 ;;   + an alist of extensions and metadata commands
 ;;   + an alist of download commands (eg. aria2, curl)
 ;;   + offloading to a dedicated downloader (eg. uget)
@@ -98,6 +94,12 @@
 
 ;;; Code
 
+;;  Dependencies
+(require 'w3m-util)
+(require 'w3m)
+
+
+
 ;;; Temporary compatability operation(s)
 
 ;; My development git fork has a different messaging standard, based
@@ -105,9 +107,9 @@
 ;; support this git branch being merged into a branch lacking that
 ;; other merge.
 (eval-when-compile
-  (if (not (fboundp 'w3m--message))
-    (defun w3m--message (timeout face message)
-      (w3m-message message))))
+  (when (not (fboundp 'w3m--message))
+    (defun w3m--message (timeout face &rest args)
+      (w3m-message args))))
 
 
 
@@ -152,6 +154,8 @@ Note that enabling this option will modify the file's checksum."
   "The process id of the download associated with the current
   download progress buffer.")
 
+(defvar-local w3m--download-save-path nil
+  "The full path-name of the downloaded file.")
 
 
 ;;; Hook functions
@@ -201,40 +205,41 @@ would be in the download buffer's buffer-local variable
 When a file is saved from the cache, this function is not called;
 the operation is perfomed directly by
 `w3m--download-check-and-use-cache'."
-  (when w3m--download-metadata-operation)
+  (when w3m--download-metadata-operation
     (goto-char (point-max))
     (insert (format "\nAdding meta-data to file... \n  %s\n"
                     w3m--download-metadata-operation))
-    (shell-command w3m--download-metadata-operation t))
+    (shell-command w3m--download-metadata-operation t)))
 
 (defun w3m--download-check-and-use-cache (url save-path metadata)
-  (let* (beg end
-        (buffer (current-buffer))
-        (ident (intern (w3m-w3m-canonicalize-url url) w3m-cache-hashtb)))
-    (with-current-buffer w3m-cache-buffer
-      (cond
-       ((not (setq beg (text-property-any
-                         (point-min) (point-max) 'w3m-cache ident)))
-        ;; It wasn't in the cache after all.
-        (setq w3m-cache-articles (delq ident w3m-cache-articles))
-        nil)
-       (t
-        ;; Find the end (i.e., the beginning of the next article).
-        (when (setq end (next-single-property-change
-                   (1+ beg) 'w3m-cache w3m-cache-buffer (point-max)))
-          (write-region beg end save-path))
-        (when metadata
-          (shell-command metadata))
-        (message "Saved from cache %s to %s"
-          (if metadata "(with metadata)" "")
-          save-path)
-        t)))))
+  (when (bufferp w3m-cache-buffer)
+    (let* (beg end
+          (ident (intern (w3m-w3m-canonicalize-url url) w3m-cache-hashtb)))
+      (with-current-buffer w3m-cache-buffer
+        (cond
+         ((not (setq beg (text-property-any
+                           (point-min) (point-max) 'w3m-cache ident)))
+          ;; It wasn't in the cache after all.
+          (setq w3m-cache-articles (delq ident w3m-cache-articles))
+          nil)
+         (t
+          ;; Find the end (i.e., the beginning of the next article).
+          (when (setq end (next-single-property-change
+                     (1+ beg) 'w3m-cache w3m-cache-buffer (point-max)))
+            (write-region beg end save-path))
+          (when metadata
+            (shell-command metadata))
+          (w3m--message t t "Saved from cache %s to %s"
+            (if metadata "(with metadata)" "")
+            save-path)
+          t))))))
 
 (defun w3m--download-kill-associated-process ()
   "Hook function for `Kill-buffer-hook' for w3m download buffers.
 PROC should have been set as a local variable at buffer creation."
   (if (not (processp w3m--download-local-proc))
-    (w3m--message t 'w3m-warning "Warning: no process found to kill (w3m-download).")
+    (w3m--message t 'w3m-warning
+                  "Warning: no process found to kill (w3m-download).")
    (delete-process w3m--download-local-proc)
    (setq w3m--download-processes-list
      (assq-delete-all w3m--download-local-proc w3m--download-processes-list))))
@@ -252,13 +257,17 @@ Reference `set-process-sentinel'."
        ((string-match "^finished" event)
          ;; TODO: Maybe keep buffer open if there was an error in
          ;; performing the metadata tagging?
+         (shell-command (concat "mv " w3m--download-save-path "{.PART,}"))
          (w3m--download-apply-metadata-tags)
          (w3m--message t t "Download completed successfully.")
          (setq w3m--download-processes-list
            (assq-delete-all proc w3m--download-processes-list))
          (kill-buffer buf))
-       ((string-match "\\(deleted\\)\\|\\(terminated\\)\\|\\(interrupt\\)\\|\\(killed\\)" event)
-         (insert (format "\nDownload encountered '%s' event." (substring event 0 -2)))
+       ((string-match
+           "\\(deleted\\)\\|\\(terminated\\)\\|\\(interrupt\\)\\|\\(killed\\)"
+           event)
+         (insert (format "\nDownload encountered '%s' event."
+                         (substring event 0 -1)))
          (setq w3m--download-processes-list
            (assq-delete-all proc w3m--download-processes-list)))
        (t
@@ -267,8 +276,10 @@ Reference `set-process-sentinel'."
          (insert (format "\nPossible failed download. Encountered event '%s'.\n
  IMPORTANT: wget ocassionally reports errors even though it
  it really has successfully performed its download, so it's
- always a good idea to check the file itself.\n\n"
-                 (substring event 0 -2)))
+ always a good idea to check the file itself. Note that if
+ the file exists, it likely has an extension \".PART\" added
+ to it, indicating a possible incomplete download.\n\n"
+                   (substring event 0 -1)))
          (w3m--download-apply-metadata-tags)
          (setq w3m--download-processes-list
            (assq-delete-all proc w3m--download-processes-list))))))))
@@ -277,8 +288,7 @@ Reference `set-process-sentinel'."
   "Download buffers should handle 'carriage return' characters.
 `wget' sends a \r at the beginning of every progress message in
 order to over-write its prior message. "
-  (let ((proc-buf (process-buffer proc))
-        proc-mark point-moved-by-user)
+  (let ((proc-buf (process-buffer proc)))
    (when (buffer-live-p proc-buf)
      (with-current-buffer proc-buf
        (let ((inhibit-read-only t))
@@ -290,24 +300,28 @@ order to over-write its prior message. "
           (goto-char (point-max))
           (if (not (string= "\r" (substring input-string 0 1)))
             (insert input-string)
-           (kill-line 0)
+           (forward-line 0)
+           (delete-region (point) (point-max))
            (insert (substring input-string 1)))))))))
 
 (defun w3m--download-using-wget (url save-path resume no-cache metadata)
   (when (not (when (not no-cache)
                (w3m--download-check-and-use-cache url save-path metadata)))
-    (let* (proc
-          (buf (generate-new-buffer "*w3m-download*")))
+    (let ((buf (generate-new-buffer "*w3m-download*")))
      (with-current-buffer buf
        (insert (format "emacs-w3m download log\n
     Killing this buffer will abort the download!\n
-  Time: %s\nURL : %s\nExec: %s%s %s %s %s\n\n"
-                 (current-time-string) url "wget" (if resume " -c" " ") "-O" save-path url))
+Time: %s\nURL : %s\nExec: %s%s %s %s %s\n\n"
+                 (current-time-string) url
+                 "wget" (if resume " -c" " ") "-O" save-path url))
        (setq buffer-read-only t)
+       (setq w3m--download-save-path save-path)
        (setq w3m--download-local-proc
          (apply 'start-process "w3m-download" buf
-           (delq nil (list "wget" (if resume "-c") "-O" save-path url))))
-       (set-process-filter w3m--download-local-proc 'w3m--download-process-filter)
+           (delq nil (list "wget" (if resume "-c")
+                           "-O" (concat save-path ".PART") url))))
+       (set-process-filter w3m--download-local-proc
+                           'w3m--download-process-filter)
        (setq w3m--download-metadata-operation metadata)
        (push (cons w3m--download-local-proc buf) w3m--download-processes-list)
        (add-hook 'kill-buffer-hook 'w3m--download-kill-associated-process nil t)
@@ -340,8 +354,8 @@ order to over-write its prior message. "
   (let ((url (or (w3m-anchor) (w3m-image))) act)
     (cond
      ((w3m-url-valid url)
-      (lexical-let ((pos (point-marker))
-                    (curl w3m-current-url))
+      (let ((pos (point-marker))
+            (curl w3m-current-url))
         (w3m-process-with-null-handler
           (w3m-process-do
               (success (w3m-download url nil nil handler))
@@ -355,7 +369,7 @@ order to over-write its prior message. "
       (let ((w3m-form-download t))
         (eval act)))
      (t
-      (w3m-message "No URL at point")))))
+      (w3m--message t 'w3m-error "No URL at point")))))
 
 (defun w3m-download-this-image ()
   "Download the image under point."
@@ -363,8 +377,8 @@ order to over-write its prior message. "
   (let ((url (w3m-image)) act)
     (cond
      ((w3m-url-valid url)
-      (lexical-let ((pos (point-marker))
-                    (curl w3m-current-url))
+      (let ((pos (point-marker))
+            (curl w3m-current-url))
         (w3m-process-with-null-handler
           (w3m-process-do
               (success (w3m-download url nil nil handler))
@@ -378,7 +392,7 @@ order to over-write its prior message. "
       (let ((w3m-form-download t))
         (eval act)))
      (t
-      (w3m-message "No image at point")))))
+      (w3m--message t 'w3m-error "No image at point")))))
 
 (defun w3m-save-image ()
   "Save the image under point to a file.
@@ -387,7 +401,28 @@ The default name will be the original name of the image."
   (let ((url (w3m-url-valid (w3m-image))))
     (if url
         (w3m-download url)
-      (w3m-message "No image at point"))))
+      (w3m--message t 'w3m-error "No image at point"))))
+
+(defun w3m-download-delete-all-download-buffers ()
+  "Delete all `w3m-download' buffers.
+
+Be careful when using this function. It will kill any active `wget'
+downloads in progress."
+  (interactive)
+  (let ((bufs (buffer-list))
+         buf)
+    (while (setq buf (pop bufs))
+      (when (string-match "^\\*w3m-download" (buffer-name buf))
+        (kill-buffer buf)))))
+
+(defalias 'w3m-download-kill-all-wget-processes
+  'w3m-download-delete-all-download-buffers
+  "Aborts all current downloads using `wget'.
+
+This is an alias for `w3m-download-delete-all-download-buffers',
+so expect the buffers to be deleted also.")
+
+
 
 ;;;###autoload
 (defun w3m-download-using-wget (url &optional save-path no-cache interactive)
@@ -403,7 +438,7 @@ Additionally, for certain downloads, if variable
 `w3m-download-save-metadata' is non-nil, then certain metadata
 will be attached to the file."
   (interactive (list (w3m-active-region-or-url-at-point) nil nil t))
-  (let* (basename resume extension metadata caption
+  (let* (basename extension metadata caption
         (num-in-progress (length w3m--download-processes-list))
         (others-in-progress-prompt
           (if (zerop num-in-progress) ""
@@ -421,12 +456,13 @@ will be attached to the file."
              (concat others-in-progress-prompt "\n"))
             "File(%s) already exists.
 Are you trying to resume an aborted partial download? ")))
-    (when (not url)
+    (unless url
       (while (string-equal ""
                (setq url (w3m-input-url download-prompt nil
                            "" nil nil 'no-initial)))
         (w3m--message t 'w3m-error "A url is required")
         (sit-for 1)))
+    (setq url (w3m-url-decode-string url))
     (when current-prefix-arg
       (setq basename
         (w3m--download-validate-basename url))
@@ -436,9 +472,11 @@ Are you trying to resume an aborted partial download? ")))
           w3m-default-save-directory
           basename)))
     (setq save-path
-      (concat
-        (if save-path (file-name-directory save-path) w3m-default-save-directory)
-        (w3m--download-validate-basename (or save-path url) t)))
+      (expand-file-name
+        (w3m--download-validate-basename (or save-path url) t)
+        (if save-path
+          (file-name-directory save-path)
+         w3m-default-save-directory)))
     (when (and w3m-download-save-metadata
               (setq caption (w3m-image-alt))
               (setq extension (downcase (file-name-extension save-path))))
@@ -452,7 +490,8 @@ Are you trying to resume an aborted partial download? ")))
                    --set-value=\"%s\" --output=\"%s\" %s"
                   caption save-path save-path))
          (t nil))))
-    (if (not (file-exists-p save-path))
+    (if (and (not (file-exists-p save-path))
+             (not (file-exists-p (concat save-path ".PART"))))
       (w3m--download-using-wget url save-path nil no-cache metadata)
      (cond
       ((or (not interactive)
@@ -462,33 +501,29 @@ Are you trying to resume an aborted partial download? ")))
        (w3m--download-using-wget url save-path nil no-cache metadata))))))
 
 ;;;###autoload
-(defun w3m-download-using-w3m (url &optional filename no-cache handler post-data)
+(defun w3m-download-using-w3m (url
+                               &optional filename no-cache handler post-data)
   "Download contents of URL to a file named FILENAME.
 NO-CACHE (which the prefix argument gives when called interactively)
 specifies not using the cached data."
   (interactive (list nil nil current-prefix-arg))
   (unless url
-    (while (string-equal (setq url (w3m-input-url
-                                    "Download URL: " nil
-                                    (or (w3m-active-region-or-url-at-point) "")
-                                    nil nil 'no-initial))
-                         "")
-      (message "A url is required")
+    (while (string-equal ""
+             (setq url (w3m-input-url
+                         "Download URL: " nil
+                         (or (w3m-active-region-or-url-at-point) "")
+                         nil nil 'no-initial)))
+      (w3m--message t 'w3m-error "A url is required")
       (sit-for 1)))
+  (setq url (w3m-url-decode-string url))
   (unless filename
-    (let ((basename (file-name-nondirectory (w3m-url-strip-query url))))
-      (when (string-match "^[\t ]*$" basename)
-        (when (string-match "^[\t ]*$"
-                            (setq basename (file-name-nondirectory url)))
-          (setq basename "index.html")))
+    (let ((basename (w3m--download-validate-basename url)))
       (setq filename
             (w3m-read-file-name (format "Download %s to: " url)
                                 w3m-default-save-directory basename))))
   (if (and w3m-use-ange-ftp (string-match "\\`ftp://" url))
       (w3m-goto-ftp-url url filename)
-    (lexical-let ((url url)
-                  (filename filename)
-                  (page-buffer (current-buffer)))
+    (let ((page-buffer (current-buffer)))
       (w3m-process-do-with-temp-buffer
           (type (progn
                   (w3m-clear-local-variables)
@@ -509,7 +544,7 @@ specifies not using the cached data."
                 t))
           (ding)
           (with-current-buffer page-buffer
-            (message "Cannot retrieve URL: %s%s" url
+            (w3m--message t 'w3m-error "Cannot retrieve URL: %s%s" url
                      (cond ((and w3m-process-exit-status
                                  (not (equal w3m-process-exit-status 0)))
                             (format " (exit status: %s)"
@@ -520,13 +555,15 @@ specifies not using the cached data."
           nil)))))
 
 ;;;###autoload
-(defun w3m-download (url &optional filename no-cache handler post-data interactive)
+(defun w3m-download (url
+                     &optional filename no-cache handler post-data interactive)
   (interactive
     (cond
      ((executable-find "wget")
-      (list (w3m-active-region-or-url-at-point) nil current-prefix-arg nil nil t))
-    (t
-     (list nil nil current-prefix-arg))))
+      (list (w3m-active-region-or-url-at-point)
+            nil current-prefix-arg nil nil t))
+     (t
+      (list nil nil current-prefix-arg))))
   (if (executable-find "wget")
     (w3m-download-using-wget url filename no-cache interactive)
    (w3m-download-using-w3m url filename no-cache handler post-data)))
