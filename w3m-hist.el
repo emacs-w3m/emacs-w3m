@@ -793,7 +793,11 @@ a crashed emacs session."
           (insert (format "    FAILURE! - %s\n    Aborting..." (error-message-string err)))
           (error "w3m: history scrub unsuccessful. See buffer for details.")))
       (insert "Deleting files ... Complete.\n\nInitializing memory cache ...")
-      (w3m-cache-shutdown)
+      (with-current-buffer w3m-cache-buffer
+        (let ((inhibit-read-only t))
+        (erase-buffer)))
+      (setq w3m-cache-hashtb nil
+            w3m-cache-articles nil)
       (insert " Complete.\nInitializing cookies from memory ...")
       (setq w3m-cookies nil)
       (when cookie-buf
