@@ -478,7 +478,24 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
 	      (goto-char (point-min))
 	      (if (not (re-search-forward "\
 <input[\t\n ]+\\(?:[^\t\n ]+[\t\n ]+\\)*name=\"LOGIN_ID\"" nil t))
-		  (when interactive-p (message "Already logged in"))
+		  (if (re-search-forward "\
+<form\\(?:[\t\n ]+[^\t\n >]+\\)+[\t\n ]+action=\"\\([^\"]+/login\\)\"" nil t)
+		      (progn
+			(setq action (match-string 1))
+			(w3m-buffer)
+			(setq form (car w3m-current-forms))
+			(erase-buffer)
+			(w3m-process-with-wait-handler
+			  (w3m-retrieve-and-render
+			   action t nil (w3m-form-make-form-data form)
+			   w3m-current-url handler))
+			(if (not (equal "https://special.sankei.com/"
+					w3m-current-url))
+			    (when interactive-p (message "Failed to login"))
+			  (when interactive-p (message "Logged in"))
+			  (password-cache-add name password)
+			  (when w3m-cookie-save-cookies (w3m-cookie-save))))
+		    (when interactive-p (message "Already logged in")))
 		(w3m-buffer)
 		(setq form (car w3m-current-forms))
 		(if (not (string-match "login\\.php\\'"
