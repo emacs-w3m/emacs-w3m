@@ -1,3 +1,10 @@
+2019-03-14  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el: Begin removing xemacs support, remove require for w3m-xmas,
+	and tweak version support message.
+
+	* w3m-xmas.el: delete file.
+
 2019-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-insert-git-revision): Allow git-revision

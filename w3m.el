@@ -85,19 +85,15 @@
 
 (eval-and-compile
   (cond
-   ((featurep 'xemacs)
-    (require 'w3m-xmas))
    ((>= emacs-major-version 21)
     (require 'w3m-ems))
    (t
-    (error "Emacs-w3m of this version no longer supports Emacs %s"
+    (error "This version of emacs-w3m no longer supports Emacs %s"
 	   (mapconcat 'identity
 		      (nbutlast (split-string emacs-version "\\."))
 		      ".")))))
 
-(unless (or (featurep 'xemacs) (< emacs-major-version 23))
-  (require 'bookmark-w3m))
-
+(require 'bookmark-w3m)
 (require 'w3m-fb)
 (require 'w3m-hist)
 (require 'timezone)
