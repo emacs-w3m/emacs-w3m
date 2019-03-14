@@ -306,7 +306,7 @@ order to over-write its prior message. "
        (setq buffer-read-only t)
        (setq w3m--download-local-proc
          (apply 'start-process "w3m-download" buf
-           (list "wget" (if resume "-c" "") "-O" save-path url)))
+           (delq nil (list "wget" (if resume "-c") "-O" save-path url))))
        (set-process-filter w3m--download-local-proc 'w3m--download-process-filter)
        (setq w3m--download-metadata-operation metadata)
        (push (cons w3m--download-local-proc buf) w3m--download-processes-list)
