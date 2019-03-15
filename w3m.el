@@ -3329,7 +3329,7 @@ function neither displays nor logs the message."
   (let ((msg (if (not face)
                (apply 'format args)
               (propertize (apply 'format args)
-                'face (if (facep face) 'w3m-message)))))
+                'face (if (facep face) face 'w3m-message)))))
    ;; Clear previous message in order to shrink
    ;; the window height of the echo area.
    (unless (or (featurep 'xemacs)
@@ -3339,12 +3339,12 @@ function neither displays nor logs the message."
    ;; Produce the message
    (unless w3m--message-silent
      (if w3m-verbose
-         (apply (function message) args)
+         (apply (function message) (list msg))
        (if (when w3m-process-background
              (or (window-minibuffer-p (selected-window))
                  (when (current-message)
                    (not (equal (current-message) w3m--current-message)))))
-           (apply (function format) args)
+           (apply (function format) (list msg))
          (w3m-static-if (featurep 'xemacs)
              (progn
                (setq w3m--current-message msg)
