@@ -1,3 +1,11 @@
+2019-03-21  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el: Major feature and documentation additions: Download
+	queue, adjustable maximum number of simultaneous downloads, bulk
+	download from buffer or region by regex (New major mode
+	w3m-download-select), option to use wget feature to save URL and
+	referer HTTP header to file extended-attributes.
+
 2019-03-13  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-download.el: New file with new features for better downloads,
