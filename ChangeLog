@@ -1,3 +1,12 @@
+2019-03-29  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el: Major feature and documentation additions: downloads
+	are organized into lists by state (running, queued, paused, failed,
+	completed) and can be acted upon and viewed in new ways. The lists are
+	stored and retrieved to/from disk for session persistence.
+	(w3m-download-view-queue): New function to display all downloads in all
+	states, pause and resume download, view download details, and entries.
+
 2019-03-21  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-download.el: Major feature and documentation additions: Download

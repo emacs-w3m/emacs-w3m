@@ -1,4 +1,4 @@
-;;; w3m.el --- an Emacs interface to w3m -*- coding: utf-8; -*-
+;; w3m.el --- an Emacs interface to w3m -*- coding: utf-8; -*-
 
 ;; Copyright (C) 2000-2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -8294,6 +8294,8 @@ for users.  See Info node `(elisp)Key Binding Conventions'.")
     (define-key map "^" 'w3m-view-parent-page)
     (define-key map "\M-d" 'w3m-download)
     (define-key map "d" 'w3m-download-this-url)
+    (define-key map [(shift ctrl y)] 'w3m-download-view-queue)
+    (define-key map "Y" 'w3m-download-view-queue)
     (define-key map "u" 'w3m-print-this-url)
     (define-key map "I" 'w3m-view-image)
     (define-key map "\M-i" 'w3m-save-image)
