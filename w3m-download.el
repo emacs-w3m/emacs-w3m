@@ -46,9 +46,15 @@
 ;;      selectable by regex and a presentation buffer. Throughout
 ;;      the code, this feature is referred to as `download-select'.
 ;;
-;;   5) Optional appending of meta-data to a download.
+;;   5) The number of simultaneous downloads may be controlled, and
+;;      can be dynamically changed.
 ;;
-;;      5.1) Defcustom `w3m-download-save-metadata' controls
+;;   6) Downloads are queued, and the queue can be modified in
+;;      real-time.
+;;
+;;   7) Optional appending of meta-data to a download.
+;;
+;;      7.1) Defcustom `w3m-download-save-metadata' controls
 ;;           whether downloaded `png' and `jpeg' files should
 ;;           have their link's "alt" caption is stored as
 ;;           meta-data element "Exif.Image.ImageDescription".
@@ -61,7 +67,7 @@
 ;;             exiv2 -g "Exif.Image.ImageDescription" foo.png
 ;;             exif --ifd=0 -t0x010e  foo.jpg |grep value
 ;;
-;;      5.2) Defcustom `w3m-download-enable-xattr' controls
+;;      7.2) Defcustom `w3m-download-enable-xattr' controls
 ;;           whether to save a file's original URL and Referer
 ;;           HTTP header value. This feature uses the `wget'
 ;;           `--xattr' argument and thus requires that the
@@ -119,6 +125,11 @@
 ;;     that was originally intended as a possible hook function:
 ;;
 ;;         `w3m-download-kill-all-asociated-processes'
+;;
+;; The download queue can be examined in a special buffer that allows
+;; one to delete or change the order of items:
+;;
+;;     `w3m-download-view-queue'
 
 
 
@@ -129,10 +140,9 @@
 ;;   + pre-screen the list of downloads for possible name conflicts
 ;;     with existing files, and duplicates, and prompt the user
 ;;     accordingly.
-;;   + create a queue display buffer
-;;     + delete items
-;;     + re-order items
-;;     + pause items
+;;     + maybe do this instead when creating the select buffer, ie.
+;;       gray out entries that already exist on the queue
+;; + pause download items
 ;; + `w3m--download-check-and-use-cache'
 ;;   + does not emulate `w3m-download-enable-xattr'
 ;; + danger of 'feature-creep': None of these-items are necessary, and
@@ -171,9 +181,8 @@
 
 ;;; Code:
 
-;;; Dependencies
+;;; Dependencies:
 (require 'w3m-util)
-(require 'w3m)
 
 
 
@@ -186,7 +195,7 @@
 (eval-when-compile
   (when (not (fboundp 'w3m--message))
     (defun w3m--message (timeout face &rest args)
-      (w3m-message args))))
+      (apply 'w3m-message args))))
 
 
 
@@ -204,19 +213,34 @@
 (unless w3m-download-select-mode-map
   (let ((map (make-keymap)))
     (suppress-keymap map)
-    (define-key map [? ]        'w3m-download-select-toggle-line)
-    (define-key map "\C-k"      'w3m-download-select-delete-line)
-    (define-key map "q"         'w3m-download-select-quit)
-    (define-key map "Q"         'w3m-download-select-quit)
-    (define-key map "\C-c\C-k"  'w3m-download-select-quit)
+    (define-key map [? ]        'w3m-download-select-toggle-line); [? ] = <SPC>
+    (define-key map "\C-k"      'w3m-download-delete-line)
+    (define-key map "q"         'w3m-download-buffer-quit)
+    (define-key map "Q"         'w3m-download-buffer-quit)
+    (define-key map "\C-c\C-k"  'w3m-download-buffer-quit)
     (define-key map "\C-c\C-c"  'w3m-download-select-exec)
     (define-key map "+"         'w3m-download-increase-simultaneous)
     (define-key map "-"         'w3m-download-decrease-simultaneous)
     (setq w3m-download-select-mode-map map)))
 
+(defvar w3m-download-queue-mode-map nil
+  "Major mode for viewing and editing the w3m-download queue.")
+(unless w3m-download-queue-mode-map
+  (let ((map (make-keymap)))
+    (suppress-keymap map)
+    (define-key map "\C-k"      'w3m-download-delete-line)
+    (define-key map "q"         'w3m-download-buffer-quit)
+    (define-key map "Q"         'w3m-download-buffer-quit)
+    (define-key map "\C-c\C-k"  'w3m-download-buffer-quit)
+    (define-key map "\C-c\C-n"  'w3m-download-queue-drop)
+    (define-key map "\C-c\C-p"  'w3m-download-queue-raise)
+    (define-key map "+"         'w3m-download-increase-simultaneous)
+    (define-key map "-"         'w3m-download-decrease-simultaneous)
+    (setq w3m-download-queue-mode-map map)))
+
 (defvar w3m--download-queue nil
   "List of pending downloads.
-Each element is a list of three elements:
+Each element is a list of four elements:
 
 1. URL - The link to download, as a string.
 
@@ -342,26 +366,32 @@ variable at buffer creation."
                   (length w3m--download-processes-list)))
      (w3m--download-from-queue)))
 
-(defun w3m--download-select-update-statistics ()
-  "A hook function for `w3m-download-select' buffers.
+(defun w3m--download-update-statistics ()
+  "A hook function for `w3m-download-select' and `w3m-download-queue' buffers.
 Meant for use with `post-command-hook'."
   (save-excursion
-    (let ((num-selected 0)
+    (let ((mode (if (eq major-mode 'w3m-download-select-mode)
+                  "Selected" "Queued"))
+          (num-selected 0)
           (inhibit-read-only t))
       (goto-char (point-min))
-      (while (re-search-forward "^\\[X" nil t)
+      (while (re-search-forward
+                (if (eq major-mode 'w3m-download-select-mode)
+                  "^\\[X" "^Q")
+                nil t)
         (setq num-selected (1+ num-selected)))
       (goto-char (point-min))
       (when (re-search-forward "^>.*$" nil t)
         (replace-match
-          (format "> %d Selected; %d maximum simultaneously"
+          (format "> %d %s; %d maximum simultaneously"
                   num-selected
+                  mode
                   w3m-download-max-simultaneous))
         (put-text-property (point-min) (+ 3 (point)) 'cursor-intangible t)))))
 
-(defun w3m--download-select-update-faces ()
-  "A hook function for `w3m-download-select' buffers.
-Meant for use  with  `pre-command-hook' and `post-command-hook'."
+(defun w3m--download-update-faces ()
+  "A hook function for `w3m-download-select' and `w3m-download-queue' buffers.
+Meant for use with `pre-command-hook' and `post-command-hook'."
   (let* ((beg (line-beginning-position))
          (end (line-beginning-position 2))
          (this-face (get-text-property beg 'face))
@@ -376,9 +406,12 @@ Meant for use  with  `pre-command-hook' and `post-command-hook'."
       ((equal this-face 'w3m-download-selected)
       'w3m-download-selected-current-line)
       ((equal this-face 'default)
-       (if (= (char-after beg) 91)
+       (if (or (= (char-after beg) 91)
+               ;; for download-select buffer,
                ;; char 91 = "[". I'm not using ?[
                ;; because it messes up check-parens etc.
+               (= (char-after beg) ?Q))
+               ;; for download-queue buffer.
          'w3m-download-current-line
         'default))
       (t 'default)))))
@@ -392,10 +425,10 @@ Meant for use  with  `pre-command-hook' and `post-command-hook'."
 
 \\<w3m-download-select-mode-map>
 \\[w3m-download-select-toggle-line]\tToggle current line's status.
-\\[w3m-download-select-delete-line]\tDelete current line.
+\\[w3m-download-delete-line]\tDelete current line.
 \\[w3m-download-increase-simultaneous]\tIncrease numner of parallel downloads.
 \\[w3m-download-decrease-simultaneous]\tDecrease number of parralel downloads.
-\\[w3m-download-select-quit]\tQuit.
+\\[w3m-download-buffer-quit]\tQuit.
 \\[w3m-download-select-exec]\tPerform the downloading.\n\n"
      (setq
        mode-name "w3m download select"
@@ -404,9 +437,98 @@ Meant for use  with  `pre-command-hook' and `post-command-hook'."
 	     buffer-read-only t)
      (cursor-intangible-mode)
      (use-local-map w3m-download-select-mode-map)
-     (add-hook 'pre-command-hook  'w3m--download-select-update-faces t t)
-     (add-hook 'post-command-hook 'w3m--download-select-update-faces t t)
-     (add-hook 'post-command-hook 'w3m--download-select-update-statistics t t))
+     (add-hook 'pre-command-hook  'w3m--download-update-faces t t)
+     (add-hook 'post-command-hook 'w3m--download-update-faces t t)
+     (add-hook 'post-command-hook 'w3m--download-update-statistics t t))
+
+(defun w3m-download-queue-mode ()
+  "Major mode for viewing and editing the w3m-download queue.
+
+\\<w3m-download-queue-mode-map>
+\\[w3m-download-queue-drop]\tMove current line down the queue.
+\\[w3m-download-queue-raise]\tMove current line up the queue.
+\\[w3m-download-delete-line]\tDelete current line.
+\\[w3m-download-increase-simultaneous]\tIncrease numner of parallel downloads.
+\\[w3m-download-decrease-simultaneous]\tDecrease number of parralel downloads.
+\\[w3m-download-buffer-quit]\tQuit.\n\n"
+  ; Note that this mode shares functions with `w3m-download-select-mode'.
+     (setq
+       mode-name "w3m download queue"
+       truncate-lines t
+       major-mode 'w3m-download-queue-mode
+       buffer-read-only t)
+     (cursor-intangible-mode)
+     (use-local-map w3m-download-queue-mode-map)
+     (add-hook 'pre-command-hook  'w3m--download-update-faces t t)
+     (add-hook 'post-command-hook 'w3m--download-update-faces t t)
+     (add-hook 'post-command-hook 'w3m--download-update-statistics t t))
+
+(defun w3m--download-queue-adjust (direction)
+  "Change the current entry's position in the w3m-download queue.
+DIRECTION is either 'raise or 'drop. This function is called by
+the interactive functions `w3m-download-queue-raise' and
+`w3m-download-queue-raise'."
+  (if (not (eq major-mode 'w3m-download-queue-mode))
+    (w3m--message t 'w3m-error
+      "This command is available only in w3m-download-queue buffers.")
+   (let ((inhibit-read-only t)
+         (current-column (current-column))
+         (url (buffer-substring-no-properties
+                (+ 2 (line-beginning-position))
+                (1- (line-beginning-position 2))))
+         queue elem prior result)
+    ; modify the queue
+    (with-mutex w3m--download-mutex
+      (setq queue w3m--download-queue)
+      (cond
+       ((eq direction 'raise)
+             (while queue
+               (cond
+                ((equal url (car (setq elem (pop queue))))
+                 (push elem result))
+                (t
+                 (push prior result)
+                 (setq prior elem)))))
+       ((eq direction 'drop)
+             (while queue
+               (cond
+                ((equal url (car (setq elem (pop queue))))
+                 (push prior result)
+                 (setq prior elem))
+                (t
+                 (push elem result)
+                 (when prior
+                   (push prior result)
+                   (setq prior nil)))))))
+      (push prior result)
+      (setq w3m--download-queue (reverse (delq nil result))))
+    ; redisplay the queue elements
+    (w3m--download-display-queue-list url current-column nil))))
+
+(defun w3m--download-display-queue-list (url current-column current-line)
+  "Display the download queue.
+Exactly one of URL or CURRENT-LINE must be NIL. A CURRENT-COLUMN
+NIL is interpreted as a 0. This function is meant to be called by
+`w3m-download-delete-line' and `w3m--download-queue-adjust'."
+  (goto-char (point-min))
+  (re-search-forward "^>" nil t)
+  (forward-line 2)
+  (delete-region (point) (point-max))
+  (dolist (entry w3m--download-queue)
+    (setq pos (point))
+    (insert "\nQ " (nth 0 entry)) ; url
+    (put-text-property pos (point) 'face 'default))
+  (w3m--download-update-statistics)
+  (goto-char (point-min))
+  (cond
+   (url
+    (re-search-forward url)
+    (forward-line 0))
+   (current-line
+    (forward-line current-line)))
+  (forward-char (or current-column 0))
+; (w3m--download-update-faces)
+  )
 
 (defun w3m--download-apply-metadata-tags ()
   "Run a shell command to apply metadata tags to a saved file.
@@ -632,10 +754,49 @@ to function `w3m-download-delete-all-download-buffers'."
          (when (string-match "w3m-download" (buffer-name buf))
            (kill-buffer buf)))))))
 
+(defun w3m-download-queue-drop ()
+  "Move the curent entry down one position in the queue.
+This means it will be downloaded later."
+  (interactive)
+  (w3m--download-queue-adjust 'drop))
+
+(defun w3m-download-queue-raise ()
+  "Move the curent entry up one position in the queue.
+This means it will be downloaded sooner."
+  (interactive)
+  (w3m--download-queue-adjust 'raise))
+
+(defun w3m-download-view-queue ()
+  "View the w3m-download queue and allow editing it."
+  (interactive)
+  (if (not w3m--download-queue)
+    (w3m--message t 'w3m-error "Download queue is empty. Nothing to display.")
+   (with-current-buffer
+     (setq buf (get-buffer-create "*w3m-download-queue*"))
+     (w3m-download-queue-mode)
+     (let ((inhibit-read-only t) pos)
+       (insert "  w3m-download-queue buffer\n
+This buffer displays only the downloads not yet started.
+  +/-      Adjust maximum number of simultaneous downloads.
+  C-C C-n  Move an entry line down the queue (later download)
+  C-c C-p  Move an entry line up the queue (sooner download)
+  C-k      Delete an entry line
+  q        Close this buffer (or just kill the buffer)\n\n\n>\n\n")
+       (put-text-property (point-min) (point) 'cursor-intangible t)
+       (dolist (entry w3m--download-queue)
+         (setq pos (point))
+         (insert "\nQ " (nth 0 entry)) ; url
+         (put-text-property pos (point) 'face 'default))
+       (w3m--download-update-statistics)))
+   (switch-to-buffer buf)
+   (goto-char (point-min))
+   (re-search-forward "^\\Q")
+   (w3m--download-update-faces)))
+
 (defun w3m-download-select-exec ()
   "Initiate a bulk download from the download-select buffer."
   (interactive)
-  (if (not (equal major-mode 'w3m-download-select-mode))
+  (if (not (eq major-mode 'w3m-download-select-mode))
     (w3m--message t 'w3m-error
       "This command is available only in w3m-download-select buffers.")
    (let (urls)
@@ -678,31 +839,45 @@ functiononly applies to downloads using `wget', not those using
   (w3m--message t t "Maximum simultaneous downloads now set to %s."
                     w3m-download-max-simultaneous))
 
-(defun w3m-download-select-quit ()
+(defun w3m-download-buffer-quit ()
   "Exit from w3m download select mode."
   (interactive)
-  (if (not (equal major-mode 'w3m-download-select-mode))
+  (if (and (not (eq major-mode 'w3m-download-select-mode))
+           (not (eq major-mode 'w3m-download-queue-mode)))
     (w3m--message t 'w3m-error
-      "This command is available only in w3m-download-select buffers.")
+      "This command is available only in w3m-download buffers.")
    (kill-buffer (current-buffer))))
 
-(defun w3m-download-select-delete-line ()
+(defun w3m-download-delete-line ()
   "Delete the current URL entry.
-Used in w3m download select mode buffers."
+Used in `w3m-download-select' and `w3m-download-queue' buffers."
   (interactive)
-  (if (not (equal major-mode 'w3m-download-select-mode))
-    (w3m--message t 'w3m-error
-      "This command is available only in w3m-download-select buffers.")
-   (let ((inhibit-read-only t))
+  (cond
+   ((eq major-mode 'w3m-download-queue-mode)
+    (let ((inhibit-read-only t)
+          (current-column (current-column))
+          (current-line (1- (string-to-number (format-mode-line "%l"))))
+          (url (buffer-substring-no-properties
+                 (+ 2 (line-beginning-position))
+                 (1- (line-beginning-position 2)))))
+     (with-mutex w3m--download-mutex
+       (setq w3m--download-queue
+         (delq (assoc url w3m--download-queue) w3m--download-queue)))
+     (w3m--download-display-queue-list nil current-column current-line)))
+   ((eq major-mode 'w3m-download-select-mode)
+    (let ((inhibit-read-only t))
      (delete-region
        (line-beginning-position)
-       (line-beginning-position 2)))))
+       (line-beginning-position 2))))
+   (t
+    (w3m--message t 'w3m-error
+      "This command is available only in w3m-download buffers."))))
 
 (defun w3m-download-select-toggle-line ()
   "Change selection status of the current URL entry.
 Used in w3m download select mode buffers."
   (interactive)
-  (if (not (equal major-mode 'w3m-download-select-mode))
+  (if (not (eq major-mode 'w3m-download-select-mode))
     (w3m--message t 'w3m-error
       "This command is available only in w3m-download-select buffers.")
    (save-excursion
@@ -1037,11 +1212,11 @@ Review the links selected [X] for downloading.\n
              (t
               (insert (format "\n[ ] %s" anchor))
               (put-text-property pos (point) 'face 'default))))
-          (w3m--download-select-update-statistics)))
+          (w3m--download-update-statistics)))
       (switch-to-buffer buf)
       (goto-char (point-min))
       (re-search-forward "^\\[")
-      (w3m--download-select-update-faces))))))
+      (w3m--download-update-faces))))))
 
 ;;;###autoload
 (defun w3m-download (url
