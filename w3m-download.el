@@ -155,11 +155,14 @@
 ;;     (define-key w3m-mode-map "Y"              'w3m-download-view-queue)
 ;;
 ;;
-;; That buffer auto-refreshes every `w3m-download-refresh-interval'
-;; seconds (default 16), but you can always force a refresh using
-;; `w3m-download-refresh-buffer' (`C-g'), and you can change the value using
-;; `w3m-download-set-refresh-interval' (`C-u C-g').
+;;     The buffer auto-refreshes every `w3m-download-refresh-interval'
+;;     seconds (default 16), but you can always force a refresh using
+;;     `w3m-download-refresh-buffer' (`C-g'), and you can change the
+;;     value using `w3m-download-set-refresh-interval' (`C-u C-g').
 ;;
+;; The download resumption behavior is controlled by variable
+;; `w3m-download-resume' to either auto-restart them, pause them, or
+;; start with a clean empty slate.
 
 
 
@@ -409,6 +412,22 @@ lines denoting 'running', 'queued', 'paused', 'failed', and
   "Maximum number of simultaneous downloads."
   :group 'w3m
   :type 'integer)
+
+(defcustom w3m-download-resume 'pause
+  "What to do with unfinished downloads when beginning a new `emacs-w3m' session.
+
+NOTHING means ignore any past downloads. The record of past
+downloads will be deleted.
+
+PAUSE means to reload the record of past downloads, but
+re-categorize all running or queued ones as paused.
+
+AUTO-RESTART means to reload the record of past downloads and
+immediately restart them."
+  :group 'w3m
+  :type '(radio  (const :tag "Pause" pause)
+                 (const :tag "Nothing" nil)
+                 (const :tag "Auto-restart" auto-restart)))
 
 (defcustom w3m-download-refresh-interval 16
   "How often (in seconds) to refresh the download display buffer.
@@ -738,11 +757,14 @@ The saved lists are `w3m--download-queued',
  `w3m--download-running', `w3m--download-paused',
  `w3m--download-failed', and `w3m--download-completed'."
   (let ((file-list (w3m-load-list (or file w3m-download-save-file))))
-    (setq w3m--download-queued    (pop file-list)
-          w3m--download-running   (pop file-list)
-          w3m--download-paused    (pop file-list)
-          w3m--download-failed    (pop file-list)
-          w3m--download-completed (pop file-list))))
+    (dolist (this '(w3m--download-queued
+                    w3m--download-running
+                    w3m--download-paused
+                    w3m--download-failed
+                    w3m--download-completed))
+      (if (eval `(not ,this))
+        (eval `(setq ,this (pop file-list)))
+       (pop file-list)))))
 
 (defun w3m--download-save-lists (&optional file)
   "Save the lists of downloads to `w3m-download-save-file' or FILE.
@@ -1091,6 +1113,27 @@ With VERBOSE non-nil, send warning messages to the user."
           (sit-for 2))
         (setq basename "index.html")))
     basename))
+
+(defun w3m--download-init ()
+  "Begin and/or resume an emacs-w3m download session.
+See `w3m-download-resume' for options."
+  (if (not w3m-download-resume)
+    (delete-file w3m-download-save-file)
+   (w3m--download-load-lists)
+   (cond
+    ((eq w3m-download-resume 'pause)
+     (setq w3m--download-paused
+       (delq nil `(,@w3m--download-running
+                   ,@w3m--download-queued
+                   ,@w3m--download-paused)))
+     (setq w3m--download-running nil)
+     (setq w3m--download-queued nil))
+    ((eq w3m-download-resume 'auto-restart)
+     (setq w3m--download-queued
+       (delq nil `(,@w3m--download-running
+                   ,@w3m--download-queued)))
+     (when w3m--download-queued
+       (w3m--download-from-queue))))))
 
 
 
@@ -1834,9 +1877,11 @@ further information."
 
 
 ;;; Provide this feature
-(w3m--download-load-lists)
+(w3m--download-init)
 (provide 'w3m-download)
 ;;; w3m-download.el ends here
+
+
 
 
 
