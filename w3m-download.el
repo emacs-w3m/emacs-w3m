@@ -949,7 +949,7 @@ Reference `set-process-sentinel'."
              nil ; an error, but I'm undecided what to do about it
             (setq elem `(,@(butlast elem 3) ,(current-time-string)))
             (with-mutex w3m--download-mutex t
-              (set1 w3m--download-running (delq elem w3m--download-running))
+              (setq w3m--download-running (delq elem w3m--download-running))
               (push elem w3m--download-completed))))
          (kill-buffer buf))
         ((string-match
