@@ -333,7 +333,8 @@ dividing this into discrete fields.")
 (defvar w3m--download-paused nil
   "List of paused downloads.
 Manipulation of this variable should only be done when holding
-`w3m--download-mutex'. Each element here is inherited from either
+`w3m--download-mutex'. Each entry has the six elements of
+`w3m--download-queued', as inherited from either
 `w3m--download-queued' or `w3m--download-running'.")
 
 (defvar w3m--download-failed nil
@@ -366,6 +367,9 @@ TODO: Consider adding file size or other data.")
 
 (defvar w3m--download-processes-list nil
   "Global list of all running `w3m-download' processes.")
+
+(defvar w3m--download-progress-alist nil
+  "An alist of wget progress strings, keyed by URL.")
 
 (defvar w3m--download-select-filter-history nil
   "Record of past download-select filter use.
@@ -799,6 +803,32 @@ This function also saves the download lists to
         (1- (string-to-number (format-mode-line "%l"))))
       (w3m--download-update-faces-post-command))))) ; FIXME guess. might be pre-
 
+(defun w3m--download-progress (url)
+  "Return the latest wget progress string, or an empty string."
+   (let ((found (assoc url w3m--download-progress-alist)))
+     (if found (cdr found)  "")))
+
+(defun w3m--download-update-progress ()
+  "Collect latest progress information from all running downloads."
+  (dolist (entry w3m--download-running)
+    (when (and (< 7 (length entry))
+               (buffer-live-p (nth 7 entry)))
+      (with-current-buffer (nth 7 entry)
+        (let ((txt (buffer-substring-no-properties
+                     (- (point-max) 100) (point-max)))
+              (url (nth 0 entry)))
+          (when (string-match
+                  "\\([0-9]+%\\)\\[[^]]+] +\\([^ ]+\\) +\\([^ ]+\\) +\\(.*\\)$"
+                  txt)
+            (setq txt
+              (format "    %s, %s, %s, %s\n"
+                (match-string 1 txt) (match-string 2 txt)
+                (match-string 3 txt) (match-string 4 txt)))
+            (if (assoc url w3m--download-progress-alist)
+              (setf (cdr (assoc url w3m--download-progress-alist)) txt)
+             (add-to-list 'w3m--download-progress-alist
+                          (cons url txt)))))))))
+
 (defun w3m--download-display-queue-list ()
   "Display the download queue.
 This is a primitve. It expects the current buffer and point to be
@@ -806,27 +836,33 @@ prepared! It is meant to be called by `w3m-download-view-queue'
 for the initial buffer creation, and by
 `w3m--download-update-display-queue-list' for updates."
   ; TODO: Should I seize the mutex for this?
+  (w3m--download-update-progress)
   (let (result)
     (dolist (state-list w3m--download-buffer-sequence)
-     (dolist (entry (eval (nth 0 state-list)))
-       (insert
-         (propertize
-           (concat
-             (nth 1 state-list) (nth 0 entry) "\n"
-             (propertize
-               (dolist (field
-                        (let ((len (length entry)))
-                          (nconc (butlast (cdr entry) (- len 4))
-                                 (last (cdr entry) (- len 5))))
-                        result)
-                 (setq result (concat result
-                                      (format "    %s\n" field))))
-               'invisible (if (nth 4 entry) 'yes 'no)))
-          'state (nth 0 state-list)
-          'url (nth 0 entry)
-          'face (nth 2 state-list)))
-       (goto-char (point-max))
-       (setq result nil))))
+      (dolist (entry (eval (nth 0 state-list)))
+        (insert
+          (propertize
+            (concat
+              (nth 1 state-list) (nth 0 entry) "\n"
+              (propertize
+                (concat
+                  (dolist (field
+                           (let ((len (length entry)))
+                             (nconc (butlast (cdr entry) (- len 4))
+                                    (last (cdr entry) (- len 5))))
+                           result)
+                    (when (and field
+                               (or (not (sequencep field))
+                                   (not (zerop (length field)))))
+                      (setq result (concat result
+                                           (format "    %s\n" field)))))
+                  (w3m--download-progress (nth 0 entry)))
+                'invisible (if (nth 4 entry) 'yes 'no)))
+           'state (nth 0 state-list)
+           'url (nth 0 entry)
+           'face (nth 2 state-list)))
+        (goto-char (point-max))
+        (setq result nil))))
   (goto-char (point-max))
   (delete-backward-char 2)
   (w3m--download-update-statistics))
@@ -1880,7 +1916,6 @@ further information."
 (w3m--download-init)
 (provide 'w3m-download)
 ;;; w3m-download.el ends here
-
 
 
 
