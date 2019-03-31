@@ -98,7 +98,6 @@
 (unless (or (featurep 'xemacs) (< emacs-major-version 23))
   (require 'bookmark-w3m))
 
-(require 'w3m-download)
 (require 'w3m-fb)
 (require 'w3m-hist)
 (require 'timezone)
