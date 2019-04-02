@@ -377,7 +377,12 @@ Manipulation of this variable should only be done when holding
 Manipulation of this variable should only be done when holding
 `w3m--download-mutex'. Each entry has the seven elements of
 `w3m--download-queued', as inherited from either
-`w3m--download-queued' or `w3m--download-running'.")
+`w3m--download-queued' or `w3m--download-running', with the
+following modifications:
+
+8. ERROR_CODE - the 'event' string from the Emacs process sentinel.
+
+9. Removed.")
 
 (defvar w3m--download-failed nil
   "List of failed downloads.
@@ -385,22 +390,20 @@ Manipulation of this variable should only be done when holding
 `w3m--download-mutex'. Each element here is inherited from
 `w3m--download-running', with the following modifications:
 
-6. STOP_TIMESTAMP - a string.  FIXME
+6. STOP_TIMESTAMP - a string.
 
 7. WGET_PROGRESS - a string, expected to include % completed,
    bytes downloaded, rate, and eta.
 
-8. BUFFER - the process buffer, where STDOUT/STDERR is sent.
+8. ERROR_CODE - the 'event' string from the Emacs process sentinel.
 
-9. ERROR_CODE - the 'event' string from the Emacs process sentinel.")
+9. Removed.")
 
 (defvar w3m--download-completed nil
   "List of completed downloads.
 Manipulation of this variable should only be done when holding
 `w3m--download-mutex'. Each element here is inherited from
 `w3m--download-running', with the following modifications:
-
-7. END_TIMESTAMP - a string.
 
 8. Removed.
 
@@ -800,13 +803,13 @@ The saved lists are `w3m--download-queued',
         one-list)
     (when all-lists
       (dolist (this-list '(w3m--download-queued
-                           w3m--download-running
+                         ; w3m--download-running (merged with queued)
                            w3m--download-paused
                            w3m--download-failed
                            w3m--download-completed))
         (setq one-list (pop all-lists))
-        (when (not (eval this-list))
-          (eval `(setq ,this-list ,one-list)))))))
+        (when (and (not (eval this-list)) one-list)
+          (eval `(setq ,this-list (quote ,one-list))))))))
 
 (defun w3m--download-save-lists (&optional file)
   "Save the lists of downloads to `w3m-download-save-file' or FILE.
@@ -816,11 +819,15 @@ The saved lists are `w3m--download-queued',
   (with-mutex w3m--download-mutex
     (w3m-save-list
       (or file w3m-download-save-file)
-      (list w3m--download-queued
-            w3m--download-running
-            w3m--download-paused
-            w3m--download-failed
-            w3m--download-completed))))
+      (list
+        ; merge 'running' into 'queued'
+        `( ,@(mapcar
+              (lambda (x) `( ,@(butlast x 2)))
+              w3m--download-running)
+           ,@w3m--download-queued)
+        w3m--download-paused
+        w3m--download-failed
+        w3m--download-completed))))
 
 (defun w3m--download-update-progress ()
   "Collect latest progress information from all running downloads."
@@ -1137,7 +1144,6 @@ Reference `set-process-sentinel'."
               (setq elem `(,@(butlast elem 4)
                            ,(concat (nth 5 elem) "\n    Paused:    " (current-time-string))
                            ,txt
-                           ,buf
                            ,event))
               (push elem w3m--download-paused))))
          (kill-buffer buf))
@@ -1161,7 +1167,7 @@ Reference `set-process-sentinel'."
                 (setq txt (substring txt 0 index)))
               (setq elem `(,@(butlast elem 4)
                            ,(concat (nth 5 elem) "\n    Failed:  " (current-time-string))
-                           ,buf
+                           ,txt
                            ,event))
               (push elem w3m--download-failed))))
          (kill-buffer buf)))))))
@@ -1279,15 +1285,11 @@ See `w3m-download-resume' for options."
    (cond
     ((eq w3m-download-resume 'pause)
      (setq w3m--download-paused
-       (delq nil `(,@w3m--download-running
-                   ,@w3m--download-queued
+       (delq nil `(,@w3m--download-queued
                    ,@w3m--download-paused)))
      (setq w3m--download-running nil)
      (setq w3m--download-queued nil))
     ((eq w3m-download-resume 'auto-restart)
-     (setq w3m--download-queued
-       (delq nil `(,@w3m--download-running
-                   ,@w3m--download-queued)))
      (when w3m--download-queued
        (w3m--download-from-queue))))))
 
@@ -1446,7 +1448,7 @@ or failed, restart or continue it."
           (when (and timestamp (string-match "\n" timestamp))
             (setq timestamp (substring timestamp 0 (match-beginning 0))))
           (setq txt (nth 6 elem))
-          (setq elem `(,@(butlast elem 2) ,timestamp ,txt))
+          (setq elem `(,@(butlast elem 3) ,timestamp ,txt))
           (add-to-list 'w3m--download-queued elem t)
           (w3m--download-from-queue))
          (t
