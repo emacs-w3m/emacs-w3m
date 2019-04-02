@@ -1,3 +1,34 @@
+2019-03-29  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el: Major feature and documentation additions: downloads
+	are organized into lists by state (running, queued, paused, failed,
+	completed) and can be acted upon and viewed in new ways. The lists are
+	stored and retrieved to/from disk for session persistence.
+	(w3m-download-view-queue): New function to display all downloads in all
+	states, pause and resume download, view download details, and entries.
+
+2019-03-21  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el: Major feature and documentation additions: Download
+	queue, adjustable maximum number of simultaneous downloads, bulk
+	download from buffer or region by regex (New major mode
+	w3m-download-select), option to use wget feature to save URL and
+	referer HTTP header to file extended-attributes.
+
+2019-03-13  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el: New file with new features for better downloads,
+	using wget, and collecting download functions from other files.
+	(w3m-download-this-url, w3m-download-this-image, w3m-save-image): moved
+	from w3m.el.
+	(w3m-download-using-wget): The entry function for the new features.
+	(w3m-download-using-w3m): The old function w3m-download.
+	(w3m-download): Now a wrapper function.
+	(w3m-download-save-metadata): defcustom whether to save captions.
+
+	* w3m.el (w3m-cache-request-contents): don't eval current-buffer when
+	we know what it is.
+
 2019-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-insert-git-revision): Allow git-revision
