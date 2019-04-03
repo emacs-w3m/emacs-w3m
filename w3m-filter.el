@@ -839,7 +839,12 @@ href=\"#\\([^\"]+\\)\"" nil t)
 			       "<div class=\"layout__content \">"
 			       nil nil nil (point) nil 1)
     (w3m-filter-delete-regions url
-			       "<div class=\"rightpoll\">"
+			       "<div class=\"follows-channel"
+			       "</body>"
+			       nil nil nil (point) nil 1)
+    (goto-char (point-min))
+    (w3m-filter-delete-regions url
+			       "<div class=\"news-block news-block_high-hidden"
 			       "</body>"
 			       nil nil nil (point) nil 1)
     (goto-char (point-min))
