@@ -1,3 +1,7 @@
+2019-04-03  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-filter.el (w3m-filter-rt): Update for new site footers.
+
 2019-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-insert-git-revision): Allow git-revision
