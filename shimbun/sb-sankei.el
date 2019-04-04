@@ -84,7 +84,9 @@
     ("west.life" "関西ライフ"
      "https://www.sankei.com/west/newslist/west_life-n1.html")
     ("west.economy" "関西経済"
-     "https://www.sankei.com/west/newslist/west_economy-n1.html")))
+     "https://www.sankei.com/west/newslist/west_economy-n1.html")
+    ("west.essay" "朝晴れエッセー"
+     "https://www.sankei.com/column/topics/column-36217-t1.html")))
 
 (defvar shimbun-sankei-category-name-alist
   '(("afr" . "事件") ("clm" . "コラム") ("ecn" . "経済") ("ent" . "エンタメ")
