@@ -563,23 +563,6 @@ arguments."
 buffer."
   :group 'w3m)
 
-(defface w3m-download-current-line
-  ;; TODO: deprecate this in favor of
-  ;;  (add-face-text-property beg end '(:weight bold))))
-  ;;  and then removing it using (cdr this-face) [example see below]
-  '((t :inherit 'w3m-bold))
-  "Face of current line in w3m-download-select buffer."
-  :group 'w3m)
-
-(defface w3m-download-selected-current-line
-  ;; TODO: deprecate this in favor of
-  ;;  (add-face-text-property beg end '(:weight bold))))
-  ;;  and then removing it using (cdr this-face) [example see below]
-  '((t :weight bold :inherit 'w3m-session-select))
-  "Face of current line in w3m-download-select
-buffer when that URL is selected for download."
-  :group 'w3m)
-
 (defface w3m-download-queued
   '((t :weight normal :inherit 'default))
   "Face of running downloads in w3m-download buffer."
@@ -706,7 +689,8 @@ Meant for use with `pre-command-hook'."
         (this-face (get-text-property (point) 'face))
         (inhibit-read-only t))
     (unless  (= (point) (point-max))
-      (put-text-property beg end 'face (or (cdr this-face) this-face)))
+      (put-text-property beg end 'face
+        (if (listp this-face) (cdr this-face) this-face)))
     (goto-char pos)))
 
 (defun w3m--download-update-faces-post-command ()
