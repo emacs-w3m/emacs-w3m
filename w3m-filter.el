@@ -1207,13 +1207,7 @@ READ MORE:\\([^<]+\\)\\(</a>\\)?</strong>\\(</p>\\)?"
 			     "</td>")
 
   (goto-char (point-min))
-  ; TODO: FIXME: The following condition-case is a kludge because when
-  ; the `re-search-forward' statements were not finding anything, we
-  ; were getting "error in process sentinel: while: Search failed:". The
-  ; proper solution is likely in the process sentinel (whichever one
-  ; that turns out to be), not here.
-  (condition-case nil
-      (while (search-forward "<div class=\"user-info \">" nil t)
+    (while (search-forward "<div class=\"user-info \">" nil t)
 	(let ((p1 (match-end 0))
 	      (p2 (if (search-forward "<li" nil t)
 		      (match-beginning 0)
@@ -1221,25 +1215,24 @@ READ MORE:\\([^<]+\\)\\(</a>\\)?</strong>\\(</p>\\)?"
 	  (w3m-filter-delete-regions
 	   url "<div class=\"user-details\">" "</a>" nil nil nil p1 p2)
 	  (goto-char p1)
-	  (while (re-search-forward "</?div[^>]*>" p2 nil)
+	  (while (re-search-forward "</?div[^>]*>" p2 t)
 	    (replace-match ""))
 	  (goto-char p1)
 	  (while (re-search-forward "<span class=\"reputation-score[^>]*>"
-				    p2 nil)
+				    p2 t)
 	    (replace-match "[rep:"))
 	  (goto-char p1)
-	  (while (re-search-forward "<span class=\"badge1\">" p2 nil)
+	  (while (re-search-forward "<span class=\"badge1\">" p2 t)
 	    (replace-match  "] [gold:"))
 	  (goto-char p1)
-	  (while (re-search-forward "<span class=\"badge2\">" p2 nil)
+	  (while (re-search-forward "<span class=\"badge2\">" p2 t)
 	    (replace-match  "] [silver:"))
 	  (goto-char p1)
-	  (while (re-search-forward "<span class=\"badge3\">" p2 nil)
+	  (while (re-search-forward "<span class=\"badge3\">" p2 t)
 	    (replace-match  "] [bronze:"))
 	  (goto-char p1)
-	  (while (re-search-forward "</?span[^>]*>" p2 nil)
+	  (while (re-search-forward "</?span[^>]*>" p2 t)
 	    (replace-match  ""))))
-    (error))
 
   (w3m-filter-replace-regexp url
 			     "<td" "<td valign=top")
@@ -1264,13 +1257,13 @@ READ MORE:\\([^<]+\\)\\(</a>\\)?</strong>\\(</p>\\)?"
 		(search-forward "<h4" nil t)
 		(match-beginning 0))))
       (goto-char p1)
-      (while (re-search-forward "^\t</a>" p2 nil)
+      (while (re-search-forward "^\t</a>" p2 t)
 	(replace-match  ""))
       (goto-char p1)
-      (while (re-search-forward "</a>" p2 nil)
+      (while (re-search-forward "</a>" p2 t)
 	(replace-match "</a><br>"))
       (goto-char p1)
-      (while (re-search-forward "</div>" p2 nil)
+      (while (re-search-forward "</div>" p2 t)
 	(replace-match " "))
       (w3m-filter-delete-regions
        url
