@@ -1,3 +1,8 @@
+2019-04-10  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-filter.el (w3m-filter-stackexchange): bugfix: re-search-forward
+	instances needed parm NOERROR set non-nil.
+
 2019-04-03  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-filter.el (w3m-filter-rt): Update for new site footers.
