@@ -1,3 +1,8 @@
+2018-04-11  Vladimir Sedach  <vas@oneofus.la>
+
+	* w3m-search.el (w3m-search-engine-alist): Use the lite version
+	([emacs-w3m:13336]).
+
 2019-04-10  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-filter.el (w3m-filter-stackexchange): bugfix: re-search-forward
