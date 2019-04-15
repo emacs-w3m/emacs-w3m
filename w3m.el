@@ -5546,8 +5546,7 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 		(silent w3m-message-silent))
     (setq w3m-current-url url
 	  url (w3m-url-strip-authinfo url))
-    (w3m-message "Reading %s...%s"
-		 (w3m-url-readable-string url)
+    (w3m-message "Reading %s...%s" (w3m-url-readable-string url)
 		 (if (and w3m-async-exec (not w3m-process-waited))
 		     (substitute-command-keys "\
 \n (Type `\\<w3m-mode-map>\\[w3m-process-stop]' to stop asynchronous process)")
@@ -7252,9 +7251,9 @@ Reading " (w3m-url-readable-string (w3m-url-strip-authinfo url)) " ...\n\n"
 		pos buffer)
     (if new-session
 	(let ((empty
-	       ;; If a new url has the #name portion, we simply copy
-	       ;; the buffer's contents to the new session, otherwise
-	       ;; creating an empty buffer.
+ 	       ;; If a new url has the #name portion (ie. a URI
+ 	       ;; "fragment"), we simply copy the buffer's contents to
+ 	       ;; the new session, otherwise creating an empty buffer.
 	       (not (and (progn
 			   (w3m-string-match-url-components url)
 			   (match-beginning 8))
@@ -7263,7 +7262,7 @@ Reading " (w3m-url-readable-string (w3m-url-strip-authinfo url)) " ...\n\n"
 						  0 (match-beginning 8)))))))
 	  (setq pos (point-marker)
 		buffer (w3m-copy-buffer
-			nil nil nil empty w3m-new-session-in-background t))
+			nil nil w3m-new-session-in-background empty t))
 	  (when w3m-new-session-in-background
 	    (set-buffer buffer))
 	  (when empty
@@ -8009,83 +8008,62 @@ Return t if highlighting is successful."
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
-(defun w3m-copy-buffer (&optional buffer newname just-copy empty background
-				  last)
+(defun w3m-copy-buffer (&optional buffer new-name background empty last)
   "Copy an emacs-w3m BUFFER, and return the new buffer.
 
-If BUFFER is nil, the current buffer is assumed. If NEWNAME is
-nil, it defaults to the name of the current buffer.
+If BUFFER is nil, the current buffer is assumed. If NEW-NAME is
+nil, a name is created based upon the name of the current buffer.
 
-If JUST-COPY is nil, then after performing the copy, the new
-buffer becomes the current buffer and pops up as a new window or
-a new frame depending upon the `w3m-display-mode'.
+If BACKGROUND is non-nil, do not switch to the new buffer copy.
+When (and only when) this function is called interactively, this
+value is determined by `w3m-new-session-in-background', but can
+be inverted by calling this function with a prefix argument.
 
-If EMPTY is nil, a page of the same url will be re-rendered in
-the new buffer, otherwise an empty buffer is created. If
-BACKGROUND is non-nil, you will not leave the current buffer. If
-LAST is non-nil, the new buffer will be made the last in order of
-the w3m buffers, otherwise it will be made the next of the
-current buffer.
+If EMPTY is non-nil, an empty buffer is created, but with the
+current buffer's history and settings.
 
-Note that this function should be called on the window displaying the
-original buffer BUFFER even if JUST-COPY is non-nil in order to render
-a page in a new buffer with the correct width."
-  (interactive (list (current-buffer)
-		     (if current-prefix-arg (read-string "Name: "))
-		     t))
+If LAST is non-nil, the new buffer will be buried as the final
+w3m buffer; otherwise, it will be sequenced next to the current
+buffer."
+  (interactive
+    (list nil nil (if current-prefix-arg
+                    (not w3m-new-session-in-background)
+                   w3m-new-session-in-background)))
   (unless buffer
     (setq buffer (current-buffer)))
-  (unless newname
-    (setq newname (buffer-name buffer)))
-  (when (string-match "<[0-9]+>\\'" newname)
-    (setq newname (substring newname 0 (match-beginning 0))))
-  (let (url coding images init-frames new)
-    (save-current-buffer
-      (set-buffer buffer)
-      (setq url (or w3m-current-url
-		    (car (w3m-history-element (cadar w3m-history))))
-	    coding w3m-current-coding-system
-	    images w3m-display-inline-images
-	    init-frames (when (w3m-popup-frame-p)
-			  (copy-sequence w3m-initial-frames)))
-      (unless url
-	(setq empty t))
-      ;;
+  (unless new-name
+    (setq new-name (buffer-name buffer)))
+  (when (string-match "<[0-9]+>\\'" new-name)
+    (setq new-name (substring new-name 0 (match-beginning 0))))
+  (cond
+   (empty
+    (let ((coding w3m-current-coding-system)
+          (images w3m-display-inline-images)
+          (init-frames (when (w3m-popup-frame-p)
+                         (copy-sequence w3m-initial-frames)))
+          (new (w3m-generate-new-buffer new-name (not last))))
       (w3m-history-store-position)
-      (set-buffer (setq new (w3m-generate-new-buffer newname (not last))))
-      ;; Make copies of `w3m-history' and `w3m-history-flat'.
-      (w3m-history-copy buffer)
-      (setq w3m-current-coding-system coding
-	    w3m-initial-frames init-frames
-	    w3m-display-inline-images
-	    (if w3m-toggle-inline-images-permanently
-		images
-	      w3m-default-display-inline-images)))
-    (cond
-     ((and empty (not background))
-      ;; Pop to a window or a frame up because `w3m-goto-url' is not called.
-      (w3m-popup-buffer new))
-     (empty
-      ;; When empty and just-copy, stay origianl buffer.
-      )
-     (t
-      ;; Need to change to the `new' buffer in which `w3m-goto-url' runs.
-      (set-buffer new)
-      ;; Render a page.
-      (let ((positions (copy-sequence (car w3m-history)))
-	    (w3m-history-reuse-history-elements t)
-	    (w3m-prefer-cache t))
-	(w3m-process-with-wait-handler
-	  (w3m-goto-url url 'redisplay nil nil nil handler
-			;; Pass the properties of the history elements,
-			;; although it is currently always nil.
-			(w3m-history-element (cadr positions))))
-	(setcar w3m-history positions))
-      (when (and w3m-new-session-in-background
-		 just-copy
-		 (not (get-buffer-window buffer)))
-	(set-window-buffer (selected-window) buffer))))
-    new))
+      (with-current-buffer new
+        (w3m-history-copy buffer)
+        (setq w3m-current-coding-system coding
+              w3m-initial-frames init-frames
+              w3m-display-inline-images
+                (if w3m-toggle-inline-images-permanently
+                  images
+                 w3m-default-display-inline-images)))
+      (when (not background)
+        (w3m-popup-buffer new))
+      new ; return value for this function
+      ))
+   (t ; ie. (not empty)
+    (let (new)
+      (with-current-buffer buffer
+        (setq new (clone-buffer new-name)))
+      (if (not background)
+        (switch-to-buffer new))
+      new ; return value for this function
+      ))))
+
 
 (defvar w3m-previous-session-buffer nil
   "A buffer of the session having selected just before this session.
@@ -9813,7 +9791,7 @@ helpful message is presented and the operation is aborted."
 		    (prog1
 			(w3m-goto-url (pop urls))
 		      (dotimes (i (length urls))
-			(push (w3m-copy-buffer nil nil nil 'empty nil t)
+			(push (w3m-copy-buffer nil nil nil 'empty t)
 			      buffers))
 		      (dolist (url (nreverse urls))
 			(with-current-buffer (pop buffers)
@@ -9933,6 +9911,8 @@ configuration; i.e. to run `w3m-history-store-position'.
 `w3m-history-store-position' should be called in a w3m-mode buffer, so
 this will be convenient if a command that calls this function may be
 invoked in other than a w3m-mode buffer."
+  ;; FIXME: Note the inconsistency in the name given to arg NO-POPUP.
+  ;; Elsewhere it seems to be referred to as BACKGROUND.
   (interactive
    (list (unless (w3m--buffer-busy-error)
 	   (w3m-input-url "Open URL in current buffer" nil nil nil
@@ -9997,8 +9977,8 @@ invoked in other than a w3m-mode buffer."
        ((not (string= file-part ""))
 	(w3m-goto-url (w3m-expand-url (substring url (match-beginning 4))
 				      (concat "file://" default-directory))
-		      reload charset post-data referer handler element))
-       (t (w3m-message "No URL at point")))))
+		      reload charset post-data referer handler element no-popup))
+       (t (w3m--message t 'w3m-error "No URL at point")))))
    ((w3m-url-valid url)
     (w3m--goto-url--valid-url url reload charset post-data referer handler
 			      element no-popup save-pos))
@@ -10092,45 +10072,54 @@ See `w3m-default-directory'."
 
 ;;;###autoload
 (defun w3m-goto-url-new-session (url &optional reload charset post-data
-				     referer)
+                                     referer no-popup)
   "Visit World Wide Web pages in a new buffer.
 
 If you invoke this command in the emacs-w3m buffer, the new buffer
 will be created by copying the current buffer.  Otherwise, the new
 buffer will start afresh."
+  ;; FIXME: Note the inconsistency in the name given to arg NO-POPUP.
+  ;; Elsewhere it seems to be referred to as BACKGROUND.
   (interactive
    (list (w3m-input-url "Open URL in new buffer" nil
-			(or (w3m-active-region-or-url-at-point)
-			    w3m-new-session-url)
-			nil 'feeling-searchy 'no-initial)
-	 current-prefix-arg
-	 (w3m-static-if (fboundp 'universal-coding-system-argument)
-	     coding-system-for-read)
-	 nil ;; post-data
-	 nil)) ;; referer
+                        (or (w3m-active-region-or-url-at-point)
+                            w3m-new-session-url)
+                        nil 'feeling-searchy 'no-initial)
+         nil ;; reload
+         (w3m-static-if (fboundp 'universal-coding-system-argument)
+             coding-system-for-read)
+         nil ;; post-data
+         nil ;; referer
+         (if current-prefix-arg ;; no-popup
+           (not w3m-new-session-in-background)
+          w3m-new-session-in-background)))
   (let (buffer)
     (if (not
-	 (or (eq 'w3m-mode major-mode)
-	     (and (setq buffer (w3m-alive-p))
-		  (prog1 t (w3m-popup-buffer buffer)))))
-	(w3m-goto-url url nil charset post-data)
+         (or (eq 'w3m-mode major-mode)
+             (and (setq buffer (w3m-alive-p))
+                  (prog1 t (w3m-popup-buffer buffer)))))
+        (w3m-goto-url url nil charset post-data)
       ;; Store the current position in the history structure.
       (w3m-history-store-position)
-      (switch-to-buffer
-       (setq buffer (w3m-copy-buffer nil "*w3m*"
-				     w3m-new-session-in-background
-				     'empty nil t)))
+      (setq buffer
+        (w3m-copy-buffer
+          nil "*w3m*" no-popup 'empty t))
+      (when (not no-popup)
+        (switch-to-buffer buffer))
+      (set-buffer buffer)
       (w3m-display-progress-message url)
-      (w3m-goto-url url
-		    (or reload
-			;; When new URL has `name' portion, we have to
-			;; goto the base url because generated buffer
-			;; has no content at this moment.
-			(and
-			 (w3m-string-match-url-components url)
-			 (match-beginning 8)
-			 'redisplay))
-		    charset post-data referer)
+      (w3m-goto-url
+        url
+        (or reload
+            ;; When new URL has `name' portion, (ir. a URI
+            ;; "fragment"), we have to goto the base url
+            ;; because generated buffer has no content at
+            ;; this moment.
+            (and
+             (w3m-string-match-url-components url)
+             (match-beginning 8)
+             'redisplay))
+        charset post-data referer nil nil no-popup)
       ;; Delete useless newly created buffer if it is empty.
       (w3m-delete-buffer-if-empty buffer))))
 
