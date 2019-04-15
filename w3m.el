@@ -222,7 +222,8 @@ filters before being rendered."
 ;; hosted by the CVS repository.
 (defconst emacs-w3m-version
   "1.4.632"
-  "Version number of this package.")
+  "Version number of this package.
+Not to be confused with `w3m-version'.")
 
 (defgroup w3m nil
   "Emacs-w3m - the web browser of choice."
@@ -262,7 +263,9 @@ The valid values include `w3m', `w3mmee', and `w3m-m17n'.")
 (defvar w3m-compile-options nil
   "Compile options that the w3m command was built with.")
 (defvar w3m-version nil
-  "Version string of the w3m command.")
+  "Version string of the external w3m command.
+
+Not to be confused with `emacs-w3m-version'.")
 
 ;; Set w3m-command, w3m-type, w3m-version and w3m-compile-options
 (if noninteractive ;; Don't call the external command when compiling.

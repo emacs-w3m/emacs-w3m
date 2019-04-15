@@ -1,3 +1,7 @@
+2019-04-14  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (emacs-w3m-version, w3m-version): Doc fix ([emacs-w3m:13330]).
+
 2019-04-11  Vladimir Sedach  <vas@oneofus.la>
 
 	* w3m-search.el (w3m-search-engine-alist): Use the lite version
