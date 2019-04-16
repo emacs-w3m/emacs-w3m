@@ -8310,7 +8310,9 @@ for users.  See Info node `(elisp)Key Binding Conventions'.")
     (when (featurep 'w3m-ems)
       (define-key map [?\C-,] 'w3m-tab-move-left)
       (define-key map [?\C-<] 'w3m-tab-move-left)
+      (define-key map "<"     'w3m-tab-move-left)
       (define-key map [?\C-.] 'w3m-tab-move-right)
+      (define-key map ">"     'w3m-tab-move-right)
       (define-key map [?\C->] 'w3m-tab-move-right))
     (define-key map "\C-w" 'w3m-delete-buffer)
     (define-key map "\M-w" 'w3m-delete-other-buffers)
@@ -11239,6 +11241,8 @@ The following command keys are available:
     (define-key map "k" 'w3m-select-buffer-previous-line)
     (define-key map "n" 'w3m-select-buffer-next-line)
     (define-key map "p" 'w3m-select-buffer-previous-line)
+    (define-key map "\C-c\C-n" 'w3m-select-buffer-move-next)
+    (define-key map "\C-c\C-p" 'w3m-select-buffer-move-previous)
     (define-key map "q" 'w3m-select-buffer-quit)
     (define-key map "h" 'w3m-select-buffer-show-this-line-and-switch)
     (define-key map "w" 'w3m-select-buffer-show-this-line-and-switch)
@@ -11255,32 +11259,41 @@ The following command keys are available:
 
 \\<w3m-select-buffer-mode-map>\
 \\[w3m-select-buffer-next-line]\
-	Next buffer.
+	Advance to next buffer on the list.
 \\[w3m-select-buffer-previous-line]\
-	Previous buffer.
+	Advance to previous buffer on the list.
+
+\\[w3m-select-buffer-show-this-line-and-switch]\
+   Switch to the selected buffer, leaving the list displayed.
 
 \\[w3m-select-buffer-show-this-line]\
-	Show the buffer on the current menu line or scroll it up.
+	Scroll the selected buffer forward one page.
 \\[w3m-select-buffer-show-this-line-and-down]\
-	Show the buffer on the current menu line or scroll it down.
-\\[w3m-select-buffer-show-this-line-and-switch]\
-	Show the buffer on the menu and switch to the buffer.
-\\[w3m-select-buffer-show-this-line-and-quit]\
-	Show the buffer on the menu and quit the buffers selection.
+   Scroll the selected buffer backward one page.
 
 \\[w3m-select-buffer-copy-buffer]\
-	Create a copy of the buffer on the menu, and show it.
+	Create a copy of the selected buffer.
+
+\\[w3m-select-buffer-move-next]\
+  Move the selected buffer down the list.
+\\[w3m-select-buffer-move-previous]\
+  Move the selected buffer up the list.
+
 \\[w3m-select-buffer-delete-buffer]\
-	Delete the buffer on the current menu line.
+     Delete the selected buffer.
 \\[w3m-select-buffer-delete-other-buffers]\
-	Delete emacs-w3m buffers except for the buffer on the menu.
+	Delete all buffers on the list, except for the selected one.
 
 \\[w3m-select-buffer-toggle-style]\
-	Toggle the style of the selection between horizontal and vertical.
+	Toggle the list style between horizontal and vertical.
+
 \\[w3m-select-buffer-recheck]\
-	Do the roll call to all emacs-w3m buffers.
+	Refresh the list.
+
+\\[w3m-select-buffer-show-this-line-and-quit]\
+	Quit the buffers selection list.
 \\[w3m-select-buffer-quit]\
-	Quit the buffers selection.
+	Quit the buffers selection list.
 "
   (setq major-mode 'w3m-select-buffer-mode
 	mode-name "w3m buffers"
@@ -11357,6 +11370,24 @@ The following command keys are available:
   "Move cursor vertically up N lines and show the buffer on the menu."
   (interactive "p")
   (w3m-select-buffer-next-line (- n)))
+
+(defun w3m-select-buffer-move-next (&optional n event)
+  "Move the current buffer down the list (ie. higher number).
+Use the prefix argument to move N positions.
+EVENT is an internal arg for mouse control."
+  (interactive (list (prefix-numeric-value current-prefix-arg)
+                     last-command-event))
+  (with-current-buffer (w3m-select-buffer-current-buffer)
+    (w3m-tab-move-right n event)))
+
+(defun w3m-select-buffer-move-previous (&optional n event)
+  "Move the current buffer up the list (ie. lower number).
+Use the prefix argument to move N positions.
+EVENT is an internal arg for mouse control."
+  (interactive (list (prefix-numeric-value current-prefix-arg)
+                     last-command-event))
+  (with-current-buffer (w3m-select-buffer-current-buffer)
+    (w3m-tab-move-right (- n) event)))
 
 (defun w3m-select-buffer-copy-buffer ()
   "Create a copy of the buffer on the current menu line, and show it."
