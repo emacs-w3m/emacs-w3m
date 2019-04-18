@@ -1,3 +1,18 @@
+2019-04-15  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el bugfixes to allow loading new tabs in background.
+	(w3m-goto-url-new-session): add optional arg NO-POPUP; replace
+	undocumented use of prefix-arg for RELOAD, with toggle of default
+	NO-POPUP value.
+	(w3m-copy-buffer): allow tab load in background; remove duplicate arg
+	JUST-COPY, major efficiency gains by using clone-buffer instead of
+	repeating entire w3m processing; replace undocumented use of prefix-arg
+	for renaming new copy, with toggle of default BACKGROUND value.
+	(w3m--goto-url--valid-url): adjust args for new format of
+	w3m-copy-buffer.
+	(w3m-view-this-url-1): pass arg NO-POPUP to allow tab
+	load in background.
+
 2019-04-14  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (emacs-w3m-version, w3m-version): Doc fix ([emacs-w3m:13330]).
