@@ -1,5 +1,18 @@
 2019-04-15  Boruch Baum  <boruch_baum@gmx.com>
 
+	* w3m.el (w3m-ctl-c-map): Assign console-friendly keybindings to
+	replace C-., C-,, C->, C-<.
+	(w3m-select-buffer-mode): Doc fix.
+	(w3m-select-buffer-move-next, w3m-select-buffer-move-previous): New
+	features for buffer listing.
+	(w3m-select-buffer-mode-map): Keybindings for the new commands.
+
+	* w3m-ems.el (w3m-tab-move-right, w3m-tab-move-left): Doc fix.
+	(w3m-tab-move-next, w3m-tab-move-prior): defaliases for
+	w3m-tab-move-right, w3m-tab-move-left.
+
+2019-04-15  Boruch Baum  <boruch_baum@gmx.com>
+
 	* w3m.el bugfixes to allow loading new tabs in background.
 	(w3m-goto-url-new-session): add optional arg NO-POPUP; replace
 	undocumented use of prefix-arg for RELOAD, with toggle of default
