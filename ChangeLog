@@ -1,3 +1,8 @@
+2019-04-17  Tatsuya Kinoshita  <tats@debian.org>
+
+	* w3m-search.el (w3m-search-engine-alist): Add &gbv=1 to
+	www.google.com/search to prevent META refresh ([emacs-w3m:13355]).
+
 2019-04-15  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m-ctl-c-map): Assign console-friendly keybindings to
