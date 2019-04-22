@@ -395,7 +395,7 @@ server for the particular hosts.  The first match made will be used.
 Here is an example of how to set this variable:
 
 \(setq w3m-command-arguments-alist
-      '(;; Don't use the proxy server to visit local web pages.
+      \\='(;; Don't use the proxy server to visit local web pages.
 	(\"^http://\\\\(?:[^/]*\\\\.\\\\)*your-company\\\\.com\\\\(?:/\\\\|$\\\\)\"
 	 \"-no-proxy\")
 	;; Use the proxy server to visit any foreign urls.
@@ -698,8 +698,8 @@ If the example.com site requires a browser to use `shift_jis' to encode
 url for example, you can add it to this variable as follows:
 
 \(add-to-list
- 'w3m-url-coding-system-alist
- '(\"\\\\`https?://\\\\(?:[^./?#]+\\\\.\\\\)*example\\\\.com/\" . shift_jis))"
+ \\='w3m-url-coding-system-alist
+ \\='(\"\\\\\\=`https?://\\\\(?:[^./?#]+\\\\.\\\\)*example\\\\.com/\" . shift_jis))"
   :group 'w3m
   :type '(repeat (cons :format "%v" :indent 2
 		       (radio :format "%v"
@@ -1834,7 +1834,7 @@ add regexps matching those file names to the second element of this
 variable.  For example:
 
 \(setq w3m-local-find-file-regexps
-      '(nil . \"\\\\.\\\\(?:[sx]?html?\\\\|dvi\\\\|ps\\\\|pdf\\\\)\\\\'\"))
+      \\='(nil . \"\\\\.\\\\(?:[sx]?html?\\\\|dvi\\\\|ps\\\\|pdf\\\\)\\\\\\='\"))
 
 It is effective only when the `w3m-local-find-file-function' variable
 is set properly."

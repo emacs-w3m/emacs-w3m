@@ -83,7 +83,7 @@
   "*Alist of `shimbun folder name (exclude `mew-shimbun-folder')'
 and included `shimbun server.groups' and its `range parameters',
 show below example,
-  '((\"yomiuri\"		;; \"shimbun folder\"
+  \\='((\"yomiuri\"		;; \"shimbun folder\"
      (\"yomiuri.shakai\" . 2)	;; (\"server.group\" . range)
      (\"yomiuri.sports\". 2)
      (\"yomiuri.seiji\" . 2)
@@ -122,7 +122,7 @@ show below example,
 (defcustom mew-shimbun-expires nil
   "*Alist of `shimbun folder name' and expire days.
 Show below expire,
-  '((\"yomiuri\" . 7)
+  \\='((\"yomiuri\" . 7)
     (\"comp\" . 3)
     (\"mew/mgp\" . nil)) ;; not expire
 "
@@ -146,7 +146,7 @@ If integer, all server.group limit 'integer'.
 If alist, each cell has shimbun folder names and their max length,
 show below example,
 
-  '((\"mew/mgp\" . 1000)
+  \\='((\"mew/mgp\" . 1000)
     (\"tcup/meadow\" . 20)
     (\"asahi\" . 100)
     (\"slashdot-jp/story\" . 3000)
