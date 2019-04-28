@@ -1,3 +1,10 @@
+2019-04-28  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el (w3m-download-toggle-pause): Bugfix: display of
+	timestamp and display detail state upon toggling from pause to queue.
+	(w3m-download-select-filter-list): Add regexes for compressed archives,
+	iso's and images.
+
 2019-03-29  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-download.el: Major feature and documentation additions: downloads

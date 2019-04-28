@@ -524,10 +524,12 @@ contain private information like access tokens or credentials."
 (defcustom w3m-download-select-filter-list
   '("all_links: .*$"
     "e-books:   \\.\\(pdf\\)\\|\\(epub\\)\\|\\(mobi\\)$"
+    "archives:  \\.\\(t?gz\\)\\|\\(zip\\)\\|\\(xz\\)\\|\\(lzma\\)$"
     "text:      \\.txt$"
     "images:    \\.\\(png\\)\\|\\(jpe?g\\)\\|\\(gif\\)$"
     "audio:     \\.\\(og[ag]\\)\\|\\(mp3\\)$"
-    "video:     \\.\\(ogv\\)\\|\\(mp4\\)$")
+    "video:     \\.\\(ogv\\)\\|\\(mp4\\)$"
+    "iso/img:   \\.\\(iso\\)\\|\\(img\\)$")
   "Regex patterns for filtering downloads.
 Each regex string may begin with an optional single descriptive word
 ending with a colon `:', followed by the regex for the filter."
@@ -1432,7 +1434,7 @@ or failed, restart or continue it."
           (when (and timestamp (string-match "\n" timestamp))
             (setq timestamp (substring timestamp 0 (match-beginning 0))))
           (setq txt (nth 6 elem))
-          (setq elem `(,@(butlast elem 3) ,timestamp ,txt))
+          (setq elem `(,@(butlast elem 2) ,timestamp ,txt))
           (add-to-list 'w3m--download-queued elem t)
           (w3m--download-from-queue))
          (t
