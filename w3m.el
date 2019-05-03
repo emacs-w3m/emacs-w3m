@@ -761,6 +761,7 @@ nil which provides Lynx-like keys."
   "*Directory where emacs-w3m config files are loaded from or saved to."
   :group 'w3m
   :type 'directory)
+(require 'w3m-download)
 
 (defcustom w3m-init-file "~/.emacs-w3m"
   "*Your emacs-w3m startup file name.

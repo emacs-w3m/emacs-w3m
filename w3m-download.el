@@ -2028,6 +2028,6 @@ further information."
 
 
 ;;; Provide this feature
-(w3m--download-init)
 (provide 'w3m-download)
+(w3m--download-init)
 ;;; w3m-download.el ends here

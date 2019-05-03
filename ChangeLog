@@ -1,3 +1,9 @@
+2019-05-03  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el, w3m-download.el: bugfix: resolve recursive load error due to
+	placement of call to w3m--download-init, and symbol error due to use of
+	variable w3m-profile-directory.
+
 2019-04-28  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-download.el (w3m-download-toggle-pause): Bugfix: display of
