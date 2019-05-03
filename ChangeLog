@@ -1,3 +1,8 @@
+2019-05-03  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m--message): BUGFIX: was occassionally silently crashing in
+	a process handler, requiring the buffer process to be manually stopped.
+
 2019-02-20  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m-print-this-url): BUGFIX: should not time-out current url
