@@ -1,3 +1,9 @@
+2019-05-05  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m--goto-torrent-url): New feature to support torrent and
+	magnet links, using for now external programs from the `transmission' suite.
+	(w3m-goto-url): Integrate the new feature.
+
 2019-04-17  Tatsuya Kinoshita  <tats@debian.org>
 
 	* w3m-search.el (w3m-search-engine-alist): Add &gbv=1 to
