@@ -24,59 +24,25 @@
 
 2. 動作環境
 
-   emacs-w3m をインストールする前に，必要な環境が整っているか調べてくだ
-   さい．
+2.1. Emacs のバージョン
 
-   emacs-w3m を動かすには最新の w3m (バージョン 0.3.1 以上) が必要です．
-   このプログラムは w3m のバージョンに強く依存しているので，既に w3m を
-   インストールしてある場合は，それを確認してください．また，w3m のより
-   新しいバージョンがリリースされているかどうかをチェックするために，公
-   式の w3m ウェブページを訪問することをお勧めします:
+     Emacs-w3m は安定版で最新の 2つのメジャーバージョンの Emacs をサポートします。つまり、もし最新の安定版の Emacs が 26.1 であるならば、
+     emacs-w3m は 26.1、25.3、25.2、および 25.1 をサポートするということです。
 
-       http://prdownloads.sourceforge.net/w3m/
+     古いバージョンの Emacs でも、まだ現行版の emacs-w3m を問題なく使うことができるかもしれません。しかし最新の emacs-w3m は、最新の Emacs や
+     Elisp 自体がいろいろな機能について行なう変更や、 非推奨にしたり削除することを追いかけているでしょうから、古いバージョンの Emacs で走らせていると、序々に機能しなく
+     なっていくでしょう。
 
-   emacs-w3m に同梱して配布されている shimbun ライブラリを利用するために
-   は，FLIM を前もってインストールしておく必要があります．詳細については，
-   Info の「Shimbun Library」節を確認してください．
+     コードを最新の状態に維持しようとしているので、リリース前の Emacs や開発中のもののスナップショットでさえも非公式にサポートしています。 したがって最先端の Emacs を
+     使っていて問題にぶつかったら、 そのバグをメーリングリストで知らせてください。
 
-   a) Emacs 21.x
-      emacs-w3m を動かすために，余分にインストールが必要なモジュールはあ
-      りません．
+2.2. w3m
 
-   b) XEmacs 21.x
-      第一に，emacs-w3m は XEmacs 21.4.17 以上，および XEmacs 21.5-b19
-      以上だけをサポートすることに注意してください．加えて，
-      timer-funcs.el を含む最新の xemacs-base パッケージをインストールし
-      ておく必要があります．
+     Emacs-w3m には最新版の w3m が必要です。
 
-      APEL を前もってインストールしておく必要があります．次の場所にある
-      最新のものを使ってください．
+2.3. APEL and FLIM
 
-      http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/apel/
-
-      注意: APEL XEmacs パッケージ (SUMO に含まれています) のバージョン
-       1.32 より古いものは使えません．もしすでにそのような版のパッケージ
-       がインストールされているならば，それを更新するか，または上記のリ
-       ンクで示した APEL で置き換えるために，以下の命令を使ってください
-       (新規に APEL をインストールする場合も同じ命令を使うことができます):
-
-          % rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
-          % cd apel-10.7
-          % make install-package XEMACS=xemacs-21.4.x\
-            PACKAGEDIR=/usr/local/lib/xemacs/xemacs-packages
-
-      XEmacs 21.x に emacs-w3m をインストールする場合は，必ず gifsicle
-      プログラムもインストールしてください．現在すべての XEmacs 21.x に
-      はオプティマイズされたアニメーション gif が正常に表示されなかった
-      り，ある種のインターレース gif を表示しようとするとクラッシュして
-      しまうバグがあります．emacs-w3m は gifsicle を利用して，gif データ
-      を XEmacs 21.x で扱える形式に変換します．これは次の場所から入手す
-      ることができます．
-
-          http://www.lcdf.org/gifsicle/
-
-   c) Emacs 20.x, Emacs 19.34 (含 Mule 2.3)
-      これらの Emacs を，emacs-w3m はサポートしません．
+     もし emacs-w3m の配布に含まれている 新聞ライブラリ を使いたいならば、Emacs パッケージ APEL と FLIM をインストールしなければなりません。
 
 
 3. インストール
@@ -231,8 +197,8 @@
 
 
 Local Variables:
+mode: outline
 mode: indented-text
-mode: outline-minor
 outline-regexp: "[0-9]\\.[0-9]\\.[0-9]\\.\\|[0-9]\\.[0-9]\\.\\|[0-9]\\."
 coding: euc-japan
 use-kuten-for-period: nil

@@ -2,78 +2,44 @@
 
 1. Introduction
 
-   w3m is a pager with WWW capability, developed by Akinori ITO.
-   Although it is a pager, it can be used as a text-mode WWW browser.
-   Visit the official w3m page for details:
+   w3m[1][2][3] is a pager, developed by Akinori ITO, that can be used as a
+   text-mode WWW browser. Emacs-w3m[4][5] uses w3m to browse the internet
+   from within Emacs. The project's detailed Info manual is available for
+   on-line viewing as HTML, here[6].
 
-       http://w3m.sourceforge.net/
-
-   Emacs-w3m is a simple Emacs interface to w3m.  Its official web page
-   is available at:
-
-        http://emacs-w3m.namazu.org/
-
-   You can find more detailed version of the following explanations
-   in the form of HTML'ized info:
-
-        http://emacs-w3m.namazu.org/info/
+   [1] http://w3m.sourceforge.net/
+   [2] https://salsa.debian.org/debian/w3m
+   [3] https://github.com/tats/w3m
+   [4] http://emacs-w3m.namazu.org/
+   [5] https://github.com/emacs-w3m/emacs-w3m
+   [6] http://emacs-w3m.namazu.org/info/
 
 
 2. Requirements
 
-   Check whether your system meets the following requirements before
-   installing emacs-w3m.
+2.1. Emacs versions
 
-   Emacs-w3m requires the latest version of w3m (version 0.3.1 and
-   later).  Since this program is much sensitive to the version of w3m,
-   you should confirm it if you already have w3m installed.  And we
-   recommend you visit the official w3m web page to check whether a
-   newer version of w3m has been released:
+     Emacs-w3m supports the latest two major stable versions of Emacs. Thus, when the latest
+     stable Emacs was 26.1, Emacs-w3m was supporting versions 26.1, 25.3, 25.2, and 25.1.
 
-       http://prdownloads.sourceforge.net/w3m/
+     Older versions of Emacs may still be able to successfully use the current version of
+     emacs-w3m, but as the current versions of Emacs or ELisp themselves change, deprecate,
+     or remove features, the latest version of emacs-w3m can be expected to keep pace, and
+     thus will gradually lose functionality when run in older Emacs versions.
 
-   If you want to use the shimbun library which is included in the
-   emacs-w3m distribution, you have to install FLIM package.  For more
-   detail about the shimbun library, see "Shimbun Library" section in
-   Info.
+     Pre-release versions of Emacs and even development snapshots are unofficially supported,
+     as we do try to keep the code up-to-date, so if you are using a "bleeding edge" Emacs
+     version and do experience a problem, please do file a bug report by contacting us on our
+     mailing list!
 
-   a) Emacs 21.x
-      No additional packages are required.
+2.2. w3m
 
-   b) XEmacs 21.x
-      First of all, you should note that emacs-w3m supports only XEmacs
-      21.4.17 and later and XEmacs 21.5-b19 and later.  In addition, you
-      need to have installed the latest xemacs-base package including
-      the timer-funcs.el module.
+     Emacs-w3m requires the latest version of w3m.
 
-      APEL package is required.  Use the latest one available in:
+2.3. apel and flim
 
-        http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/apel/
-
-      Note: You must not use the APEL XEmacs package (which is contained
-       in SUMO) of the versions older than 1.32.  If you have already
-       installed such a version, you should upgrade it or replace it
-       with APEL which is linked above (you can also use the same
-       directives in order to newly install APEL):
-
-          % rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
-          % cd apel-10.7
-          % make install-package XEMACS=xemacs-21.4.x\
-            PACKAGEDIR=/usr/local/lib/xemacs/xemacs-packages
-
-      If you are using XEmacs 21.x, you should install the "gifsicle"
-      program.  There is a known bug in all XEmacs 21.x series that
-      it won't let it display optimized animated gifs correctly or may
-      make it crash when some kind of an interlaced gif image is
-      displayed.  Emacs-w3m uses the "gifsicle" program to convert gif
-      data in order to make it possible to be handled by XEmacs 21.x.
-      It is available at:
-
-          http://www.lcdf.org/gifsicle/
-
-   c) Emacs 20.x, Emacs 19.34 (including Mule 2.3)
-      Emacs-w3m no longer supports those Emacs versions.
-
+     Optionally, if you would like to use the shimbun library included in the emacs-w3m
+     distribution, you have to install the Emacs packages APEL and FLIM.
 
 3. Installation
 
@@ -201,12 +167,14 @@
 
 5. Contact the emacs-w3m community
 
-   To contact the emacs-w3m community for reporting bugs, contributing
-   improvements, making a suggestion or asking us for help, send a mail
-   to the open list <emacs-w3m@namazu.org>.  You can also send a bug
-   report using the `report-emacs-w3m-bug' command or the `C-c C-b' key
-   if you have set the `mail-user-agent' variable that will work
-   properly.
+   The project maintains its repository on github[1], and separately
+   operates an open email list [2]. You can also file bug reports using
+   the `report-emacs-w3m-bug' command or the `C-c C-b' key if you have
+   set the `mail-user-agent' variable that will work properly.
+
+   [1] https://github.com/emacs-w3m/emacs-w3m/pulls
+   [2] emacs-w3m@namazu.org
+
 
 
 6. Acknowledgments
@@ -218,23 +186,20 @@
 
 7. Related Information
 
-   [1] APEL
-       It can be downloaded from:
+   [1] APEL (Available on MELPA)
        http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/apel/
 
-   [2] FLIM
-       It can be downloaded from:
+   [2] FLIM (Available on MELPA, requires Apel)
        http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/flim/flim-1.14/
-       Before installing it, it is necessary to install APEL.
 
    [3] gifsicle
-       It can be downloaded from: http://www.lcdf.org/gifsicle/
+       http://www.lcdf.org/gifsicle/
 
 
 Local Variables:
+mode: outline
 mode: indented-text
-mode: outline-minor
 outline-regexp: "[0-9]\\.[0-9]\\.[0-9]\\.\\|[0-9]\\.[0-9]\\.\\|[0-9]\\."
-coding: ascii
+coding: utf-8
 fill-column: 72
 End:
