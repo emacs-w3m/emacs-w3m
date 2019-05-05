@@ -3336,15 +3336,16 @@ function neither displays nor logs the message."
      (message nil))
    ;; Produce the message
    (unless w3m--message-silent
-     (if w3m-verbose
-         (apply (function message) (list msg))
-       (if (when w3m-process-background
-             (or (window-minibuffer-p (selected-window))
-                 (when (current-message)
-                   (not (equal (current-message) w3m--current-message)))))
-           (apply (function format) (list msg))
-         (let (message-log-max)
-           (setq w3m--current-message msg)))))
+     (let ((message-log-max
+             (if w3m-verbose message-log-max nil)))
+        (apply (function message) (list msg)))
+     ;; BB: I don't understand this if statement...
+     (if (when w3m-process-background
+              (or (window-minibuffer-p (selected-window))
+                  (when (current-message)
+                    (not (equal (current-message) w3m--current-message)))))
+       (apply (function format) (list msg))
+      (setq w3m--current-message msg)))
    ;; Deal with the TIMEOUT options
    (when (and w3m-message-timeout timeout)
      (run-at-time
