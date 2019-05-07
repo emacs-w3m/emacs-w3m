@@ -1,3 +1,9 @@
+2019-05-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-browse-url): Refresh the already existing page if it
+	is older than the site and the new arg REFRESH-IF-EXISTS is given.
+	Off-list suggested by Dan Jacobson <jidanni@jidanni.org>.
+
 2019-05-06  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m--goto-torrent-url): Change dependency

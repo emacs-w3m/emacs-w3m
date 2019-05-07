@@ -10525,10 +10525,16 @@ interactive command in the batch mode."
   (autoload 'browse-url-interactive-arg "browse-url"))
 
 ;;;###autoload
-(defun w3m-browse-url (url &optional new-session)
+(defun w3m-browse-url (url &optional new-session refresh-if-exists)
   "Ask emacs-w3m to browse URL.
-NEW-SESSION specifies whether to create a new emacs-w3m session.  URL
-defaults to the string looking like a url around the cursor position."
+When called interactively, URL defaults to the string existing around
+the cursor position and looking like a url.  If the prefix argument is
+given[1] or NEW-SESSION is non-nil, create a new emacs-w3m session.
+If REFRESH-IF-EXISTS is non-nil, refresh the page if it already exists
+but is older than the site.
+
+[1] More precisely the prefix argument inverts the boolean logic of
+`browse-url-new-window-flag' that defaults to nil."
   (interactive (progn
 		 (require 'browse-url)
 		 (browse-url-interactive-arg "Emacs-w3m URL: ")))
@@ -10536,7 +10542,18 @@ defaults to the string looking like a url around the cursor position."
     (setq url (w3m-canonicalize-url url))
     (if new-session
 	(w3m-goto-url-new-session url)
-      (w3m-goto-url url nil nil nil nil nil nil nil t))))
+      (w3m-goto-url
+       url
+       ;; Reload the page if it is already visited, older than the site,
+       ;; and REFRESH-IF-EXISTS is non-nil.
+       (let (buffer)
+	 (and refresh-if-exists
+	      (setq buffer (w3m-alive-p t))
+	      (string-equal url (with-current-buffer buffer w3m-current-url))
+	      (w3m-time-newer-p (let ((w3m-message-silent t))
+				  (w3m-last-modified url t))
+				(w3m-arrived-last-modified url))))
+       nil nil nil nil nil nil t))))
 
 ;;;###autoload
 (defun w3m-find-file (file)
