@@ -9380,6 +9380,41 @@ It makes the ends of upper and lower three lines visible.  If
 		((stringp (cdr elem))
 		 (w3m-pattern-uri-replace uri (cdr elem)))))))))
 
+(defun w3m--goto-torrent-url (url)
+  "Process `.torrent' links and `magnet:' protocol URLs.
+
+This handler is currently hard-coded to require three specific
+external command-line programs `transmission-daemon',
+`transmission-remote', and `transmission-remote-cli'. The
+`transmission-daemon' program initates a web interface on
+`http://localhost:9091' from which one may view and manipulate
+torrents; however, that interface requires javascript, so is
+unavailable directly via `emacs-w3m'. An alternative NCURSES
+interface is available using a third command-line program
+`transmission-remote-cli', so this function concludes by starting
+that external program in a dedicated `ansi-term' buffer, if one
+does not already exist."
+  ;; TODO: * don't hard-code for `transmission'
+  ;;       * investigate options for using `deluge', `ktorrent', or others.
+  (if (not (and (executable-find "transmission-daemon")
+                (executable-find "transmission-remote")
+                (executable-find "transmission-remote-cli")))
+    (w3m--message t 'w3m-error "Missing executable for processing torrents.")
+   (when url ;; sanity check
+     (when (not (zerop (shell-command "pgrep -f transmission-daemon")))
+       (shell-command (concat "transmission-daemon -w " w3m-default-save-directory))
+       (sit-for 1))
+     (shell-command (concat "transmission-remote -a " url))
+     (let ((buf-name "w3m-torrents"))
+       (when (not (get-buffer (concat "*" buf-name "*")))
+         (ansi-term "transmission-remote-cli" buf-name)
+         (set-process-sentinel
+           (get-buffer-process (current-buffer))
+           (lambda (process event)
+             (when (string-match "finished" event)
+               (kill-buffer))))
+         (bury-buffer))))))
+
 (defun w3m-goto-mailto-url (url &optional post-data)
   (let ((before (nreverse (buffer-list)))
 	comp info body buffers buffer function)
@@ -9941,6 +9976,10 @@ invoked in other than a w3m-mode buffer."
    ;; process mailto: protocol
    ((string-match "\\`mailto:" url)
     (w3m-goto-mailto-url url post-data))
+   ;; process torrents and their magnets
+   ((or (string-match "\\`magnet:" url)
+        (string-match "\\.torrent$" url))
+    (w3m--goto-torrent-url url))
    ;; process ftp: protocol
    ((and w3m-use-ange-ftp
 	 (string-match "\\`ftps?://" url)
