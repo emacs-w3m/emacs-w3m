@@ -9400,7 +9400,7 @@ if one does not already exist."
   ;;       * investigate options for using `deluge', `ktorrent', or others.
   (if (not (and (executable-find "transmission-daemon")
                 (executable-find "transmission-remote")))
-    (w3m--message t 'w3m-error "Missing executable for processing torrents.")
+    (w3m-message "Missing executable for processing torrents.")
    (when url ;; sanity check
      (when (not (zerop (shell-command "pgrep -f transmission-daemon")))
        (shell-command (concat "transmission-daemon -w " w3m-default-save-directory))

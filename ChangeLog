@@ -7,8 +7,14 @@
 2019-05-05  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m--goto-torrent-url): New feature to support torrent and
-	magnet links, using for now external programs from the `transmission' suite.
+	magnet links, using for now external programs from the `transmission'
+	suite.
 	(w3m-goto-url): Integrate the new feature.
+
+2019-05-03  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* w3m-util.el (w3m-insert-string): Don't touch unibyte string.
+	encode-coding-string may modify unibyte string.
 
 2019-04-17  Tatsuya Kinoshita  <tats@debian.org>
 
