@@ -1,3 +1,10 @@
+2019-05-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-filter (w3m-filter-prefer-lazy-images): New filter that prefers
+	a lazy image specified with data-src= rather than that of src= in img
+	tags.
+	(w3m-filter-configuration): Add it.
+
 2019-05-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-browse-url): Refresh the already existing page if it

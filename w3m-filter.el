@@ -1,6 +1,6 @@
 ;;; w3m-filter.el --- filtering utility of advertisements on WEB sites -*- coding: utf-8 -*-
 
-;; Copyright (C) 2001-2008, 2012-2015, 2017, 2018
+;; Copyright (C) 2001-2008, 2012-2015, 2017, 2018, 2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -135,14 +135,17 @@
      "A filter for Wikipedia"
      "\\`http://.*\\.wikipedia\\.org/" w3m-filter-wikipedia)
     (t "filter for github.com repository main page"
-        "\\`http[s]?://github\\.com/[^/]+/[^/]+[/]?$"
+       "\\`http[s]?://github\\.com/[^/]+/[^/]+[/]?$"
       w3m-filter-github-repo-main-page)
     (t "xkcd filter" "\\`http[s]?://xkcd.com/" w3m-filter-xkcd)
     (nil
      ("Remove inline frames in all pages"
       "すべてのページでインラインフレームを取り除きます")
      ""
-     w3m-filter-iframe))
+     w3m-filter-iframe)
+    (t ("Prefer a lazy image specified with data-src= in img tags"
+	"img タグ内の data-src= で指定される遅延画像を優先します")
+       w3m-filter-prefer-lazy-images))
   "List of filter configurations applied to web contents.
 Each filter configuration consists of the following form:
 
@@ -1346,5 +1349,24 @@ READ MORE:\\([^<]+\\)\\(</a>\\)?</strong>\\(</p>\\)?"
   (w3m-filter-delete-regions
    url
    "<!-- DAC CHANNEL AD START -->" "<!-- DAC CHANNEL AD END -->"))
+
+(defun w3m-filter-prefer-lazy-images (url)
+  "Prefer a lazy image specified with data-src= in img tags.
+This function replaces that of src= with it."
+  (goto-char (point-min))
+  (let ((case-fold-search t)
+	st nd data-src)
+  (while (re-search-forward "<img[\t\n ]+[^>]+>" nil t)
+    (setq st (goto-char (match-beginning 0))
+	  nd (cadr (match-data))) ;; a marker version of (match-end 0)
+    (when (re-search-forward "[\t\n ]+data-\\(src=\"[^\"]+\"\\)" nd t)
+      (setq data-src (match-string 1))
+      (replace-match "")
+      (goto-char st)
+      (if (re-search-forward "[\t\n ]+\\(src=\"[^\"]+\"\\)" nd t)
+	  (replace-match data-src nil nil nil 1)
+	(forward-char 4)
+	(insert " " data-src)))
+    (goto-char nd))))
 
 ;;; w3m-filter.el ends here
