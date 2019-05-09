@@ -1,3 +1,13 @@
+2019-05-09  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-bookmark.el (w3m-bookmark-add): Bugfix: Order of args to function
+	string-match. Message text tweak.
+	(w3m-bookmark-add-all-urls): Operate in all display modes, only ask for
+	section once, provide sane default section, don't add bookmarks
+	buffers, auto-refresh existing bookmark buffers, improve error
+	handling, add tab character to whitespace regexp, use set-buffer
+	instead of switch-to-buffer.
+
 2019-05-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-filter.el (w3m-filter-configuration): Add a missing parameter
