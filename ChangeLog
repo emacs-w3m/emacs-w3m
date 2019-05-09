@@ -1,8 +1,13 @@
+2019-05-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-filter.el (w3m-filter-configuration): Add a missing parameter
+	to the w3m-filter-prefer-lazy-images section ([emacs-w3m:13396]).
+
 2019-05-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m-filter (w3m-filter-prefer-lazy-images): New filter that prefers
-	a lazy image specified with data-src= rather than that of src= in img
-	tags.
+	* w3m-filter.el (w3m-filter-prefer-lazy-images): New filter that
+	prefers a lazy image specified with data-src= rather than that of
+	src= in img tags.
 	(w3m-filter-configuration): Add it.
 
 2019-05-07  Katsumi Yamaoka  <yamaoka@jpl.org>

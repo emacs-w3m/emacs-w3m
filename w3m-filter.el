@@ -143,9 +143,11 @@
       "すべてのページでインラインフレームを取り除きます")
      ""
      w3m-filter-iframe)
-    (t ("Prefer a lazy image specified with data-src= in img tags"
-	"img タグ内の data-src= で指定される遅延画像を優先します")
-       w3m-filter-prefer-lazy-images))
+    (t
+     ("Prefer a lazy image specified with data-src= in img tags"
+      "img タグ内の data-src= で指定される遅延画像を優先します")
+     ""
+     w3m-filter-prefer-lazy-images))
   "List of filter configurations applied to web contents.
 Each filter configuration consists of the following form:
 
