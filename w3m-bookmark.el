@@ -334,16 +334,16 @@ With prefix, ask for a new url instead of the present one."
   "Add urls of all pages being visited to the bookmark."
   (interactive)
   (let* ((buffers (w3m-list-buffers))
-         (len     (length buffers))
-         (default-section (format-time-string
-                            "Saved bookmarks: %Y-%m-%d %H:%M:%S"
-                            (current-time)))
-         (error-count 0)
-         section title bookmark-buffers)
+	 (len     (length buffers))
+	 (default-section (format-time-string
+			   "Saved bookmarks: %Y-%m-%d %H:%M:%S"
+			   (current-time)))
+	 (error-count 0)
+	 section title bookmark-buffers)
     (cond
      ((zerop len)
       (w3m-message ;; or (w3m--message t 'w3m-error
-        "No w3m buffers found to bookmark"))
+       "No w3m buffers found to bookmark"))
      ((= len 1)
       (w3m-bookmark-add-current-url))
      ((> len 1)
@@ -351,36 +351,37 @@ With prefix, ask for a new url instead of the present one."
       ;; `w3m-bookmark-add', so when making changes here, also
       ;; consider that function.
       (setq section (completing-read
-                      (format "Section (default %s): " default-section)
-                      (append (list (list default-section))
-                              (w3m-bookmark-sections))
-                      nil nil nil
-                      'w3m-bookmark-section-history))
+		     (format "Section (default %s): " default-section)
+		     (append (list (list default-section))
+			     (w3m-bookmark-sections))
+		     nil nil nil
+		     'w3m-bookmark-section-history))
       (when (or (not section) (not (stringp section)) (string= section ""))
-           (setq section default-section))
+	(setq section default-section))
       (if (string-match "^[\t ]*$" section)
-        (w3m-message ;; or (w3m--message t 'w3m-error
-          "You must specify a bookmark section name")
-       (while buffers
-         (set-buffer (pop buffers))
-         (if (string= w3m-current-url  "about://bookmark/")
-           (add-to-list 'bookmark-buffers (current-buffer))
-          (setq title (or w3m-current-title w3m-current-url))
-          (if w3m-current-url
-            (w3m-bookmark-write-file w3m-current-url
-              (w3m-encode-specials-string w3m-current-title)
-              (w3m-encode-specials-string section))
-           (message
-             "w3m-bookmark: Error saving buffer %s\n  url: %s\n  title: %s"
-             (current-buffer) w3m-current-url w3m-current-title)
-           (incf error-count))))
-       (when (> error-count 0)
-         (w3m-message  ;; or (w3m--message t 'w3m-error
-           "%s Errors encountered. See *Messages* buffer for details"
-           error-count))
-       (while bookmark-buffers
-         (set-buffer (pop bookmark-buffers))
-         (w3m-redisplay-this-page)))))))
+	  (w3m-message ;; or (w3m--message t 'w3m-error
+	   "You must specify a bookmark section name")
+	(while buffers
+	  (set-buffer (pop buffers))
+	  (if (string= w3m-current-url  "about://bookmark/")
+	      (add-to-list 'bookmark-buffers (current-buffer))
+	    (setq title (or w3m-current-title w3m-current-url))
+	    (if w3m-current-url
+		(w3m-bookmark-write-file
+		 w3m-current-url
+		 (w3m-encode-specials-string w3m-current-title)
+		 (w3m-encode-specials-string section))
+	      (message
+	       "w3m-bookmark: Error saving buffer %s\n  url: %s\n  title: %s"
+	       (current-buffer) w3m-current-url w3m-current-title)
+	      (incf error-count))))
+	(when (> error-count 0)
+	  (w3m-message  ;; or (w3m--message t 'w3m-error
+	   "%s Errors encountered. See *Messages* buffer for details"
+	   error-count))
+	(while bookmark-buffers
+	  (set-buffer (pop bookmark-buffers))
+	  (w3m-redisplay-this-page)))))))
 
 ;;;###autoload
 (defun w3m-bookmark-add-current-url-group ()
