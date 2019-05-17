@@ -1,3 +1,9 @@
+2019-05-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnshimbun.el (nnshimbun-replace-date-header): Use mail-header-date
+	along with setf instead of mail-header-set-date following the change
+	made in the Emacs master (revno 5f6c08e).
+
 2019-04-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-group-table): Add west.essay group.

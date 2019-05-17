@@ -1,6 +1,6 @@
 ;;; nnshimbun.el --- interfacing with web newspapers
 
-;; Copyright (C) 2000-2012, 2016-2018 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000-2012, 2016-2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          ARISAWA Akihiro    <ari@mbf.sphere.ne.jp>,
@@ -450,7 +450,7 @@ If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
 	"Replace ARTICLE's date header with HEADER."
 	(let ((x (gnus-summary-article-header article)))
 	  (when x
-	    (mail-header-set-date x (shimbun-header-date header)))))))
+	    (setf (mail-header-date x) (shimbun-header-date header)))))))
   (funcall 'nnshimbun-replace-date-header article header))
 
 (defun nnshimbun-request-article-1 (article &optional group server to-buffer)
