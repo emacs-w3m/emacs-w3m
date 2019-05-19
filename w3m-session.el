@@ -663,7 +663,6 @@ buffer in the current session."
 			    (list item)
 			    nil)
 		    item)))
-    (w3m-session-select-quit)
     (w3m-session-goto-session session)))
 
 (defun w3m-session-select-open-session-group (&optional arg)
@@ -746,33 +745,47 @@ being below or beside the main window."
        (message "No saved session")))))
 
 (defun w3m-session-goto-session (session)
-  "Goto URLs."
+  "Create buffer(s) for the selected SESSION url(s).
+
+If point is selecting a session, then a buffer for each
+element (url) of that session will be created. If point is
+selecting a session element, then only a single buffer for that
+url will be created."
   (let ((title (nth 0 session))
 	(urls (nth 2 session))
 	(cnum (nth 3 session))
 	(i 0)
 	(w3m-async-exec (and w3m-async-exec-with-many-urls w3m-async-exec))
-	url cbuf buf pos history)
-    (message "Session goto(%s)..." title)
-    (while (setq url (car urls))
-      (setq urls (cdr urls))
-      (unless (stringp url)
-	(setq pos     (nth 1 url)
-	      history (nth 2 url)
-	      url     (nth 0 url)))
-      (w3m-goto-url-new-session url)
-      (setq buf (car (nreverse (w3m-list-buffers))))
-      (when (or (and (numberp cnum) (= cnum i))
-		(and (not cnum) (= i 0)))
-	(setq cbuf buf))
-      (when (and buf pos history)
-	(set-buffer buf)
-	(setq w3m-history-flat history)
-	(w3m-history-tree pos))
-      (setq i (1+ i)))
-    (when (and cbuf (eq major-mode 'w3m-mode))
-      (set-window-buffer (selected-window) cbuf))
-    (message "Session goto(%s)...done" title)))
+        (session-buf (current-buffer))
+        (session-win (selected-window))
+	url cbuf cwin buf pos history)
+    (dolist (win (window-list))
+      (when (string-match "\\*w3m\\*" (buffer-name (window-buffer win)))
+        (setq cwin win)))
+    (when (not cwin)
+      (error "No visible w3m windows found."))
+    (with-selected-window cwin
+      (w3m--message t t "Session goto(%s)..." title)
+      (while (setq url (car urls))
+        (setq urls (cdr urls))
+        (unless (stringp url)
+  	(setq pos     (nth 1 url)
+  	      history (nth 2 url)
+  	      url     (nth 0 url)))
+        (w3m-goto-url-new-session url nil nil nil nil t) ; no-popup
+        (setq buf (car (last (w3m-list-buffers))))
+        (when (or (and (numberp cnum) (= cnum i))
+  		(and (not cnum) (= i 0)))
+  	(setq cbuf buf))
+        (when (and buf pos history)
+  	(set-buffer buf)
+  	(setq w3m-history-flat history)
+  	(w3m-history-tree pos))
+        (setq i (1+ i))))
+    (set-window-buffer session-win session-buf)
+    (when cbuf
+      (set-window-buffer cwin cbuf))
+    (w3m--message t t "Session goto(%s)...done" title)))
 
 (defun w3m-session-rename (sessions num)
   "Rename an entry (either a session or a buffer).
