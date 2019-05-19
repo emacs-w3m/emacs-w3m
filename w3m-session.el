@@ -770,7 +770,7 @@ url will be created, only if it does not already exist."
     (when (not cwin)
       (error "No visible w3m windows found."))
     (with-selected-window cwin
-      (w3m--message t t "Session goto(%s)..." title)
+      (w3m-message "Session goto(%s)..." title)
       (while (setq url (pop urls))
         (unless (stringp url)
           (setq pos     (nth 1 url)
@@ -792,7 +792,7 @@ url will be created, only if it does not already exist."
     (set-window-buffer session-win session-buf)
     (when cbuf
       (set-window-buffer cwin cbuf))
-    (w3m--message t t "Session goto(%s)...done" title)))
+    (w3m-message "Session goto(%s)...done" title)))
 
 (defun w3m-session-rename (sessions num)
   "Rename an entry (either a session or a buffer).
