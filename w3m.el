@@ -1693,8 +1693,10 @@ command `w3m'."
 
 (defcustom w3m-new-session-in-background
   w3m-view-this-url-new-session-in-background
-  "*Say whether not to focus on a new tab or a new session in target.
-It influences only when a new emacs-w3m buffer is created."
+  "Don't switch to newly created buffers / tabs.
+This setting can be temporarily over-ridden by opening a new
+session with a prefix argument, ie C-u M-x
+w3m-goto-url-new-session, or `C-u G'."
   :group 'w3m
   :type 'boolean)
 
@@ -10073,9 +10075,11 @@ See `w3m-default-directory'."
 				     referer)
   "Visit World Wide Web pages in a new buffer.
 
-If you invoke this command in the emacs-w3m buffer, the new buffer
-will be created by copying the current buffer.  Otherwise, the new
-buffer will start afresh."
+If called interactively from an existing `emacs-w3m' buffer, the
+new buffer will inherit the current one's history.
+
+When called interactively with a prefix-argument, over-ride your
+default setting for `w3m-new-session-in-background'."
   (interactive
    (list (w3m-input-url "Open URL in new buffer" nil
 			(or (w3m-active-region-or-url-at-point)

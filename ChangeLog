@@ -1,3 +1,8 @@
+2019-05-19  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-new-session-in-background, w3m-goto-url-new-session):
+	update documentation for clarity and for use of prefix arguemnt.
+
 2019-02-26  Boruch Baum  <boruch_baum@gmx.com>
 
 	* BUGS, BUGS.ja: Deleted this file. It was 12 years old, and seems to
