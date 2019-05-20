@@ -1,3 +1,7 @@
+2019-05-19  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m--message): BUGFIX: Handling of sub-string "%29".
+
 2019-05-03  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m--message): BUGFIX: was occassionally silently crashing in

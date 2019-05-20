@@ -3326,10 +3326,13 @@ matter what `message-log-max' is).
 
 If `w3m--message-silent' is temporarily bound to non-nil, this
 function neither displays nor logs the message."
-  (let ((msg (if (not face)
-               (apply 'format args)
-              (propertize (apply 'format args)
-                'face (if (facep face) face 'w3m-message)))))
+  (let ((msg
+          (replace-regexp-in-string "%28" "("
+            (replace-regexp-in-string "%29" ")"
+              (if (not face)
+                (apply 'format args)
+               (propertize (apply 'format args)
+                 'face (if (facep face) face 'w3m-message)))))))
    ;; Clear previous message in order to shrink
    ;; the window height of the echo area.
    (unless (< (string-width (or (current-message) "")) (window-width))
