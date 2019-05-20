@@ -1,3 +1,11 @@
+2019-05-19  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-session.el (w3m-session-select-select): Don't quit after each
+	individual session action.
+	(w3m-session-goto-session): Preserve session buffer in its window, use
+	w3m version of message function, remove needless nreverse, do not
+	create duplicate buffers.
+
 2019-05-09  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-bookmark.el (w3m-bookmark-add): Bugfix: Order of args to function
