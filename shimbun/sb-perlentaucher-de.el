@@ -1,4 +1,4 @@
-;;; sb-perlentaucher-de.el --- perlentaucher.de shimbun backend -*- coding: utf-8; -*-
+;;; sb-perlentaucher-de.el --- perlentaucher.de shimbun backend
 
 ;; Copyright (C) 2008, 2009, 2010 David Engster
 

@@ -32,7 +32,7 @@
 (luna-define-class shimbun-kyoko-np (shimbun-rss) ())
 
 (defvar shimbun-kyoko-np-url "http://kyoko-np.net/")
-(defvar shimbun-kyoko-np-server-name "")
+(defvar shimbun-kyoko-np-server-name "虚構新聞社")
 
 (defvar shimbun-kyoko-np-x-face-alist
   '(("default" . "\
@@ -63,7 +63,7 @@ h,:y~(ZRL6_\n !]+_+:*w'FH/kkX~]Wd>*Og6Q:)\"M&Kngqb%I\"V-k_@?Y5r5ESY8k>")))
     (fset 'shimbun-rss-node-text
 	  (lambda (namespace local-name element)
 	    (if (eq local-name 'author)
-		" "
+		"虚構新聞社社主 ＵＫ"
 	      (funcall fn namespace local-name element))))
     (unwind-protect
 	(setq headers (shimbun-rss-get-headers shimbun range t))
@@ -106,9 +106,9 @@ class=\"app[\t\n ]+text-center\"" nil t)
 (luna-define-method shimbun-footer :around ((shimbun shimbun-kyoko-np)
 					    header &optional html)
   (concat "<div align=\"left\">\n--&nbsp;<br>\n\
-<a href=\""
+この記事の諸権利は虚構新聞社に帰属します。原物は<a href=\""
 	  (shimbun-article-base-url shimbun header)
-	  "\"><u></u></a>\n</div>\n"))
+	  "\"><u>ここ</u></a>で公開されています。\n</div>\n"))
 
 (provide 'sb-kyoko-np)
 

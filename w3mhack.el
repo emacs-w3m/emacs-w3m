@@ -944,7 +944,7 @@ NOTE: This function must be called from the top directory."
 (defun w3mhack-insert-git-revision ()
   (let ((revision
 	 (with-temp-buffer
-	   (when (and (file-exists-p ".git/config")
+	   (when (and (file-directory-p ".git")
 		      (executable-find "git")
 		      (zerop (call-process "git"
 					   nil
@@ -959,11 +959,11 @@ NOTE: This function must be called from the top directory."
 	     (forward-line -1)
 	     (looking-at ";")))
     (forward-line 1)
-    (insert "
-(defconst emacs-w3m-git-revision " revision "
+    (insert (format "
+(defconst emacs-w3m-git-revision %s
   \"Git revision string of this package.\")
 
-")))
+" revision))))
 
 (defun w3mhack-generate-load-file ()
   "Generate a file including all autoload stubs."

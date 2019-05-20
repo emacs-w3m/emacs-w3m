@@ -5346,8 +5346,8 @@ sankei.entertainments sankei.flash sankei.life sankei.politics
 sankei.region.chubu sankei.region.chugoku-shikoku
 sankei.region.hokkaido-tohoku sankei.region.kanto sankei.region.kinki
 sankei.region.kyushu-okinawa sankei.sports sankei.top
-sankei.west.affairs sankei.west.economy sankei.west.flash
-sankei.west.life sankei.west.sports sankei.world
+sankei.west.affairs sankei.west.economy sankei.west.essay
+sankei.west.flash sankei.west.life sankei.west.sports sankei.world
 
 @item @uref{http://www.spiegel.de/, Spiegel Online}
 spiegel.news

@@ -1,4 +1,4 @@
-;;; sb-lump.el --- shimbun backend class to check all groups at once -*- coding: utf-8; -*-
+;;; sb-lump.el --- shimbun backend class to check all groups at once
 
 ;; Copyright (C) 2001, 2002 Yuuichi Teranishi <teranisi@gohome.org>
 

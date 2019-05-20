@@ -1,4 +1,4 @@
-;;; sb-infoshop.el --- infoshop shimbun backend -*- coding: utf-8; -*-
+;;; sb-infoshop.el --- infoshop shimbun backend
 
 ;; Copyright (C) 2005, 2006, 2007 David Hansen
 

@@ -1,4 +1,4 @@
-;;; sb-namazu.el --- shimbun backend for namazu.org -*- coding: utf-8; -*-
+;;; sb-namazu.el --- shimbun backend for namazu.org
 
 ;; Copyright (C) 2001, 2002, 2003, 2004 Akihiro Arisawa  <ari@mbf.sphere.ne.jp>
 

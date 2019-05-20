@@ -1,4 +1,4 @@
-;;; sb-mhonarc.el --- shimbun backend class for mhonarc -*- coding: utf-8; -*-
+;;; sb-mhonarc.el --- shimbun backend class for mhonarc
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2009
 ;; Yuuichi Teranishi <teranisi@gohome.org>

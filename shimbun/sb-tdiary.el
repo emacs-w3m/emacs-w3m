@@ -1,4 +1,4 @@
-;;; sb-tdiary.el --- shimbun backend for tDiary -*- coding: utf-8; -*-
+;;; sb-tdiary.el --- shimbun backend for tDiary
 
 ;; Copyright (C) 2003, 2004, 2005, 2007 OHASHI Akira <bg66@koka-in.org>
 

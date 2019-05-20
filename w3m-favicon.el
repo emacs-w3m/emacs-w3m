@@ -240,9 +240,11 @@ favicon is ready."
   "Convert the favicon DATA in TYPE to the favicon image and return it."
   (when (or (not (eq type 'ico))
 	    ;; Is it really in the ico format?
-	    (string-equal "\x00\x00\x01\x00" (substring data 0 4))
+	    (and (>= (length data) 4)
+                 (string-equal "\x00\x00\x01\x00" (substring data 0 4)))
 	    ;; Some icons named favicon.ico are animated GIFs.
-	    (and (member (substring data 0 5) '("GIF87" "GIF89"))
+	    (and (>= (length data) 5)
+                 (member (substring data 0 5) '("GIF87" "GIF89"))
 		 (setq type 'gif)))
     (let ((height (or (cdr w3m-favicon-size)
 		      (w3m-static-if (featurep 'xemacs)

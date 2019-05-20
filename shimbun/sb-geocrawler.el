@@ -1,4 +1,4 @@
-;;; sb-geocrawler.el --- shimbun backend for geocrawler.com. -*- coding: utf-8; -*-
+;;; sb-geocrawler.el --- shimbun backend for geocrawler.com.
 
 ;; Copyright (C) 2002, 2003, 2005, 2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

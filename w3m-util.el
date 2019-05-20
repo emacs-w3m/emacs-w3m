@@ -1356,9 +1356,10 @@ pairs from PLIST whose value is nil."
 multibyteness of the buffer."
   (if (featurep 'emacs)
       `(let ((string ,string))
-	 (insert (if enable-multibyte-characters
-		     string
-		   (encode-coding-string string 'utf-8-emacs))))
+	 (insert (if (and (null enable-multibyte-characters)
+			  (multibyte-string-p string))
+		     (encode-coding-string string 'utf-8-emacs)
+		   string)))
     `(insert ,string)))
 
 (defun w3m-custom-hook-initialize (symbol value)

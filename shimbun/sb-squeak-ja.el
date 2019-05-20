@@ -1,4 +1,4 @@
-;;; sb-squeak-ja.el --- shimbun backend for Squeak-ja's ML archive -*- coding: utf-8; -*-
+;;; sb-squeak-ja.el --- shimbun backend for Squeak-ja's ML archive
 
 ;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 

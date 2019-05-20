@@ -26,8 +26,9 @@ if test -z "$3"; then
 fi
 AC_CACHE_VAL(EMACS_cv_SYS_$1,[
 	OUTPUT=./conftest-$$
-dnl	echo "${XEMACSDEBUG} '${EMACS}' ${VANILLA_FLAG} -batch -eval '(let ((x ${elisp})) (write-region (format \"%s\" x) nil \"${OUTPUT}\" nil 5))'" >&6
-	eval "${XEMACSDEBUG} '${EMACS}' ${VANILLA_FLAG} -batch -eval '(let ((x ${elisp})) (write-region (format \"%s\" x) nil \"${OUTPUT}\" nil 5))'" >& AC_FD_CC 2>&1
+	EL=./conftest-$$.el
+	echo "(let ((x ${elisp})) (write-region (format \"%s\" x) nil \"${OUTPUT}\" nil 5) (delete-file \"${EL}\"))" >& ${EL} 2>&1
+	eval "${XEMACSDEBUG} '${EMACS}' ${VANILLA_FLAG} -batch -l ${EL}" >& AC_FD_CC 2>&1
 	retval="`cat ${OUTPUT}`"
 	echo "=> ${retval}" >& AC_FD_CC 2>&1
 	rm -f ${OUTPUT}
@@ -296,8 +297,7 @@ AC_DEFUN(AC_COMPRESS_INSTALL,
 AC_DEFUN(AC_CHECK_TEXINFO,
  [dnl Check the existence and the version of a texinfo command.
   command=$1
-  name=`echo $command| tr a-z A-Z`
-  if test "${name}" != no; then
+  if test "${command}" != no; then
     AC_MSG_CHECKING([if ${command} version >= 6.3])
     version=`${command} --version\
       | awk 'BEGIN {zero=0}\

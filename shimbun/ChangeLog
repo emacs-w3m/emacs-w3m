@@ -1,3 +1,24 @@
+2019-05-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnshimbun.el (nnshimbun-replace-date-header): Use mail-header-date
+	along with setf instead of mail-header-set-date following the change
+	made in the Emacs master (revno 5f6c08e).
+
+2019-04-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-group-table): Add west.essay group.
+
+2019-03-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Add automatic login suite to shimbun-sankei
+
+	* sb-sankei.el (shimbun-sankei-login-url, shimbun-sankei-logout-url):
+	New variables.
+	(shimbun-sankei-login-name, shimbun-sankei-login-password):
+	New user option.
+	(shimbun-sankei-login, shimbun-sankei-logout): New functions;
+	run shimbun-sankei-login when loading this module.
+
 2019-01-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make groups from special.sankei.com work again.

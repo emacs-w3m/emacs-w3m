@@ -222,7 +222,8 @@ filters before being rendered."
 ;; hosted by the CVS repository.
 (defconst emacs-w3m-version
   "1.4.632"
-  "Version number of this package.")
+  "Version number of this package.
+Not to be confused with `w3m-version'.")
 
 (defgroup w3m nil
   "Emacs-w3m - the web browser of choice."
@@ -262,7 +263,9 @@ The valid values include `w3m', `w3mmee', and `w3m-m17n'.")
 (defvar w3m-compile-options nil
   "Compile options that the w3m command was built with.")
 (defvar w3m-version nil
-  "Version string of the w3m command.")
+  "Version string of the external w3m command.
+
+Not to be confused with `emacs-w3m-version'.")
 
 ;; Set w3m-command, w3m-type, w3m-version and w3m-compile-options
 (if noninteractive ;; Don't call the external command when compiling.
@@ -392,7 +395,7 @@ server for the particular hosts.  The first match made will be used.
 Here is an example of how to set this variable:
 
 \(setq w3m-command-arguments-alist
-      '(;; Don't use the proxy server to visit local web pages.
+      \\='(;; Don't use the proxy server to visit local web pages.
 	(\"^http://\\\\(?:[^/]*\\\\.\\\\)*your-company\\\\.com\\\\(?:/\\\\|$\\\\)\"
 	 \"-no-proxy\")
 	;; Use the proxy server to visit any foreign urls.
@@ -695,8 +698,8 @@ If the example.com site requires a browser to use `shift_jis' to encode
 url for example, you can add it to this variable as follows:
 
 \(add-to-list
- 'w3m-url-coding-system-alist
- '(\"\\\\`https?://\\\\(?:[^./?#]+\\\\.\\\\)*example\\\\.com/\" . shift_jis))"
+ \\='w3m-url-coding-system-alist
+ \\='(\"\\\\\\=`https?://\\\\(?:[^./?#]+\\\\.\\\\)*example\\\\.com/\" . shift_jis))"
   :group 'w3m
   :type '(repeat (cons :format "%v" :indent 2
 		       (radio :format "%v"
@@ -1117,7 +1120,8 @@ This hook is evaluated by the `w3m-fontify' function."
 
 (defcustom w3m-display-hook
   '(w3m-move-point-for-localcgi
-    w3m-history-highlight-current-url)
+    w3m-history-highlight-current-url
+    w3m-db-history-fix-indentation)
   "*Hook run after displaying pages in emacs-w3m buffers.
 Each function is called with a url string as the argument.  This hook
 is evaluated by the `w3m-goto-url' function."
@@ -1830,7 +1834,7 @@ add regexps matching those file names to the second element of this
 variable.  For example:
 
 \(setq w3m-local-find-file-regexps
-      '(nil . \"\\\\.\\\\(?:[sx]?html?\\\\|dvi\\\\|ps\\\\|pdf\\\\)\\\\'\"))
+      \\='(nil . \"\\\\.\\\\(?:[sx]?html?\\\\|dvi\\\\|ps\\\\|pdf\\\\)\\\\\\='\"))
 
 It is effective only when the `w3m-local-find-file-function' variable
 is set properly."
@@ -6717,10 +6721,7 @@ If so return \"text/html\", otherwise \"text/plain\"."
 	(goto-char (point-min))
 	(w3m-copy-local-variables result-buffer)
 	(set-buffer-file-coding-system w3m-current-coding-system)
-	(when (string= "text/html" type)
-	  (w3m-fontify)
-	  (when (string-match "\\`about://db-history/" url)
-	    (w3m-db-history-fix-indentation)))
+	(when (string= "text/html" type) (w3m-fontify))
 	'text-page))))
 
 (defsubst w3m-image-page-displayed-p ()
@@ -7292,9 +7293,9 @@ Reading " (w3m-url-readable-string (w3m-url-strip-authinfo url)) " ...\n\n"
 		pos buffer)
     (if new-session
 	(let ((empty
-	       ;; If a new url has the #name portion, we simply copy
-	       ;; the buffer's contents to the new session, otherwise
-	       ;; creating an empty buffer.
+ 	       ;; If a new url has the #name portion (ie. a URI
+ 	       ;; "fragment"), we simply copy the buffer's contents to
+ 	       ;; the new session, otherwise creating an empty buffer.
 	       (not (and (progn
 			   (w3m-string-match-url-components url)
 			   (match-beginning 8))
@@ -7303,7 +7304,7 @@ Reading " (w3m-url-readable-string (w3m-url-strip-authinfo url)) " ...\n\n"
 						  0 (match-beginning 8)))))))
 	  (setq pos (point-marker)
 		buffer (w3m-copy-buffer
-			nil nil nil empty w3m-new-session-in-background t))
+			nil nil w3m-new-session-in-background empty t))
 	  (when w3m-new-session-in-background
 	    (set-buffer buffer))
 	  (when empty
@@ -8055,83 +8056,62 @@ Return t if highlighting is successful."
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
-(defun w3m-copy-buffer (&optional buffer newname just-copy empty background
-				  last)
+(defun w3m-copy-buffer (&optional buffer new-name background empty last)
   "Copy an emacs-w3m BUFFER, and return the new buffer.
 
-If BUFFER is nil, the current buffer is assumed. If NEWNAME is
-nil, it defaults to the name of the current buffer.
+If BUFFER is nil, the current buffer is assumed. If NEW-NAME is
+nil, a name is created based upon the name of the current buffer.
 
-If JUST-COPY is nil, then after performing the copy, the new
-buffer becomes the current buffer and pops up as a new window or
-a new frame depending upon the `w3m-display-mode'.
+If BACKGROUND is non-nil, do not switch to the new buffer copy.
+When (and only when) this function is called interactively, this
+value is determined by `w3m-new-session-in-background', but can
+be inverted by calling this function with a prefix argument.
 
-If EMPTY is nil, a page of the same url will be re-rendered in
-the new buffer, otherwise an empty buffer is created. If
-BACKGROUND is non-nil, you will not leave the current buffer. If
-LAST is non-nil, the new buffer will be made the last in order of
-the w3m buffers, otherwise it will be made the next of the
-current buffer.
+If EMPTY is non-nil, an empty buffer is created, but with the
+current buffer's history and settings.
 
-Note that this function should be called on the window displaying the
-original buffer BUFFER even if JUST-COPY is non-nil in order to render
-a page in a new buffer with the correct width."
-  (interactive (list (current-buffer)
-		     (if current-prefix-arg (read-string "Name: "))
-		     t))
+If LAST is non-nil, the new buffer will be buried as the final
+w3m buffer; otherwise, it will be sequenced next to the current
+buffer."
+  (interactive
+    (list nil nil (if current-prefix-arg
+                    (not w3m-new-session-in-background)
+                   w3m-new-session-in-background)))
   (unless buffer
     (setq buffer (current-buffer)))
-  (unless newname
-    (setq newname (buffer-name buffer)))
-  (when (string-match "<[0-9]+>\\'" newname)
-    (setq newname (substring newname 0 (match-beginning 0))))
-  (let (url coding images init-frames new)
-    (save-current-buffer
-      (set-buffer buffer)
-      (setq url (or w3m-current-url
-		    (car (w3m-history-element (cadar w3m-history))))
-	    coding w3m-current-coding-system
-	    images w3m-display-inline-images
-	    init-frames (when (w3m-popup-frame-p)
-			  (copy-sequence w3m-initial-frames)))
-      (unless url
-	(setq empty t))
-      ;;
+  (unless new-name
+    (setq new-name (buffer-name buffer)))
+  (when (string-match "<[0-9]+>\\'" new-name)
+    (setq new-name (substring new-name 0 (match-beginning 0))))
+  (cond
+   (empty
+    (let ((coding w3m-current-coding-system)
+          (images w3m-display-inline-images)
+          (init-frames (when (w3m-popup-frame-p)
+                         (copy-sequence w3m-initial-frames)))
+          (new (w3m-generate-new-buffer new-name (not last))))
       (w3m-history-store-position)
-      (set-buffer (setq new (w3m-generate-new-buffer newname (not last))))
-      ;; Make copies of `w3m-history' and `w3m-history-flat'.
-      (w3m-history-copy buffer)
-      (setq w3m-current-coding-system coding
-	    w3m-initial-frames init-frames
-	    w3m-display-inline-images
-	    (if w3m-toggle-inline-images-permanently
-		images
-	      w3m-default-display-inline-images)))
-    (cond
-     ((and empty (not background))
-      ;; Pop to a window or a frame up because `w3m-goto-url' is not called.
-      (w3m-popup-buffer new))
-     (empty
-      ;; When empty and just-copy, stay origianl buffer.
-      )
-     (t
-      ;; Need to change to the `new' buffer in which `w3m-goto-url' runs.
-      (set-buffer new)
-      ;; Render a page.
-      (let ((positions (copy-sequence (car w3m-history)))
-	    (w3m-history-reuse-history-elements t)
-	    (w3m-prefer-cache t))
-	(w3m-process-with-wait-handler
-	  (w3m-goto-url url 'redisplay nil nil nil handler
-			;; Pass the properties of the history elements,
-			;; although it is currently always nil.
-			(w3m-history-element (cadr positions))))
-	(setcar w3m-history positions))
-      (when (and w3m-new-session-in-background
-		 just-copy
-		 (not (get-buffer-window buffer)))
-	(set-window-buffer (selected-window) buffer))))
-    new))
+      (with-current-buffer new
+        (w3m-history-copy buffer)
+        (setq w3m-current-coding-system coding
+              w3m-initial-frames init-frames
+              w3m-display-inline-images
+                (if w3m-toggle-inline-images-permanently
+                  images
+                 w3m-default-display-inline-images)))
+      (when (not background)
+        (w3m-popup-buffer new))
+      new ; return value for this function
+      ))
+   (t ; ie. (not empty)
+    (let (new)
+      (with-current-buffer buffer
+        (setq new (clone-buffer new-name)))
+      (if (not background)
+        (switch-to-buffer new))
+      new ; return value for this function
+      ))))
+
 
 (defvar w3m-previous-session-buffer nil
   "A buffer of the session having selected just before this session.
@@ -8356,7 +8336,9 @@ for users.  See Info node `(elisp)Key Binding Conventions'.")
     (when (featurep 'w3m-ems)
       (define-key map [?\C-,] 'w3m-tab-move-left)
       (define-key map [?\C-<] 'w3m-tab-move-left)
+      (define-key map "<"     'w3m-tab-move-left)
       (define-key map [?\C-.] 'w3m-tab-move-right)
+      (define-key map ">"     'w3m-tab-move-right)
       (define-key map [?\C->] 'w3m-tab-move-right))
     (define-key map "\C-w" 'w3m-delete-buffer)
     (define-key map "\M-w" 'w3m-delete-other-buffers)
@@ -9445,6 +9427,44 @@ It makes the ends of upper and lower three lines visible.  If
 		((stringp (cdr elem))
 		 (w3m-pattern-uri-replace uri (cdr elem)))))))))
 
+(defun w3m--goto-torrent-url (url)
+  "Process `.torrent' links and `magnet:' protocol URLs.
+
+This handler is currently hard-coded to require the external command-
+line programs `transmission-daemon' and `transmission-remote', and to
+recommend the external NCURSES program `transmission-remote-cli'.
+
+The `transmission-daemon' program initiates a web interface on
+`http://localhost:9091' from which one may view and manipulate
+torrents; however, that interface requires javascript, so is
+unavailable directly via `emacs-w3m'.  An alternative NCURSES
+interface is available using `transmission-remote-cli', so if that
+external program is available, this function concludes by starting
+that external program in a dedicated `ansi-term' buffer, if one does
+not already exist."
+  ;; TODO: * don't hard-code for `transmission'
+  ;;       * investigate options for using `deluge', `ktorrent', or others.
+  (if (not (and (executable-find "transmission-daemon")
+		(executable-find "transmission-remote")))
+      (w3m-message "Missing executable for processing torrents.")
+    (when url ;; sanity check
+      (when (not (zerop (shell-command "pgrep -f transmission-daemon")))
+	(shell-command (concat "transmission-daemon -w "
+			       w3m-default-save-directory))
+	(sit-for 1))
+      (shell-command (concat "transmission-remote -a " url))
+      (let ((buf-name "w3m-torrents")
+	    (cmd      "transmission-remote-cli"))
+	(when (and (executable-find cmd)
+		   (not (get-buffer (concat "*" buf-name "*"))))
+	  (ansi-term cmd buf-name)
+	  (set-process-sentinel
+	   (get-buffer-process (current-buffer))
+	   (lambda (process event)
+	     (when (string-match "finished" event)
+	       (kill-buffer))))
+	  (bury-buffer))))))
+
 (defun w3m-goto-mailto-url (url &optional post-data)
   (let ((before (nreverse (buffer-list)))
 	comp info body buffers buffer function)
@@ -9859,7 +9879,7 @@ helpful message is presented and the operation is aborted."
 		    (prog1
 			(w3m-goto-url (pop urls))
 		      (dotimes (i (length urls))
-			(push (w3m-copy-buffer nil nil nil 'empty nil t)
+			(push (w3m-copy-buffer nil nil nil 'empty t)
 			      buffers))
 		      (dolist (url (nreverse urls))
 			(with-current-buffer (pop buffers)
@@ -9979,6 +9999,8 @@ configuration; i.e. to run `w3m-history-store-position'.
 `w3m-history-store-position' should be called in a w3m-mode buffer, so
 this will be convenient if a command that calls this function may be
 invoked in other than a w3m-mode buffer."
+  ;; FIXME: Note the inconsistency in the name given to arg NO-POPUP.
+  ;; Elsewhere it seems to be referred to as BACKGROUND.
   (interactive
    (list (unless (w3m--buffer-busy-error)
 	   (w3m-input-url "Open URL in current buffer" nil nil nil
@@ -10004,6 +10026,10 @@ invoked in other than a w3m-mode buffer."
    ;; process mailto: protocol
    ((string-match "\\`mailto:" url)
     (w3m-goto-mailto-url url post-data))
+   ;; process torrents and their magnets
+   ((or (string-match "\\`magnet:" url)
+        (string-match "\\.torrent$" url))
+    (w3m--goto-torrent-url url))
    ;; process ftp: protocol
    ((and w3m-use-ange-ftp
 	 (string-match "\\`ftps?://" url)
@@ -10138,22 +10164,27 @@ See `w3m-default-directory'."
 
 ;;;###autoload
 (defun w3m-goto-url-new-session (url &optional reload charset post-data
-				     referer)
+                                     referer no-popup)
   "Visit World Wide Web pages in a new buffer.
 
 If you invoke this command in the emacs-w3m buffer, the new buffer
 will be created by copying the current buffer.  Otherwise, the new
 buffer will start afresh."
+  ;; FIXME: Note the inconsistency in the name given to arg NO-POPUP.
+  ;; Elsewhere it seems to be referred to as BACKGROUND.
   (interactive
    (list (w3m-input-url "Open URL in new buffer" nil
-			(or (w3m-active-region-or-url-at-point)
-			    w3m-new-session-url)
-			nil 'feeling-searchy 'no-initial)
-	 current-prefix-arg
-	 (w3m-static-if (fboundp 'universal-coding-system-argument)
-	     coding-system-for-read)
-	 nil ;; post-data
-	 nil)) ;; referer
+                        (or (w3m-active-region-or-url-at-point)
+                            w3m-new-session-url)
+                        nil 'feeling-searchy 'no-initial)
+         nil ;; reload
+         (w3m-static-if (fboundp 'universal-coding-system-argument)
+             coding-system-for-read)
+         nil ;; post-data
+         nil ;; referer
+         (if current-prefix-arg ;; no-popup
+           (not w3m-new-session-in-background)
+          w3m-new-session-in-background)))
   (let (buffer)
     (if (not
 	 (or (eq 'w3m-mode major-mode)
@@ -10162,21 +10193,25 @@ buffer will start afresh."
 	(w3m-goto-url url nil charset post-data)
       ;; Store the current position in the history structure.
       (w3m-history-store-position)
-      (switch-to-buffer
-       (setq buffer (w3m-copy-buffer nil "*w3m*"
-				     w3m-new-session-in-background
-				     'empty nil t)))
+      (setq buffer
+        (w3m-copy-buffer
+          nil "*w3m*" no-popup 'empty t))
+      (when (not no-popup)
+        (switch-to-buffer buffer))
+      (set-buffer buffer)
       (w3m-display-progress-message url)
-      (w3m-goto-url url
-		    (or reload
-			;; When new URL has `name' portion, we have to
-			;; goto the base url because generated buffer
-			;; has no content at this moment.
-			(and
-			 (w3m-string-match-url-components url)
-			 (match-beginning 8)
-			 'redisplay))
-		    charset post-data referer)
+      (w3m-goto-url
+        url
+        (or reload
+            ;; When new URL has `name' portion, (ir. a URI
+            ;; "fragment"), we have to goto the base url
+            ;; because generated buffer has no content at
+            ;; this moment.
+            (and
+             (w3m-string-match-url-components url)
+             (match-beginning 8)
+             'redisplay))
+        charset post-data referer nil nil no-popup)
       ;; Delete useless newly created buffer if it is empty.
       (w3m-delete-buffer-if-empty buffer))))
 
@@ -10536,10 +10571,16 @@ interactive command in the batch mode."
   (autoload 'browse-url-interactive-arg "browse-url"))
 
 ;;;###autoload
-(defun w3m-browse-url (url &optional new-session)
+(defun w3m-browse-url (url &optional new-session refresh-if-exists)
   "Ask emacs-w3m to browse URL.
-NEW-SESSION specifies whether to create a new emacs-w3m session.  URL
-defaults to the string looking like a url around the cursor position."
+When called interactively, URL defaults to the string existing around
+the cursor position and looking like a url.  If the prefix argument is
+given[1] or NEW-SESSION is non-nil, create a new emacs-w3m session.
+If REFRESH-IF-EXISTS is non-nil, refresh the page if it already exists
+but is older than the site.
+
+[1] More precisely the prefix argument inverts the boolean logic of
+`browse-url-new-window-flag' that defaults to nil."
   (interactive (progn
 		 (require 'browse-url)
 		 (browse-url-interactive-arg "Emacs-w3m URL: ")))
@@ -10547,7 +10588,18 @@ defaults to the string looking like a url around the cursor position."
     (setq url (w3m-canonicalize-url url))
     (if new-session
 	(w3m-goto-url-new-session url)
-      (w3m-goto-url url nil nil nil nil nil nil nil t))))
+      (w3m-goto-url
+       url
+       ;; Reload the page if it is already visited, older than the site,
+       ;; and REFRESH-IF-EXISTS is non-nil.
+       (let (buffer)
+	 (and refresh-if-exists
+	      (setq buffer (w3m-alive-p t))
+	      (string-equal url (with-current-buffer buffer w3m-current-url))
+	      (w3m-time-newer-p (let ((w3m-message-silent t))
+				  (w3m-last-modified url t))
+				(w3m-arrived-last-modified url))))
+       nil nil nil nil nil nil t))))
 
 ;;;###autoload
 (defun w3m-find-file (file)
@@ -10856,18 +10908,21 @@ A history page is invoked by the `w3m-about-history' command.")
     (insert "</pre></body>")
     "text/html"))
 
+(defvar w3m-db-history-align-to-column nil)
+
 (defun w3m-about-db-history (url &rest args)
   "Render a flat chronological HTML list of all buffers' browsing history."
   ;; ARGS is not used. It is necessary in order to >/dev/null
   ;; unnecessary arguments because this function is one of several
   ;; called by `w3m-about-retrieve' using a generically constructed
   ;; `funcall'.
-  (let ((start 0)
-	(size 0)
-	(print-all t)
-	(width (- (w3m-display-width) 21))
-	(now (current-time))
-	title time alist prev next page total)
+  (let* ((start 0)
+	 (size 0)
+	 (print-all t)
+	 (width (- (w3m-display-width) (if (w3m-display-graphic-p) 18 19)))
+	 (now (current-time))
+	 (ellipsis "…")
+	 title time alist prev next page total)
     (when (string-match "\\`about://db-history/\\?" url)
       (dolist (s (split-string (substring url (match-end 0)) "&"))
 	(when (string-match "\\`\\(?:size\\|\\(start\\)\\)=" s)
@@ -10932,24 +10987,22 @@ A history page is invoked by the `w3m-about-history' command.")
 	      time (cdr (car alist))
 	      alist (cdr alist)
 	      title (w3m-arrived-title url))
-	;; Note that truncation might not take place in the desired position
-	;; if it is in the middle of a wide char or unsuitable font is used.
 	(cond
 	 ((or (null title) (string= "<no-title>" title))
 	  (setq title
 		(concat
 		 "&lt;"
-		 (if (> (string-width url) width)
-		     (w3m-truncate-string url (- width 2) nil ?  "…")
+		 (if (> (string-width url) (- width 2))
+		     (w3m-truncate-string url (- width 3) nil ?  ellipsis)
 		   url)
 		 "&gt")))
 	 (t
 	  (setq title
 		(w3m-encode-specials-string
 		 (if (> (string-width title) width)
-		     (w3m-truncate-string title width nil ?  "…")
+		     (w3m-truncate-string title (1- width) nil ?  ellipsis)
 		   title)))))
-	(insert (format "<tr><td><a href=\"%s\">%s</a></td>"
+	(insert (format "<tr><td><nobr><a href=\"%s\">%s</a></nobr></td>"
 			url title))
 	(when time
 	  (insert "<td>"
@@ -10962,7 +11015,8 @@ A history page is invoked by the `w3m-about-history' command.")
       (insert "</table>"
 	      (if next "\n<br>\n<hr>\n" "")
 	      prev))
-    (insert "</body></html>\n"))
+    (insert "</body></html>\n")
+    (setq w3m-db-history-align-to-column width))
   "text/html")
 
 (defun w3m-history-highlight-current-url (url)
@@ -11011,67 +11065,60 @@ It does manage history position data as well."
   :group 'w3m
   :type 'boolean)
 
-(defun w3m-db-history-fix-indentation ()
-  "Fix wrong indentation that `w3m -halfdump' may produce in db history."
-  (let ((min-column 9999)
-	(regexp "[012][0-9]:[0-5][0-9]:[0-5][0-9] \
-\\(?:20[1-9][0-9]-[01][0-9]-[0-3][0-9]\\|Today\\) *$")
-	(inhibit-read-only t))
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward regexp nil t)
-	(goto-char (match-beginning 0))
-	(setq min-column (min min-column (current-column)))
-	(forward-line 1))
-      (goto-char (point-min))
-      (while (re-search-forward regexp nil t)
-	(goto-char (match-beginning 0))
-	(delete-char (min 0 (- min-column (current-column))))
-	(forward-line 1)))))
+(defun w3m-db-history-fix-indentation (url)
+  "Fix wrong indentation that `w3m -halfdump' may produce in db history.
+Time/Date columns might nevertheless not align depending on the fonts
+especially on TTY."
+  (when (string-match "\\`about://db-history/" url)
+    (let ((regexp "\\( +\\)\\(?:[012][0-9]:[0-5][0-9]:[0-5][0-9] \
+\\(?:20[1-9][0-9]-[01][0-9]-[0-3][0-9]\\|Today\\)\\|Time/Date\\) *$")
+	  (inhibit-read-only t)
+	  (aspace (propertize
+		  " " 'display
+		  `(space :align-to ,w3m-db-history-align-to-column)))
+	  (inhibit-read-only t)
+	  num)
+      (save-excursion
+	(goto-char (point-min))
+	(while (re-search-forward regexp nil t)
+	  (delete-region (match-beginning 1) (goto-char (match-end 1)))
+	  (when (> (setq num (- w3m-db-history-align-to-column
+				(current-column)))
+		   0)
+	    (insert-char ?  (1- num))
+	    (insert aspace))))
+      (set-buffer-modified-p nil))))
 
 (defun w3m-db-history (&optional start size)
   "Display a flat chronological list of all buffers' browsing history.
 
 This is a flat (not hierarchial) presentation of all URLs visited
 by ALL w3m buffers, and includes a timestamp for when the URL was
-visited. The list is presented in reverse-chronological order,
-ie. most recent URL first.
+visited.  The list is presented in reverse-chronological order,
+i.e., most recent URL first.
 
 START is a positive integer for the point in the history list at
 which to begin displaying, where 0 is the most recent entry.
 
 SIZE is the maximum number of arrived URLs which are displayed
-per page. Variable `w3m-db-history-display-size' sets the
-default. Use 0 to display the entire history on a single page."
-  (interactive)
-  (cond
-   ((or executing-kbd-macro noninteractive)
-    (or start (setq start 0))
-    (or size (setq size w3m-db-history-display-size)))
-   (t ; called interactively; possibly indirectly
-    (or (prog1 size ;; honor specified size
-	  (or start (setq start 0)))
-	(and (display-popup-menus-p) last-input-event
-	     (listp last-nonmenu-event) use-dialog-box
-	     ;; called from GUI
-	     (let ((len 0))
-	       (mapatoms (lambda (sym)
-			   (and sym (symbol-value sym) (incf len)))
-			 w3m-arrived-db)
-	       (or
-		;; not so many
-		(<= (- len start) (/ w3m-keep-arrived-urls 2))
-		(prog1
-		    ;; raise y/n dialog box
-		    (y-or-n-p (format "Too many history (%d); continue? "
-				      (- len start)))
-		  (setq size (or w3m-db-history-display-size 0))))))
-	(setq start (read-number
-		     "How far back in the history to start displaying: "
-		     start)
-	      size (read-number
-		    "How many entries per page (0 for all on one page): "
-		    (or w3m-db-history-display-size 0))))))
+per page.  Variable `w3m-db-history-display-size' sets the
+default.  Use 0 to display the entire history on a single page.
+
+If this function is called interactively with the prefix argument,
+prompt a user for START and SIZE if the prefix argument is not a
+number (i.e., `C-u').  Otherwise if the prefix argument is a number
+(i.e., `C-u NUM'), use it as START and leave SIZE nil, that will be
+overridden by `w3m-db-history-display-size' or 0."
+  (interactive "P")
+  (when (and (w3m-interactive-p) start (not (natnump start)))
+    (setq start (read-number
+		 "How far back in the history to start displaying: "
+		 0)
+	  size (read-number
+		"How many entries per page (0 for all on one page): "
+		(or w3m-db-history-display-size 0))))
+  (or start (setq start 0))
+  (or size (setq size (or w3m-db-history-display-size 0)))
   (let ((url (format "about://db-history/?start=%d&size=%d" start size)))
     (if w3m-history-in-new-buffer
 	(w3m-goto-url-new-session url)
@@ -11290,6 +11337,8 @@ The following command keys are available:
     (define-key map "k" 'w3m-select-buffer-previous-line)
     (define-key map "n" 'w3m-select-buffer-next-line)
     (define-key map "p" 'w3m-select-buffer-previous-line)
+    (define-key map "\C-c\C-n" 'w3m-select-buffer-move-next)
+    (define-key map "\C-c\C-p" 'w3m-select-buffer-move-previous)
     (define-key map "q" 'w3m-select-buffer-quit)
     (define-key map "h" 'w3m-select-buffer-show-this-line-and-switch)
     (define-key map "w" 'w3m-select-buffer-show-this-line-and-switch)
@@ -11306,32 +11355,41 @@ The following command keys are available:
 
 \\<w3m-select-buffer-mode-map>\
 \\[w3m-select-buffer-next-line]\
-	Next buffer.
+	Advance to next buffer on the list.
 \\[w3m-select-buffer-previous-line]\
-	Previous buffer.
+	Advance to previous buffer on the list.
+
+\\[w3m-select-buffer-show-this-line-and-switch]\
+   Switch to the selected buffer, leaving the list displayed.
 
 \\[w3m-select-buffer-show-this-line]\
-	Show the buffer on the current menu line or scroll it up.
+	Scroll the selected buffer forward one page.
 \\[w3m-select-buffer-show-this-line-and-down]\
-	Show the buffer on the current menu line or scroll it down.
-\\[w3m-select-buffer-show-this-line-and-switch]\
-	Show the buffer on the menu and switch to the buffer.
-\\[w3m-select-buffer-show-this-line-and-quit]\
-	Show the buffer on the menu and quit the buffers selection.
+   Scroll the selected buffer backward one page.
 
 \\[w3m-select-buffer-copy-buffer]\
-	Create a copy of the buffer on the menu, and show it.
+	Create a copy of the selected buffer.
+
+\\[w3m-select-buffer-move-next]\
+  Move the selected buffer down the list.
+\\[w3m-select-buffer-move-previous]\
+  Move the selected buffer up the list.
+
 \\[w3m-select-buffer-delete-buffer]\
-	Delete the buffer on the current menu line.
+     Delete the selected buffer.
 \\[w3m-select-buffer-delete-other-buffers]\
-	Delete emacs-w3m buffers except for the buffer on the menu.
+	Delete all buffers on the list, except for the selected one.
 
 \\[w3m-select-buffer-toggle-style]\
-	Toggle the style of the selection between horizontal and vertical.
+	Toggle the list style between horizontal and vertical.
+
 \\[w3m-select-buffer-recheck]\
-	Do the roll call to all emacs-w3m buffers.
+	Refresh the list.
+
+\\[w3m-select-buffer-show-this-line-and-quit]\
+	Quit the buffers selection list.
 \\[w3m-select-buffer-quit]\
-	Quit the buffers selection.
+	Quit the buffers selection list.
 "
   (setq major-mode 'w3m-select-buffer-mode
 	mode-name "w3m buffers"
@@ -11408,6 +11466,24 @@ The following command keys are available:
   "Move cursor vertically up N lines and show the buffer on the menu."
   (interactive "p")
   (w3m-select-buffer-next-line (- n)))
+
+(defun w3m-select-buffer-move-next (&optional n event)
+  "Move the current buffer down the list (ie. higher number).
+Use the prefix argument to move N positions.
+EVENT is an internal arg for mouse control."
+  (interactive (list (prefix-numeric-value current-prefix-arg)
+                     last-command-event))
+  (with-current-buffer (w3m-select-buffer-current-buffer)
+    (w3m-tab-move-right n event)))
+
+(defun w3m-select-buffer-move-previous (&optional n event)
+  "Move the current buffer up the list (ie. lower number).
+Use the prefix argument to move N positions.
+EVENT is an internal arg for mouse control."
+  (interactive (list (prefix-numeric-value current-prefix-arg)
+                     last-command-event))
+  (with-current-buffer (w3m-select-buffer-current-buffer)
+    (w3m-tab-move-right (- n) event)))
 
 (defun w3m-select-buffer-copy-buffer ()
   "Create a copy of the buffer on the current menu line, and show it."

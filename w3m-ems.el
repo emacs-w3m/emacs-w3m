@@ -559,10 +559,10 @@ variable or both the value of this variable and the global value of
 `tool-bar-button-margin'.  For examples:
 
 ;; The case where the emacs-w3m icons are smaller than the others.
-\(setq w3m-toolbar-configurations '((tool-bar-button-margin . 5)))
+\(setq w3m-toolbar-configurations \\='((tool-bar-button-margin . 5)))
 
 ;; The case where the emacs-w3m icons are bigger than the others.
-\(setq w3m-toolbar-configurations '((tool-bar-button-margin . 0))
+\(setq w3m-toolbar-configurations \\='((tool-bar-button-margin . 0))
       tool-bar-button-margin 7)"
   :group 'w3m
   :type '(repeat (cons :format "%v"
@@ -1027,7 +1027,9 @@ fast operation of mouse wheel."
   (w3m-tab-next-buffer (- (or n 1)) event))
 
 (defun w3m-tab-move-right (&optional n event)
-  "Move this tab N times to the right (to the left if N is negative)."
+  "Move the current tab right-ward (ie. next, higher number).
+Use the prefix argument to move the tab N positions right-ward.
+EVENT is an internal arg for mouse control."
   (interactive (list (prefix-numeric-value current-prefix-arg)
 		     last-command-event))
   (unless n (setq n 1))
@@ -1047,11 +1049,23 @@ fast operation of mouse wheel."
       (w3m-select-buffer-update)
       (w3m-tab-mouse-track-selected-tab event next t))))
 
+(defalias 'w3m-tab-move-next 'w3m-tab-move-right
+  "Move the current tab right-ward (ie. next, higher number).
+Use the prefix argument to move the tab N positions right-ward.
+EVENT is an internal arg for mouse control.")
+
 (defun w3m-tab-move-left (&optional n event)
-  "Move this tab N times to the left (to the right if N is negative)."
+  "Move the current tab left-ward (ie. prior, lower number).
+Use the prefix argument to move the tab N positions left-ward.
+EVENT is an internal arg for mouse control."
   (interactive (list (prefix-numeric-value current-prefix-arg)
 		     last-command-event))
   (w3m-tab-move-right (- n) event))
+
+(defalias 'w3m-tab-move-prior 'w3m-tab-move-left
+  "Move the current tab left-ward (ie. prior, lower number).
+Use the prefix argument to move the tab N positions left-ward.
+EVENT is an internal arg for mouse control.")
 
 (defvar w3m-tab-map nil)
 (make-variable-buffer-local 'w3m-tab-map)
