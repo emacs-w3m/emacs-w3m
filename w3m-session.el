@@ -1,6 +1,6 @@
 ;;; w3m-session.el --- Functions to operate session of w3m -*- coding: utf-8; -*-
 
-;; Copyright (C) 2001-2003, 2005-2013, 2017, 2018
+;; Copyright (C) 2001-2003, 2005-2013, 2017-2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Hideyuki SHIRAI <shirai@meadowy.org>
@@ -752,43 +752,43 @@ element (url) of that session that does not already exist. If point is
 selecting a session element, then only a single buffer for that
 url will be created, only if it does not already exist."
   (let ((title (nth 0 session))
-        (urls (nth 2 session))
-        (cnum (nth 3 session))
-        (i 0)
-        (w3m-async-exec (and w3m-async-exec-with-many-urls w3m-async-exec))
-        (session-buf (current-buffer))
-        (session-win (selected-window))
-        (w3m-urls ; checking for duplicates
-          (mapcar (lambda(x)
-                    (with-current-buffer x
-                      (cons w3m-current-url x)))
-                  (w3m-list-buffers)))
-        url cbuf cwin buf pos history)
+	(urls (nth 2 session))
+	(cnum (nth 3 session))
+	(i 0)
+	(w3m-async-exec (and w3m-async-exec-with-many-urls w3m-async-exec))
+	(session-buf (current-buffer))
+	(session-win (selected-window))
+	(w3m-urls ; checking for duplicates
+	 (mapcar (lambda(x)
+		   (with-current-buffer x
+		     (cons w3m-current-url x)))
+		 (w3m-list-buffers)))
+	url cbuf cwin buf pos history)
     (dolist (win (window-list))
       (when (string-match "\\*w3m\\*" (buffer-name (window-buffer win)))
-        (setq cwin win)))
+	(setq cwin win)))
     (when (not cwin)
       (error "No visible w3m windows found."))
     (with-selected-window cwin
       (w3m-message "Session goto(%s)..." title)
       (while (setq url (pop urls))
-        (unless (stringp url)
-          (setq pos     (nth 1 url)
-                history (nth 2 url)
-                url     (nth 0 url)))
-        (cond
-         ((setq cbuf (cdr (assoc url w3m-urls))) t)
-         (t ; ie. (not (assoc url w3m-urls))
-          (w3m-goto-url-new-session url nil nil nil nil t) ; no-popup
-          (setq buf (car (last (w3m-list-buffers))))
-          (when (or (and (numberp cnum) (= cnum i))
-                    (and (not cnum) (= i 0)))
-            (setq cbuf buf))
-          (when (and buf pos history)
-            (set-buffer buf)
-            (setq w3m-history-flat history)
-            (w3m-history-tree pos))
-          (setq i (1+ i))))))
+	(unless (stringp url)
+	  (setq pos     (nth 1 url)
+		history (nth 2 url)
+		url     (nth 0 url)))
+	(cond
+	 ((setq cbuf (cdr (assoc url w3m-urls))) t)
+	 (t ; ie. (not (assoc url w3m-urls))
+	  (w3m-goto-url-new-session url nil nil nil nil t) ; no-popup
+	  (setq buf (car (last (w3m-list-buffers))))
+	  (when (or (and (numberp cnum) (= cnum i))
+		    (and (not cnum) (= i 0)))
+	    (setq cbuf buf))
+	  (when (and buf pos history)
+	    (set-buffer buf)
+	    (setq w3m-history-flat history)
+	    (w3m-history-tree pos))
+	  (setq i (1+ i))))))
     (set-window-buffer session-win session-buf)
     (when cbuf
       (set-window-buffer cwin cbuf))
