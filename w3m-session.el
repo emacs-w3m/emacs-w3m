@@ -731,37 +731,37 @@ be copied."
   (interactive)
   (beginning-of-line)
   (let ((sessions w3m-session-select-sessions)
-        (prompt "Merge into session: ")
-        (source-number (get-text-property (point) 'w3m-session-number))
-        source-session source-element source-time titles target)
+	(prompt "Merge into session: ")
+	(source-number (get-text-property (point) 'w3m-session-number))
+	source-session source-element source-time titles target)
     (if (integerp source-number)
-      (setq source-session (nth source-number sessions))
-     (setq source-session (nth (car source-number) sessions))
-     (setq source-element (nth (cdr source-session) (nth 2 source-session))))
+	(setq source-session (nth source-number sessions))
+      (setq source-session (nth (car source-number) sessions))
+      (setq source-element (nth (cdr source-session) (nth 2 source-session))))
     (mapc (lambda (x) (push (car x) titles))
-          sessions)
+	  sessions)
     (setq titles
-      (delete
-        (car source-session)
-        titles))
+	  (delete
+	   (car source-session)
+	   titles))
     (setq target (assoc (completing-read prompt titles nil t) sessions))
     (setq source-time (nth 1 source-session))
     (when (time-less-p (nth 1 target) source-time)
       (setf (nth 1 target) source-time))
     (setf (nth 2 target)
-      (delete-dups ;; This will allow multiple entries for the same
-        ;; URL, but with different details, eg. form selections and
-        ;; cursor positions. It may be better to delete more broadly,
-        ;; any entry with a duplicate URL.
-        (nconc (nth 2 target)
-               (or source-element
-                   (nth 2 source-session)))))
+	  (delete-dups ;; This will allow multiple entries for the same
+	   ;; URL, but with different details, eg. form selections and
+	   ;; cursor positions. It may be better to delete more broadly,
+	   ;; any entry with a duplicate URL.
+	   (nconc (nth 2 target)
+		  (or source-element
+		      (nth 2 source-session)))))
     (w3m-save-list w3m-session-file sessions)
     (if (not w3m-session-group-open)
-        (w3m-session-select (min source-number (1- (length sessions))))
+	(w3m-session-select (min source-number (1- (length sessions))))
       (w3m-session-select-open-session-group w3m-session-group-open)
       (forward-line (min (cdr source-number)
-                         (- (line-number-at-pos (point-max)) 4))))))
+			 (- (line-number-at-pos (point-max)) 4))))))
 
 ;;;###autoload
 (defun w3m-session-select (&optional n toggle nomsg)
