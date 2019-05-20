@@ -73,13 +73,13 @@
 ;; `w3m-session-save' (M-S).
 
 ;; From within session management, one can rename (`r') or delete
-;; (`d') any session.  Selecting a session using the RET key will load
-;; ALL of that session's tabs.  You can examine the details of a
-;; session by pressing `M-s' (the same key binding you used to enter
-;; the session management).  At this point, you can rename, delete, or
-;; load any individual tab.  Note that the first entry on the list
-;; gives you a second chance to load ALL the tabs.  Quitting returns
-;; you to the session list.
+;; (`d') any session. Sessions can also be merged ('m'). Selecting a
+;; session using the RET key will load ALL of that session's tabs. You
+;; can examine the details of a session by pressing `M-s' (the same
+;; key binding you used to enter the session management). At this
+;; point, you can rename, delete, or load any individual tab. Note
+;; that the first entry on the list gives you a second chance to load
+;; ALL the tabs. Quitting returns you to the session list.
 
 ;; All changes are saved to disk immediately.
 
@@ -471,6 +471,8 @@ buffer's url history."
     (define-key map "S" 'w3m-session-select-save)
     (define-key map "r" 'w3m-session-select-rename)
     (define-key map "R" 'w3m-session-select-rename)
+    (define-key map "m" 'w3m-session-select-merge)
+    (define-key map "M" 'w3m-session-select-merge)
     (define-key map "n" 'w3m-session-select-next)
     (define-key map "j" 'w3m-session-select-next)
     (define-key map "\C-n" 'w3m-session-select-next)
@@ -494,6 +496,7 @@ buffer's url history."
 \\[w3m-session-select-open-session-group]	Open the session group.
 \\[w3m-session-select-delete]	Delete the session.
 \\[w3m-session-select-rename]	Rename the session.
+\\[w3m-session-select-merge]	Merge the session into another one.
 \\[w3m-session-select-save]	Save the session.
 \\[w3m-session-select-next]	Move the point to the next session.
 \\[w3m-session-select-previous]	Move the point to the previous session.
@@ -718,6 +721,47 @@ buffer in the current session."
 	(w3m-session-select-open-session-group w3m-session-group-open)
 	(forward-line (min (cdr num)
 			   (- (line-number-at-pos (point-max)) 4)))))))
+
+(defun w3m-session-select-merge ()
+  "Copy the elements of the selected session into another one.
+
+The user will be prompted for the receiving session. If point is
+on a single element within a session, then only that element will
+be copied."
+  (interactive)
+  (beginning-of-line)
+  (let ((sessions w3m-session-select-sessions)
+        (prompt "Merge into session: ")
+        (source-number (get-text-property (point) 'w3m-session-number))
+        source-session source-element source-time titles target)
+    (if (integerp source-number)
+      (setq source-session (nth source-number sessions))
+     (setq source-session (nth (car source-number) sessions))
+     (setq source-element (nth (cdr source-session) (nth 2 source-session))))
+    (mapc (lambda (x) (push (car x) titles))
+          sessions)
+    (setq titles
+      (delete
+        (car source-session)
+        titles))
+    (setq target (assoc (completing-read prompt titles nil t) sessions))
+    (setq source-time (nth 1 source-session))
+    (when (time-less-p (nth 1 target) source-time)
+      (setf (nth 1 target) source-time))
+    (setf (nth 2 target)
+      (delete-dups ;; This will allow multiple entries for the same
+        ;; URL, but with different details, eg. form selections and
+        ;; cursor positions. It may be better to delete more broadly,
+        ;; any entry with a duplicate URL.
+        (nconc (nth 2 target)
+               (or source-element
+                   (nth 2 source-session)))))
+    (w3m-save-list w3m-session-file sessions)
+    (if (not w3m-session-group-open)
+        (w3m-session-select (min source-number (1- (length sessions))))
+      (w3m-session-select-open-session-group w3m-session-group-open)
+      (forward-line (min (cdr source-number)
+                         (- (line-number-at-pos (point-max)) 4))))))
 
 ;;;###autoload
 (defun w3m-session-select (&optional n toggle nomsg)
