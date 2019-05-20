@@ -176,7 +176,7 @@ by way of `post-command-hook'."
 	     (add-text-properties p (point-max)
 				  (list 'keymap w3m-minor-mode-map
 					'text-rendered-by-mime-w3m t)))
-	 (error (message "%s" err)))))))
+	 (error (w3m--message t 'w3m-error "%s" err)))))))
 
 (let (current-load-list)
   (defadvice mime-display-message

@@ -376,10 +376,10 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
     (w3m-process-do
 	(success (prog1
 		     (w3m-download url nil nil handler)
-		   (message "Download: %s..." name)))
+		   (w3m--message nil t "Downloading: %s..." name)))
       (if success
-	  (message "Download: %s...done" name)
-	(message "Download: %s...failed" name))
+	  (w3m--message t t "Download: %s...done" name)
+	(w3m--message t 'w3m-error "Download: %s...failed" name))
       (sit-for 1))))
 
 (defun w3m-mail-compose-with-mew (source url charset content-type
@@ -419,7 +419,7 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
     (when (eq csorig mew-cs-unknown)
       (setq csorig nil))
     (if (or (not last) (not (mew-attach-not-line012-1)))
-	(message "Can not attach from emacs-w3m here!")
+	(w3m--message t 'w3m-error "Can not attach from emacs-w3m here!")
       ;; Application/.*xml is not inline view with Mew.
       (cond
        ((string= "application/xhtml+xml" ct)
@@ -510,7 +510,7 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
 	  (mew-syntax-set-ct syntax ctl))
 	(mew-syntax-set-cd syntax url)
 	(mew-encode-syntax-print mew-encode-syntax))
-      (message "Compose a mail using Mew with %s...done" url)
+      (w3m--message t t "Compose a mail using Mew with %s...done" url)
       (when (and (file-exists-p filename) (file-writable-p filename))
 	(delete-file filename)))))
 

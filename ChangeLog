@@ -1,3 +1,132 @@
+2019-05-19  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m--message): BUGFIX: Handling of sub-string "%29".
+
+2019-05-03  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m--message): BUGFIX: was occassionally silently crashing in
+	a process handler, requiring the buffer process to be manually stopped.
+
+2019-02-20  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-print-this-url): BUGFIX: should not time-out current url
+	message.
+
+2019-02-14  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-resize-image-interactive): refactor function to remove
+	duplications in code.
+
+2019-02-14  Boruch Baum  <boruch_baum@gmx.com>
+
+	* mime-w3m.el (mime-w3m-preview-text/html): Convert
+	message to w3m--message.
+
+	* mew-w3m.el (mew-w3m-ext-url-fetch, w3m-mail-compose-with-mew):
+	Convert message to w3m--message.
+
+	* w3m.el (w3m-arrived-shutdown, w3m-load-list)
+	(w3m-toggle-inline-images-internal, )
+	(w3m-resize-inline-image-internal, w3m-download)
+	(w3m-search-name-anchor, w3m-view-previous-page)
+	(w3m-view-url-with-external-browser, w3m-move-unseen-buffer)
+	(w3m-goto-ftp-url, w3m-goto-new-session-url)
+	(w3m-resize-image-interactive): Convert message to w3m--message.
+
+	* w3m-bookmark.el (w3m-bookmark-add-this-url)
+	(w3m-bookmark-add-current-url, w3m-bookmark-add-current-url-group)
+	(w3m-bookmark-view, w3m-bookmark-add-all-urls): Convert message to
+	w3m--message.
+
+	* w3m-cookie.el (w3m-cookie-1-set, w3m-cookie-shutdown): Convert
+	message to w3m--message.
+
+	* w3m-fb.el (w3m-fb-mode): Convert message to w3m--message.
+
+	* w3m-filter.el (w3m-toggle-filtering): Convert message to
+	w3m--message.
+
+	* w3m-form.el (w3m-form-input-password, w3m-form-input-textarea-set)
+	(w3m-form-input-textarea-exit, w3m-form-textarea-toggle-major-mode):
+	Convert message to w3m--message.
+
+	* w3m-hist.el (w3m-history-add-properties)
+	(w3m-history-store-position, w3m-history-restore-position): Convert
+	message to w3m--message.
+
+	* w3m-image.el (w3m-imagick-convert-program-available-p)
+	(w3m-imagick-convert-buffer): Convert message to w3m--message.
+
+	* w3m-session.el (w3m-session-save)
+	(w3m-session-select-list-all-sessions)
+	(w3m-session-select-open-session-group, w3m-session-select)
+	(w3m-session-goto-session): Convert message to w3m--message.
+
+	* w3m-util.el (read-number): Convert message to w3m--message.
+
+	* w3m-xmas.el (w3m-create-image)
+	(w3m-form-coding-system-accept-region-p): Convert message to
+	w3m--message.
+
+2019-02-12  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m--message): Renamed function w3m-message, added two
+	mandatory arguments TIMEOUT and FACE, added those features, refactored
+	entire codebase to use the new function and features.
+	(w3m-message-timeout): New defcustom, for a users' preferred timeout.
+	(w3m--message-timeout): New variable, for system default timeout.
+	(w3m--current-message): Renamed variable, using '--' to connote
+	that its for internal use.
+	(w3m-message): New face, for default messages.
+	(w3m-warning): New face, for warning messages.
+	(w3m-idle-images-show, w3m-toggle-inline-image)
+	(w3m-toggle-inline-images, w3m-resize-image-interactive)
+	(w3m-
+  zoom-out-image, w3m-fontify, w3m-local-dirlist-cgi)
+	(w3m-w3m-dump-head, w3m--dump-extra--handler-function)
+	(w3m-w3m-dump-extra, w3m--retrieve--handler-function)
+	(w3m-w3m-retrieve, w3m-rendering-buffer)
+	(w3m--retrieve-and-render--handler-function, w3m-retrieve-and-render)
+	(w3m-view-this-url, w3m-submit-form, w3m-external-view-file)
+	(w3m-view-image, w3m-save-image, w3m-external-view-this-url)
+	(w3m-external-view-current-url, w3m-view-url-with-browse-url)
+	(w3m-download-this-url, w3m-download-this-image)
+	(w3m-download-this-url, w3m-download-this-image)
+	(w3m-print-this-image-url, w3m-highlight-current-anchor-1)
+	(w3m-edit-this-url, w3m-goto-url, w3m-reload-this-page)
+	(w3m-redisplay-this-page, w3m-redisplay-and-reset)
+	(w3m-redisplay-with-charset, w3m-redisplay-with-content-type)
+	(w3m-view-source, w3m-view-header, w3m-pipe-source)
+	(w3m-select-buffer, w3m-select-buffer-show-this-line)
+	(w3m-safe-view-this-url, w3m-mouse-safe-view-this-url)
+	(w3m-show-form-hint): Use the new function and its features.
+
+	* w3m-cookie.el (w3m-cookie-clear): Use the new function and its
+	features.
+
+	* w3m-dtree.el (w3m-about-dtree): Use the new function and its
+	features.
+
+	* w3m-favicon.el (autoload, w3m-favicon-retrieve): Use the new function
+	and its features.
+
+	* w3m-form.el (w3m-form-input, w3m-form-input-checkbox)
+	(w3m-form-input-radio, w3m-form-input-file)
+	(w3m-form-input-textarea-mode-setup, w3m-form-input-select)
+	(w3m-form-submit): Use the new function and its features.
+
+	* w3m-lnum.el (w3m-lnum-actions-link-alist, w3m-lnum-mode)
+	(w3m-lnum-goto, w3m-lnum-follow, w3m-lnum-universal-dispatch)
+	(w3m-lnum-universal, w3m-lnum-toggle-inline-image)
+	(w3m-lnum-view-image, w3m-lnum-save-image)
+	(w3m-lnum-external-view-this-url, w3m-lnum-edit-this-url)
+	(w3m-lnum-print-this-url, w3m-lnum-download-this-url)
+	(w3m-lnum-bookmark-add-this-url): Use the new function and its
+	features.
+
+	* w3m-weather.el (w3m-about-weather): Use the new function and its
+	featu
+=======
 2019-05-09  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-bookmark.el (w3m-bookmark-add): Bugfix: Order of args to function
@@ -213,7 +342,7 @@
 2019-02-14  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m-resize-image-interactive): Refactor function to remove
-	code duplications.
+	code duplications
 
 2019-02-12  Boruch Baum  <boruch_baum@gmx.com>
 

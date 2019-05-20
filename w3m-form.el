@@ -993,7 +993,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 (defun w3m-form-input (form id name type width maxlength value)
   (let ((fvalue (w3m-form-get form id)))
     (if (get-text-property (point) 'w3m-form-readonly)
-	(w3m-message "READONLY %s: %s" (upcase type) fvalue)
+	(w3m--message nil 'w3m-warning "READONLY %s: %s" (upcase type) fvalue)
       (save-excursion
 	(let ((input (save-excursion
 		       (read-from-minibuffer (concat (upcase type) ": ") fvalue)))
@@ -1006,7 +1006,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 
 (defun w3m-form-input-password (form id name)
   (if (get-text-property (point) 'w3m-form-readonly)
-      (message "This input box is read-only.")
+      (w3m--message t 'w3m-error "This input box is read-only.")
     (let* ((fvalue (w3m-form-get form id))
 	   (input (save-excursion
 		    (read-passwd (concat "PASSWORD"
@@ -1020,7 +1020,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 
 (defun w3m-form-input-checkbox (form id name value)
   (if (get-text-property (point) 'w3m-form-readonly)
-      (w3m-message "This form is currently inactive")
+      (w3m--message nil 'w3m-warning "This form is currently inactive")
     (let ((fvalue (w3m-form-get form id)))
       (if (member value fvalue)		; already checked
 	  (progn
@@ -1041,7 +1041,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 
 (defun w3m-form-input-radio (form id name value)
   (if (get-text-property (point) 'w3m-form-readonly)
-      (w3m-message "This form is currently inactive")
+      (w3m--message nil 'w3m-warning "This form is currently inactive")
     (save-excursion
       (let ((fid (w3m-form-field-parse
 		  (get-text-property (point) 'w3m-form-field-id)))
@@ -1065,7 +1065,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 
 (defun w3m-form-input-file (form id name value)
   (if (get-text-property (point) 'w3m-form-readonly)
-      (w3m-message "This form is currently inactive")
+      (w3m--message nil 'w3m-warning "This form is currently inactive")
     (let ((input (save-excursion
 		   (read-file-name "File name: "
 				   (or (cdr (w3m-form-get form id))
@@ -1227,7 +1227,7 @@ character."
       (kill-buffer buffer)
       (if (not (buffer-live-p w3mbuffer))
 	  (and (eq this-command 'w3m-form-input-textarea-set)
-	       (message "No current w3m buffer"))
+	       (w3m--message t 'w3m-error "No current w3m buffer"))
 	(pop-to-buffer w3mbuffer)
 	(set-window-configuration wincfg)
 	(when (and form point)
@@ -1249,7 +1249,7 @@ character."
     (kill-buffer buffer)
     (if (not (buffer-live-p w3mbuffer))
 	(and (eq this-command 'w3m-form-input-textarea-exit)
-	     (message "No current w3m buffer"))
+	     (w3m--message t 'w3m-error "No current w3m buffer"))
       (pop-to-buffer w3mbuffer)
       (set-window-configuration wincfg)
       (when point (goto-char point)))))
@@ -1296,7 +1296,7 @@ positive, otherwise text-mode."
 	(if (null arg)
 	    (not w3m-form-textarea-use-org-mode-p)
 	  (> (prefix-numeric-value arg) 0)))
-  (message "Edit textarea in Org-mode %s"
+  (w3m--message t t "Edit textarea in Org-mode %s"
 	   (if w3m-form-textarea-use-org-mode-p "enabled" "disabled")))
 
 (eval-when-compile (require 'outline))
@@ -1346,11 +1346,11 @@ positive, otherwise text-mode."
 				     View-leave View-quit View-quit-all))
 	  (substitute-key-definition command
 				     'w3m-form-input-textarea-exit keymap))
-	(w3m-message (substitute-command-keys "READONLY TEXT; type \
+	(w3m--message nil 'w3m-warning (substitute-command-keys "READONLY TEXT; type \
 `\\<w3m-form-input-textarea-map>\\[w3m-form-input-textarea-exit]' \
 to quit textarea")))
     (w3m-form-input-textarea-mode 1)
-    (w3m-message "%s"
+    (w3m--message nil 'w3m-warning "%s"
 		 (if readonly "\
 This text is not editable because the form has disabled or readonly attribute"
 		   (substitute-command-keys "Type \
@@ -1704,7 +1704,7 @@ selected rather than \(as usual\) some other window.  See
 
 (defun w3m-form-input-select (form id name)
   (if (get-text-property (point) 'w3m-form-readonly)
-      (w3m-message "This form is currently inactive")
+      (w3m--message nil 'w3m-warning "This form is currently inactive")
     (let* ((value (w3m-form-get form id))
 	   (cur-win (selected-window))
 	   (wincfg (current-window-configuration))
@@ -2008,7 +2008,7 @@ selected rather than \(as usual\) some other window.  See
 			    url
 			  (concat (w3m-url-strip-query url) "?" query)))))
 	    (t
-	     (w3m-message "This form's method has not been supported: %s"
+	     (w3m--message nil 'w3m-error "This form's method is not supported: %s"
 			  (let (print-level print-length)
 			    (prin1-to-string (w3m-form-method form)))))))))
 

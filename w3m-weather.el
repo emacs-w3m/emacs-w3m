@@ -425,7 +425,7 @@
 	    (w3m-decode-buffer furl)
 	    (w3m-weather-run-filter-functions w3m-weather-filter-functions
 					      area furl no-cache handler))))
-    (w3m-message "Unknown URL: %s" url)
+    (w3m--message t 'w3m-error "Unknown URL: %s" url)
     nil))
 
 (defun w3m-weather-run-filter-functions (functions area url no-cache handler)

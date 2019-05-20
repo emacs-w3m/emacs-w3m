@@ -210,9 +210,9 @@ over the 'w3m-dtree-directory-depth'."
     ;; counter drive letter
     (setq path (file-name-as-directory (w3m-dtree-directory-name path)))
     (setq default-directory path)
-    (w3m-message "Dtree (%s)..." path)
+    (w3m--message nil nil "Dtree (%s)..." path)
     (w3m-dtree-create path allfiles dirprefix fileprefix)
-    (w3m-message "Dtree...done")
+    (w3m--message t nil "Dtree...done")
     "text/html"))
 
 ;;;###autoload
