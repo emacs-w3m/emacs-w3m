@@ -1,3 +1,13 @@
+2019-05-22  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-view-this-url-1): Remove this function as unnecessary and duplicate.
+	(w3m-view-this-url, w3m-view-this-url-new-session)
+	(w3m-goto-new-session-url):Replace use of function w3m-view-this-url-1
+	with either w3m-goto-url or w3m-goto-url-new-session.
+
+	* w3m-bookmark.el (w3m-bookmark-view-new-session): Replace use of
+	function w3m-view-this-url-1 with w3m-goto-url-new-session.
+
 2019-05-19  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-session.el (w3m-session-select-merge): New feature, allows moving

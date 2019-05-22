@@ -415,7 +415,7 @@ With prefix, ask for a new url instead of the present one."
   (if (not (eq major-mode 'w3m-mode))
       (message "This command can be used in w3m mode only")
     (if (file-exists-p w3m-bookmark-file)
-	(w3m-view-this-url-1 "about://bookmark/" reload 'new-session)
+	(w3m-goto-url-new-session "about://bookmark/" reload)
       (message "No bookmark file is available"))))
 
 ;;;###autoload

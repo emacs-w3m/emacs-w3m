@@ -7247,53 +7247,12 @@ Reading " (w3m-url-readable-string (w3m-url-strip-authinfo url)) " ...\n\n"
     (put-text-property (point-min) (point-max) 'w3m-progress-message t)
     (sit-for 0)))
 
-(defun w3m-view-this-url-1 (url reload new-session)
-  (lexical-let ((url url)
-		pos buffer)
-    (if new-session
-	(let ((empty
- 	       ;; If a new url has the #name portion (ie. a URI
- 	       ;; "fragment"), we simply copy the buffer's contents to
- 	       ;; the new session, otherwise creating an empty buffer.
-	       (not (and (progn
-			   (w3m-string-match-url-components url)
-			   (match-beginning 8))
-			 (string-equal w3m-current-url
-				       (substring url
-						  0 (match-beginning 8)))))))
-	  (setq pos (point-marker)
-		buffer (w3m-copy-buffer
-			nil nil w3m-new-session-in-background empty t))
-	  (when w3m-new-session-in-background
-	    (set-buffer buffer))
-	  (when empty
-	    (w3m-display-progress-message url)))
-      (setq buffer (current-buffer)))
-    (let (handler)
-      (w3m-process-do
-	  (success (w3m-goto-url url reload nil nil w3m-current-url handler
-				 nil w3m-new-session-in-background))
-	(set-window-hscroll (selected-window) 0)
-	;; Delete the newly created buffer if it's been made empty.
-	(when (and pos
-		   (buffer-name buffer))
-	  (w3m-delete-buffer-if-empty buffer))
-	(when pos ;; the new session is created.
-	  ;; FIXME: what we should actually do is to modify the `w3m-goto-url'
-	  ;; function so that it may return a proper value, and checking it.
-	  (when (and (marker-buffer pos) (buffer-name (marker-buffer pos)))
-	    (with-current-buffer (marker-buffer pos)
-	      (save-excursion
-		(goto-char pos)
-		(w3m-refontify-anchor)))))
-	(w3m-recenter)))))
-
-(defun w3m-view-this-url (&optional arg new-session)
+(defun w3m-view-this-url (&optional reload new-session)
   "Display the page pointed to by the link under point.
 If ARG is the number 2 or the list of the number 16 (you may produce
 this by typing `C-u' twice) or NEW-SESSION is non-nil and the link is
 an anchor, this function makes a copy of the current buffer in advance.
-Otherwise, if ARG is non-nil, it forces to reload the url at point."
+Otherwise, if RELOAD is non-nil, it forces to reload the url at point."
   (interactive (if (member current-prefix-arg '(2 (16)))
 		   (list nil t)
 		 (list current-prefix-arg nil)))
@@ -7311,7 +7270,9 @@ Otherwise, if ARG is non-nil, it forces to reload the url at point."
 	    (w3m-form-download nil))
 	(eval act)))
      ((setq url (w3m-url-valid (w3m-anchor)))
-      (w3m-view-this-url-1 url arg new-session))
+      (if new-session
+        (w3m-goto-url-new-session url reload)
+       (w3m-goto-url url reload)))
      ((w3m-url-valid (w3m-image))
       (if (w3m-display-graphic-p)
 	  (w3m-toggle-inline-image)
@@ -7319,8 +7280,10 @@ Otherwise, if ARG is non-nil, it forces to reload the url at point."
      ((setq url (w3m-active-region-or-url-at-point 'never))
       (unless (eq 'quit (setq url (w3m-input-url nil url 'quit nil
 						 'feeling-searchy 'no-initial)))
-	(w3m-view-this-url-1 url arg new-session)))
-     (t (w3m-message "No URL at point")))))
+      (if new-session
+        (w3m-goto-url-new-session url reload)
+       (w3m-goto-url url reload))))
+     (t (w3m--message t 'w3m-error "No URL at point")))))
 
 (eval-and-compile
   (autoload 'mouse-set-point "mouse"))
@@ -7331,11 +7294,11 @@ Otherwise, if ARG is non-nil, it forces to reload the url at point."
   (mouse-set-point event)
   (w3m-view-this-url arg))
 
-(defun w3m-open-all-links-in-new-session (start end &optional arg)
+(defun w3m-open-all-links-in-new-session (start end &optional reload)
   "Open all http links between START and END as new sessions.
 If the page looks like Google's search result and the START point is
 the beginning of a line, only the links displayed in the beginning of
-lines are picked up.  If ARG is non-nil, it forces to reload all links.
+lines are picked up.  If RELOAD is non-nil, it forces to reload all links.
 If Transient Mark mode, deactivate the mark."
   (interactive "r\nP")
   (when (w3m-region-active-p)
@@ -7368,7 +7331,7 @@ If Transient Mark mode, deactivate the mark."
       (setq url (car urls)
 	    urls (cdr urls))
       (set-buffer buffer)
-      (w3m-view-this-url-1 url arg t))))
+      (w3m-goto-url-new-session url reload))))
 
 (defun w3m-view-this-url-new-session ()
   "Display the page of the link under point in a new session.
@@ -10114,7 +10077,7 @@ See `w3m-default-directory'."
   (interactive "P")
   (if (not (eq major-mode 'w3m-mode))
       (message "This command can be used in w3m mode only")
-    (w3m-view-this-url-1 w3m-new-session-url reload 'new-session)))
+    (w3m-goto-url-new-session w3m-new-session-url reload)))
 
 ;;;###autoload
 (defun w3m-goto-url-new-session (url &optional reload charset post-data
