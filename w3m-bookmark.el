@@ -146,7 +146,7 @@ Minor mode to edit bookmark.
   "Return the modification time of the bookmark file `w3m-bookmark-file'.
 The value is a list of two time values `(HIGH LOW)' if the bookmark
 file exists, otherwise nil."
-  (nth 5 (file-attributes w3m-bookmark-file)))
+  (nth 5 (file-attributes (file-chase-links w3m-bookmark-file))))
 
 (defun w3m-bookmark-buffer (&optional no-verify-modtime)
   "Return the buffer reading `w3m-bookmark-file' current."
