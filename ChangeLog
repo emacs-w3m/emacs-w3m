@@ -1,3 +1,23 @@
+2019-05-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Bugfix ([emacs-w3m:13417])
+
+	* w3m.el (w3m-search-name-anchor): Refactor; make the window positions
+	sure to be set for the case where it runs in the background.
+	(w3m-copy-buffer): Revert to the old function definition keeping the
+	current arglist and its order; work for the background run suitably.
+
+	Trivia:
+	* w3m.el (w3m-view-this-url-new-session-in-background): Remove.
+	(w3m--retrieve-and-render--handler-function):
+	Make the "...has been retrieved" message sure to be shown for a while.
+	(w3m-view-this-url-1): Always select the copied buffer.
+	(w3m-view-this-url-new-session, w3m-goto-url-new-session):
+	Don't show the progress message for the background run.
+	(w3m--goto-url--handler-function):
+	Show the "...has been retrieved" message when jumping to a name anchor
+	in the background.
+
 2019-05-27  Tatsuya Kinoshita  <tats@debian.org>
 
 	* w3m-bookmark.el (w3m-bookmark-file-modtime): Chase links

@@ -1690,14 +1690,8 @@ command `w3m'."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-view-this-url-new-session-in-background nil
-  "*Obsolete."
-  :group 'w3m
-  :type 'boolean)
-
-(defcustom w3m-new-session-in-background
-  w3m-view-this-url-new-session-in-background
-  "*Say whether not to focus on a new tab or a new session in target.
+(defcustom w3m-new-session-in-background nil
+  "Say whether not to focus on a new tab or a new session in target.
 It influences only when a new emacs-w3m buffer is created."
   :group 'w3m
   :type 'boolean)
@@ -6458,9 +6452,16 @@ to fold them).  Things in textarea won't be modified."
 			  (w3m-content-charset url))
 		      page-buffer)
 		(w3m-force-window-update-later page-buffer 1e-9)
-		(unless (get-buffer-window page-buffer)
+		(unless (or w3m-message-silent (get-buffer-window page-buffer))
 		  (w3m-message "The content (%s) has been retrieved in %s"
-			       url (buffer-name page-buffer))))))
+			       url (buffer-name page-buffer))
+		  ;; Make the message sure to be shown for a while.
+		  (run-at-time
+		   0.5 nil
+		   (lambda (orig) (setq w3m-after-cursor-move-hook orig))
+		   (prog1
+		       w3m-after-cursor-move-hook
+		     (setq w3m-after-cursor-move-hook nil)))))))
 	(when (and w3m-clear-display-while-reading
 		   (string-match "\\`file:" url))
 	  (with-current-buffer page-buffer
@@ -6946,16 +6947,10 @@ when the URL of the retrieved page matches the REGEXP."
       (while (not found)
 	(while (setq pos (next-single-property-change pos 'w3m-name-anchor))
 	  (when (member name (get-text-property pos 'w3m-name-anchor))
-	    (goto-char pos)
-	    (when (eolp) (forward-line))
-	    (w3m-horizontal-on-screen)
 	    (throw 'found (setq found t))))
 	(setq pos (point-min))
 	(while (setq pos (next-single-property-change pos 'w3m-name-anchor2))
 	  (when (member name (get-text-property pos 'w3m-name-anchor2))
-	    (goto-char pos)
-	    (when (eolp) (forward-line))
-	    (w3m-horizontal-on-screen)
 	    (throw 'found (setq found t))))
 	(if oname
 	    (progn
@@ -6965,18 +6960,31 @@ when the URL of the retrieved page matches the REGEXP."
 	  (setq pos (point-min)
 		oname name
 		name (w3m-url-decode-string name)))))
-
-    (when (and found
-	       (not no-record)
-	       (/= (point) cur-pos))
-      (setq w3m-name-anchor-from-hist
-	    (append (list 1 nil (point) cur-pos)
-		    (and (integerp (car w3m-name-anchor-from-hist))
-			 (nthcdr (1+ (car w3m-name-anchor-from-hist))
-				 w3m-name-anchor-from-hist)))))
     (when found
-      (w3m-recenter))
-    found))
+      (w3m-labels
+	  ((position-point
+	    (pos cur-pos no-record)
+	    (goto-char pos)
+	    (when (eolp) (forward-line))
+	    (or no-record (= (point) cur-pos)
+		(setq w3m-name-anchor-from-hist
+		      (append (list 1 nil (point) cur-pos)
+			      (and (integerp (car w3m-name-anchor-from-hist))
+				   (nthcdr (1+ (car w3m-name-anchor-from-hist))
+					   w3m-name-anchor-from-hist)))))
+	    (w3m-horizontal-on-screen)
+	    (w3m-recenter)))
+	(if (get-buffer-window (current-buffer) (selected-frame))
+	    (position-point pos cur-pos no-record)
+	  ;; Make the window positions sure to be set
+	  ;; even when it runs in the background.
+	  (save-window-excursion
+	    (set-window-buffer (selected-window) (current-buffer))
+	    (position-point pos cur-pos no-record)
+	    ;; `w3m-history-restore-position' will run
+	    ;; when the buffer is selected thereafter.
+	    (w3m-history-store-position))))
+      t)))
 
 (defun w3m-parent-page-available-p ()
   (if (null w3m-current-url)
@@ -7263,9 +7271,8 @@ Reading " (w3m-url-readable-string (w3m-url-strip-authinfo url)) " ...\n\n"
 						  0 (match-beginning 8)))))))
 	  (setq pos (point-marker)
 		buffer (w3m-copy-buffer
-			nil nil w3m-new-session-in-background empty t))
-	  (when w3m-new-session-in-background
-	    (set-buffer buffer))
+			nil nil	w3m-new-session-in-background empty t))
+	  (set-buffer buffer)
 	  (when empty
 	    (w3m-display-progress-message url)))
       (setq buffer (current-buffer)))
@@ -7375,9 +7382,13 @@ If Transient Mark mode, deactivate the mark."
 If the region is active, use the `w3m-open-all-links-in-new-session'
 command instead."
   (interactive)
-  (if (w3m-region-active-p)
-      (call-interactively 'w3m-open-all-links-in-new-session)
-    (w3m-view-this-url nil t)))
+  (let ((w3m-clear-display-while-reading
+	 ;; Don't show the progress message for the background run.
+	 (unless w3m-new-session-in-background
+	   w3m-clear-display-while-reading)))
+    (if (w3m-region-active-p)
+	(call-interactively 'w3m-open-all-links-in-new-session)
+      (w3m-view-this-url nil t))))
 
 (defun w3m-mouse-view-this-url-new-session (event)
   "Follow the link under the mouse pointer in a new session."
@@ -8012,59 +8023,72 @@ Return t if highlighting is successful."
 (defun w3m-copy-buffer (&optional buffer new-name background empty last)
   "Copy an emacs-w3m BUFFER, and return the new buffer.
 
-If BUFFER is nil, the current buffer is assumed. If NEW-NAME is
-nil, a name is created based upon the name of the current buffer.
+If BUFFER is nil, the current buffer is assumed.
 
-If BACKGROUND is non-nil, do not switch to the new buffer copy.
-When (and only when) this function is called interactively, this
-value is determined by `w3m-new-session-in-background', but can
-be inverted by calling this function with a prefix argument.
+If NEW-NAME is nil, a name is created based on the name of the current
+buffer.  If BACKGROUND is non-nil, do not switch to the new buffer.
 
-If EMPTY is non-nil, an empty buffer is created, but with the
-current buffer's history and settings.
+When called interactively, you will be prompted for NEW-NAME if and
+only if a prefix argument is given, and BACKGROUND inherits the value
+of `w3m-new-session-in-background'.
 
-If LAST is non-nil, the new buffer will be buried as the final
-w3m buffer; otherwise, it will be sequenced next to the current
-buffer."
-  (interactive
-    (list nil nil (if current-prefix-arg
-                    (not w3m-new-session-in-background)
-                   w3m-new-session-in-background)))
+If EMPTY is non-nil, an empty buffer is created, but with the current
+buffer's history and settings.
+
+If LAST is non-nil, the new buffer will be buried as the final w3m
+buffer; otherwise, it will be sequenced next to the current buffer."
+  (interactive (list nil
+		     (if current-prefix-arg (read-string "Name: "))
+		     w3m-new-session-in-background))
   (unless buffer
     (setq buffer (current-buffer)))
   (unless new-name
     (setq new-name (buffer-name buffer)))
   (when (string-match "<[0-9]+>\\'" new-name)
     (setq new-name (substring new-name 0 (match-beginning 0))))
-  (cond
-   (empty
-    (let ((coding w3m-current-coding-system)
-          (images w3m-display-inline-images)
-          (init-frames (when (w3m-popup-frame-p)
-                         (copy-sequence w3m-initial-frames)))
-          (new (w3m-generate-new-buffer new-name (not last))))
+  (let (url coding images init-frames new)
+    (save-current-buffer
+      (set-buffer buffer)
+      (setq url (or w3m-current-url
+		    (car (w3m-history-element (cadar w3m-history))))
+	    coding w3m-current-coding-system
+	    images w3m-display-inline-images
+	    init-frames (when (w3m-popup-frame-p)
+			  (copy-sequence w3m-initial-frames)))
+      (unless url
+	(setq empty t))
+      ;;
       (w3m-history-store-position)
-      (with-current-buffer new
-        (w3m-history-copy buffer)
-        (setq w3m-current-coding-system coding
-              w3m-initial-frames init-frames
-              w3m-display-inline-images
-                (if w3m-toggle-inline-images-permanently
-                  images
-                 w3m-default-display-inline-images)))
-      (when (not background)
-        (w3m-popup-buffer new))
-      new ; return value for this function
-      ))
-   (t ; ie. (not empty)
-    (let (new)
-      (with-current-buffer buffer
-        (setq new (clone-buffer new-name)))
-      (if (not background)
-        (switch-to-buffer new))
-      new ; return value for this function
-      ))))
-
+      (set-buffer (setq new (w3m-generate-new-buffer new-name (not last))))
+      ;; Make copies of `w3m-history' and `w3m-history-flat'.
+      (w3m-history-copy buffer)
+      (setq w3m-current-coding-system coding
+	    w3m-initial-frames init-frames
+	    w3m-display-inline-images
+	    (if w3m-toggle-inline-images-permanently
+		images
+	      w3m-default-display-inline-images)))
+    (cond
+     (empty) ;; Don't leave from the current buffer.
+     (t ;; Switch to the `new' buffer in which `w3m-goto-url' runs.
+      (set-buffer new)
+      ;; Render a page.
+      (let ((positions (copy-sequence (car w3m-history)))
+	    (w3m-history-reuse-history-elements t)
+	    (w3m-prefer-cache t)
+	    (w3m-clear-display-while-reading
+	     ;; Don't show the progress message for the background run.
+	     (unless (and background (w3m-interactive-p))
+	       w3m-clear-display-while-reading)))
+	(w3m-process-with-wait-handler
+	  (w3m-goto-url url 'redisplay nil nil nil handler
+			;; Pass the properties of the history elements,
+			;; although it is currently always nil.
+			(w3m-history-element (cadr positions))))
+	(setcar w3m-history positions))
+      (when (and background (not (get-buffer-window buffer)))
+	(set-window-buffer (selected-window) buffer))))
+    new))
 
 (defvar w3m-previous-session-buffer nil
   "A buffer of the session having selected just before this session.
@@ -9744,13 +9768,24 @@ helpful message is presented and the operation is aborted."
       (and (match-beginning 8)
 	   (setq name (match-string 9 w3m-current-url)))
       (when (and name
-		 (progn
-		   ;; Redisplay to search an anchor sure.
-		   (sit-for 0)
-		   (w3m-search-name-anchor name nil
-					   (not (eq action 'cursor-moved)))))
+		 (w3m-search-name-anchor name nil
+					 (not (eq action 'cursor-moved))))
 	(setf (w3m-arrived-time (w3m-url-strip-authinfo orig))
-	      (w3m-arrived-time url)))
+	      (w3m-arrived-time url))
+	(unless (or w3m-message-silent
+		    (not (eq this-command 'w3m-view-this-url-new-session))
+		    (get-buffer-window w3m-current-buffer (selected-frame)))
+	  (when (string-match "\\*w3m\\*<[0-9]+>\\'"
+			      (setq name (buffer-name w3m-current-buffer)))
+	    (setq name (match-string 0 name)))
+	  (w3m-message "The content (%s) has been retrieved in %s" url name)
+	  ;; Make the message sure to be shown for a while.
+	  (run-at-time
+	   0.5 nil
+	   (lambda (orig) (setq w3m-after-cursor-move-hook orig))
+	   (prog1
+	       w3m-after-cursor-move-hook
+	     (setq w3m-after-cursor-move-hook nil)))))
       (unless (eq action 'cursor-moved)
 	(if (equal referer "about://history/")
 	    ;; Don't sprout a new branch for
@@ -9818,7 +9853,7 @@ helpful message is presented and the operation is aborted."
   (w3m-process-stop (current-buffer))	; Stop all processes retrieving images.
   (w3m-idle-images-show-unqueue (current-buffer))
   ;; Store the current position in the history structure if SAVE-POS
-  ;; is set or this command is called interactively.
+  ;; is set or `w3m-goto-url' is called interactively.
   (when (or save-pos (w3m-interactive-p))
     (w3m-history-store-position))
   ;; Access url group
@@ -10147,13 +10182,11 @@ buffer will start afresh."
 	(w3m-goto-url url nil charset post-data)
       ;; Store the current position in the history structure.
       (w3m-history-store-position)
-      (setq buffer
-        (w3m-copy-buffer
-          nil "*w3m*" no-popup 'empty t))
-      (when (not no-popup)
-        (switch-to-buffer buffer))
-      (set-buffer buffer)
-      (w3m-display-progress-message url)
+      (setq buffer (w3m-copy-buffer nil "*w3m*" no-popup 'empty t))
+      (if no-popup
+	  (set-buffer buffer)
+	(switch-to-buffer buffer)
+	(w3m-display-progress-message url))
       (w3m-goto-url
         url
         (or reload
