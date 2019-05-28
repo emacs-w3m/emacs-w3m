@@ -4280,34 +4280,34 @@ You are retrieving non-secure image(s).  Continue? ")
 If RATE is not given, use `w3m-resize-image-scale'.
 CHANGED-RATE is currently changed rate / 100."
   (let* ((msg-prompt "Resize: [+ =] enlarge [-] shrink [0] original [q] quit")
-         (changed-rate (or changed-rate 1))
-         (rate (or (and rate (min rate 99)) w3m-resize-image-scale))
-         char)
+	 (changed-rate (or changed-rate 1))
+	 (rate (or (and rate (min rate 99)) w3m-resize-image-scale))
+	 char)
     (while
-      (cond
-       ((memq
-          (setq char
-            (w3m-static-if (featurep 'xemacs)
-              (progn
-                 (w3m-message msg-prompt)
-                 (char-octet (read-char-exclusive)))
-             (read-char-exclusive
-               (propertize msg-prompt 'face 'w3m-lnum-minibuffer-prompt))))
-          '(?+ ?=))
-        (let ((percent (+ 100 rate)))
-          (w3m-resize-inline-image-internal image percent)
-          (setq changed-rate (* changed-rate
-                                (/ percent 100.0)))))
-       ((eq char ?-)
-        (let ((percent (/ 10000.0 (+ 100 rate))))
-          (w3m-resize-inline-image-internal image percent)
-          (setq changed-rate (* changed-rate
-                                (/ percent 100.0)))))
-       ((eq char ?0)
-        (w3m-resize-inline-image-internal image
-                                          (/ 100.0 changed-rate))
-        (setq changed-rate 1))
-       (t nil)))))
+	(cond
+	 ((memq
+	   (setq char
+		 (w3m-static-if (featurep 'xemacs)
+		     (progn
+		       (w3m-message msg-prompt)
+		       (char-octet (read-char-exclusive)))
+		   (read-char-exclusive
+		    (propertize msg-prompt 'face 'w3m-lnum-minibuffer-prompt))))
+	   '(?+ ?=))
+	  (let ((percent (+ 100 rate)))
+	    (w3m-resize-inline-image-internal image percent)
+	    (setq changed-rate (* changed-rate
+				  (/ percent 100.0)))))
+	 ((eq char ?-)
+	  (let ((percent (/ 10000.0 (+ 100 rate))))
+	    (w3m-resize-inline-image-internal image percent)
+	    (setq changed-rate (* changed-rate
+				  (/ percent 100.0)))))
+	 ((eq char ?0)
+	  (w3m-resize-inline-image-internal image
+					    (/ 100.0 changed-rate))
+	  (setq changed-rate 1))
+	 (t nil)))))
 
 (defun w3m-zoom-in-image (&optional rate)
   "Zoom in an image on the point.
@@ -7260,9 +7260,9 @@ Reading " (w3m-url-readable-string (w3m-url-strip-authinfo url)) " ...\n\n"
 		pos buffer)
     (if new-session
 	(let ((empty
- 	       ;; If a new url has the #name portion (ie. a URI
- 	       ;; "fragment"), we simply copy the buffer's contents to
- 	       ;; the new session, otherwise creating an empty buffer.
+	       ;; If a new url has the #name portion (ie. a URI
+	       ;; "fragment"), we simply copy the buffer's contents to
+	       ;; the new session, otherwise creating an empty buffer.
 	       (not (and (progn
 			   (w3m-string-match-url-components url)
 			   (match-beginning 8))
@@ -10016,7 +10016,7 @@ invoked in other than a w3m-mode buffer."
     (w3m-goto-mailto-url url post-data))
    ;; process torrents and their magnets
    ((or (string-match "\\`magnet:" url)
-        (string-match "\\.torrent$" url))
+	(string-match "\\.torrent$" url))
     (w3m--goto-torrent-url url))
    ;; process ftp: protocol
    ((and w3m-use-ange-ftp
@@ -10153,7 +10153,7 @@ See `w3m-default-directory'."
 
 ;;;###autoload
 (defun w3m-goto-url-new-session (url &optional reload charset post-data
-                                     referer no-popup)
+				     referer no-popup)
   "Visit World Wide Web pages in a new buffer.
 
 If you invoke this command in the emacs-w3m buffer, the new buffer
@@ -10163,17 +10163,17 @@ buffer will start afresh."
   ;; Elsewhere it seems to be referred to as BACKGROUND.
   (interactive
    (list (w3m-input-url "Open URL in new buffer" nil
-                        (or (w3m-active-region-or-url-at-point)
-                            w3m-new-session-url)
-                        nil 'feeling-searchy 'no-initial)
-         nil ;; reload
-         (w3m-static-if (fboundp 'universal-coding-system-argument)
-             coding-system-for-read)
-         nil ;; post-data
-         nil ;; referer
-         (if current-prefix-arg ;; no-popup
-           (not w3m-new-session-in-background)
-          w3m-new-session-in-background)))
+			(or (w3m-active-region-or-url-at-point)
+			    w3m-new-session-url)
+			nil 'feeling-searchy 'no-initial)
+	 nil ;; reload
+	 (w3m-static-if (fboundp 'universal-coding-system-argument)
+	     coding-system-for-read)
+	 nil ;; post-data
+	 nil ;; referer
+	 (if current-prefix-arg ;; no-popup
+	     (not w3m-new-session-in-background)
+	   w3m-new-session-in-background)))
   (let (buffer)
     (if (not
 	 (or (eq 'w3m-mode major-mode)
@@ -10188,17 +10188,17 @@ buffer will start afresh."
 	(switch-to-buffer buffer)
 	(w3m-display-progress-message url))
       (w3m-goto-url
-        url
-        (or reload
-            ;; When new URL has `name' portion, (ir. a URI
-            ;; "fragment"), we have to goto the base url
-            ;; because generated buffer has no content at
-            ;; this moment.
-            (and
-             (w3m-string-match-url-components url)
-             (match-beginning 8)
-             'redisplay))
-        charset post-data referer nil nil no-popup)
+       url
+       (or reload
+	   ;; When new URL has `name' portion, (ir. a URI
+	   ;; "fragment"), we have to goto the base url
+	   ;; because generated buffer has no content at
+	   ;; this moment.
+	   (and
+	    (w3m-string-match-url-components url)
+	    (match-beginning 8)
+	    'redisplay))
+       charset post-data referer nil nil no-popup)
       ;; Delete useless newly created buffer if it is empty.
       (w3m-delete-buffer-if-empty buffer))))
 
@@ -11459,7 +11459,7 @@ The following command keys are available:
 Use the prefix argument to move N positions.
 EVENT is an internal arg for mouse control."
   (interactive (list (prefix-numeric-value current-prefix-arg)
-                     last-command-event))
+		     last-command-event))
   (with-current-buffer (w3m-select-buffer-current-buffer)
     (w3m-tab-move-right n event)))
 
@@ -11468,7 +11468,7 @@ EVENT is an internal arg for mouse control."
 Use the prefix argument to move N positions.
 EVENT is an internal arg for mouse control."
   (interactive (list (prefix-numeric-value current-prefix-arg)
-                     last-command-event))
+		     last-command-event))
   (with-current-buffer (w3m-select-buffer-current-buffer)
     (w3m-tab-move-right (- n) event)))
 
@@ -11867,8 +11867,9 @@ Refer to variable `w3m-display-mode' for details."
 
 (defun w3m-cleanup-temp-files ()
   (when w3m-do-cleanup-temp-files
-    (dolist (f (directory-files w3m-profile-directory t "^w3m\\(cache\\|el\\|src\\|tmp\\)" t))
-        (delete-file f))))
+    (dolist (f (directory-files w3m-profile-directory t
+				"^w3m\\(cache\\|el\\|src\\|tmp\\)" t))
+      (delete-file f))))
 
 (defun w3m-show-form-hint ()
   "Show sending form hint when the cursor is in a form."
