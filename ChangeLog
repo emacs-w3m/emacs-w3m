@@ -1,3 +1,10 @@
+2019-06-06  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m--get-page-anchors): New funcion.
+	(w3m-search-name-anchor): Prompt user interactively with list of
+	available anchors, excluding those from w3m half-dump. Provide this
+	function a keybinding `C-c j'.
+
 2019-05-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Bugfix ([emacs-w3m:13417])
