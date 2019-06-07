@@ -11443,7 +11443,9 @@ The following command keys are available:
   (when (if (or (not n) (> n 0))
 	    (< (line-end-position) (point-max))
 	  (> (line-beginning-position) (point-min)))
-    (next-line n)
+    (let ((c (current-column)))
+      (forward-line n)
+      (move-to-column c))
     (prog1
 	(w3m-select-buffer-show-this-line)
       (w3m-static-when (featurep 'xemacs)
