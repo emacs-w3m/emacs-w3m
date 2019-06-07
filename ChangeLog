@@ -1,3 +1,8 @@
+2019-06-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-util.el (w3m-generate-new-buffer):
+	Work regardless of w3m-use-title-buffer-name ([emacs-w3m:13441]).
+
 2019-05-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Bugfix ([emacs-w3m:13417])
