@@ -11400,7 +11400,6 @@ The following command keys are available:
 (defun w3m-select-buffer-show-this-line (&optional interactive-p)
   "Show the buffer on the current menu line or scroll it up."
   (interactive (list t))
-  (forward-line 0)
   (let ((obuffer (and (window-live-p w3m-select-buffer-window)
 		      (window-buffer w3m-select-buffer-window)))
 	(buffer (w3m-select-buffer-current-buffer)))
@@ -11441,13 +11440,16 @@ The following command keys are available:
 (defun w3m-select-buffer-next-line (&optional n)
   "Move cursor vertically down N lines and show the buffer on the menu."
   (interactive "p")
-  (forward-line n)
-  (prog1
-      (w3m-select-buffer-show-this-line)
-    (w3m-static-when (featurep 'xemacs)
-      (save-window-excursion
-	;; Update gutter tabs.
-	(select-window w3m-select-buffer-window)))))
+  (when (if (or (not n) (> n 0))
+	    (< (line-end-position) (point-max))
+	  (> (line-beginning-position) (point-min)))
+    (next-line n)
+    (prog1
+	(w3m-select-buffer-show-this-line)
+      (w3m-static-when (featurep 'xemacs)
+	(save-window-excursion
+	  ;; Update gutter tabs.
+	  (select-window w3m-select-buffer-window))))))
 
 (defun w3m-select-buffer-previous-line (&optional n)
   "Move cursor vertically up N lines and show the buffer on the menu."
