@@ -450,18 +450,19 @@ An argument of nil means kill the current buffer."
 Make the new buffer the next of the current buffer if NEXT is non-nil."
   (when (string-match "\\*w3m\\*\\(<\\([0-9]+\\)>\\)\\'" name)
     (setq name (substring name 0 (match-beginning 1))))
-  (let ((tailbufs (let* ((w3m-fb-mode nil)
-			 (all (w3m-list-buffers)))
-		    (if next
-			(memq (current-buffer) all)
-		      (last all))))
-	new num prev)
-    (when tailbufs
-      (setq new (1+ (or (w3m-buffer-number (car tailbufs)) 1))
-	    num new
+  (let* ((w3m-fb-mode nil)
+	 (all (w3m-list-buffers))
+	 (num (1+ (length all)))
+	 (tail (if next
+		   (memq (current-buffer) all)
+		 (last all)))
+	 new prev)
+    (when tail
+      (setq new (1+ (or (w3m-buffer-number (car tail)) 1))
 	    prev (current-buffer))
-      (dolist (buf (cdr tailbufs))
-	(w3m-buffer-set-number buf (setq num (1+ num)))))
+      (dolist (buf (nreverse (cdr tail)))
+	(w3m-buffer-set-number buf num)
+	(setq num (1- num))))
     (with-current-buffer
 	(setq new (generate-new-buffer (if new
 					   (format "%s<%d>" name new)
