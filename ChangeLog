@@ -1,3 +1,11 @@
+2019-06-12  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m--goto-url--valid-url): Use new feature w3m--url-strip-queries.
+
+	* w3m-util.el (w3m--url-strip-queries): New feature: Strip unwanted trackers from
+	urls.
+	(w3m-strip-queries-alist): Defcustom in support of the new feature.
+
 2019-06-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-select-buffer-show-this-line)
