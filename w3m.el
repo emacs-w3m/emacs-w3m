@@ -10024,26 +10024,24 @@ invoked in other than a w3m-mode buffer."
 	 (not (string= "text/html" (w3m-local-content-type url))))
     (w3m-goto-ftp-url url))
    ;; find-file directly
-   ((condition-case nil
-	(and (w3m-url-local-p url)
-	     w3m-local-find-file-function
-	     (let ((base-url (w3m-url-strip-fragment url))
-		   (match (car w3m-local-find-file-regexps))
-		   nomatch file)
-	       (and (or (not match)
-			(string-match match base-url))
-		    (not (and (setq nomatch (cdr w3m-local-find-file-regexps))
-			      (string-match nomatch base-url)))
-		    (setq file (w3m-url-to-file-name base-url))
-		    (file-exists-p file)
-		    (not (file-directory-p file))
-		    (prog1
-			t
-		      (funcall (if (functionp w3m-local-find-file-function)
-				   w3m-local-find-file-function
-				 (eval w3m-local-find-file-function))
-			       file)))))
-      (error nil)))
+   ((and (w3m-url-local-p url)
+         w3m-local-find-file-function
+         (setq url (concat "file:/" (substitute-in-file-name url)))
+         (let ((base-url (w3m-url-strip-fragment url))
+               (match (car w3m-local-find-file-regexps))
+               nomatch file)
+           (and (or (not match)
+                    (string-match match base-url))
+                (not (and (setq nomatch (cdr w3m-local-find-file-regexps))
+                          (string-match nomatch base-url)))
+                (setq file (w3m-url-to-file-name base-url))
+                (file-exists-p file)
+                (not (file-directory-p file))
+                (funcall (if (functionp w3m-local-find-file-function)
+                               w3m-local-find-file-function
+                             (eval w3m-local-find-file-function))
+                           file))))
+     t)
    ;; process buffer-local url
    ((w3m-buffer-local-url-p url)
     (let (file-part fragment-part)
@@ -10199,6 +10197,7 @@ buffer will start afresh."
 	    (match-beginning 8)
 	    'redisplay))
        charset post-data referer nil nil no-popup)
+      (pop-to-buffer buffer)
       ;; Delete useless newly created buffer if it is empty.
       (w3m-delete-buffer-if-empty buffer))))
 

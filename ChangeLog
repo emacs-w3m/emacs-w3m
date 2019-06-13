@@ -1,3 +1,15 @@
+2019-06-13  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-goto-url): bugfixes for local file urls: parse
+	environment variables in the pathname, honor docstring for
+	w3m-local-find-file-regexps.
+	(w3m-goto-url-new-session): bugfix for local file urls: don't hide
+	buffer after creating it.
+
+	* w3m-util.el (w3m-strip-queries): Add defcustom option to easily
+	toggle the feature.
+	(w3m--url-strip-queries): Use the defcustom.
+
 2019-06-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-select-buffer-show-this-line)
