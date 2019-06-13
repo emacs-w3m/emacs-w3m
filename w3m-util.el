@@ -1256,6 +1256,12 @@ Otherwise return nil."
       (match-string 1 url)
     url))
 
+(defcustom w3m-strip-queries t
+  "Remove unwanted queries from URLs.
+Details are set by `w3m-strip-queries-alist'."
+  :group 'w3m
+  :type 'boolean)
+
 (defcustom w3m-strip-queries-alist
   '(("^https?://.*" "&?utm_source=[^&]+")
     ("^https?://.*" "&?utm_medium=[^&]+")
@@ -1272,7 +1278,8 @@ websites or referers embed."
   "Strip unwanted queries from a url.
 This is meant to remove unwanted trackers or other data that
 websites or referers embed. See `w3m-strip-queries-alist'."
-  (if (not (string-match "^.*\\?" url))
+  (if (or (not w3m-strip-queries)
+          (not (string-match "^.*\\?" url)))
     url
    (let* ((base (match-string 0 url))
           (queries (replace-match "" t t url 0)))

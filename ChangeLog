@@ -1,3 +1,9 @@
+2019-06-13  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-util.el (w3m-strip-queries): Add defcustom option to easily
+	toggle the feature.
+	(w3m--url-strip-queries): Use the defcustom.
+
 2019-06-12  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m--goto-url--valid-url): Use new feature w3m--url-strip-queries.
