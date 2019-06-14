@@ -283,25 +283,23 @@ buffer's url history."
 	 (prompt "New session title: ")
 	 (cnum 0)
 	 (i 0)
-	 title titles urls len buf cbuf)
+	 otitle title titles urls len buf cbuf)
      (mapc (lambda (x)
 	     (setq titles (cons (cons (car x) (car x)) titles)))
 	   sessions)
-     (setq title (or w3m-current-title
+     (setq otitle (or w3m-current-title
 		     (with-current-buffer (car bufs)
 		       w3m-current-title)))
-     (setq titles (cons (cons title title) titles))
-     (catch 'loop
-       (while t
-	 ;; A devious way to emulate INITIAL-INPUT that is deprecated.
-	 (let ((minibuffer-setup-hook (lambda nil (insert title))))
-	   (setq title (completing-read prompt titles nil nil nil nil title)))
-	 (if (or (string= title "")
-		 (and (assoc title sessions)
-		      (not (y-or-n-p (format "\"%s\" exists.  Overwrite? "
-					     title)))))
-	     (setq prompt "New session title: ")
-	   (throw 'loop t))))
+     (setq titles (cons (cons otitle otitle) titles))
+     (while (not title)
+       ;; A devious way to emulate INITIAL-INPUT that is deprecated.
+       (let ((minibuffer-setup-hook (lambda nil (insert otitle))))
+         (setq title (completing-read prompt titles nil nil nil nil otitle)))
+       (if (or (string= title "")
+               (and (assoc title sessions)
+                    (not (y-or-n-p (format "\"%s\" exists.  Overwrite? "
+                                           title)))))
+           (setq title nil)))
      (setq cbuf (current-buffer))
      (save-current-buffer
        (while (setq buf (car bufs))
@@ -465,6 +463,8 @@ buffer's url history."
     (define-key map "\C-g" 'w3m-session-select-quit)
     (define-key map "\C-m" 'w3m-session-select-select)
     (define-key map "\M-s" 'w3m-session-select-open-session-group)
+    (define-key map "c" 'w3m-session-select-copy)
+    (define-key map "C" 'w3m-session-select-copy)
     (define-key map "d" 'w3m-session-select-delete)
     (define-key map "D" 'w3m-session-select-delete)
     (define-key map "s" 'w3m-session-select-save)
@@ -644,7 +644,8 @@ buffer in the current session."
   (if w3m-session-group-open
       (let ((num w3m-session-group-open))
 	(setq w3m-session-group-open nil)
-	(w3m-session-select-list-all-sessions))
+	(w3m-session-select-list-all-sessions)
+        (forward-line num))
     (let ((buffer (current-buffer)))
       (or (one-window-p) (delete-window))
       (kill-buffer buffer))))
@@ -717,10 +718,56 @@ buffer in the current session."
       ;;(w3m-session-select)
       ;;(forward-line (min num (- (line-number-at-pos (point-max)) 4))))))
       (if (not w3m-session-group-open)
-	  (w3m-session-select (min num (1- (length sessions))))
+	  (w3m-session-select (min
+                                (if (integerp num) num (car num))
+                                (1- (length sessions))))
 	(w3m-session-select-open-session-group w3m-session-group-open)
-	(forward-line (min (cdr num)
+	(forward-line (min (1+ (cdr num))
 			   (- (line-number-at-pos (point-max)) 4)))))))
+
+(defun w3m-session-select-copy ()
+  "Copy the currently selected session."
+  (interactive)
+  (beginning-of-line)
+  (let ((sessions w3m-session-select-sessions)
+        (default-prompt "Name for new session: ")
+        (source-number (get-text-property (point) 'w3m-session-number))
+        prompt source-session target-session otitle title)
+    (setq prompt default-prompt)
+    (if (not (integerp source-number))
+      (error "Only for sessions, not their elements.")
+     (setq source-session (nth source-number sessions))
+     (setq target-session source-session))
+    (setq otitle (car source-session))
+    ;; BEGIN: Code duplicated in function `w3m-session-rename'
+    (while (not title)
+      ;; A devious way to emulate INITIAL-INPUT that is deprecated.
+      (let ((minibuffer-setup-hook (lambda nil (insert otitle))))
+        (setq title (read-from-minibuffer prompt nil nil nil nil otitle)))
+      (cond
+       ((string= title "")
+        (setq title nil
+              prompt default-prompt))
+       ((string= title otitle)
+        (setq prompt (concat title
+                             " is same as original title (C-g to abort): ")
+              title nil))
+       ((assoc title sessions)
+        (if (not (y-or-n-p (format "\"%s\" exists.  Overwrite? " title)))
+            (setq prompt default-prompt
+                  title nil)
+          (setq sessions (delq (assoc title sessions) sessions))))))
+    ;; END: Code duplicated in function `w3m-session-rename'
+    (setq sessions (cons (list title
+                               (current-time)
+                               (nth 2 source-session)
+                               (nth 3 source-session))
+                         sessions))
+    (w3m-save-list w3m-session-file sessions)
+    (w3m--message t t "Session %s copied to %s." otitle title)
+    (when (and (setq buf (get-buffer " *w3m-session select*"))
+               (get-buffer-window buf 'visible))
+      (save-selected-window (w3m-session-select)))))
 
 (defun w3m-session-select-merge ()
   "Copy the elements of the selected session into another one.
@@ -841,10 +888,10 @@ url will be created, only if it does not already exist."
 (defun w3m-session-rename (sessions num)
   "Rename an entry (either a session or a buffer).
 
-Rename session number NUM, when NUM is an integer.  NUM may also
-be a cons cell, for which the car is a session number and the cdr
-is a buffer entry (i.e., a tab) within that session.  In that case
-rename the buffer entry."
+Rename session number NUM of the SESSIONS data structure, when
+NUM is an integer. NUM may also be a cons cell, for which the car
+is a session number and the cdr is a buffer entry (i.e., a tab)
+within that session. In that case rename the buffer entry."
   (let* ((default-prompt "Enter new session title (C-g to abort): ")
 	 (prompt default-prompt)
 	 overwrite
@@ -852,6 +899,7 @@ rename the buffer entry."
 	 (group (if (consp num) (nth 2 (nth (car num) sessions)) nil))
 	 (tmp  (if group (nth (cdr num) group) (nth num sessions)))
 	 (otitle (if (consp num) (nth 2 (cdr tmp)) (car tmp))))
+    ; BEGIN: Code duplicated in function `w3m-session-copy'
     (while (not title)
       ;; A devious way to emulate INITIAL-INPUT that is deprecated.
       (let ((minibuffer-setup-hook (lambda nil (insert otitle))))
@@ -876,6 +924,8 @@ rename the buffer entry."
 	(setq prompt "\
 Not yet supported.  Manually delete the other entry, or try again. "
 	      title nil))))
+    ;; END: Code duplicated in function `w3m-session-copy'
+
     ;; in this case, wrapper must decrement its copy of num
     ;; BB_2018-02-15: I don't understand that comment
     (cond
@@ -898,15 +948,19 @@ Not yet supported.  Manually delete the other entry, or try again. "
 (defun w3m-session-delete (sessions num)
   "Delete an entry (either a session or a buffer).
 
-Delete session number NUM, when NUM is an integer.  NUM may also
-be a cons cell, for which the car is a session number and the cdr
-is a buffer entry (i.e., a tab) within that session.  In that case
-delete the buffer entry."
-  (if (consp num)
-      (let* ((item (nth 2 (nth (car num) sessions)))
-	     (tmp (delq (nth (cdr num) item) item)))
-	(setf (nth 2 (nth (car num) sessions)) tmp))
-    (setq sessions (delq (nth num sessions) sessions)))
+Delete from the SESSIONS data structure the session number NUM,
+when NUM is an integer. NUM may also be a cons cell, for which
+the car is a session number and the cdr is a buffer entry (i.e.,
+a tab) within that session. In that case delete the buffer
+entry."
+  (if (integerp num)
+    (setq sessions (delq (nth num sessions) sessions))
+   (let* ((item (nth 2 (nth (car num) sessions)))
+          (tmp (delq (nth (cdr num) item) item)))
+     (if (not (zerop (length tmp)))
+       (setf (nth 2 (nth (car num) sessions)) tmp)
+      (setq sessions (delq (nth (car num) sessions) sessions))
+      (setq w3m-session-group-open nil))))
   (if sessions
       (w3m-save-list w3m-session-file sessions)
     (let ((file (expand-file-name w3m-session-file)))
