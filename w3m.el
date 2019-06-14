@@ -10197,7 +10197,10 @@ buffer will start afresh."
 	    (match-beginning 8)
 	    'redisplay))
        charset post-data referer nil nil no-popup)
-      (pop-to-buffer buffer)
+      (when (and (string-match "^file://"  url)
+                 (string-match (or (car w3m-local-find-file-regexps) ".") url)
+                 (not (string-match (cdr w3m-local-find-file-regexps) url)))
+        (pop-to-buffer buffer))
       ;; Delete useless newly created buffer if it is empty.
       (w3m-delete-buffer-if-empty buffer))))
 
