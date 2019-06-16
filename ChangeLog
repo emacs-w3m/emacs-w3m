@@ -1,3 +1,9 @@
+2019-06-16  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-select-buffer-toggle-unseen): New feature.
+	(w3m-select-buffer-mode-map): Bind new feature to 'u'.
+	(w3m-select-buffer-mode): Document new feature.
+
 2019-06-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-select-buffer-show-this-line)
