@@ -1,7 +1,6 @@
 ;;; sb-pcweb-column.el --- shimbun backend for PC WEB COLUMN Square
 
-;; Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007
-;; OHASHI Akira <bg66@koka-in.org>
+;; Copyright (C) 2002-2007, 2019 OHASHI Akira <bg66@koka-in.org>
 
 ;; Author: OHASHI Akira <bg66@koka-in.org>
 ;;         Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
@@ -86,12 +85,11 @@
 (luna-define-method shimbun-article :before
   ((shimbun shimbun-pcweb-column) header &optional outbuf)
   (shimbun-header-set-xref header
-			   (shimbun-replace-in-string
-			    (shimbun-header-xref header)
+			   (replace-regexp-in-string
 			    (format "/%s\\([0-9]+\\)\\.html\\'"
 				    (regexp-quote
 				     (shimbun-current-group shimbun)))
-			    "/\\1/")))
+			    "/\\1/" (shimbun-header-xref header))))
 
 (luna-define-method shimbun-make-contents :before
   ((shimbun shimbun-pcweb-column) header)

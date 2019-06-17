@@ -1,4 +1,4 @@
-;;; sb-lotusex.el --- shimbun backend for http://tsuruo.dominohosting.biz -*- coding: utf-8; -*-
+;;; sb-lotusex.el --- shimbun backend for http://tsuruo.dominohosting.biz
 
 ;; Copyright (C) 2003, 2004 NAKAJIMA Mikio <minakaji@namazu.org>
 

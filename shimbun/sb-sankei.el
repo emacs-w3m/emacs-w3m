@@ -1,4 +1,4 @@
-;;; sb-sankei.el --- shimbun backend for the Sankei News -*- coding: utf-8; -*-
+;;; sb-sankei.el --- shimbun backend for the Sankei News
 
 ;; Copyright (C) 2003-2011, 2013-2019 Katsumi Yamaoka
 
@@ -23,6 +23,9 @@
 ;;; Commentary:
 
 ;;; Code:
+
+(eval-when-compile (require 'cl)) ;; lexical-let
+;; Note: the `w3m-process-do-with-temp-buffer' macro uses `lexical-let'.
 
 (require 'sb-multi)
 
@@ -402,9 +405,10 @@ class=\"pageNextsubhead\"" nil t)
 	  (shimbun-article-base-url shimbun header) "&gt;</a>\n</div>\n"))
 
 (eval-when-compile
-  (require 'cl)
   (require 'w3m-cookie)
   (require 'w3m-form))
+
+(declare-function w3m-cookie-save "w3m-cookie" (&optional domain))
 
 (autoload 'password-cache-add "password-cache")
 (autoload 'password-read-from-cache "password-cache")

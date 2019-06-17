@@ -1,4 +1,4 @@
-;;; sb-atmarkit.el --- shimbun backend for atmarkit -*- coding: utf-8; -*-
+;;; sb-atmarkit.el --- shimbun backend for atmarkit
 
 ;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2010
 ;; NAKAJIMA Mikio <minakaji@namazu.org>

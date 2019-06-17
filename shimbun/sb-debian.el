@@ -1,6 +1,6 @@
 ;;; sb-debian.el --- shimbun backend for debian.org
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2007 OHASHI Akira <bg66@koka-in.org>
+;; Copyright (C) 2001-2003, 2005, 2007, 2019 OHASHI Akira <bg66@koka-in.org>
 
 ;; Author: OHASHI Akira <bg66@koka-in.org>
 ;; Keywords: news
@@ -26,9 +26,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-incf
 (require 'shimbun)
 (require 'sb-mhonarc)
 
@@ -139,7 +137,7 @@
 	(count 0)
 	headers paths)
     (goto-char (point-max))
-    (while (and (if pages (<= (incf count) pages) t)
+    (while (and (if pages (<= (cl-incf count) pages) t)
 		(re-search-backward
 		 (concat "<a href=\"\\([^\"]+\\)/threads.html\">") nil t))
       (push (match-string 1) paths))

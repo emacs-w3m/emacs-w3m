@@ -1,7 +1,6 @@
 ;;; sb-yahoo.el --- shimbun backend for news.yahoo.co.jp -*- coding: utf-8 -*-
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2009, 2010
-;; Kazuyoshi KOREEDA
+;; Copyright (C) 2001-2003, 2005-2007, 2009, 2010, 2019 Kazuyoshi KOREEDA
 
 ;; Author: Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>,
 ;;         Katsumi Yamaoka <yamaoka@jpl.org>
@@ -68,7 +67,7 @@
 		    "\\([^<）]+\\)"
 		    s0 "\\(?:</a>" s0 "\\)?"
 		    s0 "）"
-		    "\\(?:" s0 "-\\(?:[^<]+\)\\)?\
+		    "\\(?:" s0 "-\\(?:[^<]+)\\)?\
 \\|" s0 "\\(?:<[^>]+>" s0 "\\)?\
 \\(?:[01]?[0-9]月\\)?[0-3]?[0-9]日\\(?:([日月火水木金土])\\)?\\)?\
 \\|[01]?[0-9]月[0-3]?[0-9]日\\(?:([日月火水木金土])\\)?\\)"
@@ -177,7 +176,7 @@
   "Alist of group names, their Japanese translations, index pages,
 regexps and numbers.  Where numbers point to the search result in order
 of [0]url, [1]serial number, [2]year, [3]month, [4]day, [5]subject,
-\[6]news source, [7]hour, [8]minute, and [9]news source (the last one
+[6]news source, [7]hour, [8]minute, and [9]news source (the last one
 may not be presented).")
 
 (defvar shimbun-yahoo-groups
@@ -194,7 +193,7 @@ may not be presented).")
   '(("default" . "X-Face: \"Qj}=TahP*`:b#4o_o63:I=\"~wbql=kpF1a>Sp62\
 fpAsVY`saZV[b*GqI!u|i|xKPjNh&P=\n R?n}rh38mkp_:')h=Bh:Rk>0pYF\\I?f\\\
 PvPs3>/KG:03n47U?FC[?DNAR4QAQxE3L;m!L10OM$-]kF\n YD\\]-^qzd#'{(o2cu,\
-\(}CMi|3b9JDQ(^D\\:@DE}d2+0S2G{VS@E*1Og7Vj#35[77\"z9XBq9$1uF$+W\n u")))
+(}CMi|3b9JDQ(^D\\:@DE}d2+0S2G{VS@E*1Og7Vj#35[77\"z9XBq9$1uF$+W\n u")))
 (defvar shimbun-yahoo-expiration-days 7)
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-yahoo))
@@ -252,9 +251,8 @@ class=\"ymuiContainer\"\\)" nil t)
 	(while (re-search-forward regexp nil t)
 	  (setq id (concat "<"
 			   (save-match-data
-			     (shimbun-replace-in-string
-			      (match-string (nth 1 numbers))
-			      "-" "."))
+			     (replace-regexp-in-string
+			      "-" "." (match-string (nth 1 numbers))))
 			   "%" group ".headlines.yahoo.co.jp>"))
 	  (unless (and (shimbun-search-id shimbun id)
 		       (if (and (>= count 1) ;; We're in the next page.

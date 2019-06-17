@@ -1,231 +1,19 @@
-Emacs-w3m $B%K%e!<%9(B -- $B%f!<%6!<$KH=FI$G$-$kJQ99$NMzNr!#(B
+Emacs-w3m ニュース -- ユーザーに判読できる変更の履歴。
 
-Copyright (C) 2007 $BEZ202mL-(B
-$B%i%$%;%s%9$N>r7o$K$D$$$F$O$3$N%U%!%$%k$NKvHx$r8+$F$/$@$5$$!#(B
+Copyright (C) 2019 土屋雅稔
+ライセンスの条件についてはこのファイルの末尾を見てください。
 
-$B%P%0%j%]!<%H$O(B emacs-w3m@namazu.org $B$KAw$C$F$/$@$5$$!#(B
-$B$b$72DG=$J$i(B M-x report-emacs-w3m-bug $B$r;H$C$F$/$@$5$$!#(B
+バグリポートは emacs-w3m@namazu.org に送ってください。
+もし可能なら M-x report-emacs-w3m-bug を使ってください。
 
-$B$3$N%U%!%$%k$O(B emacs-w3m $B%P!<%8%g%s(B 1.5 $B$NJQ99$K4X$9$k$b$N$G$9!#(B
-
-
-* $BI,MW$J(B Emacs $B%P!<%8%g%s$,JQ$o$j$^$7$?(B
-
-** Emacs-w3m $B$O$b$O$d8E$$%P!<%8%g%s$N(B Emacs $B$G$OF0:n$7$^$;$s!#(B
-$B8=:_(B emacs-w3m $B$O(B Emacs 21.1 $B0J>e!"(BXEmacs 21.4.17 $B0J>e!"$^$?$O(B XEmacs
-21.5-b19 $B0J>e$G!"$&$^$/$$$1$PF0:n$9$k$G$7$g$&!#(B
-
-*** $B%P!<%8%g%s$KFC2=$7$?%b%8%e!<%k$O!"8=:_(B w3m-ems.el $B$H(B w3m-xmas.el $B$G$9!#(B
-$B%b%8%e!<%k(B w3m-e21.el$B!"(Bw3m-e23.el$B!"$*$h$S(B w3m-fsf.el $B$O!"(Bw3m-ems.el $B$K(B
-$BE}9g$5$l$^$7$?!#(B
-
-*** $B:#$G$O@55,I=8=$G(B shy group $B$r;H$&$3$H$,$G$-$^$9!#(B
+このファイルは 2019年6月現在の emacs-w3m に関するものです。
 
 
-* $B304Q$K4X$9$kJQ99(B
+* 必要な Emacs バージョンが変わりました
 
-** Emacs-w3m $B$O:#$G$O%$%?%j%C%/BN$N%F%-%9%H$rI=<($9$k$3$H$,$G$-$^$9!#(B
-$B%&%'%V%Z!<%8$OC18l$dJ8$r6/D4$9$k$?$a$K%$%?%j%C%/BN$N%F%-%9%H$rB?MQ$7$^(B
-$B$9$,!"0JA0(B emacs-w3m ($B$H(B w3m) $B$O$=$l$i$rDL>o$N%F%-%9%H$H$7$FI=<($7$^$7(B
-$B$?!#$3$N5!G=$rM-8z$K$9$k$?$a$K$O(B w3m 0.5.2 $B0J>e$r%$%s%9%H!<%k$7$F$"$k(B
-$BI,MW$,$"$j$^$9!#%$%?%j%C%/BN$N%F%-%9%H$rI=<($9$k$?$a$K;H$&(B face $B$O(B
-`w3m-italic' $B$G$9!#(B
-
-** $B%F%-%9%H$N6/D4I=<($,Bg$-$/2~A1$5$l$^$7$?!#(B
-$BB@;z!"%$%?%j%C%/!"2<@~$*$h$S4SDL$N(B face $BB0@-$r!":#$G$OF1$8%F%-%9%H$G=E(B
-$B$M$k$3$H$,$G$-$^$9!#(B
-
-** Emacs-w3m $B$O:#!"%X%C%@!<%i%$%s$K(B uri $B$HBjL>$rI=<($9$k$3$H$,$G$-$^$9!#(B
-$B$3$l$O(B `w3m-use-header-line-title' $BJQ?t$G@)8f$7$^$9!#(B
-
-** Emacs-w3m $B$O:#!"%Z!<%8$NBjL>$r%P%C%U%!!<L>$H$7$F;H$&$3$H$,$G$-$^$9!#(B
-$B$3$l$O(B `w3m-use-title-buffer-name' $BJQ?t$G@)8f$7$^$9!#(B
-
-** $B:#$d(B XPM $B%"%$%3%s$K2C$($F(B PNG $B%"%$%3%s$,MxMQ2DG=$G$9!#(B
-$B$3$l$i$O%D!<%k%P!<$G;H$o$l$k$b$N$G!"(BGTK $B$r;H$&$h$&$K:n$i$l$?(B Emacs $B$K(B
-$B$O@d9%$G$9!#$=$&$$$&$o$1$G(B emacs-w3m $B$O(B GTK Emacs $BMQ$K$O%G%U%)%k%H$G$=(B
-$B$l$i$r;H$$$^$9!#(B`w3m-toolbar-icon-preferred-image-types' $BJQ?t$G$I$N%?(B
-$B%$%W$N%"%$%3%s$r;H$&$+$r@)8f$7$^$9!#(B
-
-
-* $B%?%V!"%;%C%7%g%s!"$*$h$S%a%K%e!<$K4X$9$kJQ99(B
-
-** $BJXMx$J%a%K%e!<$,%j%s%/$N>e$G(B mouse-3 $B$r%/%j%C%/$9$k$H8=$l$^$9!#(B
-$B$b$A$m$s(B tty $B>e$G$OF0$-$^$;$s$1$l$I$M!#(B
-
-** $B8=:_$N%?%V$K$O(B Firefox+TabMixPlus $B$KJo$C$?JXMx$J%a%K%e!<$,$"$j$^$9!#(B
-$B%a%K%e!<$O%?%V$G%^%&%9(B-3 $B$r%/%j%C%/$9$k$H8=$l!"$=$l$i$N%a%K%e!<9`L\$N(B
-$B%-!<%P%$%s%I$rCN$k$3$H$b$G$-$^$9!#$=$N%a%K%e!<$O%a%K%e!<%P!<$N(B `Tab'
-$B%a%K%e!<$G$bMxMQ$G$-$^$9!#(B
-
-** $B:#$G$O%^%&%9%[%$!<%k$G%?%V$rA`:n$9$k$3$H$,$G$-$^$9!#(B
-$B%?%V9T$G%^%&%9%[%$!<%k$r2s$9$H%?%V$,=[4D$7$^$9!#2C$($F!"%^%&%9%[%$!<%k(B
-$B$r2s$7$F$$$k4V%3%s%H%m!<%k!&%-!<$r2!$7$F$$$k$3$H$K$h$C$F!"%?%V$NJB$S49(B
-$B$($,$G$-$^$9!#(B
-
-** $B:#$N(B emacs-w3m $B$O?7$7$$%;%C%7%g%s$r%P%C%/%0%i%&%s%I$G:n$k$3$H$,$G$-$^$9!#(B
-$B$3$l$,M-8z$K$J$C$F$$$k$H!"(Bemacs-w3m $B$K?7$7$$%;%C%7%g%s>e$GK,Ld$9$k$h$&(B
-$B$KL?$8$?%Z!<%8$O!"$=$N%P%C%U%!$rA*Br$9$k$^$G8=$l$^$;$s!#$3$l$O%G%U%)%k(B
-$B%H$GL58z$K$J$C$F$$$^$9!#(B`w3m-new-session-in-background' $BJQ?t$r(B nil $B$G(B
-$B$O$J$$CM$K$9$k$3$H$K$h$C$F!"$=$l$rM-8z$K$9$k$3$H$,$G$-$^$9!#(B
-
-** $B%G%U%)%k%H$G$O(B w3m $B%a%K%e!<$,%a%K%e!<%P!<$NCf$[$I$K8=$l$k$h$&$K$J$j$^$7$?!#(B
-$B0JA0$N$h$&$K%a%K%e!<%P!<$N:8C<$KCV$-$?$$$J$i$P!"(B`w3m-menu-on-forefront'
-$BJQ?t$K(B nil $B$G$O$J$$CM$r@_Dj$7$F$/$@$5$$!#(B
-
-
-* $B%3%s%F%s%D$N%G%3!<%I$K4X$9$kJQ99(B
-
-** Emacs-w3m $B$O:#!"%Z!<%8$,;XDj$9$kJ8;z%;%C%H$N>e0L8_49$N$b$N$r;H$$$^$9!#(B
-$BNc$($P$$$/$D$+$N%h!<%m%C%Q$N%&%'%V%5%$%H$O!"$H$-$I$-(B `iso-8859-1' $BJ8;z(B
-$B%;%C%H$G%Z!<%8$r%(%s%3!<%I$7$F$$$k$H>N$7$F$$$J$,$i(B `windows-1252' $B$r;H$C(B
-$B$F$$$k$3$H$,$"$j$^$9!#$=$N$h$&$J>l9g(B emacs-w3m $B$O%3%s%F%s%D$N%G%3!<%I(B
-$B$K!"$b$7MxMQ2DG=$J$i(B `iso-8859-1' $B$N>e0L8_49$G$"$k(B `windows-1252' $B$r;H(B
-$B$$$^$9!#(B`w3m-compatible-encoding-alist' $BJQ?t$,J8;z%;%C%H$H$=$N>e0L8_49(B
-$B$N$b$N$NBP1~I=$r;}$A$^$9!#(B
-
-** $B:#$d(B emacs-w3m $B$OHs(B-ASCII $BJ8;z$r4^$`%j%s%/$r$?$I$k$3$H$,$G$-$^$9!#(B
-$B%j%s%/$N%3%s%F%s%D$r<h$j9~$`$H$-!"(Bemacs-w3m $B$O$=$N%j%s%/$,$"$k%Z!<%8$r(B
-$B%G%3!<%I$9$k$N$K;H$C$?J8;z%;%C%H$G(B url $B$r%(%s%3!<%I$7$^$9!#(B(Shimbun $B$G(B
-$B$O(B `shimbun-url-coding-system' $B%/%i%9JQ?t$G$=$NJ8;z%;%C%H$r>e=q$-$9$k(B
-$B$3$H$,$G$-$^$9!#0J2<$r;2>H$7$F$/$@$5$$!#(B)
-
-** html $B%=!<%9$r$I$NDxEY%G%3!<%I$9$k$+$r(B emacs-w3m $B$K;X<($G$-$^$9!#(B
-`w3m-view-source' $B%3%^%s%I(B (`\' $B%-!<$K%P%$%s%I$5$l$F$$$k(B) $B$K?tCM$N@\F,(B
-$B0z?t$rM?$($F$/$@$5$$!#>\:Y$O$=$N%3%^%s%I$N@bL@J8$r8+$F$/$@$5$$!#(B
-
-** application/xml $B$N%Z!<%8$r(B text/html $B$H$7$F%G%3!<%I$7$^$9!#(B
-$B%Z!<%8$N%=!<%9$,(B xhtml+xml $B$N$h$&$K8+$($k>l9g$K$=$&$7$^$9!#(B
-
-** $B<+A0$G2hA|%G!<%?$r2r@O$9$k$3$H$K$h$C$FF@$?2hA|$N7?$r?.Mj$7$^$9!#(B
-$B$H$-$I$-%&%'%V%5%$%H$,(B Content-Type $B$H$7$F;XDj$9$k2hA|$N7?$,4V0c$C$F$$(B
-$B$k$+$i$G$9!#8=:_(B gif, jpeg, $B$*$h$S(B png $B$N7?$rFCDj$9$k$3$H$,$G$-$^$9!#(B
-
-
-* $B?7$7$$(B Lisp $B%b%8%e!<%k(B
-
-** w3m-fb.el -- frame-local $B%P%C%U%!!<$N%5%]!<%H!#(B
-$B$$$m$$$m$JL\E*$N$?$a$KJ#?t$N(B emacs-w3m $B$N(B frame $B$r;}$D$3$m$,$G$-$^$9!#(B
-$BNc$($P!"$"$k$b$N$O%K%e!<%9%5%$%HMQ!"B>$O8!:w%(%s%8%sMQ$H$$$&$U$&$K!#(B
-(info "(emacs-w3m-ja)Frame Local Buffers") $B$r8+$F$/$@$5$$!#(B
-
-** w3m-mail.el -- $B%Z!<%8Aw?.$N$?$a$N(B mail-user-agent $B%$%s%?!<%U%'!<%9!#(B
-$B:#8+$F$$$k%&%'%V%Z!<%8$r%a!<%k$GAw?.$9$k$3$H$,$G$-$^$9!#%3%^%s%I$O(B
-`M-x w3m-mail' $B$G$9!#(B`mail-user-agent' $B$rE,@Z$K@_Dj$7$F$*$/I,MW$,$"$k(B
-$B$3$H$KCm0U$7$F$/$@$5$$!#(B
-
-** w3m-session.el -- $B%;%C%7%g%s$rJ]B8(B/$BI|85$9$k$?$a$N5!G=!#(B
-$BJ#?t$N%Z!<%8$rK,Ld$7$F$$$k8=:_$N%;%C%7%g%s$r%U%!%$%k$KJ]B8$9$k$3$H$,$G(B
-$B$-$^$9!#$5$i$K(B `w3m-session-autosave' $B$,(B nil $B0J30$NCM$J$i(B ($B$=$l$,%G%U%)(B
-$B%k%H$G$9(B)$B!"(Bemacs-w3m $B$r=*$($kA0$N:G8e$N%;%C%7%g%s$,<+F0E*$KJ]B8$5$l$^(B
-$B$9!#J]B8$5$l$?%;%C%7%g%s$O8e$GI|85$G$-$^$9!#M-MQ$J%3%^%s%I$OJ]B8$N$?$a(B
-$B$N(B `M-S' $B$H!"J]B8$5$l$?$b$N$NCf$+$iA*Br$9$k$?$a$N(B `M-s' $B$G$9!#$3$l$i$O(B
-`w3m' $B%a%K%e!<$K$"$k(B `Session' $B%5%V%a%K%e!<$G$b;H$&$3$H$,$G$-$^$9!#(B
-
-
-* $B8!:w%(%s%8%s$K4X$9$kJQ99(B
-
-** $B$?$/$5$s$N8!:w%(%s%8%s$,DI2C$5$l$^$7$?!#(B
-(info "(emacs-w3m-ja)Using Search Engines") $B$r8+$F$/$@$5$$!#(B
-
-
-* $B%U%#%k%?!<$K4X$9$kJQ99(B
-
-** Google $B8!:w7k2L$NJ8;z2=$1$rM^@)$7!"8+$d$9$/@07A$9$k$3$H$,$G$-$^$9!#(B
-
-** Amazon $B$N(B uri $B$NC;=L7A$rI=<($9$k$3$H$,$G$-$^$9!#(B
-
-** mixi $B$G$N30ItF|5-I=<($N%@%$%l%/%H%"%/%;%9$r%5%]!<%H$7$^$9!#(B
-
-** $B1Q<-O:(B on the WEB $B$KBP1~$7$^$7$?!#(B
-
-
-* $B$=$NB>(B
-
-** vm-w3m.el $B$O?7$7$$(B VM $B%A!<%`$K0\4I$5$l$^$7$?!#(B
-$B8=:_$O(B VM 8.x $B%Q%C%1!<%8$K$"$j$^$9!#(Bhttp://www.nongnu.org/viewmail/ $B$r(B
-$BK,$M$F$/$@$5$$!#(B
-
-** $B:#$d(B Emacs-w3m $B$O(B uri $B$H$7$FG$0U$NJ8;zNs$r<u$1F~$l$^$9!#(B
-$B$3$N5!G=$O(B Google $B$N!V(BI'm Feeling Lucky$B!W$KJo$C$?$b$N$G!"(BGoogle $B$r;H$C(B
-$B$F$=$NJ8;zNs$r8!:w$7$^$9!#(B`w3m-enable-google-feeling-lucky' $BJQ?t$,$3$N(B
-$B5!G=$r@)8f$7$^$9(B ($B%G%U%)%k%H$GM-8z$K$J$C$F$$$^$9(B)$B!#(B
-
-** `w3m-goto-article-function' $B$O:#$G$O%f!<%6!<%*%W%7%g%s$K$J$j$^$7$?!#(B
-
-** XEmacs 21.5 $B$r0BA4$KF0:n$5$;$^$9!#(B
-XEmacs 21.5 $B$,8G$^$C$F$7$^$&$N$rKI$0$?$a$K!"0lEY$K$?$/$5$s$N%Z!<%8$r%"(B
-$B%/%;%9$9$k$H$-$OHsF14|F0:n$r9T$J$&$3$H$rD|$a$^$7$?!#(B
-
-** $B%3%s%Q%$%k;~$KL5MQ$J7Y9p$,=P$J$$$h$&$K$7$F$$$^$9!#(B
-$B:#8e$b$3$l$OE0Dl$7$F9T$J$$$^$9!#$=$l$O(B emacs-w3m $B$r%3%s%Q%$%k$9$k:]$K(B
-$B??$N%(%i!<$r8+$D$1$k$3$H$rMF0W$K$7$^$9!#(B
-
-** $B%$%s%9%H!<%k@h$N%G%#%l%/%H%jL>$,6uGrJ8;z$r4^$`$3$H$r5vMF$7$^$9!#(B
-
-** $B$3$N%j%j!<%9$G$OB>$K$bB?$/$N2~NI$H%P%0$N=$@5$r9T$J$$$^$7$?!#(B
-($B$=$l$i$N$$$/$D$+$O?7$7$$%P%0$r0z$-5/$3$9$+$b$7$l$^$;$s$1$l$I!#(B)
-
-
-* Shimbun $B$K4X$9$kJQ99(B
-
-** $B?7$7$$(B shimbun $B%/%i%9JQ?t(B `shimbun-prefer-text-plain'$B!#(B
-Shimbun $B%b%8%e!<%k$K(B text/plain $B$N5-;v$H(B html $B5-;v$N$I$A$i$r@8@.$5$;$k(B
-$B$+$r@)8f$7$^$9!#Nc$($P(B sb-asahi.el $B%b%8%e!<%k$O%G%U%)%k%H$G(B text/plain
-$B$N5-;v$r@8@.$7$^$9$,!"(B`shimbun-asahi-prefer-text-plain' $B$r(B nil $B$K@_Dj(B
-$B$9$k$3$H$K$h$C$F(B html $B5-;v$r@8@.$9$k$h$&$K;X<($9$k$3$H$,$G$-$^$9!#H?BP(B
-$B$K!"(Bsb-mainichi.el $B%b%8%e!<%k$O%G%U%)%k%H$G(B html $B5-;v$r@8@.$7$^$9$,!"(B
-`shimbun-mainichi-prefer-text-plain' $B$r(B nil $B$G$O$J$$CM$K@_Dj$9$l$P!"(B
-text/plain $B$N5-;v$r@8@.$5$;$^$9!#$3$N5!G=$KH<$C$F(B sb-asahi-html.el $B$H(B
-sb-yomiuri-html.el $B$O$d$d5l<0$K$J$C$F$$$^$9!#$9$Y$F$N(B shimbun $B%b%8%e!<(B
-$B%k$,$3$l$rG'<1$9$k$o$1$G$O$J$$$3$H$KCm0U$7$F$/$@$5$$!#(B
-
-** Shimbun $B$O8=:_$G$O5-;v$r<hF@$9$k$H$-$K%j%@%$%l%/%H$r%5%]!<%H$7$^$9!#(B
-$B$$$/$D$+$N%&%'%V%5%$%H$N:w0z%Z!<%8$,Ds6!$9$k(B url $B$O5-;v$N%Z!<%8$rD>@\(B
-$B;X$9$b$N$G$O$"$j$^$;$s!#$=$N(B url $B$,;X$7<($9%Z!<%8$K5-;v$NK\Ev$N(B url $B$,(B
-$B$"$C$F!"$7$+$b%/%i%$%"%s%H$K$7$P$i$/BT$D$3$H$rMW5a$7$^$9(B ($BB?$/$O9-9p$r(B
-$BI=<($9$k$?$a(B)$B!#8=:_$N(B shimbun $B$O$=$l$rD4$Y$F!"BT$A;~4VL5$7$GK\Ev$N5-;v(B
-$B$NFbMF$r<hF@$7$^$9!#(B
-
-** Shimbun $B$O:#!"A43Q(B ASCII $BJ8;z$rH>3Q$KJQ49$7$^$9!#(B
-$BA43Q(B ($BI}$N9-$$(B ASCII $B$G$O$J$$J8;z(B) $B$GI=<($5$l$k1QC18l$H?t;z$OFI$_$K$/(B
-$B$$$b$N$G$9!#$9$Y$F$N(B shimbun $B%b%8%e!<%k$G;H$($k$o$1$G$O$J$$$N$G$9$,!"(B
-`shimbun-japanese-hankaku' $BJQ?t$r(B nil $B$G$O$J$$CM$K@_Dj$7$F$_$k2ACM$O$"(B
-$B$k$G$7$g$&!#$=$l$OA43Q$NHs(B-ASCII $BJ8;z$rIaDL$N$b$N$KJQ49$9$k$@$1$G$J$/!"(B
-$BJ,$+$A=q$-(B ($B1Q?t;z$HF|K\8l$NJ8$r6uGr$GJ,N%$9$k$3$H(B) $B$b9T$J$$$^$9!#$3$l(B
-$B$r(B shimbun $B%5!<%P!<C10L$G9T$J$$$?$$$H$-$O!"Be$o$j$K(B
-`shimbun-SERVER-japanese-hankaku' $B$r;H$C$F$/$@$5$$!#(B
-
-** $B?7$7$$(B shimbun $B%/%i%9(B `shimbun-newspaper'$B!#(B
-$BF|K\8l0J30$N(B shimbun $B5-;v$KCx:n8"$K4X$9$kCm0U=q$-$r2C$($k$?$a$K;H$&$b(B
-$B$N$G$9!#F|K\8lMQ$K$O(B `shimbun-japanese-newspaper' $B$r;H$C$F$/$@$5$$!#(B
-
-** $B?7$7$$(B shimbun $B%/%i%9JQ?t(B `shimbun-url-coding-system'$B!#(B
-$B$3$l$O%j%s%/$NHs(B-ASCII $BJ8;z$r4^$`(B url $B$r%(%s%3!<%I$9$k$?$a$NJ8;z%;%C%H(B
-(charset) $B$r>e=q$-$7$^$9(B ($B%G%U%)%k%H$G$O%j%s%/$N(B url $B$O!"$=$N%j%s%/$r(B
-$B4^$`%Z!<%8$r%(%s%3!<%I$7$?$H$-$K;H$C$?J8;z%;%C%H$G%(%s%3!<%I$5$l$^$9(B)$B!#(B
-`shimbun-SERVER-url-coding-system' $BJQ?t$r%5!<%P!<$4$H$K;H$C$F$/$@$5$$!#(B
-
-** $B?7$7$$(B shimbun $B%/%i%9JQ?t(B `shimbun-retry-fetching'$B!#(B
-$B%3%s%F%s%D$N<hF@$K<:GT$7$?$H$-!"$=$l$,@5$N?t$@$C$?$i(B shimbun $B$O$=$N2s(B
-$B?t$^$G%j%H%i%$$7$^$9!#(B`shimbun-SERVER-retry-fetching' $BJQ?t$r%5!<%P!<$4(B
-$B$H$K;H$C$F$/$@$5$$!#(B
-
-** $B?7$7$$(B shimbun $B%b%8%e!<%k$,DI2C$5$l$^$7$?!#(B
-sb-aljazeera.el sb-debugmagazin-de.el sb-gendai-net.el sb-nytimes.el
-sb-ohmynews-jp.el sb-perlentaucher-de.el sb-slashdot.el
-sb-sueddeutsche-de.el sb-tech-on.el 
-
-** $B$$$/$D$+$N(B shimbun $B%b%8%e!<%k$ONI$/%a%s%F$5$l$F$$$^$9$,B>$OH]!#(B
-$B%\%i%s%F%#%"4?7^(B!
-
-*** Gnus $B$N$?$a$N?7$7$$JQ?t(B `nnshimbun-default-group-level'$B!#(B
-$B$3$NJQ?t$NCM$O?75,$K:n$i$l$k(B shimbun $B%0%k!<%W$N!"%0%k!<%W%l%Y%k$N=i4|(B
-$BCM$r7h$a$^$9!#%G%U%)%k%HCM$O(B nil $B$G!"$=$N>l9g(B
-`gnus-level-default-subscribed' $B$N$b$N$,;H$o$l$^$9!#(B
-
-*** Gnus $B$N$?$a$N?7$7$$%3%^%s%I(B `gnus-group-make-shimbun-groups'$B!#(B
-$B$3$l$O0l$D$N%5!<%P!<$K$"$k$9$Y$F$N(B shimbun $B%0%k!<%W$r:n$j$^$9!#(B
+** Emacs-w3m はもはや古いバージョンの Emacs では動作しません。
+現在 emacs-w3m は Emacs 25、26、そしてうまくいけば 27 (まだリリースさ
+れていませんが) で動作するでしょう。XEmacs サポートは終了しました。
 
 
 ----------------------------------------------------------------------
@@ -248,5 +36,4 @@ Boston, MA 02110-1301, USA.
 Local variables:
 mode: outline
 paragraph-separate: "[ 	]*$"
-coding: iso-2022-7bit
 end:

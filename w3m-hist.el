@@ -1,6 +1,6 @@
-;;; w3m-hist.el --- the history management system for emacs-w3m -*- coding: utf-8; -*-
+;;; w3m-hist.el --- the history management system for emacs-w3m
 
-;; Copyright (C) 2001-2012 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2012, 2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -32,8 +32,13 @@
 
 ;;; Code:
 
+;; Delete this section when emacs-w3m drops the Emacs 25 support.
 (eval-when-compile
-  (require 'cl))
+  (unless (>= emacs-major-version 26)
+    (require 'cl))) ;; c[ad][ad][ad]+r
+
+(require 'cl-lib) ;; cl-decf, cl-incf
+
 (require 'w3m-util)
 
 (defcustom w3m-history-reuse-history-elements nil
@@ -62,7 +67,7 @@ See the documentation for the variables `w3m-history' and
 (defcustom w3m-history-minimize-in-new-session nil
   "Non-nil means minimize copied history so that there's only current page.
 This variable is effective when creating of the new session by copying
-\(i.e., `w3m-copy-buffer')."
+(i.e., `w3m-copy-buffer')."
   :group 'w3m
   :type '(boolean :format "%{%t%}: %[%v%]" :on "On" :off "Off"))
 
@@ -70,7 +75,7 @@ This variable is effective when creating of the new session by copying
   "A tree-structured complex list of all the links which you have visited.
 This is a buffer-local variable.  For example, it will grow as follows:
 
-\[Branch-1.0.0.0]:                 +--> U1.0.0.0.0 --> U1.0.0.0.1
+[Branch-1.0.0.0]:                 +--> U1.0.0.0.0 --> U1.0.0.0.1
                                   |
     [Branch-1.0]:         +--> U1.0.0 --> U1.0.1 --> U1.0.2
                           |
@@ -80,7 +85,7 @@ This is a buffer-local variable.  For example, it will grow as follows:
                                  |
     [Branch-2.1]:                +--> U2.1.0 --> U2.1.1 --> U2.1.2
                                                     |
-\[Branch-2.1.1.0]:                                   +--> U2.1.1.0.0
+[Branch-2.1.1.0]:                                   +--> U2.1.1.0.0
 
 In this case, the U1.0.0.0.0 history element represents the first link
 of the first branch which is sprouted from the U1.0.0 history element.
@@ -141,7 +146,7 @@ which contains an odd number of integers.  For example, `(0)' does
 point to U0 and `(2 1 0)' does point to U2.1.0.  Finally, the value of
 the `w3m-history' variable will be constructed as follows:
 
-\(((1) (2) (2 1 0))
+(((1) (2) (2 1 0))
  (\"http://www.U0.org/\" (:title \"U0\" :foo \"bar\"))
  (\"http://www.U1.org/\" (:title \"U1\" :foo \"bar\")
   ((\"http://www.U100.org/\" (:title \"U100\" :foo \"bar\")
@@ -265,7 +270,7 @@ of the elements of the `car' of `w3m-history' (which see)."
     next))
 
 (defun w3m-history-set-plist (plist property value)
-  "Similar to `plist-put' but PLIST is actually modified even in XEmacs.
+  "Similar to `plist-put' but PLIST is actually modified.
 If VALUE is nil, the pair of PROPERTY and VALUE is removed from PLIST.
 Exceptionally, if PLIST is made empty because of removing, it will be
 instead set to `(nil nil)'.  Return PLIST itself."
@@ -350,12 +355,12 @@ previous element."
 	     (while (and (> count 0)
 			 (setq position (caar w3m-history)))
 	       (w3m-history-set-current (setq last position))
-	       (decf count)))
+	       (cl-decf count)))
 	    ((< count 0)
 	     (while (and (< count 0)
 			 (setq position (caddar w3m-history)))
 	       (w3m-history-set-current (setq last position))
-	       (incf count)))
+	       (cl-incf count)))
 	    (t ;; Don't move.
 	     (setq last (cadar w3m-history))))
       (prog1
@@ -718,14 +723,14 @@ are accessible by PREV and NEXT operations."
     (setq w3m-history-flat (w3m-history-slimmed-history-flat))
     (w3m-history-tree position)))
 
-(eval-when-compile
-  (defvar w3m-arrived-db)
-  (autoload 'w3m-goto-url "w3m"))
+(defvar w3m-arrived-db)
+(declare-function w3m-goto-url "w3m"
+		  (url &optional reload charset post-data referer handler))
 
 (defun w3m-history-add-arrived-db ()
   "Add the arrived database to the history structure unreasonably.
 This function is useless normally, so you may not want to use it.
-\(The reason it is here is because it is useful once in a while when
+(The reason it is here is because it is useful once in a while when
 debugging w3m-hist.el.)"
   (interactive)
   (unless (eq 'w3m-mode major-mode)

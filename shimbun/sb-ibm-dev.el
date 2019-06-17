@@ -1,6 +1,6 @@
-;;; sb-ibm-dev.el --- shimbun backend for www-6.ibm.com/ja/developerworks -*- coding: utf-8; -*-
+;;; sb-ibm-dev.el --- shimbun backend for www-6.ibm.com/ja/developerworks
 
-;; Copyright (C) 2001, 2003, 2005, 2007, 2010
+;; Copyright (C) 2001, 2003, 2005, 2007, 2010, 2019
 ;; NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
@@ -26,9 +26,6 @@
 ;;; Commentary:
 
 ;;; Code:
-
-(eval-when-compile
-  (require 'cl))
 
 (require 'shimbun)
 

@@ -1,6 +1,6 @@
-;;; w3m-rss.el --- RSS functions -*- coding: utf-8; -*-
+;;; w3m-rss.el --- RSS functions
 
-;; Copyright (C) 2004, 2005, 2012 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2004, 2005, 2012, 2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -39,21 +39,18 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
+;; Delete this section when emacs-w3m drops the Emacs 25 support.
+(eval-when-compile
+  (unless (>= emacs-major-version 26)
+    (require 'cl))) ;; c[ad][ad][ad]+r
+
+(require 'cl-lib) ;; cl-labels
+
 (require 'w3m-util)
-(autoload 'xml-parse-region "xml")
 
 (eval-and-compile
   (autoload 'timezone-parse-date "timezone")
   (autoload 'timezone-parse-time "timezone"))
-
-(eval-when-compile
-  ;; Avoid warning for Emacs 19 and XEmacs.
-  (unless (fboundp 'match-string-no-properties)
-    (autoload 'match-string-no-properties "poe"))
-  ;; Avoid warning for Emacs 19.
-  (unless (fboundp 'split-string)
-    (autoload 'split-string "poe")))
 
 (defun w3m-rss-parse-date-string (date)
   "Decode DATE string written in the ISO 8601 format or the RFC822 style.
@@ -110,11 +107,11 @@ which are supported by the `timezone-parse-date' function (which see)."
 T?\\(?:\\([0-9][0-9]\\):\\([0-9][0-9]\\)\\(?::\\([.0-9]+\\)\\)?\\)?\
 \\(?:\\([-+]\\)\\([0-9][0-9]\\):?\\([0-9][0-9]\\)\\|Z\\)?"
 		       date)
-	 (w3m-labels ((substr (n default)
-			      (if (match-beginning n)
-				  (string-to-number
-				   (match-string-no-properties n date))
-				default)))
+	 (cl-labels ((substr (n default)
+			     (if (match-beginning n)
+				 (string-to-number
+				  (match-string-no-properties n date))
+			       default)))
 	   (encode-time
 	    (substr 6 0) ;; seconds
 	    (substr 5 0) ;; minitue

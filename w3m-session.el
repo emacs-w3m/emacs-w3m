@@ -1,4 +1,4 @@
-;;; w3m-session.el --- Functions to operate session of w3m -*- coding: utf-8; -*-
+;;; w3m-session.el --- Functions to operate session of w3m
 
 ;; Copyright (C) 2001-2003, 2005-2013, 2017-2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -85,23 +85,34 @@
 
 
 ;;; Code:
-(eval-when-compile (require 'cl))
+
+;; Delete this section when emacs-w3m drops the Emacs 25 support.
+(eval-when-compile
+  (unless (>= emacs-major-version 26)
+    (require 'cl))) ;; c[ad][ad][ad]+r
+
 (require 'w3m-util)
 
-(eval-when-compile
-  (defvar w3m-async-exec)
-  (defvar w3m-async-exec-with-many-urls)
-  (defvar w3m-current-title)
-  (defvar w3m-current-url)
-  (defvar w3m-history)
-  (defvar w3m-history-flat)
-  (defvar w3m-language)
-  (defvar w3m-mode-map)
-  (defvar w3m-profile-directory)
-  (autoload 'w3m-goto-url-new-session "w3m")
-  (autoload 'w3m-history-tree "w3m-hist")
-  (autoload 'w3m-load-list "w3m")
-  (autoload 'w3m-save-list "w3m"))
+(defvar w3m-async-exec)
+(defvar w3m-current-title)
+(defvar w3m-current-url)
+(defvar w3m-history)
+(defvar w3m-history-flat)
+(defvar w3m-language)
+(defvar w3m-mode-map)
+(defvar w3m-profile-directory)
+
+(declare-function w3m--setup-popup-window "w3m" (toggle buffer-name nomsg))
+(declare-function w3m-goto-url-new-session "w3m"
+		  (url &optional reload charset post-data referer no-popup))
+(declare-function w3m-history-slimmed-history-flat "w3m-hist")
+(declare-function w3m-history-tree "w3m-hist" (&optional newpos))
+(declare-function w3m-load-list "w3m" (file &optional coding-system))
+(declare-function w3m-message "w3m" (&rest args))
+(declare-function w3m-save-list "w3m"
+		  (file list &optional coding-system escape-ctl-chars))
+
+(autoload 'seq-position "seq")
 
 (defvar w3m-session-group-open nil
   "Which session-group is open.
@@ -117,17 +128,17 @@ is identical to a 'session' that has more than one 'buffer'.")
 
 (defcustom w3m-session-file
   (expand-file-name ".sessions" w3m-profile-directory)
-  "*File name to keep sessions."
+  "File name to keep sessions."
   :group 'w3m
   :type 'file)
 
 (defcustom w3m-session-autosave t
-  "*Non-nil means save automatically when w3m quit."
+  "Non-nil means save automatically when w3m quit."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-session-deleted-save t
-  "*Non-nil means save deleted sessions."
+  "Non-nil means save deleted sessions."
   :group 'w3m
   :type 'boolean)
 
@@ -137,11 +148,10 @@ is identical to a 'session' that has more than one 'buffer'.")
   :type 'boolean)
 
 (defcustom w3m-session-time-format
-  (if (and (equal "Japanese" w3m-language)
-	   (not (featurep 'xemacs)))
+  (if (equal "Japanese" w3m-language)
       "%Y年%m月%d日(%a) %H:%M"
     "%Y-%m-%d (%a) %H:%M")
-  "*Format of saved time."
+  "Format of saved time."
   :group 'w3m
   :type 'string)
 
@@ -149,7 +159,7 @@ is identical to a 'session' that has more than one 'buffer'.")
   (if (equal "Japanese" w3m-language)
       "自動保存"
     "Automatic saved sessions")
-  "*String of title to save session automatically."
+  "String of title to save session automatically."
   :group 'w3m
   :type 'string)
 
@@ -157,7 +167,7 @@ is identical to a 'session' that has more than one 'buffer'.")
   (if (equal "Japanese" w3m-language)
       "削除セッション"
     "Removed sessions")
-  "*String of title to save session when buffer delete."
+  "String of title to save session when buffer delete."
   :group 'w3m
   :type 'string)
 
@@ -165,27 +175,27 @@ is identical to a 'session' that has more than one 'buffer'.")
   (if (equal "Japanese" w3m-language)
       "クラッシュ回復"
     "Crash recovery sessions")
-  "*String of title to save session to use for crash recovering."
+  "String of title to save session to use for crash recovering."
   :group 'w3m
   :type 'string)
 
 (defcustom w3m-session-deleted-keep-number 5
-  "*Number to keep sessions when buffers delete."
+  "Number to keep sessions when buffers delete."
   :group 'w3m
   :type 'integer)
 
 (defcustom w3m-session-automatic-keep-number 5
-  "*Number to keep sessions automatically."
+  "Number to keep sessions automatically."
   :group 'w3m
   :type 'integer)
 
 (defcustom w3m-session-unknown-title "<Unknown Title>"
-  "*String of title to use when title is not specified."
+  "String of title to use when title is not specified."
   :group 'w3m
   :type 'string)
 
 (defcustom w3m-session-load-last-sessions nil
-  "*Whether to re-load the most recent session when emacs-w3m
+  "Whether to re-load the most recent session when emacs-w3m
 starts."
   :group 'w3m
   :type
@@ -195,7 +205,7 @@ starts."
     (const :format "Never re-load the last session automatically." nil)))
 
 (defcustom w3m-session-load-crashed-sessions 'ask
-  "*Whether to re-load a crashed session when emacs-w3m starts.
+  "Whether to re-load a crashed session when emacs-w3m starts.
 This is used when emacs-w3m determines that the most recent session crashed."
   :group 'w3m
   :type
@@ -216,8 +226,6 @@ This is used when emacs-w3m determines that the most recent session crashed."
     (t nil))
   "Face of w3m-session."
   :group 'w3m)
-;; backward-compatibility alias
-(put 'w3m-session-select-face 'face-alias 'w3m-session-select)
 
 (defface w3m-session-selected
   `((((class color) (background light) (type nil))
@@ -231,8 +239,6 @@ This is used when emacs-w3m determines that the most recent session crashed."
     (t (:bold t :underline t)))
   "Face of selected w3m-session."
   :group 'w3m)
-;; backward-compatibility alias
-(put 'w3m-session-selected-face 'face-alias 'w3m-session-selected)
 
 (defun w3m-session-history-to-save ()
   "Return a copy of `w3m-history-flat' without current page data."
@@ -257,9 +263,7 @@ This is used when emacs-w3m determines that the most recent session crashed."
       (if (and (file-exists-p w3m-session-file)
 	       (yes-or-no-p (format
 			     "An error was found in \"%s\"; may we remove it? "
-			     ,(if (featurep 'xemacs)
-				  '(abbreviate-file-name w3m-session-file t)
-				'(abbreviate-file-name w3m-session-file)))))
+			     (abbreviate-file-name w3m-session-file))))
 	  (progn
 	    (delete-file w3m-session-file)
 	    (run-at-time 0.1 nil #'message
@@ -564,7 +568,7 @@ Meant for use  with  `pre-command-hook' and `post-command-hook'."
 			     `(face w3m-session-select
 				    w3m-session-number ,num))
 	(setq num (1+ num))
-	(insert (make-string (- max (string-width title)) ?\ ))
+	(insert (make-string (- max (string-width title)) ? ))
 	(insert time "\n"))
       (delete-char -1)
       (goto-char (point-min))
@@ -615,7 +619,7 @@ buffer in the current session."
 			     `(face w3m-session-select
 				    w3m-session-number ,(cons arg num)))
 	(setq num (1+ num))
-	(insert (make-string (- max (string-width title)) ?\ ))
+	(insert (make-string (- max (string-width title)) ? ))
 	(insert url "\n"))
       (goto-char (point-min))
       (goto-char (next-single-property-change
@@ -799,7 +803,6 @@ url will be created, only if it does not already exist."
 	(urls (nth 2 session))
 	(cnum (nth 3 session))
 	(i 0)
-	(w3m-async-exec (and w3m-async-exec-with-many-urls w3m-async-exec))
 	(session-buf (current-buffer))
 	(session-win (selected-window))
 	(w3m-urls ; checking for duplicates
@@ -939,42 +942,29 @@ delete the buffer entry."
      w3m-session-save t]
     [,(w3m-make-menu-item "セッションを選択する" "Select Sessions")
      w3m-session-select t])
-  "*List of the session menu items.")
+  "List of the session menu items.")
 
 ;;;###autoload
 (defun w3m-setup-session-menu ()
   "Setup w3m session items in menubar."
-  (w3m-static-if (featurep 'xemacs)
-      (unless (car (find-menu-item current-menubar '("Session")))
-	(easy-menu-define w3m-session-menu w3m-mode-map
-	  "" '("Session" ["(empty)" ignore nil]))
-	(easy-menu-add w3m-session-menu)
-	(add-hook 'activate-menubar-hook 'w3m-session-menubar-update))
-    (unless (lookup-key w3m-mode-map [menu-bar Session])
-      (easy-menu-define w3m-session-menu w3m-mode-map "" '("Session"))
-      (easy-menu-add w3m-session-menu)
-      (add-hook 'menu-bar-update-hook 'w3m-session-menubar-update))))
+  (unless (lookup-key w3m-mode-map [menu-bar Session])
+    (easy-menu-define w3m-session-menu w3m-mode-map "" '("Session"))
+    (easy-menu-add w3m-session-menu)
+    (add-hook 'menu-bar-update-hook 'w3m-session-menubar-update)))
 
 (defvar w3m-session-menu-items-pre nil)
 (defvar w3m-session-menu-items-time nil)
 
 (defun w3m-session-menubar-update ()
   "Update w3m session menubar."
-  (when (and (eq major-mode 'w3m-mode)
-	     (w3m-static-if (featurep 'xemacs)
-		 (frame-property (selected-frame) 'menubar-visible-p)
-	       menu-bar-mode))
+  (when (and (eq major-mode 'w3m-mode) menu-bar-mode)
     (let ((items w3m-session-menu-items)
 	  (pages (w3m-session-make-menu-items)))
       (easy-menu-define w3m-session-menu w3m-mode-map
 	"The menu kepmap for the emacs-w3m session."
 	(cons "Session" (if pages
 			    (append items '("----") pages)
-			  items)))
-      (w3m-static-when (featurep 'xemacs)
-	(when (setq items (car (find-menu-item current-menubar '("Session"))))
-	  (setcdr items (cdr w3m-session-menu))
-	  (set-buffer-menubar current-menubar))))))
+			  items))))))
 
 (defun w3m-session-file-modtime ()
   "Return the modification time of the session file `w3m-session-file'.
@@ -982,13 +972,7 @@ The value is a list of two time values `(HIGH LOW)' if the session
 file exists, otherwise nil."
   (nth 5 (file-attributes w3m-session-file)))
 
-(defvar w3m-session-make-item-xmas
-  (and (equal "Japanese" w3m-language) (featurep 'xemacs)))
-
-(defun w3m-session-make-item (item)
-  (if w3m-session-make-item-xmas
-      (concat item "%_ ")
-    item))
+(defun w3m-session-make-item (item) item)
 
 (defun w3m-session-make-menu-items ()
   "Create w3m session menu items."
@@ -1004,16 +988,15 @@ file exists, otherwise nil."
 	     (and sessions
 		  (mapcar
 		   (lambda (entry)
-		     (cons (w3m-session-make-item (car entry))
+		     (cons (car entry)
 			   (cons (vector "Open all sessions"
 					 `(w3m-session-goto-session
 					   (quote ,entry)))
 				 (mapcar
 				  (lambda (item)
 				    (let ((title
-					   (w3m-session-make-item
-					    (or (nth 3 item)
-						w3m-session-unknown-title))))
+					   (or (nth 3 item)
+					       w3m-session-unknown-title)))
 				      (vector
 				       title
 				       `(w3m-session-goto-session

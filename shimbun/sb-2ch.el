@@ -1,6 +1,6 @@
-;;; sb-2ch.el --- shimbun backend for 2ch.net -*- coding: utf-8; -*-
+;;; sb-2ch.el --- shimbun backend for 2ch.net
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005 by (not 1)
+;; Copyright (C) 2001-2005, 2019 (not 1)
 
 ;; Author: (not 1)
 ;; Keywords: 2ch
@@ -28,10 +28,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl)
-  (require 'static))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-incf
 (require 'shimbun)
 
 (eval-and-compile
@@ -39,7 +36,7 @@
   (luna-define-internal-accessors 'shimbun-2ch))
 
 (defcustom shimbun-2ch-group-alist nil
-  "*An alist of groups and their URLs."
+  "An alist of groups and their URLs."
   :group 'shimbun
   :type '(repeat
 	  (cons :format "%v" :indent 4
@@ -89,7 +86,7 @@ If optional NO-BREAK is non-nil, don't stop even when header found."
        ((looking-at "<b>\\([^<]+\\)<")
 	(setq uaddr (match-string 1))))
       (when (re-search-forward "\
-：\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)\\(\([^\)]\)\\)? \\([0-9]+:[0-9]+\\)"
+：\\([0-9]+\\)/\\([0-9]+\\)/\\([0-9]+\\)\\(([^)])\\)? \\([0-9]+:[0-9]+\\)"
 			       nil t)
 	(setq date (shimbun-make-date-string (string-to-number
 					      (match-string 1))
@@ -135,11 +132,8 @@ If optional NO-BREAK is non-nil, don't stop even when header found."
 		(while (re-search-forward "</?[A-Za-z_][^>]*>" nil t)
 		  (delete-region (match-beginning 0) (match-end 0)))
 		(shimbun-mime-encode-string
-		 (static-if (fboundp 'truncate-string-to-width)
-		     (truncate-string-to-width (buffer-string)
-					       (- 80 (length "subject: ")))
-		   (truncate-string (buffer-string)
-				    (- 80 (length "subject: ")))))))
+		 (truncate-string-to-width (buffer-string)
+					   (- 80 (length "subject: "))))))
 	(when (if (eq num 1) (if last t) t)
 	  (push (shimbun-make-header
 		 num
@@ -222,7 +216,7 @@ Unfortunately, the url name format might have been changed in 2ch"))
 			    indices))))
 	    (setq indices (nreverse indices))))
 	(when (and range
-		   (eq (incf count) range))
+		   (eq (cl-incf count) range))
 	  (setq indices nil))
 	(setq indices (cdr indices)))
       headers)))

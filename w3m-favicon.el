@@ -1,6 +1,6 @@
-;;; w3m-favicon.el --- utilities for handling favicon in emacs-w3m -*- coding: utf-8; -*-
+;;; w3m-favicon.el --- utilities for handling favicon in emacs-w3m
 
-;; Copyright (C) 2001-2005, 2007, 2009, 2011, 2017, 2018
+;; Copyright (C) 2001-2005, 2007, 2009, 2011, 2017, 2018, 2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -29,29 +29,29 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
+(eval-when-compile (require 'cl)) ;; lexical-let
 
-;;(require 'w3m-util)
-;;(require 'w3m-proc)
 (require 'w3m-image)
 
-(eval-when-compile
-  (defvar w3m-current-buffer)
-  (defvar w3m-current-url)
-  (defvar w3m-favicon-image)
-  (defvar w3m-icon-data)
-  (defvar w3m-modeline-favicon)
-  (defvar w3m-profile-directory)
-  (defvar w3m-use-favicon)
-  (defvar w3m-work-buffer-name)
-  (defvar w3m-work-buffer-list)
-  (autoload 'w3m-expand-url "w3m")
-  (autoload 'w3m-load-list "w3m")
-  (autoload 'w3m-message "w3m")
-  (autoload 'w3m-retrieve "w3m")
-  (autoload 'w3m-save-list "w3m")
-  (autoload 'w3m-url-readable-string "w3m"))
+(defvar w3m-current-buffer)
+(defvar w3m-current-url)
+(defvar w3m-favicon-image)
+(defvar w3m-icon-data)
+(defvar w3m-message-silent)
+(defvar w3m-modeline-favicon)
+(defvar w3m-profile-directory)
+(defvar w3m-use-favicon)
+(defvar w3m-work-buffer-name)
+(defvar w3m-work-buffer-list)
+
+(declare-function w3m-expand-url "w3m" (url &optional base))
+(declare-function w3m-load-list "w3m" (file &optional coding-system))
+(declare-function w3m-message "w3m" (&rest args))
+(declare-function w3m-retrieve "w3m" (url &optional no-uncompress no-cache
+					  post-data referer handler))
+(declare-function w3m-save-list "w3m"
+		  (file list &optional coding-system escape-ctl-chars))
+(declare-function w3m-url-readable-string "w3m" (url))
 
 (defcustom w3m-favicon-size nil
   "Size of favicon.  The value should be `(WIDTH . HEIGHT)' or nil.
@@ -69,7 +69,7 @@ be omitted."
 (add-hook 'w3m-display-functions 'w3m-favicon-setup)
 
 (defcustom w3m-favicon-use-cache-file nil
-  "*If non-nil, use favicon cache file."
+  "If non-nil, use favicon cache file."
   :group 'w3m
   :type 'boolean)
 
@@ -82,7 +82,7 @@ by the `w3m-profile-directory' variable."
 		(file :format "%t: %v\n")))
 
 (defcustom w3m-favicon-cache-expire-wait (* 30 24 60 60)
-  "*The cache will be expired after specified seconds passed since retrieval.
+  "The cache will be expired after specified seconds passed since retrieval.
 If this variable is nil, never expired."
   :group 'w3m
   :type 'integer)
@@ -94,22 +94,12 @@ If this variable is nil, never expired."
       (while types
 	(setq type (car types)
 	      types (cdr types))
-	(if (if (featurep 'xemacs)
-		(featurep type)
-	      ;; Silence SXEmacs 22.1.14's byte compiler.
-	      (eval (list 'image-type-available-p (list 'quote type))))
+	(if (image-type-available-p type)
 	    (throw 'det type)))))
-  "*Image type of display favicon."
+  "Image type of display favicon."
   :group 'w3m
   :type (cons 'radio
-	      (let ((types (if (or
-				(featurep 'xemacs)
-				(not (fboundp 'image-types)))
-			       (delq nil
-				     (mapcar (lambda (type)
-					       (if (featurep type) type))
-					     '(gif jpeg png tiff xpm)))
-			     (delq 'postscript (copy-sequence image-types)))))
+	      (let ((types (delq 'postscript (copy-sequence image-types))))
 		(nconc (mapcar (lambda (x)
 				 `(const :format "%v  " ,x))
 			       (butlast types))
@@ -126,10 +116,9 @@ italic font in the modeline."
   "List of additional arguments passed to ImageMagick's convert program.
 Args that are always passed to convert in addition to this value are:
 
-\(\"-geometry\" \"WIDTHxHEIGHT\" \"fromTYPE:temp-file\" \"toTYPE:-\")
+(\"-geometry\" \"WIDTHxHEIGHT\" \"fromTYPE:temp-file\" \"toTYPE:-\")
 
-Args might also contain (\"-transparent\" \"COLOR\") in the beginning.
-Note that this value is effective only with Emacs 22 and greater."
+Args might also contain (\"-transparent\" \"COLOR\") in the beginning."
   :group 'w3m
   :type `(repeat (group :inline t
 			:match-inline
@@ -148,8 +137,7 @@ Note that this value is effective only with Emacs 22 and greater."
   "Color name used as transparent color of favicon image.
 Nil means to use the background color of the Emacs frame.  The null
 string \"\" is special, that will be replaced with the background color
-of the header line or the mode line on which the favicon is displayed.
-Note that this value is effective only with Emacs 22 and greater."
+of the header line or the mode line on which the favicon is displayed."
   :group 'w3m
   :type '(radio (string :format "Color: %v\n"
 			:match (lambda (widget value)
@@ -158,9 +146,7 @@ Note that this value is effective only with Emacs 22 and greater."
 		(const :tag "Null string" "")))
 
 (defvar w3m-favicon-type-alist '((pbm . ppm))
-  "A list of a difference type of image between Emacs and ImageMagick.
- 0. Type of Emacs
- 1. Type of ImageMagick")
+  "A cons of what image type Emacs says and its real type generally told.")
 
 (defvar w3m-favicon-cache-data nil
   "A list of favicon cache (internal variable).
@@ -174,10 +160,7 @@ Each information is a list whose elements are:
 Where IMAGE highly depends on the Emacs version and is not saved in
 the cache file.")
 
-(w3m-static-if (featurep 'xemacs)
-    (set 'w3m-modeline-favicon
-	 '("" w3m-space-before-favicon w3m-favicon-image))
-  (put 'w3m-modeline-favicon 'risky-local-variable t))
+(put 'w3m-modeline-favicon 'risky-local-variable t)
 (make-variable-buffer-local 'w3m-modeline-favicon)
 (make-variable-buffer-local 'w3m-favicon-image)
 
@@ -195,14 +178,12 @@ the cache file.")
 
 (defmacro w3m-favicon-set-image (image)
   "Set IMAGE to `w3m-favicon-image' and `w3m-modeline-favicon'."
-  (if (featurep 'xemacs)
-      `(set 'w3m-favicon-image ,image)
-    `(when (setq w3m-favicon-image ,image)
-       (set 'w3m-modeline-favicon
-	    (list ""
-		  'w3m-space-before-favicon
-		  (propertize "  " 'display w3m-favicon-image)
-		  (propertize " " 'display '(space :width 0.5)))))))
+  `(when (setq w3m-favicon-image ,image)
+     (set 'w3m-modeline-favicon
+	  (list ""
+		'w3m-space-before-favicon
+		(propertize "  " 'display w3m-favicon-image)
+		(propertize " " 'display '(space :width 0.5))))))
 
 (defun w3m-favicon-setup (url)
   "Set up the favicon data in the current buffer.  The buffer-local
@@ -211,11 +192,8 @@ favicon is ready."
   (w3m-favicon-set-image nil)
   (when (and w3m-use-favicon
 	     w3m-current-url
-	     (w3m-static-if (featurep 'xemacs)
-		 (and (device-on-window-system-p)
-		      (featurep w3m-favicon-type))
-	       (and (display-images-p)
-		    (image-type-available-p w3m-favicon-type))))
+	     (display-images-p)
+	     (image-type-available-p w3m-favicon-type))
     (let (icon)
       (cond
        ((and (string-match "\\`about://\\([^/]+\\)/" url)
@@ -241,17 +219,12 @@ favicon is ready."
   (when (or (not (eq type 'ico))
 	    ;; Is it really in the ico format?
 	    (and (>= (length data) 4)
-                 (string-equal "\x00\x00\x01\x00" (substring data 0 4)))
+		 (string-equal "\x00\x00\x01\x00" (substring data 0 4)))
 	    ;; Some icons named favicon.ico are animated GIFs.
 	    (and (>= (length data) 5)
-                 (member (substring data 0 5) '("GIF87" "GIF89"))
+		 (member (substring data 0 5) '("GIF87" "GIF89"))
 		 (setq type 'gif)))
-    (let ((height (or (cdr w3m-favicon-size)
-		      (w3m-static-if (featurep 'xemacs)
-			  (face-height 'default)
-			(frame-char-height))))
-	  (new (w3m-static-unless (featurep 'xemacs)
-		 (>= emacs-major-version 22)))
+    (let ((height (or (cdr w3m-favicon-size) (frame-char-height)))
 	  bg args img)
       ;; Examine the transparent color of the image.
       (when (and w3m-imagick-identify-program
@@ -276,12 +249,10 @@ favicon is ready."
       (setq args (list "-geometry"
 		       (format "%dx%d"
 			       (or (car w3m-favicon-size) height) height)))
-      (w3m-static-unless (featurep 'xemacs)
-	(when new
-	  ;; "-transparent" should precede the other arguments.
-	  (setq args (nconc (when bg (list "-transparent" bg))
-			    args
-			    w3m-favicon-convert-args))))
+      ;; "-transparent" should precede the other arguments.
+      (setq args (nconc (when bg (list "-transparent" bg))
+			args
+			w3m-favicon-convert-args))
       (setq img (apply
 		 #'w3m-imagick-convert-data
 		 data (symbol-name type)
@@ -290,14 +261,13 @@ favicon is ready."
 				  w3m-favicon-type))
 		 args))
       (when img
-	(w3m-static-if (featurep 'xemacs)
-	    (make-glyph
-	     (make-image-instance (vector w3m-favicon-type :data img)))
-	  (if new
-	      (create-image img w3m-favicon-type t
-			    :ascent 'center
-			    :background w3m-favicon-default-background)
-	    (create-image img w3m-favicon-type t :ascent 'center)))))))
+	(create-image img w3m-favicon-type t
+		      :ascent 'center
+		      :background w3m-favicon-default-background)))))
+
+(declare-function zlib-available-p "decompress.c")
+(declare-function zlib-decompress-region "decompress.c"
+		  (start end &optional allow-partial))
 
 (defun w3m-favicon-retrieve (url type target)
   "Retrieve favicon from URL and convert it to image as TYPE in TARGET.
@@ -305,8 +275,8 @@ TYPE is a symbol like `ico' and TARGET is a buffer where the image is
 stored in the `w3m-favicon-image' buffer-local variable."
   (if (and (w3m-favicon-cache-p url)
 	   (or (null w3m-favicon-cache-expire-wait)
-	       (< (- (w3m-float-time)
-		     (w3m-float-time (w3m-favicon-cache-retrieved url)))
+	       (< (- (float-time)
+		     (float-time (w3m-favicon-cache-retrieved url)))
 		  w3m-favicon-cache-expire-wait)))
       (with-current-buffer target
 	(w3m-favicon-set-image (w3m-favicon-cache-favicon url)))
@@ -324,7 +294,7 @@ stored in the `w3m-favicon-image' buffer-local variable."
 		     (>= (buffer-size) 4))
 		(progn
 		  (when (string-equal "\037\213" (buffer-substring 1 3))
-		    (if (fboundp 'zlib-decompress-region)
+		    (if (and (fboundp 'zlib-available-p) (zlib-available-p))
 			(zlib-decompress-region (point-min) (point-max))
 		      (let ((coding-system-for-read 'binary)
 			    (coding-system-for-write 'binary))

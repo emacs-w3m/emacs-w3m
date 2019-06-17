@@ -1,6 +1,6 @@
-;;; mime-w3m.el --- mime-view content filter for text -*- coding: utf-8; -*-
+;;; mime-w3m.el --- mime-view content filter for text
 
-;; Copyright (C) 2001-2005, 2009, 2010, 2012, 2013, 2017
+;; Copyright (C) 2001-2005, 2009, 2010, 2012, 2013, 2017, 2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -33,25 +33,12 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl)
-  (require 'calist)
-  ;; mime-parse.el should be loaded before mime.el so as not to make
-  ;; `mime-uri-parse-cid' an autoloaded function to which the byte
-  ;; compiler might issue a nonsense warning.
-  (require 'mime-parse)
-  (require 'mime)
-  (require 'w3m)
-  (defvar mime-preview-condition)
-  (defvar mime-setup-enable-inline-html)
-  (defvar mime-view-mode-default-map))
-
-(eval-and-compile
-  (when (featurep 'xemacs)
-    (require 'font)))
+(eval-when-compile (require 'cl-lib)) ;; cl-labels
+(require 'mime-view)
+(require 'w3m)
 
 (defcustom mime-w3m-display-inline-images 'default
-  "*Non-nil means that inline images are displayed.
+  "Non-nil means that inline images are displayed.
 When this option is equal to `default',
 `w3m-default-display-inline-images' is refered instead of this option,
 to decide whether inline images are displayed."
@@ -70,7 +57,7 @@ to decide whether inline images are displayed."
 		(const default)))
 
 (defcustom mime-w3m-safe-url-regexp "\\`cid:"
-  "*Regexp that matches safe url names.
+  "Regexp that matches safe url names.
 Some HTML mails might have the trick of spammers using <img> tags.  It
 is likely to be intended to verify whether you have read the mail.
 You can prevent your personal informations from leaking by setting
@@ -83,14 +70,14 @@ set this value to nil if you consider all the urls to be safe."
 
 (defcustom mime-w3m-after-cursor-move-hook
   '(w3m-print-this-url)
-  "*Hook run each time after the cursor moves in mime-w3m buffers.
+  "Hook run each time after the cursor moves in mime-w3m buffers.
 This hook is called by the `mime-w3m-check-current-position' function
 by way of `post-command-hook'."
   :group 'mime-w3m
   :type 'hook)
 
 (defcustom mime-w3m-setup-hook nil
-  "*Hook run at the end of function `mime-w3m-setup'."
+  "Hook run at the end of function `mime-w3m-setup'."
   :group 'mime-w3m
   :type 'hook)
 
@@ -99,10 +86,10 @@ by way of `post-command-hook'."
 
 (defun mime-w3m-insinuate ()
   "Insinuate `mime-w3m' module to SEMI."
-  (setq mime-setup-enable-inline-html nil)
+  (setq mime-view-text/html-previewer nil)
   (let (flag)
     (when (boundp 'mime-preview-condition)
-      (w3m-labels
+      (cl-labels
 	  ((overwrite (x)
 		      (if (symbolp x)
 			  (if (eq x 'mime-preview-text/html)
@@ -137,15 +124,6 @@ by way of `post-command-hook'."
 	  w3m-cid-retrieve-function-alist))
   (run-hooks 'mime-w3m-setup-hook))
 
-(def-edebug-spec mime-w3m-save-background-color t)
-(defmacro mime-w3m-save-background-color (&rest body)
-  (if (featurep 'xemacs)
-      `(let ((color (color-name (face-background 'default))))
-	 (prog1
-	     (progn ,@body)
-	   (font-set-face-background 'default color (current-buffer))))
-    (cons 'progn body)))
-
 ;;;###autoload
 (defun mime-w3m-preview-text/html (entity situation)
   (mime-w3m-setup)
@@ -157,26 +135,25 @@ by way of `post-command-hook'."
     (goto-char p)
     (insert "\n")
     (goto-char p)
-    (mime-w3m-save-background-color
-     (save-restriction
-       (narrow-to-region p p)
-       (mime-insert-text-content entity)
-       (run-hooks 'mime-text-decode-hook)
-       (condition-case err
-	   (let ((w3m-safe-url-regexp mime-w3m-safe-url-regexp)
-		 (w3m-display-inline-images mime-w3m-display-inline-images)
-		 w3m-force-redisplay)
-	     (w3m-region p (point-max)
-			 (and (stringp xref)
-			      (string-match "\\`http://" xref)
-			      xref)
-			 (mime-content-type-parameter
-			  (mime-entity-content-type entity)
-			  "charset"))
-	     (add-text-properties p (point-max)
-				  (list 'keymap w3m-minor-mode-map
-					'text-rendered-by-mime-w3m t)))
-	 (error (message "%s" err)))))))
+    (save-restriction
+      (narrow-to-region p p)
+      (mime-insert-text-content entity)
+      (run-hooks 'mime-text-decode-hook)
+      (condition-case err
+	  (let ((w3m-safe-url-regexp mime-w3m-safe-url-regexp)
+		(w3m-display-inline-images mime-w3m-display-inline-images)
+		w3m-force-redisplay)
+	    (w3m-region p (point-max)
+			(and (stringp xref)
+			     (string-match "\\`http://" xref)
+			     xref)
+			(mime-content-type-parameter
+			 (mime-entity-content-type entity)
+			 "charset"))
+	    (add-text-properties p (point-max)
+				 (list 'keymap w3m-minor-mode-map
+				       'text-rendered-by-mime-w3m t)))
+	(error (message "%s" err))))))
 
 (let (current-load-list)
   (defadvice mime-display-message
@@ -184,8 +161,6 @@ by way of `post-command-hook'."
     "Advised by emacs-w3m.
 Add some emacs-w3m utility functions to pre/post-command-hook."
     (when (featurep 'w3m)
-      (w3m-make-local-hook 'pre-command-hook)
-      (w3m-make-local-hook 'post-command-hook)
       (add-hook 'pre-command-hook 'w3m-store-current-position nil t)
       (add-hook 'post-command-hook 'mime-w3m-check-current-position nil t))))
 
@@ -211,11 +186,6 @@ Add some emacs-w3m utility functions to pre/post-command-hook."
 
 (eval
  (quote
-  ;; Arglist varies according to Emacs version.
-  ;; Emacs 21.1~21.4, 23.3, 24, XEmacs, SXEmacs:
-  ;; (kill-new string &optional replace)
-  ;; Emacs 22.1~23.2:
-  ;; (kill-new string &optional replace yank-handler)
   (defadvice kill-new (before strip-keymap-properties-from-kill activate)
     "Advised by emacs-w3m.
 Strip `keymap' or `local-map' properties from a killed string."

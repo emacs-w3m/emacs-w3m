@@ -1,6 +1,7 @@
 ;;; sb-geocrawler.el --- shimbun backend for geocrawler.com.
 
-;; Copyright (C) 2002, 2003, 2005, 2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2002, 2003, 2005, 2017, 2019
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: news
@@ -146,10 +147,6 @@
 			  (shimbun-expand-url (concat (match-string 1) "/")
 					      url))))))))))
     headers))
-
-(eval-and-compile
-  ;; This is mainly for avoiding a compile warning for old Emacsen.
-  (autoload 'customize-save-variable "cus-edit"))
 
 (defun shimbun-geocrawler-add-group ()
   "Add an group to `shimbun-geocrawler-group-alist' interactively."

@@ -1,8 +1,8 @@
 ;;; sb-fml.el --- shimbun backend class for fml archiver.
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2009, 2010
+;; Copyright (C) 2001-2004, 2009, 2010, 2019
 ;; Akihiro Arisawa <ari@mbf.sphere.ne.jp>
-;; Copyright (C) 2001, 2002, 2003, 2004, 2009, 2010
+;; Copyright (C) 2001-2004, 2009, 2010, 2019
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -34,9 +34,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-incf
 (require 'shimbun)
 
 (luna-define-class shimbun-fml (shimbun) ())
@@ -59,7 +57,7 @@
 	(count 0)
 	headers auxs aux)
     (goto-char (point-min))
-    (while (and (if pages (<= (incf count) pages) t)
+    (while (and (if pages (<= (cl-incf count) pages) t)
 		(re-search-forward "<a href=\"\\([0-9]+\\(\\.week\\|\\.month\\)?\\)/index.html\">" nil t))
       (setq auxs (append auxs (list (match-string 1)))))
     (catch 'stop

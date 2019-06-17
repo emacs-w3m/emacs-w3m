@@ -1,4 +1,4 @@
-;;; sb-wincefan.el --- shimbun backend for WindowsCE FAN -*- coding: utf-8; -*-
+;;; sb-wincefan.el --- shimbun backend for WindowsCE FAN
 
 ;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 

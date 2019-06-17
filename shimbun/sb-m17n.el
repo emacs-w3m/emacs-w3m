@@ -1,6 +1,6 @@
 ;;; sb-m17n.el --- shimbun backend for m17n.org
 
-;; Copyright (C) 2001, 2002, 2003, 2006, 2009
+;; Copyright (C) 2001-2003, 2006, 2009, 2019
 ;; Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 
 ;; Author: Akihiro Arisawa <ari@mbf.sphere.ne.jp>
@@ -25,9 +25,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-incf
 (require 'shimbun)
 (require 'sb-mhonarc)
 
@@ -64,7 +62,7 @@ tcW.jD{Y&/'K6$ls7r8!M%HnBCV[j;?Vr!3l|dWt%.%Wx8nvzk1+w5Uw6Zb\n\
 	headers months)
     (goto-char (point-min))
     (catch 'stop
-      (while (and (if pages (<= (incf count) pages) t)
+      (while (and (if pages (<= (cl-incf count) pages) t)
 		  (re-search-forward
 		   "<A HREF=\"\\([0-9]+\\)/maillist\\.html\">"
 		   nil t)

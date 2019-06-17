@@ -1,4 +1,4 @@
-;;; sb-dennou.el --- shimbun backend class for 電脳街の現場レポート web page. -*- coding: utf-8; -*-
+;;; sb-dennou.el --- shimbun backend class for 電脳街の現場レポート web page.
 
 ;; Copyright (C) 2003, 2004 NAKAJIMA Mikio <minakaji@namazu.org>
 

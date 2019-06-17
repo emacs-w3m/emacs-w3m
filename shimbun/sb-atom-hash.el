@@ -1,6 +1,6 @@
 ;;; sb-atom-hash.el --- shimbun backend for atom content -*- coding: utf-8 -*-
 
-;; Copyright (C) 2006-2009, 2011 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2006-2009, 2011, 2019 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: shimbun
@@ -191,9 +191,9 @@
   (let* ((node (assq (intern (concat namespace (symbol-name local-name)))
 		     element))
 	 (text (shimbun-atom-compose-tag node))
-	 (cleaned-text (if text (shimbun-replace-in-string
-				 text "^[ \000-\037\177]+\\|[ \000-\037\177]+$"
-				 ""))))
+	 (cleaned-text (if text (replace-regexp-in-string
+				 "^[ \000-\037\177]+\\|[ \000-\037\177]+$"
+				 "" text))))
     (if (string-equal "" cleaned-text)
 	nil
       cleaned-text)))

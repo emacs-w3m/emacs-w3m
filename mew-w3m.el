@@ -1,6 +1,6 @@
-;;; mew-w3m.el --- View Text/Html content with w3m in Mew -*- coding: utf-8; -*-
+;;; mew-w3m.el --- View Text/Html content with w3m in Mew
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2008, 2009, 2010
+;; Copyright (C) 2001-2006, 2008-2010, 2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Shun-ichi GOTO  <gotoh@taiyo.co.jp>,
@@ -43,14 +43,13 @@
 ;; (setq mew-use-w3m-minor-mode t)
 ;; (add-hook 'mew-message-hook 'mew-w3m-minor-mode-setter)
 ;;
-;; (3) If you use mew-1.95b118 or later on which Emacs 21, 22 or XEmacs,
-;; can display the images in the Text/Html message.
-;; To activate this feaeture, add following in your ~/.mew file.
+;; (3) To display images in a Text/Html message, add the following snippet
+;; to the ~/.mew file.
 ;;
 ;; (define-key mew-summary-mode-map "T" 'mew-w3m-view-inline-image)
 ;;
-;; Press "T":    Toggle the visibility of the images included its message only.
-;; Press "C-uT": Display the all images included its Text/Html part."
+;; Press "T":    Toggle the visibility of images in only the message.
+;; Press "C-uT": Display images in Text/Html parts in any message.
 ;;
 ;; (4) You can use emacs-w3m to fetch and/or browse
 ;; `external-body with URL access'. To activate this feaeture,
@@ -79,9 +78,9 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl)) ;; lexical-let
 (require 'mew)
 (require 'w3m)
-(eval-when-compile (require 'cl))
 
 ;;; initializer for mew
 (defgroup mew-w3m nil
@@ -89,7 +88,7 @@
   :group 'w3m)
 
 (defcustom mew-use-w3m-minor-mode nil
-  "*Use w3m minor mode in message buffer.
+  "Use w3m minor mode in message buffer.
 Non-nil means that the minor mode whose keymap contains keys binded to
 some emacs-w3m commands are activated in message buffer, when viewing
 Text/Html contents."
@@ -97,18 +96,17 @@ Text/Html contents."
   :type 'boolean)
 
 (defcustom mew-w3m-auto-insert-image nil
-  "*If non-nil, images are inserted automatically in Multipart/Related message.
-This variable is effective only in XEmacs, Emacs 21 and Emacs 22."
+  "Non-nil means insert images inline in an html message automatically."
   :group 'mew-w3m
   :type 'boolean)
 
 (defcustom mew-w3m-cid-retrieve-hook nil
-  "*Hook run after cid retrieved"
+  "Hook run after cid retrieved"
   :group 'mew-w3m
   :type 'hook)
 
 (defcustom mew-w3m-region-cite-mark "&gt;&nbsp;"
-  "*Method of converting `blockquote'."
+  "Method of converting `blockquote'."
   :group 'mew-w3m
   :type '(choice (const :tag "Use Indent" nil)
 		 (const :tag "Use Cite Mark \"> \"" "&gt;&nbsp;")
@@ -116,15 +114,13 @@ This variable is effective only in XEmacs, Emacs 21 and Emacs 22."
 
 (defconst mew-w3m-safe-url-regexp "\\`cid:")
 
-;; Avoid bytecompile error and warnings.
-(eval-when-compile
-  (defvar mew-use-text/html)
-  (unless (fboundp 'mew-current-get-fld)
-    (autoload 'mew-coding-system-p "mew")
-    (autoload 'mew-current-get-fld "mew")
-    (autoload 'mew-current-get-msg "mew")
-    (autoload 'mew-syntax-get-entry-by-cid "mew")
-    (defun mew-cache-hit (&rest args) ())))
+;; Avoid bytecompile errors and warnings.
+(defvar mew-use-text/html)
+(declare-function mew-cache-hit "mew-cache" (fld msg &optional must-hit))
+(declare-function mew-coding-system-p "mew-mule3" (cs))
+(declare-function mew-current-get-fld "mew" (arg))
+(declare-function mew-current-get-msg "mew" (arg))
+(declare-function mew-syntax-get-entry-by-cid "mew-syntax" (syntax cid))
 
 (defmacro mew-w3m-add-text-properties (props)
   `(add-text-properties (point-min)
@@ -166,7 +162,7 @@ This variable is effective only in XEmacs, Emacs 21 and Emacs 22."
 The variable `mew-w3m-region-cite-mark' specifies the citation mark."
   (let ((case-fold-search t))
     (while (and (re-search-forward "\
-\[\t\n ]*<[\t\n ]*blockquote\\(?:[\t\n ]*>\\|[\t\n ]+[^>]+>\\)" nil t)
+[\t\n ]*<[\t\n ]*blockquote\\(?:[\t\n ]*>\\|[\t\n ]+[^>]+>\\)" nil t)
 		(w3m-end-of-tag "blockquote" t))
       (save-restriction
 	(narrow-to-region (match-beginning 0) (match-end 0))
@@ -290,11 +286,7 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
 	    (when (and (re-search-forward "^X-Shimbun-Id: " eoh t)
 		       (goto-char (point-min))
 		       (re-search-forward "^Xref: \\(.+\\)\n" eoh t))
-	      (setq xref (match-string 1))
-	      (w3m-static-if (fboundp 'match-string-no-properties)
-		  (setq xref (match-string-no-properties 1))
-		(setq xref (match-string 1))
-		(set-text-properties 0 (length xref) nil xref))))))
+	      (setq xref (match-string-no-properties 1))))))
       (mew-elet
        (cond
 	((and (null cache) (eq w3m-type 'w3m-m17n))
@@ -333,14 +325,10 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
 			   xref))))
        (mew-w3m-add-text-properties `(w3m t w3m-images ,mew-w3m-auto-insert-image))))))
 
-(defvar w3m-mew-support-cid (and (boundp 'mew-version-number)
-				 (fboundp 'mew-syntax-get-entry-by-cid)))
-
 (defun mew-w3m-cid-retrieve (url &rest args)
   (let ((output-buffer (current-buffer)))
     (with-current-buffer w3m-current-buffer
-      (when (and w3m-mew-support-cid
-		 (string-match "^cid:\\(.+\\)" url))
+      (when (string-match "^cid:\\(.+\\)" url)
 	(setq url (match-string 1 url))
 	(let* ((fld (mew-current-get-fld (mew-frame-id)))
 	       (msg (mew-current-get-msg (mew-frame-id)))
@@ -361,9 +349,8 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
 		  (downcase (car (mew-syntax-get-ct cidstx))))
 	      (run-hooks 'mew-w3m-cid-retrieve-hook))))))))
 
-(when w3m-mew-support-cid
-  (push (cons 'mew-message-mode 'mew-w3m-cid-retrieve)
-	w3m-cid-retrieve-function-alist))
+(push (cons 'mew-message-mode 'mew-w3m-cid-retrieve)
+      w3m-cid-retrieve-function-alist)
 
 (defun mew-w3m-ext-url-show (dummy url)
   (pop-to-buffer (mew-buffer-message))
@@ -389,7 +376,7 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
     (split-window))
   (select-window (next-window))
   (condition-case nil
-      (unless (and (boundp 'mew-init-p) mew-init-p
+      (unless (and mew-init-p
 		   (progn
 		     (mew-summary-jump-to-draft-buffer)
 		     (and (eq major-mode 'mew-draft-mode)
@@ -442,8 +429,7 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
 	(cond
 	 ((string= "text/html" ct)
 	  (insert source)
-	  (setq cs (w3m-static-if (fboundp 'mew-text/html-detect-cs)
-		       (mew-text/html-detect-cs (point-min) (point-max))))
+	  (setq cs (mew-text/html-detect-cs (point-min) (point-max)))
 	  (when (or (eq cs mew-cs-unknown) (not cs))
 	    (cond
 	     (csorig
@@ -452,8 +438,7 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
 	      (setq cs mew-cs-autoconv)))))
 	 ((string= "text/xml" ct)
 	  (insert source)
-	  (setq cs (w3m-static-if (fboundp 'mew-text/html-detect-cs)
-		       (mew-text/html-detect-cs (point-min) (point-max))))
+	  (setq cs (mew-text/html-detect-cs (point-min) (point-max)))
 	  (when (or (eq cs mew-cs-unknown) (not cs))
 	    (cond
 	     (csorig

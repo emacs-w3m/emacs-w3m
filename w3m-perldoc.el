@@ -1,6 +1,6 @@
-;;; w3m-perldoc.el --- The add-on program to view Perl documents. -*- coding: utf-8; -*-
+;;; w3m-perldoc.el --- The add-on program to view Perl documents.
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2017
+;; Copyright (C) 2001-2005, 2007, 2017, 2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -40,18 +40,18 @@
   :prefix "w3m-perldoc-")
 
 (defcustom w3m-perldoc-command "perldoc"
-  "*Name of the executable file of perldoc."
+  "Name of the executable file of perldoc."
   :group 'w3m-perldoc
   :type 'string)
 
 (defcustom w3m-perldoc-pod2html-command "pod2html"
-  "*Name of the executable file of pod2html."
+  "Name of the executable file of pod2html."
   :group 'w3m-perldoc
   :type 'string)
 
 (defcustom w3m-perldoc-pod2html-arguments
   '("--noindex")
-  "*Arguments of pod2html."
+  "Arguments of pod2html."
   :group 'w3m-perldoc
   :type '(repeat (string :format "Argument: %v\n"))
   :get (lambda (symbol)
@@ -69,13 +69,13 @@
     (if (w3m-find-coding-system 'utf-8)
 	'utf-8
       'iso-latin-1))
-  "*Coding system used when writing to `w3m-perldoc-command'."
+  "Coding system used when writing to `w3m-perldoc-command'."
   :group 'w3m-perldoc
   :type 'coding-system)
 
 (defcustom w3m-perldoc-output-coding-system
   'undecided
-  "*Coding system used when reading from `w3m-perldoc-command'."
+  "Coding system used when reading from `w3m-perldoc-command'."
   :group 'w3m-perldoc
   :type 'coding-system)
 

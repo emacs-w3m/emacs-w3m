@@ -39,55 +39,39 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
-(eval-when-compile (require 'static))
-
 (require 'nnoo)
 (require 'nnheader)
 (require 'nnmail)
-
-;; In some platforms, to load gnus-bcklg.el might fail because of the
-;; reason `shell-file-name' has been set mistakenly or the reason the
-;; uncompface program is not available.  That is due to the code which
-;; determines the default value of `gnus-article-compface-xbm'.  See
-;; gnus-ems.el which has been distributed with Emacs 21.1-21.4.  So,
-;; we take the following countermeasure to load gnus-bcklg.el safely.
-(eval-and-compile
-  (condition-case err
-      (require 'gnus-bcklg)
-    (error
-     (if (fboundp 'shell-command-to-string)
-	 (let ((fn (symbol-function 'shell-command-to-string)))
-	   (fset 'shell-command-to-string (lambda (command) ""))
-	   (unwind-protect
-	       (require 'gnus-bcklg)
-	     (fset 'shell-command-to-string fn)))
-       (signal (car err) (cdr err))))))
-
+(require 'gnus-bcklg)
 (require 'shimbun)
 
-(eval-and-compile
-  (autoload 'gnus-declare-backend "gnus-start")
-  (autoload 'gnus-ephemeral-group-p "gnus")
-  (autoload 'gnus-group-change-level "gnus-start")
-  (autoload 'gnus-group-goto-group "gnus-group")
-  (autoload 'gnus-group-group-level "gnus-group")
-  (autoload 'gnus-group-insert-group-line-info "gnus-group")
-  (autoload 'gnus-group-make-group "gnus-group")
-  (autoload 'gnus-group-prefixed-name "gnus")
-  (autoload 'gnus-group-read-ephemeral-group "gnus-group")
-  (autoload 'gnus-group-remove-mark "gnus-group")
-  (autoload 'gnus-group-short-name "gnus")
-  (autoload 'gnus-group-update-group-line "gnus-group")
-  (autoload 'gnus-kill-ephemeral-group "gnus")
-  (autoload 'gnus-summary-refer-article "gnus-sum")
-  (autoload 'message-make-date "message")
-  (autoload 'parse-time-string "parse-time"))
+(declare-function gnus-declare-backend "gnus-start" (name &rest abilities))
+(declare-function gnus-ephemeral-group-p "gnus" (group))
+(declare-function gnus-group-change-level "gnus-start"
+		  (entry level &optional oldlevel previous fromkilled))
+(declare-function gnus-group-goto-group "gnus-group"
+		  (group &optional far test-marked))
+(declare-function gnus-group-group-level "gnus-group")
+(declare-function gnus-group-insert-group-line-info "gnus-group" (group))
+(declare-function gnus-group-make-group "gnus-group"
+		  (name &optional method address args))
+(declare-function gnus-group-prefixed-name "gnus"
+		  (group method &optional full))
+(declare-function gnus-group-read-ephemeral-group "gnus-group"
+		  (group method &optional activate quit-config request-only
+			 select-articles parameters number))
+(declare-function gnus-group-remove-mark "gnus-group"
+		  (group &optional test-marked))
+(declare-function gnus-group-short-name "gnus" (group))
+(declare-function gnus-group-update-group-line "gnus-group")
+(declare-function gnus-kill-ephemeral-group "gnus" (group))
+(declare-function gnus-summary-refer-article "gnus-sum" (message-id))
+(declare-function message-make-date "message" (&optional now))
+(declare-function parse-time-string "parse-time" (string))
 
-(eval-when-compile
-  (defvar gnus-level-default-subscribed)
-  (defvar gnus-level-killed)
-  (defvar gnus-level-subscribed))
+(defvar gnus-level-default-subscribed)
+(defvar gnus-level-killed)
+(defvar gnus-level-subscribed)
 
 (defgroup nnshimbun nil
   "Reading web contents with Gnus."
@@ -97,7 +81,7 @@
 ;; Customizable variables:
 
 (defcustom nnshimbun-keep-backlog 300
-  "*If non-nil, nnshimbun will keep read articles for later re-retrieval.
+  "If non-nil, nnshimbun will keep read articles for later re-retrieval.
 If it is a number N, then nnshimbun will keep only the last N articles
 read.  If it is neither nil nor a number, nnshimbun will keep all read
 articles.  That is not a good idea, though.
@@ -162,49 +146,6 @@ the value of `gnus-level-default-subscribed' will be used."
 		       (symbol :tag "Keyword")
 		       (sexp :tag "Value"))))
   "A type definition for customizing the nnshimbun group parameters.")
-
-(eval-and-compile
-  (defconst nnshimbun-is-compiled-for-modern-gnus
-    (eval-when-compile
-      ;; The `gnus-define-group-parameter' macro isn't available in old Gnusae,
-      ;; e.g. installed Emacs 21 may contain Gnus v5.9 which is the old Gnus.
-      (and (fboundp 'gnus-define-group-parameter)
-	   (condition-case nil
-	       (macroexpand '(gnus-define-group-parameter PARAM))
-	     (error nil))
-	   t))
-    "Non-nil means the nnshimbun.elc file is compiled for the modern Gnus.
-Users should never modify the value."))
-
-(eval-and-compile
-  (let ((flag (if nnshimbun-is-compiled-for-modern-gnus
-		  (if (fboundp 'gnus-define-group-parameter)
-		      nil
-		    (message "\
-Warning: nnshimbun.elc is compiled for the newer Gnus,\
- you should recompile it")
-		    (sit-for 1)
-		    nil)
-		(if (fboundp 'gnus-define-group-parameter)
-		    (progn
-		      (message "\
-Warning: nnshimbun.elc is compiled for the old Gnus,\
- you should recompile it")
-		      (sit-for 1)
-		      '(nil . t))
-		  '(t . t)))))
-    (when (car flag)
-      (defmacro gnus-define-group-parameter (&rest args) nil))
-    (when (cdr flag)
-      (defun nnshimbun-find-group-parameters (name)
-	"Return an nnshimbun GROUP's group parameters."
-	(when name
-	  (or (gnus-group-find-parameter name 'nnshimbun-group-parameters t)
-	      (assoc-default
-	       name
-	       (when (boundp 'nnshimbun-group-parameters-alist)
-		 (symbol-value 'nnshimbun-group-parameters-alist))
-	       (function string-match))))))))
 
 (gnus-define-group-parameter
  ;; This definition provides the `nnshimbun-group-parameters' group

@@ -1,6 +1,6 @@
-;;; octet.el --- An octet stream viewer. -*- coding: utf-8; -*-
+;;; octet.el --- An octet stream viewer.
 
-;; Copyright (C) 2000, 2002, 2003, 2004, 2005, 2010, 2014, 2016, 2017
+;; Copyright (C) 2000, 2002-2005, 2010, 2014, 2016, 2017, 2019
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
@@ -41,11 +41,6 @@
 ;;     + MELPA
 ;;     + http://emacs-w3m.namazu.org/
 ;;     + https://github.com/emacs-w3m/emacs-w3m
-;; + Mule-UCS
-;;   + for UTF-8 decoding
-;;   + available at
-;;     + MELPA
-;;     + ftp://ftp.m17n.org/pub/mule/Mule-UCS/
 ;; + APEL
 ;;   + for character encoding portability
 ;;   + available at
@@ -112,13 +107,9 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
 (require 'poe)     ; for compatibility (from emacs package 'apel)
 (require 'pces)    ; as-binary-process (from emacs package 'apel)
 (require 'mime)    ; SEMI
-(require 'static)
 (require 'w3m-util); w3m-insert-string
 
 ;; Make edebug work for the static-* macros in Emacs 24.4+.
@@ -209,7 +200,7 @@ SUBTYPE is symbol to indicate subtype of content-type.")
     (pdf     octet-filter-call2	     "pdftotext" ("-q" "-eucjp" "-raw") text))
   "Alist of type-to-filter-program.
 Each element should have the form like:
-\(TYPE FUNCTION FILTER_PROGRAM ARGUMENT NEW-TYPE\)
+(TYPE FUNCTION FILTER_PROGRAM ARGUMENT NEW-TYPE)
 nil in NEW-TYPE means filtering is completed.")
 
 (defvar octet-find-file-hook nil)
@@ -257,32 +248,16 @@ nil in NEW-TYPE means filtering is completed.")
   0)
 
 ;; Decode image
-(static-cond
- ((featurep 'xemacs)
-  (defun octet-decode-image (ignore &rest args)
-    (let (glyph)
-      (if (memq (car args) (image-instantiator-format-list))
-	  (progn
-	    (setq glyph (make-glyph (vector (car args) :data (buffer-string))))
-	    (if glyph
-		(progn (erase-buffer)
-		       (set-extent-end-glyph
-			(make-extent (point-min)(point-min))
-			glyph)
-		       0)
-	      1))
-	1))))
- (t
-  (defun octet-decode-image (ignore &rest args)
-    (let (image)
-      (if (image-type-available-p (car args))
-	  (progn
-	    (setq image (create-image (buffer-string) (car args) 'data))
-	    (if image
-		(progn (erase-buffer)
-		       (insert-image image) 0)
-	      1))
-	1)))))
+(defun octet-decode-image (ignore &rest args)
+  (let (image)
+    (if (image-type-available-p (car args))
+	(progn
+	  (setq image (create-image (buffer-string) (car args) 'data))
+	  (if image
+	      (progn (erase-buffer)
+		     (insert-image image) 0)
+	    1))
+      1)))
 
 (defun octet-decode-u8-text (&rest args)
   (let ((string (buffer-string)))
@@ -453,19 +428,6 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 			    (quit "text"))))))
     (while (setq type (octet-filter-buffer type)))))
 
-(static-if (featurep 'xemacs)
-    (defun octet-insert-buffer (from)
-      "Insert after point the contents of BUFFER and the image."
-      (let (extent glyph)
-	(with-current-buffer from
-	  (if (setq extent (extent-at (point-min) nil nil nil 'at))
-	      (setq glyph (extent-end-glyph extent))))
-	(insert-buffer-substring from)
-	(if glyph
-	    (set-extent-end-glyph (make-extent (point) (point))
-				  glyph))))
-  (defalias 'octet-insert-buffer 'insert-buffer))
-
 ;;;###autoload
 (defun octet-find-file (file)
   "Find FILE with octet-stream decoding."
@@ -505,7 +467,7 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 	(w3m-insert-string (mime-entity-content entity))
 	(octet-buffer name (mime-entity-type/subtype entity))
 	(with-current-buffer to-buf
-	  (octet-insert-buffer from-buf)
+	  (insert-buffer-substring from-buf)
 	  (run-hooks 'mime-preview-octet-hook))))))
 
 ;;;###autoload
@@ -549,6 +511,8 @@ If optional CONTENT-TYPE is specified, it is used for type guess."
 	  (view-buffer buf)
 	  (run-hooks 'mime-view-octet-hook)
 	  (goto-char (point-min)))))))
+
+(declare-function ctree-set-calist-strictly "calist" (ctree-var calist))
 
 ;;;###autoload
 (defun octet-mime-setup ()

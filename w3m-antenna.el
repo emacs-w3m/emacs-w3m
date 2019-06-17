@@ -1,6 +1,6 @@
-;;; w3m-antenna.el --- Utility to detect changes of WEB -*- coding: utf-8; -*-
+;;; w3m-antenna.el --- Utility to detect changes of WEB
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2017
+;; Copyright (C) 2001-2005, 2007, 2017, 2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -43,7 +43,10 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl)) ;; lexical-let
+;; `cl' employs `cl-lib'.
+;; (require 'cl-lib) ;; cl-incf
+
 (require 'w3m-util)
 (require 'w3m-rss)
 (require 'w3m)
@@ -72,27 +75,6 @@ with :value-from."
 		      (setq value ""))
 		    value)))
   (widget-default-create widget))
-
-(eval-when-compile
-  ;; Compiler warning in Emacs 19.
-  (autoload 'widget-default-get "wid-edit"))
-
-(apply 'define-widget 'w3m-antenna-function 'function
-       "Bug-fixed version of the `function' widget.
-In Emacs 20.7 through 21.4 and XEmacs, it doesn't represent a value as
-a string internally, converts it into a string in the customization
-buffer, and provides the default value as `ignore'."
-       (if (and (fboundp 'widget-default-get)
-		(widget-default-get
-		 '(function :value-to-external ignore :value foo)))
-	   '(:value-create
-	     (lambda (widget)
-	       (widget-put widget :value
-			   (widget-sexp-value-to-internal widget value))
-	       (widget-field-value-create widget))
-	     :value-to-internal
-	     (lambda (widget value) value)
-	     :value ignore)))
 
 (defvar w3m-antenna-alist nil
   "A list of site information (internal variable).  nil means that
@@ -170,7 +152,7 @@ not to update the page."
 		  (regexp :value "")
 		  (integer :value 0))
 	    (cons :tag "Check with a user defined function"
-		  (w3m-antenna-function
+		  (function
 		   :match (lambda (widget value)
 			    (and (functionp value)
 				 (not (memq value
@@ -374,9 +356,9 @@ from the page that is specified by SITE's key attribute."
 (defun w3m-antenna-check-page (site handler &optional url)
   "Check SITE with the generic procedure.
 It consists of 3 steps:
-\(1\) Check the time when the SITE was last modified with HEAD request.
-\(2\) Check the size of the SITE with HEAD request.
-\(3\) Get the real content of the SITE, and check its size.
+(1) Check the time when the SITE was last modified with HEAD request.
+(2) Check the size of the SITE with HEAD request.
+(3) Get the real content of the SITE, and check its size.
 "
   (lexical-let ((site site)
 		(url (or url
@@ -445,7 +427,7 @@ a list of the results."
     (set buffer (current-buffer))
     (dolist (element sequence)
       (aset (symbol-value table)
-	    (incf index)
+	    (cl-incf index)
 	    (funcall function
 		     element
 		     (cons `(lambda (x)
@@ -461,7 +443,7 @@ results for the further handler functions.  Otherwise, return an
 asynchronous process that has not finished yet."
   (or (catch 'found-proces
 	(let ((index -1))
-	  (while (< (incf index) (length result))
+	  (while (< (cl-incf index) (length result))
 	    (when (w3m-process-p (aref result index))
 	      (throw 'found-proces (aref result index))))))
       (progn

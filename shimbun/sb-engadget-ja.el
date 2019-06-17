@@ -1,4 +1,4 @@
-;;; sb-engadget-ja.el --- shimbun backend for japanese.engadget.com -*- coding: utf-8; -*-
+;;; sb-engadget-ja.el --- shimbun backend for japanese.engadget.com
 
 ;; Copyright (C) 2005, 2006, 2007 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 

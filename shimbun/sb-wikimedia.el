@@ -1,6 +1,7 @@
-;;; sb-wikimedia.el --- shimbun backend for Wikimedia Mailing list -*- coding: utf-8; -*-
+;;; sb-wikimedia.el --- shimbun backend for Wikimedia Mailing list
 
-;; Copyright (C) 2004, 2005, 2007 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2004, 2005, 2007, 2019
+;; Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: news
@@ -97,7 +98,7 @@
 	    "@wikipedia.org"))
 
 (defun shimbun-wikimedia-l10n-make-contents (shimbun header)
-  (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
+  (subst-char-in-region (point-min) (point-max) ?\t ?  t)
   (shimbun-decode-entities)
   (goto-char (point-min))
   (let* ((case-fold-search t)

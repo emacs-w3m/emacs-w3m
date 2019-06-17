@@ -1,6 +1,6 @@
 ;;; sb-toshiba.el --- shimbun backend for TOSHIBA Linux users ML
 
-;; Copyright (C) 2001, 2005 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001, 2005, 2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: news
@@ -28,9 +28,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-incf
 (require 'shimbun)
 (require 'sb-fml)
 
@@ -47,7 +45,7 @@
 	(count 0)
 	headers auxs aux)
     (goto-char (point-min))
-    (while (and (if pages (<= (incf count) pages) t)
+    (while (and (if pages (<= (cl-incf count) pages) t)
 		(re-search-forward "<a href=\"\\([0-9]+\\(\\.week\\|\\.month\\)?\\)/index.html\">" nil t))
       (setq auxs (append auxs (list (match-string 1)))))
     (catch 'stop

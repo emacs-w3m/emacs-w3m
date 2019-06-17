@@ -1,6 +1,6 @@
-;;; w3m-fb.el --- frame-local buffers support for Emacs-w3m -*- coding: utf-8; -*-
+;;; w3m-fb.el --- frame-local buffers support for emacs-w3m
 
-;;; Copyright (C) 2005, 2006, 2018 Matthew P. Hodges
+;;; Copyright (C) 2005, 2006, 2018, 2019 Matthew P. Hodges
 
 ;; Author: Matthew P. Hodges <MPHodges@member.fsf.org>
 ;; Version: $Id$
@@ -38,21 +38,10 @@
 (defconst w3m-fb-version "1.0.0"
   "Version number of this package.")
 
-(eval-when-compile
-  (autoload 'w3m-delete-buffer "w3m" nil t)
-  (autoload 'w3m-list-buffers "w3m-util")
-  (autoload 'w3m-next-buffer "w3m" nil t)
-  (defvar w3m-pop-up-frames))
-
-(eval-and-compile
-  (defalias 'w3m-fb-frame-parameter
-    (cond
-     ((fboundp 'frame-parameter)
-      'frame-parameter)
-     ((fboundp 'frame-property)
-      'frame-property)
-     (t
-      (error "No frame parameter/property function")))))
+(declare-function w3m-delete-buffer "w3m" (&optional force))
+(declare-function w3m-list-buffers "w3m-util" (&optional nosort))
+(declare-function w3m-next-buffer "w3m" (arg &optional buffer))
+(defvar w3m-pop-up-frames)
 
 (defvar w3m-fb-list-buffers-frame nil
   "Frame to list buffers for in `w3m-list-buffers'.
@@ -62,7 +51,7 @@ selected frame are required.")
 ;; Customizable variables
 
 (defgroup w3m-fb nil
-  "Frame local buffers for Emacs-w3m."
+  "Frame local buffers for emacs-w3m."
   :group 'w3m)
 
 (defcustom w3m-fb-delete-frame-kill-buffers t
@@ -107,7 +96,7 @@ selected frame are required.")
 
 (defun w3m-fb-add ()
   "Add current buffer to `w3m-fb-buffer-list'."
-  (let ((val (w3m-fb-frame-parameter nil 'w3m-fb-buffer-list)))
+  (let ((val (frame-parameter nil 'w3m-fb-buffer-list)))
     (w3m-fb-set-frame-parameter
      nil 'w3m-fb-buffer-list (nconc val (list (current-buffer))))))
 
@@ -117,7 +106,7 @@ Applies to all frames."
   (when (eq major-mode 'w3m-mode)
     (let (val)
       (dolist (f (frame-list))
-	(setq val (w3m-fb-frame-parameter f 'w3m-fb-buffer-list))
+	(setq val (frame-parameter f 'w3m-fb-buffer-list))
 	(w3m-fb-set-frame-parameter
 	 f 'w3m-fb-buffer-list (delq (current-buffer) val))))))
 
@@ -142,7 +131,7 @@ Applies to all frames."
     (when rest
       (w3m-fb-set-frame-parameter
        nil 'w3m-fb-buffer-list
-       (nconc (w3m-fb-frame-parameter nil 'w3m-fb-buffer-list) rest)))))
+       (nconc (frame-parameter nil 'w3m-fb-buffer-list) rest)))))
 
 (defun w3m-fb-dissociate ()
   "Disassociate `w3m-mode' buffers from frames."

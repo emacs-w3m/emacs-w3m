@@ -1,6 +1,6 @@
-;;; w3m-form.el --- Stuffs to handle <form> tag -*- coding: utf-8; -*-
+;;; w3m-form.el --- Stuffs to handle <form> tag
 
-;; Copyright (C) 2001-2014, 2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2014, 2017, 2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -37,44 +37,43 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
+(eval-when-compile (require 'cl)) ;; defsetf
+;; The `defsetf' macro uses this function at compile-time.
+(declare-function gv--defsetter "gv" (name setter do args &optional vars))
+;; `cl' employs `cl-lib'.
+;; (require 'cl-lib) ;; cl-incf
 
 (require 'w3m-util)
 (require 'w3m)
 
-(eval-when-compile
-  (defvar w3m-current-forms))
+(defvar w3m-current-forms)
 
 (defcustom w3m-form-use-fancy-faces t
-  "*Use fancy faces to fontify <form> tags."
+  "Use fancy faces to fontify <form> tags."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-form-treat-textarea-size t
-  "*Non-nil means to process textarea size (treat textarea rows)."
+  "Non-nil means to process textarea size (treat textarea rows)."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-form-use-textarea-backup t
-  "*Non-nil means save and restore text that you wrote last in the textarea.
+  "Non-nil means save and restore text that you wrote last in the textarea.
 Files to save text are stored in the directory specified by the
 `w3m-form-textarea-directory' variable."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-form-textarea-file-expire-date 3
-  "*Date to expire of the file for textarea's backup."
+  "Date to expire of the file for textarea's backup."
   :group 'w3m
   :type '(choice (integer :tag "Expire date")
 		 (const :tag "Remove when emacs-w3m exit" t)
 		 (const :tag "No expire" nil)))
 
 (defcustom w3m-form-textarea-file-coding-system
-  (cond ((or (featurep 'un-define)
-	     (fboundp 'utf-translate-cjk-mode))
-	 'utf-8)
-	((equal "Japanese" w3m-language)
+  (cond ((equal "Japanese" w3m-language)
 	 'iso-2022-7bit-ss2)
 	((w3m-find-coding-system 'utf-8)
 	 'utf-8)
@@ -86,12 +85,12 @@ Files to save text are stored in the directory specified by the
 
 (defcustom w3m-form-textarea-directory
   (expand-file-name ".textarea" w3m-profile-directory)
-  "*Name of the directory to save the file of textarea input."
+  "Name of the directory to save the file of textarea input."
   :group 'w3m
   :type 'directory)
 
 (defcustom w3m-form-textarea-edit-mode 'text-mode
-  "*Major mode to edit textarea."
+  "Major mode to edit textarea."
   :group 'w3m
   :type '(choice
 	  (function :tag "Major mode")
@@ -106,10 +105,8 @@ Files to save text are stored in the directory specified by the
   '((((class color) (background light)) (:foreground "cyan" :underline t))
     (((class color) (background dark)) (:foreground "red" :underline t))
     (t (:underline t)))
-  "*Face to fontify forms."
+  "Face to fontify forms."
   :group 'w3m-face)
-;; backward-compatibility alias
-(put 'w3m-form-face 'face-alias 'w3m-form)
 
 (defface w3m-form-inactive
   ;; A copy of the `shadow' face, plus `underline'.
@@ -468,51 +465,29 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
    (when (eq t (car w3m-current-forms))
      (setq w3m-current-forms (cdr w3m-current-forms)))))
 
-(eval-and-compile
-  (unless (fboundp 'w3m-form-make-button)
-    (defun w3m-form-make-button (start end properties &optional readonly)
-      "Make button on the region from START to END with PROPERTIES."
-      (w3m-add-text-properties
-       start end (append (if readonly
-			     '(face w3m-form-inactive w3m-form-readonly t)
-			   '(face w3m-form)
-			   properties))))))
-
 ;;; w3mmee
 ;;
-(eval-and-compile
-  (defalias 'w3m-char-to-int (if (fboundp 'char-to-int)
-				 'char-to-int
-			       'identity))
-  (defalias 'w3m-string-to-char-list (if (fboundp 'string-to-list)
-					 'string-to-list
-				       (lambda (str)
-					 (mapcar 'identity str))))
-  (defalias 'w3m-int-to-char (if (fboundp 'int-to-char)
-				 'int-to-char
-			       'identity)))
-
 (defmacro w3m-form-mee-attr-unquote (x)
   "Unquote form attribute of w3mmee."
   '(let (attr)
      (when (eq (car x) ?T)
        (setq x (cdr x))
-       (while (and x (not (eq (w3m-char-to-int (car x)) 0)))
+       (while (and x (not (eq (car x) 0)))
 	 (setq attr (concat attr (char-to-string (car x))))
 	 (setq x (cdr x))))
      attr))
 
 (defun w3m-form-mee-new (x)
   "Decode form information of w3mmee."
-  (setq x (w3m-string-to-char-list
+  (setq x (string-to-list
 	   (w3m-url-decode-string x w3m-current-coding-system)))
   (let (method enctype action charset target name)
-    (setq method (case (/ (w3m-char-to-int (car x)) 16)
+    (setq method (pcase (/ (car x) 16)
 		   (0 "get")
 		   (1 "post")
 		   (2 "internal")
 		   (3 "head"))
-	  enctype (case (% (w3m-char-to-int (car x)) 16)
+	  enctype (pcase (% (car x) 16)
 		    (0 'application/x-www-form-urlencoded)
 		    (1 'multipart/form-data)))
     (setq x (cdr x))
@@ -521,7 +496,7 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
     (setq x (cdr x))
     (if (member "lang=many" w3m-compile-options)
 	(setq charset (w3m-form-mee-attr-unquote x))
-      (setq charset (case (car x)
+      (setq charset (pcase (car x)
 		      (?e "euc-jp")
 		      (?s "shift-jis")
 		      (?n "iso-2022-7bit"))))
@@ -533,21 +508,21 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
 
 (defun w3m-form-mee-select-value (value)
   "Decode select form information of w3mmee."
-  (let ((clist (w3m-string-to-char-list
+  (let ((clist (string-to-list
 		(w3m-url-decode-string value w3m-current-coding-system)))
 	label val s selected candidates)
     (while clist
-      (setq s (eq (car clist) (w3m-int-to-char 1))
+      (setq s (eq (car clist) 1)
 	    label nil
 	    val nil)
       (setq clist (cdr clist))
-      (while (not (eq (car clist) (w3m-int-to-char 0)))
+      (while (not (eq (car clist) 0))
 	(setq label (concat label (char-to-string (car clist))))
 	(setq clist (cdr clist)))
       (if label
 	  (setq label (decode-coding-string label w3m-output-coding-system)))
       (setq clist (cdr clist))
-      (while (not (eq (car clist) (w3m-int-to-char 0)))
+      (while (not (eq (car clist) 0))
 	(setq val (concat val (char-to-string (car clist))))
 	(setq clist (cdr clist)))
       (if val
@@ -694,7 +669,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	    (unless maps (setq maps (w3m-form-new "map" ".")))
 	    (when candidates
 	      (w3m-form-put maps
-			    (incf id)
+			    (cl-incf id)
 			    name
 			    (nreverse candidates))))))
        ((string= tag "img_alt")
@@ -725,7 +700,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			       (readonly :bool)
 			       no_effect       ; map
 			       name value)
-	  (incf id)
+	  (cl-incf id)
 	  (when value
 	    (setq value (w3m-decode-entities-string value)))
 	  (save-excursion
@@ -911,7 +886,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
       (setq internal-start (match-beginning 0))
       (while (and (null reuse-forms)
 		  (re-search-forward "<\\([a-z]+\\)_int" nil t))
-	(incf id)
+	(cl-incf id)
 	(cond
 	 ((string= (match-string 1) "select")
 	  (w3m-parse-attributes ((selectnumber :integer))
@@ -979,10 +954,10 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		      (make-string (length string) ?.)
 		    (mapconcat 'identity
 			       (split-string
-				(w3m-truncate-string (or string "")
-						     width) "\n")
+				(truncate-string-to-width (or string "")
+							  width) "\n")
 			       "")))
-	    (make-string (max (- width (string-width string)) 0) ?\ ))
+	    (make-string (max (- width (string-width string)) 0) ? ))
     (delete-region (point)
 		   (next-single-property-change (point) 'w3m-action))
     (add-text-properties start (point) prop)
@@ -1076,17 +1051,17 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 ;;; TEXTAREA
 
 (defcustom w3m-form-input-textarea-buffer-lines 10
-  "*Buffer lines for form textarea buffer."
+  "Buffer lines for form textarea buffer."
   :group 'w3m
   :type 'integer)
 
 (defcustom w3m-form-input-textarea-mode-hook nil
-  "*A hook called after w3m-form-input-textarea-mode."
+  "A hook called after w3m-form-input-textarea-mode."
   :group 'w3m
   :type 'hook)
 
 (defcustom w3m-form-input-textarea-set-hook nil
-  "*A Hook called before w3m-form-input-textarea-set."
+  "A Hook called before w3m-form-input-textarea-set."
   :group 'w3m
   :type 'hook)
 
@@ -1133,7 +1108,7 @@ character."
 	(lines 1))
     (save-excursion
       (while (w3m-form-search-textarea s 'backward)
-	(incf lines))
+	(cl-incf lines))
       (list (get-text-property (point) 'w3m-form-id)
 	    (get-text-property (point) 'w3m-form-name)
 	    lines
@@ -1299,18 +1274,10 @@ positive, otherwise text-mode."
   (message "Edit textarea in Org-mode %s"
 	   (if w3m-form-textarea-use-org-mode-p "enabled" "disabled")))
 
-(eval-when-compile (require 'outline))
-(w3m-static-if (fboundp 'outline-show-all)
-    ;; Emacs >=25
-    (progn
-      (autoload 'outline-show-all "outline" nil t)
-      (add-hook 'w3m-form-input-textarea-mode-hook
-		(lambda ()
-		  (and (eq major-mode 'org-mode) (outline-show-all)))))
-  (autoload 'show-all "outline" nil t)
-  (add-hook 'w3m-form-input-textarea-mode-hook
-	    (lambda ()
-	      (and (eq major-mode 'org-mode) (show-all)))))
+(autoload 'outline-show-all "outline" nil t)
+(add-hook 'w3m-form-input-textarea-mode-hook
+	  (lambda ()
+	    (and (eq major-mode 'org-mode) (outline-show-all))))
 
 (defvar view-mode-map)
 (defun w3m-form-input-textarea-mode-setup (caller-buffer readonly)
@@ -1359,40 +1326,6 @@ textarea, or type \
 `\\<w3m-form-input-textarea-map>\\[w3m-form-input-textarea-exit]' to quit \
 textarea")))))
 
-(eval-and-compile
-  (defalias 'w3m-same-window-p
-    (if (featurep 'xemacs)
-	(lambda (buffer-name)
-	  "Return non-nil if a buffer named BUFFER-NAME would be shown in the \"same\" window.
-This function returns non-nil if `display-buffer' or
-`pop-to-buffer' would show a buffer named BUFFER-NAME in the
-selected rather than \(as usual\) some other window.  See
-`same-window-buffer-names' and `same-window-regexps'."
-	  (cond
-	   ((not (stringp buffer-name)))
-	   ;; The elements of `same-window-buffer-names' can be buffer
-	   ;; names or cons cells whose cars are buffer names.
-	   ((and (boundp 'same-window-buffer-names)
-		 (member buffer-name same-window-buffer-names)))
-	   ((and (boundp 'same-window-buffer-names)
-		 (assoc buffer-name same-window-buffer-names)))
-	   ((and (boundp 'same-window-regexps)
-		 (save-match-data
-		   (catch 'found
-		     (dolist (regexp same-window-regexps)
-		       ;; The elements of `same-window-regexps' can be regexps
-		       ;; or cons cells whose cars are regexps.
-		       (when (or (and (stringp regexp)
-				      (string-match regexp buffer-name))
-				 (and (consp regexp) (stringp (car regexp))
-				      (string-match (car regexp) buffer-name)))
-			 (throw 'found t)))))))))
-      'same-window-p)))
-
-(eval-when-compile
-  (unless (fboundp 'split-window-sensibly)
-    (defalias 'split-window-sensibly 'ignore)))
-
 (defun w3m-form-input-textarea (form hseq)
   (let* ((info  (w3m-form-textarea-info))
 	 (value (w3m-form-get form (car info)))
@@ -1437,7 +1370,7 @@ selected rather than \(as usual\) some other window.  See
 	    (when (unless (w3m-form-textarea-same-check value before)
 		    (save-window-excursion
 		      (set-window-buffer (selected-window) (current-buffer))
-		      (goto-char (abs (w3m-compare-strings
+		      (goto-char (abs (compare-strings
 				       before 0 (length before)
 				       value 0 (length value))))
 		      (condition-case nil
@@ -1469,18 +1402,14 @@ selected rather than \(as usual\) some other window.  See
 	;; same frame only
 	(select-window (get-buffer-window (cdr buffer)))
       ;; Use the whole current window for the textarea when a user added
-      ;; the buffer name "*w3m form textarea*" to `same-window-buffer-names'
-      ;; (that is available only in Emacs).
+      ;; the buffer name "*w3m form textarea*" to `same-window-buffer-names'.
       ;; cf.
       ;; <https://lists.gnu.org/archive/html/help-gnu-emacs/2008-11/msg00551.html>
-      (unless (w3m-same-window-p (buffer-name (if (consp buffer)
-						  (cdr buffer)
-						buffer)))
+      (unless (same-window-p (buffer-name (if (consp buffer)
+					      (cdr buffer)
+					    buffer)))
 	(condition-case nil
-	    (if (and w3m-form-textarea-use-org-mode-p
-		     (fboundp 'split-window-sensibly) ;; Emacs >= 23
-		     (not (eq (symbol-function 'split-window-sensibly)
-			      'ignore)))
+	    (if w3m-form-textarea-use-org-mode-p
 		(split-window-sensibly cur-win)
 	      (split-window cur-win (if (> size 0) size window-min-height)))
 	  (error
@@ -1593,22 +1522,22 @@ selected rather than \(as usual\) some other window.  See
 ;;; SELECT
 
 (defcustom w3m-form-input-select-buffer-lines 10
-  "*Buffer lines for form select buffer."
+  "Buffer lines for form select buffer."
   :group 'w3m
   :type 'integer)
 
 (defcustom w3m-form-input-select-mode-hook nil
-  "*A hook called after w3m-form-input-select-mode."
+  "A hook called after w3m-form-input-select-mode."
   :group 'w3m
   :type 'hook)
 
 (defcustom w3m-form-input-select-set-hook nil
-  "*A Hook called before w3m-form-input-select-set."
+  "A Hook called before w3m-form-input-select-set."
   :group 'w3m
   :type 'hook)
 
 (defcustom w3m-form-mouse-face 'highlight
-  "*Mouse face to highlight selected value."
+  "Mouse face to highlight selected value."
   :group 'w3m
   :type 'face)
 
@@ -1633,11 +1562,8 @@ selected rather than \(as usual\) some other window.  See
   (define-key w3m-form-input-select-keymap "j" 'next-line)
   (define-key w3m-form-input-select-keymap "k" 'previous-line)
   (define-key w3m-form-input-select-keymap "l" 'forward-char)
-  (if (featurep 'xemacs)
-      (define-key w3m-form-input-select-keymap [(button2)]
-	'w3m-form-input-select-set-mouse)
-    (define-key w3m-form-input-select-keymap [mouse-2]
-      'w3m-form-input-select-set-mouse)))
+  (define-key w3m-form-input-select-keymap [mouse-2]
+    'w3m-form-input-select-set-mouse))
 
 (defun w3m-form-input-select-set-mouse (event)
   "Save and exit from w3m form select mode with mouse."
@@ -1700,7 +1626,7 @@ selected rather than \(as usual\) some other window.  See
 	major-mode 'w3m-form-input-select-mode)
   (setq buffer-read-only t)
   (use-local-map w3m-form-input-select-keymap)
-  (w3m-run-mode-hooks 'w3m-form-input-select-mode-hook))
+  (run-mode-hooks 'w3m-form-input-select-mode-hook))
 
 (defun w3m-form-input-select (form id name)
   (if (get-text-property (point) 'w3m-form-readonly)
@@ -1777,17 +1703,17 @@ selected rather than \(as usual\) some other window.  See
 ;;; MAP
 
 (defcustom w3m-form-input-map-buffer-lines 10
-  "*Buffer lines for form select map buffer."
+  "Buffer lines for form select map buffer."
   :group 'w3m
   :type 'integer)
 
 (defcustom w3m-form-input-map-mode-hook nil
-  "*A hook called after w3m-form-input-map-mode."
+  "A hook called after w3m-form-input-map-mode."
   :group 'w3m
   :type 'hook)
 
 (defcustom w3m-form-input-map-set-hook nil
-  "*A Hook called before w3m-form-input-map-set."
+  "A Hook called before w3m-form-input-map-set."
   :group 'w3m
   :type 'hook)
 
@@ -1812,11 +1738,8 @@ selected rather than \(as usual\) some other window.  See
   (define-key w3m-form-input-map-keymap "j" 'next-line)
   (define-key w3m-form-input-map-keymap "k" 'previous-line)
   (define-key w3m-form-input-map-keymap "l" 'forward-char)
-  (if (featurep 'xemacs)
-      (define-key w3m-form-input-map-keymap [(button2)]
-	'w3m-form-input-map-set-mouse)
-    (define-key w3m-form-input-map-keymap [mouse-2]
-      'w3m-form-input-map-set-mouse)))
+  (define-key w3m-form-input-map-keymap [mouse-2]
+    'w3m-form-input-map-set-mouse))
 
 (defun w3m-form-input-map-set-mouse (event)
   "Save and exit from w3m form select map mode with mouse."
@@ -1870,7 +1793,7 @@ selected rather than \(as usual\) some other window.  See
 	major-mode 'w3m-form-input-map-mode)
   (setq buffer-read-only t)
   (use-local-map w3m-form-input-map-keymap)
-  (w3m-run-mode-hooks 'w3m-form-input-map-mode-hook))
+  (run-mode-hooks 'w3m-form-input-map-mode-hook))
 
 (defun w3m-form-input-map (form id name)
   (let* ((value (w3m-form-get-by-name form id name))
@@ -2069,9 +1992,8 @@ selected rather than \(as usual\) some other window.  See
 	    (setq to nil)))
 	(setq keymap (make-sparse-keymap))
 	(define-key keymap "c" `(lambda nil (interactive) (kill-new ,value)))
-	(w3m-static-when (featurep 'emacs)
-	  (define-key keymap [mouse-1] 'ignore)
-	  (define-key keymap [drag-mouse-1] 'ignore))
+	(define-key keymap [mouse-1] 'ignore)
+	(define-key keymap [drag-mouse-1] 'ignore)
 	(if (<= (length (replace-regexp-in-string "[\t\n ]+" "" value))
 		(length (replace-regexp-in-string
 			 "[\t\n ]+" ""

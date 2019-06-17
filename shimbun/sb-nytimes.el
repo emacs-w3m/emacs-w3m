@@ -1,6 +1,6 @@
 ;;; sb-nytimes.el --- shimbun backend for The New York Times
 
-;; Copyright (C) 2007, 2008, 2009, 2010 Katsumi Yamaoka
+;; Copyright (C) 2007-2010, 2019 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -349,7 +349,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAHYAAAAQAgMAAAC+ZGPFAAAADFBMVEVLS0u8vLz///8ICAg
 	(replace-match "\\1<br>"))
       ;; Remove the `Skip to next paragraph' buttons.
       (goto-char (point-min))
-      (while (re-search-forward "\[\t\n ]*\
+      (while (re-search-forward "[\t\n ]*\
 \\(?:<div[\t\n ]+[^>]+>[\t\n ]*\\)*\
 <a[\t\n ]+href=\"#\\([^\"]+\\)\"[^>]*>[\t\n ]*\
 Skip[\t\n ]+to[\t\n ]+next[\t\n ]+paragraph[\t\n ]*</a>[\t\n ]*"
@@ -388,8 +388,8 @@ Skip[\t\n ]+to[\t\n ]+next[\t\n ]+paragraph[\t\n ]*</a>[\t\n ]*"
       ;; Remove useless timesselect stuff.
       (goto-char (point-min))
       (while (re-search-forward "[\t\n ]*<img\\(?:[\t\n ]+[^\t\n >]+\\)*\
-\[\t\n ]+src=\"[^\"]*/ts_icon\\.gif\"\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>\
-\[\t\n ]*"
+[\t\n ]+src=\"[^\"]*/ts_icon\\.gif\"\\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>\
+[\t\n ]*"
 				nil t)
 	(delete-region (match-beginning 0) (match-end 0)))
       ;; Replace wide apostrophe with the normal one.
@@ -400,7 +400,7 @@ Skip[\t\n ]+to[\t\n ]+next[\t\n ]+paragraph[\t\n ]*</a>[\t\n ]*"
       (goto-char (point-min))
       (while (re-search-forward "[\t\n ]*\\(?:<p>[\t\n ]*\\)+\
 \\(<font[\t\n ]+[^>]+>[\t\n ]*(Page[\t\n ]+[0-9]+[\t\n ]+of[\t\n ]+[0-9]+)\
-\[\t\n ]*</font>\\)\\(?:[\t\n ]*<p>\\)+[\t\n ]*"
+[\t\n ]*</font>\\)\\(?:[\t\n ]*<p>\\)+[\t\n ]*"
 				nil t)
 	(replace-match "\n&#012;\\1\n<p>"))
       ;; Add last newline.
@@ -434,7 +434,7 @@ Skip[\t\n ]+to[\t\n ]+next[\t\n ]+paragraph[\t\n ]*</a>[\t\n ]*"
       ;; Replace wide apostrophe with the normal one in the subject.
       (when apostrophe
 	(shimbun-header-set-subject
-	 header (shimbun-subst-char-in-string
+	 header (subst-char-in-string
 		 apostrophe ?' (shimbun-header-subject header t)))))))
 
 (provide 'sb-nytimes)

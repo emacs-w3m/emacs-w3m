@@ -1,6 +1,6 @@
 ;;; w3m-filter.el --- filtering utility of advertisements on WEB sites -*- coding: utf-8 -*-
 
-;; Copyright (C) 2001-2008, 2012-2015, 2017, 2018, 2019
+;; Copyright (C) 2001-2008, 2012-2015, 2017-2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -33,9 +33,6 @@
 ;;; Code:
 
 (provide 'w3m-filter)
-
-(eval-when-compile
-  (require 'cl))
 
 (require 'w3m)
 
@@ -122,10 +119,6 @@
      "A filter for http://eow.alc.co.jp/*/UTF-8*"
      "\\`http://eow\\.alc\\.co\\.jp/[^/]+/UTF-8" w3m-filter-alc)
     (nil
-     ("A filter for Asahi Shimbun"
-      "朝日新聞用フィルタ")
-     "\\`http://www\\.asahi\\.com/" w3m-filter-asahi-shimbun)
-    (nil
      "A filter for http://imepita.jp/NUM/NUM*"
      "\\`http://imepita\\.jp/[0-9]+/[0-9]+" w3m-filter-imepita)
     (nil
@@ -151,13 +144,13 @@
   "List of filter configurations applied to web contents.
 Each filter configuration consists of the following form:
 
-\(FLAG DESCRIPTION REGEXP FUNCTION)
+(FLAG DESCRIPTION REGEXP FUNCTION)
 
 FLAG
   Non-nil means this filter is enabled.
 DESCRIPTION
   Describe what this filter does.  The value may be a string or a list
-  of two strings; in the later case, those descriptions are written in
+  of two strings; in the latter case, those descriptions are written in
   English and Japanese respectively, and only either one is displayed
   in the customization buffer according to `w3m-language'.
 REGEXP
@@ -167,7 +160,7 @@ FUNCTION
   Filter function to run on web contents.  The value may be a function
   or a list of a function and rest argument(s).  A function should take
   at least one argument, a url of contents retrieved then, as the first
-  argument even if it is useless.  Use the later (i.e. a function and
+  argument even if it is useless.  Use the latter (i.e. a function and
   arguments) if the function requires rest arguments."
   :group 'w3m
   :type '(repeat
@@ -189,12 +182,6 @@ FUNCTION
 			     (apply #',fn args)))))
 	    `((group
 	       :indent 2
-
-	       ;; Work around a widget bug: the default value of `choice'
-	       ;; gets nil regardless of the type of items if it is within
-	       ;; (group :inline t ...).  Fixed in Emacs 24.4 (Bug#12670).
-	       :default-get (lambda (widget) '(t "Not documented" ".*" ignore))
-
 	       :value-create
 	       (lambda (widget)
 		 (widget-group-value-create widget)
@@ -272,16 +259,14 @@ This variable is semi-obsolete; use `w3m-filter-configuration' instead."
 		  (function :tag "Filter with a user defined function"
 			    :format "Function: %v\n")))))
 
-(defcustom w3m-filter-google-use-utf8
-  (or (featurep 'un-define) (fboundp 'utf-translate-cjk-mode)
-      (and (not (equal "Japanese" w3m-language))
-	   (w3m-find-coding-system 'utf-8)))
-  "*Use the converting rule to UTF-8 on the site of Google."
+(defcustom w3m-filter-google-use-utf8 (not (equal "Japanese" w3m-language))
+  ;; FIXME: what does this docstring say? - ky
+  "Use the converting rule to UTF-8 on the site of Google."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-filter-google-use-ruled-line  t
-  "*Use the ruled line on the site of Google."
+  "Use the ruled line on the site of Google."
   :group 'w3m
   :type 'boolean)
 
@@ -304,12 +289,12 @@ This variable is semi-obsolete; use `w3m-filter-configuration' instead."
    "\\(?:[^/]+/\\)?dp"
    "\\)"
    "/\\([0-9]+\\)")
-  "*Regexp to extract ASIN number for Amazon."
+  "Regexp to extract ASIN number for Amazon."
   :group 'w3m
   :type 'string)
 
 (defcustom w3m-filter-amazon-short-url-bottom nil
-  "*Amazon short URLs insert bottom position."
+  "Amazon short URLs insert bottom position."
   :group 'w3m
   :type 'boolean)
 
@@ -383,7 +368,7 @@ If USE-REGEX is non-nil, treat START and END as regular expressions.
 START-POS is a position from which to begin deletions.
 END-POS is a position at which to stop deletions.
 COUNT is the maximum number of deletions to make."
-  `(let (p (i 0))
+  `(let (p (i 0) _dummy)
      (goto-char ,(or start-pos '(point-min)))
      (while (and ,@(if count `((< i ,count)))
 		 ,(if use-regex
@@ -399,7 +384,7 @@ COUNT is the maximum number of deletions to make."
 			     '(match-beginning 0)
 			   '(match-end 0)))
        (setq i (1+ i)))
-     (> i 0)))
+     (setq _dummy (> i 0))))
 
 (defmacro w3m-filter-replace-regexp (url regexp to-string
 					 &optional start-pos end-pos count)
@@ -407,7 +392,7 @@ COUNT is the maximum number of deletions to make."
 Return t if at least one replacement is made.
 Optional START-POS, END-POS, and COUNT limit the scope of
 the replacements."
-  `(let ((i 0))
+  `(let ((i 0) _dummy)
      (goto-char ,(or start-pos '(point-min)))
      (while ,(if count
 		 `(and (< i ,count)
@@ -415,7 +400,7 @@ the replacements."
 	       `#1#)
        (replace-match ,to-string nil nil)
        (setq i (1+ i)))
-     (> i 0)))
+     (setq _dummy (> i 0))))
 
 ;; Filter functions:
 (defun w3m-filter-google-click-tracking (url)
@@ -458,7 +443,7 @@ href=\"\\)\\(?:[^\"]+\\)?/\\(?:imgres\\?imgurl\\|url\\?\\(?:q\\|url\\)\\)=\
 	  (narrow-to-region (goto-char (match-beginning 0))
 			    (match-end 0))
 	  (while (re-search-forward "\
-\[\t\n\r ]*\\(?:\\(?:rowspan\\|width\\)=\"[^\"]+\"\\|<br>\\)[\t\n\r ]*"
+[\t\n\r ]*\\(?:\\(?:rowspan\\|width\\)=\"[^\"]+\"\\|<br>\\)[\t\n\r ]*"
 				    nil t)
 	    ;; Preserve a space at the line-break point.
 	    (replace-match " "))
@@ -605,20 +590,6 @@ href=\"#\\([^\"]+\\)\"" nil t)
       (goto-char (point-min))
       (while (search-forward mark nil t)
 	(delete-region (match-beginning 0) (match-end 0))))))
-
-(defun w3m-filter-asahi-shimbun (url)
-  "Convert entity reference of UCS."
-  (when w3m-use-mule-ucs
-    (goto-char (point-min))
-    (let ((case-fold-search t)
-	  end ucs)
-      (while (re-search-forward "alt=\"\\([^\"]+\\)" nil t)
-	(goto-char (match-beginning 1))
-	(setq end (set-marker (make-marker) (match-end 1)))
-	(while (re-search-forward "&#\\([0-9]+\\);" (max end (point)) t)
-	  (setq ucs (string-to-number (match-string 1)))
-	  (delete-region (match-beginning 0) (match-end 0))
-	  (insert-char (w3m-ucs-to-char ucs) 1))))))
 
 (defun w3m-filter-google (url)
   "Insert separator within items."

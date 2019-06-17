@@ -6,7 +6,6 @@ datadir      = @datadir@
 infodir      = @infodir@
 lispdir      = @lispdir@
 srcdir       = @srcdir@
-PACKAGEDIR   = @PACKAGEDIR@
 ICONDIR      = @ICONDIR@
 ADDITIONAL_LOAD_PATH = @ADDITIONAL_LOAD_PATH@
 GZIP_PROG    = @GZIP_PROG@
@@ -18,12 +17,6 @@ SHELL        = /bin/sh
 EMACS   = @EMACS@
 VANILLA_FLAG = @VANILLA_FLAG@
 FLAGS   = $(VANILLA_FLAG) -batch -l $(srcdir)/w3mhack.el '$(ADDITIONAL_LOAD_PATH)'
-
-## This is used to set the environment variable XEMACSDEBUG for XEmacs
-## 21.5 in order to suppress warnings for Lisp shadows when XEmacs 21.5
-## starts.  This is used also for not installing w3m-ems.el for XEmacs
-## and w3m-xmas.el for GNU Emacs.
-XEMACSDEBUG = @XEMACSDEBUG@
 
 IGNORES = w3mhack.el
 
@@ -42,12 +35,12 @@ all-ja: lisp info-ja
 lisp: Makefile
 	env test ! -f w3m-util.elc -o w3m-util.elc -nt w3m-util.el || $(MAKE) clean
 	env test ! -f w3m-proc.elc -o w3m-proc.elc -nt w3m-proc.el || $(MAKE) clean
-	$(XEMACSDEBUG) '$(EMACS)' $(FLAGS) -f w3mhack-compile
+	'$(EMACS)' $(FLAGS) -f w3mhack-compile
 
 # `w3mhack-what-where' respects DESTDIR
 what-where:
-	@$(XEMACSDEBUG) '$(EMACS)' $(FLAGS) -f w3mhack-what-where\
-	 '$(lispdir)' '$(ICONDIR)' '$(PACKAGEDIR)' '$(infodir)'
+	@'$(EMACS)' $(FLAGS) -f w3mhack-what-where\
+	 '$(lispdir)' '$(ICONDIR)' '$(infodir)'
 
 info:
 	cd doc && $(MAKE) EMACS="$(EMACS)"
@@ -70,12 +63,6 @@ install-lisp: lisp
 	  if test -f "$$p"; then\
 	    case "$$p" in\
 	      $(IGNORES)) ;;\
-	      w3m-ems\.el) if test -z "$(XEMACSDEBUG)"; then\
-		echo "$(INSTALL_DATA) $$p \"$(DESTDIR)$(lispdir)/$$p\"";\
-		$(INSTALL_DATA) $$p "$(DESTDIR)$(lispdir)/$$p"; fi;;\
-	      w3m-xmas\.el) if test -n "$(XEMACSDEBUG)"; then\
-		echo "$(INSTALL_DATA) $$p \"$(DESTDIR)$(lispdir)/$$p\"";\
-		$(INSTALL_DATA) $$p "$(DESTDIR)$(lispdir)/$$p"; fi;;\
 	      *) echo "$(INSTALL_DATA) $$p \"$(DESTDIR)$(lispdir)/$$p\"";\
 		$(INSTALL_DATA) $$p "$(DESTDIR)$(lispdir)/$$p";;\
 	    esac;\
@@ -148,30 +135,6 @@ install-info-ja: info-ja
 	@echo "cd doc && $(MAKE) EMACS=\"$(EMACS)\" infodir=\"$(DESTDIR)$(infodir)\" install-ja";\
 	cd doc && $(MAKE) EMACS="$(EMACS)" infodir="$(infodir)" install-ja
 
-install-package:
-	@if test $(PACKAGEDIR) = NONE; then\
-	  echo "What a pity!  Your \"$(EMACS)\" does not support"\
-		"the package system.";\
-	else\
-	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" install-lisp;\
-	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/images/w3m" install-icons30;\
-	  $(MAKE) infodir="$(PACKAGEDIR)/info" install-info;\
-	  echo $(XEMACSDEBUG) \'$(EMACS)\' $(FLAGS) -f w3mhack-make-package $(DESTDIR)$(PACKAGEDIR);\
-	  $(XEMACSDEBUG) '$(EMACS)' $(FLAGS) -f w3mhack-make-package $(DESTDIR)$(PACKAGEDIR);\
-	fi
-
-install-package-ja:
-	@if test $(PACKAGEDIR) = NONE; then\
-	  echo "What a pity!  Your \"$(EMACS)\" does not support"\
-		"the package system.";\
-	else\
-	  $(MAKE) lispdir="$(PACKAGEDIR)/lisp/w3m" install-lisp;\
-	  $(MAKE) ICONDIR="$(PACKAGEDIR)/etc/images/w3m" install-icons30;\
-	  $(MAKE) infodir="$(PACKAGEDIR)/info" install-info-ja;\
-	  echo $(XEMACSDEBUG) \'$(EMACS)\' $(FLAGS) -f w3mhack-make-package $(DESTDIR)$(PACKAGEDIR);\
-	  $(XEMACSDEBUG) '$(EMACS)' $(FLAGS) -f w3mhack-make-package $(DESTDIR)$(PACKAGEDIR);\
-	fi
-
 Makefile: Makefile.in config.status
 	$(srcdir)/config.status
 
@@ -183,7 +146,7 @@ configure: configure.in aclocal.m4
 
 dist: Makefile w3m.elc
 	$(MAKE) tarball \
-	  VERSION=`$(XEMACSDEBUG) '$(EMACS)' $(FLAGS) -f w3mhack-version 2>/dev/null` \
+	  VERSION=`'$(EMACS)' $(FLAGS) -f w3mhack-version 2>/dev/null` \
 	  BRANCH=`cvs status Makefile.in|grep "Sticky Tag:"|awk '{print $$3}'|sed 's,(none),HEAD,'`
 
 tarball: CVS/Root CVS/Repository
@@ -205,8 +168,7 @@ tarball: CVS/Root CVS/Repository
 	rm -rf $(DISTDIR)
 
 clean:
-	-rm -rf $(PACKAGE)* ;\
-	rm -f *~ *.elc shimbun/*.elc w3m-load.el ;\
+	-rm -f *~ *.elc shimbun/*.elc w3m-load.el;\
 	cd doc && $(MAKE) clean
 
 distclean: clean
@@ -217,24 +179,27 @@ distclean: clean
 .SUFFIXES: .elc .el
 
 .el.elc:
-	@echo $(XEMACSDEBUG) \'$(EMACS)\' $(FLAGS) -f batch-byte-compile $*.el;\
-	$(XEMACSDEBUG) '$(EMACS)' $(FLAGS) -f batch-byte-compile $*.el
+	@echo $(EMACS) $(FLAGS) -f batch-byte-compile $*.el;\
+	'$(EMACS)' $(FLAGS) -f batch-byte-compile $*.el
 
 slow: Makefile
-	@for i in `$(XEMACSDEBUG) '$(EMACS)' $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`;\
+	@for i in `'$(EMACS)' $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`;\
 	do $(MAKE) -s $$i; done
 
 very-slow: clean Makefile
 	@args="$(VANILLA_FLAG) -batch";\
 	args="$$args -l $(srcdir)/attic/addpath.el '$(ADDITIONAL_LOAD_PATH)'";\
+	ename=`echo '$(EMACS)'| sed 's:.*/::g'`;\
 	echo "=============================================";\
 	echo "Compiling the 1st stage-----without elc files";\
 	echo "=============================================";\
-	for i in `$(XEMACSDEBUG) '$(EMACS)' $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`;\
+	echo "EMACS=$(EMACS)";\
+	echo "ARGS=$$args";\
+	for i in `$(EMACS) $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`;\
 	  do\
 	  j=`echo $$i| sed 's/elc$$/el/g'`;\
-	  echo $(XEMACSDEBUG) \'$(EMACS)\' ARGS -f batch-byte-compile $$j;\
-	  $(XEMACSDEBUG) '$(EMACS)' $$args -f batch-byte-compile $$j;\
+	  echo $$ename ARGS -f batch-byte-compile $$j;\
+	  '$(EMACS)' $$args -f batch-byte-compile $$j;\
 	  mv $$i $$j"x";\
 	done;\
 	for i in `echo *.elx shimbun/*.elx`; do\
@@ -244,9 +209,11 @@ very-slow: clean Makefile
 	echo "==============================================";\
 	echo "Compiling the 2nd stage-----with all elc files";\
 	echo "==============================================";\
-	for i in `$(XEMACSDEBUG) '$(EMACS)' $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`;\
+	echo "EMACS=$(EMACS)";\
+	echo "ARGS=$$args";\
+	for i in `'$(EMACS)' $(FLAGS) -f w3mhack-examine-modules 2>/dev/null`;\
 	  do\
 	  j=`echo $$i| sed 's/elc$$/el/g'`;\
-	  echo $(XEMACSDEBUG) \'$(EMACS)\' ARGS -f batch-byte-compile $$j;\
-	  $(XEMACSDEBUG) '$(EMACS)' $$args -f batch-byte-compile $$j;\
+	  echo $$ename ARGS -f batch-byte-compile $$j;\
+	  '$(EMACS)' $$args -f batch-byte-compile $$j;\
 	done

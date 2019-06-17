@@ -1,4 +1,4 @@
-;;; sb-yomiuri-html.el --- shimbun backend for yomiuri online (HTML version) -*- coding: utf-8; -*-
+;;; sb-yomiuri-html.el --- shimbun backend for yomiuri online (HTML version)
 
 ;; Copyright (C) 2001, 2002, 2003, 2005 Yuuichi Teranishi <teranisi@gohome.org>
 

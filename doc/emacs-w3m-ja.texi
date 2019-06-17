@@ -9,7 +9,7 @@
 @synindex pg cp
 
 @copying
-Copyright @copyright{} 2000-2014 @w{TSUCHIYA Masatoshi}
+Copyright @copyright{} 2000-2019 @w{TSUCHIYA Masatoshi}
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -233,29 +233,8 @@ Emacs-w3m Functions
 @section どんなバージョンの Emacs で使えるの?
 @cindex Possible Emacs versions
 
-以下に挙げたいろいろなバージョンの Emacsen で emacs-w3m を動作させること
-ができます。
-
-@table @samp
-@item Emacs 21.1 以上
-追加のパッケージは不要です。
-
-@item XEmacs 21.x
-第一に、emacs-w3m は XEmacs 21.4.17 以上、および XEmacs 21.5-b19 以上だ
-けをサポートすることに注意してください。加えて、@file{timer-funcs.el} を
-含む最新の xemacs-base パッケージをインストールしておく必要があります。
-
-@acronym{APEL} パッケージと @samp{gifsicle} プログラムが必要です。さらに、
-@samp{mailto} url を解析するための @file{rfc2368.el} モジュールをインス
-トールしておいた方が良いでしょう (@pxref{Other Requirements})。
-
-@item Emacs 20.x, Emacs 19.34 (含 Mule 2.3)
-これらの Emacs を emacs-w3m はサポートしません。
-@end table
-
-GNU Emacs の開発版を使っているのであれば、おそらく CVS 版の emacs-w3m を
-使わなければならないでしょう。その場合には、メーリングリストに参加するこ
-とを強く勧めます (@pxref{Mailing List})。
+現在 emacs-w3m は Emacs 25、26、そしてうまくいけば 27 (まだリリースされ
+ていませんが) で動作するでしょう。XEmacs サポートは終了しました。
 
 @node You Need w3m
 @section w3m を使います: emacs-w3m が速いわけ
@@ -268,53 +247,19 @@ Emacs-w3m は外部コマンド w3m を、ウェブコンテンツを取得す�
 あなたは最新の w3m をインストールしなければなりません。それは以下の場所
 で取得できます:
 
-@uref{http://prdownloads.sourceforge.net/w3m/}
+@uref{https://salsa.debian.org/debian/w3m}
 
 @node Other Requirements
 @section Emacs-w3m を動作させるのに必要なもの
-@cindex @acronym{APEL} package
-@cindex Gifsicle program
 @cindex ImageMagick package
+@cindex @acronym{APEL} package
 @cindex @acronym{FLIM} package
-@cindex Mule-UCS package
-@cindex codepage-ex
-@cindex rfc2368.el
 
 使用している Emacs のバージョンによっては、サードパーティのパッケージが
 必要になることがあります。この項では、それらを見つけてインストールするた
 めの資料を提供します。
 
 @table @samp
-@item @acronym{APEL}
-XEmacs に不可欠です。Emacs-w3m を構築する前に @acronym{APEL} をインストー
-ルしなければなりません。@acronym{APEL} は以下の場所にあります:
-
-@uref{http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/apel/}
-
-@acronym{APEL} XEmacs パッケージ (SUMO に含まれています) のバージョ
-ン 1.32 より古いものは使えないことに注意してください。もしすでにそのよう
-な版のパッケージがインストールされているならば、それを更新するか、または
-上記のリンクで示した @acronym{APEL} で置き換えるために、以下の命令を使っ
-てください (新規に @acronym{APEL} をインストールする場合も同じ命令を使う
-ことができます):
-
-@example
-% rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
-% cd apel-10.7
-% make install-package XEMACS=xemacs-21.4.x\
-  PACKAGEDIR=/usr/local/lib/xemacs/xemacs-packages
-@end example
-
-@item gifsicle
-XEmacs に不可欠です。すべての XEmacs 21.x には、オプティマイズされたアニ
-メーション gif が正常に表示されなかったり、ある種のインターレース gif を
-表示しようとするとクラッシュしてしまう既知のバグがあります。
-Emacs-w3m は gif データを XEmacs 21.x で扱える形式に変換するため
-に、@samp{gifsicle} プログラムを使います。これは次の場所から入手すること
-ができます:
-
-@uref{http://www.lcdf.org/gifsicle/}
-
 @item ImageMagick
 ImageMagick パッケージに含まれている @samp{convert} プログラムがあれば、
 emacs-w3m は画像サイズの変更や @samp{favicon} 画像を Emacs が扱えるフォー
@@ -329,6 +274,13 @@ emacs-w3m は画像サイズの変更や @samp{favicon} 画像を Emacs が扱�
 ことを推奨します。以前のバージョンも動くかもしれませんが、それらは完全に
 チェックされていません。
 
+@item @acronym{APEL}
+Shimbun ライブラリを使うために必要です。Emacs-w3m を構築する前
+に @acronym{APEL} をインストールしなければなりません。@acronym{APEL} は
+以下の場所にあります:
+
+@uref{https://github.com/wanderlust/apel}
+
 @item @acronym{FLIM}
 @samp{Shimbun} ライブラリを使うためには @acronym{FLIM} パッケージが必要
 です。@samp{Shimbun} ライブラリはウェブ上の新聞を読むための道具類のコレ
@@ -341,56 +293,7 @@ emacs-w3m は画像サイズの変更や @samp{favicon} 画像を Emacs が扱�
 @acronym{APEL} と @acronym{FLIM} の両方をインストールしなければなりませ
 ん。@acronym{FLIM} パッケージは以下の場所にあります:
 
-@uref{http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/flim/flim-1.14/}
-
-@item Mule-UCS
-XEmacs 21.4 を使うか、または Emacs 21 を使って中国語、日本語、韓国語など
-のテキストを読む必要があるならば、emacs-w3m が (Unicode システムの代表的
-な coding system である) UTF-8 でエンコードされたページを表示できるよう
-にするために、Mule-UCS Emacs Lisp パッケージをインストールすることを勧め
-ます。Emacs 21 が Unicode システムを部分的に (例えばラテン・テキストのた
-めに) サポートし、Emacs 22 以上がそれを完全にサポートすることに注意して
-ください。Mule-UCS Emacs Lisp パッケージは以下の場所から取得してください:
-
-@uref{http://unit.aist.go.jp/itri/itri-gist/ftp.m17n.org/pub/mule/Mule-UCS/test/Mule-UCS-current.tar.gz}
-
-(Mule-UCS の公式ページは近い将来 @uref{http://www.meadowy.org/} でオープ
-ンします。)
-
-Emacs-21.2 で利用する場合は、
-Mule-UCS に @uref{http://www.m17n.org/mlarchive/mule/200203/msg00000.html,
-このパッチ} を適用したほうがいいでしょう。
-
-XEmacs 21.4 ユーザ向けには、ここにコンパイル済みのパッケージがあります:
-
-@uref{ftp://ftp.xemacs.org/xemacs/packages/mule-ucs-1.14-pkg.tar.gz}
-
-(Mule SUMO に含まれているので、加えてさらにこれをインストールする必要は
-ありません。)
-
-@item codepage-ex
-ヨーロッパのいくつかの web サイトは、@samp{charset=ISO-8859-1} をテキス
-トのエンコードに指定しているのにもかかわらず、実際に
-は @code{windows-1252} を使います。それらをデコードするの
-に @code{iso-8859-1} は不十分なので、emacs-w3m は利用可能な
-ら @code{windows-1252} を @code{iso-8859-1} のスーパーセットとして使用し
-ます。Emacs 22 から @code{windows-1252} coding system は組み込まれていま
-すが、@code{codepage-ex} というモジュールを使うことによって、Emacs 21 で
-もそれを使えるようにすることができます。以下のページを参照してください。
-
-@uref{http://nijino.homelinux.net/emacs/codepage-ex.html}
-
-@item rfc2368.el
-XEmacs 上で動作させる emacs-w3m が、適切に @samp{mailto} url を解析でき
-るようにしたい場合にインストールしてください。XEmacs で使うことができ
-る @file{rfc2368.el} モジュールは、emacs-w3m の配布の @file{attic} ディ
-レクトリにあります。インストールするには @file{rfc2368.el} ファイル
-を @code{load-path} が通っているディレクトリにコピーして、以下のコマンド
-を実行してください:
-
-@example
-% xemacs -batch -vanilla -f batch-byte-compile rfc2368.el
-@end example
+@uref{https://github.com/wanderlust/flim}
 @end table
 
 @node Installing Emacs-w3m
@@ -453,8 +356,7 @@ Emacs-w3m を CVS で取得したのならば、@samp{configure} スクリプト
 ンの {--without-compress-install} を使ってください。
 
 @item
-単に @samp{make} と @samp{make install} を実行します。XEmacs を使ってい
-る場合は、さらに次の段落も見てください。
+単に @samp{make} と @samp{make install} を実行します。
 
 @example
 % make
@@ -471,8 +373,8 @@ Emacs-w3m を CVS で取得したのならば、@samp{configure} スクリプト
 % make what-where
 @end example
 
-画像を表示することができる Emacs または XEmacs を使っているならば、アイ
-コン画像のファイルをインストールした方が良いでしょう。それを行なうには:
+アイコン画像のファイルもインストールした方が良いでしょう。それを行なうに
+は:
 
 @example
 % make install-icons
@@ -487,44 +389,6 @@ Emacs-w3m を CVS で取得したのならば、@samp{configure} スクリプト
 
 @noindent
 後者はちょっと大きなアイコン画像を使うためのものです。
-
-@item
-以下のように @samp{make install} の代わり
-に @samp{make install-package} を使うことによって、
-emacs-w3m を XEmacs パッケージとしてインストールすることもできます:
-
-@example
-% make
-% make install-package
-@end example
-
-この場合 @samp{make install-icons} または @samp{make install-icons30} を
-実行する必要はありません。
-
-パッケージ・ディレクトリを指定するには二つの方法があります:
-
-@itemize @bullet
-@item
-@samp{configure} オプションの @samp{--with-packagedir=} を使います。例で
-す:
-
-@example
-% ./configure --with-packagedir=/opt/xemacs/xemacs-packages
-% make what-where
-% make
-% make install-package
-@end example
-
-@item
-変数 @samp{PACKAGEDIR} を使います。例です:
-
-@example
-% ./configure
-% make what-where PACKAGEDIR=/opt/xemacs/xemacs-packages
-% make
-% make install-package PACKAGEDIR=/opt/xemacs/xemacs-packages
-@end example
-@end itemize
 @end enumerate
 
 @node Non-UNIX-like systems
@@ -556,12 +420,7 @@ Variables} で見つけることができるでしょう。
 @table @samp
 @item Autoloads
 @cindex Adding autoload settings
-Emacs-w3m を XEmacs パッケージとしてインストール (@pxref{Installing
-Emacs-w3m}) してあれば @file{w3m/auto-autoloads.el} ファイルが自動ロー
-ド (autoload) の面倒を見てくれるので、これは必要ありません。
-
-それ以外のすべての場合、以下の行を @file{~/.emacs} ファイルに入れてくだ
-さい:
+以下の行を @file{~/.emacs} ファイルに入れてください:
 
 @lisp
 (require 'w3m-load)
@@ -1542,16 +1401,13 @@ Bookmark マイナーモード (@pxref{Consulting Bookmarks}) は、ブックマ
 
 もう一つの気が利いた機能は、ページの状態を知らせることです。カラー端末か
 ウィンドゥシステムを使っていれば、ページの状態を知らせるため
-に emacs-w3m は違う色でテキストをタブに表示します@footnote{XEmacs はすべ
-てのタブをいつも同じ色で表示しますが、選択されたタブと他のものを区別した
-り、モードラインで現在のページの状態を知ることは簡単です。}。例えばベー
-ジを取り込んでいる最中はテキストは赤くなっていて、取り込みが完了するとデ
-フォルトの色 (通常は黒) に戻ります。これにより、見ようと思って待っている
-ページが到着したかどうかが、タブ行を一目見ただけで分かります。
+に emacs-w3m は違う色でテキストをタブに表示します。例えばベージを取り込
+んでいる最中はテキストは赤くなっていて、取り込みが完了するとデフォルトの
+色 (通常は黒) に戻ります。これにより、見ようと思って待っているページが到
+着したかどうかが、タブ行を一目見ただけで分かります。
 
 最後に、もしウェブページが favicon を持っていれば、それもタブに表示され
-ます@footnote{XEmacs では今のところタブ行に favicon は表示されません。}。
-Emacs-w3m ユーザにもっと視覚効果を!
+ます。Emacs-w3m ユーザにもっと視覚効果を!
 
 ユーザオプション:
 
@@ -1650,9 +1506,7 @@ Emacs-w3m ユーザにもっと視覚効果を!
 最も頻繁に使うコマンドがたぶん隣のバッファに行くものであろうことは、世間
 の認めるところでしょう。それは、現在の「後」か「前」のバッファです。この
 意味はタブを使ってみればよくわかります。次のバッファは現在の右側の一つ後、
-前のバッファは左側です。しかし、残念ながら XEmacs はタブを順不同に表示す
-るので、どれが隣のバッファかを知るには、各タブに表示されている数字に注目
-する必要があります。これらのコマンドに割り当てられているキー
+前のバッファは左側です。これらのコマンドに割り当てられているキー
 は @w{@kbd{C-c C-p}} と @w{@kbd{C-c C-n}} です。
 
 これらのコマンドは数字接頭引数の習慣を理解します。すなわち、それらを
@@ -2799,8 +2653,7 @@ emacs-w3m がファイルにアクセスする時に、パス名を変換する�
 @vindex w3m-fill-column
 emacs-w3m のバッファで @code{fill-column} として使われる数字。正の値なら
 ば、ページがその桁数で表示される。0 か負の値ならば、ウィンドウの幅からそ
-の数字をがページの最大幅として使われる。XEmacs ではこの設定が常に働くわ
-けではないということに注意してください。
+の数字をがページの最大幅として使われる。
 
 @item w3m-follow-redirection
 @vindex w3m-follow-redirection
@@ -2989,7 +2842,7 @@ emacs-w3m session.
 @item w3m-popup-frame-parameters
 @vindex w3m-popup-frame-parameters
 Alist of frame parameters used when creating a new emacs-w3m frame.  It
-allows not only the alist form but also XEmacs's plist form.
+allows not only an alist form but also a plist form.
 
 @item w3m-prefer-cache
 @vindex w3m-prefer-cache
@@ -3075,32 +2928,7 @@ option.
 @item w3m-track-mouse
 @vindex w3m-track-mouse
 Whether to track the mouse and message the url under the mouse.  See
-also @code{show-help-function} if you are using GNU Emacs.
-
-@noindent
-A tip for XEmacs users:
-
-You can also use the @code{balloon-help} feature by the
-@w{@kbd{M-x balloon-help-mode}} command with arg 1.  If the window
-manager decorates the balloon-help frame, and that is not to your taste,
-you may strip it off with the following directives:
-
-@example
-For ol[v]wm use this in .Xdefaults:
-   olvwm.NoDecor: balloon-help
-     or
-   olwm.MinimalDecor: balloon-help
-
-For fvwm version 1 use this in your .fvwmrc:
-   NoTitle balloon-help
-or
-   Style "balloon-help" NoTitle, NoHandles, BorderWidth 0
-
-For twm use this in your .twmrc:
-   NoTitle @{ "balloon-help" @}
-@end example
-
-See the @file{balloon-help.el} file for more information.
+also @code{show-help-function}.
 
 @item w3m-uri-replace-alist
 @c @vindex w3m-uri-replace-alist
@@ -3182,10 +3010,6 @@ Non-@code{nil} means display the header line.
 @vindex w3m-use-header-line-title
 Non-@code{nil} means display the current title at the header line. This
 variable is effective only when @code{w3m-use-tab} is @code{nil}.
-
-@item w3m-use-mule-ucs
-@vindex w3m-use-mule-ucs
-Non-@code{nil} means use the multi-script support with Mule-UCS.
 
 @item w3m-use-refresh
 @vindex w3m-use-refresh
@@ -3338,8 +3162,7 @@ If non-@code{nil}, resize images to the specified width and height.
 @vindex w3m-show-graphic-icons-in-header-line
 Non-@code{nil} means show graphic status indicators in the header-line.
 If it is @code{nil}, also the favicon won't be shown in the header-line
-even if @code{w3m-use-favicon} is non-@code{nil}.  This variable is
-currently meaningless under XEmacs.
+even if @code{w3m-use-favicon} is non-@code{nil}.
 
 @item w3m-show-graphic-icons-in-mode-line
 @vindex w3m-show-graphic-icons-in-mode-line
@@ -3840,8 +3663,7 @@ process.  It shows a percentage of the data loaded from the web server.
 
 @item w3m-show-current-title-in-buffer-tab
 @vindex w3m-show-current-title-in-buffer-tab
-If non-@code{nil}, show the title strings in the buffers tab.  It has no
-effect if your XEmacs does not support the gutter items.
+If non-@code{nil}, show the title strings in the buffers tab.
 
 @item w3m-input-url-provide-initial-content
 @vindex w3m-input-url-provide-initial-content
@@ -4173,18 +3995,8 @@ w3m を Emacs 上で動かすインターフェースプログラムです。Ema
 @item
 Q. 動作する Emacs は?
 
-以下の Emacsen で動作することが確認されています。
-
-@itemize @bullet
-@item Emacs 21
-@item Emacs 22
-@item XEmacs 21.4.17 以上、Mule 有り/無し
-@item XEmacs 21.5-b19 以上、Mule 有り/無し
-@item Meadow
-@end itemize
-
-なお、XEmacs では @acronym{APEL} が必要となります。詳しくは @ref{Other
-Requirements} を確認してください。
+現在 emacs-w3m は Emacs 25、26、そしてうまくいけば 27 (まだリリースされ
+ていませんが) で動作するでしょう。XEmacs サポートは終了しました。
 
 @item
 Q. 動作する w3m は?
@@ -4200,19 +4012,6 @@ Q. 動作する w3m は?
 尋ねたときに 3 を入力することによってできます) ことに注意してください。
 さらにそれは @samp{libmoe} パッケージを必要とします。
 @end itemize
-
-@item
-Q. XEmacs の SUMO パッケージに含まれている @acronym{APEL} をインストール
-してあるのですが?
-
-XEmacs の @acronym{APEL} パッケージ (すべてのモジュールが Mule 付き
-の XEmacs 用にコンパイルされている) にはいろいろ問題があります。例え
-ば @samp{std11} モジュールが @acronym{FLIM} のものとかち合う、など。それ
-でも @file{apel-1.23-pkg.tar.gz} 以上のものだったら、そし
-て @samp{shimbun} の機能のために @acronym{FLIM} を使わないならば、
-Mule 付きと無し両方の XEmacs で使えるのですが、オリジナル
-の @acronym{APEL} で置き換えるか新規にインストールすることを勧めます。取
-得場所は @ref{Other Requirements} を見てください。
 
 @item
 Q. CVS で最新版を取得したのですが、@file{configure} スクリプトが見つかり
@@ -4267,31 +4066,10 @@ ISO-2022-JP(jis), EUC-JP または SHIFT_JIS 以外の文字コードで記述�
 
 @enumerate a
 @item
-Mule-UCS (@pxref{Other Requirements}) をインストールすると、Unicode で定
-義されている範囲の文字は表示できるようになります。インストール後、変
-数 @code{w3m-use-mule-ucs} が @code{nil} 以外の値に設定されていることを
-確認してください。なお、Emacs (それに emacs-w3m も) が EUC-JISX0213 およ
-び ISO-2022-JP-3 の文字コードを扱えるようにするには、Mule-UCS に附属して
-いる @samp{jisx0213} モジュールをインストールする必要があります (残念な
-がら XEmacs では使えませんが)。
-
-@item
 w3mmee や w3m-m17n をインストールして、変数 @code{w3m-command} に適切な
 値を設定してください。このように設定すると、emacs-w3m はこれらのプログラ
-ムが提供する多言語機能を利用するようになります。ただし、Emacs が扱える文
-字コードに限られますので、必要に応じて Mule-UCS もインストールしてくださ
-い。
+ムが提供する多言語機能を利用するようになります。
 @end enumerate
-
-@item
-Emacsen の問題
-
-XEmacs 21.1 では SHIFT_JIS のページが化けることがあります。また、XEmacs
-21.2 でも beta36 以前では問題があります。そういうものを使っている場合
-は XEmacs をアップグレードしてください。
-
-XEmacs 21.1 と 21.2 は、すでに公式にお役御免になったことを認識してくださ
-い。
 
 @item
 @code{standard-display-european} を使わないでください
@@ -4317,10 +4095,6 @@ Q. 画像表示できません。
 
 古いバージョンの @samp{libungif} ライブラリにはバグがあります。
 @samp{libungif-4.1.0b1} 以降のものをインストールしなければなりません。
-
-XEmacs では必ず @samp{gifsicle} プログラムをインストールしてください。現
-在利用できるすべての XEmacs 21.x にはバグがあり、emacs-w3m ではこれを使っ
-て対策しています (@pxref{Other Requirements})。
 
 古い w3m コマンドでは正常に表示できません。w3m のバージョンを確認してく
 ださい。
@@ -4421,7 +4195,7 @@ Emacs のフレームをポップアップさせる他の機能も動かない�
 ません。
 
 @lisp
-(if (or (not window-system) (featurep 'xemacs))
+(if (not window-system)
     nil
   (defadvice raise-frame
     (after make-it-work (&optional frame) activate)
@@ -4444,7 +4218,7 @@ Advice を @file{~/.emacs} ファイルに書き込む前に、@samp{wmctrl} コ
 ものはありません。)
 
 @lisp
-(if (or (not window-system) (featurep 'xemacs))
+(if (not window-system)
     nil
   (defadvice pop-to-buffer (after enable-it-to-forcus-frame
                                   activate)
@@ -4465,7 +4239,7 @@ Advice を @file{~/.emacs} ファイルに書き込む前に、@samp{wmctrl} コ
 は試してみる価値があるかもしれません。
 
 @lisp
-(if (or (not window-system) (featurep 'xemacs))
+(if (not window-system)
     nil
   (defadvice select-frame (around set-input-focus
                                   (frame) activate)
@@ -5911,9 +5685,6 @@ yahoo-sports.F1 yahoo-sports.baseball yahoo-sports.keiba
 yahoo-sports.NBA yahoo-sports.NFL yahoo-sports.rugby
 @end table
 
-ただし、Emacs-21.4 またはそれ以前の版で @@nifty: モータースポーツを閲覧
-するには、Mule-UCS (@pxref{Other Requirements}) が必要です。
-
 @node Misc Sites Supported by Shimbun
 @subsection その他
 
@@ -6828,23 +6599,6 @@ Emacs-w3m を使って、@code{yahtml-mode} でまさに編集中の HTML ファ
 (defadvice yahtml-browse-html
   (around w3m-yahtml-browse-html activate compile)
   (w3m-goto-url (ad-get-arg 0) t))
-@end lisp
-
-@item jisx0213
-
-Emacs では Mule-UCS パッケージに含まれている @code{jis0213} モジュールを
-使うことによって、JIS X 0213 文字セットを使うことができます。
-@code{decode-char} 関数が @code{mucs} によって上書きされてしま
-う (@code{jis0213} が @code{mucs} を読み込む) ために、@code{ucs} CCS に
-対して正しく動作しなくなってしまいますが、さらに @code{unicode} モジュー
-ルを読み込むことによって、その問題が解決されるように見えるという報告があ
-りました。理由はまだ解明されていません。@file{~/.emacs} ファイル用の例で
-す:
-
-@lisp
-(require 'unicode)
-(require 'un-define)
-(require 'jisx0213)
 @end lisp
 @end itemize
 

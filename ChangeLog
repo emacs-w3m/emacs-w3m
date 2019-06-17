@@ -1,3 +1,67 @@
+2019-06-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Drop old Emacsen support
+
+	Remove things used for keeping compatibility with Emacs 24 and older;
+	Drop XEmacs support;
+	Use cl-lib rather than cl as much as possible;
+	Use declare-function instead of autoload for non-existent functions;
+	Remove old face name aliases;
+	Remove coding cookie for utf-8 as that is Emacs' default for .el files;
+	Remove "*" from docstring for defcustom and defface
+
+	* .travis.yml, Makefile.in, aclocal.m4, configure.in, doc/Makefile.in
+	* doc/emacs-w3m-ja.texi, doc/emacs-w3m.texi
+	* attic/addpath.el, bookmark-w3m.el, mew-w3m.el, mime-w3m.el, octet.el
+	* w3m-antenna.el, w3m-bookmark.el, w3m-bug.el, w3m-cookie.el
+	* w3m-dtree.el, w3m-ems.el, w3m-favicon.el, w3m-fb.el, w3m-filter.el
+	* w3m-form.el, w3m-hist.el, w3m-image.el, w3m-lnum.el, w3m-mail.el
+	* w3m-namazu.el, w3m-perldoc.el, w3m-proc.el, w3m-rss.el, w3m-save.el
+	* w3m-search.el, w3m-session.el, w3m-symbol.el, w3m-tabmenu.el
+	* w3m-util.el, w3m-weather.el, w3m.el, w3mhack.el
+	* shimbun/{mew-shimbun.el, nnshimbun.el, sb-2ch.el, sb-airs.el}
+	* shimbun/{sb-asahi-mytown.el, sb-asahi.el, sb-atmarkit.el}
+	* shimbun/{sb-atom-hash.el, sb-atom.el, sb-cgi-board.el, sb-chise.el}
+	* shimbun/{sb-cnet-jp.el, sb-cnet.el, sb-cnn-jp.el, sb-debian-jp.el}
+	* shimbun/{sb-debian.el, sb-dennou.el, sb-digiko.el, sb-emacs-w3m.el}
+	* shimbun/{sb-emacswiki.el, sb-engadget-ja.el, sb-excite.el, sb-fau.el}
+	* shimbun/{sb-fml.el, sb-geocrawler.el, sb-glimpse.el, sb-gnome.el}
+	* shimbun/{sb-hns.el, sb-ibm-dev.el, sb-impress.el, sb-itmedia.el}
+	* shimbun/{sb-javaconf.el, sb-jpo.el, sb-kantei.el, sb-kde.el}
+	* shimbun/{sb-kyoko-np.el, sb-lotusex.el, sb-m17n.el, sb-mailman.el}
+	* shimbun/{sb-mainichi.el, sb-meadow.el, sb-mew.el}
+	* shimbun/{sb-msports-nifty.el, sb-multi.el, sb-netbsd.el}
+	* shimbun/{sb-nikkangendai.el, sb-nikkansports.el, sb-nikkei.el}
+	* shimbun/{sb-nytimes.el, sb-orca.el, sb-palmfan.el}
+	* shimbun/{sb-pcweb-column.el, sb-pocketgames.el, sb-rakuten.el}
+	* shimbun/{sb-redhat.el, sb-rss.el, sb-ruby.el, sb-sankei.el}
+	* shimbun/{sb-savannah.el, sb-slashdot-jp.el, sb-sml.el}
+	* shimbun/{sb-sourceforge-jp.el, sb-tcup.el, sb-tdiary.el}
+	* shimbun/{sb-tech-on.el, sb-text.el, sb-tigris.el, sb-toshiba.el}
+	* shimbun/{sb-vinelinux.el, sb-wiki.el, sb-wikimedia.el}
+	* shimbun/{sb-wincefan.el, sb-wired-jp.el, sb-x51.el}
+	* shimbun/{sb-yahoo-auctions.el, sb-yahoo.el, sb-yomiuri-html.el}
+	* shimbun/{sb-yomiuri.el, sb-yoshirin.el, sb-zdnet-jp.el, shimbun.el}
+
+	Remove files
+
+	* w3m-ccl.el, w3m-ucs.el, w3m-xmas.el, attic/rfc2368.el
+	* doc/ptexinfmt.el, patches/*
+
+	New implementation for w3m-download ([emacs-w3m:13326])
+
+	* w3m (w3m-download): Use awk to divide the output of `w3m -dump_extra'
+	into header fed to Emacs and body to be saved in file;
+	note that awk should be GNU awk that supports BINMODE and RT.
+	(w3m-current-process): Modify docstring; now it's a list of processes.
+	(w3m-buffer-setup): Show downloading indicator in the mode-line.
+	(w3m--goto-url--valid-url): Treat w3m-current-process as a list.
+
+	* w3m-proc.el (w3m-process-filter): Show downloading indicators.
+	(w3m-process-modeline-string): Modify docstring; now it's an alist of
+	downloading progress informations.
+	(w3m-process-start-after): No need to reset w3m-process-modeline-string.
+
 2019-06-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-select-buffer-show-this-line)

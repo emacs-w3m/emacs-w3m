@@ -1,7 +1,9 @@
 ;;; sb-rss.el --- shimbun backend for RSS (Rich Site Summary).
 
-;; Copyright (C) 2003-2011, 2013 Koichiro Ohba <koichiro@meadowy.org>
-;; Copyright (C) 2003-2011, 2013 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+;; Copyright (C) 2003-2011, 2013, 2019
+;; Koichiro Ohba <koichiro@meadowy.org>
+;; Copyright (C) 2003-2011, 2013, 2019
+;; NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
 ;;         NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
@@ -29,9 +31,10 @@
 
 ;;; Code:
 
+;; Delete this section when emacs-w3m drops the Emacs 25 support.
 (eval-when-compile
-  (require 'cl)
-  (require 'static))
+  (unless (>= emacs-major-version 26)
+    (require 'cl))) ;; c[ad][ad][ad]+r
 
 (require 'shimbun)
 (eval-when-compile
@@ -195,7 +198,7 @@ ascending date."
 	     (ftime
 	      (when (and (stringp date)
 			 (> (length date) 1))
-		(w3m-float-time (date-to-time date)))))
+		(float-time (date-to-time date)))))
 	(push (list tmp ftime) headers)))
     (when headers
       (if (or need-all-items
@@ -329,9 +332,9 @@ is available, otherwise return nil."
 	 (text (if (and node (listp node))
 		   (shimbun-rss-node-just-text node)
 		 node))
-	 (cleaned-text (if text (shimbun-replace-in-string
-				 text "^[ \000-\037\177]+\\|[ \000-\037\177]+$"
-				 ""))))
+	 (cleaned-text (if text (replace-regexp-in-string
+				 "^[ \000-\037\177]+\\|[ \000-\037\177]+$"
+				 "" text))))
     (if (string-equal "" cleaned-text)
 	nil
       cleaned-text)))

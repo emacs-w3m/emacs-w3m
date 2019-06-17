@@ -1,6 +1,6 @@
-;;; w3m-search.el --- functions convenient to access web search engines -*- coding: utf-8; -*-
+;;; w3m-search.el --- functions convenient to access web search engines
 
-;; Copyright (C) 2001--2012, 2017, 2018 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001--2012, 2017-2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Keisuke Nishida    <kxn30@po.cwru.edu>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -34,18 +34,15 @@
 
 ;;; Code:
 
+;; Delete this section when emacs-w3m drops the Emacs 25 support.
 (eval-when-compile
-  (require 'cl))
+  (unless (>= emacs-major-version 26)
+    (require 'cl))) ;; c[ad][ad][ad]+r
 
 (require 'w3m)
 
 (defcustom w3m-search-engine-alist
-  (let* ((ja (equal "Japanese" w3m-language))
-	 (utf-8 (or (and (boundp 'mule-version)
-			 (not (string< (symbol-value 'mule-version) "6.0")))
-		    (featurep 'un-define)
-		    (fboundp 'utf-translate-cjk-mode)
-		    (and (not ja) (w3m-find-coding-system 'utf-8)))))
+  (let ((ja nil));(equal "Japanese" w3m-language)))
     `(,@(if ja
 	    '(("yahoo"
 	       "https://search.yahoo.co.jp/bin/search?p=%s"
@@ -58,85 +55,43 @@
 	     "https://search.yahoo.co.jp/bin/search?p=%s"
 	     euc-japan)))
       ("alc" "https://eow.alc.co.jp/%s/UTF-8/" utf-8)
-      ,@(cond
-	 ((and ja utf-8)
-	  '(("blog"
-	     "https://blogsearch.google.com/blogsearch?q=%s&hl=ja&lr=lang_ja&oe=utf-8&ie=utf-8"
-	     utf-8)
-	    ("blog-en"
-	     "https://blogsearch.google.com/blogsearch?q=%s&hl=en&oe=utf-8&ie=utf-8"
-	     utf-8)))
-	 (ja
-	  '(("blog"
-	     "https://blogsearch.google.com/blogsearch?q=%s&hl=ja&lr=lang_ja&ie=Shift_JIS&oe=Shift_JIS"
-	     shift_jis)
-	    ("blog-en"
-	     "https://blogsearch.google.com/blogsearch?q=%s&hl=en")))
-	 (utf-8
+      ,@(if ja
+	    '(("blog"
+	       "https://blogsearch.google.com/blogsearch?q=%s&hl=ja&lr=lang_ja&oe=utf-8&ie=utf-8"
+	       utf-8)
+	      ("blog-en"
+	       "https://blogsearch.google.com/blogsearch?q=%s&hl=en&oe=utf-8&ie=utf-8"
+	       utf-8))
 	  '(("blog"
 	     "https://blogsearch.google.com/blogsearch?q=%s&oe=utf-8&ie=utf-8"
 	     utf-8)
 	    ("blog-en"
 	     "https://blogsearch.google.com/blogsearch?q=%s&hl=en&oe=utf-8&ie=utf-8"
 	     utf-8)))
-	 (t
-	  '(("blog"
-	     "https://blogsearch.google.com/blogsearch?q=%s")
-	    ("blog-ja"
-	     "https://blogsearch.google.com/blogsearch?q=%s&lr=lang_ja&ie=Shift_JIS&oe=Shift_JIS"
-	     shift_jis))))
-      ,@(cond
-	 ((and ja utf-8)
-	  '(("google"
-	     "https://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=utf-8&oe=utf-8&gbv=1"
-	     utf-8)
-	    ("google-en"
-	     "https://www.google.com/search?q=%s&hl=en&ie=utf-8&oe=utf-8&gbv=1"
-	     utf-8)))
-	 (ja
-	  '(("google"
-	     "https://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=Shift_JIS&oe=Shift_JIS&gbv=1"
-	     shift_jis)
-	    ("google-en"
-	     "https://www.google.com/search?q=%s&hl=en&gbv=1")))
-	 (utf-8
+      ,@(if ja
+	    '(("google"
+	       "https://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=utf-8&oe=utf-8&gbv=1"
+	       utf-8)
+	      ("google-en"
+	       "https://www.google.com/search?q=%s&hl=en&ie=utf-8&oe=utf-8&gbv=1"
+	       utf-8))
 	  '(("google"
 	     "https://www.google.com/search?q=%s&ie=utf-8&oe=utf-8&gbv=1"
 	     utf-8)
 	    ("google-en"
 	     "https://www.google.com/search?q=%s&hl=en&ie=utf-8&oe=utf-8&gbv=1"
 	     utf-8)))
-	 (t
-	  '(("google"
-	     "https://www.google.com/search?q=%s&gbv=1")
-	    ("google-ja"
-	     "https://www.google.com/search?q=%s&hl=ja&lr=lang_ja&ie=Shift_JIS&oe=Shift_JIS&gbv=1"
-	     shift_jis))))
-      ,@(cond
-	 ((and ja utf-8)
-	  '(("google news"
-	     "https://news.google.co.jp/news?q=%s&hl=ja&ie=utf-8&oe=utf-8"
-	     utf-8)
-	    ("google news-en"
-	     "https://news.google.com/news?q=%s&hl=en")))
-	 (ja
-	  '(("google news"
-	     "https://news.google.co.jp/news?q=%s&hl=ja&ie=Shift_JIS&oe=Shift_JIS"
-	     shift_jis)
-	    ("google news-en"
-	     "https://news.google.com/news?q=%s&hl=en")))
-	 (utf-8
+      ,@(if ja
+	    '(("google news"
+	       "https://news.google.co.jp/news?q=%s&hl=ja&ie=utf-8&oe=utf-8"
+	       utf-8)
+	      ("google news-en"
+	       "https://news.google.com/news?q=%s&hl=en"))
 	  '(("google news"
 	     "https://news.google.com/news?q=%s&ie=utf-8&oe=utf-8"
 	     utf-8)
 	    ("google news-en"
 	     "https://news.google.com/news?q=%s&hl=en&ie=utf-8&oe=utf-8")))
-	 (t
-	  '(("google news"
-	     "https://news.google.com/news?q=%s")
-	    ("google news-ja"
-	     "https://news.google.co.jp/news?q=%s&hl=ja&ie=Shift_JIS&oe=Shift_JIS"
-	     shift_jis))))
       ,@(if ja
 	    '(("technorati"
 	       "https://www.technorati.jp/search/search.html?query=%s&language=ja"
@@ -215,7 +170,7 @@ __mk_ja_JP=%%83J%%83%%5E%%83J%%83i&url=search-alias%%3Daps&field-keywords=%s"
        utf-8)
       ("msdn" "https://search.msdn.microsoft.com/search/default.aspx?query=%s")
       ("duckduckgo" "https://duckduckgo.com/lite" utf-8 "q=%s")))
-  "*An alist of search engines.
+  "An alist of search engines.
 Each element looks like (ENGINE ACTION CODING POST-DATA)
 ENGINE is a string, the name of the search engine.
 ACTION is a string, the URL that performs a search.
@@ -230,7 +185,7 @@ If CODING is omitted, it defaults to `w3m-default-coding-system'."
 		 (string :format "       Action: %v\n")
 		 (coding-system :format "%t: %v\n")
 		 (checklist :inline t
-			    :entry-format ,(if (w3m-device-on-window-system-p)
+			    :entry-format ,(if (display-graphic-p)
 					       "%b   %v"
 					     "%b  %v")
 			    (string :format "PostData: %v\n")))))
@@ -241,11 +196,11 @@ See also `w3m-search-engine-alist'."
   :group 'w3m
   :type (nconc '(radio) (mapcar
 			 (lambda (x)
-			   (list 'const (w3m-substring-no-properties (car x))))
+			   (list 'const (substring-no-properties (car x))))
 			 w3m-search-engine-alist)))
 
 (defcustom w3m-search-word-at-point t
-  "*Non-nil means that the word at point is used as an initial string.
+  "Non-nil means that the word at point is used as an initial string.
 If Transient Mark mode, this option is ignored and the region is used
 as an initial string."
   :group 'w3m
@@ -267,7 +222,7 @@ as an initial string."
 When a default value for the query is discovered, prompt with string
 PROMPT-WITH-DEFAULT instead of string PROMPT."
   (let ((default
-	  (if (w3m-region-active-p)
+	  (if (region-active-p)
 	      (buffer-substring (region-beginning) (region-end))
 	    (unless (and (eq major-mode 'w3m-mode)
 			 (listp (get-text-property (point-at-bol) 'face))
@@ -277,11 +232,11 @@ PROMPT-WITH-DEFAULT instead of string PROMPT."
 	initial)
     (when default
       (set-text-properties 0 (length default) nil default)
-      (when (or w3m-search-word-at-point (w3m-region-active-p))
+      (when (or w3m-search-word-at-point (region-active-p))
 	(setq initial default
 	      default nil))
-      (when (w3m-region-active-p)
-	(w3m-deactivate-region)))
+      (when (region-active-p)
+	(deactivate-mark)))
     (read-string (if default
 		     (format prompt-with-default default)
 		   prompt)

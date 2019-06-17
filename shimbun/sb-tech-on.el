@@ -1,6 +1,6 @@
 ;;; sb-tech-on.el --- shimbun backend for Tech-On! -*- coding: utf-8 -*-
 
-;; Copyright (C) 2007-2011 Katsumi Yamaoka
+;; Copyright (C) 2007-2011, 2019 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -24,7 +24,6 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'static))
 (require 'sb-rss)
 (require 'sb-multi)
 
@@ -142,8 +141,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAADFBMVEUAAAB/gP+ttr7///8
 				     (quit nil)))))
 		 (not (string-match "\\`[\t ]*\\'" pass)))
 	(with-temp-buffer
-	  (static-unless (featurep 'xemacs)
-	    (set-buffer-multibyte t))
+	  (set-buffer-multibyte t)
 	  (shimbun-retrieve-url
 	   (concat "https://techon.nikkeibp.co.jp/login/login.jsp"
 		   "?MODE=LOGIN_EXEC"

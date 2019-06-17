@@ -44,15 +44,10 @@
 	    '(emacs-w3m-git-revision))
       emacs-w3m-version
       emacs-version
-      ,@(if (or (boundp 'mule-version)
-		(functionp 'mule-version))
+      ,@(if (boundp 'mule-version)
 	    '(mule-version))
-      ,@(cond ((featurep 'xemacs)
-	       '((featurep 'mule)
-		 (featurep 'file-coding)))
-	      ((or (boundp 'Meadow-version)
-		   (functionp 'Meadow-version))
-	       '(Meadow-version)))
+      ,@(if (boundp 'Meadow-version)
+	    '(Meadow-version))
       system-type
       (featurep 'gtk)
       w3m-version
@@ -63,8 +58,7 @@
       w3m-command-arguments-alist
       w3m-command-environment
       w3m-input-coding-system
-      w3m-output-coding-system
-      w3m-use-mule-ucs))
+      w3m-output-coding-system))
   "List of the system informations.  Users should NEVER modify the value."
   ;; For the developers:
   ;; It is possible that it would be a security hole.  To prevent those
@@ -72,9 +66,6 @@
   ;; send a bug report.  Each element can be the symbol of a variable,
   ;; a Lisp function with no argument or any Lisp form to be evaluated.
   )
-
-(eval-when-compile
-  (require 'cl))
 
 (defun report-emacs-w3m-bug (topic &optional buffer)
   "Report a bug in emacs-w3m.

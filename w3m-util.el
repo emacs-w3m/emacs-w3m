@@ -1,6 +1,6 @@
-;;; w3m-util.el --- Utility macros and functions for emacs-w3m -*- coding: utf-8; -*-
+;;; w3m-util.el --- Utility macros and functions for emacs-w3m
 
-;; Copyright (C) 2001-2014, 2016-2018 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2014, 2016-2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -37,133 +37,109 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
 ;; Variables and functions which are used in the following inline
 ;; functions.  They should be defined in the other module at run-time.
-(eval-when-compile
-  (defvar w3m-current-process)
-  (defvar w3m-current-refresh)
-  (defvar w3m-current-title)
-  (defvar w3m-current-url)
-  (defvar w3m-fb-list-buffers-frame)
-  (defvar w3m-fb-mode)
-  (defvar w3m-mode-hook)
-  (defvar w3m-pop-up-frames)
-  (defvar w3m-pop-up-windows)
-  (defvar w3m-popup-frame-parameters)
-  (defvar w3m-previous-session-buffer)
-  (defvar w3m-refresh-timer)
-  (defvar w3m-select-buffer-name)
-  (defvar w3m-use-refresh)
-  (defvar w3m-use-tab)
-  (defvar w3m-work-buffer-list)
-  (defvar w3m-use-japanese-menu)
-  (defvar w3m-mode-map)
-  (defvar w3m-use-title-buffer-name)
-  (defvar w3m-buffer-unseen)
-  (defvar w3m-puny-utf-16be)
-  (unless (fboundp 'select-frame-set-input-focus)
-    (defalias 'select-frame-set-input-focus 'ignore)))
-
-(eval-and-compile
-  (when (featurep 'xemacs)
-    (require 'poe)
-    (require 'poem)))
+(defvar w3m-current-process)
+(defvar w3m-current-refresh)
+(defvar w3m-current-title)
+(defvar w3m-current-url)
+(defvar w3m-fb-list-buffers-frame)
+(defvar w3m-fb-mode)
+(defvar w3m-mode-hook)
+(defvar w3m-pop-up-frames)
+(defvar w3m-pop-up-windows)
+(defvar w3m-popup-frame-parameters)
+(defvar w3m-previous-session-buffer)
+(defvar w3m-refresh-timer)
+(defvar w3m-select-buffer-name)
+(defvar w3m-use-refresh)
+(defvar w3m-use-tab)
+(defvar w3m-work-buffer-list)
+(defvar w3m-use-japanese-menu)
+(defvar w3m-mode-map)
+(defvar w3m-use-title-buffer-name)
+(defvar w3m-buffer-unseen)
+(defvar w3m-puny-utf-16be)
 
 ;;; Things should be defined in advance:
-(eval-when-compile
-  (autoload 'w3m-detect-coding-region
-    (if (featurep 'emacs) "w3m-ems" "w3m-xmas"))
-  (autoload 'w3m-fb-frame-parameter "w3m-fb")
-  (autoload 'w3m-history-restore-position "w3m-hist" nil t)
-  (autoload 'w3m-mode "w3m"))
+(declare-function w3m-detect-coding-region "w3m-ems" (start end &optional priority-list))
+(declare-function w3m-force-window-update "w3m-ems" (&optional window))
+(declare-function w3m-fb-frame-parameter "w3m-fb" (frame parameter))
+(declare-function w3m-history-restore-position "w3m-hist")
+(declare-function w3m-mode "w3m")
 
-;; XEmacs 21.4 wants this.
-(defalias 'w3m-make-local-hook (if (featurep 'xemacs)
-				   'make-local-hook
-				 'ignore))
+;; ;;; Control structures:
 
-;;; Control structures:
+;; (defmacro w3m-static-if (cond then &rest else)
+;;   "Like `if', except that it evaluates COND at compile-time."
+;;   (if (eval cond) then `(progn  ,@else)))
+;; (put 'w3m-static-if 'lisp-indent-function 2)
+;; (def-edebug-spec w3m-static-if (&rest def-form))
 
-(defmacro w3m-static-if (cond then &rest else)
-  "Like `if', except that it evaluates COND at compile-time."
-  (if (eval cond) then `(progn  ,@else)))
-(put 'w3m-static-if 'lisp-indent-function 2)
-(def-edebug-spec w3m-static-if (&rest def-form))
+;; (put 'w3m-static-when 'lisp-indent-function 1)
+;; (defmacro w3m-static-when (cond &rest body)
+;;   "Like `when', but evaluate COND at compile time."
+;;   (if (eval cond)
+;;       `(progn ,@body)))
+;; (def-edebug-spec w3m-static-when (&rest def-form))
 
-(put 'w3m-static-when 'lisp-indent-function 1)
-(defmacro w3m-static-when (cond &rest body)
-  "Like `when', but evaluate COND at compile time."
-  (if (eval cond)
-      `(progn ,@body)))
-(def-edebug-spec w3m-static-when (&rest def-form))
+;; (put 'w3m-static-unless 'lisp-indent-function 1)
+;; (defmacro w3m-static-unless (cond &rest body)
+;;   "Like `unless', but evaluate COND at compile time."
+;;   (if (eval cond)
+;;       nil
+;;     `(progn ,@body)))
+;; (def-edebug-spec w3m-static-unless (&rest def-form))
 
-(put 'w3m-static-unless 'lisp-indent-function 1)
-(defmacro w3m-static-unless (cond &rest body)
-  "Like `unless', but evaluate COND at compile time."
-  (if (eval cond)
-      nil
-    `(progn ,@body)))
-(def-edebug-spec w3m-static-unless (&rest def-form))
+;; (defmacro w3m-static-cond (&rest clauses)
+;;   "Like `cond', except that it evaluates CONDITION part of each clause at
+;; compile-time."
+;;   (while (and clauses
+;; 	      (not (eval (car (car clauses)))))
+;;     (setq clauses (cdr clauses)))
+;;   (if clauses
+;;       (cons 'progn (cdr (car clauses)))))
+;; (def-edebug-spec w3m-static-cond (&rest (&rest def-form)))
 
-(defmacro w3m-static-cond (&rest clauses)
-  "Like `cond', except that it evaluates CONDITION part of each clause at
-compile-time."
-  (while (and clauses
-	      (not (eval (car (car clauses)))))
-    (setq clauses (cdr clauses)))
-  (if clauses
-      (cons 'progn (cdr (car clauses)))))
-(def-edebug-spec w3m-static-cond (&rest (&rest def-form)))
-
-(put 'w3m-condition-case 'lisp-indent-function 2)
-(defmacro w3m-condition-case (var bodyform &rest handlers)
-  "Like `condition-case', except that signal an error if `debug-on-error'
-or `debug-on-quit' is non-nil."
-  `(if (or debug-on-error debug-on-quit)
-       ,bodyform
-     (condition-case ,var
-	 ,bodyform
-       ,@handlers)))
+;; (put 'w3m-condition-case 'lisp-indent-function 2)
+;; (defmacro w3m-condition-case (var bodyform &rest handlers)
+;;   "Like `condition-case', except that signal an error if `debug-on-error'
+;; or `debug-on-quit' is non-nil."
+;;   `(if (or debug-on-error debug-on-quit)
+;;        ,bodyform
+;;      (condition-case ,var
+;; 	 ,bodyform
+;;        ,@handlers)))
 
 ;;; Functions used in common:
 
-;; Moved from w3m-(ems,xmas).el because of modules' dependency problem.
 (defvar w3m-coding-system)
 (defvar w3m-default-coding-system)
 (defun w3m-decode-coding-string-with-priority (str coding)
   "Decode the string STR which is encoded in CODING.
 If CODING is a list, look for the coding system using it as a priority
 list."
-  (w3m-static-if (featurep 'mule)
-      (with-temp-buffer
-	(w3m-static-when (featurep 'emacs) (set-buffer-multibyte nil))
-	(insert str)
-	(decode-coding-string
-	 (buffer-string)
-	 (or (if (listp coding)
-		 (w3m-detect-coding-region (point-min) (point-max) coding)
-	       coding)
-	     w3m-default-coding-system
-	     w3m-coding-system
-	     'iso-2022-7bit)))
-    str))
+  (with-temp-buffer
+    (set-buffer-multibyte nil)
+    (insert str)
+    (decode-coding-string
+     (buffer-string)
+     (or (if (listp coding)
+	     (w3m-detect-coding-region (point-min) (point-max) coding)
+	   coding)
+	 w3m-default-coding-system
+	 w3m-coding-system
+	 'iso-2022-7bit))))
 
 ;;; Text props:
 
 (defmacro w3m-add-text-properties (start end props &optional object)
-  "Like `add-text-properties' but always add non-sticky properties."
-  (let ((non-stickies
-	 (if (featurep 'xemacs)
-	     ;; Default to start-closed and end-open in XEmacsen.
-	     '(list 'start-open t)
-	   ;; Default to front-nonsticky and rear-sticky in Emacsen.
-	   '(list 'rear-nonsticky t))))
-    `(add-text-properties ,start ,end
-			  (append ,non-stickies ,props)
-			  ,object)))
+  "Like `add-text-properties' but always add a non-sticky property."
+  `(add-text-properties
+    ,start ,end
+    ;; front-nonsticky and rear-sticky are enabled by default.
+    (append '(rear-nonsticky t) ,props)
+    ,object))
 
 (defun w3m-add-face-property (start end name &optional object)
   "Add face NAME to the face text property of the text from START to END.
@@ -525,41 +501,9 @@ buffer names."
 
 ;;; Pop up and delete buffers, windows or frames:
 
-(defmacro w3m-popup-frame-parameters ()
-  "Return a pop-up frame plist if this file is compiled for XEmacs,
-otherwise return an alist."
-  (if (featurep 'xemacs)
-      '(let ((params (or w3m-popup-frame-parameters pop-up-frame-plist)))
-	 (if (consp (car-safe params))
-	     (alist-to-plist params)
-	   params))
-    '(let ((params (or w3m-popup-frame-parameters pop-up-frame-alist))
-	   alist)
-       (if (consp (car-safe params))
-	   params
-	 (while params
-	   (push (cons (car params) (cdr params)) alist)
-	   (setq params (cddr params)))
-	 (nreverse alist)))))
-
-(defun w3m-device-on-window-system-p ()
-  "Return non-nil if the selected frame is on a window system"
-  (w3m-static-if (featurep 'xemacs)
-      (device-on-window-system-p)
-    window-system))
-
 (defmacro w3m-popup-frame-p ()
-  "Return non-nil if `w3m-pop-up-frames' is non-nil and Emacs really
-supports separate frames."
-  '(and w3m-pop-up-frames (w3m-device-on-window-system-p)))
-
-(defmacro w3m-use-tab-p ()
-  "Return non-nil if `w3m-use-tab' is non-nil and Emacs really supports
-the tabs line."
-  (cond ((featurep 'xemacs)
-	 '(and w3m-use-tab (device-on-window-system-p)))
-	(t
-	 'w3m-use-tab)))
+  "Return non-nil if `w3m-pop-up-frames' is non-nil and it is effective."
+  '(and w3m-pop-up-frames (display-graphic-p)))
 
 (defun w3m-lefttab-exist-p (&optional buffer)
   (not (eq (or buffer (current-buffer)) (car (w3m-list-buffers)))))
@@ -578,7 +522,7 @@ the tabs line."
   "Return non-nil if `w3m-pop-up-windows' is non-nil and the present
 situation allows it."
   '(and w3m-pop-up-windows
-	(not (w3m-use-tab-p))
+	(not w3m-use-tab)
 	(not (get-buffer-window w3m-select-buffer-name))))
 
 (defvar w3m-initial-frames nil
@@ -602,7 +546,7 @@ for not deleting frames made for aims other than emacs-w3m sessions.")
 	     ;; There is no window for BUFFER, so look for the existing
 	     ;; emacs-w3m window if the tabs line is enabled or the
 	     ;; selection window exists (i.e., we can reuse it).
-	     (if (or (w3m-use-tab-p)
+	     (if (or w3m-use-tab
 		     (get-buffer-window w3m-select-buffer-name t))
 		 (progn
 		   (setq buffers (delq buffer (w3m-list-buffers t)))
@@ -632,17 +576,11 @@ for not deleting frames made for aims other than emacs-w3m sessions.")
 		   (pop-to-buffer buffer))
 		  (t
 		   ;; Pop up a new frame.
-		   (let* ((pop-up-frame-alist (w3m-popup-frame-parameters))
-			  (pop-up-frame-plist pop-up-frame-alist))
+		   (let ((pop-up-frame-alist (or w3m-popup-frame-parameters
+						 pop-up-frame-alist)))
 		     (pop-to-buffer buffer))
 		   (setq frame (window-frame (get-buffer-window buffer t)))))
-	    ;; Raise, select and focus the frame.
-	    (if (fboundp 'select-frame-set-input-focus)
-		(select-frame-set-input-focus frame)
-	      (raise-frame frame)
-	      (select-frame frame)
-	      (w3m-static-when (featurep 'xemacs)
-		(focus-frame frame))))
+	    (select-frame-set-input-focus frame))
 	;; Simply switch to BUFFER in the current frame.
 	(let ((cd default-directory))
 	  (if (w3m-popup-window-p)
@@ -652,27 +590,15 @@ for not deleting frames made for aims other than emacs-w3m sessions.")
 	  (setq default-directory cd))
 	(w3m-history-restore-position)))))
 
-(eval-when-compile
-  (when (and (fboundp 'select-frame-set-input-focus)
-	     (eq (symbol-function 'select-frame-set-input-focus) 'ignore))
-    (fmakunbound 'select-frame-set-input-focus)))
-
 (defun w3m-add-w3m-initial-frames (&optional frame)
-  "Add FRAME into `w3m-initial-frames', the buffer-local variable.
+  "Add FRAME to `w3m-initial-frames', the buffer-local variable.
 It is done when FRAME is newly created for the emacs-w3m session.
-This function is added to the hook which is different with the Emacs
-version as follows:
-
-XEmacs          `create-frame-hook'
-Emacs 21,22     `after-make-frame-functions'
-Emacs 19        `after-make-frame-hook'
-
-Note that `after-make-frame-hook' doesn't take an argument."
+This function will be added to `after-make-frame-functions' to run."
   (unless frame
     (setq frame (selected-frame)))
   ;; Share the opened frame in `w3m-initial-frames' over all emacs-w3m
   ;; buffers if using a tabbed display mode.  Otherwise, the frame is
-  ;; appended into `w3m-initial-frames' only in the current buffer.
+  ;; appended to `w3m-initial-frames' only in the current buffer.
   (with-current-buffer (window-buffer (frame-first-window frame))
     (when (eq major-mode 'w3m-mode)
       (unless (memq frame w3m-initial-frames)
@@ -683,10 +609,7 @@ Note that `after-make-frame-hook' doesn't take an argument."
 	  (unless (memq frame w3m-initial-frames)
 	    (push frame w3m-initial-frames)))))))
 
-(add-hook (if (featurep 'xemacs)
-	      'create-frame-hook
-	    'after-make-frame-functions)
-	  'w3m-add-w3m-initial-frames)
+(add-hook 'after-make-frame-functions 'w3m-add-w3m-initial-frames)
 
 (defun w3m-delete-w3m-initial-frames (frame)
   "Delete FRAME from `w3m-initial-frames', the buffer-local variable.
@@ -850,18 +773,6 @@ KEYS is alternating list of key-value."
 	     (setq keys (cddr keys)))
 	   (nreverse res)))))
 
-(defmacro w3m-set-match-data (list)
-  "Same as the `set-match-data'; convert points into markers under XEmacs."
-  (if (featurep 'xemacs)
-      `(let ((list ,list))
-	 (store-match-data (dolist (pt (prog1 list (setq list nil))
-				       (nreverse list))
-			     (push (if (markerp pt)
-				       pt
-				     (set-marker (make-marker) pt))
-				   list))))
-    `(set-match-data ,list)))
-
 (defun w3m-search-tag-1 (regexp)
   "Subroutine used by `w3m-search-tag'."
   (let ((start (point))
@@ -874,7 +785,7 @@ KEYS is alternating list of key-value."
 		      (search-forward ">" nil t))))
 	(prog1
 	    (goto-char (match-end 0))
-	  (w3m-set-match-data
+	  (set-match-data
 	   (cond ((= end (match-beginning 0))
 		  (list begin (match-end 0)
 			(1+ begin) end))
@@ -897,7 +808,7 @@ KEYS is alternating list of key-value."
   "Search forward for a tag which begins with one of NAMES.
 This macro generates the form equivalent to:
 
-\(re-search-forward \"<\\\\(NAMES\\\\)\\\\([ \\t\\f\\n]+[^>]*\\\\)?/?>\" nil t)
+(re-search-forward \"<\\\\(NAMES\\\\)\\\\([ \\t\\f\\n]+[^>]*\\\\)?/?>\" nil t)
 
 but it works even if the tag is considerably large.
 
@@ -1052,8 +963,8 @@ ___<TAG ...>___
 	      (progn
 		(setq tag (regexp-quote tag))
 		(if (looking-at (concat "\
-\[\t\n\r ]*\\(<[\t\n\r ]*" tag "\\(?:[\t\n\r ]*\\|[\t\n\r ]+[^>]+\\)>\\)\
-\[\t\n\r ]*"))
+[\t\n\r ]*\\(<[\t\n\r ]*" tag "\\(?:[\t\n\r ]*\\|[\t\n\r ]+[^>]+\\)>\\)\
+[\t\n\r ]*"))
 		    (setq st1 (nth 2 (match-data)) ;; (match-beginning 1)
 			  st2 (nth 3 (match-data)) ;; (match-end 1)
 			  st3 (nth 1 (match-data))) ;; (match-end 0)
@@ -1066,7 +977,7 @@ ___<TAG ...>___
 		    (error "")))
 		(goto-char (1+ st1))
 		(setq regexp (concat "\
-\[\t\n\r ]*\\(<\\([\t\n\r ]*/\\)?[\t\n\r ]*" tag "\
+[\t\n\r ]*\\(<\\([\t\n\r ]*/\\)?[\t\n\r ]*" tag "\
 \\(?:[\t\n\r ]*\\|[\t\n\r ]+[^>]+\\)>\\)"))
 		(while (and (> num 0)
 			    (re-search-forward regexp))
@@ -1116,8 +1027,7 @@ ___<TAG ...>___
   (let ((md (make-vector 20 nil))
 	pt)
     (with-temp-buffer
-      (w3m-static-unless (featurep 'xemacs)
-	(set-buffer-multibyte (multibyte-string-p string)))
+      (set-buffer-multibyte (multibyte-string-p string))
       (insert string)
       (goto-char (point-min))
       (aset md 0 0)
@@ -1182,6 +1092,7 @@ But this function should work even if STRING is considerably long."
     (error ;; Stack overflow in regexp matcher
      (w3m-string-match-url-components-1 string))))
 
+;; Faster than (> (time-to-seconds (time-subtract a b)) 0).
 (defun w3m-time-newer-p (a b)
   "Return t, if A is newer than B.  Otherwise return nil.
 A and B are lists which represent time in Emacs-style.  If value is
@@ -1192,33 +1103,13 @@ nil, it is regarded as the oldest time."
 	       (and (= (car a) (car b))
 		    (> (nth 1 a) (nth 1 b)))))))
 
+;; Generally faster than (time-subtract end start).
 (defun w3m-time-lapse-seconds (start end)
   "Return lapse seconds from START to END.
 START and END are lists which represent time in Emacs-style."
   (+ (* (- (car end) (car start)) 65536)
      (cadr end)
      (- (cadr start))))
-
-(defalias 'w3m-float-time
-  (if (fboundp 'float-time)
-      'float-time
-    (lambda (&optional specified-time)
-      "Return the current time, as a float number of seconds since the epoch.
-If an argument is given, it specifies a time to convert to float
-instead of the current time.  The argument should have the forms:
- (HIGH . LOW) or (HIGH LOW USEC) or (HIGH LOW . USEC).
-
-WARNING: Since the result is floating point, it may not be exact.
-Do not use this function if precise time stamps are required."
-      (let ((time (or specified-time (current-time))))
-	(+ (* (car time) 65536.0)
-	   (cadr time)
-	   (cond ((consp (setq time (cddr time)))
-		  (/ (car time) 1000000.0))
-		 (time
-		  (/ time 1000000.0))
-		 (t
-		  0)))))))
 
 (defun w3m-url-local-p (url)
   "If URL points a file on the local system, return non-nil value.
@@ -1287,29 +1178,8 @@ Otherwise return nil."
     (with-current-buffer (or buffer (current-buffer))
       (setq w3m-current-refresh nil)
       (when w3m-refresh-timer
-	(w3m-static-if (featurep 'xemacs)
-	    (delete-itimer w3m-refresh-timer)
-	  (cancel-timer w3m-refresh-timer))
+	(cancel-timer w3m-refresh-timer)
 	(setq w3m-refresh-timer nil)))))
-
-(cond ((featurep 'xemacs)
-       ;; The function of the XEmacs version doesn't work correctly
-       ;; for wide characters.
-       (defun w3m-truncate-string (str end-column)
-	 "Truncate string STR to end at column END-COLUMN."
-	 (let ((len (length str))
-	       (column 0)
-	       (idx 0))
-	   (condition-case nil
-	       (while (< column end-column)
-		 (setq column (+ column (char-width (aref str idx)))
-		       idx (1+ idx)))
-	     (args-out-of-range (setq idx len)))
-	   (when (> column end-column)
-	     (setq idx (1- idx)))
-	   (substring str 0 idx))))
-      (t
-       (defalias 'w3m-truncate-string 'truncate-string-to-width)))
 
 (defun w3m-assoc-ignore-case (name alist)
   "Return the element of ALIST whose car equals NAME ignoring its case."
@@ -1324,15 +1194,14 @@ Otherwise return nil."
     match))
 
 (defun w3m-prin1 (object &optional stream)
-  "Like `prin1', except that control chars will be represented with ^ as
-`cat -v' does."
+  "Like `prin1', but control chars \\C-x will be represented as ^X."
   (if (stringp object)
       (let (rest)
 	(dolist (char (append object nil) rest)
 	  (cond ((eq char ?\C-?)
 		 (push "^?" rest))
 		((or (memq char '(?\t ?\n))
-		     (>= char ?\ ))
+		     (>= char ? ))
 		 (push (char-to-string char) rest))
 		(t
 		 (push (concat "^" (char-to-string (+ 64 char))) rest))))
@@ -1340,9 +1209,9 @@ Otherwise return nil."
     (prin1 object stream)))
 
 (defun w3m-modify-plist (plist &rest properties)
-  "Change values in PLIST corresponding to PROPERTIES.  This is similar
-to `plist-put', but handles plural symbol and value pairs and remove
-pairs from PLIST whose value is nil."
+  "Change values in PLIST corresponding to PROPERTIES.
+This is similar to `plist-put', but handles plural symbol and value
+pairs and remove pairs from PLIST whose value is nil."
   (while properties
     (setq plist (plist-put plist (car properties) (cadr properties))
 	  properties (cddr properties)))
@@ -1356,13 +1225,11 @@ pairs from PLIST whose value is nil."
 (defmacro w3m-insert-string (string)
   "Insert STRING at point without conversions in either case the
 multibyteness of the buffer."
-  (if (featurep 'emacs)
-      `(let ((string ,string))
-	 (insert (if (and (null enable-multibyte-characters)
-			  (multibyte-string-p string))
-		     (encode-coding-string string 'utf-8-emacs)
-		   string)))
-    `(insert ,string)))
+  `(let ((string ,string))
+     (insert (if (and (null enable-multibyte-characters)
+		      (multibyte-string-p string))
+		 (encode-coding-string string 'utf-8-emacs)
+	       string))))
 
 (defun w3m-custom-hook-initialize (symbol value)
   "Initialize the hook option pointed by the SYMBOL with the default VALUE."
@@ -1374,154 +1241,28 @@ multibyteness of the buffer."
 	  (setq value (cdr value))))
     (custom-initialize-set symbol value)))
 
-(defun w3m-run-mode-hooks (&rest funcs)
-  "Run `run-mode-hooks' if it is available, otherwise `run-hooks'."
-  (if (fboundp 'run-mode-hooks)
-      (apply 'run-mode-hooks funcs)
-    (apply 'run-hooks funcs)))
-
-(defmacro w3m-keep-region-active ()
-  "Keep the region active after evaluating this current command.
-In XEmacs, `zmacs-region-stays' is set to nil everywhen a command is
-evaluated.  This means that the region is always deactivated after
-evaluating the current command.  This macro sets t to it, and keeps
-the region active."
-  (when (featurep 'xemacs)
-    '(if (interactive-p)
-	 (setq zmacs-region-stays t))))
-
-(defmacro w3m-deactivate-region ()
-  "Deactivate the region."
-  (if (featurep 'xemacs)
-      '(zmacs-deactivate-region)
-    '(deactivate-mark)))
-
-(defmacro w3m-region-active-p ()
-  "Say whether the region is active."
-  (if (fboundp 'region-active-p)
-      (list 'region-active-p)
-    (list 'and 'transient-mark-mode 'mark-active)))
-
-(eval-and-compile
-  (cond
-   ((fboundp 'replace-regexp-in-string)
-    (defun w3m-replace-in-string  (string regexp newtext &optional literal)
-      ;;(replace-regexp-in-string regexp newtext string nil literal)))
-      ;;
-      ;; Don't call the symbol function `replace-regexp-in-string' directly
-      ;; in order to silence the byte-compiler when an Emacs which doesn't
-      ;; provide it is used.  The following form generates exactly the same
-      ;; byte-code.
-      (funcall (symbol-function 'replace-regexp-in-string)
-	       regexp newtext string nil literal)))
-   (t
-    (defalias 'w3m-replace-in-string 'replace-in-string))))
-
 (defun w3m-replace-regexps-in-string (string &rest regexps)
   "In STRING replace an alist of REGEXPS."
   (if (cadr regexps)
-      (w3m-replace-in-string
-       (apply #'w3m-replace-regexps-in-string string (cddr regexps))
-       (car regexps) (cadr regexps))
+      (replace-regexp-in-string
+       (car regexps) (cadr regexps)
+       (apply #'w3m-replace-regexps-in-string string (cddr regexps)))
     string))
 
-(if (fboundp 'string-match-p)
-    (defalias 'w3m-string-match-p 'string-match-p)
-  (defun w3m-string-match-p (regexp string &optional start)
-    "\
-Same as `string-match' except this function does not change the match data."
-    (save-match-data
-      (string-match regexp string start))))
-
-(if (fboundp 'substring-no-properties)
-    (defalias 'w3m-substring-no-properties 'substring-no-properties)
-  (defun w3m-substring-no-properties (string &optional from to)
-    "Return a substring of STRING, without text properties.
-It starts at index FROM and ending before TO.
-TO may be nil or omitted; then the substring runs to the end of STRING.
-If FROM is nil or omitted, the substring starts at the beginning of STRING.
-If FROM or TO is negative, it counts from the end.
-
-With one argument, just copy STRING without its properties."
-    (setq string (substring string (or from 0) to))
-    (set-text-properties 0 (length string) nil string)
-    string))
-
-(if (fboundp 'compare-strings)
-    (defalias 'w3m-compare-strings 'compare-strings)
-  (defun w3m-compare-strings (string1 start1 end1 string2 start2 end2)
-    "Compare the contents of two strings."
-    (let* ((str1 (substring string1 start1 end1))
-	   (str2 (substring string2 start2 end2))
-	   (len (min (length str1) (length str2)))
-	   (i 0))
-      (if (string= str1 str2)
-	  t
-	(setq i (catch 'ignore
-		  (while (< i len)
-		    (when (not (eq (aref str1 i) (aref str2 i)))
-		      (throw 'ignore i))
-		    (setq i (1+ i)))
-		  i))
-	(1+ i)))))
-
-(eval-and-compile
-  ;; This function will be redefined in w3m-ems.el.
-  (unless (fboundp 'w3m-force-window-update)
-    (defalias 'w3m-force-window-update 'ignore)))
-
-(if (boundp 'header-line-format)
-    (defun w3m-force-window-update-later (&optional buffer seconds)
-      "Update the header-line appearance in BUFFER after SECONDS.
+(defun w3m-force-window-update-later (&optional buffer seconds)
+  "Update the header-line appearance in BUFFER after SECONDS.
 BUFFER defaults to the current buffer.  SECONDS defaults to 0.5."
-      (run-with-timer (or seconds 0.5) nil
-		      (lambda (buffer)
-			(when (and (buffer-live-p buffer)
-				   (eq (get-buffer-window buffer t)
-				       (selected-window)))
-			  (w3m-force-window-update)))
-		      (or buffer (current-buffer))))
-  (defalias 'w3m-force-window-update-later 'ignore))
-
-(if (fboundp 'read-number)
-    (defalias 'w3m-read-number 'read-number)
-  (defun w3m-read-number (prompt &optional default)
-    "Read a numeric value in the minibuffer, prompting with PROMPT.
-DEFAULT specifies a default value to return if the user just types RET.
-The value of DEFAULT is inserted into PROMPT."
-    (let ((n nil))
-      (when default
-	(setq prompt
-	      (if (string-match "\\(\\):[ \t]*\\'" prompt)
-		  (replace-match (format " (default %s)" default) t t prompt 1)
-		(w3m-replace-in-string prompt "[ \t]*\\'"
-				       (format " (default %s) " default)
-				       t))))
-      (while
-	  (progn
-	    (let ((str (read-from-minibuffer
-			prompt nil nil nil nil
-			(and default (number-to-string default)))))
-	      (condition-case nil
-		  (setq n (cond
-			   ((zerop (length str)) default)
-			   ((stringp str) (read str))))
-		(error nil)))
-	    (unless (numberp n)
-	      (message "Please enter a number.")
-	      (sit-for 1)
-	      t)))
-      n)))
+  (run-with-timer (or seconds 0.5) nil
+		  (lambda (buffer)
+		    (when (and (buffer-live-p buffer)
+			       (eq (get-buffer-window buffer t)
+				   (selected-window)))
+		      (w3m-force-window-update)))
+		  (or buffer (current-buffer))))
 
 (defun w3m-make-menu-item (japan english)
   "Make menu item."
-  (cond
-   ((and w3m-use-japanese-menu (featurep 'xemacs))
-    (concat japan "%_ "))
-   (w3m-use-japanese-menu
-    japan)
-   (t
-    english)))
+  (if w3m-use-japanese-menu japan english))
 
 (defvar w3m-make-menu-commands-keys nil)
 
@@ -1557,69 +1298,23 @@ The value of DEFAULT is inserted into PROMPT."
   (with-current-buffer buffer
     w3m-buffer-unseen))
 
-(defun w3m-visited-file-modtime ()
-  "Replacement of `visited-file-modtime'.
-It returns a list of two integers if the current buffer visits a file,
-otherwise returns the number 0.  In modern Emacsen, this function will
-get to be the alias to `visited-file-modtime'."
-  (let ((modtime (visited-file-modtime)))
-    (cond ((consp (cdr-safe modtime))
-	   (defalias 'w3m-visited-file-modtime 'visited-file-modtime)
-	   modtime)
-	  ((integerp (cdr-safe modtime))
-	   ;; XEmacs version returns `(0 . 0)' if no file is visited.
-	   (if (and (= (car modtime) 0) (= (cdr modtime) 0))
-	       0
-	     (list (car modtime) (cdr modtime))))
-	  (t
-	   modtime))))
-
 (defmacro w3m-interactive-p ()
-  (condition-case nil
-      (progn
-	(eval '(called-interactively-p 'any))
-	;; Emacs >=23.2
-	'(called-interactively-p 'any))
-    ;; Emacs <23.2
-    (wrong-number-of-arguments '(called-interactively-p))
-    ;; Old ones
-    (void-function '(interactive-p))))
+  '(called-interactively-p 'any))
 
-(defalias 'w3m-force-mode-line-update
-  (if (fboundp 'force-mode-line-update)
-      'force-mode-line-update
-    'redraw-modeline))
-
-;; `flet' and `labels' got obsolete since Emacs 24.3.
+;; `flet' got obsolete since Emacs 24.3.
 (defmacro w3m-flet (bindings &rest body)
   "Make temporary overriding function definitions.
 This is an analogue of a dynamically scoped `let' that operates on
 the function cell of FUNCs rather than their value cell.
 
-\(fn ((FUNC ARGLIST BODY...) ...) FORM...)"
-  (require 'cl)
-  (if (fboundp 'cl-letf)
-      `(cl-letf ,(mapcar (lambda (binding)
-			   `((symbol-function ',(car binding))
-			     (lambda ,@(cdr binding))))
-			 bindings)
-	 ,@body)
-    `(flet ,bindings ,@body)))
+(fn ((FUNC ARGLIST BODY...) ...) FORM...)"
+  `(cl-letf ,(mapcar (lambda (binding)
+		       `((symbol-function ',(car binding))
+			 (lambda ,@(cdr binding))))
+		     bindings)
+     ,@body))
 (put 'w3m-flet 'lisp-indent-function 1)
 (def-edebug-spec w3m-flet ((&rest (sexp sexp &rest form)) &rest form))
-
-(defmacro w3m-labels (bindings &rest body)
-  "Make temporary function bindings.
-The bindings can be recursive and the scoping is lexical, but capturing
-them in closures will only work if `lexical-binding' is in use.  But in
-Emacs 24.2 and older, the lexical scoping is handled via `lexical-let'
-rather than relying on `lexical-binding'.
-
-\(fn ((FUNC ARGLIST BODY...) ...) FORM...)"
-  `(,(progn (require 'cl) (if (fboundp 'cl-labels) 'cl-labels 'labels))
-    ,bindings ,@body))
-(put 'w3m-labels 'lisp-indent-function 1)
-(def-edebug-spec w3m-labels ((&rest (sexp sexp &rest form)) &rest form))
 
 (eval-when-compile (require 'wid-edit))
 (defun w3m-widget-type-convert-widget (widget)

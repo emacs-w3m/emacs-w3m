@@ -1,6 +1,6 @@
-;;; sb-x51.el --- shimbun backend for x51.org -*- coding: utf-8; -*-
+;;; sb-x51.el --- shimbun backend for x51.org
 
-;; Copyright (C) 2004, 2005, 2006, 2010 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2004-2006, 2010, 2019 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: news blog
@@ -27,7 +27,7 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl-lib)) ;; cl-incf
 (require 'shimbun)
 (require 'sb-rss)
 
@@ -120,7 +120,7 @@
 			   nil t))
 		;; push linked for page 2-end
 		(push (format "%s%s%d" url "?page=" count) indexes)
-		(incf count)))
+		(cl-incf count)))
 	    (widen)))
 	(setq indexes (nreverse indexes))
 	(catch 'stop

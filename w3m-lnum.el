@@ -1,6 +1,7 @@
-;;; w3m-lnum.el --- Operations using link numbers -*- coding: utf-8; -*-
+;;; w3m-lnum.el --- Operations using link numbers
 
-;; Copyright (C) 2004-2014, 2016, 2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2004-2014, 2016, 2017, 2019
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;;          Andrey Kotlarski <m00naticus@gmail.com>
@@ -286,10 +287,8 @@ enable them.  With no prefix ARG - toggle."
   `(let ((overlay (make-overlay ,pos (1+ ,pos))))
      (let ((num (format "[%d]" (setq ,index (1+ ,index)))))
        (overlay-put overlay 'before-string num)
-       (w3m-static-if (featurep 'xemacs)
-	   (set-glyph-face (extent-begin-glyph overlay) 'w3m-lnum)
-	 (w3m-add-face-property 0 (length num) 'w3m-lnum num)
-	 (overlay-put overlay 'evaporate t)))
+       (w3m-add-face-property 0 (length num) 'w3m-lnum num)
+       (overlay-put overlay 'evaporate t))
      (overlay-put overlay 'w3m-lnum-overlay ,index)
      (let ((hseq (get-char-property ,pos 'w3m-anchor-sequence))
 	   (pos2 ,pos))
@@ -322,7 +321,7 @@ DONT-CLEAR-P determines whether previous numbering has to be cleared."
 	(index 0)
 	(context (or (assoc-default w3m-current-url
 				    w3m-lnum-context-alist
-				    'w3m-string-match-p)
+				    #'string-match-p)
 		     0)))
     (while (and pos
 		(setq pos (funcall next-func pos))
@@ -343,17 +342,17 @@ DONT-CLEAR-P determines whether previous numbering has to be cleared."
 			      (concat str
 				      (buffer-substring-no-properties
 				       pos3 pos2)))))))))
-	(when (w3m-string-match-p reg
-				  (concat
-				   (buffer-substring-no-properties
-				    pos
-				    (next-single-property-change
-				     pos
-				     (cond ((w3m-anchor-sequence pos)
-					    'w3m-anchor-sequence)
-					   ((w3m-image pos)
-					    'w3m-image))))
-				   str))
+	(when (string-match-p reg
+			      (concat
+			       (buffer-substring-no-properties
+				pos
+				(next-single-property-change
+				 pos
+				 (cond ((w3m-anchor-sequence pos)
+					'w3m-anchor-sequence)
+				       ((w3m-image pos)
+					'w3m-image))))
+			       str))
 	  (w3m-lnum-set-overlay pos index pmax)
 	  (let ((counter context))
 	    (while (and (>= (setq counter (1- counter)) 0)
@@ -394,17 +393,17 @@ If such element is found, return its position.  Nil otherwise."
 				(concat str
 					(buffer-substring-no-properties
 					 pos3 pos2)))))))))
-	  (if (w3m-string-match-p filter
-				  (concat
-				   (buffer-substring-no-properties
-				    pos
-				    (next-single-property-change
-				     pos
-				     (cond ((w3m-anchor-sequence pos)
-					    'w3m-anchor-sequence)
-					   ((w3m-image pos)
-					    'w3m-image))))
-				   str))
+	  (if (string-match-p filter
+			      (concat
+			       (buffer-substring-no-properties
+				pos
+				(next-single-property-change
+				 pos
+				 (cond ((w3m-anchor-sequence pos)
+					'w3m-anchor-sequence)
+				       ((w3m-image pos)
+					'w3m-image))))
+			       str))
 	      (throw 'found pos)))))))
 
 (defun w3m-lnum (arg &optional filter dont-clear-p)
@@ -440,24 +439,6 @@ SHOW-NUM if specified replaces NUM."
 			   'face 'w3m-lnum-minibuffer-prompt))
 	     " " ,filter anchor)))
 
-(defmacro w3m-read-event (prompt key)
-  "Read event with PROMPT and return keycode.
-KEY is what XEmacs gives for event-key."
-  (w3m-static-if (featurep 'xemacs)
-      `(progn
-	 (display-message 'no-log ,prompt)
-	 (let ((event (next-command-event)))
-	   (if (key-press-event-p event)
-	       (or (event-to-character event)
-		   (characterp
-		    (setq ,key (event-key event)))
-		   ,key))))
-    `(read-event ,prompt t)))
-
-(eval-when-compile
-  (if (fboundp 'redisplay) nil
-    (defalias 'redisplay 'ignore)))
-
 (defun w3m-lnum-read-interactive (prompt fun type last-index &optional
 					 def-anchor filter def-num)
   "Interactively read a valid integer from minubuffer with PROMPT.
@@ -486,14 +467,14 @@ Return list of selected number and last applied filter."
 						def-anchor filter
 						(if auto-num ""))))
 	  (while (not (memq		; while not return or escape
-		       (setq ch (w3m-read-event temp-prompt key))
+		       (setq ch (read-event temp-prompt t))
 		       '(return 10 13 ?\n ?\r ?\C-g escape 27 ?\e)))
 	    (cond
 	     ((memq ch '(backspace 8 127 ?\C-h))
 	      (if auto-num
 		  (unless (string-equal filter "") ; delete last filter character
 		    (setq num 1
-			  filter (w3m-substring-no-properties
+			  filter (substring-no-properties
 				  filter 0 (1- (length filter)))
 			  last-index (w3m-lnum type filter)
 			  temp-prompt
@@ -508,15 +489,11 @@ Return list of selected number and last applied filter."
 					   def-anchor filter
 					   (if auto-num "")))))
 	     ;; scroll options
-	     ((memq ch '(32 ?\ ))		; scroll down
+	     ((eq ch ? )		; scroll down
 	      (w3m-lnum-remove-overlays (point-min) (point-max))
-	      (ignore-errors
-		(w3m-scroll-up)
-		;; scroll-up sets wrongly window-start/end
-		(if (and (fboundp 'redisplay)
-			 (not (eq (symbol-function 'redisplay) 'ignore)))
-		    (redisplay)
-		  (sit-for 0)))
+	      (w3m-scroll-up)
+	      ;; scroll-up sets wrongly window-start/end
+	      (redisplay)
 	      #1=
 	      (setq last-index (w3m-lnum type filter t)
 		    num (if (zerop last-index) 0 1)
@@ -546,9 +523,7 @@ Return list of selected number and last applied filter."
 		    temp-prompt
 		    (w3m-lnum-prompt-str num fun prompt def-anchor
 					 filter "")))
-	     ((and (w3m-static-if (featurep 'xemacs) ; digit
-		       (characterp ch)
-		     (numberp ch))
+	     ((and (numberp ch) ; digit
 		   (< 47 ch) (< ch 58))
 	      (if auto-num
 		  (if (= ch 48) (throw 'select (setq num 0))
@@ -566,17 +541,12 @@ Return list of selected number and last applied filter."
 	      (setq temp-prompt
 		    (w3m-lnum-prompt-str num fun prompt def-anchor
 					 filter (if auto-num ""))))
-	     (t (setq ch (string (w3m-static-if (featurep 'xemacs)
-				     (cond
-				      ((eq ch t) key)
-				      ((= ch ?\^@) ?\ ) ;<ctrl>+SPACE
-				      (t ch))
-				   (cond
-				    ((= ch 67108896) 32) ;<ctrl>+SPACE
-				    ((and (< 67108911 ch) ;treat <ctrl>+DIGIT
-					  (< ch 67108922))
-				     (- ch 67108864)) ; as DIGIT
-				    (t ch))))
+	     (t (setq ch (string (cond
+				  ((= ch 67108896) 32) ;<ctrl>+SPACE
+				  ((and (< 67108911 ch) ;treat <ctrl>+DIGIT
+					(< ch 67108922))
+				   (- ch 67108864)) ; as DIGIT
+				  (t ch)))
 		      filter (concat filter ch)
 		      last-index (w3m-lnum type filter))
 		(if (and (= last-index 1)
@@ -593,14 +563,10 @@ Return list of selected number and last applied filter."
 				     (point-min) (window-start)))))
 		      (when pos
 			(goto-char pos)
-			(if (and (fboundp 'redisplay)
-				 (not (eq (symbol-function 'redisplay)
-					  'ignore)))
-			    (redisplay)
-			  (sit-for 0))
+			(redisplay)
 			(setq last-index (w3m-lnum type filter t))))
 		    (if (zerop last-index) ; search found nothing, remove new char
-			(setq filter (w3m-substring-no-properties
+			(setq filter (substring-no-properties
 				      filter 0 (1- (length filter)))
 			      last-index (w3m-lnum type filter t))))
 		  (setq num 1
@@ -625,7 +591,7 @@ the last used index number."
 chars, C-digit, C-SPACE: add chars, digits or space to string \
 filter | arrows: move selection | SPACE,DEL,<,>: scroll | \
 ESC, C-g: quit")
-		       (w3m-force-mode-line-update)
+		       (force-mode-line-update)
 		       (let ((last-index (w3m-lnum ,type ,filter)))
 			 ,@body))
        (with-current-buffer buffer
@@ -836,7 +802,7 @@ Function has to take one argument that is selection info."
 	      (setq mode-line-format "RET, left click: select | \
 <down>,TAB/<up>,BACKTAB: move to next/previous action"
 		    buffer-read-only nil)
-	      (w3m-force-mode-line-update)
+	      (force-mode-line-update)
 	      (mapc (lambda (option)
 		      (if (consp option)
 			  (insert
@@ -859,13 +825,12 @@ Function has to take one argument that is selection info."
 	      (while (not (get-text-property (point) 'action))
 		(forward-line))		; go over first action
 	      (pop-to-buffer selection-buffer)
-	      (setq char (w3m-read-event
+	      (setq char (read-event
 			  (concat
-			   (propertize
-			    "Select action: " 'face
-			    'w3m-lnum-minibuffer-prompt)
+			   (propertize "Select action: "
+				       'face 'w3m-lnum-minibuffer-prompt)
 			   "[" label "]")
-			  key))
+			  t))
 	      (while (and (not selection-made)
 			  (or (consp char)
 			      (memq char '(up down tab backtab
@@ -893,12 +858,12 @@ Function has to take one argument that is selection info."
 							  'action)))
 			   (if action (setq selection-made action))))))
 		(unless selection-made
-		  (setq char (w3m-read-event
+		  (setq char (read-event
 			      (concat (propertize
 				       "Select action: " 'face
 				       'w3m-lnum-minibuffer-prompt)
 				      "[" label "]")
-			      key)))))
+			      t)))))
 	  (setq mode-line-format original-mode-line-format)
 	  (kill-buffer (current-buffer)))))
     (unless (memq char '(?\C-g escape 27 ?\e))
@@ -1028,7 +993,7 @@ variable.  If no image under point, activate numbering and ask
 for one, then interactively resize.
 If IN zoom in, otherwise zoom out."
   `(progn
-     (or (w3m-display-graphic-p)
+     (or (display-images-p)
 	 (error "Can't display images in this environment"))
      (or (w3m-imagick-convert-program-available-p)
 	 (error "ImageMagick's `convert' program is required"))

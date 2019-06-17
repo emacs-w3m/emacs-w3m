@@ -1,6 +1,6 @@
-;;; w3m-mail.el --- an interface to mail-user-agent for sending web pages -*- coding: utf-8; -*-
+;;; w3m-mail.el --- an interface to mail-user-agent for sending web pages
 
-;; Copyright (C) 2006, 2009, 2010, 2013 TSUCHIYA Masatoshi
+;; Copyright (C) 2006, 2009, 2010, 2013, 2019 TSUCHIYA Masatoshi
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -73,21 +73,20 @@ the page, `charset' is a charset that the page uses, `content-type' is
 the one such as \"text/html\", and the rest are the same as those of
 `compose-mail'.")
 
-(eval-when-compile
-  (autoload 'message-add-action "message")
-  (autoload 'mml-insert-empty-tag "mml")
-  (autoload 'vm-mime-attach-buffer "vm-mime")
-  (condition-case nil
-      (require 'mime-edit)
-    (error
-     (dolist (symbol '(encode-mime-charset-region
-		       detect-mime-charset-region
-		       std11-wrap-as-quoted-string
-		       mime-find-file-type
-		       mime-edit-insert-tag
-		       mime-edit-define-encoding
-		       mime-encode-region))
-       (defalias symbol 'ignore)))))
+(declare-function message-add-action "message" (action &rest types))
+(declare-function mml-insert-empty-tag "mml" (name &rest plist))
+(declare-function vm-mime-attach-buffer "vm-mime"
+		  (buffer type &optional charset description))
+
+(declare-function detect-mime-charset-region "mcs-20" (start end))
+(declare-function encode-mime-charset-region "mcs-e20"
+		  (start end charset &optional lbt))
+(declare-function mime-edit-define-encoding "mime-edit" (encoding))
+(declare-function mime-edit-insert-tag "mime-edit"
+		  (&optional pritype subtype parameters delimiter))
+(declare-function mime-encode-region "mel" (start end encoding))
+(declare-function mime-find-file-type "mime-edit" (file))
+(declare-function std11-wrap-as-quoted-string "std11" (string))
 
 (eval-and-compile
   (autoload 'mm-find-mime-charset-region "mm-util")
@@ -97,17 +96,16 @@ the one such as \"text/html\", and the rest are the same as those of
 (defun w3m-mail-make-subject ()
   "Return a string used for the Subject header."
   (cond ((consp w3m-mail-subject)
-	 (w3m-replace-in-string
-	  (w3m-replace-in-string
+	 (replace-regexp-in-string
+	  "\\(?:\\` \\| \\'\\)" ""
+	  (replace-regexp-in-string
+	   "[\t\n ]+" " "
 	   (mapconcat (lambda (elem)
 			(cond ((eq elem 'url) w3m-current-url)
 			      ((eq elem 'title) w3m-current-title)
 			      ((stringp elem) elem)
 			      (t (format "%s" elem))))
-		      w3m-mail-subject
-		      " ")
-	   "[\t\n ]+" " ")
-	  "\\(?:\\` \\| \\'\\)" ""))
+		      w3m-mail-subject " "))))
 	((stringp w3m-mail-subject) w3m-mail-subject)
 	(t "(no subject)")))
 
@@ -130,8 +128,7 @@ the one such as \"text/html\", and the rest are the same as those of
 (defun w3m-mail-embed-base-url (source base-url)
   "Embed BASE-URL in SOURCE."
   (with-temp-buffer
-    (w3m-static-unless (featurep 'xemacs)
-      (set-buffer-multibyte t))
+    (set-buffer-multibyte t)
     (setq case-fold-search t)
     (insert source)
     (goto-char (point-min))
@@ -180,8 +177,7 @@ the one such as \"text/html\", and the rest are the same as those of
   "Compose a mail using MML."
   (let ((buffer (generate-new-buffer " *w3m-mail*")))
     (with-current-buffer buffer
-      (w3m-static-unless (featurep 'xemacs)
-	(set-buffer-multibyte (not (string-match "\\`image/" content-type))))
+      (set-buffer-multibyte (not (string-match "\\`image/" content-type)))
       (insert source))
     (if (eq mail-user-agent 'gnus-user-agent)
 	(progn
@@ -218,13 +214,10 @@ the one such as \"text/html\", and the rest are the same as those of
 			  (or charset
 			      (and (not (string-match "\\`image/"
 						      content-type))
-				   (w3m-static-if (featurep 'xemacs)
-				       (string-match "[^\000-\177]" source)
-				     (multibyte-string-p source))))))
+				   (multibyte-string-p source)))))
 	 (buffer (generate-new-buffer " *w3m-mail*")))
     (with-current-buffer buffer
-      (w3m-static-unless (featurep 'xemacs)
-	(set-buffer-multibyte (and (not coding) multibytep)))
+      (set-buffer-multibyte (and (not coding) multibytep))
       (cond (coding
 	     (insert (encode-coding-string source coding)))
 	    (multibytep
@@ -232,18 +225,15 @@ the one such as \"text/html\", and the rest are the same as those of
 	     (when (and (setq charset (car (mm-find-mime-charset-region
 					    (point-min) (point-max))))
 			(setq coding (w3m-charset-to-coding-system charset)))
-	       (w3m-static-if (featurep 'xemacs)
-		   (encode-coding-region (point-min) (point-max) coding)
-		 (insert (prog1
-			     (encode-coding-string (buffer-string) coding)
-			   (erase-buffer)
-			   (set-buffer-multibyte nil))))))
+	       (insert (prog1
+			   (encode-coding-string (buffer-string) coding)
+			 (erase-buffer)
+			 (set-buffer-multibyte nil)))))
 	    (t
 	     (insert source))))
     (require 'vm-startup)
     (compose-mail to subject other-headers)
     (add-to-list 'mail-send-actions `(kill-buffer ,buffer))
-    (w3m-make-local-hook 'kill-buffer-hook)
     (add-hook 'kill-buffer-hook `(lambda nil (kill-buffer ,buffer)) nil t)
     (w3m-mail-goto-body-and-clear-body)
     (w3m-mail-position-point
@@ -340,7 +330,7 @@ The optional HEADERS is a list in which each element is a cons of the
 symbol of a header name and a string.  Here is an example to use this
 function:
 
-\(w3m-mail '((To . \"foo@bar\") (Subject . \"The emacs-w3m home page\")))"
+(w3m-mail '((To . \"foo@bar\") (Subject . \"The emacs-w3m home page\")))"
   (interactive (unless (eq major-mode 'w3m-mode)
 		 (error "`%s' must be invoked from an emacs-w3m buffer"
 			this-command)))
@@ -359,7 +349,7 @@ function:
 	    base (w3m-mail-compute-base-url))
       (w3m-view-source)
       (setq url w3m-current-url
-	    charset (w3m-coding-system-to-charset w3m-current-coding-system)
+	    charset (coding-system-get w3m-current-coding-system :mime-charset)
 	    content-type (or (w3m-arrived-content-type w3m-current-url)
 			     (w3m-content-type w3m-current-url)))
       (w3m-view-source))
@@ -369,13 +359,13 @@ function:
 	    base (w3m-mail-compute-base-url))
       (w3m-view-source)
       (setq url w3m-current-url
-	    charset (w3m-coding-system-to-charset w3m-current-coding-system)
+	    charset (coding-system-get w3m-current-coding-system :mime-charset)
 	    content-type (or (w3m-arrived-content-type w3m-current-url)
 			     (w3m-content-type w3m-current-url)))
       (w3m-view-header))
      (t
       (setq url w3m-current-url
-	    charset (w3m-coding-system-to-charset w3m-current-coding-system)
+	    charset (coding-system-get w3m-current-coding-system :mime-charset)
 	    content-type (or (w3m-arrived-content-type w3m-current-url)
 			     (w3m-content-type w3m-current-url)))
       (w3m-view-source)

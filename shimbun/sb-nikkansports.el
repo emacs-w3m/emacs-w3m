@@ -1,6 +1,6 @@
-;;; sb-nikkansports.el --- shimbun backend for www.nikkansports.com -*- coding: utf-8; -*-
+;;; sb-nikkansports.el --- shimbun backend for www.nikkansports.com
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2008, 2017
+;; Copyright (C) 2001-2005, 2007, 2008, 2017, 2019
 ;; MIYOSHI Masanori <miyoshi@meadowy.org>
 
 ;; Author: MIYOSHI Masanori <miyoshi@meadowy.org>
@@ -72,7 +72,7 @@
 ニュース本文[\t\n ]*\\++[\t\n ]*-+[\t\n ]*>[\t\n ]*\
 \\(?:\\(?:<[\t\n ]*/?[\t\n ]*[ads][^>]+>\
 \\|<[\t\n ]*h[0-9]+[\t\n ]*>[^<]+<[\t\n ]*/[\t\n ]*h[0-9]+[\t\n ]*>\\)\
-\[\t\n ]*\\)*")
+[\t\n ]*\\)*")
 
 (defvar shimbun-nikkansports-content-end
   "\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\

@@ -1,9 +1,7 @@
 ;;; sb-meadow.el --- shimbun backend for meadow-ml
 
-;; Copyright (C) 2001, 2002, 2003, 2004
-;; Akihiro Arisawa <ari@mbf.sphere.ne.jp>
-;; Copyright (C) 2001, 2002, 2003, 2004
-;; Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2004, 2019 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001-2004, 2019 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -34,9 +32,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-incf
 (require 'shimbun)
 (require 'sb-mhonarc)
 (luna-define-class shimbun-meadow (shimbun-mhonarc) ())
@@ -80,7 +76,7 @@
 			      (shimbun-expand-url (format "mail%d.html" aux) (cdr elem))))
 		  (delete-region (point-min) (point-max))
 		  (shimbun-retrieve-url url)
-		  (unless (if pages (<= (incf count) pages) t)
+		  (unless (if pages (<= (cl-incf count) pages) t)
 		    (throw 'stop headers))
 		  (shimbun-mhonarc-get-headers shimbun url headers (car elem))
 		  (setq aux (1- aux))))

@@ -1,6 +1,6 @@
-;;; sb-yomiuri.el --- shimbun backend for www.yomiuri.co.jp -*- coding: utf-8; -*-
+;;; sb-yomiuri.el --- shimbun backend for www.yomiuri.co.jp
 
-;; Copyright (C) 2001-2008, 2017
+;; Copyright (C) 2001-2008, 2017, 2019
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -32,7 +32,10 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl)) ;; caddr, cadddr, cddddr.
+;; Delete this section when emacs-w3m drops the Emacs 25 support.
+(eval-when-compile
+  (unless (>= emacs-major-version 26)
+    (require 'cl))) ;; c[ad][ad][ad]+r
 
 (require 'shimbun)
 
@@ -209,7 +212,7 @@ regexps and numbers.
 Regexp may contain the \"%s\" token which is replaced with a
 regexp-quoted group name.  Numbers point to the search result in order
 of [0]url, [1,2]serial numbers, [3]year, [4]subject, [5]month, [6]day,
-\[7]hour:minute, [8]ja month, [9]ja day, [10]genre and [11]ja genre.")
+[7]hour:minute, [8]ja month, [9]ja day, [10]genre and [11]ja genre.")
 
 (defvar shimbun-yomiuri-subgroups-alist
   (let* ((s0 "[\t\n 　]*")
@@ -730,7 +733,7 @@ Ex;xlc)9`]D07rPEsbgyjP@\"_@g-kw!~TJNilrSC!<D|<m=%Uf2:eebg")))
 \\([^.]+\\)[^\"]+\\)\"[^>]*>[\t\n ]*\\([^<]+\\)[\t\n ]*</a>[\t\n ]*\
 <span[\t\n ]+class=\"date\">[\t\n ]*<span[\t\n ]+class=\"y\">[\t\n ]*\
 \\(20[0-9][0-9]\\)[\t\n ]*年[\t\n ]*</span>[\t\n ]*<span[\t\n ]+class=\"m\">\
-\[\t\n ]*\\([01]?[0-9]\\)[\t\n ]*月[\t\n ]*</span>[\t\n ]*\
+[\t\n ]*\\([01]?[0-9]\\)[\t\n ]*月[\t\n ]*</span>[\t\n ]*\
 <span[\t\n ]+class=\"d\">[\t\n ]*\\([0-3]?[0-9]\\)[\t\n ]*日[\t\n ]*</span>"
 				end t)
 	(setq id (concat "<" (match-string 2) "." (match-string 3)

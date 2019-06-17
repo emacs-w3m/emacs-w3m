@@ -1,8 +1,8 @@
-;;; sb-mailman.el --- shimbun backend class for mailman archiver -*- coding: utf-8; -*-
+;;; sb-mailman.el --- shimbun backend class for mailman archiver
 
-;; Copyright (C) 2002, 2003 NAKAJIMA Mikio <minakaji@namazu.org>
-;; Copyright (C) 2002, 2008 Katsumi Yamaoka <yamaoka@jpl.org>
-;; Copyright (C) 2005       Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2002, 2003, 2019 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2002, 2008, 2019 Katsumi Yamaoka <yamaoka@jpl.org>
+;; Copyright (C) 2005,       2019 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Authors: NAKAJIMA Mikio  <minakaji@namazu.org>,
 ;;          Katsumi Yamaoka <yamaoka@jpl.org>,
@@ -33,15 +33,13 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-incf
 (require 'shimbun)
 
 (luna-define-class shimbun-mailman (shimbun) ())
 
 (defun shimbun-mailman-make-contents (shimbun header)
-  (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
+  (subst-char-in-region (point-min) (point-max) ?\t ?  t)
   (goto-char (point-min))
   (let ((end (search-forward "<!--beginarticle-->"))
 	name address)
@@ -101,7 +99,7 @@
       (setq case-fold-search t)
       (let ((pages (shimbun-header-index-pages range))
 	    (count 0))
-	(while (and (if pages (<= (incf count) pages) t)
+	(while (and (if pages (<= (cl-incf count) pages) t)
 		    (re-search-forward "\
 <a href=\"\\(20[0-9][0-9]\\(?:q[1-4]\\)?\
 \\|20[0-9][0-9]-\\(?:January\\|February\\|March\\|April\\|May\\|June\
@@ -117,7 +115,7 @@
 				 (concat (setq aux (car auxs)) "/date.html")
 				 index-url)
 				'reload)
-	  (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
+	  (subst-char-in-region (point-min) (point-max) ?\t ?  t)
 	  (goto-char (point-max))
 	  (while (re-search-backward "<LI><A HREF=\"\\(\\([0-9]+\\)\\.html\\)\
 \">\\([^\n]+\\)\n</A><A NAME=\"[0-9]+\">&nbsp;</A>\n *<I>\\([^\n]+\\)\n</I>"
@@ -154,7 +152,7 @@
 (luna-define-class shimbun-mailman-ja (shimbun-mailman) ())
 
 (defun shimbun-mailman-ja-make-contents (shimbun header)
-  (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
+  (subst-char-in-region (point-min) (point-max) ?\t ?  t)
   (goto-char (point-min))
   (let ((end (search-forward "<!--beginarticle-->"))
 	name address date)
