@@ -53,6 +53,8 @@
 ;;     scraped from web pages. This extension requires the external
 ;;     program `youtube-dl' (as is not limited to youtube).
 ;;
+;;   + Downloads may be 'throttled' to limit bandwidth per download.
+;;
 ;;   + Optional appending of meta-data to a download.
 ;;
 ;;     + Defcustom `w3m-download-save-metadata' controls whether
@@ -227,11 +229,6 @@
 ;;
 ;;   + use the process-fiter function to add detail to each download.
 ;;
-;;   + torrent and magnet support
-;;
-;;     + maybe do this using the type-alist for external helper
-;;       programs?
-;;
 ;;   + Think about the need / desirability of hook functions to
 ;;     optionally kill running downloads, for `kill-emacs-hook'
 ;;     (without user interaction), `kill-emacs-query-functions'
@@ -275,6 +272,11 @@ These are:`w3m--download-queued', `w3m--download-running',
   "\\([0-9]+%\\)\\[[^]]+] +\\([^ ]+\\) +\\([^ ]+\\) +\\(.*\\)$"
   "Parses four values from wget progress message.")
 
+(defconst w3m--download-queue-hardcoded-point-min 767
+  "Uugh. A simple efficient awful kludge.
+Update this value whenever altering the dowload queue buffer's
+heading.")
+
 (defconst w3m--download-queue-buffer-header-string "
  This buffer displays running, queued, paused, failed, and completed downloads.\n
    +/-      Adjust maximum number of simultaneous downloads.
@@ -310,10 +312,12 @@ These are:`w3m--download-queued', `w3m--download-running',
 (defvar w3m-download-queue-mode-map nil
   "Major mode for viewing and editing the `w3m-download' queue.")
 (unless w3m-download-queue-mode-map
-  (let ((map (make-keymap)))
+  (let ((map (make-sparse-keymap)))
     (suppress-keymap map)
     (define-key map "\C-o"      'w3m-download-toggle-details)
     (define-key map "\C-c\C-o"  'w3m-download-toggle-all-details)
+    (define-key map [?\t]       'w3m-download-queue-next-entry)
+    (define-key map [backtab]   'w3m-download-queue-previous-entry)
     (define-key map "p"         'w3m-download-toggle-pause)
     (define-key map "\C-k"      'w3m-download-delete-line)
     (define-key map "q"         'w3m-download-buffer-quit)
@@ -454,7 +458,13 @@ lines denoting 'running', 'queued', 'paused', 'failed', and
 ;;; User-options:
 
 (defcustom w3m-download-max-simultaneous 4
-  "Maximum number of simultaneous downloads."
+  "Maximum number of simultaneous downloads.
+This value can be temporarily changed at any time from the
+download queue buffer using
+`w3m-download-decrease-simultaneous' (bound to
+`\\<w3m-download-queue-mode-map>\\[w3m-download-decrease-simultaneous]')
+or `w3m-download-increase-simultaneous' (bound to
+`\\[w3m-download-increase-simultaneous]')."
   :group 'w3m
   :type 'integer)
 
@@ -477,7 +487,9 @@ immediately restart them."
 (defcustom w3m-download-refresh-interval 16
   "How often (in seconds) to refresh the download display buffer.
 This is also the interval for saving the download lists to
-`w3m-download-save-file'."
+`w3m-download-save-file'.
+This value can be temporarily changed at any time from the download queue
+buffer using `w3m-download-refresh-buffer' (bound to `C-u \\<w3m-download-queue-mode-map>\\[w3m-download-refresh-buffer]')."
   :group 'w3m
   :type 'integer)
 
@@ -520,6 +532,31 @@ Referer HTTP header value if used. Be aware that the URL might
 contain private information like access tokens or credentials."
   :group 'w3m
   :type 'boolean)
+
+(defcustom w3m-download-throttle nil
+"Download rate limit (bytes/second). NIL for no throttling.
+This (currently) only takes effect for future queued items, ie.
+not items already on the queue."
+  :group 'w3m
+  :type 'integer)
+
+(defcustom w3m-download-wget-options nil
+"Catch-all for your preferred `wget' options.
+
+This (currently) only takes effect for future queued items, ie.
+not items already on the queue.
+
+Use this option at your own risk! Refer to `man(1) wget', and
+consider how anything you put here will affect the interaction
+between `wget' and this Emacs package!
+
+Note that the `wget' option `--limit-rate' is already handled by
+`w3m-download-throttle', `--enable-xattr' is already handled by
+`w3m-download-enable-xattr', `--continue' is hard-coded into this
+package, and `--output-document' is used by this package to label
+partial downloads."
+  :group 'w3m
+  :type 'string)
 
 (defcustom w3m-download-select-filter-list
   '("all_links: .*$"
@@ -684,7 +721,8 @@ Meant for use with `pre-command-hook'."
         (beg (if (eq major-mode 'w3m-download-select-mode)
                (line-beginning-position)
               (previous-single-property-change
-                (min (1+ (point)) (point-max)) 'url nil 767))) ; hard-coded point-min!
+                (min (1+ (point)) (point-max))
+                'url nil w3m--download-queue-hardcoded-point-min)))
         (end (if (eq major-mode 'w3m-download-select-mode)
                (line-end-position)
               (next-single-property-change (point) 'url nil (point-max))))
@@ -702,7 +740,8 @@ Meant for use with `post-command-hook'."
         (beg (if (eq major-mode 'w3m-download-select-mode)
                (line-beginning-position)
               (previous-single-property-change
-                (min (1+ (point)) (point-max)) 'url nil 767))) ; hard-coded point-min!
+                (min (1+ (point)) (point-max))
+                'url nil w3m--download-queue-hardcoded-point-min)))
         (end (if (eq major-mode 'w3m-download-select-mode)
                (line-end-position)
               (next-single-property-change (point) 'url nil (point-max))))
@@ -1077,7 +1116,9 @@ Reference `set-process-sentinel'."
   (let ((buf (process-buffer proc)))
    (with-current-buffer buf
      (let ((inhibit-read-only t)
-           (kill-buffer-query-functions nil))
+           (kill-buffer-query-functions nil)
+           (save-path w3m--download-save-path)
+           (n 1) metadata-error)
       (goto-char (point-max))
       (insert (concat "\n" event))
       (cond
@@ -1085,12 +1126,19 @@ Reference `set-process-sentinel'."
        ((string-match "^finished" event)
          ;; TODO: Maybe keep buffer open if there was an error in
          ;; performing the metadata tagging?
-         (shell-command (concat "mv " w3m--download-save-path "{.PART,}"))
-         (w3m--message t t "Download completed successfully.")
          (condition-case err
            (w3m--download-apply-metadata-tags)
-          (err (w3m--message t 'w3m-error
-                 "Error %s applying metadata to %s" err w3m--download-url)))
+          (err (setq metadata-error t)))
+         (when (file-exists-p save-path)
+          (while (file-exists-p (format "%s.%d" save-path n))
+            (incf n))
+          (setq save-path (format "%s.%d" save-path n)))
+         (shell-command (format "mv %s.PART %s" w3m--download-save-path save-path))
+         (if metadata-error
+           (w3m--message t 'w3m-error
+             "Download completed successfully, but failed to apply metadata\n%s"
+             save-path)
+          (w3m--message t t "Download completed successfully.\n%s" save-path))
          (setq w3m--download-processes-list
            (assq-delete-all proc w3m--download-processes-list))
          (let ((elem (assoc w3m--download-url w3m--download-running))
@@ -1196,8 +1244,11 @@ to add metadata to SAVE-PATH."
         (list
           url
           (delq nil (list "wget" "-c"
-                    (if w3m-download-enable-xattr "--xattr")
-                    "-O" (concat save-path ".PART") url))
+                      (when w3m-download-enable-xattr "--xattr")
+                      (when w3m-download-throttle
+                        (format "--limit-rate=%d" w3m-download-throttle))
+                      w3m-download-wget-options
+                      "-O" (concat save-path ".PART") url))
           save-path
           metadata
           t) ; SHOW-STATE = details begin as invisible/hidden
@@ -1279,9 +1330,49 @@ See `w3m-download-resume' for options."
      (when w3m--download-queued
        (w3m--download-from-queue))))))
 
+(defun w3m--download-msg--download-only ()
+  (w3m--message t 'w3m-error
+    "This command is available only in w3m-download buffers"))
+
+(defun w3m--download-msg--select-only ()
+  (w3m--message t 'w3m-error
+    "This command is available only in the w3m-download-select buffer"))
+
+(defun w3m--download-msg--queue-only ()
+  (w3m--message t 'w3m-error
+    "This command is available only in the w3m-download-queue buffer"))
+
 
 
 ;;; Interactive and user-facing functions:
+
+(defun w3m-download-queue-next-entry (&optional arg)
+  "Advance point to beginning of next entry in the queue buffer.
+With the prefix-ARG, advance that many entries."
+  (interactive "p")
+  (if (not (eq major-mode 'w3m-download-queue-mode))
+    (w3m--download-msg--queue-only)
+   (while (> arg 0)
+     (let ((pos (next-single-property-change (point) 'url nil (point-max))))
+       (goto-char
+         (if (/= pos (point-max))
+           pos
+          (goto-char (point-min))
+          (next-single-property-change (point) 'url nil (point-max)))))
+     (decf arg))))
+
+(defun w3m-download-queue-previous-entry (&optional arg)
+  "Move point to beginning of previous entry in the queue buffer.
+With the prefix-ARG, advance that many entries."
+  (interactive "p")
+  (if (not (eq major-mode 'w3m-download-queue-mode))
+    (w3m--download-msg--queue-only)
+   (let ((pos-min (+ 3 w3m--download-queue-hardcoded-point-min)))
+     (while (> arg 0)
+       (when (= (point) pos-min)
+         (goto-char (point-max)))
+       (goto-char (previous-single-property-change (point) 'url nil pos-min))
+       (decf arg)))))
 
 (defun w3m-download-kill-all-asociated-processes (&optional arg)
   "Kill all `w3m-download' processes and progress buffers.
@@ -1366,8 +1457,7 @@ Use the state of the current entry as a basis for the decision
 which to do."
   (interactive)
   (if (not (eq major-mode  'w3m-download-queue-mode))
-    (w3m--message t 'w3m-error
-      "This command is available only in w3m-download buffers")
+    (w3m--download-msg--queue-only)
    (let ((inhibit-read-only t)
          (state (or (get-text-property (point) 'invisible)
                     (get-text-property
@@ -1390,8 +1480,7 @@ which to do."
   "View or hide the details of the download at point."
   (interactive)
   (if (not (eq major-mode 'w3m-download-queue-mode))
-    (w3m--message t 'w3m-error
-      "This command is available only in w3m-download buffers")
+    (w3m--download-msg--queue-only)
    (let* ((inhibit-read-only t)
           (state-list (get-text-property (point) 'state))
           (url (get-text-property (point) 'url)))
@@ -1411,8 +1500,7 @@ If the download is running or queued, pause it. If it is paused
 or failed, restart or continue it."
   (interactive)
   (if (not (eq major-mode 'w3m-download-queue-mode))
-    (w3m--message t 'w3m-error
-      "This command is available only in w3m-download buffers")
+    (w3m--download-msg--queue-only)
    (let* ((inhibit-read-only t)
           (kill-buffer-query-functions nil)
           (update-err-msg
@@ -1421,37 +1509,39 @@ or failed, restart or continue it."
           (url  (get-text-property (point) 'url))
           (cur-col (current-column))
           elem timestamp txt)
-    (if (eq state 'w3m--download-completed)
-      (w3m--message t 'w3m-error "Can not pause a completed download")
-     (with-mutex w3m--download-mutex
-       (setq elem (assoc url (eval state)))
-       (if (not elem)
-         (w3m--message t 'w3m-error update-err-msg)
-        (cond
-         ((eq state 'w3m--download-paused)
-          (setq w3m--download-paused (delq elem w3m--download-paused))
-          (setq timestamp (nth 5 elem))
-          (when (and timestamp (string-match "\n" timestamp))
-            (setq timestamp (substring timestamp 0 (match-beginning 0))))
-          (setq txt (nth 6 elem))
-          (setq elem `(,@(butlast elem 2) ,timestamp ,txt))
-          (add-to-list 'w3m--download-queued elem t)
-          (w3m--download-from-queue))
-         (t
-          (eval `(setq ,state (delq (quote ,elem) ,state)))
-          (when (buffer-live-p (nth 8 elem))
-            (kill-buffer (nth 8 elem)))
-          (setq txt (nth 6 elem))
-          (when (and txt (string-match ",  " txt))
-            (setq txt (substring txt 0 (match-beginning 0))))
-          (setq base (butlast elem (if (equal state "w3m--download-queued") 2 4)))
-          (setq elem `(,@(butlast elem (if (eq state 'w3m--download-queued) 2 4))
-                       ,(concat (nth 5 elem) "\n    Paused:    " (current-time-string))
-                       ,txt))
-          (add-to-list 'w3m--download-paused elem t)))))
+    (with-mutex w3m--download-mutex
+      (setq elem (assoc url (eval state)))
+      (if (not elem)
+        (w3m--message t 'w3m-error update-err-msg)
+       (cond
+        ((eq state 'w3m--download-paused)
+         (setq w3m--download-paused (delq elem w3m--download-paused))
+         (setq timestamp (nth 5 elem))
+         (when (and timestamp (string-match "\n" timestamp))
+           (setq timestamp (substring timestamp 0 (match-beginning 0))))
+         (setq txt (nth 6 elem))
+         (setq elem `(,@(butlast elem 2) ,timestamp ,txt))
+         (add-to-list 'w3m--download-queued elem t)
+         (w3m--download-from-queue))
+        (t
+         (eval `(setq ,state (delq (quote ,elem) ,state)))
+         (when (buffer-live-p (nth 8 elem))
+           (kill-buffer (nth 8 elem)))
+         (unless (eq state 'w3m--download-completed)
+           (setq txt (nth 6 elem))
+           (when (and txt (string-match ",  " txt))
+             (setq txt (substring txt 0 (match-beginning 0)))))
+         (setq base (butlast elem (if (eq state 'w3m--download-queued) 2 4)))
+
+         (setq elem `(,@(butlast elem (if (eq state 'w3m--download-queued) 2 4))
+                      ,(unless (eq state 'w3m--download-completed)
+                         (format "%s\n    Paused:    %s"
+                                 (nth 5 elem) (current-time-string)))
+                      ,txt))
+         (add-to-list 'w3m--download-paused elem t)))))
     (w3m--download-update-display-queue-list nil cur-col
       (1- (string-to-number (format-mode-line "%l"))))
-    (w3m--download-restore-point-sensibly state cur-col)))))
+    (w3m--download-restore-point-sensibly state cur-col))))
 
 (defun w3m-download-refresh-buffer (&optional arg)
   "Refresh the `w3m-download' buffer.
@@ -1472,25 +1562,27 @@ function `w3m-download-set-refresh-interval'."
            (not w3m--download-failed)
            (not w3m--download-completed))
     (w3m--message t 'w3m-error "Download lists are empty. Nothing to display.")
-   (with-current-buffer
-     (setq buf (get-buffer-create "*w3m-download-queue*"))
-     (w3m-download-queue-mode)
-     (let ((inhibit-read-only t)
-           pos)
-       (erase-buffer)
-       (insert (propertize w3m--download-queue-buffer-header-string
-                  'cursor-intangible t 'field t 'front-sticky t))
-       (w3m--download-display-queue-list))
-     (goto-char (point-min))
-     (re-search-forward w3m--download-category-regex))
-   (switch-to-buffer buf)))
+   (let* ((buf-string "*w3m-download-queue*")
+          (buf (get-buffer buf-string)))
+     (unless buf
+       (with-current-buffer
+         (setq buf (get-buffer-create buf-string))
+         (w3m-download-queue-mode)
+         (let ((inhibit-read-only t)
+               pos)
+           (erase-buffer)
+           (insert (propertize w3m--download-queue-buffer-header-string
+                      'cursor-intangible t 'field t 'front-sticky t))
+           (w3m--download-display-queue-list))
+         (goto-char (point-min))
+         (re-search-forward w3m--download-category-regex)))
+     (switch-to-buffer buf))))
 
 (defun w3m-download-select-exec ()
   "Initiate a bulk download from the download-select buffer."
   (interactive)
   (if (not (eq major-mode 'w3m-download-select-mode))
-    (w3m--message t 'w3m-error
-      "This command is available only in w3m-download-select buffers.")
+    (w3m--download-msg--select-only)
    (let (urls)
      (goto-char (point-min))
      (while (re-search-forward "^\\[X\\] \\(.*\\)$" nil t)
@@ -1536,8 +1628,7 @@ functiononly applies to downloads using `wget', not those using
   (interactive)
   (if (not (or (eq major-mode 'w3m-download-select-mode)
                (eq major-mode 'w3m-download-queue-mode)))
-    (w3m--message t 'w3m-error
-      "This command is available only in w3m-download buffers")
+    (w3m--download-msg--download-only)
    (let ((kill-buffer-query-functions nil))
      (kill-buffer (current-buffer)))))
 
@@ -1553,14 +1644,12 @@ Used in `w3m-download-select' and `w3m-download-queue' buffers."
           (cur-lin (1- (string-to-number (format-mode-line "%l"))))
           (url  (get-text-property (point) 'url))
           (from (get-text-property (point) 'state)))
-     ; BEGIN - code duplication from `w3m-download-toggle-pause'
      (when (eq from 'w3m--download-running)
        (let ((elem (assoc url w3m--download-running)))
          (when (and elem
-                    (< 7 (length elem))
-                    (buffer-live-p (nth 7 elem)))
-           (kill-buffer (nth 7 elem)))))
-     ; END - code duplication from `w3m-download-toggle-pause'
+                    (< 8 (length elem))
+                    (buffer-live-p (nth 8 elem)))
+           (kill-buffer (nth 8 elem)))))
      (w3m--download-xfer-entry url from nil)
      (w3m--download-update-display-queue-list nil cur-col cur-lin)
      (w3m--download-restore-point-sensibly from cur-col)))
@@ -1570,16 +1659,14 @@ Used in `w3m-download-select' and `w3m-download-queue' buffers."
        (line-beginning-position)
        (line-beginning-position 2))))
    (t
-    (w3m--message t 'w3m-error
-      "This command is available only in w3m-download buffers"))))
+    (w3m--download-msg--download-only))))
 
 (defun w3m-download-select-toggle-line ()
   "Change selection status of the current URL entry.
 Used in w3m download select mode buffers."
   (interactive)
   (if (not (eq major-mode 'w3m-download-select-mode))
-    (w3m--message t 'w3m-error
-      "This command is available only in w3m-download-select buffers.")
+    (w3m--download-msg--select-only)
    (let ((beg (line-beginning-position))
          (end (line-beginning-position 2))
          (cur-col (current-column))
@@ -1690,8 +1777,6 @@ so expect the buffers to be deleted also.")
 ;;;###autoload
 (defun w3m-download-video (url)
   "Invoke `youtube-dl' in a sub-process to download a video from URL."
-  ;; This is not a native w3m-download.el function. It is a legacy
-  ;; function imported from the emacs-w3m mailing list. [#12802]
   (interactive)
   (if (not (w3m-url-valid url))
     (error "Invalid URL")
@@ -1734,8 +1819,6 @@ so expect the buffers to be deleted also.")
 ;;;###autoload
 (defun w3m-download-video-at-point ()
   "Invoke `youtube-dl' in a sub-process to download the video at point."
-  ;; This is not a native w3m-download.el function. It is a legacy
-  ;; function imported from the emacs-w3m mailing list [#12802].
   (interactive)
   (let ((url (w3m-anchor)))
    (if (not url)
@@ -1812,11 +1895,11 @@ Are you trying to resume an aborted partial download? ")))
       (setq metadata
         (cond
          ((and (string= "png" extension) (executable-find "exiv2"))
-          (format "exiv2 -M\"add Exif.Image.ImageDescription %s\" %s"
+          (format "exiv2 -M\"add Exif.Image.ImageDescription %s\" %s.PART"
                   caption save-path))
          ((and (string-match "^jpe?g$" extension) (executable-find "exif"))
           (format "exif --create-exif --ifd=0 -t0x10e \
-                   --set-value=\"%s\" --output=\"%s\" %s"
+                   --set-value=\"%s\" --output=\"%s\" %s.PART"
                   caption save-path save-path))
          (t nil))))
     (when interactively

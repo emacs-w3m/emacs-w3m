@@ -1,3 +1,21 @@
+2019-06-25  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el (w3m-download-queue-mode-map): Make map sparse.
+	(w3m-download-max-simultaneous, w3m-download-refresh-interval): Improve
+	dostring to mention relevant commands and their keybindings.
+	(w3m-download-throttle, w3m-download-wget-options): New defcustoms.
+	(w3m--download--cache-or-queue): Use the new defcustoms.
+	(w3m--download-sentinel): Emulate the default no-clobber behavior of wget.
+	(w3m-download-toggle-pause): Allow repeat of completed download.
+	(w3m-download-view-queue): Only allow a single queue buffer.
+	(w3m-download-queue-next-entry, w3m-download-queue-previous-entry): New
+	navigation functions.
+	(w3m-download-queue-mode-map): Bind new navigation functions to <tab>
+	and <backtab>.
+	(w3m--download-queue-hardcoded-point-min): Embarassing use defined as a
+	constant.
+	(w3m-download-delete-line): Bugfix: properly delete wget process.
+
 2019-05-03  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el, w3m-download.el: bugfix: resolve recursive load error due to
