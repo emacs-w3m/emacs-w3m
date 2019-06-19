@@ -13,11 +13,12 @@ AC_CACHE_VAL(EMACS_cv_SYS_$1,[
 	EL=./conftest-$$.el
 	echo "(let ((x ${elisp})) (write-region (format \"%s\" x) nil \"${OUTPUT}\" nil 5) (delete-file \"${EL}\"))" >& ${EL} 2>&1
 	eval "'${EMACS}' ${VANILLA_FLAG} -batch -l ${EL}" >& AC_FD_CC 2>&1
-	retval="`cat ${OUTPUT}`"
-	echo "=> ${retval}" >& AC_FD_CC 2>&1
-	rm -f ${OUTPUT}
-	EMACS_cv_SYS_$1="${retval}"
-])
+	if test -f ${OUTPUT}; then
+		retval="`cat ${OUTPUT}`"
+		echo "=> ${retval}" >& AC_FD_CC 2>&1
+		rm -f ${OUTPUT}
+		EMACS_cv_SYS_$1="${retval}"
+	fi])
 $1="${EMACS_cv_SYS_$1}"
 if test -z "$3"; then
 	AC_MSG_RESULT($$1)
@@ -59,15 +60,22 @@ AC_DEFUN(AC_PATH_EMACS,
       (concat \"Emacs \" (car vers) \".\" (nth 1 vers))),
     noecho)
   case "${flavor}" in
+  "")
+    flavor=unknown;;
   Emacs\ 2[[5-9]]\.*)
     EMACS_FLAVOR=emacs;;
   *)
     EMACS_FLAVOR=unsupported;;
   esac
   AC_MSG_RESULT(${flavor})
-  if test ${EMACS_FLAVOR} = unsupported; then
-    AC_MSG_ERROR(${flavor} is not supported.)
+  if test "${flavor}" = unknown; then
+    AC_MSG_ERROR(Cannot examine Emacs flavor.)
     exit 1
+  else
+    if test ${EMACS_FLAVOR} = unsupported; then
+      AC_MSG_ERROR(${flavor} is not supported.)
+      exit 1
+    fi
   fi])
 
 AC_DEFUN(AC_PATH_LISPDIR, [

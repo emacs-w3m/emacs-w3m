@@ -1,3 +1,10 @@
+2019-06-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_EMACS_LISP): Protect against malfunctioned Emacs.
+	(AC_PATH_EMACS): Clarify error message.
+
+	* w3mhack.el (w3mhack-compile-file): Simplify.
+
 2019-06-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Drop old Emacsen support

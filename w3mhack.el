@@ -181,16 +181,7 @@ There seems to be no shell command which is equivalent to /bin/sh.
   "Byte-compile FILE after reporting that it's being compiled."
   ;; The byte compiler in Emacs >=25 doesn't say much.
   (message "Compiling %s..." (file-name-nondirectory file))
-  (if (string-equal (file-name-nondirectory file) "w3m-filter.el")
-      ;; Silence the warning "value returned from (> i 0) is unused".
-      ;; See `w3m-filter-delete-regions', `w3m-filter-replace-regexp',
-      ;; and the filter functions that use those macros.
-      (let ((val (get '> 'side-effect-free)))
-	(put '> 'side-effect-free 'error-free)
-	(unwind-protect
-	    (byte-compile-file file)
-	  (put '> 'side-effect-free val)))
-    (byte-compile-file file)))
+  (byte-compile-file file))
 
 (defun w3mhack-compile ()
   "Byte-compile the w3m modules."
