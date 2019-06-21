@@ -1274,6 +1274,16 @@ websites or referers embed."
   :type '(repeat (cons (string :tag "URL regex")
 		       (string :tag "Query regex"))))
 
+(defcustom w3m-queries-log nil
+  "Whether to log URL queries to `w3m-queries-log-file'."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-queries-log-file "$HOME/emacs-w3m-queries_log.txt"
+  "File in which to log URL queries."
+  :group 'w3m
+  :type 'boolean)
+
 (defun w3m--url-strip-queries (url)
   "Strip unwanted queries from a url.
 This is meant to remove unwanted trackers or other data that
@@ -1283,6 +1293,9 @@ websites or referers embed. See `w3m-strip-queries-alist'."
     url
    (let* ((base (match-string 0 url))
           (queries (replace-match "" t t url 0)))
+     (when (and w3m-queries-log queries)
+       (shell-command
+         (format "printf \"%s\n\" >> %s" queries w3m-queries-log-file)))
      (dolist (strip w3m-strip-queries-alist)
        (when (string-match (car strip) base)
          (while (string-match (cadr strip) queries)
