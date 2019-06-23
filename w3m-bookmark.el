@@ -327,6 +327,11 @@ With prefix, ask for a new url instead of the present one."
   (interactive "P")
   (w3m-bookmark-add (if arg (w3m-input-url) w3m-current-url)
 		    w3m-current-title)
+  (w3m-bookmark-add (if arg
+                      (w3m-canonicalize-url (w3m-input-url))
+                      w3m-current-url)
+		     w3m-current-title)
+;;(w3m--message t t "Added"))
   (message "Added"))
 
 ;;;###autoload

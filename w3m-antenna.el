@@ -596,7 +596,9 @@ asynchronous process that has not finished yet."
   "Add link of current page to antenna.
 With prefix, ask new url to add instead of current page."
   (interactive "P")
-  (w3m-antenna-add (if arg (w3m-input-url) w3m-current-url)
+  (w3m-antenna-add (if arg
+                     (w3m-canonicalize-url (w3m-input-url))
+                     w3m-current-url)
 		   (w3m-encode-specials-string w3m-current-title)))
 
 (defun w3m-antenna-add (url &optional title)

@@ -313,6 +313,7 @@ buffer, or \"new\" if in a new buffer."
 
 (defun w3m-search-do-search (w3m-goto-function search-engine query)
   "Call W3M-GOTO-FUNCTION with the URL for the search."
+  ;; NOTE: Changes here may require also updating function `w3m-goto-url'
   (unless (string= query "")
     (let ((info (assoc search-engine w3m-search-engine-alist)))
       (if info
@@ -350,6 +351,7 @@ and deactivate the mark."
 ;;;###autoload
 (defun w3m-search-uri-replace (uri engine)
   "Generate query string for ENGINE from URI matched by last search."
+  ;; NOTE: Changes here may require also updating function `w3m-goto-url'
   (let ((query (substring uri (match-end 0)))
 	(info (assoc engine w3m-search-engine-alist)))
     (when info
