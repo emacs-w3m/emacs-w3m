@@ -9947,11 +9947,11 @@ helpful message is presented and the operation is aborted."
 	       (setq w3m-name-anchor-from-hist
 		     (plist-get (nthcdr 3 element) :name-anchor-hist))
 	       (setq w3m-current-process
-		     (w3m-retrieve-and-render orig reload charset post-data
+		     (w3m-retrieve-and-render url reload charset post-data
 					      referer handler))))
 	  (w3m--goto-url--handler-function
 	   url reload charset post-data referer redisplay name reuse-history
-	   action orig history-position))))))
+	   action url history-position))))))
 
 ;;;###autoload
 (defun w3m-goto-url (url &optional reload charset post-data referer handler
