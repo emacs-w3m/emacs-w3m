@@ -744,7 +744,9 @@ a crashed emacs session."
   ;   timeframe, for elements that store timestamp information.
   (interactive)
   (let ((stdout-buf (generate-new-buffer "*w3m-scrub-history*"))
-        (warning-msg "Warning: This will irrevocably erase ALL your emacs-w3m browsing history.\nPlease confirm to proceed."))
+        (warning-msg (propertize
+                       "Warning: This will irrevocably erase ALL your emacs-w3m browsing history.\nPlease confirm to proceed."
+                       'face 'w3m-warning)))
    (switch-to-buffer stdout-buf)
    (w3m--full-window-message warning-msg)
    (cond
@@ -810,7 +812,8 @@ a crashed emacs session."
           (setq w3m-history nil)
           (setq w3m-history-flat nil)
           (cond
-           ((or (string-match "^about://\\(cookie\\|history\\|db-history\\)/" w3m-current-url)
+           ((or (string-match "^about://\\(cookie\\|history\\|db-history\\)/"
+                              (or w3m-current-url ""))
                 w3m-form-input-textarea-mode
                 (eq major-mode 'w3m-form-input-select-mode)
                 (eq major-mode 'w3m-form-input-map-mode))
