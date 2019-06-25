@@ -1,3 +1,16 @@
+2019-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Improve web contents cache handling
+
+	* w3m.el (w3m-cache-articles): Handle cache pointer as well.
+	(w3m-cache-setup): Make w3m-cache-hashtb a real hash table.
+	(w3m-cache-header, w3m-cache-request-header, w3m-cache-remove-oldest)
+	(w3m-cache-available-p): Use hash table functions.
+	(w3m-cache-remove-oldest, w3m-cache-remove, w3m-cache-contents)
+	(w3m-cache-request-contents): Use pointer instead of text props to find
+	cache.
+	(w3m-cache-remove): Detach the function core into w3m-cache-remove-1.
+
 2019-06-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* aclocal.m4 (AC_EMACS_LISP): Protect against malfunctioned Emacs.

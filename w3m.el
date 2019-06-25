@@ -2308,10 +2308,19 @@ See the function definitions of `w3m-toggle-inline-image',
 `w3m-mouse-safe-view-this-url'.")
 
 (defvar w3m-current-buffer nil)
-(defvar w3m-cache-buffer nil)
-(defvar w3m-cache-articles nil)
-(defvar w3m-cache-hashtb nil)
 (defvar w3m-input-url-history nil)
+
+(defvar w3m-cache-buffer nil
+  "A buffer that keeps the caches of the web contents in order.")
+(defvar w3m-cache-articles nil
+  "An alist of url and pointer in cached order.
+The pointer is a cons of beg and end markers in `w3m-cache-buffer'.
+This variable will be made buffer-local in `w3m-cache-buffer'.")
+(defvar w3m-cache-hashtb nil
+  "Hash table used to cache headers associated with urls.")
+;; Why `w3m-cache-hashtb' does not cache web contents along with headers
+;; is that it is hard to know the oldest cache in the hash table and to
+;; know the number of caches in the hash table is not so efficient.
 
 (defvar w3m-http-status-alist
   '((400 . "Bad Request")
@@ -4491,16 +4500,16 @@ This function is used as `minibuffer-default-add-function'."
     (with-current-buffer (w3m-get-buffer-create " *w3m cache*")
       (buffer-disable-undo)
       (set-buffer-multibyte nil)
+      (set (make-local-variable 'w3m-cache-articles) nil)
       (setq buffer-read-only t
 	    w3m-cache-buffer (current-buffer)
-	    w3m-cache-hashtb (make-vector 1021 0)))))
+	    w3m-cache-hashtb (make-hash-table :test #'equal)))))
 
 (defun w3m-cache-shutdown ()
   "Clear all the variables managing the cache, and the cache itself."
   (when (buffer-live-p w3m-cache-buffer)
     (kill-buffer w3m-cache-buffer))
-  (setq w3m-cache-hashtb nil
-	w3m-cache-articles nil))
+  (setq w3m-cache-hashtb nil))
 
 (defun w3m-cache-header-delete-variable-part (header)
   (let (buf flag)
@@ -4518,118 +4527,106 @@ If OVERWRITE is non-nil, it forces the storing even if there has
 already been the data corresponding to URL in the cache."
   (w3m-cache-setup)
   (setq url (w3m-w3m-canonicalize-url url))
-  (let ((ident (intern url w3m-cache-hashtb)))
-    (if (boundp ident)
-	(if (and
-	     (not overwrite)
-	     (string=
-	      (w3m-cache-header-delete-variable-part header)
-	      (w3m-cache-header-delete-variable-part (symbol-value ident))))
-	    (symbol-value ident)
-	  (w3m-cache-remove url)
-	  (set ident header))
-      (set ident header))))
+  (let ((cache (gethash url w3m-cache-hashtb 'void)))
+    (if (eq cache 'void)
+	(puthash url header w3m-cache-hashtb)
+      (if (and (not overwrite)
+	       (string= (w3m-cache-header-delete-variable-part header)
+			(w3m-cache-header-delete-variable-part cache)))
+	  cache
+	(w3m-cache-remove url)
+	(puthash url header w3m-cache-hashtb)))))
 
 (defun w3m-cache-request-header (url)
   "Return the header string of URL when it is stored in the cache."
   (w3m-cache-setup)
-  (let ((ident (intern (w3m-w3m-canonicalize-url url) w3m-cache-hashtb)))
-    (and (boundp ident)
-	 (symbol-value ident))))
+  (let ((cache (gethash (w3m-w3m-canonicalize-url url) w3m-cache-hashtb 'void)))
+    (unless (eq cache 'void)
+      cache)))
 
 (defun w3m-cache-remove-oldest ()
-  (with-current-buffer w3m-cache-buffer
-    (goto-char (point-min))
-    (unless (zerop (buffer-size))
-      (let ((ident (get-text-property (point) 'w3m-cache))
-	    (inhibit-read-only t))
-	;; Remove the ident from the list of articles.
-	(when ident
-	  (setq w3m-cache-articles (delq ident w3m-cache-articles)))
-	;; Delete the article itself.
-	(delete-region (point)
-		       (next-single-property-change
-			(1+ (point)) 'w3m-cache nil (point-max)))))))
+  "Remove the oldest cache.
+Must run in `w3m-cache-buffer' where read-only is lifted."
+  (when w3m-cache-articles
+    (let* ((art (pop w3m-cache-articles))
+	   (beg (cadr art))
+	   (end (cddr art)))
+      (remhash (car art) w3m-cache-hashtb)
+      (delete-region beg end)
+      (set-marker beg nil)
+      (set-marker end nil))))
+
+(defun w3m-cache-remove-1 (url)
+  "Remove the data coresponding to URL from the cache.
+Must run in `w3m-cache-buffer' where read-only is lifted."
+  (let ((art (assoc url w3m-cache-articles))
+	beg end)
+    (when art
+      ;; It should be in the cache.
+      (remhash (car art) w3m-cache-hashtb)
+      (delete-region (setq beg (cadr art)) (setq end (cddr art)))
+      (set-marker beg nil)
+      (set-marker end nil)
+      (setq w3m-cache-articles (delq art w3m-cache-articles)))))
 
 (defun w3m-cache-remove (url)
   "Remove the data coresponding to URL from the cache."
   (w3m-cache-setup)
-  (let ((ident (intern url w3m-cache-hashtb))
-	beg end)
-    (when (memq ident w3m-cache-articles)
-      ;; It was in the cache.
-      (with-current-buffer w3m-cache-buffer
-	(let ((inhibit-read-only t))
-	  (when (setq beg (text-property-any
-			   (point-min) (point-max) 'w3m-cache ident))
-	    ;; Find the end (i. e., the beginning of the next article).
-	    (setq end (next-single-property-change
-		       (1+ beg) 'w3m-cache (current-buffer) (point-max)))
-	    (delete-region beg end)))
-	(setq w3m-cache-articles (delq ident w3m-cache-articles))))))
+  (with-current-buffer w3m-cache-buffer
+    (let ((inhibit-read-only t))
+      (inline (w3m-cache-remove-1 url)))))
 
 (defun w3m-cache-contents (url buffer)
   "Store the contents of URL into the cache.
-The contents are assumed to be in BUFFER.  Return a symbol which
-identifies the data in the cache."
+The contents are assumed to be in BUFFER."
   (w3m-cache-setup)
   (setq url (w3m-w3m-canonicalize-url url))
-  (let ((ident (intern url w3m-cache-hashtb)))
-    (w3m-cache-remove url)
-    ;; Remove the oldest article, if necessary.
-    (and (numberp w3m-keep-cache-size)
-	 (>= (length w3m-cache-articles) w3m-keep-cache-size)
-	 (w3m-cache-remove-oldest))
-    ;; Insert the new article.
-    (with-current-buffer w3m-cache-buffer
-      (let ((inhibit-read-only t))
-	(goto-char (point-max))
-	(let ((b (point)))
-	  (insert-buffer-substring buffer)
-	  ;; Tag the beginning of the article with the ident.
-	  (when (> (point-max) b)
-	    (w3m-add-text-properties b (1+ b) (list 'w3m-cache ident))
-	    (setq w3m-cache-articles (cons ident w3m-cache-articles))
-	    ident))))))
+  (with-current-buffer w3m-cache-buffer
+    (let ((inhibit-read-only t))
+      (w3m-cache-remove-1 url)
+      ;; Remove the oldest article, if necessary.
+      (and (numberp w3m-keep-cache-size)
+	   (>= (length w3m-cache-articles) w3m-keep-cache-size)
+	   (w3m-cache-remove-oldest))
+      ;; Insert the new article.
+      (goto-char (point-max))
+      (let ((b (point)))
+	(insert-buffer-substring buffer)
+	;; Tag the beginning of the article with URL.
+	(when (> (point-max) b)
+	  (setq w3m-cache-articles
+		(nconc w3m-cache-articles
+		       (list (cons url (cons (copy-marker b)
+					     (point-max-marker)))))))))))
 
 (defun w3m-cache-request-contents (url &optional buffer)
   "Insert contents of URL into BUFFER.
 Return t if the contents are found in the cache, otherwise nil.  When
 BUFFER is nil, all contents will be inserted in the current buffer."
   (w3m-cache-setup)
-  (let ((ident (intern (w3m-w3m-canonicalize-url url) w3m-cache-hashtb)))
-    (when (memq ident w3m-cache-articles)
-      ;; It was in the cache.
-      (let (beg end)
-	(with-current-buffer w3m-cache-buffer
-	  (if (setq beg (text-property-any
-			 (point-min) (point-max) 'w3m-cache ident))
-	      ;; Find the end (i.e., the beginning of the next article).
-	      (setq end (next-single-property-change
-			 (1+ beg) 'w3m-cache (current-buffer) (point-max)))
-	    ;; It wasn't in the cache after all.
-	    (setq w3m-cache-articles (delq ident w3m-cache-articles))))
-	(and beg
-	     end
-	     (with-current-buffer (or buffer (current-buffer))
-	       (let ((inhibit-read-only t))
-		 (insert-buffer-substring w3m-cache-buffer beg end))
-	       t))))))
+  (or buffer (setq buffer (current-buffer)))
+  (with-current-buffer w3m-cache-buffer
+    (let ((art (assoc url w3m-cache-articles))
+	  beg end)
+      (when art
+	;; It should be in the cache.
+	(setq beg (cadr art)
+	      end (cddr art))
+	(with-current-buffer buffer
+	  (let ((inhibit-read-only t))
+	    (insert-buffer-substring w3m-cache-buffer beg end))
+	  t)))))
 
 ;; FIXME: we need to check whether contents were updated in remote servers.
 (defun w3m-cache-available-p (url)
-  "Return non-nil if a content of URL has already been cached."
+  "Return non-nil if contents of URL has already been cached."
   (w3m-cache-setup)
-  (when (stringp url)
-    (let ((ident (intern (w3m-w3m-canonicalize-url url) w3m-cache-hashtb)))
-      (and
-       (memq ident w3m-cache-articles)
-       (or
-	w3m-prefer-cache
-	(save-match-data
-	  (let ((case-fold-search t)
-		(head (and (boundp ident) (symbol-value ident)))
-		time expire)
+  (let (head time expire (case-fold-search t))
+    (and (stringp url)
+	 (not (eq (setq head (gethash url w3m-cache-hashtb 'void)) 'void))
+	 (or
+	  w3m-prefer-cache
+	  (save-match-data
 	    (cond
 	     ((and (string-match "^\\(?:date\\|etag\\):[ \t]" head)
 		   (or (string-match "^pragma:[ \t]+no-cache\n" head)
@@ -4661,8 +4658,7 @@ BUFFER is nil, all contents will be inserted in the current buffer."
 	      ;; Adhoc heuristic rule: pages with neither
 	      ;; Last-Modified header and ETag header are treated as
 	      ;; dynamically-generated pages.
-	      (string-match "^\\(?:last-modified\\|etag\\):" head))))))
-       ident))))
+	      (string-match "^\\(?:last-modified\\|etag\\):" head))))))))
 
 (defun w3m-read-file-name (&optional prompt dir default existing)
   (unless prompt
