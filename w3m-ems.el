@@ -447,12 +447,6 @@ variable or both the value of this variable and the global value of
 	     (w3m-toolbar-set-configurations)))))
 
 (defun w3m-toolbar-define-keys (keymap defs)
-  ;; Invalidate the default bindings.
-  (let ((keys (cdr (key-binding [tool-bar] t)))
-	item)
-    (while (setq item (pop keys))
-      (when (setq item (car-safe item))
-	(define-key keymap (vector 'tool-bar item) 'undefined))))
   (let ((n (length defs))
 	def)
     (while (>= n 0)
