@@ -1,3 +1,10 @@
+2019-06-25  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m--goto-url--valid-url): Ensure query trackers are stripped
+	at first opportunity.
+	(w3m--retrieve-1--handler-function): Undo potential url modification
+	performed by w3m-w3m-dump-extra.
+
 2019-06-21  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-util.el (w3m-queries-log, w3m-queries-log-file): New defcustoms.
