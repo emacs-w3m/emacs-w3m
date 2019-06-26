@@ -1,3 +1,18 @@
+2019-06-26  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el (w3m-download-video, w3m--download-update-progress)
+	(w3m--download-sentinel, w3m--download-from-queue): ): Integrate
+	youtube-dl usage with download queue, support rate-limiting.
+	(w3m--download-progress-regex) Deleted. Replaced by
+	(w3m--download-progress-regex-wget)
+	(w3m--download-progress-regex-youtube-dl): New regex contants.
+	(w3m--download-cmd): New buffer local variable, to distinguish between
+	wget and youtube-dl buffers.
+	(w3m--download-process-filter) Deleted. Replaced by
+	(w3m--download-process-filter-wget)
+	(w3m--download-process-filter-youtube-dl): youtube-dl support.
+	(w3m--download--cache-or-queue): Simplify command string.
+
 2019-06-25  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-download.el (w3m-download-queue-mode-map): Make map sparse.

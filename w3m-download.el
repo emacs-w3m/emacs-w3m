@@ -204,7 +204,11 @@
 ;;     a user can make on a download record.
 ;;
 ;;   + apply certain command upon a region, ie. more than one download
-;;     at a time.
+;;     at a time. This has posed problematic for me because although
+;;     `transient-mark-mode' is non-nil, `region-active-p' always
+;;     returns nil, so I haven't been able to get region commands to
+;;     work (see programming note in-line below). Anyway, here are
+;;     candidates for commands on which to apply regions:
 ;;
 ;;      + move position in queue
 ;;
@@ -268,9 +272,13 @@ These are:`w3m--download-queued', `w3m--download-running',
 `w3m--download-paused', `w3m--download-failed', and
 `w3m--download-completed'.")
 
-(defconst w3m--download-progress-regex
-  "\\([0-9]+%\\)\\[[^]]+] +\\([^ ]+\\) +\\([^ ]+\\) +\\(.*\\)$"
-  "Parses four values from wget progress message.")
+(defconst w3m--download-progress-regex-wget
+  "\\([0-9.]+%\\)\\[[^]]+] +\\([^ ]+\\) +\\([^ ]+\\) +\\(.*\\)$"
+  "Parses four values from wget progress messages.")
+
+(defconst w3m--download-progress-regex-youtube-dl
+  "\\([0-9.]+%\\) of \\([^ ]+\\) at +\\([^ ]+\\) \\(.*\\)\n?$"
+  "Parses four values from youtube-dl progress messages.")
 
 (defconst w3m--download-queue-hardcoded-point-min 767
   "Uugh. A simple efficient awful kludge.
@@ -646,6 +654,11 @@ buffer."
  This variable is set buffer-local in the download's progress
  buffer.")
 
+(defvar-local w3m--download-cmd nil
+  "The command used to perform the download.
+ This variable is set buffer-local in the download's progress
+ buffer.")
+
 (defvar-local w3m--download-save-path nil
   "The full path-name of the downloaded file.
 This variable is set buffer-local in the download's progress
@@ -861,16 +874,21 @@ The saved lists are `w3m--download-queued',
       (when (and (< 8 (length entry))
                  (buffer-live-p (nth 8 entry)))
         (with-current-buffer (nth 8 entry)
-          (let ((txt (buffer-substring-no-properties
-                       (- (point-max) 100) (point-max)))
-                (url (nth 0 entry)))
-            (when (string-match w3m--download-progress-regex
-                    txt)
-              (setq txt
-                (format "%s, %s,  %s, %s"
-                  (match-string 1 txt) (match-string 2 txt)
-                  (match-string 3 txt) (match-string 4 txt)))
-              (setf (nth 6 entry) txt))))))))
+          (let ((url (nth 0 entry))
+                regex txt)
+          (if (string= (car w3m--download-cmd) "wget")
+            (setq regex w3m--download-progress-regex-wget)
+           (goto-char (point-max))
+           (backward-char 2)
+           (setq regex w3m--download-progress-regex-youtube-dl))
+          (setq txt (buffer-substring-no-properties
+                      (line-beginning-position) (point-max)))
+          (when (string-match regex txt)
+            (setq txt
+              (format "%s, %s,  %s, %s"
+                (match-string 1 txt) (match-string 2 txt)
+                (match-string 3 txt) (match-string 4 txt)))
+            (setf (nth 6 entry) txt))))))))
 
 (defun w3m--download-display-queue-list ()
   "Display the download queue.
@@ -1124,36 +1142,51 @@ Reference `set-process-sentinel'."
       (cond
        ((string-match "^open" event) t)
        ((string-match "^finished" event)
-         ;; TODO: Maybe keep buffer open if there was an error in
-         ;; performing the metadata tagging?
-         (condition-case err
-           (w3m--download-apply-metadata-tags)
-          (err (setq metadata-error t)))
-         (when (file-exists-p save-path)
-          (while (file-exists-p (format "%s.%d" save-path n))
-            (incf n))
-          (setq save-path (format "%s.%d" save-path n)))
-         (shell-command (format "mv %s.PART %s" w3m--download-save-path save-path))
-         (if metadata-error
-           (w3m--message t 'w3m-error
-             "Download completed successfully, but failed to apply metadata\n%s"
-             save-path)
-          (w3m--message t t "Download completed successfully.\n%s" save-path))
+        (pcase (car w3m--download-cmd)
+         ("wget"
+           ;; TODO: Maybe keep buffer open if there was an error in
+           ;; performing the metadata tagging?
+           (condition-case err
+             (w3m--download-apply-metadata-tags)
+            (err (setq metadata-error t)))
+           (when (file-exists-p save-path)
+            (while (file-exists-p (format "%s.%d" save-path n))
+              (incf n))
+            (setq save-path (format "%s.%d" save-path n)))
+           (shell-command (format "mv %s.PART %s" w3m--download-save-path save-path))
+           (if metadata-error
+             (w3m--message t 'w3m-error
+               "Download completed successfully, but failed to apply metadata\n%s"
+               save-path)
+            (w3m--message t t "Download completed successfully.\n%s"
+                              (or w3m--download-save-path ""))))
+         ("youtube-dl"
+           (w3m--message t t "Download completed successfully.\n%s"
+                             (or w3m--download-save-path ""))))
          (setq w3m--download-processes-list
            (assq-delete-all proc w3m--download-processes-list))
          (let ((elem (assoc w3m--download-url w3m--download-running))
                txt index)
            (if (not elem)
              nil ; an error, but I'm undecided what to do about it
-            (when (re-search-backward
-                    " 100%\\[=+> *\\] +\\([^ ]+\\) +\\([^ ]+\\) +\\(.*\\)$" nil t)
-              (setq txt (format "%s, %s, %s"
-                          (match-string 1)
-                          (match-string 2)
-                          (replace-regexp-in-string "  +" " " (match-string 3)))))
-            (goto-char (point-max))
-            (when (re-search-backward "saved \\[\\([0-9/]+\\)\\]$" nil t)
-              (setq txt (concat txt (format ", %s bytes." (match-string 1)))))
+            (pcase (car w3m--download-cmd)
+             ("wget"
+               (when (re-search-backward
+                       " 100%\\[=+> *\\] +\\([^ ]+\\) +\\([^ ]+\\) +\\(.*\\)$" nil t)
+                 (setq txt (format "%s, %s, %s"
+                             (match-string 1)
+                             (match-string 2)
+                             (replace-regexp-in-string "  +" " " (match-string 3)))))
+               (goto-char (point-max))
+               (when (re-search-backward "saved \\[\\([0-9/]+\\)\\]$" nil t)
+                 (setq txt (concat txt (format ", %s bytes." (match-string 1))))))
+             ("youtube-dl"
+               (when (re-search-backward
+                       " 100% of \\([^ ]+\\) in \\([^ \n]+\\)" nil t)
+                 (setq txt (format "%s, in %s\n    Saved to:\n      %s"
+                             (match-string 1)
+                             (match-string 2)
+                             (or save-path ""))))))
             (with-mutex w3m--download-mutex t
               (setq w3m--download-running (delq elem w3m--download-running))
               (push `(,@(butlast elem 3)
@@ -1184,10 +1217,11 @@ Reference `set-process-sentinel'."
         (t
          (w3m--message t 'w3m-error "Error (%s) downloading %s"
            (substring event 0 -1) w3m--download-url)
-         (condition-case err
-           (w3m--download-apply-metadata-tags)
-          (err (w3m--message t 'w3m-error
-                 "Error %s applying metadata to %s" err w3m--download-url)))
+         (when (string= (car w3m--download-cmd) "wget")
+           (condition-case err
+             (w3m--download-apply-metadata-tags)
+            (err (w3m--message t 'w3m-error
+                   "Error %s applying metadata to %s" err w3m--download-url))))
          (setq w3m--download-processes-list
            (assq-delete-all proc w3m--download-processes-list))
          (with-mutex w3m--download-mutex
@@ -1206,7 +1240,7 @@ Reference `set-process-sentinel'."
               (push elem w3m--download-failed))))
          (kill-buffer buf)))))))
 
-(defun w3m--download-process-filter (proc input-string)
+(defun w3m--download-process-filter-wget (proc input-string)
   "Parse output from `wget'.
 This function is called by Emacs whenever `w3m-download' process
 PROC sends INPUT-STRING to its STDOUT. It translates 'carriage
@@ -1224,6 +1258,37 @@ over-write the prior progress message."
            (forward-line 0)
            (delete-region (point) (point-max))
            (insert (substring input-string 1)))))))))
+
+(defun w3m--download-process-filter-youtube-dl (proc input-string)
+  "Parse output from `youtube-dl'.
+This function is called by Emacs whenever `w3m-download' process
+PROC sends INPUT-STRING to its STDOUT. It translates 'carriage
+return' characters. \r at the beginning of every progress message
+into the equivalent of a real carriage return in order to
+over-write the prior progress message."
+  (let ((proc-buf (process-buffer proc)))
+   (when (buffer-live-p proc-buf)
+     (with-current-buffer proc-buf
+       (when (string-match
+               "^\\[download\\] Destination: \\([^\n]+\\)\n?$"
+               input-string)
+         (setq w3m--download-save-path (match-string 1 input-string)))
+       (let ((inhibit-read-only t))
+        (save-excursion
+          (goto-char (point-min))
+          (cond
+           ((not (re-search-forward
+                   "\\[download\\] \\(Destination\\)\\|\\(Resuming\\) " nil t))
+            (goto-char (point-max))
+            (insert input-string))
+           ((= (1+ (line-end-position)) (point-max))
+            (goto-char (point-max))
+            (insert input-string))
+           (t
+            (goto-char (1- (point-max)))
+            (delete-region (line-beginning-position) (point-max))
+            (goto-char (point-max))
+            (insert input-string )))))))))
 
 (defun w3m--download--cache-or-queue (url save-path no-cache metadata)
   "Either prepare a `wget' download or save URL from the `emacs-w3m' cache.
@@ -1243,12 +1308,14 @@ to add metadata to SAVE-PATH."
       (add-to-list 'w3m--download-queued
         (list
           url
-          (delq nil (list "wget" "-c"
-                      (when w3m-download-enable-xattr "--xattr")
-                      (when w3m-download-throttle
-                        (format "--limit-rate=%d" w3m-download-throttle))
-                      w3m-download-wget-options
-                      "-O" (concat save-path ".PART") url))
+          (split-string
+            (format "wget -c %s %s %s -O %s %s"
+              (if w3m-download-enable-xattr "--xattr" "")
+              (if (not w3m-download-throttle) ""
+                 (format "--limit-rate=%d" w3m-download-throttle))
+              (or w3m-download-wget-options "")
+              (concat save-path ".PART")
+              url))
           save-path
           metadata
           t) ; SHOW-STATE = details begin as invisible/hidden
@@ -1265,7 +1332,7 @@ to add metadata to SAVE-PATH."
                   (pop w3m--download-queued)))
            (len (length job))
            (url       (nth 0 job))
-           (wget-cmd  (nth 1 job))
+           (cmd       (nth 1 job))
            (save-path (nth 2 job))
            (metadata  (nth 3 job))
            (time-stamp (if (> len 5)
@@ -1278,13 +1345,16 @@ to add metadata to SAVE-PATH."
        (insert (format "emacs-w3m download log\n
     Killing this buffer will abort the download!\n
 Time: %s\nURL : %s\nExec: %s\n\n"
-                 time-stamp url wget-cmd))
+                 time-stamp url cmd))
        (setq w3m--download-url url)
+       (setq w3m--download-cmd cmd)
        (setq w3m--download-save-path save-path)
        (setq w3m--download-local-proc
-         (apply 'start-process "w3m-download" buf wget-cmd))
+         (apply 'start-process "w3m-download" buf cmd))
        (set-process-filter w3m--download-local-proc
-                           'w3m--download-process-filter)
+         (pcase (car cmd)
+           ("wget"       'w3m--download-process-filter-wget)
+           ("youtube-dl" 'w3m--download-process-filter-youtube-dl)))
        (setq w3m--download-metadata-operation metadata)
        (push (cons w3m--download-local-proc buf) w3m--download-processes-list)
        (add-hook 'kill-buffer-hook 'w3m--download-kill-associated-process nil t)
@@ -1785,36 +1855,28 @@ so expect the buffers to be deleted also.")
       (concat
         (substring-no-properties url nil (match-beginning 0))
         (substring-no-properties url (match-end 0)))))
-  (let* (proc
-         (title (w3m-anchor-title))
-         (buf (generate-new-buffer "*w3m-download-video*"))
-         (base (and (string-match "//\\([^/]+\\)/" url)
+  (let* ((base (and (string-match "//\\([^/]+\\)/" url)
            (substring-no-properties url
              (match-beginning 1) (match-end 1))))
          (args (catch 'found-replacement
            (dolist (elem w3m-download-video-alist "--")
              (when (string-match (car elem) base)
                (throw 'found-replacement (cdr elem)))))))
-    (with-current-buffer buf
-      (insert (current-time-string) "\n\n  " (or title " ")
-        "\n\n  youtube-dl " args " " url "\n\n")
-      ; NOTE: There does exist a function `w3m-process-do' to evaluate
-      ;       lisp code asyncronously.
-      (setq proc
-        (apply 'start-process "w3m-download-video" buf "youtube-dl"
-          (split-string (concat args " " url)))))
-    (w3m--message nil t "Requesting download.")
-    (set-process-sentinel proc
-      (lambda (proc event)
-        (let ((buf (process-buffer proc)))
-         (with-current-buffer buf (insert event))
-         (cond
-          ((string-match "^finished" event)
-             (w3m--message t t
-               "Download complete. Check buffer %s for details." buf))
-          ((string-match "^open" event) t)
-          (t (w3m--message t 'w3m-error
-               "Download error. Check buffer %s for details." buf)))))))))
+    (with-mutex w3m--download-mutex
+      (add-to-list 'w3m--download-queued
+        (list
+          url
+          (split-string
+            (format "youtube-dl %s %s %s"
+              (if (not w3m-download-throttle) ""
+               (format "--limit-rate %d" w3m-download-throttle))
+              args
+              url))
+          nil ;; save-path isn't needed for youtube-dl downloads
+          nil ;; metadata isn't saved for videos
+          t) ; SHOW-STATE = details begin as invisible/hidden
+       t)) ; t = append to end of list
+    (w3m--download-from-queue))))
 
 ;;;###autoload
 (defun w3m-download-video-at-point ()
