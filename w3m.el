@@ -2349,7 +2349,6 @@ This variable will be made buffer-local in `w3m-cache-buffer'.")
 
 (defvar w3m-http-status nil)
 
-(defconst w3m-arrived-db-size 1023)
 (defvar w3m-arrived-db nil
   "Hash table, the arrived URLs database.
 The name of each symbol represents a url, the arrival time in the
@@ -2746,25 +2745,28 @@ directory."
 		      (substring file (match-end 0)))
 	    file)))
 
-
 ;;; Managing the arrived URLs database:
 (defmacro w3m-arrived-intern (url &optional soft)
-  "Normalize URL by stripping last / and intern it into `w3m-arrived-db'.
-If SOFT is non-nil, use `intern-soft' instead."
-  (let ((fn (if soft 'intern-soft 'intern))
-	(str (if (consp url)
-		 `(let* ((url ,url)
-			 (len (length url)))
-		    (if (and (not (zerop len))
-			     (eq (aref url (1- len)) ?/))
-			(substring url 0 -1)
-		      url))
-	       `(if (let ((len (length ,url)))
-		      (and (not (zerop len))
-			   (eq (aref ,url (1- len)) ?/)))
-		    (substring ,url 0 -1)
-		  ,url))))
-    `(,fn ,str w3m-arrived-db)))
+  "Look up URL in hash table `w3m-arrived-db' and return its symbol.
+If SOFT is nil, create a key for URL in `w3m-arrived-db' if not exists.
+If SOFT is non-nil, return nil if URL is not found in `w3m-arrived-db'.
+In `w3m-arrived-db' URL is normalized so as not to have the last `/'."
+  (let* ((url `(let* ((url ,url)
+		      (len (length url))
+		      val)
+		 (if (and (not (zerop len))
+			  (eq (aref url (1- len)) ?/))
+		     (setq url (substring url 0 -1)))))
+	 (get '(gethash url w3m-arrived-db))
+	 (put `(or ,get (puthash url (make-symbol url) w3m-arrived-db))))
+    (cond ((and (not (consp soft)) soft)
+	   ;; SOFT is neither a function form nor nil.
+	   `(,@url ,get))
+	  ((not (or (consp soft) soft))
+	   ;; SOFT is neither a function form nor a non-nil symbol.
+	   `(,@url ,put))
+	  (t ;; SOFT looks like a function form.
+	   `(,@url (if ,soft ,get ,put))))))
 
 (defun w3m-arrived-add (url &optional title modification-time
 			    arrival-time content-charset content-type)
@@ -2796,7 +2798,7 @@ CONTENT-TYPE are also be added."
   "Return the arrival time of a page of URL if it has arrived.
 Otherwise return nil."
   (let ((v (w3m-arrived-intern url t)))
-    (and v (boundp v) (symbol-value v))))
+    (and v (symbol-value v))))
 (defsetf w3m-arrived-time (url) (value)
   (list 'w3m-arrived-add url nil nil value))
 
@@ -2867,7 +2869,7 @@ format, they will simply be ignored."
 It is performed only when `w3m-arrived-db' has not been initialize yet.
 The file is specified by `w3m-arrived-file'."
   (unless w3m-arrived-db
-    (setq w3m-arrived-db (make-vector w3m-arrived-db-size 0))
+    (setq w3m-arrived-db (make-hash-table :test 'equal))
     (let ((list (w3m-arrived-load-list)))
       (dolist (elem list)
 	;; Ignore an element that lacks an arrival time information.
@@ -2907,8 +2909,8 @@ is specified by `w3m-arrived-file'."
 			       (nth 5 elem))))
 	  ;; Convert current database to a list.
 	  (let (list)
-	    (mapatoms
-	     (lambda (sym)
+	    (maphash
+	     (lambda (_key sym)
 	       (and sym
 		    (boundp sym)
 		    (symbol-value sym) ; Ignore an entry lacks an arrival time.
@@ -4503,7 +4505,7 @@ This function is used as `minibuffer-default-add-function'."
       (set (make-local-variable 'w3m-cache-articles) nil)
       (setq buffer-read-only t
 	    w3m-cache-buffer (current-buffer)
-	    w3m-cache-hashtb (make-hash-table :test #'equal)))))
+	    w3m-cache-hashtb (make-hash-table :test 'equal)))))
 
 (defun w3m-cache-shutdown ()
   "Clear all the variables managing the cache, and the cache itself."
@@ -10380,8 +10382,8 @@ A history page is invoked by the `w3m-about-history' command.")
 	    (setq size (string-to-number (substring s (match-end 0))))
 	    (unless (zerop size) (setq print-all nil))))))
     (when w3m-arrived-db
-      (mapatoms
-       (lambda (sym)
+      (maphash
+       (lambda (_key sym)
 	 (and sym
 	      (setq url (symbol-name sym))
 	      (not (string-match "#" url))

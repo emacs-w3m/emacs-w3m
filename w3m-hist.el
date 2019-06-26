@@ -744,14 +744,14 @@ debugging w3m-hist.el.)"
 	  w3m-history-flat nil)
     (let ((w3m-history-reuse-history-elements t)
 	  url-title title)
-      (mapatoms (lambda (symbol)
-		  (when symbol
-		    (if (setq title (get symbol 'title))
-			(push (list (symbol-name symbol)
-				    (list :title title))
-			      url-title)
-		      (push (list (symbol-name symbol)) url-title))))
-		w3m-arrived-db)
+      (maphash (lambda (_key symbol)
+		 (when symbol
+		   (if (setq title (get symbol 'title))
+		       (push (list (symbol-name symbol)
+				   (list :title title))
+			     url-title)
+		     (push (list (symbol-name symbol)) url-title))))
+	       w3m-arrived-db)
       (apply 'w3m-history-push (nth (random (length url-title)) url-title))
       (while url-title
 	(w3m-history-push (car (nth (random (length w3m-history-flat))
