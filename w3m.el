@@ -8202,7 +8202,7 @@ no visible buffer."
 Quit browsing immediately if the prefix argument FORCE is
 specified, otherwise prompt you for the confirmation.
 
-See also`w3m-close-window'.
+See also `w3m-close-window'.
 
 This command updates the `arrived URLs' database."
   (interactive "P")
@@ -8240,7 +8240,9 @@ This command updates the `arrived URLs' database."
 	  (delete-windows-on buf t)
 	  (kill-buffer buf)))
       (w3m-fb-delete-frame-buffers)
-      (display-buffer-same-window (other-buffer) nil))))
+      (display-buffer-same-window (other-buffer) nil))
+    (remove-hook 'window-size-change-functions
+		 #'w3m-redisplay-pages-automatically)))
 
 (defun w3m-close-window ()
   "Bury emacs-w3m buffers and close windows and frames.
@@ -8643,6 +8645,7 @@ or a list which consists of the following elements:
   (set (make-local-variable 'mwheel-scroll-up-function) #'w3m-scroll-up)
   (set (make-local-variable 'mwheel-scroll-down-function) #'w3m-scroll-down)
   (setq w3m-last-window-width (window-width))
+  (add-hook 'window-size-change-functions #'w3m-redisplay-pages-automatically)
   (w3m-setup-toolbar)
   (w3m-setup-menu)
   (run-hooks 'w3m-mode-setup-functions)
@@ -9919,9 +9922,6 @@ displayed in the other unselected frames will also change unwantedly."
 		 (set-window-buffer window buffer))
 	     (push buffer buffers))))
        'ignore-minibuf (selected-frame)))))
-
-(add-hook 'window-size-change-functions
-	  #'w3m-redisplay-pages-automatically)
 
 (defun w3m-examine-command-line-args ()
   "Return a url when the `w3m' command is invoked from the command line.
