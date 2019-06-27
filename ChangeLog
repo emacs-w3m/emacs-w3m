@@ -1,3 +1,13 @@
+2019-06-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Redisplay page automatically when its window width changes
+	Suggested by Dan Jacobson <jidanni@jidanni.org>
+
+	* w3m.el (w3m-last-window-width): New buffer local variable.
+	(w3m-mode): Initialize it.
+	(w3m-redisplay-pages-automatically): New function to be added to
+	`window-size-change-functions'.
+
 2019-06-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	A trial to make w3m-arrived-db a real hash table

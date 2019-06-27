@@ -2241,6 +2241,11 @@ It is used for favicon data.  The type is often `ico'.")
 (make-variable-buffer-local 'w3m-current-ssl)
 (make-variable-buffer-local 'w3m-name-anchor-from-hist)
 
+(defvar w3m-last-window-width nil
+  "Variable that keeps the last window width of the w3m-mode window.
+`w3m-redisplay-pages-automatically' uses this.")
+(make-variable-buffer-local 'w3m-last-window-width)
+
 (defun w3m-clear-local-variables ()
   (setq w3m-current-url nil
 	w3m-current-base-url nil
@@ -8637,6 +8642,7 @@ or a list which consists of the following elements:
   (setq show-trailing-whitespace nil)
   (set (make-local-variable 'mwheel-scroll-up-function) #'w3m-scroll-up)
   (set (make-local-variable 'mwheel-scroll-down-function) #'w3m-scroll-down)
+  (setq w3m-last-window-width (window-width))
   (w3m-setup-toolbar)
   (w3m-setup-menu)
   (run-hooks 'w3m-mode-setup-functions)
@@ -9875,6 +9881,47 @@ passed to the `w3m-redisplay-this-page' function (which see)."
 		       w3m-content-type-alist nil t)))
 	    (unless (string= type "") type)))
     (w3m-redisplay-this-page arg)))
+
+(defun w3m-redisplay-pages-automatically (&rest args)
+  "Redisplay pages when some operation changes the page width.
+Note that the visibility of the same page, i.e., the same buffer,
+displayed in the other unselected frames will also change unwantedly."
+  ;; Don't care the page height change that often happens
+  ;; if the echo area shows a message in two or more lines.
+  (unless (eq (selected-window) (minibuffer-window))
+    (let (buffer buffers width pos)
+      (walk-windows
+       (lambda (window)
+	 (setq buffer (window-buffer window))
+	 (unless (memq buffer buffers)
+	   (if (with-current-buffer buffer
+		 (and (eq major-mode 'w3m-mode)
+		      (not (eq w3m-last-window-width
+			       (setq width (window-width window))))))
+	       (progn
+		 (dolist (buff (w3m-list-buffers t))
+		   (unless (memq buff buffers)
+		     (push buff buffers)
+		     (with-current-buffer buff
+		       (setq w3m-last-window-width width)
+		       (unless w3m-current-process
+			 (setq pos (/ (window-start window) (buffer-size) 1.0))
+			 (w3m-redisplay-this-page)
+			 (goto-char
+			  (prog1
+			      (point)
+			    (goto-char
+			     (max 1 (min (point-max)
+					 (round (* pos (buffer-size))))))
+			    (set-window-start
+			     window (line-beginning-position))))
+			 (beginning-of-line)))))
+		 (set-window-buffer window buffer))
+	     (push buffer buffers))))
+       'ignore-minibuf (selected-frame)))))
+
+(add-hook 'window-size-change-functions
+	  #'w3m-redisplay-pages-automatically)
 
 (defun w3m-examine-command-line-args ()
   "Return a url when the `w3m' command is invoked from the command line.
