@@ -1,3 +1,8 @@
+2019-06-27  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m--retrieve-1--handler-function): Bugfix:  header
+	info doesn't exist for failed GET requests.
+
 2019-06-25  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m--goto-url--valid-url): Ensure query trackers are stripped

@@ -5730,7 +5730,8 @@ It will put the retrieved contents into the current buffer.  See
 
 (defun w3m--retrieve-1--handler-function (url post-data referer no-cache
 					      counter handler temp-file attr)
-  (setf (nth 6 attr) (w3m-url-strip-query (nth 6 attr)))
+  (when (nth 6 attr)
+    (setf (nth 6 attr) (w3m-url-strip-query (nth 6 attr))))
   (and temp-file
        (file-exists-p temp-file)
        (delete-file temp-file))
