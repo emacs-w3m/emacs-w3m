@@ -1,3 +1,14 @@
+2019-06-27  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-create-page): Bugfixes: Properly construct collection for
+	completing-read, return to original buffer when performing an external
+	view or a download. Spin off two parts into separate functions:
+	(w3m--unsupported-display, w3m--prompt-for-unknown-content-type)
+	(w3m-external-view): Bugfix: was not respecting user's request to download.
+	(w3m-external-view-file): Bugfixes: account for file arg being nil, .
+	Regex for suffix was failing for foo.bar.abc. Wasn't parsing external
+	format for content types based upon substituting '%s' for filename.
+
 2019-06-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-select-buffer-show-this-line)
