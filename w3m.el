@@ -8241,10 +8241,11 @@ This command updates the `arrived URLs' database."
 	  (kill-buffer buf)))
       (w3m-fb-delete-frame-buffers)
       (display-buffer-same-window (other-buffer) nil))
-    (remove-hook (if (= emacs-major-version 26)
-		     'window-size-change-functions
-		   'window-configuration-change-hook)
-		 #'w3m-redisplay-pages-automatically)))
+    (remove-hook 'window-configuration-change-hook
+		 #'w3m-redisplay-pages-automatically)
+    (when (= emacs-major-version 26)
+      (remove-hook 'window-size-change-functions
+		   #'w3m-redisplay-pages-automatically))))
 
 (defun w3m-close-window ()
   "Bury emacs-w3m buffers and close windows and frames.
@@ -8647,10 +8648,11 @@ or a list which consists of the following elements:
   (set (make-local-variable 'mwheel-scroll-up-function) #'w3m-scroll-up)
   (set (make-local-variable 'mwheel-scroll-down-function) #'w3m-scroll-down)
   (setq w3m-last-window-width (window-width))
-  (add-hook (if (= emacs-major-version 26)
-		'window-size-change-functions
-	      'window-configuration-change-hook)
+  (add-hook 'window-configuration-change-hook
 	    #'w3m-redisplay-pages-automatically)
+  (when (= emacs-major-version 26)
+    (add-hook 'window-size-change-functions
+	      #'w3m-redisplay-pages-automatically))
   (w3m-setup-toolbar)
   (w3m-setup-menu)
   (run-hooks 'w3m-mode-setup-functions)
