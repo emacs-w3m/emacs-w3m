@@ -11018,7 +11018,7 @@ without prompting for confirmation."
   (interactive "P")
   (let* ((pos (point))
 	 (buffer (w3m-select-buffer-current-buffer))
-         (show-next (eq (window-buffer w3m-select-buffer-window) buffer)))
+	 (show-next (eq (window-buffer w3m-select-buffer-window) buffer)))
     (if (= 1 (count-lines (point-min) (point-max)))
 	(w3m-quit force)
       (w3m-process-stop buffer)
@@ -11032,7 +11032,7 @@ without prompting for confirmation."
       (goto-char (min pos (point-max)))
       (beginning-of-line)
       (when show-next
-        (w3m-select-buffer-show-this-line)))))
+	(w3m-select-buffer-show-this-line)))))
 
 (defun w3m-select-buffer-delete-other-buffers ()
   "Delete emacs-w3m buffers except for the buffer on the current menu."

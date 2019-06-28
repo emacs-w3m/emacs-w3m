@@ -1,3 +1,8 @@
+2019-06-28  Eugene Sharygin  <eush77@gmail.com>
+
+	* w3m.el (w3m-select-buffer-delete-buffer): Make sure the buffer on
+	the current menu line to be shown after the deletion (PR#26).
+
 2019-06-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-redisplay-pages-automatically): Rewrite it with
