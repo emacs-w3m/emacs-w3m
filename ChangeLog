@@ -1,3 +1,11 @@
+2019-06-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-redisplay-pages-automatically): Rewrite it with
+	a FIXME comment; use `window-size-change-functions' for Emacs 26
+	otherwise `window-configuration-change-hook' to run it.
+
+	* w3m-util.el (w3m-condition-case): Uncomment it.
+
 2019-06-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Redisplay page automatically when its window width changes

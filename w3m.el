@@ -8241,7 +8241,9 @@ This command updates the `arrived URLs' database."
 	  (kill-buffer buf)))
       (w3m-fb-delete-frame-buffers)
       (display-buffer-same-window (other-buffer) nil))
-    (remove-hook 'window-size-change-functions
+    (remove-hook (if (= emacs-major-version 26)
+		     'window-size-change-functions
+		   'window-configuration-change-hook)
 		 #'w3m-redisplay-pages-automatically)))
 
 (defun w3m-close-window ()
@@ -8645,7 +8647,10 @@ or a list which consists of the following elements:
   (set (make-local-variable 'mwheel-scroll-up-function) #'w3m-scroll-up)
   (set (make-local-variable 'mwheel-scroll-down-function) #'w3m-scroll-down)
   (setq w3m-last-window-width (window-width))
-  (add-hook 'window-size-change-functions #'w3m-redisplay-pages-automatically)
+  (add-hook (if (= emacs-major-version 26)
+		'window-size-change-functions
+	      'window-configuration-change-hook)
+	    #'w3m-redisplay-pages-automatically)
   (w3m-setup-toolbar)
   (w3m-setup-menu)
   (run-hooks 'w3m-mode-setup-functions)
@@ -9885,43 +9890,51 @@ passed to the `w3m-redisplay-this-page' function (which see)."
 	    (unless (string= type "") type)))
     (w3m-redisplay-this-page arg)))
 
-(defun w3m-redisplay-pages-automatically (&rest args)
+(defun w3m-redisplay-pages-automatically (&optional _arg)
   "Redisplay pages when some operation changes the page width.
 Note that the visibility of the same page, i.e., the same buffer,
-displayed in the other unselected frames will also change unwantedly."
+displayed in the other unselected windows will also change unwantedly."
   ;; Don't care the page height change that often happens
   ;; if the echo area shows a message in two or more lines.
   (unless (eq (selected-window) (minibuffer-window))
     (let (buffer buffers width pos)
-      (walk-windows
-       (lambda (window)
-	 (setq buffer (window-buffer window))
-	 (unless (memq buffer buffers)
-	   (if (with-current-buffer buffer
-		 (and (eq major-mode 'w3m-mode)
-		      (not (eq w3m-last-window-width
-			       (setq width (window-width window))))))
-	       (progn
-		 (dolist (buff (w3m-list-buffers t))
-		   (unless (memq buff buffers)
-		     (push buff buffers)
-		     (with-current-buffer buff
-		       (setq w3m-last-window-width width)
-		       (unless w3m-current-process
-			 (setq pos (/ (window-start window) (buffer-size) 1.0))
-			 (w3m-redisplay-this-page)
-			 (goto-char
-			  (prog1
-			      (point)
-			    (goto-char
-			     (max 1 (min (point-max)
-					 (round (* pos (buffer-size))))))
-			    (set-window-start
-			     window (line-beginning-position))))
-			 (beginning-of-line)))))
-		 (set-window-buffer window buffer))
-	     (push buffer buffers))))
-       'ignore-minibuf (selected-frame)))))
+      (cl-labels
+	  ((redisplay
+	    (window)
+	    (setq buffer (window-buffer window))
+	    (unless (memq buffer buffers)
+	      (push buffer buffers)
+	      (with-current-buffer buffer
+		(when (and (eq major-mode 'w3m-mode)
+			   (not (eq w3m-last-window-width
+				    (setq width (window-width window))))
+			   (not w3m-current-process))
+		  (setq w3m-last-window-width width
+			pos (/ (window-start window) (buffer-size) 1.0))
+		  ;; FIXME:
+		  ;; There should be a bug in the forms handling or other.
+		  ;; It will arise on Emacs 26 and greater when performing
+		  ;; `w3m-redisplay-this-page' in the condition the window
+		  ;; width gets too thin.  Try visiting
+		  ;; <https://www.excite.co.jp/world/english/> and type
+		  ;; `C-x 3'.  Note that to enter the debugger you may want
+		  ;; to run this function manually since an error would be
+		  ;; concealed by the special hook that runs this function.
+		  (w3m-condition-case nil
+		      (let (w3m-clear-display-while-reading)
+			(w3m-redisplay-this-page))
+		    ;; Why does `reload' work?  There is no meaningful
+		    ;; difference between the already cached web data and
+		    ;; the newly reloared ones.
+		    (error (w3m-reload-this-page)))
+		  (goto-char
+		   (prog1 (point)
+		     (goto-char (max 1 (min (point-max)
+					    (round (* pos (buffer-size))))))
+		     (set-window-start window (line-beginning-position))))
+		  (beginning-of-line))))))
+	(redisplay (selected-window))
+	(walk-windows #'redisplay 'ignore-minibuf (selected-frame))))))
 
 (defun w3m-examine-command-line-args ()
   "Return a url when the `w3m' command is invoked from the command line.

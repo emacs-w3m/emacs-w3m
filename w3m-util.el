@@ -101,15 +101,15 @@
 ;;       (cons 'progn (cdr (car clauses)))))
 ;; (def-edebug-spec w3m-static-cond (&rest (&rest def-form)))
 
-;; (put 'w3m-condition-case 'lisp-indent-function 2)
-;; (defmacro w3m-condition-case (var bodyform &rest handlers)
-;;   "Like `condition-case', except that signal an error if `debug-on-error'
-;; or `debug-on-quit' is non-nil."
-;;   `(if (or debug-on-error debug-on-quit)
-;;        ,bodyform
-;;      (condition-case ,var
-;; 	 ,bodyform
-;;        ,@handlers)))
+(put 'w3m-condition-case 'lisp-indent-function 2)
+(defmacro w3m-condition-case (var bodyform &rest handlers)
+  "Like `condition-case', except that signal an error if `debug-on-error'
+or `debug-on-quit' is non-nil."
+  `(if (or debug-on-error debug-on-quit)
+       ,bodyform
+     (condition-case ,var
+	 ,bodyform
+       ,@handlers)))
 
 ;;; Functions used in common:
 
