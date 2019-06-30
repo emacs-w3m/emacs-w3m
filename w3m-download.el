@@ -1908,6 +1908,7 @@ was itself interactively and thus whether the user may be prompted for
 further information."
   (interactive (list (w3m-active-region-or-url-at-point) nil nil t))
   (let* (basename extension metadata caption found-file
+         alt-basename alt-extension
         (num-in-progress (length w3m--download-processes-list))
         (others-in-progress-prompt
           (if (zerop num-in-progress) ""
@@ -1937,9 +1938,15 @@ Are you trying to resume an aborted partial download? ")))
         (w3m--message t 'w3m-error "A url is required")
         (sit-for 1)))
     (setq url (w3m-url-decode-string url))
+    (setq basename (w3m--download-validate-basename url))
+    (when (and (setq caption (w3m-image-alt))
+               (not (setq extension (file-name-extension basename)))
+               (setq alt-basename (w3m--download-validate-basename caption))
+               (setq alt-extension (file-name-extension alt-basename)))
+      (setq basename alt-basename)
+      (setq extension alt-extension)
+      (setq save-path (concat w3m-default-save-directory alt-basename)))
     (when current-prefix-arg
-      (setq basename
-        (w3m--download-validate-basename url))
       (setq save-path
         (w3m-read-file-name
           (format "Download %s to: " url)
@@ -1952,8 +1959,9 @@ Are you trying to resume an aborted partial download? ")))
           (file-name-directory save-path)
          w3m-default-save-directory)))
     (when (and w3m-download-save-metadata
-              (setq caption (w3m-image-alt))
-              (setq extension (downcase (file-name-extension save-path))))
+               caption
+               extension)
+      (setq extension (downcase extension))
       (setq metadata
         (cond
          ((and (string= "png" extension) (executable-find "exiv2"))
