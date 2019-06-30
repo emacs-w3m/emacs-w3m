@@ -800,10 +800,15 @@ a crashed emacs session."
         (erase-buffer)))
       (setq w3m-cache-hashtb nil
             w3m-cache-articles nil)
+      (insert " Complete.\nInitializing input URL history from memory ...")
+      (setq w3m-input-url-history nil)
       (insert " Complete.\nInitializing cookies from memory ...")
       (setq w3m-cookies nil)
       (when cookie-buf
         (kill-buffer cookie-buf))
+      (insert " Complete.\nInitializing bookmark edit history from memory ...")
+      (setq w3m-bookmark-section-history nil)
+      (setq w3m-bookmark-title-history nil)
       (insert " Complete.\nInitializing global history from memory ...")
       (setq w3m-arrived-db nil)
       (insert " Complete.\nInitializing individual buffer histories and forms ...")
