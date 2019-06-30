@@ -1,7 +1,7 @@
 2019-06-30  Boruch Baum  <boruch_baum@gmx.com>
 
-	* w3m-hist.el (w3m-history-scrub): Delete bokomark edit histories and
-	url input history.
+	* w3m-hist.el (w3m-history-scrub): Delete bookmark edit histories and
+	url input history. Delete download queues and their save-file.
 
 2019-06-25  Boruch Baum  <boruch_baum@gmx.com>
 

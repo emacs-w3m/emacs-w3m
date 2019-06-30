@@ -826,6 +826,26 @@ a crashed emacs session."
            ((string-match "*w3m-session select*" (buffer-name))
             (kill-buffer buf))
            (t nil))))
+      (insert " Complete.\nInitializing download queues from memory  ...")
+      (with-mutex w3m--download-mutex
+        (setq w3m--download-queued nil)
+        (setq w3m--download-paused nil)
+        (setq w3m--download-failed nil)
+        (setq w3m--download-completed nil))
+      (insert " Complete.\nScrubbing download queue save-file ...\n")
+      (condition-case err
+        (let ((file (expand-file-name w3m-download-save-file)))
+          (cond
+           (cmd
+             (insert (format "  %s %s\n" cmd-string file))
+             (call-process (car cmd) nil t t (cadr cmd) file))
+           (t
+             (insert (format "  %s %s\n" cmd-string file))
+             (delete-file file))))
+          (error ; Handler for `condition-case'
+            (insert (format "    FAILURE! - %s\n    Aborting..." (error-message-string err)))
+            (error "w3m: history scrub unsuccessful. See buffer for details.")))
+      (w3m--download-save-lists)
       (insert " Complete.\nScrubbing selected sessions from session database ...")
       (let ((sessions (w3m-load-list w3m-session-file)))
         (dolist (session sessions sessions)
