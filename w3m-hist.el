@@ -816,6 +816,7 @@ a crashed emacs session."
         (with-current-buffer buf
           (setq w3m-history nil)
           (setq w3m-history-flat nil)
+          (w3m-history-push w3m-current-url)
           (cond
            ((or (string-match "^about://\\(cookie\\|history\\|db-history\\)/"
                               (or w3m-current-url ""))
