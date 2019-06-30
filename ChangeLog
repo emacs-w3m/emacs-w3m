@@ -1,3 +1,11 @@
+2019-06-30  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-input-url): Interpret bookmark titles as urls (ala
+	awesome-bar).
+	(w3m--get-url-from-bookmark-title): New function to enable the feature.
+	(w3m-arrived-setup): Add bookmark urls and title strings to
+	variable w3m-input-url-history.
+
 2019-06-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-select-buffer-show-this-line)
