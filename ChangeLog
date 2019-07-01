@@ -1,3 +1,8 @@
+2019-07-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-region): Suspend undo recording while rendering
+	if the buffer enables undo.
+
 2019-06-28  Eugene Sharygin  <eush77@gmail.com>
 
 	* w3m.el (w3m-select-buffer-delete-buffer): Make sure the buffer on

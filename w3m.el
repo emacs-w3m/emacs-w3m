@@ -10139,30 +10139,48 @@ URL specifies the address where the contents come from.  It can be
 omitted or nil when the address is not identified.  CHARSET is used
 for decoding the contents.  If it is nil, this function attempts to
 parse the meta tag to extract the charset."
-  (interactive
-   (list (region-beginning)
-	 (region-end)
-	 (w3m-expand-file-name-as-url
-	  (or (buffer-file-name) default-directory))))
-  (save-restriction
-    (w3m-process-stop (current-buffer))
-    (narrow-to-region start end)
-    (w3m-clear-local-variables)
-    (let ((w3m-current-buffer (current-buffer)))
+  (interactive (list (region-beginning)
+		     (region-end)
+		     (w3m-expand-file-name-as-url (or (buffer-file-name)
+						      default-directory))))
+  (w3m-process-stop (current-buffer))
+  (w3m-clear-local-variables)
+  (setq url (or url w3m-buffer-local-url)
+	w3m-current-url url
+	w3m-current-base-url url)
+  (let ((inhibit-read-only t)
+	(w3m-current-buffer (current-buffer))
+	w3m-use-refresh)
+    (save-restriction
+      (narrow-to-region start end)
       (unless charset
 	(setq charset (w3m-correct-charset (w3m-detect-meta-charset))))
-      (setq url (or url
-		    w3m-buffer-local-url)
-	    w3m-current-url url
-	    w3m-current-base-url url
-	    w3m-current-coding-system
+      (setq w3m-current-coding-system
 	    (if charset
 		(w3m-charset-to-coding-system charset)
-	      w3m-coding-system)
-	    w3m-current-title
-	    (let (w3m-use-refresh)
-	      (w3m-rendering-buffer charset)))
-      (w3m-fontify)
+	      w3m-coding-system))
+      (if (eq buffer-undo-list t)
+	  (progn
+	    (setq w3m-current-title (w3m-rendering-buffer charset))
+	    (w3m-fontify))
+	;; Suspend undo recording while rendering.
+	(let ((tem (generate-new-buffer " *temp*")))
+	  (unwind-protect
+	      (progn
+		(insert
+		 (prog1
+		     (with-current-buffer tem
+		       (insert-char ?  (1- start))
+		       (insert-buffer-substring-no-properties
+			w3m-current-buffer start end)
+		       (w3m-copy-local-variables w3m-current-buffer)
+		       (narrow-to-region start end)
+		       (setq w3m-current-title (w3m-rendering-buffer charset))
+		       (w3m-fontify)
+		       (buffer-substring start (point-max)))
+		   (delete-region start end)))
+		(w3m-copy-local-variables tem))
+	    (kill-buffer tem))))
       (when (w3m-display-inline-images-p)
 	(and w3m-force-redisplay (sit-for 0))
 	(w3m-toggle-inline-images 'force)))))
