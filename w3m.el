@@ -10143,6 +10143,7 @@ parse the meta tag to extract the charset."
 		     (region-end)
 		     (w3m-expand-file-name-as-url (or (buffer-file-name)
 						      default-directory))))
+  (w3m-arrived-setup)
   (w3m-process-stop (current-buffer))
   (w3m-clear-local-variables)
   (setq url (or url w3m-buffer-local-url)
@@ -10159,28 +10160,23 @@ parse the meta tag to extract the charset."
 	    (if charset
 		(w3m-charset-to-coding-system charset)
 	      w3m-coding-system))
-      (if (eq buffer-undo-list t)
-	  (progn
-	    (setq w3m-current-title (w3m-rendering-buffer charset))
-	    (w3m-fontify))
-	;; Suspend undo recording while rendering.
-	(let ((tem (generate-new-buffer " *temp*")))
-	  (unwind-protect
-	      (progn
-		(insert
-		 (prog1
-		     (with-current-buffer tem
-		       (insert-char ?  (1- start))
-		       (insert-buffer-substring-no-properties
-			w3m-current-buffer start end)
-		       (w3m-copy-local-variables w3m-current-buffer)
-		       (narrow-to-region start end)
-		       (setq w3m-current-title (w3m-rendering-buffer charset))
-		       (w3m-fontify)
-		       (buffer-substring start (point-max)))
-		   (delete-region start end)))
-		(w3m-copy-local-variables tem))
-	    (kill-buffer tem))))
+      (unless (eq buffer-undo-list t)
+	;; Record text that of before being changed to the undo list.
+	(undo-boundary)
+	(setq buffer-undo-list
+	      (nconc (list nil nil
+			   (cons (buffer-substring start end) start))
+		     buffer-undo-list)))
+      (let ((buffer-undo-list t)) ;; Suspend undo recording.
+	(setq w3m-current-title (w3m-rendering-buffer charset))
+	(w3m-fontify)
+	(goto-char (point-max))
+	(skip-chars-backward "\t\n ")
+	(delete-region (point) (point-max))
+	(insert "\n"))
+      (unless (eq buffer-undo-list t)
+	;; Set the pointer for new text in the undo list.
+	(setcar (cdr buffer-undo-list) (cons start (point-max))))
       (when (w3m-display-inline-images-p)
 	(and w3m-force-redisplay (sit-for 0))
 	(w3m-toggle-inline-images 'force)))))

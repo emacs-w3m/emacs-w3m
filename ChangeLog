@@ -1,3 +1,7 @@
+2019-07-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-region): Improve the way to suspend undo recording.
+
 2019-07-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-region): Suspend undo recording while rendering
