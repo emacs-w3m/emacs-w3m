@@ -1,3 +1,16 @@
+2019-07-02  Boruch Baum  <boruch_baum@gmx.com>
+
+	Replace w3m-view-this-url-1 with w3m-goto-url{,-new-session} (PR#44)
+
+	* w3m.el (w3m-view-this-url-1): Remove this function as unnecessary and
+	duplicate.
+	(w3m-view-this-url, w3m-view-this-url-new-session)
+	(w3m-goto-new-session-url): Replace use of function w3m-view-this-url-1
+	with either w3m-goto-url or w3m-goto-url-new-session.
+
+	* w3m-bookmark.el (w3m-bookmark-view-new-session): Replace use of
+	function w3m-view-this-url-1 with w3m-goto-url-new-session.
+
 2019-07-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-region): Improve the way to suspend undo recording.
