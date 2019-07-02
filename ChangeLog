@@ -1,3 +1,20 @@
+2019-07-01  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el (w3m--download-progress-percent-display): New
+	function and feature: Displays a horizontal progress bar (different
+	background color) for each queue entry as a percentage of the window
+	width.
+	(w3m-download-progress): New face for percentage progress indication.
+	(w3m--download-display-queue-list): Use the new function. In support of
+	it, all lines of queue entries must be padded fully right-ward.
+	(w3m--download-progress-regex-wget): Add more use-cases and a
+	translation key.
+	(w3m-download-wget-options): Add options to display HTTP responses and
+	to quiet the wget progress messages.
+	(w3m--download-update-faces-pre-command): Don't accumulate entries in
+	'face text-property.
+	(w3m--download-update-progress): Handle case of unknown download size.
+
 2019-06-30  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-download.el (w3m-download-using-wget): When the url for an image

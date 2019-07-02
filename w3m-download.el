@@ -273,7 +273,8 @@ These are:`w3m--download-queued', `w3m--download-running',
 `w3m--download-completed'.")
 
 (defconst w3m--download-progress-regex-wget
-  "\\([0-9.]+%\\)\\[[^]]+] +\\([^ ]+\\) +\\([^ ]+\\) +\\(.*\\)$"
+  "\\([0-9.]+%\\)?\\[[^]]+] +\\([^ ]+\\) +\\([^/]+/[^ ]+\\) +\\(.*\\)$"
+  ;; %completed              bytes done   download speed     eta
   "Parses four values from wget progress messages.")
 
 (defconst w3m--download-progress-regex-youtube-dl
@@ -548,7 +549,7 @@ not items already on the queue."
   :group 'w3m
   :type 'integer)
 
-(defcustom w3m-download-wget-options nil
+(defcustom w3m-download-wget-options "--server-response --progress=bar:noscroll"
 "Catch-all for your preferred `wget' options.
 
 This (currently) only takes effect for future queued items, ie.
@@ -608,6 +609,13 @@ arguments."
   '((t :inherit 'w3m-session-select))
   "Face of URL selected for download in w3m-download-select
 buffer."
+  :group 'w3m)
+
+(defface w3m-download-progress
+  '((t :background "blue")) ;; "brightblack"))
+  "Face of running downloads in w3m-download buffer."
+; TODO: Make this more sophisticated to be consistent with other
+; project faces, to account for light/dark themes and window-display-p
   :group 'w3m)
 
 (defface w3m-download-queued
@@ -739,11 +747,9 @@ Meant for use with `pre-command-hook'."
         (end (if (eq major-mode 'w3m-download-select-mode)
                (line-end-position)
               (next-single-property-change (point) 'url nil (point-max))))
-        (this-face (get-text-property (point) 'face))
         (inhibit-read-only t))
     (unless  (= (point) (point-max))
-      (put-text-property beg end 'face
-        (if (listp this-face) (cdr this-face) this-face)))
+      (w3m--remove-face-property beg end '(:weight bold)))
     (goto-char pos)))
 
 (defun w3m--download-update-faces-post-command ()
@@ -886,9 +892,41 @@ The saved lists are `w3m--download-queued',
           (when (string-match regex txt)
             (setq txt
               (format "%s, %s,  %s, %s"
-                (match-string 1 txt) (match-string 2 txt)
-                (match-string 3 txt) (match-string 4 txt)))
+                (or (match-string 1 txt) "??.?%")
+                (match-string 2 txt)
+                (match-string 3 txt)
+                (match-string 4 txt)))
             (setf (nth 6 entry) txt))))))))
+
+(defun w3m--download-progress-percent-display ()
+  "Colorize running queue entries based upon their % completion.
+This is a primitve. It expects the current buffer and point to be
+prepared! This function is meant to be called by
+`w3m--download-display-queue-list'."
+  (let ((win-width (window-width))
+        (pos-1 (next-single-property-change (point-min) 'url nil (point-max)))
+        (pos-2 0)
+         percent cols)
+    (while (and (< pos-1 (point-max))
+                (setq pos-2
+                  (next-single-property-change pos-1 'url nil (point-max)))
+                (memq (get-text-property pos-1 'state)
+                      '(w3m--download-running w3m--download-paused)))
+      (goto-char pos-1)
+      (if (not (and (re-search-forward "^ +\\([0-9.]+\\)" pos-2 t)
+                    (setq percent
+                      (string-to-number
+                        (replace-regexp-in-string
+                          "\\.[0-9]+$" "" (match-string-no-properties 1))))
+                    (not (zerop (setq cols (/ (* percent win-width) 100))))))
+        (setq pos-1 pos-2)
+       (goto-char pos-1)
+       (while (< pos-1 pos-2)
+         (add-face-text-property
+           pos-1 (min (point-max) (+ pos-1 cols))
+           'w3m-download-progress)
+         (forward-line)
+         (setq pos-1 (point)))))))
 
 (defun w3m--download-display-queue-list ()
   "Display the download queue.
@@ -897,13 +935,14 @@ prepared! It is meant to be called by `w3m-download-view-queue'
 for the initial buffer creation, and by
 `w3m--download-update-display-queue-list' for updates."
   ; TODO: Should I seize the mutex for this?
-  (let (result)
+  (let ((padding (make-string (window-width) ? ))
+       result)
     (dolist (state-list w3m--download-buffer-sequence)
       (dolist (entry (eval (nth 0 state-list)))
         (insert
           (propertize
             (concat
-              (nth 1 state-list) (nth 0 entry) "\n"
+              (nth 1 state-list) (nth 0 entry) padding "\n"
               (propertize
                 (dolist (field
                          (let ((len (length entry)))
@@ -913,14 +952,21 @@ for the initial buffer creation, and by
                   (when (and field
                              (or (not (sequencep field))
                                  (not (zerop (length field)))))
-                    (setq result (concat result
-                                         (format "    %s\n" field)))))
+                    (setq result
+                      (concat result
+                        (format "    %s%s\n"
+                          (if (stringp field)
+                            (replace-regexp-in-string
+                              "\n" (concat padding "\n") field)
+                           field)
+                          padding)))))
                 'invisible (if (nth 4 entry) 'yes 'no)))
            'state (nth 0 state-list)
            'url (nth 0 entry)
            'face (nth 2 state-list)))
         (goto-char (point-max))
         (setq result nil))))
+  (w3m--download-progress-percent-display)
   (goto-char (point-max))
 ; (delete-backward-char 1)
   (w3m--download-update-statistics))
@@ -1755,6 +1801,8 @@ Used in w3m download select mode buffers."
               ;; immediately change them
               'w3m-download-selected
              'default))))
+;; TODO: Consider (remove-text-properties ... w3m-download-selected)
+;; instead of adding default
        (goto-char (+ end cur-col))
        (when (/= cur-col (current-column))
          (forward-line 0)
