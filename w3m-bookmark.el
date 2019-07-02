@@ -302,9 +302,12 @@ Optional argument TITLE is title of link."
     (when (or (not title)
 	      (string-match "^[\t ]*$" title))
       (error "%s" "You must specify a bookmark title"))
+    (setq title (w3m-encode-specials-string title))
     (w3m-bookmark-write-file url
-			     (w3m-encode-specials-string title)
-			     (w3m-encode-specials-string section))))
+			     title
+			     (w3m-encode-specials-string section)))
+    (push url w3m-input-url-history)
+    (push title w3m-input-url-history))
 
 ;;;###autoload
 (defun w3m-bookmark-add-this-url ()
@@ -365,23 +368,26 @@ With prefix, ask for a new url instead of the present one."
 	  (set-buffer (pop buffers))
 	  (if (string= w3m-current-url  "about://bookmark/")
 	      (add-to-list 'bookmark-buffers (current-buffer))
-	    (setq title (or w3m-current-title w3m-current-url))
-	    (if w3m-current-url
-		(w3m-bookmark-write-file
-		 w3m-current-url
-		 (w3m-encode-specials-string w3m-current-title)
-		 (w3m-encode-specials-string section))
-	      (message
-	       "w3m-bookmark: Error saving buffer %s\n  url: %s\n  title: %s"
-	       (current-buffer) w3m-current-url w3m-current-title)
-	      (incf error-count))))
-	(when (> error-count 0)
-	  (w3m-message  ;; or (w3m--message t 'w3m-error
-	   "%s Errors encountered. See *Messages* buffer for details"
-	   error-count))
-	(while bookmark-buffers
-	  (set-buffer (pop bookmark-buffers))
-	  (w3m-redisplay-this-page)))))))
+          (setq title (w3m-encode-specials-string
+                        (or w3m-current-title w3m-current-url)))
+          (cond
+           (w3m-current-url
+            (w3m-bookmark-write-file w3m-current-url title
+              (w3m-encode-specials-string section))
+            (push w3m-current-url w3m-input-url-history)
+            (push title           w3m-input-url-history)))
+           (t
+            (message
+              "w3m-bookmark: Error saving buffer %s\n  url: %s\n  title: %s"
+              (current-buffer) w3m-current-url w3m-current-title)
+            (incf error-count))))
+       (when (> error-count 0)
+         (w3m--message t 'w3m-error
+           "%s Errors encountered. See *Messages* buffer for details"
+           error-count))
+       (while bookmark-buffers
+         (set-buffer (pop bookmark-buffers))
+         (w3m-redisplay-this-page)))))))
 
 ;;;###autoload
 (defun w3m-bookmark-add-current-url-group ()
