@@ -1,3 +1,9 @@
+2019-07-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* .dir-locals.el: New file; make indent-tabs-mode default to t.
+	* w3mhack.el (w3mhack-module-list): Don't compile it.
+	* Makefile.in (install-lisp): Install it.
+
 2019-07-02  Boruch Baum  <boruch_baum@gmx.com>
 
 	Replace w3m-view-this-url-1 with w3m-goto-url{,-new-session} (PR#44)

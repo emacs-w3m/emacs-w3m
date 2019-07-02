@@ -59,7 +59,7 @@ install-ja: install-lisp install-info-ja
 
 install-lisp: lisp
 	@$(SHELL) $(srcdir)/mkinstalldirs "$(DESTDIR)$(lispdir)";\
-	for p in ChangeLog ChangeLog.[1-9] ChangeLog.[1-9][0-9] *.el; do\
+	for p in ChangeLog ChangeLog.[1-9] ChangeLog.[1-9][0-9] *.el .dir-locals.el; do\
 	  if test -f "$$p"; then\
 	    case "$$p" in\
 	      $(IGNORES)) ;;\

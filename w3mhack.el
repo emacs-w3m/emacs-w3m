@@ -137,7 +137,8 @@ There seems to be no shell command which is equivalent to /bin/sh.
 (defun w3mhack-module-list ()
   "Returna a list of w3m modules should be byte-compile'd."
   (let* ((modules (directory-files default-directory nil "^[^#]+\\.el$"))
-	 (ignores '("w3mhack.el")) ;; modules not to be byte-compiled.
+	 ;; Modules not to be byte-compiled.
+	 (ignores '(".dir-locals.el" "w3mhack.el"))
 	 (shimbun-dir (file-name-as-directory shimbun-module-directory))
 	 print-level print-length)
     (unless (locate-library "mew")
