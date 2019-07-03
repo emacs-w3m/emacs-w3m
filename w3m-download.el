@@ -493,7 +493,7 @@ immediately restart them."
                  (const :tag "Nothing" nil)
                  (const :tag "Auto-restart" auto-restart)))
 
-(defcustom w3m-download-refresh-interval 16
+(defcustom w3m-download-refresh-interval 1
   "How often (in seconds) to refresh the download display buffer.
 This is also the interval for saving the download lists to
 `w3m-download-save-file'.
