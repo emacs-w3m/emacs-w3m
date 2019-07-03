@@ -1,5 +1,17 @@
 2019-07-03  Boruch Baum  <boruch_baum@gmx.com>
 
+	Remove trackers embedded in URLs (PR#47)
+
+	* w3m-util.el (w3m-strip-queries, w3m-strip-queries-alist)
+	(w3m-queries-log, w3m-queries-log-file): New defcustoms.
+	(w3m--url-strip-queries): New feature; strip unwanted trackers from
+	urls.
+
+	* w3m.el (w3m--retrieve-1--handler-function): Undo potential url
+	modification performed by w3m-w3m-dump-extra.
+	(w3m--goto-url--valid-url): Use new feature w3m--url-strip-queries;
+	ensure query trackers are stripped at first opportunity.
+
 	Add a new command `w3m-search-name-anchor' bound to `C-c j' key (PR#46)
 
 	* w3m.el (w3m--get-page-anchors): New funcion.

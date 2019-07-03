@@ -37,6 +37,8 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'subr-x)) ;; string-empty-p
+
 ;; Variables and functions which are used in the following inline
 ;; functions.  They should be defined in the other module at run-time.
 (defvar w3m-current-process)
@@ -1146,6 +1148,53 @@ Otherwise return nil."
   (if (string-match "\\`\\([^?#]*\\)[?#]" url)
       (match-string 1 url)
     url))
+
+(defcustom w3m-strip-queries t
+  "Remove unwanted queries from URLs.
+Details are set by `w3m-strip-queries-alist'."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-strip-queries-alist
+  '(("^https?://.*" "&?utm_source=[^&]+")
+    ("^https?://.*" "&?utm_medium=[^&]+")
+    ("^https?://.*" "&?utm_campaign=[^&]+"))
+  "Alist of url regexes and query regexes to strip from them.
+This is meant to remove unwanted trackers or other data that websites or
+referers embed."
+  :group 'w3m
+  :type '(repeat (group (string :tag "URL regex")
+			(string :tag "Query regex"))))
+
+(defcustom w3m-queries-log nil
+  "Whether to log URL queries to `w3m-queries-log-file'."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-queries-log-file "~/emacs-w3m-queries_log.txt"
+  "File in which to log URL queries."
+  :group 'w3m
+  :type 'boolean)
+
+(defun w3m--url-strip-queries (url)
+  "Strip unwanted queries from a url.
+This is meant to remove unwanted trackers or other data that
+websites or referers embed. See `w3m-strip-queries-alist'."
+  (if (or (not w3m-strip-queries)
+	  (not (string-match "^.*\\?" url)))
+      url
+    (let* ((base (match-string 0 url))
+	   (queries (replace-match "" t t url 0)))
+      (when (and w3m-queries-log queries)
+	(shell-command
+	 (format "printf \"%s\n\" >> %s" queries w3m-queries-log-file)))
+      (dolist (strip w3m-strip-queries-alist)
+	(when (string-match (car strip) base)
+	  (while (string-match (cadr strip) queries)
+	    (setq queries (replace-match "" t t queries 0)))))
+      (if (string-empty-p queries)
+	  (substring base 0 -1)
+	(concat base queries)))))
 
 (defun w3m-get-server-hostname (url)
   "Extract a server root from URL."

@@ -5394,6 +5394,8 @@ It will put the retrieved contents into the current buffer.  See
 
 (defun w3m--retrieve-1--handler-function (url post-data referer no-cache
 					      counter handler temp-file attr)
+  (when (nth 6 attr)
+    (setf (nth 6 attr) (w3m-url-strip-query (nth 6 attr))))
   (and temp-file
        (file-exists-p temp-file)
        (delete-file temp-file))
@@ -9309,6 +9311,7 @@ helpful message is presented and the operation is aborted."
 (defun w3m--goto-url--valid-url (url reload charset post-data referer handler
 				     element no-popup save-pos)
   "Main function called by `w3m-goto-url' for handling generic URLS."
+  (setq url (w3m--url-strip-queries url))
   (w3m-buffer-setup)			; Setup buffer.
   (w3m-arrived-setup)			; Setup arrived database.
   (unless no-popup
@@ -9411,12 +9414,12 @@ helpful message is presented and the operation is aborted."
 	       (setq w3m-name-anchor-from-hist
 		     (plist-get (nthcdr 3 element) :name-anchor-hist))
 	       (let ((proc (w3m-retrieve-and-render
-			    orig reload charset post-data referer handler)))
+			    url reload charset post-data referer handler)))
 		 (push proc w3m-current-process)
 		 proc)))
 	  (w3m--goto-url--handler-function
 	   url reload charset post-data referer redisplay name reuse-history
-	   action orig history-position))))))
+	   action url history-position))))))
 
 ;;;###autoload
 (defun w3m-goto-url (url &optional reload charset post-data referer handler
