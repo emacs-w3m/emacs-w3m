@@ -1,3 +1,8 @@
+2019-07-02  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-hist.el (w3m-history-scrub): Render display earlier. Initialize
+	arrived-db for awesome-bar feature support.
+
 2019-06-30  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-hist.el (w3m-history-scrub): Delete bookmark edit histories and

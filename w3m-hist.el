@@ -770,6 +770,7 @@ a crashed emacs session."
                          "emacs' delete-file"))
             files)
       (switch-to-buffer stdout-buf)
+      (redisplay)
       (insert "Beginning emacs-w3m history scrub "
               (format-time-string "%Y-%m-%d %H:%M:%S.%N")
               "\n\nDeleting files ...\n")
@@ -811,6 +812,7 @@ a crashed emacs session."
       (setq w3m-bookmark-title-history nil)
       (insert " Complete.\nInitializing global history from memory ...")
       (setq w3m-arrived-db nil)
+      (w3m-arrived-setup) ; For 'awesome-bar' feature.
       (insert " Complete.\nInitializing individual buffer histories and forms ...")
       (dolist (buf bufs)
         (with-current-buffer buf
