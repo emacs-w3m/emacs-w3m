@@ -1,3 +1,10 @@
+2019-07-03  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m--filter-page-anchors): New feature to prune junk anchors
+	from anchor searches.
+	(w3m-anchor-list-filter-alist): Junk anchor defcustom.
+	(w3m--get-page-anchors): Implement the feature.
+
 2019-06-06  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m--get-page-anchors): New funcion.

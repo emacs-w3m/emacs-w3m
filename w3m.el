@@ -6938,6 +6938,32 @@ when the URL of the retrieved page matches the REGEXP."
 							   (match-string 1)))
 			     url))))
 
+(defcustom w3m-anchor-list-filter-alist
+  '((".*" . "^cite_.*[0-9]$")
+    (".*" . "^mw-head$")
+    (".*" . "^p-search$"))
+  "Identification of 'junk' anchor to be ignored in user searches.
+
+The car of each element is a URL regex, and the CDR is a regex of
+anchor names to prune.
+
+This feature was prompted by the large number of useless anchors
+created by the very popular media-wiki software used for sites
+such as wikipedia."
+  :group 'w3m
+  :type '(repeat (cons :format "%v" :indent 9
+		       (regexp :format "URL: %v\n")
+		       (regexp :format "%t: %v\n"))))
+
+(defun w3m--filter-page-anchors (anchor-list)
+  "Prune 'junk' anchors from ANCHOR-LIST."
+  (dolist (filter w3m-anchor-list-filter-alist anchor-list)
+    (when (string-match (car filter) w3m-current-url)
+      (setq anchor-list
+        (remove-if
+          (lambda (x) (string-match (cdr filter) (car x)))
+          anchor-list)))))
+
 (defun w3m--get-page-anchors (&optional sub-sets sort-method)
   "Return list of page anchors, sorted by SORT-METHOD.
 SUB-SETS defines from where to draw anchor information. It
@@ -6947,7 +6973,7 @@ also be 'name or a function that can be passed to `sort'."
   (let ((pos (point-min))
         (cur-pos (point))
         anchor-list)
-; NOTE: w3m-name-anchor aggregates data from `w3m -half-dump'.
+    ;; NOTE: w3m-name-anchor aggregates data from `w3m -half-dump'.
     (unless (eq sub-sets 'w3m-name-anchor2)
       (while (setq pos (next-single-property-change pos 'w3m-name-anchor))
         (push (cons (car (get-text-property pos 'w3m-name-anchor)) pos)
@@ -6957,6 +6983,7 @@ also be 'name or a function that can be passed to `sort'."
       (while (setq pos (next-single-property-change pos 'w3m-name-anchor2))
         (push (cons (car (get-text-property pos 'w3m-name-anchor2)) pos)
               anchor-list)))
+    (setq anchor-list (w3m--filter-page-anchors anchor-list))
     (sort anchor-list
       (cond
        ((or (not sort-method) (eq sort-method 'position))
