@@ -6554,53 +6554,59 @@ when the URL of the retrieved page matches the REGEXP."
 							   (match-string 1)))
 			     url))))
 
-(defun w3m-search-name-anchor (name &optional quiet no-record)
-  (interactive "sName: ")
+(defun w3m--get-page-anchors (&optional sub-sets sort-method)
+  "Return list of page anchors, sorted by SORT-METHOD.
+SUB-SETS defines from where to draw anchor information.  It defaults to
+`all', but may also be `w3m-name-anchor' or `w3m-name-anchor2'.
+SORT-METHOD defaults to `position', but may also be `name' or a function
+that can be passed to `sort'."
   (let ((pos (point-min))
 	(cur-pos (point))
-	oname found)
-    (catch 'found
-      (while (not found)
-	(while (setq pos (next-single-property-change pos 'w3m-name-anchor))
-	  (when (member name (get-text-property pos 'w3m-name-anchor))
-	    (throw 'found (setq found t))))
-	(setq pos (point-min))
-	(while (setq pos (next-single-property-change pos 'w3m-name-anchor2))
-	  (when (member name (get-text-property pos 'w3m-name-anchor2))
-	    (throw 'found (setq found t))))
-	(if oname
-	    (progn
-	      (unless quiet
-		(message "No such anchor: %s" oname))
-	      (throw 'found nil))
-	  (setq pos (point-min)
-		oname name
-		name (w3m-url-decode-string name)))))
-    (when found
-      (cl-labels
-	  ((position-point
-	    (pos cur-pos no-record)
-	    (goto-char pos)
-	    (when (eolp) (forward-line))
-	    (or no-record (= (point) cur-pos)
-		(setq w3m-name-anchor-from-hist
-		      (append (list 1 nil (point) cur-pos)
-			      (and (integerp (car w3m-name-anchor-from-hist))
-				   (nthcdr (1+ (car w3m-name-anchor-from-hist))
-					   w3m-name-anchor-from-hist)))))
-	    (w3m-horizontal-on-screen)
-	    (w3m-recenter)))
-	(if (get-buffer-window (current-buffer) (selected-frame))
-	    (position-point pos cur-pos no-record)
-	  ;; Make the window positions sure to be set
-	  ;; even when it runs in the background.
-	  (save-window-excursion
-	    (set-window-buffer (selected-window) (current-buffer))
-	    (position-point pos cur-pos no-record)
-	    ;; `w3m-history-restore-position' will run
-	    ;; when the buffer is selected thereafter.
-	    (w3m-history-store-position))))
-      t)))
+	anchor-list)
+    ;; NOTE: w3m-name-anchor aggregates data from `w3m -half-dump'.
+    (unless (eq sub-sets 'w3m-name-anchor2)
+      (while (setq pos (next-single-property-change pos 'w3m-name-anchor))
+	(push (cons (car (get-text-property pos 'w3m-name-anchor)) pos)
+	      anchor-list))
+      (setq pos (point-min)))
+    (unless (eq sub-sets 'w3m-name-anchor)
+      (while (setq pos (next-single-property-change pos 'w3m-name-anchor2))
+	(push (cons (car (get-text-property pos 'w3m-name-anchor2)) pos)
+	      anchor-list)))
+    (sort anchor-list
+	  (cond
+	   ((or (not sort-method) (eq sort-method 'position))
+	    (lambda (x y) (< (cdr x) (cdr y))))
+	   ((eq sort-method 'name)
+	    (lambda (x y) (string-lessp (downcase (car x)) (downcase (car y)))))
+	   ((functionp sort-method) sort-method)
+	   (t (error "Invalid arg: SORT-METHOD"))))))
+
+(defun w3m-search-name-anchor (name &optional quiet no-record)
+  "Navigate to HTML anchor NAME in the current buffer.
+When called interactively, the user is prompted for a name and provided
+a list of valid anchors.
+Set QUIET to non-nil to suppress an error message.
+Set NO-RECORD to non-nil to prevent the navigation from being pushed
+onto the history stack."
+  (interactive (list (completing-read
+		      "Name: "
+		      (w3m--get-page-anchors 'w3m-name-anchor2) nil t)
+		     nil nil))
+  (let ((anchor-list (w3m--get-page-anchors)) jump-to-pos)
+    (if (not (assoc name anchor-list))
+	(unless quiet
+	  (w3m-message "No such anchor: %s" name))
+      (setq jump-to-pos (cdr (assoc name anchor-list)))
+      (when (and (not no-record)
+		 (/= (point) jump-to-pos))
+	(setq w3m-name-anchor-from-hist
+	      (append (list 1 nil jump-to-pos (point))
+		      (and (integerp (car w3m-name-anchor-from-hist))
+			   (nthcdr (1+ (car w3m-name-anchor-from-hist))
+				   w3m-name-anchor-from-hist)))))
+      (goto-char jump-to-pos)
+      (w3m-recenter))))
 
 (defun w3m-parent-page-available-p ()
   (if (null w3m-current-url)
@@ -7870,30 +7876,31 @@ Note: keys should not be alphabet since `C-c LETTER' keys are reserved
 for users.  See Info node `(elisp)Key Binding Conventions'.")
 (unless w3m-ctl-c-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "\M-h" 'w3m-history)
-    (define-key map "\C-@" 'w3m-history-store-position)
+    (define-key map "\M-h"  'w3m-history)
+    (define-key map "\C-@"  'w3m-history-store-position)
     (define-key map [?\C- ] 'w3m-history-store-position)
-    (define-key map "\C-e" 'w3m-goto-new-session-url)
-    (define-key map "\C-v" 'w3m-history-restore-position)
-    (define-key map "\C-t" 'w3m-copy-buffer)
-    (define-key map "\C-p" 'w3m-previous-buffer)
-    (define-key map "\C-n" 'w3m-next-buffer)
+    (define-key map "j"     'w3m-search-name-anchor)
+    (define-key map "\C-e"  'w3m-goto-new-session-url)
+    (define-key map "\C-v"  'w3m-history-restore-position)
+    (define-key map "\C-t"  'w3m-copy-buffer)
+    (define-key map "\C-p"  'w3m-previous-buffer)
+    (define-key map "\C-n"  'w3m-next-buffer)
     (define-key map [?\C-,] 'w3m-tab-move-left)
     (define-key map [?\C-<] 'w3m-tab-move-left)
     (define-key map "<"     'w3m-tab-move-left)
     (define-key map [?\C-.] 'w3m-tab-move-right)
     (define-key map ">"     'w3m-tab-move-right)
     (define-key map [?\C->] 'w3m-tab-move-right)
-    (define-key map "\C-w" 'w3m-delete-buffer)
-    (define-key map "\M-w" 'w3m-delete-other-buffers)
-    (define-key map "\M-l" 'w3m-delete-left-tabs)
-    (define-key map "\M-r" 'w3m-delete-right-tabs)
-    (define-key map "\C-s" 'w3m-select-buffer)
-    (define-key map "\C-a" 'w3m-switch-buffer)
-    (define-key map "\C-b" 'report-emacs-w3m-bug)
-    (define-key map "\C-c" 'w3m-submit-form)
-    (define-key map "\C-k" 'w3m-process-stop)
-    (define-key map "\C-m" 'w3m-move-unseen-buffer)
+    (define-key map "\C-w"  'w3m-delete-buffer)
+    (define-key map "\M-w"  'w3m-delete-other-buffers)
+    (define-key map "\M-l"  'w3m-delete-left-tabs)
+    (define-key map "\M-r"  'w3m-delete-right-tabs)
+    (define-key map "\C-s"  'w3m-select-buffer)
+    (define-key map "\C-a"  'w3m-switch-buffer)
+    (define-key map "\C-b"  'report-emacs-w3m-bug)
+    (define-key map "\C-c"  'w3m-submit-form)
+    (define-key map "\C-k"  'w3m-process-stop)
+    (define-key map "\C-m"  'w3m-move-unseen-buffer)
     (setq w3m-ctl-c-map map)))
 
 (defvar w3m-redisplay-map nil
