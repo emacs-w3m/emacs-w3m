@@ -60,7 +60,15 @@
 (require 'w3m-util)
 (require 'w3m-proc)
 
+;; Why this is here is because w3m-ems.el uses.
+(defcustom w3m-select-buffer-hook nil
+  "Hook run when a different emacs-w3m buffer is selected."
+  :group 'w3m
+  :type 'hook)
+
 (eval-and-compile (require 'w3m-ems))
+
+(add-hook 'w3m-select-buffer-hook #'w3m-set-buffer-seen)
 
 (require 'bookmark-w3m)
 (require 'w3m-fb)
@@ -1024,11 +1032,6 @@ way of `post-command-hook'."
   :group 'w3m
   :type 'hook
   :initialize 'w3m-custom-hook-initialize)
-
-(defcustom w3m-select-buffer-hook '(w3m-set-buffer-seen)
-  "Hook run when a different emacs-w3m buffer is selected."
-  :group 'w3m
-  :type 'hook)
 
 (defcustom w3m-async-exec t
   "Non-nil means execute the w3m command asynchronously in Emacs process."
@@ -8446,13 +8449,11 @@ or a list which consists of the following elements:
 (defvar w3m-buffer-unseen nil)
 (make-variable-buffer-local 'w3m-buffer-unseen)
 
-(defun w3m-set-buffer-unseen (&optional url)
-  (setq w3m-buffer-unseen t)
-  (add-hook 'pre-command-hook 'w3m-set-buffer-seen nil t))
+(defun w3m-set-buffer-unseen ()
+  (setq w3m-buffer-unseen t))
 
 (defun w3m-set-buffer-seen ()
-  (setq w3m-buffer-unseen nil)
-  (remove-hook 'pre-command-hook 'w3m-set-buffer-seen t))
+  (setq w3m-buffer-unseen nil))
 
 (defun w3m-move-unseen-buffer ()
   "Move to the next unseen buffer."
@@ -9329,7 +9330,7 @@ helpful message is presented and the operation is aborted."
     ;; restore position must call after hooks for localcgi.
     (when (or reload redisplay)
       (w3m-history-restore-position))
-    (w3m-set-buffer-unseen)
+    (unless redisplay (w3m-set-buffer-unseen))
     (w3m-refresh-at-time)))
 
 (defun w3m--goto-url--valid-url (url reload charset post-data referer handler
@@ -11072,7 +11073,8 @@ without prompting for confirmation."
 	  pop-up-frames)
       (pop-to-buffer buf)
       (and (get-buffer-window w3m-select-buffer-name)
-	   (delete-windows-on w3m-select-buffer-name)))))
+	   (delete-windows-on w3m-select-buffer-name))))
+  (w3m-set-buffer-seen))
 
 (defun w3m-select-buffer-show-this-line-and-switch ()
   "Show the buffer on the menu and switch to the buffer."
