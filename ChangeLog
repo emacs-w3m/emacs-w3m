@@ -5,6 +5,12 @@
 
 2019-07-04  Boruch Baum  <boruch_baum@gmx.com>
 
+	New feature: toggle unread status of buffer (PR#50)
+
+	* w3m.el (w3m-select-buffer-toggle-unseen): New feature.
+	(w3m-select-buffer-mode-map): Bind new feature to 'u'.
+	(w3m-select-buffer-mode): Document new feature.
+
 	w3m-session: bugfixes and new feature `copy a session' (PR#49)
 
 	* w3m-session.el (w3m-session-select-delete): Advance to next session

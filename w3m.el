@@ -10868,6 +10868,7 @@ The following command keys are available:
     (define-key map "p" 'w3m-select-buffer-previous-line)
     (define-key map "\C-c\C-n" 'w3m-select-buffer-move-next)
     (define-key map "\C-c\C-p" 'w3m-select-buffer-move-previous)
+    (define-key map "u" 'w3m-select-buffer-toggle-unseen)
     (define-key map "q" 'w3m-select-buffer-quit)
     (define-key map "h" 'w3m-select-buffer-show-this-line-and-switch)
     (define-key map "w" 'w3m-select-buffer-show-this-line-and-switch)
@@ -10889,28 +10890,30 @@ The following command keys are available:
 	Advance to previous buffer on the list.
 
 \\[w3m-select-buffer-show-this-line-and-switch]\
-   Switch to the selected buffer, leaving the list displayed.
+	Switch to the selected buffer, leaving the list displayed.
 
 \\[w3m-select-buffer-show-this-line]\
 	Scroll the selected buffer forward one page.
 \\[w3m-select-buffer-show-this-line-and-down]\
-   Scroll the selected buffer backward one page.
+	Scroll the selected buffer backward one page.
 
 \\[w3m-select-buffer-copy-buffer]\
 	Create a copy of the selected buffer.
 
 \\[w3m-select-buffer-move-next]\
-  Move the selected buffer down the list.
+	Move the selected buffer down the list.
 \\[w3m-select-buffer-move-previous]\
-  Move the selected buffer up the list.
+	Move the selected buffer up the list.
 
 \\[w3m-select-buffer-delete-buffer]\
-     Delete the selected buffer.
+	Delete the selected buffer.
 \\[w3m-select-buffer-delete-other-buffers]\
 	Delete all buffers on the list, except for the selected one.
 
 \\[w3m-select-buffer-toggle-style]\
 	Toggle the list style between horizontal and vertical.
+\\[w3m-select-buffer-toggle-unseen]\
+	Toggle the read/unread status of the selected buffer.
 
 \\[w3m-select-buffer-recheck]\
 	Refresh the list.
@@ -10918,8 +10921,7 @@ The following command keys are available:
 \\[w3m-select-buffer-show-this-line-and-quit]\
 	Quit the buffers selection list.
 \\[w3m-select-buffer-quit]\
-	Quit the buffers selection list.
-"
+	Quit the buffers selection list."
   (setq major-mode 'w3m-select-buffer-mode
 	mode-name "w3m buffers"
 	truncate-lines t
@@ -11095,6 +11097,20 @@ without prompting for confirmation."
   "Toggle the style of the selection between horizontal and vertical."
   (interactive)
   (w3m-select-buffer t))
+
+(defun w3m-select-buffer-toggle-unseen ()
+  "Toggle the read/unread status of a buffer."
+  (interactive)
+  (if (not (eq major-mode 'w3m-select-buffer-mode))
+      (w3m-message "\
+This command is only available from the buffer selection pop-up window.")
+    (let ((pos (point)))
+      (with-current-buffer (w3m-select-buffer-current-buffer)
+	(if (w3m-unseen-buffer-p (current-buffer))
+	    (w3m-set-buffer-seen)
+	  (w3m-set-buffer-unseen)))
+      (w3m-select-buffer-generate-contents (current-buffer))
+      (goto-char pos))))
 
 (defun w3m-select-buffer-window-size ()
   (if w3m-select-buffer-horizontal-window
