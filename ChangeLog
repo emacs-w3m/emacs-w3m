@@ -1,3 +1,15 @@
+2019-07-04  Boruch Baum  <boruch_baum@gmx.com>
+
+	Add a new command `w3m-search-name-anchor' bound to `C-c j' key (PR#46)
+
+	* w3m.el (w3m--filter-page-anchors): New feature to prune junk anchors
+	from anchor searches.
+	(w3m-anchor-list-filter-alist): Junk anchor defcustom.
+	(w3m--get-page-anchors): New funcion.
+	(w3m-search-name-anchor): Prompt user interactively with list of
+	available anchors, excluding those from w3m half-dump. Provide this
+	function a keybinding `C-c j'.
+
 2019-07-03  Boruch Baum  <boruch_baum@gmx.com>
 
 	Remove trackers embedded in URLs (PR#47)
@@ -11,13 +23,6 @@
 	modification performed by w3m-w3m-dump-extra.
 	(w3m--goto-url--valid-url): Use new feature w3m--url-strip-queries;
 	ensure query trackers are stripped at first opportunity.
-
-	Add a new command `w3m-search-name-anchor' bound to `C-c j' key (PR#46)
-
-	* w3m.el (w3m--get-page-anchors): New funcion.
-	(w3m-search-name-anchor): Prompt user interactively with list of
-	available anchors, excluding those from w3m half-dump. Provide this
-	function a keybinding `C-c j'.
 
 2019-07-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
