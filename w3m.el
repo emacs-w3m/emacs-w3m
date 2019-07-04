@@ -10744,14 +10744,19 @@ splitting windows vertically."
   "n: next buffer, p: previous buffer, q: quit."
   "Help message used when the emacs-w3m buffers selection window is open.")
 
-;; Why this function is here abruptly is because of `w-s-b-horizontal-window'.
+;; Why this function is here abruptly is because of
+;; `w3m-select-buffer-horizontal-window' and `w3m-session-select-mode'.
 (defun w3m-display-width ()
   "Return the maximum width which should display lines within the value."
   (if (< 0 w3m-fill-column)
       w3m-fill-column
-    (+ (if (and w3m-select-buffer-horizontal-window
-		(get-buffer-window w3m-select-buffer-name))
-	   ;; Show pages as if there is no buffers selection window.
+    (+ (if (or (and w3m-select-buffer-horizontal-window
+		    (get-buffer-window w3m-select-buffer-name))
+	       ;; FIXME: that the session-select window is selected
+	       ;; at this time would probably be due to a bug.
+	       (with-current-buffer (window-buffer)
+		 (eq major-mode 'w3m-session-select-mode)))
+	   ;; Show a page as if there is no selection window.
 	   (frame-width)
 	 (window-width))
        (or w3m-fill-column -1))))

@@ -1,3 +1,8 @@
+2019-07-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-display-width): Add a workaround with a FIXME comment
+	so to work with w3m-session-select-select.
+
 2019-07-04  Boruch Baum  <boruch_baum@gmx.com>
 
 	w3m-session: bugfixes and new feature `copy a session' (PR#49)
