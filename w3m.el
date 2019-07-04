@@ -10962,6 +10962,8 @@ The following command keys are available:
 		     w3m-select-buffer-horizontal-window)))
      (t (setq w3m-select-buffer-window (get-largest-window))))
     (set-window-buffer w3m-select-buffer-window buffer)
+    (with-current-buffer buffer (w3m-set-buffer-seen))
+    (w3m-select-buffer-generate-contents buffer)
     (when (and interactive-p (eq obuffer buffer))
       (save-selected-window
 	(pop-to-buffer buffer)
