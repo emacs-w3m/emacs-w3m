@@ -1,7 +1,9 @@
 2019-07-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-display-width): Add a workaround with a FIXME comment
-	so to work with w3m-session-select-select.
+	* w3m.el (w3m-select-buffer-hook): Default to w3m-set-buffer-seen.
+	(w3m-select-buffer-show-this-line): Run w3m-set-buffer-seen.
+	(w3m-display-width): Add a workaround with a FIXME comment so to work
+	with w3m-session-select-select.
 
 2019-07-04  Boruch Baum  <boruch_baum@gmx.com>
 

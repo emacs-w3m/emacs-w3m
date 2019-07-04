@@ -1025,7 +1025,7 @@ way of `post-command-hook'."
   :type 'hook
   :initialize 'w3m-custom-hook-initialize)
 
-(defcustom w3m-select-buffer-hook nil
+(defcustom w3m-select-buffer-hook '(w3m-set-buffer-seen)
   "Hook run when a different emacs-w3m buffer is selected."
   :group 'w3m
   :type 'hook)
