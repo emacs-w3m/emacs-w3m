@@ -1,5 +1,18 @@
 2019-07-04  Boruch Baum  <boruch_baum@gmx.com>
 
+	w3m-session: bugfixes and new feature `copy a session' (PR#49)
+
+	* w3m-session.el (w3m-session-select-delete): Advance to next session
+	group element after delete, not previous.  Handle case of final entry
+	of session group being deleted.
+	(w3m-session-delete): Deleting final element of a session removes the
+	session entry itself, and returns to the parent page (ie. the list of
+	sessions, not the list of session elements).
+	(w3m-session-save): Remove catch/throw idiom
+	(w3m-session-select-copy): New feaure.
+	(w3m-session-select-mode-map): Bind new feature to `c' and `C'.
+	(w3m-session-select-quit): Properly position point upon completion.
+
 	Add a new command `w3m-search-name-anchor' bound to `C-c j' key (PR#46)
 
 	* w3m.el (w3m--filter-page-anchors): New feature to prune junk anchors
