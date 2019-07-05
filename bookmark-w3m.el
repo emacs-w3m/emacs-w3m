@@ -1,6 +1,6 @@
-;;; bookmark-w3m.el --- bridging between emacs's bookmark.el and emacs-w3m -*- coding: utf-8; -*-
+;;; bookmark-w3m.el --- bridging between emacs's bookmark.el and emacs-w3m
 
-;; Copyright (C) 2010 Masatake YAMATO
+;; Copyright (C) 2010, 2019 Masatake YAMATO
 ;;
 ;; Author: Masatake YAMATO <yamato@redhat.com>
 ;;
@@ -61,9 +61,6 @@
   "Make a emacs bookmark entry for a w3m buffer."
   `(,w3m-current-title
     ,@(bookmark-make-record-default 'no-file)
-    ;; if bookmark-bmenu-toggle-filenames is t and a bookmark record doesn't
-    ;; have filename field, , Emacs23.2 raises an error.
-    ;; Here is the workaround suggested by ARISAWA Akihiro.
     (filename . ,w3m-current-url)
     (url . ,w3m-current-url)
     (handler . bookmark-w3m-bookmark-jump)))

@@ -1,6 +1,6 @@
 ;;; sb-kde.el --- shimbun backend for www.KDE.gr.jp
 
-;; Copyright (C) 2002, 2003 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+;; Copyright (C) 2002, 2003, 2019 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Authors: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 ;; Keywords: news
@@ -26,9 +26,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-decf
 (require 'shimbun)
 (require 'sb-mhonarc)
 
@@ -63,12 +61,12 @@ V{p:G4A}<vq\"[#f;XPl\\Ea|B5yrA4-}Q};cWbLr9hfDhCzxs]z-bRkQ<Rc`m!")))
 	(progn
 	  (goto-char (point-min))
 	  (while (and (or (not pages)
-			  (>= (decf pages) 0))
+			  (>= (cl-decf pages) 0))
 		      (re-search-forward regexp nil t))
 	    (push (match-string 1) months)))
       (goto-char (point-max))
       (while (and (or (not pages)
-		      (>= (decf pages) 0))
+		      (>= (cl-decf pages) 0))
 		  (re-search-backward regexp nil t))
 	(push (match-string 1) months)))
     (setq months (nreverse months))

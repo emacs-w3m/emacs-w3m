@@ -1,4 +1,4 @@
-;;; sb-wired-jp.el --- shimbun backend for Hotwired Japan -*- coding: utf-8; -*-
+;;; sb-wired-jp.el --- shimbun backend for Hotwired Japan
 
 ;; Copyright (C) 2005, 2006 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

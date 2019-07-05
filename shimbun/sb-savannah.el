@@ -1,6 +1,6 @@
 ;;; sb-savannah.el --- shimbun backend for gnu list archives on savannah
 
-;; Copyright (C) 2002, 2003, 2005 Yoichi NAKAYAMA <yoichi@FreeBSD.org>
+;; Copyright (C) 2002, 2003, 2005, 2019 Yoichi NAKAYAMA <yoichi@FreeBSD.org>
 
 ;; Author: Yoichi NAKAYAMA <yoichi@FreeBSD.org>
 ;;         Katsumi Yamaoka <yamaoka@jpl.org>
@@ -31,9 +31,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-decf
 (require 'shimbun)
 (require 'sb-mhonarc)
 
@@ -87,7 +85,7 @@ ej<20'LI/le]z)n!%Bb(KI(@c&\"<`Ah~3&6Yn%+>-K>`@13\n T?OXgWz^><'44jgi;\
     (goto-char (point-min))
     (catch 'stop
       (while (and (or (not pages)
-		      (>= (decf pages) 0))
+		      (>= (cl-decf pages) 0))
 		  (re-search-forward
 		   "<a href=\"\\(20[0-9][0-9]-[01][0-9]/\\)index\\.html\">"
 		   nil t))

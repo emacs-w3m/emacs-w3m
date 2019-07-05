@@ -1,6 +1,6 @@
-;;; sb-asahi.el --- shimbun backend for asahi.com -*- coding: utf-8; -*-
+;;; sb-asahi.el --- shimbun backend for asahi.com
 
-;; Copyright (C) 2001-2011, 2013-2018 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2011, 2013-2019 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -32,7 +32,10 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
+;; Delete this section when emacs-w3m drops the Emacs 25 support.
+(eval-when-compile
+  (unless (>= emacs-major-version 26)
+    (require 'cl))) ;; c[ad][ad][ad]+r
 
 (require 'shimbun)
 (require 'sb-multi)
@@ -58,7 +61,7 @@ Every `.' in NAME will be replaced with `/'."
 	      (no-nl "[^\n<>]+"))
 	  (concat "<a" s1 "href=\"/"
 		  ;; 1. url
-		  "\\(" (shimbun-subst-char-in-string ?. ?/ name) "/"
+		  "\\(" (subst-char-in-string ?. ?/ name) "/"
 		  ;; 2. serial number
 		  "\\([a-z]*"
 		  ;; 3. year
@@ -308,7 +311,7 @@ Every `.' in NAME will be replaced with `/'."
 regexps and numbers.  Where index pages and regexps may contain the
 \"%s\" token which is replaced with group names, numbers point to the
 search result in order of [0]a url, [1,2]a serial number, [3]a subject,
-\[4]a year, [5]a month, [6]a day, [7]an hour:minute, [8,9,10]an extra
+[4]a year, [5]a month, [6]a day, [7]an hour:minute, [8,9,10]an extra
 keyword, [11]hour, [12]minute, and [13]an alternative subject.
 If an index page is nil, a group name in which \".\" is substituted with
 \"/\" is used instead.")
@@ -970,7 +973,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAEIAAAAQBAMAAABQPLQnAAAAElBMVEX8rKjd3Nj+7utdXFr
 (luna-define-method shimbun-index-url ((shimbun shimbun-asahi))
   (let* ((group (shimbun-current-group-internal shimbun))
 	 (index (or (nth 2 (assoc group shimbun-asahi-group-table))
-		    (concat (shimbun-subst-char-in-string ?. ?/ group) "/"))))
+		    (concat (subst-char-in-string ?. ?/ group) "/"))))
     (cond ((not index)
 	   "about:blank")
 	  ((string-match "\\`http:" index)
@@ -1040,7 +1043,7 @@ Contents will be saved in the shimbun header as the extra element."
 	  book-p (string-match "\\`book\\." group))
     (when (setq regexp (nth 3 regexp))
       (setq regexp (format regexp
-			   (regexp-quote (shimbun-subst-char-in-string
+			   (regexp-quote (subst-char-in-string
 					  ?. ?/ (if book-p
 						    (substring group 5)
 						  group))))))
@@ -1116,7 +1119,7 @@ Contents will be saved in the shimbun header as the extra element."
 				(format "%d%02d%02d.%s"
 					year month day (match-string num)))
 			       (t
-				(shimbun-subst-char-in-string
+				(subst-char-in-string
 				 ?/ ?.
 				 (downcase (match-string (nth 2 numbers))))))
 		  extra (or (and (setq num (nth 8 numbers))
@@ -1165,9 +1168,9 @@ Contents will be saved in the shimbun header as the extra element."
 			    (concat jname (format " (%d/%d)" month day)))
 			   (travel-p
 			    (save-match-data
-			      (shimbun-replace-in-string
-			       (match-string (nth 3 numbers))
-			       "\\(?:[\t\n 　]*&#[0-9]+;\\)*[\t\n 　]*" "")))
+			      (replace-regexp-in-string
+			       "\\(?:[\t\n 　]*&#[0-9]+;\\)*[\t\n 　]*" ""
+			       (match-string (nth 3 numbers)))))
 			   (t
 			    (match-string (nth 3 numbers))))
 		     ;; from
@@ -1181,8 +1184,8 @@ Contents will be saved in the shimbun header as the extra element."
 			     (setq num (if (match-beginning 1)
 					   "書評"
 					 (substring num (match-end 0)))))
-			   (shimbun-replace-in-string
-			    from "(RSS" (concat "(" num)))
+			   (replace-regexp-in-string
+			    "(RSS" (concat "(" num) from))
 		       from)
 		     ;; date
 		     (shimbun-make-date-string
@@ -1261,9 +1264,9 @@ Contents will be saved in the shimbun header as the extra element."
 					    header url)
   (shimbun-asahi-multi-next-url shimbun header url))
 
-(eval-when-compile
-  (unless (fboundp 'zlib-decompress-region)
-    (defalias 'zlib-decompress-region 'ignore)))
+(declare-function zlib-available-p "decompress.c")
+(declare-function zlib-decompress-region "decompress.c"
+		  (start end &optional allow-partial))
 
 (defun shimbun-asahi-article (shimbun header outbuf)
   "Fetch article contents."
@@ -1276,9 +1279,7 @@ Contents will be saved in the shimbun header as the extra element."
 		 (set-buffer-multibyte nil)
 		 (insert contents)
 		 (base64-decode-region (point-min) (point-max))
-		 (if (and (fboundp 'zlib-decompress-region)
-			  (not (eq (symbol-function 'zlib-decompress-region)
-				   'ignore)))
+		 (if (and (fboundp 'zlib-available-p) (zlib-available-p))
 		     (zlib-decompress-region (point-min) (point-max))
 		   (let ((coding-system-for-read 'binary)
 			 (coding-system-for-write 'binary))
@@ -1308,23 +1309,23 @@ article contents."
     (cond
      ((string-equal group "car")
       (shimbun-remove-tags "\
-\[\t\n ]*<![\t\n ]*-+[\t\n ]*[★☆]+[\t\n ]*AD[\t\n ]*[★☆]+[\t\n ]*-+>"
+[\t\n ]*<![\t\n ]*-+[\t\n ]*[★☆]+[\t\n ]*AD[\t\n ]*[★☆]+[\t\n ]*-+>"
 			   "\
 <![\t\n ]*-+[\t\n ]*/[\t\n ]*[★☆]+[\t\n ]*AD[\t\n ]*[★☆]+[\t\n ]*-+>\
-\[\t\n ]*")
+[\t\n ]*")
       (goto-char (point-min))
       (when (and (re-search-forward (shimbun-content-start shimbun) nil t)
 		 (re-search-forward "\
-\[\t\n ]*<!-+[\t\n ]*Creative[\t\n ]+for[\t\n ]+"
+[\t\n ]*<!-+[\t\n ]*Creative[\t\n ]+for[\t\n ]+"
 				    nil t))
 	(goto-char (match-beginning 0))
 	(insert "\n<!-- End of Kiji -->\n")))
      ((string-equal group "digital")
       (shimbun-remove-tags "\
-\[\t\n ]*<![\t\n ]*-+[\t\n ]*[★☆]+[\t\n ]*AD[\t\n ]*[★☆]+[\t\n ]*-+>"
+[\t\n ]*<![\t\n ]*-+[\t\n ]*[★☆]+[\t\n ]*AD[\t\n ]*[★☆]+[\t\n ]*-+>"
 			   "\
 <![\t\n ]*-+[\t\n ]*/[\t\n ]*[★☆]+[\t\n ]*AD[\t\n ]*[★☆]+[\t\n ]*-+>\
-\[\t\n ]*")
+[\t\n ]*")
       (cond ((string-match "コラム" from)
 	     (unless (re-search-forward (shimbun-content-end shimbun) nil t)
 	       (when (re-search-forward "\\(?:[\t\b ]*<[^>]+>\\)*[\t\n ]*\
@@ -1360,7 +1361,7 @@ article contents."
      ((string-equal group "rss"))
      ((string-match "\\`book\\(?:\\.\\|\\'\\)" group)
       (while (re-search-forward "\\(<a[\t\n ]+[^>]+>\\)\
-\[\t\n ]*<img[\t\n ]+[^>]+>[\t\n ]*</a>"
+[\t\n ]*<img[\t\n ]+[^>]+>[\t\n ]*</a>"
 				nil t)
 	(when (save-match-data
 		(search-backward "alt=\"No image\"" (match-beginning 0) t))
@@ -1513,7 +1514,7 @@ article contents."
     ;; Remove zoom buttons.
     (goto-char (point-min))
     (while (re-search-forward "[\t\n ]*<img\\(?:[\t\n ]+[^\t\n >]+\\)*\
-\[\t\n ]+class=\"ThmbZoomBtn\"[^>]*>[\t\n ]*"
+[\t\n ]+class=\"ThmbZoomBtn\"[^>]*>[\t\n ]*"
 			      nil t)
       (replace-match "\n"))
     ;; Add line breaks after images that captions or images follow.

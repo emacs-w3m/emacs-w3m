@@ -1,6 +1,6 @@
 ;;; sb-debian-jp.el --- shimbun backend for debian.or.jp
 
-;; Copyright (C) 2001, 2002, 2003 OHASHI Akira <bg66@koka-in.org>
+;; Copyright (C) 2001-2003, 2019 OHASHI Akira <bg66@koka-in.org>
 
 ;; Author: OHASHI Akira <bg66@koka-in.org>
 ;; Keywords: news
@@ -26,9 +26,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-incf
 (require 'shimbun)
 (require 'sb-mhonarc)
 
@@ -60,7 +58,7 @@
 	(count 0)
 	headers months)
     (goto-char (point-min))
-    (while (and (if pages (<= (incf count) pages) t)
+    (while (and (if pages (<= (cl-incf count) pages) t)
 		(re-search-forward "<A HREF=\"\\([0-9]+\\)/\">" nil t)
 		(push (match-string 1) months)))
     (setq months (nreverse months))

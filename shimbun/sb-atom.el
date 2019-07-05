@@ -1,6 +1,6 @@
 ;;; sb-atom.el --- shimbun backend for ATOM (Rich Site Summary).
 
-;; Copyright (C) 2006, 2008-2011 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2006, 2008-2011,2019 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: news
@@ -26,10 +26,6 @@
 ;;; Commentary:
 
 ;;; Code:
-
-(eval-when-compile
-  (require 'cl)
-  (require 'static))
 
 (require 'shimbun)
 (require 'sb-rss)
@@ -71,7 +67,7 @@ have date information, the result is sorted by ascending date."
 	     (ftime
 	      (when (and (stringp date)
 			 (> (length date) 1))
-		(w3m-float-time (date-to-time date)))))
+		(float-time (date-to-time date)))))
 	(push (list tmp ftime) headers)))
     (when headers
       (if (or need-all-entries

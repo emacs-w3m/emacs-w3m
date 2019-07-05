@@ -1,6 +1,6 @@
-;;; w3m-tabmenu.el --- Functions for TAB menu browsing -*- coding: utf-8; -*-
+;;; w3m-tabmenu.el --- Functions for TAB menu browsing
 
-;; Copyright (C) 2001-2007, 2009, 2011-2012
+;; Copyright (C) 2001-2007, 2009, 2011-2012, 2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Hideyuki SHIRAI    <shirai@meadowy.org>,
@@ -33,26 +33,18 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-incf
 (require 'w3m-util)
 (require 'w3m)
 (require 'easymenu)
 
 (defun w3m-setup-tab-menu ()
   "Setup w3m tab menubar."
-  (when w3m-use-tab-menubar
-    (w3m-static-if (featurep 'xemacs)
-	(unless (car (find-menu-item current-menubar '("Tab")))
-	  (easy-menu-define w3m-tab-menu w3m-mode-map
-	    "" '("Tab" ["dummy" w3m-switch-buffer t]))
-	  (easy-menu-add w3m-tab-menu)
-	  (add-hook 'activate-menubar-hook 'w3m-tab-menubar-update))
-      (unless (lookup-key w3m-mode-map [menu-bar Tab])
-	(easy-menu-define w3m-tab-menu w3m-mode-map "" '("Tab"))
-	(easy-menu-add w3m-tab-menu)
-	(add-hook 'menu-bar-update-hook 'w3m-tab-menubar-update)))))
+  (when (and w3m-use-tab-menubar
+	     (not (lookup-key w3m-mode-map [menu-bar Tab])))
+    (easy-menu-define w3m-tab-menu w3m-mode-map "" '("Tab"))
+    (easy-menu-add w3m-tab-menu)
+    (add-hook 'menu-bar-update-hook 'w3m-tab-menubar-update)))
 
 (defun w3m-switch-buffer ()
   "Switch `w3m-mode' buffer in the current window."
@@ -94,18 +86,10 @@
 
 (defun w3m-tab-menubar-update ()
   "Update w3m tab menubar."
-  (when (and (eq major-mode 'w3m-mode)
-	     (w3m-static-if (featurep 'xemacs)
-		 (frame-property (selected-frame) 'menubar-visible-p)
-	       menu-bar-mode))
+  (when (and (eq major-mode 'w3m-mode) menu-bar-mode)
     (easy-menu-define w3m-tab-menu w3m-mode-map
       "The menu kepmap for the emacs-w3m tab."
-      (cons "Tab" (w3m-tab-menubar-make-items)))
-    (w3m-static-when (featurep 'xemacs)
-      (let ((items (car (find-menu-item current-menubar '("Tab")))))
-	(when items
-	  (setcdr items (cdr w3m-tab-menu))
-	  (set-buffer-menubar current-menubar))))))
+      (cons "Tab" (w3m-tab-menubar-make-items)))))
 
 (defvar w3m-tab-menubar-items-sub-coeff 30) ;; 30?
 (defvar w3m-tab-menubar-items-width 50) ;; 50?
@@ -127,11 +111,11 @@
 	 (setq unseen (w3m-unseen-buffer-p buffer))
 	 (when (>= (string-width title) width)
 	   (setq title
-		 (concat (w3m-truncate-string title
-					      (- width 3))
+		 (concat (truncate-string-to-width title
+						   (- width 3))
 			 "...")))
 	 (vector (format "%d:%s%s"
-			 (incf i)
+			 (cl-incf i)
 			 (cond ((eq buffer current) "* ")
 			       (unseen "u ")
 			       (t "  "))

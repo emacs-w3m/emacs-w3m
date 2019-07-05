@@ -1,6 +1,6 @@
 ;;; sb-emacswiki.el --- emacswiki shimbun backend
 
-;; Copyright (C) 2004, 2005 David Hansen
+;; Copyright (C) 2004, 2005, 2019 David Hansen
 
 ;; Author: David Hansen <david.hansen@physik.fu-berlin.de>
 ;; Keywords: news
@@ -49,10 +49,6 @@ e2ibWOZWTFz8j~/m")))
 
 (luna-define-method shimbun-get-headers :around ((shimbun shimbun-emacswiki)
 						 &optional range)
-  (static-when (featurep 'xemacs)
-    ;; It's one of many bugs in XEmacs that the coding systems *-dos
-    ;; provided by Mule-UCS don't convert CRLF to LF when decoding.
-    (shimbun-strip-cr))
   (let ((xml (condition-case err
 		 (xml-parse-region (point-min) (point-max))
 	       (error

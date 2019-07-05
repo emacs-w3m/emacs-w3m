@@ -1,6 +1,6 @@
-;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp -*- coding: utf-8; -*-
+;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp
 
-;; Copyright (C) 2001-2007, 2009-2011, 2017
+;; Copyright (C) 2001-2007, 2009-2011, 2017, 2019
 ;; Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>
 
 ;; Author: Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>,
@@ -561,13 +561,13 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
   (let (next time url subject serial day month year category id)
     (goto-char (point-min))
     (while (re-search-forward "<span\\(?:[\t\n ]+[^>]+\\)?>\
-\[\t\n ]*(\\([012][0-9]:[0-5][0-9]\\))[\t\n ]*</span>"
+[\t\n ]*(\\([012][0-9]:[0-5][0-9]\\))[\t\n ]*</span>"
 			      nil t)
       (setq next (match-end 0)
 	    time (match-string 1))
       (when (and (re-search-backward "<a[\t\n ]+href=\"\\([^\"]+\\)\"[^>]*>\
-\[\t\n ]*\\(?:<![^>]+>[\t\n ]*\\)*\\([^\n<]+\\)\\(?:[\t\n ]*<![^>]+>\\)*\
-\[\t\n ]*</a>"
+[\t\n ]*\\(?:<![^>]+>[\t\n ]*\\)*\\([^\n<]+\\)\\(?:[\t\n ]*<![^>]+>\\)*\
+[\t\n ]*</a>"
 				     nil t)
 		 (progn
 		   (setq url (match-string 1)
@@ -600,7 +600,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 					     (match-string 3 url))))))
 		 (progn
 		   (setq id (concat "<" year month day "."
-				    (shimbun-subst-char-in-string ?  ?_ serial)
+				    (subst-char-in-string ?  ?_ serial)
 				    "%" category "." group "."
 				    shimbun-nikkei-top-level-domain ">"))
 		   (not (or (member id shimbun-nikkei-tmp-ids)
@@ -689,8 +689,8 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
   "Function used to fetch headers for the kansai group."
   (let ((date (if (re-search-forward "\
 <div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"topicpath[\t\n ]+updatetime\"\
-\[^>]*>[\t\n ]*\\(20[0-9][0-9]\\)/\\([01]?[0-9]\\)/\\([0-3]?[0-9]\\)\
-\[\t\n 　]+更新[\t\n ]*</div>"
+[^>]*>[\t\n ]*\\(20[0-9][0-9]\\)/\\([01]?[0-9]\\)/\\([0-3]?[0-9]\\)\
+[\t\n 　]+更新[\t\n ]*</div>"
 				     nil t)
 		  (prog1
 		      (shimbun-make-date-string
@@ -713,7 +713,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 	     (match-string 3)
 	     shimbun-nikkei-from-address
 	     date
-	     (concat "<" (shimbun-subst-char-in-string
+	     (concat "<" (subst-char-in-string
 			  ?/ ?. (downcase (match-string 2)))
 		     "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
@@ -755,7 +755,7 @@ If HEADERS is non-nil, it is appended to newly fetched headers."
 			    s0 "</a>")))
 		nil t)
 	  (setq sub-end (point)
-		id (concat "<" (shimbun-subst-char-in-string
+		id (concat "<" (subst-char-in-string
 				?  ?_ (downcase (match-string 2)))
 			   "%" group "."
 			   shimbun-nikkei-top-level-domain ">"))
@@ -822,7 +822,7 @@ http://it.nikkei.co.jp/" (or (match-string 1) (match-string 2)))
 	      (string-to-number (match-string 5))
 	      (string-to-number (match-string 4))
 	      (string-to-number (match-string 3)))
-	     (concat "<" (shimbun-subst-char-in-string
+	     (concat "<" (subst-char-in-string
 			  ?  ?_ (downcase (match-string 2)))
 		     "%" group "." shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
@@ -881,8 +881,8 @@ href=\"http://markets\\.nikkei\\.co\\.jp/[a-z]+/[a-z0-9]+\\.aspx"
 		      (string-to-number (match-string 9))))
 	     (concat "<" (downcase (match-string 2)) "."
 		     (downcase (save-match-data
-				 (shimbun-replace-in-string (match-string 3)
-							    "[\t\n ]+" ".")))
+				 (replace-regexp-in-string "[\t\n ]+" "."
+							   (match-string 3))))
 		     "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
@@ -929,8 +929,8 @@ http://markets\\.nikkei\\.co\\.jp/kaigai/ft\\.aspx"
 	      nil nil 1)
 	     (concat "<ff."
 		     (downcase (save-match-data
-				 (shimbun-replace-in-string (match-string 2)
-							    "[\t\n ]+" ".")))
+				 (replace-regexp-in-string "[\t\n ]+" "."
+							   (match-string 2))))
 		     "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
@@ -1031,8 +1031,8 @@ href=\"http://markets\\.nikkei\\.co\\.jp/[a-z]+/[a-z0-9]+\\.aspx"
 		      (string-to-number (match-string 9))))
 	     (concat "<" (downcase (match-string 2)) "."
 		     (downcase (save-match-data
-				 (shimbun-replace-in-string (match-string 3)
-							    "[\t\n ]+" ".")))
+				 (replace-regexp-in-string "[\t\n ]+" "."
+							   (match-string 3))))
 		     "%" group "."
 		     shimbun-nikkei-top-level-domain ">")
 	     "" 0 0
@@ -1080,12 +1080,12 @@ http://markets.nikkei.co.jp/kokunai/bunkatsu3.aspx" (match-string 1)) folder))
 	      month (string-to-number (match-string 2))
 	      day (string-to-number (match-string 3))
 	      time (match-string 4))
-	(setq from (shimbun-replace-in-string
-		    shimbun-nikkei-from-address
+	(setq from (replace-regexp-in-string
 		    ")" (concat "/"
-				(shimbun-replace-in-string
-				 subtitle "\\(&nbsp;\\)+" "")
-				")")))
+				(replace-regexp-in-string
+				 "\\(&nbsp;\\)+" "" subtitle)
+				")")
+		    shimbun-nikkei-from-address))
 	(while (re-search-forward
 		(eval-when-compile
 		  (let ((s0 "[\t\n ]*")
@@ -1424,7 +1424,7 @@ http://markets.nikkei.co.jp/kokunai/bunkatsu3.aspx" (match-string 1)) folder))
 		   (goto-char (point-min))
 		   (re-search-forward "<a[\t\n ]+href=\"\
 \\(isclassList\\.cfm\\?page=[0-9]+&lindID=[0-9]+&sindID=[0-9]+\\)\
-\[\t\n ]*\"[\t\n ]*>[\t\n ]*次へ[\t\n ]*&gt;[\t\n ]*</a>"
+[\t\n ]*\"[\t\n ]*>[\t\n ]*次へ[\t\n ]*&gt;[\t\n ]*</a>"
 				      nil t)))
 	    (progn
 	      (shimbun-retrieve-url (prog1
@@ -1472,9 +1472,9 @@ http://markets.nikkei.co.jp/kokunai/bunkatsu3.aspx" (match-string 1)) folder))
 	    nil t)
       (push (shimbun-create-header
 	     0
-	     (shimbun-subst-char-in-string
-	      ?\） ?\)
-	      (shimbun-subst-char-in-string ?\（ ?\( (match-string 4)))
+	     (subst-char-in-string
+	      ?） ?\)
+	      (subst-char-in-string ?（ ?\( (match-string 4)))
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
 	      (string-to-number (match-string 3))
@@ -1500,7 +1500,7 @@ http://markets.nikkei.co.jp/kokunai/bunkatsu3.aspx" (match-string 1)) folder))
 \\|</ul>\
 \\|<a[\t\n ]+[^>]+>[\t\n ]*＜拡大\\(?:画像\\)?＞[\t\n ]*</a>\
 \\|\\(?:<div[\t\n ]+[^>]+>[\t\n ]*\\)?<img[\t\n ]+src=\"[^\"]+/s\\.gif\"\
-\[^>]+>\\(?:[\t\n ]*</div>\\)?\
+[^>]+>\\(?:[\t\n ]*</div>\\)?\
 \\)[\t\n ]*"
 			      nil t)
       (delete-region (match-beginning 0) (match-end 0)))
@@ -1532,7 +1532,7 @@ http://markets.nikkei.co.jp/kokunai/bunkatsu3.aspx" (match-string 1)) folder))
 	 (goto-char (point-min))
 	 (when (re-search-forward "[\t\n ]*\
 \\(?:<\\(?:\\(?:/?div\\|/?p\\)\\(?:[\t\n ]*\\|[\t\n ]+[^>]+\\)\\|![^>]+\\)>\
-\[\t\n ]*\\)+\\'"
+[\t\n ]*\\)+\\'"
 				  nil t)
 	   (replace-match "\n")))
       (erase-buffer)
@@ -1558,7 +1558,7 @@ Please visit <a href=\""
 		     (setq body (point))
 		     (re-search-forward "\
 \\(?:[\t\n 　]*<\\(?:p\\|p[\t\n 　]+[^>]+\\|/p\\|/p[\t\n 　]+[^>]+\\)>\\)*\
-\[\t\n 　]*<!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\""
+[\t\n 　]*<!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\""
 					nil t)))
 	      ;; The following section will be used for the `main' group.
 	      (and (re-search-forward "\
@@ -1631,7 +1631,7 @@ Please visit <a href=\""
 			       (progn
 				 (setq st (match-end 1))
 				 (re-search-forward "\
-\[\t\n ]*<!-+[\t\n ]*/Photo[\t\n _]news[\t\n ]*-+>"
+[\t\n ]*<!-+[\t\n ]*/Photo[\t\n _]news[\t\n ]*-+>"
 						    nil t)
 				 (setq nd (match-beginning 0))))
 			  (and (match-beginning 2)
@@ -1678,7 +1678,7 @@ Please visit <a href=\""
 				      nil t))
 	   (setq start (match-end 0))
 	   (or (re-search-forward "\
-\[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*<p\\(?:[\t\n ]+[^>]+\\)*[\t\n ]align="
+[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*<p\\(?:[\t\n ]+[^>]+\\)*[\t\n ]align="
 				  nil t)
 	       (prog1 nil (goto-char (point-min)))))
 	 (when (or (re-search-forward "\
@@ -1722,7 +1722,7 @@ Please visit <a href=\""
   ;; Remove unwanted images.
   (let (start end)
     (while (re-search-forward "[\t\n ]*<div[\t\n ]+[^>]+>[\t\n ]*<img[\t\n ]+\
-\[^>]+>[\t\n ]*</div>[\t\n ]*"
+[^>]+>[\t\n ]*</div>[\t\n ]*"
 			      nil t)
       (setq start (match-beginning 0)
 	    end (match-end 0))
@@ -1739,7 +1739,7 @@ Please visit <a href=\""
     (insert shimbun-nikkei-content-start)
     (when (re-search-forward "\
 \\(?:[\t\n 　]*<\\(?:p\\|p[\t\n 　]+[^>]+\\|/p\\|/p[\t\n 　]+[^>]+\\)>\\)*\
-\[\t\n 　]*<!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-+>\
+[\t\n 　]*<!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\"[\t\n ]*-+>\
 \\|<a[\t\n ]+name=\"newslist\"></a>\n"
 			     nil t)
       (goto-char (match-beginning 0))
@@ -1814,7 +1814,7 @@ Please visit <a href=\""
 				  nil t)
 	       (setq body (point))
 	       (re-search-forward "\
-\[\t\n ]*<!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\""
+[\t\n ]*<!-+[\t\n ]*FJZONE[\t\n ]+END[\t\n ]+NAME=\"HONBUN\""
 				  nil t))
       (goto-char (match-beginning 0))
       (insert shimbun-nikkei-content-end)
@@ -1841,8 +1841,8 @@ Please visit <a href=\""
   "Function used to prepare contents of an article for the release groups."
   (when (re-search-forward ">[\t\n ]*このページをプリントする[\t\n ]*\
 \\(?:\\(?:<[^>]+>*[\t\n ]*\\)*<h[0-9]+\\(?:[\t\n ]+[^>]+\\)*\
-\[\t\n ]+[^\t\n >]+[\t\n ]*=[\t\n ]*\"[\t\n ]*heading[\t\n ]*\"[^>]*>\
-\[^<]+</h[0-9]+>\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\\)?"
+[\t\n ]+[^\t\n >]+[\t\n ]*=[\t\n ]*\"[\t\n ]*heading[\t\n ]*\"[^>]*>\
+[^<]+</h[0-9]+>\\(?:[\t\n ]*<[^>]+>\\)*[\t\n ]*\\)?"
 			   nil t)
     (insert shimbun-nikkei-content-start)
     (and (re-search-forward "[\t\n ]*\\(?:<[^>]+>[\t\n ]*\\)*\

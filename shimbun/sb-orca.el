@@ -1,6 +1,7 @@
 ;;; sb-orca.el --- shimbun backend for www.orca.med.or.jp ML archive
 
-;; Copyright (C) 2002, 2003, 2005 Masamichi Goudge M.D. <Matanuki@Goudge.org>
+;; Copyright (C) 2002, 2003, 2005, 2019
+;; Masamichi Goudge M.D. <Matanuki@Goudge.org>
 
 ;; Author: Masamichi Goudge M.D. <Matanuki@Goudge.org>
 ;; Keywords: news
@@ -24,9 +25,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-incf
 (require 'shimbun)
 (require 'sb-mhonarc)
 
@@ -55,7 +54,7 @@
     (catch 'stop
       (shimbun-mhonarc-get-headers shimbun url headers)
       (goto-char (point-min))
-      (while (and (if pages (< (incf count) pages) t)
+      (while (and (if pages (< (cl-incf count) pages) t)
 		  (re-search-forward
 		   "<A HREF=\"\\(mail[0-9]+\\.html\\)\">Prev Page</A>"
 		   nil t))

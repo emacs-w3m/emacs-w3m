@@ -1,6 +1,6 @@
 ;;; sb-tdiary.el --- shimbun backend for tDiary
 
-;; Copyright (C) 2003, 2004, 2005, 2007 OHASHI Akira <bg66@koka-in.org>
+;; Copyright (C) 2003-2005, 2007, 2019 OHASHI Akira <bg66@koka-in.org>
 
 ;; Author: OHASHI Akira <bg66@koka-in.org>
 ;; Keywords: news
@@ -26,9 +26,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-decf, cl-incf
 (require 'shimbun)
 
 (luna-define-class shimbun-tdiary (shimbun) ())
@@ -37,7 +35,7 @@
 (defvar shimbun-tdiary-content-end "</div>")
 
 (defcustom shimbun-tdiary-group-alist nil
-  "*An alist of TDIARY shimbun group definition.
+  "An alist of TDIARY shimbun group definition.
 Each element looks like (NAME URL).
 NAME is a shimbun group name.
 URL is the URL for TDIARY access point of the group."
@@ -85,10 +83,10 @@ URL is the URL for TDIARY access point of the group."
 	  (dst (nth 7 (decode-time today)))
 	  (zone (nth 8 (decode-time today))))
      (dotimes (i (1- ,count))
-       (decf month)
+       (cl-decf month)
        (when (<= month 0)
 	 (setq month 12)
-	 (decf year)))
+	 (cl-decf year)))
      (let ((date
 	    (format-time-string
 	     "%Y%m"
@@ -111,7 +109,7 @@ URL is the URL for TDIARY access point of the group."
     (goto-char (point-min))
     (when (re-search-forward "<link rel=\"first\" .* href=\"\./.*\\([0-9][0-9][0-9][0-9][0-9][0-9]\\)" nil t)
       (setq first (match-string 1)))
-    (while (and (incf count)
+    (while (and (cl-incf count)
 		(if pages (<= count pages) t)
 		(setq month (shimbun-tdiary-make-date count first))
 		(push month months)))

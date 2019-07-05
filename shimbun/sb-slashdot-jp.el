@@ -1,6 +1,6 @@
-;;; sb-slashdot-jp.el --- shimbun backend for slashdot.jp -*- coding: utf-8; -*-
+;;; sb-slashdot-jp.el --- shimbun backend for slashdot.jp
 
-;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2010, 2017
+;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2010, 2017, 2019
 ;; NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
@@ -52,7 +52,7 @@
   '((threshold . 1)
     (mode . nested)
     (commentsort . 0))
-  "*Arguments to view comment pages."
+  "Arguments to view comment pages."
   :group 'shimbun
   :type '(list
 	  (cons :tag "Score threshold" :format "%t: %v"
@@ -88,7 +88,7 @@
     ("hardware"    . "http://slashdot.jp/hardware.rss")
     ("diary.oliver" .
      "http://slashdot.jp/~Oliver/journal/rss"))
-  "*Alist of slashdot groups and their RSS feeds."
+  "Alist of slashdot groups and their RSS feeds."
   :group 'shimbun
   :type '(repeat
 	  (cons :format "%v" :indent 4

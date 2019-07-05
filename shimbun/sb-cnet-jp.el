@@ -1,7 +1,6 @@
 ;;; sb-cnet-jp.el --- shimbun backend for CNET Japan -*- coding: utf-8 -*-
 
-;; Copyright (C) 2003, 2004, 2005, 2006, 2007, 2010
-;; NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003-2007, 2010, 2019 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio     <minakaji@namazu.org>,
 ;;         TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -125,10 +124,10 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
   (when (re-search-forward "\\(s.prop2=\"\\([^\"]+\\)\"\\|\
 <dt +class=\"author\">\\([^\n]+\\)</dt>\\)" nil t)
     (let ((from (or (match-string 2) (match-string 3))))
-      (setq from (shimbun-replace-in-string from "文：" ""))
-      (setq from (shimbun-replace-in-string from "翻訳校正：*" ""))
-      (setq from (shimbun-replace-in-string from " *<br */?> *" ", "))
-      (setq from (shimbun-replace-in-string from "、" ", "))
+      (setq from (replace-regexp-in-string "文：" "" from))
+      (setq from (replace-regexp-in-string "翻訳校正：*" "" from))
+      (setq from (replace-regexp-in-string " *<br */?> *" ", " from))
+      (setq from (replace-regexp-in-string "、" ", " from))
       (shimbun-header-set-from header from))))
 
 (provide 'sb-cnet-jp)

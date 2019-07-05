@@ -1,4 +1,4 @@
-;;; sb-nikkangendai.el --- shimbun backend for Nikkan Gendai -*- coding: utf-8; -*-
+;;; sb-nikkangendai.el --- shimbun backend for Nikkan Gendai
 
 ;; Copyright (C) 2015, 2016 Katsumi Yamaoka
 

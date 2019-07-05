@@ -1,4 +1,4 @@
-;;; sb-excite.el --- shimbun backend for excite -*- coding: utf-8; -*-
+;;; sb-excite.el --- shimbun backend for excite
 
 ;; Copyright (C) 2004, 2005, 2006, 2010 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 

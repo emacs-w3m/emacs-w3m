@@ -1,6 +1,6 @@
 ;;; sb-javaconf.el --- shimbun backend class for java-conference archive.
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2007 ABE Yasushi <yasushi@stbbs.net>
+;; Copyright (C) 2001-2004, 2007, 2019 ABE Yasushi <yasushi@stbbs.net>
 
 ;; Author: ABE Yasushi <yasushi@stbbs.net>
 ;; Keywords: news
@@ -26,9 +26,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-incf
 (require 'shimbun)
 (require 'sb-mhonarc)
 
@@ -62,7 +60,7 @@
     (catch 'stop
       (dolist (elem indeces)
 	(delete-region (point-min) (point-max))
-	(unless (if pages (<= (incf count) pages) t)
+	(unless (if pages (<= (cl-incf count) pages) t)
 	  (throw 'stop headers))
 	(shimbun-retrieve-url elem t)
 	(goto-char (point-min))

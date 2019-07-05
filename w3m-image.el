@@ -1,6 +1,6 @@
-;;; w3m-image.el --- Image conversion routines. -*- coding: utf-8; -*-
+;;; w3m-image.el --- Image conversion routines.
 
-;; Copyright (C) 2001-2003, 2005, 2007-2009, 2016-2018
+;; Copyright (C) 2001-2003, 2005, 2007-2009, 2016-2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>
@@ -38,29 +38,22 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
+(eval-when-compile (require 'cl)) ;; lexical-let
 
 (require 'w3m-util)
 (require 'w3m-proc)
 
-(eval-when-compile
-  (if (not (fboundp 'defcustom))
-      (require 'pcustom)))
-
-;; Functions and variables which should be defined in the other module
-;; at run-time.
-(eval-when-compile
-  (defvar w3m-async-exec)
-  (defvar w3m-current-url)
-  (defvar w3m-profile-directory)
-  (defvar w3m-work-buffer-name)
-  (defvar w3m-work-buffer-list))
+;; Variables which should be defined in the other module at run-time.
+(defvar w3m-async-exec)
+(defvar w3m-current-url)
+(defvar w3m-profile-directory)
+(defvar w3m-work-buffer-name)
+(defvar w3m-work-buffer-list)
 
 (defcustom w3m-imagick-convert-program (if noninteractive
 					   nil
 					 (w3m-which-command "convert"))
-  "*Program name of ImageMagick's `convert'."
+  "Program name of ImageMagick's `convert'."
   :group 'w3m
   :set (lambda (symbol value)
 	 (custom-set-default symbol (if (and (not noninteractive)
@@ -74,7 +67,7 @@
 (defcustom w3m-imagick-identify-program (if noninteractive
 					    nil
 					  (w3m-which-command "identify"))
-  "*Program name of ImageMagick's `identify'."
+  "Program name of ImageMagick's `identify'."
   :group 'w3m
   :set (lambda (symbol value)
 	 (custom-set-default symbol (if (and (not noninteractive)
@@ -87,7 +80,7 @@
 
 ;;; Image handling functions.
 (defcustom w3m-resize-images (and w3m-imagick-convert-program t)
-  "*If non-nil, resize images to the specified width and height."
+  "If non-nil, resize images to the specified width and height."
   :group 'w3m
   :set (lambda (symbol value)
 	 (custom-set-default symbol (and w3m-imagick-convert-program value)))
@@ -108,18 +101,16 @@ nil forcibly."
 	 (put 'w3m-imagick-convert-program 'available-p 'yes)
 	 ;; Check whether convert supports png32.
 	 (put 'w3m-imagick-convert-program 'png32
-	      (unless (or (featurep 'xemacs)
-			  (< emacs-major-version 22))
-		(with-temp-buffer
-		  (set-buffer-multibyte nil)
-		  (insert "P1 1 1 1")
-		  (condition-case nil
-		      (call-process-region (point-min) (point-max)
-					   w3m-imagick-convert-program
-					   t t nil "pbm:-" "png32:-")
-		    (error))
-		  (goto-char (point-min))
-		  (looking-at "\211PNG\r\n"))))
+	      (with-temp-buffer
+		(set-buffer-multibyte nil)
+		(insert "P1 1 1 1")
+		(condition-case nil
+		    (call-process-region (point-min) (point-max)
+					 w3m-imagick-convert-program
+					 t t nil "pbm:-" "png32:-")
+		  (error))
+		(goto-char (point-min))
+		(looking-at "\211PNG\r\n")))
 	 t)
 	(t
 	 (when w3m-imagick-convert-program

@@ -1,4 +1,4 @@
-;;; sb-tcup.el --- shimbun backend for www.tcup.com -*- coding: utf-8; -*-
+;;; sb-tcup.el --- shimbun backend for www.tcup.com
 
 ;; Copyright (C) 2001, 2002, 2005 Yuuichi Teranishi <teranisi@gohome.org>
 

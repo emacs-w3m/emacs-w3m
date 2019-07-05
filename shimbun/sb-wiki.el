@@ -1,6 +1,6 @@
 ;;; sb-wiki.el --- shimbun backend for wiki
 
-;; Copyright (C) 2003, 2004, 2006 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003, 2004, 2006, 2019 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
@@ -48,9 +48,9 @@
      nil
      "<div class=\"section\">"
      "<div class=\"sidebar\">"))
-  "*An alist of Wiki shimbun group definition.
+  "An alist of Wiki shimbun group definition.
 Each element is a list such as
-   \(NAME URL ADDRESS X-FACE CONTENT-START CONTENT-END\).
+   (NAME URL ADDRESS X-FACE CONTENT-START CONTENT-END).
 NAME is a shimbun group name.
 URL is the URL for Wiki access point of the group.
 Note that sb-wiki.el supports only RSS version 1.0 (0.91 does not

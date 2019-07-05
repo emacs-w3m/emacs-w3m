@@ -1,6 +1,6 @@
-;;; w3m-save.el --- Save the page to the local files -*- coding: utf-8; -*-
+;;; w3m-save.el --- Save the page to the local files
 
-;; Copyright (C) 2015-2017 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2015-2017, 2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -28,7 +28,11 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
+;; Delete this section when emacs-w3m drops the Emacs 25 support.
+(eval-when-compile
+  (unless (>= emacs-major-version 26)
+    (require 'cl))) ;; c[ad][ad][ad]+r
+
 (require 'w3m)
 
 (defcustom w3m-save-buffer-directory (expand-file-name
@@ -79,7 +83,7 @@ history list, and be viewable using `w3m-next-page'."
 			    (file-name-nondirectory w3m-current-url))
 		       (make-temp-name "w3m-")))
 	     (case-fold-search t))
-	 (setq name (w3m-replace-in-string name "[\C-@- \"*/:<>?\|]+" "_"))
+	 (setq name (replace-regexp-in-string "[\C-@- \"*/:<>?\\|]+" "_" name))
 	 (list
 	  (read-file-name
 	   (if (not w3m-save-buffer-html-only)
@@ -200,8 +204,8 @@ history list, and be viewable using `w3m-next-page'."
 				  (setq ext (concat "."
 						    (symbol-name (cdr ext)))))
 			      (setq ext (concat "." ext)))
-			    (setq bname (w3m-replace-in-string
-					 bname "[\C-@- \"*/:<>?\|]+" "_"))
+			    (setq bname (replace-regexp-in-string
+					 "[\C-@- \"*/:<>?\|]+" "_" bname))
 			    (when (file-exists-p (expand-file-name
 						  (concat bname ext) subdir))
 			      (while (progn

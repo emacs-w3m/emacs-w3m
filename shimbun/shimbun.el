@@ -1,6 +1,7 @@
-;;; shimbun.el --- interfacing with web newspapers -*- coding: utf-8; -*-
+;;; shimbun.el --- interfacing with web newspapers
 
-;; Copyright (C) 2001-2014, 2017, 2018 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2014, 2017, 2018, 2019
+;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
@@ -70,15 +71,9 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
-(eval-when-compile (require 'static))
-
-;; Make edebug work for the static-* macros in Emacs 24.4+.
-(def-edebug-spec static-cond (&rest (&rest def-form)))
-(def-edebug-spec static-defconst (&define name def-body [&optional def-body]))
-(def-edebug-spec static-if (&rest def-form))
-(def-edebug-spec static-unless (&rest def-form))
-(def-edebug-spec static-when (&rest def-form))
+(eval-when-compile (require 'cl)) ;; defsetf
+;; The `defsetf' macro uses this function at compile-time.
+(declare-function gv--defsetter "gv" (name setter do args &optional vars))
 
 (require 'mcharset)
 (require 'eword-encode)
@@ -116,17 +111,17 @@
   "X-Face: @Q+y!*#)K`rvKfSQnCK.Q\\{T0qs@?plqxVu<=@H-y\
 22NlKSprlFiND7{\"{]&Ddg1=P6{Ze|\n xbW2L1p5ofS\\&u~28A\
 dJrT4Cd<Ls?U!G4}0S%FA~KegR;YZWieoc%`|$4M\\\"i*2avWm?"
-  "*Default X-Face field for shimbun."
+  "Default X-Face field for shimbun."
   :group 'shimbun
   :type '(string :format "%{%t%}:\n%v"))
 
 (defcustom shimbun-server-additional-path nil
-  "*List of additional directories to search for shimbun servers."
+  "List of additional directories to search for shimbun servers."
   :group 'shimbun
   :type '(repeat (directory :format "%t: %v\n")))
 
 (defcustom shimbun-checking-new-news-format "Checking new news on #S for #g"
-  "*Format string used to show a progress message while chacking new news.
+  "Format string used to show a progress message while chacking new news.
 See `shimbun-message' for the special format specifiers."
   :group 'shimbun
   :type '(string :format "%{%t%}:\n%v"))
@@ -134,7 +129,7 @@ See `shimbun-message' for the special format specifiers."
 (defcustom shimbun-verbose t
   "If non-nil, `shimbun-message' will display echo messages.
 If it is nil, messages will be neither displayed nor logged into the
-\"*Messages*\" buffer.  Note that the meaning of this variable differs
+\"Messages*\" buffer.  Note that the meaning of this variable differs
 from `w3m-verbose'.  See also `shimbun-message-enable-logging'."
   :group 'shimbun
   :type 'boolean)
@@ -249,7 +244,6 @@ Default is the value of `w3m-default-save-directory'."
 (defalias 'shimbun-find-coding-system 'w3m-find-coding-system)
 (defalias 'shimbun-flet 'w3m-flet)
 (defalias 'shimbun-interactive-p 'w3m-interactive-p)
-(defalias 'shimbun-replace-in-string 'w3m-replace-in-string)
 (defalias 'shimbun-url-encode-string 'w3m-url-encode-string)
 
 (defun shimbun-retrieve-url (url &optional no-cache no-decode referer)
@@ -369,10 +363,10 @@ Return content-type of URL as string when retrieval succeeded."
 	  (unless keep-angle-brackets
 	    (shimbun-remove-markup))
 	  (shimbun-decode-entities)
-	  (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
-	  (subst-char-in-region (point-min) (point-max) ?\r ?\  t)
-	  (subst-char-in-region (point-min) (point-max) ?\f ?\  t)
-	  (subst-char-in-region (point-min) (point-max) ?\n ?\  t)
+	  (subst-char-in-region (point-min) (point-max) ?\t ?  t)
+	  (subst-char-in-region (point-min) (point-max) ?\r ?  t)
+	  (subst-char-in-region (point-min) (point-max) ?\f ?  t)
+	  (subst-char-in-region (point-min) (point-max) ?\n ?  t)
 	  (goto-char (point-min))
 	  (skip-chars-forward " ")
 	  (buffer-substring (point)
@@ -503,7 +497,7 @@ instead of this function."
   (shimbun-article-base-url shimbun header))
 
 (defcustom shimbun-encapsulate-images t
-  "*If non-nil, inline images will be encapsulated in the articles.
+  "If non-nil, inline images will be encapsulated in the articles.
 Generated article have a multipart/related content-type."
   :group 'shimbun
   :type 'boolean)
@@ -546,7 +540,7 @@ Generated article have a multipart/related content-type."
   (shimbun-multipart-entity-set-boundary-internal
    entity
    (apply 'format "===shimbun_%d_%d_%d_%d==="
-	  (incf shimbun-multipart-entity-counter)
+	  (cl-incf shimbun-multipart-entity-counter)
 	  (current-time))))
 
 (defun shimbun-make-multipart-entity (&optional type cid)
@@ -770,12 +764,8 @@ content-type if `shimbun-encapsulate-images' is non-nil."
       (insert "MIME-Version: 1.0\n")
       (shimbun-entity-insert body))))
 
-(defcustom shimbun-x-face-database-function
-  (if (boundp 'shimbun-use-bbdb-for-x-face)
-      (cdr (assq (symbol-value 'shimbun-use-bbdb-for-x-face)
-		 '((t . shimbun-bbdb-get-x-face)
-		   (never . never)))))
-  "*Function to get faces from a favorite database.
+(defcustom shimbun-x-face-database-function nil
+  "Function to get faces from a favorite database.
 When its initial value is nil and BBDB or LSDB is loaded, it will be
 set to an appropriate default value.  You can set this to `never' if
 you want to use no database."
@@ -797,8 +787,7 @@ you want to use no database."
        ;; Make sure the temp buffer's multibyteness is true.  It is
        ;; needed to make `encode-mime-charset-string' (which is
        ;; employed by `eword-encode-string') encode non-ascii text.
-       (static-unless (featurep 'xemacs)
-	 (set-buffer-multibyte t))
+       (set-buffer-multibyte t)
        (insert "Subject: " (or (eword-encode-string
 				(shimbun-header-subject header t))
 			       "(none)")
@@ -1303,8 +1292,7 @@ that the content type is text/html, otherwise text/plain."
 	  ;; Make sure the temp buffer's multibyteness is true.  It is
 	  ;; needed to make `encode-mime-charset-string' (which is
 	  ;; employed by `eword-encode-string') encode non-ascii text.
-	  (static-unless (featurep 'xemacs)
-	    (set-buffer-multibyte t))
+	  (set-buffer-multibyte t)
 	  (mapconcat
 	   #'identity
 	   (split-string (or (eword-encode-string
@@ -1353,7 +1341,7 @@ seconds ahead of UTC (east of Greenwich), the return value expresses
 the local time of the zone that the value indicates.  For instance,
 the following form returns the present time of Japan, wherever you are.
 
-\(shimbun-decode-time nil 32400)"
+(shimbun-decode-time nil 32400)"
   (if specified-zone
       (let* ((tz (- (car (current-time-zone)) specified-zone))
 	     (ct (or specified-time (current-time)))
@@ -1456,22 +1444,6 @@ STRING is like the inside of a \"\\\\(...\\\\)\" in a regular expression."
   (while (search-backward "\r\n" nil t)
     (delete-char 1)))
 
-(if (fboundp 'subst-char-in-string)
-    (defalias 'shimbun-subst-char-in-string 'subst-char-in-string)
-  (defun shimbun-subst-char-in-string (fromchar tochar string
-						&optional inplace)
-    "Replace characters in STRING from FROMCHAR to TOCHAR.
-Unless optional argument INPLACE is non-nil, return a new string."
-    (let ((string (if inplace string (copy-sequence string)))
-	  (len (length string))
-	  (idx 0))
-      ;; Replace all occurrences of FROMCHAR with TOCHAR.
-      (while (< idx len)
-	(when (= (aref string idx) fromchar)
-	  (aset string idx tochar))
-	(setq idx (1+ idx)))
-      string)))
-
 (defun shimbun-message (shimbun fmt &rest args)
   "Function equivalent to `message' enabling to handle special formats.
 SHIMBUN is a shimbun entity object.  FMT and ARGS are the same as the
@@ -1488,8 +1460,7 @@ controls whether this function should log messages in the \"*Messages*\"
 buffer."
   (let (specifier)
     (with-temp-buffer
-      (static-unless (featurep 'xemacs)
-	(set-buffer-multibyte t))
+      (set-buffer-multibyte t)
       (insert fmt)
       (goto-char (point-min))
       (while (search-forward "#" nil t)
@@ -1506,16 +1477,10 @@ buffer."
 			   (shimbun-server-internal shimbun))))))
       (setq fmt (buffer-string))))
   (if shimbun-verbose
-      (static-if (featurep 'xemacs)
-	  (let ((string (apply 'format fmt args)))
-	    (if shimbun-message-enable-logging
-		(display-message 'message string)
-	      (display-message 'no-log string))
-	    string)
-	(if shimbun-message-enable-logging
-	    (apply 'message fmt args)
-	  (let (message-log-max)
-	    (apply 'message fmt args))))
+      (if shimbun-message-enable-logging
+	  (apply 'message fmt args)
+	(let (message-log-max)
+	  (apply 'message fmt args)))
     (apply 'format fmt args)))
 
 (defmacro shimbun-with-narrowed-article (shimbun &rest forms)
@@ -1538,11 +1503,9 @@ buffer."
 	   (widen))
 	 (goto-char (point-min))))))
 
-(static-if (featurep 'xemacs)
-    (defalias 'shimbun-char-category-list 'char-category-list)
-  (defun shimbun-char-category-list (char)
-    "Return a list of category mnemonics for CHAR."
-    (append (category-set-mnemonics (char-category-set char)) nil)))
+(defun shimbun-char-category-list (char)
+  "Return a list of category mnemonics for CHAR."
+  (append (category-set-mnemonics (char-category-set char)) nil))
 
 (eval-when-compile
   (defsubst shimbun-japanese-hankaku-region-1 (start end quote)
@@ -1801,18 +1764,18 @@ There are exceptions; some chars aren't converted, and \"＜\", \"＞\" and
     (unless (eobp)
       (shimbun-japanese-hankaku-region start (point-max) quote))))
 
-;; Silence XEmacs's byte compiler.
-(eval-when-compile
-  (if (fboundp 'libxml-parse-xml-region) nil
-    (defalias 'libxml-parse-xml-region 'ignore)))
+(declare-function libxml-available-p "xml.c")
+(declare-function libxml-parse-xml-region "xml.c"
+		  (start end &optional base-url))
 
 (defun shimbun-xml-parse-buffer ()
   "Calls (lib)xml-parse-region on the whole buffer.
 This is a wrapper for `xml-parse-region', which will resort to
 using `libxml-parse-xml-region' if available, since it is much
 faster."
-  (if (and (fboundp 'libxml-parse-xml-region)
-	   (not (eq (symbol-function 'libxml-parse-xml-region) 'ignore)))
+  (if (or (and (fboundp 'libxml-available-p) (libxml-available-p))
+	  ;; Emacs <=26
+	  (fboundp 'libxml-parse-xml-region))
       (save-excursion
 	(goto-char (point-min))
 	(let ((xml (when (search-forward "<" nil t)

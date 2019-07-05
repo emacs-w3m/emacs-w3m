@@ -1,3 +1,16 @@
+2019-06-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Remove backlog stuff that didn't work as intended
+	(rely it fully on Gnus's backlog facility)
+
+	* nnshimbun.el (nnshimbun-backlog-articles, nnshimbun-backlog-hashtb)
+	(nnshimbun-keep-backlog, nnshimbun-backlog)
+	(nnshimbun-unadvised-gnus-backlog-shutdown): Remove definittions.
+	(gnus-backlog-shutdown): Remove advice.
+	(nnshimbun-close-server): Remove caches in Gnus' backlog.
+	(nnshimbun-request-article-1): Don't call gnus-backlog-request-article
+	as this function won't be called anyway if Gnus has a cache in backlog.
+
 2019-05-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnshimbun.el (nnshimbun-replace-date-header): Use mail-header-date

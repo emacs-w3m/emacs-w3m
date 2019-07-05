@@ -1,7 +1,6 @@
 # .travis.yml for emacs-w3m (http://github.com/emacs-w3m/emacs-w3m/)
 
 ## cache could be a time-saver for
-## + manually built xemacs21 on osx
 ## + apel/flim for all emacsen
 ## + but how to do it?
 #cache:
@@ -28,21 +27,14 @@ matrix:
     - os: osx
       osx_image: xcode10.1
       env: EMACS=emacs-snapshot
-    - os: linux
-      dist: xenial
-      env: EMACS=xemacs21
-    - os: osx
-      osx_image: xcode10.1
-      env: EMACS=xemacs21
-    - os: osx
-      osx_image: xcode10.1
-      env: EMACS=aquamacs
+#    - os: osx
+#      osx_image: xcode10.1
+#      env: EMACS=aquamacs
   allow_failures:
     - os: osx
       osx_image: xcode10.1
       env: EMACS=emacs-snapshot
-    - env: EMACS=xemacs21
-    - env: EMACS=aquamacs
+#    - env: EMACS=aquamacs
 
 install:
   - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'linux--emacs25' ]; then
@@ -83,38 +75,15 @@ install:
       brew install emacs --HEAD &&
       brew install w3m;
     fi
-  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'linux--xemacs21' ]; then
-      export EMACS_EXE=xemacs21;
-      sudo apt-get -qq update &&
-      sudo apt-get -qq -f install &&
-      sudo apt-get -qq install xemacs21;
-    fi
-  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'osx--xemacs21' ]; then
-      export EMACS_EXE=xemacs21;
-      brew install gcc &&
-      orig_dir="${PWD}" &&
-      file_name="xemacs-21.4.24" &&
-      wget "http://ftp.xemacs.org/pub/xemacs/stable/${file_name}.tar.gz" &&
-      gzip -dc "${file_name}.tar.gz" | tar xf - &&
-      cd "${file_name}" &&
-      ./configure --with-emacs=${EMACS_EXE} && make && sudo make install &&
-      cd /usr/local/lib/xemacs/xemacs-packages/ &&
-      pkg_url="http://ftp.xemacs.org/pub/xemacs/packages/" &&
-      for pkg_name in xemacs-base-2.46 efs-1.37 apel-1.36 ; do
-        wget "${pkg_url}${pkg_name}-pkg.tar.gz" &&
-        gzip -dc "${pkg_name}-pkg.tar.gz" | tar xf - ;
-      done &&
-      cd "${orig_dir}" ;
-    fi
-  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'osx--aquamacs' ]; then
-      export EMACS_EXE=aquamacs;
-      download_path=$(curl -s "https://api.github.com/repos/davidswelt/aquamacs-emacs/releases/latest" | grep 'browser_' |  sed 's/.* .//;s/.$//') &&
-      echo "${download_path}" &&
-      wget "${download_path}" &&
-      hdiutil attach "$(basename ${download_path})" &&
-      ls /Volumes/A* &&
-      sudo ln -s /Volumes/Aquamacs/Aquamacs.app/Contents/MacOS/Aquamacs /usr/local/bin/${EMACS_EXE};
-    fi
+#  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'osx--aquamacs' ]; then
+#      export EMACS_EXE=aquamacs;
+#      download_path=$(curl -s "https://api.github.com/repos/davidswelt/aquamacs-emacs/releases/latest" | grep 'browser_' |  sed 's/.* .//;s/.$//') &&
+#      echo "${download_path}" &&
+#      wget "${download_path}" &&
+#      hdiutil attach "$(basename ${download_path})" &&
+#      ls /Volumes/A* &&
+#      sudo ln -s /Volumes/Aquamacs/Aquamacs.app/Contents/MacOS/Aquamacs /usr/local/bin/${EMACS_EXE};
+#    fi
 
 before_script:
   - autoconf --version

@@ -1,6 +1,6 @@
 ;;; sb-netbsd.el --- shimbun backend for netbsd.org
 
-;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2003, 2019 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
@@ -30,9 +30,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-incf
 (require 'shimbun)
 (require 'sb-mhonarc)
 
@@ -63,7 +61,7 @@
     (nreverse
      (catch 'stop
        (dolist (month months)
-	 (unless (if pages (<= (incf count) pages) t)
+	 (unless (if pages (<= (cl-incf count) pages) t)
 	   (throw 'stop headers))
 	 (erase-buffer)
 	 (shimbun-retrieve-url

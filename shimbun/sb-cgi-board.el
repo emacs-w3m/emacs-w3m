@@ -1,5 +1,8 @@
 ;;; sb-cgi-board.el --- Shimbun backend for CGI_Board bulletin board systems
 
+;; Copyright (C) 2004, 2006, 2009, 2019
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: shimbun
 
@@ -27,15 +30,11 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl)) ;; multiple-value-bind
+;; `cl' employs `cl-lib'.
+;; (require 'cl-lib) ;; cl-incf
+
 (require 'shimbun)
-(eval-when-compile
-  (require 'cl)
-  ;; `multiple-value-bind' requires the 2nd argument to be multiple-value,
-  ;; not a list, in particular for XEmacs 21.5.  `values-list' does it,
-  ;; but is a run-time cl function in XEmacs 21.4 and Emacs 21.
-  (when (eq 'identity (symbol-function 'values-list))
-    (define-compiler-macro values-list (arg)
-      arg)))
 
 (defcustom shimbun-cgi-board-group-alist
   '(("support" .
@@ -52,7 +51,7 @@
      "http://njb.virtualave.net/BBS.cgi?b=nmain")
     ("yamagata" .
      "http://ruitomo.com/~hiroo/bbs/BBS.cgi?b=kohobu"))
-  "*An alist of CGI_Board bulletin board systems and their URLs."
+  "An alist of CGI_Board bulletin board systems and their URLs."
   :group 'shimbun
   :type '(repeat
 	  (cons :format "%v" :indent 4
@@ -170,7 +169,7 @@
 	(count 0)
 	(limit (shimbun-header-index-pages range)))
     (goto-char (point-min))
-    (while (and (or (not limit) (<= (incf count) limit))
+    (while (and (or (not limit) (<= (cl-incf count) limit))
 		(re-search-forward
 		 "<a href=\"\\./\\([^.]+\\.html\\)\" target=\"article\">"
 		 nil t))

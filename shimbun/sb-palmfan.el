@@ -1,4 +1,4 @@
-;;; sb-palmfan.el --- shimbun backend class for palmfan web site. -*- coding: utf-8; -*-
+;;; sb-palmfan.el --- shimbun backend class for palmfan web site.
 
 ;; Copyright (C) 2002, 2003, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 

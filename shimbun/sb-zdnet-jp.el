@@ -1,6 +1,6 @@
 ;;; sb-zdnet-jp.el --- shimbun backend for ZDNet Japan -*- coding: utf-8 -*-
 
-;; Copyright (C) 2005, 2006 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2005, 2006, 2019 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: news
@@ -118,10 +118,10 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
   (when (re-search-forward "<div class=\"property cblack\">\\([^\n]+\\)</div>"
 			   nil t)
     (let ((from (match-string 1)))
-      (setq from (shimbun-replace-in-string from "文：" ""))
-      (setq from (shimbun-replace-in-string from "翻訳校正：*" ""))
-      (setq from (shimbun-replace-in-string from " *<br */?> *" ", "))
-      (setq from (shimbun-replace-in-string from "、" ", "))
+      (setq from (replace-regexp-in-string "文：" "" from))
+      (setq from (replace-regexp-in-string "翻訳校正：*" "" from))
+      (setq from (replace-regexp-in-string " *<br */?> *" ", " from))
+      (setq from (replace-regexp-in-string "、" ", " from))
       (shimbun-header-set-from header from))))
 
 (luna-define-method shimbun-footer :around ((shimbun shimbun-zdnet-jp)

@@ -1,6 +1,6 @@
 ;;; sb-gnome.el --- shimbun backend for mail.gnome.org
 
-;; Copyright (C) 2001, 2002, 2003, 2004 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2004, 2019 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
 ;; Keywords: news
@@ -26,9 +26,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-incf
 (require 'shimbun)
 (require 'sb-mhonarc)
 
@@ -66,7 +64,7 @@
 	(count 0)
 	headers months)
     (goto-char (point-min))
-    (while (and (if pages (<= (incf count) pages) t)
+    (while (and (if pages (<= (cl-incf count) pages) t)
 		(re-search-forward
 		 "<a href=\"\\([^/]+\\)/date.html\">" nil t))
       (push (match-string 1) months))

@@ -1,6 +1,6 @@
-;;; w3m-cookie.el --- Functions for cookie processing -*- coding: utf-8; -*-
+;;; w3m-cookie.el --- Functions for cookie processing
 
-;; Copyright (C) 2002, 2003, 2005, 2006, 2008, 2009, 2010, 2017
+;; Copyright (C) 2002, 2003, 2005, 2006, 2008-2010, 2017, 2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Teranishi Yuuichi  <teranisi@gohome.org>
@@ -38,20 +38,13 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
 (require 'w3m-util)
 (require 'w3m)
+(require 'url-domsuf)
 
 (defvar w3m-cookies nil
   "A list of cookie elements.
 Currently only browser local cookies are stored.")
-
-;; Use `url-domsuf-cookie-allowed-p', if available (Emacs >= 24.3),
-;; to check if a domain is unique to allow having cookies set.
-(eval-and-compile (ignore-errors (require 'url-domsuf)))
-(declare-function url-domsuf-cookie-allowed-p "url-domsuf")
 
 (defconst w3m-cookie-two-dot-domains-regexp
   (concat "\\.\\(?:"
@@ -83,7 +76,7 @@ If ask, ask user whether accept bad cookies or not."
 	  (const :tag "Always accept bad cookies" t)))
 
 (defcustom w3m-cookie-save-cookies t
-  "*Non-nil means save cookies when emacs-w3m cookie system shutdown."
+  "Non-nil means save cookies when emacs-w3m cookie system shutdown."
   :group 'w3m
   :type 'boolean)
 
@@ -326,21 +319,10 @@ If ask, ask user whether accept bad cookies or not."
    ;; A special case that domain name is ".hostname".
    ((string= (concat "." host) domain)
     t)
-   ((fboundp 'url-domsuf-cookie-allowed-p)
+   (t
     (url-domsuf-cookie-allowed-p (if (eq (aref domain 0) ?.)
 				     (substring domain 1)
-				   domain)))
-   ((let ((case-fold-search t) (numdots 0) last)
-      (while (setq last (string-match "\\." domain last))
-	(setq numdots (1+ numdots)
-	      last (1+ last)))
-      (>= numdots			; We have enough dots in domain name
-	  (if (string-match w3m-cookie-two-dot-domains-regexp domain) 2 3)))
-    ;; Need to check and make sure the host is actually _in_ the
-    ;; domain it wants to set a cookie for though.
-    (string-match (concat (regexp-quote domain) "$") host))
-   (t
-    nil)))
+				   domain)))))
 
 (defun w3m-cookie-1-set (url &rest args)
   ;; Set-Cookie:, version 0 cookie.
@@ -515,7 +497,7 @@ BEG and END should be an HTTP response header region on current buffer."
 	  (if (match-beginning 1)
 	      (setq version 1))
 	  (apply
-	   (case version
+	   (pcase version
 	     (0 'w3m-cookie-1-set)
 	     (1 'w3m-cookie-2-set))
 	   url (w3m-cookie-parse-args data 'nodowncase)))))))
@@ -584,23 +566,14 @@ string is case insensitive and allows a regular expression."
     (when post-data
       (dolist (pair (split-string post-data "&"))
 	(setq pair (split-string pair "="))
-	(w3m-static-if (fboundp 'pcase)
-	    (pcase (car pair)
-	      ("delete" (setq delete (cadr pair)))
-	      ("re-search" (setcdr match t))
-	      ("search" (setcar match (replace-regexp-in-string
-				       "[\n\r].*" ""
-				       (w3m-url-decode-string (cadr pair)))))
-	      (_ (when (equal (cadr pair) "0")
-		   (push (string-to-number (car pair)) dels))))
-	  (cond ((equal "delete" (car pair)) (setq delete (cadr pair)))
-		((equal "re-search" (car pair)) (setcdr match t))
-		((equal "search" (car pair))
-		 (setcar match (replace-regexp-in-string
-				"[\n\r].*" ""
-				(w3m-url-decode-string (cadr pair)))))
-		(t (when (equal (cadr pair) "0")
-		     (push (string-to-number (car pair)) dels)))))))
+	(pcase (car pair)
+	  ("delete" (setq delete (cadr pair)))
+	  ("re-search" (setcdr match t))
+	  ("search" (setcar match (replace-regexp-in-string
+				   "[\n\r].*" ""
+				   (w3m-url-decode-string (cadr pair)))))
+	  (_ (when (equal (cadr pair) "0")
+	       (push (string-to-number (car pair)) dels))))))
     (if (zerop (length (car match)))
 	(setq match nil
 	      cookies w3m-cookies)
@@ -611,31 +584,14 @@ string is case insensitive and allows a regular expression."
 	(when (string-match regexp (w3m-cookie-url cookie))
 	  (push cookie cookies)))
       (setq cookies (nreverse cookies)))
-    (w3m-static-if (fboundp 'pcase)
-	(pcase delete
-	  ("0" (dolist (del dels)
-		 (setf (w3m-cookie-ignore (nth del cookies)) t)))
-	  ("1" (dolist (cookie cookies)
-		 (setf (w3m-cookie-ignore cookie) nil)))
-	  ("2" (dolist (cookie cookies)
-		 (setf (w3m-cookie-ignore cookie) t)))
-	  ("3" (progn
-		 (dolist (del dels)
-		   (setf (w3m-cookie-ignore (nth del cookies)) t))
-		 (dolist (cookie cookies)
-		   (when (w3m-cookie-ignore cookie)
-		     (setq cookies (delq cookie cookies)
-			   w3m-cookies (delq cookie w3m-cookies)))))))
-      (cond ((equal "0" delete)
-	     (dolist (del dels)
-	       (setf (w3m-cookie-ignore (nth del cookies)) t)))
-	    ((equal "1" delete)
-	     (dolist (cookie cookies)
-	       (setf (w3m-cookie-ignore cookie) nil)))
-	    ((equal "2" delete)
-	     (dolist (cookie cookies)
-	       (setf (w3m-cookie-ignore cookie) t)))
-	    ((equal "3" delete)
+    (pcase delete
+      ("0" (dolist (del dels)
+	     (setf (w3m-cookie-ignore (nth del cookies)) t)))
+      ("1" (dolist (cookie cookies)
+	     (setf (w3m-cookie-ignore cookie) nil)))
+      ("2" (dolist (cookie cookies)
+	     (setf (w3m-cookie-ignore cookie) t)))
+      ("3" (progn
 	     (dolist (del dels)
 	       (setf (w3m-cookie-ignore (nth del cookies)) t))
 	     (dolist (cookie cookies)

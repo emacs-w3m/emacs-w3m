@@ -1,6 +1,6 @@
-;;; sb-yahoo-auctions.el --- shimbun backend for Yahoo! AUCTIONS -*- coding: utf-8; -*-
+;;; sb-yahoo-auctions.el --- shimbun backend for Yahoo! AUCTIONS
 
-;; Copyright (C) 2005, 2006, 2008, 2011, 2013
+;; Copyright (C) 2005, 2006, 2008, 2011, 2013, 2019
 ;; ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
 
 ;; Author: ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
@@ -31,7 +31,7 @@
 (luna-define-class shimbun-yahoo-auctions (shimbun-rss) ())
 
 (defcustom shimbun-yahoo-auctions-group-alist nil
-  "*An alist of Yahoo! AUCTIONS group definition.
+  "An alist of Yahoo! AUCTIONS group definition.
 Each element looks like (NAME URL).
 NAME is a shimbun group name.
 URL is the URL for category or search result."

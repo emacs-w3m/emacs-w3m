@@ -1,6 +1,6 @@
 ;;; sb-ruby.el --- shimbun backend class for ruby ML archiver.
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2009
+;; Copyright (C) 2001-2003, 2005, 2009, 2019
 ;; NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
@@ -27,9 +27,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-incf
 (require 'shimbun)
 
 (luna-define-class shimbun-ruby (shimbun) ())
@@ -76,7 +74,7 @@
 	(count 0)
 	headers auxs aux)
     ;; Use entire archive.
-    (while (and (if pages (<= (incf count) pages) t)
+    (while (and (if pages (<= (cl-incf count) pages) t)
 		(re-search-forward "<a href=\"\\([0-9]+-[0-9]+.shtml\\)\">" nil t))
       (setq auxs (append auxs (list (match-string 1)))))
     (setq auxs (nreverse auxs))

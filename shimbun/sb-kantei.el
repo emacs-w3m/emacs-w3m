@@ -1,6 +1,6 @@
-;;; sb-kantei.el --- shimbun backend for kantei blog backnumber -*- coding: utf-8; -*-
+;;; sb-kantei.el --- shimbun backend for kantei blog backnumber
 
-;; Copyright (C) 2001-2012 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2012, 2019 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
 ;; Keywords: news
@@ -320,8 +320,8 @@ jp/m-magazine/backnumber/hukuda.html")
 		  month (string-to-number (match-string 3))
 		  mday (string-to-number (match-string 4))
 		  url (match-string 1)
-		  subject (shimbun-replace-in-string (match-string 6)
-						     "[\t\n 　]+" " ")
+		  subject (replace-regexp-in-string "[\t\n 　]+" " "
+						    (match-string 6))
 		  rev (match-string 5))
 	    (if (and (member group '("blog-en" "blog-ja"))
 		     (prog2
@@ -406,7 +406,7 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 	       (progn
 		 (setq section (regexp-quote (match-string 1))
 		       start (match-end 0))
-		 (re-search-forward (concat "\[\t\n ]*<!--/" section
+		 (re-search-forward (concat "[\t\n ]*<!--/" section
 					    "\\(?:から\\)?-->")
 				    nil t)))
 	  (progn
@@ -415,7 +415,7 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 		     (setq section (regexp-quote (match-string 1)))
 		     (delete-region end (match-end 0))
 		     (insert "\n&#012;\n")
-		     (and (re-search-forward (concat "\[\t\n ]*<!--/" section
+		     (and (re-search-forward (concat "[\t\n ]*<!--/" section
 						     "\\(?:から\\)?-->")
 					     nil t)
 			  (setq end (match-beginning 0)))))
@@ -442,7 +442,7 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 	(replace-match "<br>\n"))
       (goto-char (point-min))
       (while (re-search-forward "\
-\[\t\n ]*</?\\(?:hr\\|span\\|table\\|td\\|tr\\)\\(?:[\t\n ]+[^>]+\\)?>[\t\n ]*"
+[\t\n ]*</?\\(?:hr\\|span\\|table\\|td\\|tr\\)\\(?:[\t\n ]+[^>]+\\)?>[\t\n ]*"
 				nil t)
 	(replace-match "\n"))
       (goto-char (point-min))
@@ -469,11 +469,8 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 <img[\t\n ]+[^>]+>\\(?:[\t\n ]*<[^/][>]+>\\)*\\)[\t\n ]*" nil t)
 	(replace-match "<br>\n\\1<br>\n"))
       ;; Shrink boundary lines.
-      (let ((limit (w3m-static-if (featurep 'xemacs)
-		       (when (device-on-window-system-p)
-			 (font-width (face-font 'default)))
-		     (when window-system
-		       (frame-char-width)))))
+      (let ((limit (when (display-graphic-p)
+		     (frame-char-width))))
 	(when limit
 	  (setq limit (* limit (1- (window-width))))
 	  (goto-char (point-min))
@@ -510,7 +507,7 @@ go[\t\n ]+to[\t\n ]+top[\t\n ]+of[\t\n ]+the[\t\n ]+page[\t\n ]*</a>\
 	       (delete-region (point-min) (match-beginning 2))
 	       (goto-char (point-min))
 	       (while (re-search-forward "\
-\[\t\n 　]*<p>\\(?:[\t\n 　]*\\|[\t\n ]*&nbsp;[\t\n ]*\\)</p>[\t\n 　]*"
+[\t\n 　]*<p>\\(?:[\t\n 　]*\\|[\t\n ]*&nbsp;[\t\n ]*\\)</p>[\t\n 　]*"
 					 nil t)
 		 (replace-match "")))))
       ;; Zenkaku ASCII -> Hankaku

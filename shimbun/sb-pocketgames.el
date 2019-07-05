@@ -1,6 +1,6 @@
-;;; sb-pocketgames.el --- shimbun backend class for www.pocketgames.jp. -*- coding: utf-8; -*-
+;;; sb-pocketgames.el --- shimbun backend class for www.pocketgames.jp.
 
-;; Copyright (C) 2003, 2004, 2005, 2008 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003-2005, 2008, 2019 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
@@ -36,7 +36,7 @@
 (defvar shimbun-pocketgames-groups '("news"))
 (defvar shimbun-pocketgames-coding-system 'shift_jis)
 (defvar shimbun-pocketgames-content-start
-  "<a class=\"pn-normal\" href=\"modules.php\\?op=modload\&amp;name=Search\\&amp;file=index\\&amp;action=search\\&amp;overview=1\\&amp;active_stories=[0-9]+\\&amp;stories_topics\[[0-9]+\]=\"><b>[^<]+</b></a>")
+  "<a class=\"pn-normal\" href=\"modules.php\\?op=modload\&amp;name=Search\\&amp;file=index\\&amp;action=search\\&amp;overview=1\\&amp;active_stories=[0-9]+\\&amp;stories_topics\\[[0-9]+\\]=\"><b>[^<]+</b></a>")
 (defvar shimbun-pocketgames-content-end
   "</body>")
 

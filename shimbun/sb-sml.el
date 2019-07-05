@@ -1,6 +1,6 @@
 ;;; sb-sml.el --- shimbun backend for Smalltalkers' Salon Mailing List archive
 
-;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003-2005, 2019 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
@@ -43,7 +43,7 @@
   (shimbun-sml-make-contents shimbun header))
 
 (defun shimbun-sml-make-contents (shimbun header)
-  (subst-char-in-region (point-min) (point-max) ?\t ?\  t)
+  (subst-char-in-region (point-min) (point-max) ?\t ?  t)
   (shimbun-decode-entities)
   (goto-char (point-min))
   (let ((end (search-forward "<!--beginarticle-->")))

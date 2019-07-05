@@ -1,6 +1,7 @@
 ;;; sb-tigris.el --- shimbun backend for tigris.org ML
 
-;; Copyright (C) 2005, 2007, 2009, 2017 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2005, 2007, 2009, 2017, 2019
+;; Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: news
@@ -24,9 +25,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-incf
 (require 'shimbun)
 
 (luna-define-class shimbun-tigris (shimbun) ())
@@ -60,7 +59,7 @@
     ("ankhsvn"     . ("issues" "users" "announce" "cvs" "svn-commit"
 		      "Draco-build"))
     )
-  "*List of mailing lists serverd by Tigris.org."
+  "List of mailing lists serverd by Tigris.org."
   :group 'shimbun
   :type '(repeat
 	  (cons
@@ -124,7 +123,7 @@
       (catch 'stop
 	(let ((count 0) url)
 	  (while (and indexes
-		      (if pages (<= (incf count) pages) t))
+		      (if pages (<= (cl-incf count) pages) t))
 	    (erase-buffer)
 	    (setq url (pop indexes))
 	    (shimbun-retrieve-url url)

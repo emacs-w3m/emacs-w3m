@@ -1,6 +1,6 @@
-;;; sb-mainichi.el --- shimbun backend for Mainichi jp -*- coding: utf-8; -*-
+;;; sb-mainichi.el --- shimbun backend for Mainichi jp
 
-;; Copyright (C) 2001-2009, 2011-2013, 2015-2018
+;; Copyright (C) 2001-2009, 2011-2013, 2015-2019
 ;; Koichiro Ohba <koichiro@meadowy.org>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
@@ -352,7 +352,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
   (when (re-search-forward "\
 <span[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"More\"[^<]+\
 <a[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*href=\"\\([^\"]+\\)\"[^>]*>\
-\[\t\n ]*続きを読む[\t\n ]*</a>[\t\n ]*</span>" nil t)
+[\t\n ]*続きを読む[\t\n ]*</a>[\t\n ]*</span>" nil t)
     (let ((orig (buffer-string)))
       (unless (shimbun-fetch-url shimbun (prog1
 					     (match-string 1)
@@ -421,7 +421,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 ;;    (erase-buffer)
 ;;    (insert "<html><body>\
 ;;この記事はもうありません。<br>\n\
-;;\(さもなければ通常とは異なる形式を使っているか、<br>\n\
+;;(さもなければ通常とは異なる形式を使っているか、<br>\n\
 ;;&nbsp;または取得に失敗したのかもしれません。)</body></html>\n")
     nil))
 

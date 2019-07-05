@@ -1,6 +1,6 @@
-;;; w3m-dtree.el --- The add-on program to display local directory tree. -*- coding: utf-8; -*-
+;;; w3m-dtree.el --- The add-on program to display local directory tree.
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2009, 2017
+;; Copyright (C) 2001-2003, 2005-2007, 2009, 2017, 2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Hideyuki SHIRAI    <shirai@meadowy.org>,
@@ -35,19 +35,19 @@
 (require 'w3m)
 
 (defcustom w3m-dtree-default-allfiles nil
-  "*If non-nil, set 'allfiles' to default."
+  "If non-nil, set 'allfiles' to default."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-dtree-directory-depth 8
-  "*Interger of a depth of the viewing directory."
+  "Interger of a depth of the viewing directory."
   :group 'w3m
   :type '(choice
 	  (const :tag "No limit" nil)
 	  (integer :format "%t: %v\n" :tag "depth" 10)))
 
 (defcustom w3m-dtree-indent-strings ["|-" "+-" "|  " "   "]
-  "*Vector of strings to be used for indentation with w3m-dtree.
+  "Vector of strings to be used for indentation with w3m-dtree.
 
 If use default value or choice 'ASCII', display like this,
 /home/shirai/work/emacs-w3m/
@@ -82,7 +82,7 @@ If you care for another style, set manually and try it :-).
 			       :value ,(aref defaults 3)))))))
 
 (defcustom w3m-dtree-stop-strings ["|=" "+="]
-  "*Vector of strings to be used for indentation when a depth of directory
+  "Vector of strings to be used for indentation when a depth of directory
 over the 'w3m-dtree-directory-depth'."
   :group 'w3m
   :type '(radio

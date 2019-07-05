@@ -1,4 +1,4 @@
-;;; sb-jpo.el --- shimbun backend for http://www.jpo.go.jp -*- coding: utf-8; -*-
+;;; sb-jpo.el --- shimbun backend for http://www.jpo.go.jp
 
 ;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
 

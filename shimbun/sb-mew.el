@@ -1,7 +1,7 @@
 ;;; sb-mew.el --- shimbun backend for mew.org
 
-;; Copyright (C) 2001, 2002, 2005 Yuuichi Teranishi <teranisi@gohome.org>
-;; Copyright (C) 2001, 2002, 2005 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001, 2002, 2005, 2019 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2005, 2019 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Akihiro Arisawa    <ari@mbf.sphere.ne.jp>,
@@ -32,9 +32,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-incf
 (require 'shimbun)
 (require 'sb-mhonarc)
 (luna-define-class shimbun-mew (shimbun-mhonarc) ())
@@ -83,7 +81,7 @@
 	headers aux)
     (catch 'stop
       (shimbun-mhonarc-get-headers shimbun url headers)
-      (while (and (if pages (< (incf count) pages) t)
+      (while (and (if pages (< (cl-incf count) pages) t)
 		  (re-search-forward
 		   "<A HREF=\"\\(mail[0-9]+.html\\)\">Prev Page</A>"
 		   nil t)

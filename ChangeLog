@@ -1,3 +1,260 @@
+2019-07-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* .travis.yml: Drop Aquamacs.
+
+2019-07-05  Boruch Baum  <boruch_baum@gmx.com>
+
+	Emulate `awesome-bar' for bookmarked urls (PR#56)
+
+	* w3m-bookmark.el (w3m-bookmark-add, w3m-bookmark-add-all-urls): Add
+	new bookmarks to w3m-input-url-history for `awesome bar' feature.
+
+	* w3m.el (w3m-input-url): Interpret bookmark titles as urls (ala
+	awesome-bar).
+	(w3m--get-url-from-bookmark-title): New function to enable the feature.
+	(w3m-arrived-setup): Add bookmark urls and title strings to variable
+	w3m-input-url-history.
+
+	Bugfixes for content-type handling (PR#55)
+
+	* w3m.el (w3m-create-page): Bugfixes: Properly construct collection for
+	completing-read, return to original buffer when performing an external
+	view or a download.  Spin off two parts into separate functions:
+	(w3m--unsupported-display, w3m--prompt-for-unknown-content-type)
+	(w3m-external-view): Bugfix: was not respecting user's request to
+	download.
+	(w3m-external-view-file): Bugfixes: account for file arg being nil.
+	Regex for suffix was failing for foo.bar.abc.  Wasn't parsing external
+	format for content types based upon substituting '%s' for filename.
+
+	Fix issue #52: quick-search that requires POST-DATA (PR#54)
+
+	* w3m.el (w3m-input-url): Don't remove potential POST-DATA from
+	raw-input (ref github issue #52).  Callers to this function will now
+	need to perform w3m-canonicalize-url if and when they choose.
+	(w3m-goto-url): Extract potential POST-DATA from output of
+	w3m-input-url, and only afterwards perform w3m-canonicalize-url.
+	(w3m-uri-replace-alist): Correct omissions in docstring.
+
+	* w3m-antenna.el (w3m-antenna-add-current-url):
+	* w3m-bookmark.el (w3m-bookmark-add-current-url):
+	* w3m.el (w3m-download, w3m-edit-url)
+	(w3m-view-url-with-external-browser):
+	Perform w3m-canonicalize-url for w3m-input-url.
+
+2019-07-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Improve w3m-buffer-unseen control
+
+	* w3m.el (w3m-select-buffer-hook): Define before loading w3m-ems;
+	add w3m-set-buffer-seen.
+	(w3m-set-buffer-unseen, w3m-set-buffer-seen):
+	No need to manipulate pre-command-hook.
+	(w3m-select-buffer-show-this-line, w3m-select-buffer-quit):
+	Run w3m-set-buffer-seen.
+
+	Workaround to let w3m-session-selest-select get correct window width
+
+	(w3m-display-width): Add a workaround with a FIXME comment so to work
+	with w3m-session-select-select.
+
+2019-07-04  Boruch Baum  <boruch_baum@gmx.com>
+
+	New feature: toggle unread status of buffer (PR#50)
+
+	* w3m.el (w3m-select-buffer-toggle-unseen): New feature.
+	(w3m-select-buffer-mode-map): Bind new feature to 'u'.
+	(w3m-select-buffer-mode): Document new feature.
+
+	w3m-session: bugfixes and new feature `copy a session' (PR#49)
+
+	* w3m-session.el (w3m-session-select-delete): Advance to next session
+	group element after delete, not previous.  Handle case of final entry
+	of session group being deleted.
+	(w3m-session-delete): Deleting final element of a session removes the
+	session entry itself, and returns to the parent page (ie. the list of
+	sessions, not the list of session elements).
+	(w3m-session-save): Remove catch/throw idiom
+	(w3m-session-select-copy): New feaure.
+	(w3m-session-select-mode-map): Bind new feature to `c' and `C'.
+	(w3m-session-select-quit): Properly position point upon completion.
+
+	Add a new command `w3m-search-name-anchor' bound to `C-c j' key (PR#46)
+
+	* w3m.el (w3m--filter-page-anchors): New feature to prune junk anchors
+	from anchor searches.
+	(w3m-anchor-list-filter-alist): Junk anchor defcustom.
+	(w3m--get-page-anchors): New funcion.
+	(w3m-search-name-anchor): Prompt user interactively with list of
+	available anchors, excluding those from w3m half-dump. Provide this
+	function a keybinding `C-c j'.
+
+2019-07-03  Boruch Baum  <boruch_baum@gmx.com>
+
+	Remove trackers embedded in URLs (PR#47)
+
+	* w3m-util.el (w3m-strip-queries, w3m-strip-queries-alist)
+	(w3m-queries-log, w3m-queries-log-file): New defcustoms.
+	(w3m--url-strip-queries): New feature; strip unwanted trackers from
+	urls.
+
+	* w3m.el (w3m--retrieve-1--handler-function): Undo potential url
+	modification performed by w3m-w3m-dump-extra.
+	(w3m--goto-url--valid-url): Use new feature w3m--url-strip-queries;
+	ensure query trackers are stripped at first opportunity.
+
+2019-07-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* .dir-locals.el: New file; make indent-tabs-mode default to t.
+	* w3mhack.el (w3mhack-module-list): Don't compile it.
+	* Makefile.in (install-lisp): Install it.
+
+2019-07-02  Boruch Baum  <boruch_baum@gmx.com>
+
+	Replace w3m-view-this-url-1 with w3m-goto-url{,-new-session} (PR#44)
+
+	* w3m.el (w3m-view-this-url-1): Remove this function as unnecessary and
+	duplicate.
+	(w3m-view-this-url, w3m-view-this-url-new-session)
+	(w3m-goto-new-session-url): Replace use of function w3m-view-this-url-1
+	with either w3m-goto-url or w3m-goto-url-new-session.
+
+	* w3m-bookmark.el (w3m-bookmark-view-new-session): Replace use of
+	function w3m-view-this-url-1 with w3m-goto-url-new-session.
+
+2019-07-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-region): Improve the way to suspend undo recording.
+
+2019-07-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-region): Suspend undo recording while rendering
+	if the buffer enables undo.
+
+2019-06-28  Eugene Sharygin  <eush77@gmail.com>
+
+	* w3m.el (w3m-select-buffer-delete-buffer): Make sure the buffer on
+	the current menu line to be shown after the deletion (PR#26).
+
+2019-06-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-redisplay-pages-automatically): Rewrite it with
+	a FIXME comment; use `window-configuration-change-hook' and also
+	`window-size-change-functions' for Emacs 26 otherwise only
+	`window-configuration-change-hook' to run it.
+
+	* w3m-util.el (w3m-condition-case): Uncomment it.
+
+2019-06-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Redisplay page automatically when its window width changes
+	Suggested by Dan Jacobson <jidanni@jidanni.org>
+
+	* w3m.el (w3m-last-window-width): New buffer local variable.
+	(w3m-mode): Initialize it.
+	(w3m-redisplay-pages-automatically): New function to be added to
+	`window-size-change-functions'.
+
+2019-06-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	A trial to make w3m-arrived-db a real hash table
+
+	* w3m.el (w3m-arrived-setup): Make w3m-arrived-db a real hash table.
+	(w3m-arrived-intern, w3m-arrived-shutdown, w3m-about-db-history):
+	Use hash table functions.
+	(w3m-arrived-db-size): Remove.
+
+	* w3m-hist.el (w3m-history-add-arrived-db): Replace mapatoms w/ maphash.
+
+2019-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-ems.el (w3m-toolbar-define-keys): Remove old Emacsen stuff
+	that was left mistakenly in last commit.
+
+2019-06-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Improve web contents cache handling
+
+	* w3m.el (w3m-cache-articles): Handle cache pointer as well.
+	(w3m-cache-setup): Make w3m-cache-hashtb a real hash table.
+	(w3m-cache-header, w3m-cache-request-header, w3m-cache-remove-oldest)
+	(w3m-cache-available-p): Use hash table functions.
+	(w3m-cache-remove-oldest, w3m-cache-remove, w3m-cache-contents)
+	(w3m-cache-request-contents): Use pointer instead of text props to find
+	cache.
+	(w3m-cache-remove): Detach the function core into w3m-cache-remove-1.
+
+2019-06-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_EMACS_LISP): Protect against malfunctioned Emacs.
+	(AC_PATH_EMACS): Clarify error message.
+
+	* w3mhack.el (w3mhack-compile-file): Simplify.
+
+2019-06-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Drop old Emacsen support
+
+	Remove things used for keeping compatibility with Emacs 24 and older;
+	Drop XEmacs support;
+	Use cl-lib rather than cl as much as possible;
+	Use declare-function instead of autoload for non-existent functions;
+	Remove old face name aliases;
+	Remove coding cookie for utf-8 as that is Emacs' default for .el files;
+	Remove "*" from docstring for defcustom and defface
+
+	* .travis.yml, Makefile.in, aclocal.m4, configure.in, doc/Makefile.in
+	* doc/emacs-w3m-ja.texi, doc/emacs-w3m.texi
+	* attic/addpath.el, bookmark-w3m.el, mew-w3m.el, mime-w3m.el, octet.el
+	* w3m-antenna.el, w3m-bookmark.el, w3m-bug.el, w3m-cookie.el
+	* w3m-dtree.el, w3m-ems.el, w3m-favicon.el, w3m-fb.el, w3m-filter.el
+	* w3m-form.el, w3m-hist.el, w3m-image.el, w3m-lnum.el, w3m-mail.el
+	* w3m-namazu.el, w3m-perldoc.el, w3m-proc.el, w3m-rss.el, w3m-save.el
+	* w3m-search.el, w3m-session.el, w3m-symbol.el, w3m-tabmenu.el
+	* w3m-util.el, w3m-weather.el, w3m.el, w3mhack.el
+	* shimbun/{mew-shimbun.el, nnshimbun.el, sb-2ch.el, sb-airs.el}
+	* shimbun/{sb-asahi-mytown.el, sb-asahi.el, sb-atmarkit.el}
+	* shimbun/{sb-atom-hash.el, sb-atom.el, sb-cgi-board.el, sb-chise.el}
+	* shimbun/{sb-cnet-jp.el, sb-cnet.el, sb-cnn-jp.el, sb-debian-jp.el}
+	* shimbun/{sb-debian.el, sb-dennou.el, sb-digiko.el, sb-emacs-w3m.el}
+	* shimbun/{sb-emacswiki.el, sb-engadget-ja.el, sb-excite.el, sb-fau.el}
+	* shimbun/{sb-fml.el, sb-geocrawler.el, sb-glimpse.el, sb-gnome.el}
+	* shimbun/{sb-hns.el, sb-ibm-dev.el, sb-impress.el, sb-itmedia.el}
+	* shimbun/{sb-javaconf.el, sb-jpo.el, sb-kantei.el, sb-kde.el}
+	* shimbun/{sb-kyoko-np.el, sb-lotusex.el, sb-m17n.el, sb-mailman.el}
+	* shimbun/{sb-mainichi.el, sb-meadow.el, sb-mew.el}
+	* shimbun/{sb-msports-nifty.el, sb-multi.el, sb-netbsd.el}
+	* shimbun/{sb-nikkangendai.el, sb-nikkansports.el, sb-nikkei.el}
+	* shimbun/{sb-nytimes.el, sb-orca.el, sb-palmfan.el}
+	* shimbun/{sb-pcweb-column.el, sb-pocketgames.el, sb-rakuten.el}
+	* shimbun/{sb-redhat.el, sb-rss.el, sb-ruby.el, sb-sankei.el}
+	* shimbun/{sb-savannah.el, sb-slashdot-jp.el, sb-sml.el}
+	* shimbun/{sb-sourceforge-jp.el, sb-tcup.el, sb-tdiary.el}
+	* shimbun/{sb-tech-on.el, sb-text.el, sb-tigris.el, sb-toshiba.el}
+	* shimbun/{sb-vinelinux.el, sb-wiki.el, sb-wikimedia.el}
+	* shimbun/{sb-wincefan.el, sb-wired-jp.el, sb-x51.el}
+	* shimbun/{sb-yahoo-auctions.el, sb-yahoo.el, sb-yomiuri-html.el}
+	* shimbun/{sb-yomiuri.el, sb-yoshirin.el, sb-zdnet-jp.el, shimbun.el}
+
+	Remove files
+
+	* w3m-ccl.el, w3m-ucs.el, w3m-xmas.el, attic/rfc2368.el
+	* doc/ptexinfmt.el, patches/*
+
+	New implementation for w3m-download ([emacs-w3m:13326])
+
+	* w3m (w3m-download): Use awk to divide the output of `w3m -dump_extra'
+	into header fed to Emacs and body to be saved in file;
+	note that awk should be GNU awk that supports BINMODE and RT.
+	(w3m-current-process): Modify docstring; now it's a list of processes.
+	(w3m-buffer-setup): Show downloading indicator in the mode-line.
+	(w3m--goto-url--valid-url): Treat w3m-current-process as a list.
+
+	* w3m-proc.el (w3m-process-filter): Show downloading indicators.
+	(w3m-process-modeline-string): Modify docstring; now it's an alist of
+	downloading progress informations.
+	(w3m-process-start-after): No need to reset w3m-process-modeline-string.
+
 2019-06-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-select-buffer-show-this-line)

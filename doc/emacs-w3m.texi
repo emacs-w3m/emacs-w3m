@@ -8,7 +8,7 @@
 @synindex pg cp
 
 @copying
-Copyright @copyright{} 2000-2014 @w{TSUCHIYA Masatoshi}
+Copyright @copyright{} 2000-2019 @w{TSUCHIYA Masatoshi}
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -212,31 +212,8 @@ you're not that lucky, read on to learn how to install emacs-w3m.
 @section What version of Emacs can be used?
 @cindex Possible Emacs versions
 
-You can run emacs-w3m in various versions of Emacsen listed below:
-
-@table @samp
-
-@item Emacs 21.1 or greater
-No additional packages are required.
-
-@item XEmacs 21.x
-First of all, you should note that emacs-w3m supports only XEmacs
-21.4.17 and later and XEmacs 21.5-b19 and later.  In addition, you need
-to have installed the latest xemacs-base package including the
-@file{timer-funcs.el} module.
-
-The @acronym{APEL} package and the @samp{gifsicle} program are required.
-In addition, it would be better to have installed the @file{rfc2368.el}
-module which parses @samp{mailto} urls (@pxref{Other Requirements}).
-
-@item Emacs 20.x, Emacs 19.34 (including Mule 2.3)
-Emacs-w3m no longer supports those Emacs versions.
-
-@end table
-
-If you use the development version of GNU Emacs, perhaps you should run
-the CVS version of emacs-w3m on it.  In that case, it is strongly
-recommended that you join the @ref{Mailing List}.
+Now emacs-w3m will work with Emacs 25, 26, and hopefully 27 (not
+released yet, though).  XEmacs support has been dropped.
 
 @node You Need w3m
 @section Using w3m: the reason why emacs-w3m is fast
@@ -248,52 +225,19 @@ accelerated Emacs web browser with asynchronous operation.
 
 You must install the latest w3m, it is available at:
 
-@uref{http://prdownloads.sourceforge.net/w3m/}
+@uref{https://salsa.debian.org/debian/w3m}
 
 @node Other Requirements
 @section Things required to run emacs-w3m
-@cindex @acronym{APEL} package
-@cindex Gifsicle program
 @cindex ImageMagick package
+@cindex @acronym{APEL} package
 @cindex @acronym{FLIM} package
-@cindex Mule-UCS package
-@cindex codepage-ex
-@cindex rfc2368.el
 
 Depending on the Emacs version you're using, third party packages may be
 required.  This section provides resources to help you find and install
 them.
 
 @table @samp
-
-@item @acronym{APEL}
-Indispensable to XEmacs.  You should install @acronym{APEL} before
-building emacs-w3m.  @acronym{APEL} is available at:
-
-@uref{http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/apel/}
-
-Note that you must not use the @acronym{APEL} XEmacs package (which is
-contained in SUMO) of the versions older than 1.32.  If you have already
-installed such a version, you should upgrade it or use the following
-directives to replace it with @acronym{APEL} which is linked above (you
-can also use the same directives in order to newly install
-@acronym{APEL}):
-
-@example
-% rm -fr /usr/local/lib/xemacs/xemacs-packages/lisp/apel
-% cd apel-10.7
-% make install-package XEMACS=xemacs-21.4.x\
-  PACKAGEDIR=/usr/local/lib/xemacs/xemacs-packages
-@end example
-
-@item gifsicle
-Indispensable to XEmacs.  There is a known bug in all XEmacs 21.x series
-that won't let it display optimized animated gifs correctly or may make
-it crash when some kind of an interlaced gif image is displayed.
-Emacs-w3m uses the @samp{gifsicle} program to convert gif data in order
-to make it possible to be handled by XEmacs 21.x.  It is available at:
-
-@uref{http://www.lcdf.org/gifsicle/}
 
 @item ImageMagick
 If the @samp{convert} program bundled with the ImageMagick package is
@@ -307,6 +251,13 @@ your surfing experience.  You can get the ImageMagick package from:
 To manipulate @samp{favicon} images, we recommend version 5.4.0-5 and
 later, previous versions may work but we didn't check them thoroughly.
 
+@item @acronym{APEL}
+Necessary for using the shimbun library.  You should install
+@acronym{APEL} before building emacs-w3m.  @acronym{APEL} is available
+at:
+
+@uref{https://github.com/wanderlust/apel}
+
 @item @acronym{FLIM}
 The @acronym{FLIM} package is required to use the @samp{shimbun}
 library.  The @samp{shimbun} library is a collection of tools for
@@ -318,55 +269,7 @@ regardless of the version of Emacs you are using.  Therefore, you must
 install both @acronym{APEL} and @acronym{FLIM} if you would like to use
 the @samp{shimbun} library.  The @acronym{FLIM} package is available at:
 
-@uref{http://kanji.zinbun.kyoto-u.ac.jp/~tomo/lemi/dist/flim/flim-1.14/}
-
-@item Mule-UCS
-If you use XEmacs 21.4, or need to read Chinese text, Japanese text,
-Korean text, etc. using Emacs 21, we recommend you install the Mule-UCS
-Emacs Lisp package so as to enable emacs-w3m to display pages encoded by
-UTF-8, which is the typical coding system of the Unicode system.  Note
-that Emacs 21 supports the Unicode system partially (e.g., for Latin
-text) and Emacs 22 or greater fully supports it.  The Mule-UCS Emacs
-Lisp package is available at:
-
-@uref{http://unit.aist.go.jp/itri/itri-gist/ftp.m17n.org/pub/mule/Mule-UCS/test/Mule-UCS-current.tar.gz}
-
-(The official page for Mule-UCS will open in the near future in
-@uref{http://www.meadowy.org/}.)
-
-If you use it with Emacs 21.2, it is necessary to apply
-@uref{http://www.m17n.org/mlarchive/mule/200203/msg00000.html, this
-patch} before installation.
-
-If you are an XEmacs 21.4 user, the compiled package is here:
-
-@uref{ftp://ftp.xemacs.org/xemacs/packages/mule-ucs-1.14-pkg.tar.gz}
-
-(You don't need to install it in addition to Mule SUMO, that contains
-it.)
-
-@item codepage-ex
-Some web sites in Europe specify a @samp{charset=ISO-8859-1} encoding,
-but really use @code{windows-1252}.  Since @code{iso-8859-1} is
-insufficient to decode that, emacs-w3m uses @code{windows-1252} as a
-superset of @code{iso-8859-1} if it is available.  The
-@code{windows-1252} coding system is built-in since Emacs 22.  Even in
-Emacs 21, you can enable to use it using the module called
-@code{codepage-ex}.  See the following page:
-
-@uref{http://nijino.homelinux.net/emacs/codepage-ex.html}
-
-@item rfc2368.el
-Install it if you'd like to enable emacs-w3m running with XEmacs to
-parse @samp{mailto} urls properly.  You can find the @file{rfc2368.el}
-module which can be used with XEmacs in the @file{attic} directory in
-the emacs-w3m distribution.  To install it, copy the @file{rfc2368.el}
-file to the directory belonging to the @code{load-path}, and perform the
-following command:
-
-@example
-% xemacs -batch -vanilla -f batch-byte-compile rfc2368.el
-@end example
+@uref{https://github.com/wanderlust/flim}
 @end table
 
 @node Installing Emacs-w3m
@@ -431,8 +334,7 @@ If you don't want those files to be compressed, use the configure option
 @samp{--without-compress-install}.
 
 @item
-Just run @samp{make} and @samp{make install}.  See also the next step if
-you are using XEmacs.
+Just run @samp{make} and @samp{make install}.
 
 @example
 % make
@@ -447,8 +349,7 @@ beforehand, use this:
 % make what-where
 @end example
 
-If you are using Emacs or XEmacs capable of displaying images, you had
-better install icon image files.  To do this:
+You may as well install icon image files, too.  To do this:
 
 @example
 % make install-icons
@@ -462,47 +363,7 @@ or
 @end example
 
 @noindent
-The later is for using the slightly larger icon images.
-
-@item
-You can also install emacs-w3m as an XEmacs package using @samp{make
-install-package} instead of @samp{make install} as follows:
-
-@example
-% make
-% make install-package
-@end example
-
-In this case, you don't have to execute @samp{make install-icons} nor
-@samp{make install-icons30}.
-
-If you need to specify the package directory, there are two ways to do
-that:
-
-@itemize @bullet
-
-@item
-Use the @samp{configure} option @samp{--with-packagedir=}.  For example:
-
-@example
-% ./configure --with-packagedir=/opt/xemacs/xemacs-packages
-% make what-where
-% make
-% make install-package
-@end example
-
-@item
-Use the @samp{PACKAGEDIR} variable.  For example:
-
-@example
-% ./configure
-% make what-where PACKAGEDIR=/opt/xemacs/xemacs-packages
-% make
-% make install-package PACKAGEDIR=/opt/xemacs/xemacs-packages
-@end example
-
-@end itemize
-
+The latter is for using the slightly larger icon images.
 @end enumerate
 
 @node Non-UNIX-like systems
@@ -537,11 +398,7 @@ variables in @ref{Customizable Variables}.
 @item Autoloads
 @cindex Adding autoload settings
 
-You don't need this if you've installed emacs-w3m as an XEmacs package
-(@pxref{Installing Emacs-w3m}) because the @file{w3m/auto-autoloads.el}
-takes care of setting up autoloads.
-
-In all other cases, put the following line in your @file{~/.emacs} file:
+Put the following line in your @file{~/.emacs} file:
 
 @lisp
 (require 'w3m-load)
@@ -646,7 +503,7 @@ get used to the new web browser easily.  One is called the
 @samp{Lynx-like} keymap, the other is the @samp{Info-like} keymap.  You
 can see what they mean from those names, can't you?  The former is
 similar to that of @samp{Lynx} which is the text-based web browser, and
-the later is similar to that of @samp{Info} which is GNU's official
+the latter is similar to that of @samp{Info} which is GNU's official
 document browser.  By default, the @samp{Lynx-like} keymap is used.  If
 you would like to use the @samp{Info-like} keymap, type
 
@@ -1514,18 +1371,14 @@ the next section.  Now keep quiet and read on!)
 
 Another nifty feature is the feedback it provides.  If you are on a
 color terminal or window system, emacs-w3m shows the text in the tab in
-different colors to show the status of the page@footnote{Although XEmacs
-shows all tabs in the same colors at every moment, you can easily
-distinguish the selected tab and others and see the status of the
-current page in the modeline.}.  For example, when the page is being
-loaded, the text is in red, and goes back to its default color (usually
-black) when the loading is complete.  This way you can tell with a
-single glance at the tabs line if the page you're waiting for has
-arrived or not.
+different colors to show the status of the page.  For example, when the
+page is being loaded, the text is in red, and goes back to its default
+color (usually black) when the loading is complete.  This way you can
+tell with a single glance at the tabs line if the page you're waiting
+for has arrived or not.
 
 Finally, if the web page provides a favicon, it will be shown in the
-tab as well@footnote{Under XEmacs, favicons will currently not be shown
-in the tabs line.}.  More eye-candy for the emacs-w3m user!
+tab as well.  More eye-candy for the emacs-w3m user!
 
 User options:
 
@@ -1626,10 +1479,7 @@ The commands you will probably use most often are those who allow you
 to go to an adjacent buffer; that is a buffer just ``after'' or
 ``before'' the current one.  The meaning of this will be obvious if you
 use tabs: the next buffer is the one just after the active one, on the
-right, and the previous buffer is the one on the left.  However, XEmacs
-displays tabs in random order unfortunately, so you need to pay
-attention to the number which is displayed in each tab in order to know
-what is the adjacent buffer if you are using XEmacs.  The key bindings
+right, and the previous buffer is the one on the left.  The key bindings
 for these commands are @w{@kbd{C-c C-p}} and @w{@kbd{C-c C-n}}.
 
 These commands understand the numeric argument convention, i.e. if you
@@ -2737,7 +2587,7 @@ Integer used as the value for @code{fill-column} in emacs-w3m buffers.
 If it is positive, pages will be displayed within the columns of that
 number.  If it is zero or negative, the number of columns which
 subtracted that number from the window width is applied to the maximum
-width of pages.  Note that XEmacs does not always obey this setting.
+width of pages.
 
 @item w3m-follow-redirection
 @vindex w3m-follow-redirection
@@ -2929,7 +2779,7 @@ emacs-w3m session.
 @item w3m-popup-frame-parameters
 @vindex w3m-popup-frame-parameters
 Alist of frame parameters used when creating a new emacs-w3m frame.  It
-allows not only the alist form but also XEmacs's plist form.
+allows not only an alist form but also a plist form.
 
 @item w3m-prefer-cache
 @vindex w3m-prefer-cache
@@ -3015,32 +2865,8 @@ option.
 @item w3m-track-mouse
 @vindex w3m-track-mouse
 Whether to track the mouse and message the url under the mouse.  See
-also @code{show-help-function} if you are using GNU Emacs.
+also @code{show-help-function}.
 
-@noindent
-A tip for XEmacs users:
-
-You can also use the @code{balloon-help} feature by the
-@w{@kbd{M-x balloon-help-mode}} command with arg 1.  If the window
-manager decorates the balloon-help frame, and that is not to your taste,
-you may strip it off with the following directives:
-
-@example
-For ol[v]wm use this in .Xdefaults:
-   olvwm.NoDecor: balloon-help
-     or
-   olwm.MinimalDecor: balloon-help
-
-For fvwm version 1 use this in your .fvwmrc:
-   NoTitle balloon-help
-or
-   Style "balloon-help" NoTitle, NoHandles, BorderWidth 0
-
-For twm use this in your .twmrc:
-   NoTitle @{ "balloon-help" @}
-@end example
-
-See the @file{balloon-help.el} file for more information.
 
 @item w3m-uri-replace-alist
 @c @vindex w3m-uri-replace-alist
@@ -3122,10 +2948,6 @@ Non-@code{nil} means display the header line.
 @vindex w3m-use-header-line-title
 Non-@code{nil} means display the current title at the header line. This
 variable is effective only when @code{w3m-use-tab} is @code{nil}.
-
-@item w3m-use-mule-ucs
-@vindex w3m-use-mule-ucs
-Non-@code{nil} means use the multi-script support with Mule-UCS.
 
 @item w3m-use-refresh
 @vindex w3m-use-refresh
@@ -3282,8 +3104,7 @@ If non-@code{nil}, resize images to the specified width and height.
 @vindex w3m-show-graphic-icons-in-header-line
 Non-@code{nil} means show graphic status indicators in the header-line.
 If it is @code{nil}, also the favicon won't be shown in the header-line
-even if @code{w3m-use-favicon} is non-@code{nil}.  This variable is
-currently meaningless under XEmacs.
+even if @code{w3m-use-favicon} is non-@code{nil}.
 
 @item w3m-show-graphic-icons-in-mode-line
 @vindex w3m-show-graphic-icons-in-mode-line
@@ -3784,8 +3605,7 @@ process.  It shows a percentage of the data loaded from the web server.
 
 @item w3m-show-current-title-in-buffer-tab
 @vindex w3m-show-current-title-in-buffer-tab
-If non-@code{nil}, show the title strings in the buffers tab.  It has no
-effect if your XEmacs does not support the gutter items.
+If non-@code{nil}, show the title strings in the buffers tab.
 
 @item w3m-input-url-provide-initial-content
 @vindex w3m-input-url-provide-initial-content
@@ -4117,19 +3937,8 @@ information, see @ref{Introduction}.
 @item
 Q. Which emacs versions are supported?
 
-The following Emacsen have been checked for emacs-w3m support:
-
-@itemize @bullet
-@item Emacs 21
-@item Emacs 22
-@item XEmacs 21.4.17 and later with/without Mule
-@item XEmacs 21.5-b19 and later with/without Mule
-@item Meadow
-@end itemize
-
-Note that you're required to use @acronym{APEL} if you'd like to run
-emacs-w3m under XEmacs.  For more information, see @ref{Other
-Requirements}.
+Now emacs-w3m will work with Emacs 25, 26, and hopefully 27 (not
+released yet, though).  XEmacs support has been dropped.
 
 @item
 Q. Which w3m versions are supported?
@@ -4145,19 +3954,6 @@ Note that w3mmee mentioned as the example is configured with the
 @samp{configure} script prompts you, "Which language do you prefer?").
 It also requires the @samp{libmoe} package.
 @end itemize
-
-@item
-Q. I've already installed @acronym{APEL} in the XEmacs SUMO package, is
-it ok?
-
-There are some problems in the XEmacs @acronym{APEL} package (all
-modules have been compiled for XEmacs with Mule); for instance, the
-@samp{std11} modules conflict with the @acronym{FLIM}'s one, etc.  Even
-though you can use @file{apel-1.23-pkg.tar.gz} or later for both XEmacs
-with Mule and non-Mule XEmacs if you don't use @acronym{FLIM} for the
-@samp{shimbun} features, we recommend you replace it or newly install
-the original @acronym{APEL} package.  See @ref{Other Requirements} where
-to get it from.
 
 @item
 Q. I've gotten the developing version of emacs-w3m with CVS, however I'm
@@ -4214,34 +4010,10 @@ ways:
 
 @enumerate a
 @item
-Any characters defined in Unicode will be displayed correctly if you
-install the Mule-UCS package (@pxref{Other Requirements}).  You need to
-make sure that the value of the @code{w3m-use-mule-ucs} variable is set
-to a value other than @code{nil} after installing the Mule-UCS package.
-In addition, if you want to make Emacs (and also emacs-w3m) handle the
-character sets EUC-JISX0213 and ISO-2022-JP-3, you have to install the
-@samp{jisx0213} module which is contained in the Mule-UCS package
-(though it doesn't work under XEmacs unfortunately).
-
-@item
 Install w3mmee or w3m-m17n, and set the @code{w3m-command} variable to
 the appropriate value.  And emacs-w3m will use the multi-lingual
 features provided by one of those programs.
-However, a page written by a coding system which Emacs doesn't support
-may not be displayed correctly. So please install Mule-UCS package if
-necessary.
 @end enumerate
-
-@item
-Emacsen incompatibility
-
-Under XEmacs 21.1, pages written by the SHIFT_JIS character set may not
-be displayed correctly.  There is also a problem in XEmacs 21.2 prior to
-the beta 36 version.  You should upgrade your XEmacs if you use such
-one.
-
-You should notice that XEmacs versions 21.1 and 21.2 have already been
-retired officially.
 
 @item
 Don't use @code{standard-display-european}
@@ -4268,9 +4040,6 @@ It could be caused by the following reasons:
 
 There is a bug in the earlier versions of the @samp{libungif} library.
 You have to install @samp{libungif-4.1.0b1} and later.
-
-You must install the @samp{gifsicle} program if you want to run
-emacs-w3m under XEmacs.  @xref{Other Requirements}.
 
 Emacs-w3m doesn't support the old versions of w3m.  Check what version
 of w3m you use.
@@ -4367,7 +4136,7 @@ either.  If you are in such a miserable circumstance, it might be worth
 trying the following advice:
 
 @lisp
-(if (or (not window-system) (featurep 'xemacs))
+(if (not window-system)
     nil
   (defadvice raise-frame
     (after make-it-work (&optional frame) activate)
@@ -4390,7 +4159,7 @@ application needs it to work.  (You will lose nothing by adding it if
 you are in the platform in which the previous one is needed.)
 
 @lisp
-(if (or (not window-system) (featurep 'xemacs))
+(if (not window-system)
     nil
   (defadvice pop-to-buffer (after enable-it-to-forcus-frame
                                   activate)
@@ -4411,7 +4180,7 @@ The last one is perhaps unnecessary but it might be worth trying in some
 platforms.
 
 @lisp
-(if (or (not window-system)(featurep 'xemacs))
+(if (not window-system)
     nil
   (defadvice select-frame (around set-input-focus
                                   (frame) activate)
@@ -5888,9 +5657,6 @@ yahoo-sports.F1 yahoo-sports.baseball yahoo-sports.keiba
 yahoo-sports.NBA yahoo-sports.NFL yahoo-sports.rugby
 @end table
 
-@@nifty:motorsports requires the Mule-UCS package (@pxref{Other
-Requirements}) for Emacs-21.4 or any previous versions.
-
 @node Misc Sites Supported by Shimbun
 @subsection Misc Sites Supported by Shimbun
 
@@ -6257,7 +6023,7 @@ Open the @file{shimbun.el} file.  You may see unfamiliar definitions
 like @code{luna-define-generic} or @code{luna-define-method} there.  Hm,
 they look like @code{defun}, don't you?  You may also see there's just a
 doc-string in the former definition and the same symbol is declared
-again in the later form.  And further, there are some symbols only
+again in the latter form.  And further, there are some symbols only
 declared by the @code{luna-define-generic} form, not by the
 @code{luna-define-method} form.  What on earth are we seeing?  Isn't the
 program not written in the Emacs-Lisp language?
@@ -6822,22 +6588,6 @@ with the @code{yahtml-mode}.  Here is an example:
 (defadvice yahtml-browse-html
   (around w3m-yahtml-browse-html activate compile)
   (w3m-goto-url (ad-get-arg 0) t))
-@end lisp
-
-@item jisx0213
-
-You can use JIS X 0213 character set in Emacs using the @code{jis0213}
-module which is bundled in the Mule-UCS package.  Although the
-@code{decode-char} function is overridden by @code{mucs} (@code{jis0213}
-loads @code{mucs}) and it stops working properly for the @code{ucs}
-coded character set, it has been reported that also to load the
-@code{unicode} module seems to solve the problem. The reason has not
-been made clear yet.  Here is an example for the @file{~/.emacs} file:
-
-@lisp
-(require 'unicode)
-(require 'un-define)
-(require 'jisx0213)
 @end lisp
 @end itemize
 

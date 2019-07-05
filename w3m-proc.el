@@ -1,6 +1,6 @@
-;;; w3m-proc.el --- Functions and macros to control sub-processes -*- coding: utf-8; -*-
+;;; w3m-proc.el --- Functions and macros to control sub-processes
 
-;; Copyright (C) 2001-2005, 2007-2010, 2012, 2013, 2016-2018
+;; Copyright (C) 2001-2005, 2007-2010, 2012, 2013, 2016-2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -38,29 +38,42 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl)) ;; lexical-let
+;; `cl' employs `cl-lib'.
+;; (require 'cl-lib) ;; cl-incf, cl-labels
+
+;; Delete these two sections and use `gensym' instead of `w3m-gensym'
+;; when emacs-w3m drops the Emacs 25 support.
 (eval-when-compile
-  (require 'cl))
+  (require 'cl) (require 'cl-macs)) ;; `gensym' for Emacs 25
+(eval-and-compile
+  (if (>= emacs-major-version 26)
+      (defalias 'w3m-gensym 'gensym)
+    (defun w3m-gensym (&optional prefix)
+      "Generate a new uninterned symbol.
+The name is made by appending a number to PREFIX, default \"G\"."
+      (unless (boundp 'cl--gensym-counter) (set 'cl--gensym-counter 0))
+      (inline (cl-gensym prefix)))))
 
 (require 'w3m-util)
 
-(eval-when-compile
-  ;; External functions and variables used in this module,
-  ;; and should be defined in the other module at run-time.
-  (autoload 'w3m-idle-images-show-unqueue "w3m")
-  (defvar w3m-async-exec)
-  (defvar w3m-clear-display-while-reading)
-  (defvar w3m-command)
-  (defvar w3m-command-arguments)
-  (defvar w3m-command-environment)
-  (defvar w3m-current-buffer)
-  (defvar w3m-current-process)
-  (defvar w3m-current-title)
-  (defvar w3m-current-url)
-  (defvar w3m-process-connection-type)
-  (defvar w3m-process-modeline-format)
-  (defvar w3m-profile-directory)
-  (defvar w3m-terminal-coding-system)
-  (defvar w3m-work-buffer-list))
+;; External functions and variables used in this module,
+;; and should be defined in the other module at run-time.
+(declare-function w3m-idle-images-show-unqueue "w3m" (buffer))
+(defvar w3m-async-exec)
+(defvar w3m-clear-display-while-reading)
+(defvar w3m-command)
+(defvar w3m-command-arguments)
+(defvar w3m-command-environment)
+(defvar w3m-current-buffer)
+(defvar w3m-current-process)
+(defvar w3m-current-title)
+(defvar w3m-current-url)
+(defvar w3m-process-connection-type)
+(defvar w3m-process-modeline-format)
+(defvar w3m-profile-directory)
+(defvar w3m-terminal-coding-system)
+(defvar w3m-work-buffer-list)
 
 (defvar w3m-process-inhibit-quit t
   "`w3m-process-sentinel' binds `inhibit-quit' according to this variable.")
@@ -86,7 +99,7 @@
 (make-variable-buffer-local 'w3m-process-object)
 
 (defvar w3m-process-modeline-string nil
-  "Modeline string to show status of retrieving process.")
+  "Alist of process buffer's name and downloading progress message.")
 (make-variable-buffer-local 'w3m-process-modeline-string)
 
 (defvar w3m-process-proxy-user nil "User name of the proxy server.")
@@ -111,22 +124,13 @@
 	 (temporary-file-directory
 	  (if (file-directory-p w3m-profile-directory)
 	      (file-name-as-directory w3m-profile-directory)
-	    ,(if (featurep 'xemacs)
-		 ;; Though `temporary-file-directory' exists even in XEmacs,
-		 ;; that's only an imitation provided by APEL.
-		 '(temp-directory)
-	       'temporary-file-directory)))
+	    temporary-file-directory))
 	 (default-directory
 	   (cond ((file-directory-p w3m-profile-directory)
 		  (file-name-as-directory w3m-profile-directory))
 		 ((file-directory-p (expand-file-name "~/"))
 		  (expand-file-name "~/"))
 		 (t temporary-file-directory))))
-     ;; XEmacs obtains tmp-dir from the `temp-directory' function of which
-     ;; return value can only be modified by the following env vars.
-     ,@(if (featurep 'xemacs)
-	   '((setenv "TEMP" temporary-file-directory) ;; Windoze
-	     (setenv "TMPDIR" temporary-file-directory))) ;; Un|x
      (dolist (pair ,alist)
        (setenv (car pair) (cdr pair)))
      ,@body))
@@ -211,11 +215,7 @@ generated asynchronous process is ignored.  Otherwise,
 			      (current-buffer) command
 			      (w3m-process-arguments object)))
 		 (authinfo (when w3m-current-url
-			     (w3m-url-authinfo w3m-current-url)))
-		 (set-process-query-on-exit-flag
-		  (if (fboundp 'set-process-query-on-exit-flag)
-		      'set-process-query-on-exit-flag
-		    'process-kill-without-query)))
+			     (w3m-url-authinfo w3m-current-url))))
 	    (setq w3m-process-user (car authinfo)
 		  w3m-process-passwd (cdr authinfo)
 		  w3m-process-realm nil)
@@ -224,7 +224,7 @@ generated asynchronous process is ignored.  Otherwise,
 	    (set-process-sentinel proc (if no-sentinel
 					   'ignore
 					 'w3m-process-sentinel))
-	    (funcall set-process-query-on-exit-flag proc nil))))))
+	    (set-process-query-on-exit-flag proc nil))))))
   nil)	;; The return value of `w3m-process-start-process'.
 
 (defun w3m-process-kill-stray-processes ()
@@ -243,7 +243,7 @@ number of current working processes is less than `w3m-process-max'."
     (catch 'last
       (dolist (obj (reverse w3m-process-queue))
 	(when (buffer-name (w3m-process-buffer obj))
-	  (if (> (incf num) w3m-process-max)
+	  (if (> (cl-incf num) w3m-process-max)
 	      (throw 'last nil)
 	    (w3m-process-start-process obj)))))))
 
@@ -327,7 +327,7 @@ which have no handler."
   "Generate the null handler, and evaluate BODY.
 When BODY is evaluated, the local variable `handler' keeps the null
 handler."
-  (let ((var (gensym "--tempvar--")))
+  (let ((var (w3m-gensym "--tempvar--")))
     `(let ((,var (let (handler) ,@body)))
        (when (w3m-process-p ,var)
 	 (w3m-process-start-process ,var))
@@ -371,8 +371,8 @@ otherwise returns nil."
   "Generate the waiting handler, and evaluate BODY.
 When BODY is evaluated, the local variable `handler' keeps the handler
 which will wait for the end of the evaluation."
-  (let ((result (gensym "--result--"))
-	(wait-function (gensym "--wait-function--")))
+  (let ((result (w3m-gensym "--result--"))
+	(wait-function (w3m-gensym "--wait-function--")))
     `(let ((w3m-process-waited t)
 	   (,result)
 	   (,wait-function (make-symbol "wait-function")))
@@ -447,9 +447,9 @@ be evaluated after the end of the process with the variable VAR which
 is set to the result of the form FORM.  Otherwise, the body BODY is
 evaluated at the same time, and this macro returns the result of the
 body BODY."
-  (let ((var (or (car spec) (gensym "--tempvar--")))
+  (let ((var (or (car spec) (w3m-gensym "--tempvar--")))
 	(form (cdr spec))
-	(post-function (gensym "--post-function--")))
+	(post-function (w3m-gensym "--post-function--")))
     `(let ((,post-function (lambda (,var) ,@body)))
        (let ((,var (let ((handler (cons ,post-function handler)))
 		     ,@form)))
@@ -469,25 +469,25 @@ body BODY."
   "(w3m-process-do-with-temp-buffer (VAR FORM) BODY...):
 Like `w3m-process-do', but the form FORM and the body BODY are
 evaluated in a temporary buffer."
-  (let ((var (or (car spec) (gensym "--tempvar--")))
+  (let ((var (or (car spec) (w3m-gensym "--tempvar--")))
 	(form (cdr spec))
-	(post-body (gensym "--post-body--"))
-	(post-handler (gensym "--post-handler--"))
-	(temp-buffer (gensym "--temp-buffer--"))
-	(current-buffer (gensym "--current-buffer--")))
+	(post-body (w3m-gensym "--post-body--"))
+	(post-handler (w3m-gensym "--post-handler--"))
+	(temp-buffer (w3m-gensym "--temp-buffer--"))
+	(current-buffer (w3m-gensym "--current-buffer--")))
     `(lexical-let ((,temp-buffer
 		    (w3m-get-buffer-create
 		     (generate-new-buffer-name w3m-work-buffer-name)))
 		   (,current-buffer (current-buffer)))
-       (w3m-labels ((,post-body (,var)
-				(when (buffer-name ,temp-buffer)
-				  (set-buffer ,temp-buffer))
-				,@body)
-		    (,post-handler (,var)
-				   (w3m-kill-buffer ,temp-buffer)
-				   (when (buffer-name ,current-buffer)
-				     (set-buffer ,current-buffer))
-				   ,var))
+       (cl-labels ((,post-body (,var)
+			       (when (buffer-name ,temp-buffer)
+				 (set-buffer ,temp-buffer))
+			       ,@body)
+		   (,post-handler (,var)
+				  (w3m-kill-buffer ,temp-buffer)
+				  (when (buffer-name ,current-buffer)
+				    (set-buffer ,current-buffer))
+				  ,var))
 	 (let ((,var (let ((handler
 			    (cons #',post-body
 				  (cons #',post-handler handler))))
@@ -521,9 +521,6 @@ evaluated in a temporary buffer."
 	 (apply 'call-process command nil t nil arguments))))))
 
 (defun w3m-process-start-after (exit-status)
-  (when w3m-current-buffer
-    (with-current-buffer w3m-current-buffer
-      (setq w3m-process-modeline-string nil)))
   (cond
    ((numberp exit-status)
     (zerop (setq w3m-process-exit-status exit-status)))
@@ -544,8 +541,7 @@ evaluated in a temporary buffer."
     (unwind-protect
 	(if (buffer-name (process-buffer process))
 	    (with-current-buffer (process-buffer process)
-	      (w3m-static-unless (featurep 'xemacs)
-		(accept-process-output process 1))
+	      (accept-process-output process 1)
 	      (setq w3m-process-queue
 		    (delq w3m-process-object w3m-process-queue))
 	      (let ((exit-status (process-exit-status process))
@@ -682,15 +678,23 @@ Username for \\(.*\\)\n?: ")
 	      (re-search-backward
 	       "^W3m-\\(?:in-\\)?progress: \\([.0-9]+/[.0-9]+[a-zA-Z]?b\\)$"
 	       nil t))
-	    (let ((str (w3m-process-modeline-format (match-string 1)))
-		  (buf))
+	    (let ((str (match-string 1))
+		  (temp (buffer-name))
+		  buf progress)
 	      (save-current-buffer
 		(dolist (handler (w3m-process-handlers w3m-process-object))
 		  (when (setq buf (w3m-process-handler-parent-buffer handler))
 		    (if (buffer-name buf)
 			(progn
 			  (set-buffer buf)
-			  (setq w3m-process-modeline-string str))
+			  (when (setq progress
+				      (assoc temp w3m-process-modeline-string))
+			    (setcdr progress
+				    (if (string-equal str (cdr progress))
+					;; Blink it
+					(make-string (length str) ? )
+				      str)))
+			  (force-mode-line-update))
 		      (w3m-process-kill-stray-processes)))))))))))))
 
 (defun w3m-process-modeline-format (str)
@@ -760,8 +764,7 @@ Username for \\(.*\\)\n?: ")
 			       (format "Password for %s%%s: " ident)
 			     "Password%s: ")
 			   (if (and (stringp pass)
-				    (> (length pass) 0)
-				    (not (featurep 'xemacs)))
+				    (> (length pass) 0))
 			       (concat " (default "
 				       (make-string (length pass) ?\*)
 				       ")")
@@ -795,19 +798,6 @@ prompt."
 	(when (setq answer (y-or-n-p prompt))
 	  (push (cons root (list prompt)) w3m-process-accept-alist)))
       answer)))
-
-;; Silence the byte compiler complaining against `gensym' like:
-;; "Warning: the function `gensym' might not be defined at runtime."
-(eval-when-compile
-  (and (boundp 'byte-compile-unresolved-functions)
-       (fboundp 'gensym)
-       (symbol-file 'gensym)
-       (string-match "/cl-macs\\.el[^/]*\\'" (symbol-file 'gensym))
-       (condition-case nil
-	   (setq byte-compile-unresolved-functions
-		 (delq (assq 'gensym byte-compile-unresolved-functions)
-		       byte-compile-unresolved-functions))
-	 (error))))
 
 (provide 'w3m-proc)
 

@@ -1,6 +1,6 @@
 ;;; sb-multi.el --- Virtual shimbun class to retrieve multiple pages.
 
-;; Copyright (C) 2006-2009, 2011 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2006-2009, 2011, 2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: news
@@ -26,14 +26,9 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl)
-  ;; `multiple-value-bind' requires the 2nd argument to be multiple-value,
-  ;; not a list, in particular for XEmacs 21.5.  `values-list' does it,
-  ;; but is a run-time cl function in XEmacs 21.4 and Emacs 21.
-  (when (eq 'identity (symbol-function 'values-list))
-    (define-compiler-macro values-list (arg)
-      arg)))
+(eval-when-compile (require 'cl)) ;; multiple-value-bind
+;; `cl' employs `cl-lib'.
+;; (require 'cl-lib) ;; cl-incf
 
 (require 'shimbun)
 
@@ -116,7 +111,7 @@ Return nil, unless a content is cleared successfully.")
 	(let ((i 0))
 	  (dolist (text texts)
 	    (setf (shimbun-entity-cid text)
-		  (format "shimbun.%d.%s" (incf i) base-cid))))
+		  (format "shimbun.%d.%s" (cl-incf i) base-cid))))
 	(apply 'shimbun-entity-add-child body texts))
       (when images
 	(setf (shimbun-entity-cid body) (concat "shimbun.0." base-cid))

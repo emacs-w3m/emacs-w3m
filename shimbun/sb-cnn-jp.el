@@ -1,6 +1,6 @@
 ;;; sb-cnn-jp.el --- shimbun backend for CNN Japan
 
-;; Copyright (C) 2003, 2004, 2005, 2008 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2003-2005, 2008, 2019 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 
 ;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
 ;; Keywords: news
@@ -162,7 +162,7 @@ Web\\(?:\\s \\|&nbsp;\\)+posted\\(?:\\s \\|&nbsp;\\)+at:[^0-9]*\
 		 (goto-char (point-min))
 		 (re-search-forward (shimbun-content-start shimbun) nil t)))
       (if (looking-at "[\t\n ]*\\(-[\t\n ]+[A-Z]+\\(?:/[A-Z]+\\)*\\)\
-\[\t\n ]*</p>[\t\n ]*<p>")
+[\t\n ]*</p>[\t\n ]*<p>")
 	  (replace-match (concat "\\1<br>\n" photo "<p>"))
 	(when (looking-at "[\t\n ]+")
 	  (delete-region (match-beginning 0) (match-end 0)))

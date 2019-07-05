@@ -1,6 +1,6 @@
 ;;; sb-glimpse.el --- shimbun backend class for Glimpse archive
 
-;; Copyright (C) 2001, 2002, 2003 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
+;; Copyright (C) 2001-2003, 2019 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 
 ;; Author: Akihiro Arisawa    <ari@mbf.sphere.ne.jp>
 ;; Keywords: news
@@ -26,9 +26,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(eval-when-compile (require 'cl-lib)) ;; cl-incf
 (require 'shimbun)
 (require 'sb-mhonarc)
 
@@ -48,7 +46,7 @@
 	(pages (shimbun-header-index-pages range))
 	(count 0)
 	headers auxs)
-    (while (and (if pages (<= (incf count) pages) t)
+    (while (and (if pages (<= (cl-incf count) pages) t)
 		(re-search-forward
 		 (concat "<A HREF=\"" path
 			 "\\([12][0-9][0-9][0-9][0-1][0-9]\\)/\">\\[Index\\]")

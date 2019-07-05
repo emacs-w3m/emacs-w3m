@@ -1,6 +1,6 @@
-;;; w3m-symbol.el --- Stuffs to replace symbols for emacs-w3m -*- coding: utf-8; -*-
+;;; w3m-symbol.el --- Stuffs to replace symbols for emacs-w3m
 
-;; Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2009, 2017
+;; Copyright (C) 2002-2007, 2009, 2017, 2019
 ;; ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
 
 ;; Author: ARISAWA Akihiro <ari@mbf.sphere.ne.jp>
@@ -27,14 +27,10 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
-(eval-when-compile
-  (defvar w3m-output-coding-system)
-  (defvar w3m-language)
-  (defvar w3m-use-symbol)
-  (autoload 'w3m-mule-unicode-p "w3m"))
+(defvar w3m-output-coding-system)
+(defvar w3m-language)
+(defvar w3m-use-symbol)
+(declare-function w3m-mule-unicode-p "w3m")
 
 (defgroup w3m-symbol nil
   "Symbols for w3m"
@@ -44,14 +40,7 @@
   '(list
     :convert-widget w3m-widget-type-convert-widget
     (let* ((w `(sexp :match (lambda (widget value) (stringp value))
-		     :size 4 :value ""
-		     ,@(if (not (widget-get widget :copy))
-			   ;; Emacs versions prior to 22.
-			   '(:value-to-internal
-			     (lambda (widget value)
-			       (if (string-match "\\`\".*\"\\'" value)
-				   value
-				 (prin1-to-string value)))))))
+		     :size 4 :value ""))
 	   (a `(,@w :format "%v "))
 	   (b `(,@w :format "%v\n"))
 	   (c (list a a a a a a a b))
@@ -184,7 +173,7 @@
 	 (funcall w3m-use-symbol))
 	(t w3m-use-symbol)))
 
-(eval-when-compile (defvar current-language-environment))
+(defvar current-language-environment)
 
 (defun w3m-symbol ()
   (cond (w3m-symbol
@@ -193,16 +182,7 @@
 	   w3m-symbol))
 	((and (eq w3m-output-coding-system 'utf-8)
 	      w3m-mule-unicode-symbol))
-	((let ((lang (or w3m-language
-			 (and (boundp 'current-language-environment)
-			      current-language-environment
-			      ;; In XEmacs 21.5 it may be the one like
-			      ;; "Japanese (UTF-8)".
-			      (if (string-match "[\t ]+("
-						current-language-environment)
-				  (substring current-language-environment
-					     0 (match-beginning 0))
-				current-language-environment)))))
+	((let ((lang (or w3m-language current-language-environment)))
 	   (when (boundp (intern (format "w3m-%s-symbol" lang)))
 	     (symbol-value (intern (format "w3m-%s-symbol" lang))))))
 	(t w3m-default-symbol)))
