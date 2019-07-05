@@ -27,14 +27,14 @@ matrix:
     - os: osx
       osx_image: xcode10.1
       env: EMACS=emacs-snapshot
-    - os: osx
-      osx_image: xcode10.1
-      env: EMACS=aquamacs
+#    - os: osx
+#      osx_image: xcode10.1
+#      env: EMACS=aquamacs
   allow_failures:
     - os: osx
       osx_image: xcode10.1
       env: EMACS=emacs-snapshot
-    - env: EMACS=aquamacs
+#    - env: EMACS=aquamacs
 
 install:
   - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'linux--emacs25' ]; then
@@ -75,15 +75,15 @@ install:
       brew install emacs --HEAD &&
       brew install w3m;
     fi
-  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'osx--aquamacs' ]; then
-      export EMACS_EXE=aquamacs;
-      download_path=$(curl -s "https://api.github.com/repos/davidswelt/aquamacs-emacs/releases/latest" | grep 'browser_' |  sed 's/.* .//;s/.$//') &&
-      echo "${download_path}" &&
-      wget "${download_path}" &&
-      hdiutil attach "$(basename ${download_path})" &&
-      ls /Volumes/A* &&
-      sudo ln -s /Volumes/Aquamacs/Aquamacs.app/Contents/MacOS/Aquamacs /usr/local/bin/${EMACS_EXE};
-    fi
+#  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'osx--aquamacs' ]; then
+#      export EMACS_EXE=aquamacs;
+#      download_path=$(curl -s "https://api.github.com/repos/davidswelt/aquamacs-emacs/releases/latest" | grep 'browser_' |  sed 's/.* .//;s/.$//') &&
+#      echo "${download_path}" &&
+#      wget "${download_path}" &&
+#      hdiutil attach "$(basename ${download_path})" &&
+#      ls /Volumes/A* &&
+#      sudo ln -s /Volumes/Aquamacs/Aquamacs.app/Contents/MacOS/Aquamacs /usr/local/bin/${EMACS_EXE};
+#    fi
 
 before_script:
   - autoconf --version
