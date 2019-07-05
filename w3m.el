@@ -10031,8 +10031,9 @@ displayed in the other unselected windows will also change unwantedly."
 		    (error (w3m-reload-this-page)))
 		  (goto-char
 		   (prog1 (point)
-		     (goto-char (max 1 (min (point-max)
-					    (round (* pos (buffer-size))))))
+		     (goto-char (max (point-min)
+				     (min (point-max)
+					  (round (* pos (buffer-size))))))
 		     (set-window-start window (line-beginning-position))))
 		  (beginning-of-line))))))
 	(redisplay (selected-window))
