@@ -1,3 +1,20 @@
+2019-07-05  Boruch Baum  <boruch_baum@gmx.com>
+
+	Fix issue #52: quick-search that requires POST-DATA (PR#54)
+
+	* w3m.el (w3m-input-url): Don't remove potential POST-DATA from
+	raw-input (ref github issue #52).  Callers to this function will now
+	need to perform w3m-canonicalize-url if and when they choose.
+	(w3m-goto-url): Extract potential POST-DATA from output of
+	w3m-input-url, and only afterwards perform w3m-canonicalize-url.
+	(w3m-uri-replace-alist): Correct omissions in docstring.
+
+	* w3m-antenna.el (w3m-antenna-add-current-url):
+	* w3m-bookmark.el (w3m-bookmark-add-current-url):
+	* w3m.el (w3m-download, w3m-edit-url)
+	(w3m-view-url-with-external-browser):
+	Perform w3m-canonicalize-url for w3m-input-url.
+
 2019-07-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Improve w3m-buffer-unseen control

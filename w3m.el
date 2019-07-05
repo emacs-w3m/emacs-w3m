@@ -175,6 +175,8 @@ filters before being rendered."
 (declare-function image-scroll-up "image-mode" (&optional n))
 (declare-function quit-window "window" (&optional kill window))
 (declare-function rfc2368-parse-mailto-url "rfc2368" (mailto-url))
+(declare-function w3m-search-escape-query-string "w3m-search"
+		  (str &optional coding))
 (declare-function widget-convert-button "wid-edit" (type from to &rest args))
 (declare-function widget-forward "wid-edit" (arg))
 (declare-function widget-get "wid-edit" (widget property))
@@ -185,6 +187,7 @@ filters before being rendered."
 (defvar w3m-bookmark-menu-items)
 (defvar w3m-bookmark-menu-items-pre)
 (defvar w3m-tab-menubar-make-items-preitems)
+(defvar w3m-search-engine-alist)
 (defvar w3m-session-menu-items-pre)
 (defvar w3m-session-menu-items)
 
@@ -1769,15 +1772,17 @@ timestamp with the `-t' option."
     ("\\`urn:ietf:rfc:\\([0-9]+\\)" w3m-pattern-uri-replace
      "http://www.ietf.org/rfc/rfc\\1.txt"))
   "Alist of regexps matching URIs, and some types of replacements.
-It can be used universally to replace URI strings in the local rule to
-the valid forms in the Internet.
+This alist is used universally to replace locally produced URI
+strings (eg. via user input) to the valid internet forms.
 
-Each element looks like the `(REGEXP FUNCTION OPTIONS...)' form.
-FUNCTION takes one or more arguments, a uri and OPTIONS.  You can use
-the grouping constructs \"\\\\(...\\\\)\" in REGEXP, and they can be
-referred by the \"\\N\" forms in a replacement (which is one of OPTIONS).
+Each element should take the form (REGEXP FUNCTION ARGS).
+FUNCTION will be called with URI as its first argument and ARGS
+as its second.
 
-Here are some predefined functions which can be used for those ways:
+REGEXP may include grouping constructs \"\\(...\\)\", so that they can be
+referred by the \"N\" forms in a replacement (which is one of OPTIONS).
+
+`Emacs-w3m' comes with two predefined functions for use with this alist:
 
 `w3m-pattern-uri-replace'
     Replace a URI using PATTERN (which is just an OPTION).  It is
@@ -1791,8 +1796,17 @@ Here are some predefined functions which can be used for those ways:
     (\"\\\\`gg:\" w3m-search-uri-replace \"google\")
 
     makes it possible to replace the URI \"gg:emacs\" to the form to
-    query the word \"emacs\" to the Google site.\
-"
+    query the word \"emacs\" to the Google site.
+
+Two additional forms for elements are available, but they are
+deprecated and support for them are subject to being removed at
+any time:
+
+1. (REGEXP REPLACE-PATTERN) Function `w3m-pattern-uri-replace'
+   will be called to perform the replacement.
+
+2. (REGEXP FUNCTION) FUNCTION will be called will URI as its
+   argument to perform the replacement."
   :group 'w3m
   :type '(repeat
 	  :convert-widget w3m-widget-type-convert-widget
@@ -4493,15 +4507,13 @@ This function is used as `minibuffer-default-add-function'."
 		       (if feeling-searchy "URL or Keyword: " "URL: ")))
 		   initial keymap nil 'w3m-input-url-history default)))
       (if (string-equal url "")
-	  (or default "")
-	(if (stringp url)
-	    (progn
-	      ;; remove duplication
-	      (setq w3m-input-url-history
-		    (cons url (delete url w3m-input-url-history)))
-	      (w3m-canonicalize-url url feeling-searchy))
-	  ;; It may be `popup'.
-	  url)))))
+	  (or default ;; It may be a symbol like `popup'.
+	      "")
+	(when (stringp url)
+	  ;; remove duplication
+	  (setq w3m-input-url-history
+		(cons url (delete url w3m-input-url-history))))
+	url))))
 
 ;;; Cache:
 (defun w3m-cache-setup ()
@@ -5674,10 +5686,11 @@ specifies not using the cached data."
   (interactive (list nil nil current-prefix-arg))
   (unless url
     (while (string-equal
-	    (setq url (w3m-input-url
-		       "Download URL: " nil
-		       (or (w3m-active-region-or-url-at-point) "")
-		       nil nil 'no-initial))
+	    (setq url (w3m-canonicalize-url
+		       (w3m-input-url
+			"Download URL: " nil
+			(or (w3m-active-region-or-url-at-point) "")
+			nil nil 'no-initial)))
 	    "")
       (message "A url is required")
       (sit-for 1)))
@@ -7161,13 +7174,14 @@ of the url currently displayed.  The browser is defined in
   ;; This command bound the M key and was listed in the tab menu till
   ;; 2013-10-17.  As someone may still need it, don't delete it even
   ;; if emacs-w3m no longer uses.
-  (interactive (list (w3m-input-url "URL to view externally: "
-				    nil
-				    (or (w3m-anchor)
-					(unless w3m-display-inline-images
-					  (w3m-image))
-					w3m-current-url)
-				    nil nil 'no-initial)))
+  (interactive (list (w3m-canonicalize-url
+		      (w3m-input-url "URL to view externally: "
+				     nil
+				     (or (w3m-anchor)
+					 (unless w3m-display-inline-images
+					   (w3m-image))
+					 w3m-current-url)
+				     nil nil 'no-initial))))
   (when (w3m-url-valid url)
     (message "Browsing <%s>..." url)
     (w3m-external-view url)))
@@ -7354,7 +7368,7 @@ Return t if highlighting is successful."
 
 (defun w3m-edit-url (url)
   "Edit the source code of URL."
-  (interactive (list (w3m-input-url)))
+  (interactive (list (w3m-canonicalize-url (w3m-input-url))))
   (when (string-match "\\`about://\\(?:header\\|source\\)/" url)
     (setq url (substring url (match-end 0))))
   (catch 'found
@@ -9487,8 +9501,26 @@ invoked in other than a w3m-mode buffer."
 	   (w3m-input-url "Open URL in current buffer" nil nil nil
 			  'feeling-searchy 'no-initial))
 	 current-prefix-arg coding-system-for-read))
-  (when (and (stringp url) (not (w3m-interactive-p)))
-    (setq url (w3m-canonicalize-url url)))
+  (when (not post-data)
+    (require 'w3m-search)
+    (let* ((uri-replace ; based upon: `w3m-uri-replace'
+	    (catch 'found-replacement
+	      (dolist (elem w3m-uri-replace-alist)
+		(when (string-match (car elem) url)
+		  (throw 'found-replacement  elem)))))
+	   (query (when uri-replace (substring url (match-end 0))))
+	   engine-info)
+      (when (and uri-replace query
+		 (eq (nth 1 uri-replace) 'w3m-search-uri-replace))
+	; based upon `w3m-search-uri-replace' and `w3m-search-do-search'
+	(setq engine-info (assoc (nth 2 uri-replace) w3m-search-engine-alist))
+	(when (and engine-info (< 3 (length engine-info)))
+	  (setq post-data
+		(format (nth 3 engine-info)
+			(w3m-search-escape-query-string query
+							(nth 2 engine-info))))
+	  (setq reload t)))))
+  (setq url (w3m-canonicalize-url url))
   (set-text-properties 0 (length url) nil url)
   (unless (or (w3m-url-local-p url)
 	      (string-match "\\`about:" url)
