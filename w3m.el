@@ -6343,69 +6343,101 @@ If so return \"text/html\", otherwise \"text/plain\"."
 	(image-mode-setup-winprops)
 	'image-page))))
 
+(defun w3m--unsupported-display (page-buffer url type)
+  "Internal function for `w3m-create-page'.
+When the display does not support handling the mime-type, inform
+the user and attempt to use an external program or just download
+the url."
+  (with-current-buffer page-buffer
+    (setq w3m-current-url (if (w3m-arrived-p url)
+			      (w3m-real-url url)
+			    url)
+	  w3m-current-title (file-name-nondirectory w3m-current-url))
+    (let ((inhibit-read-only t))
+      (erase-buffer)
+      (insert (format "This display does not support %s:\n<%s>
+Attempting external view or download..."
+		      (if (string-match "\\`image/" type)
+			  "image" type)
+		      url))
+      (center-region (point-min) (point))
+      (goto-char (point-min))
+      (insert-char ?\n (/ (- (window-height) 3) 2)))
+    (goto-char (point-min))
+    (w3m-external-view url)
+    (w3m-process-stop page-buffer)
+    (w3m-view-previous-page)
+    'external-view))
+
+(defun w3m--prompt-for-unknown-content-type (url type page-buffer)
+  "Internal function for `w3m-create-page'.
+Displays a url's raw contents, prompts the user for the mime-type
+to use, and updates the buffer's local variables accordingly."
+  (let ((cur (current-buffer))
+	(mb enable-multibyte-characters)
+	dots cont)
+    (with-temp-buffer
+      (rename-buffer " *Raw Contents*" t)
+      (set-buffer-multibyte mb)
+      (save-window-excursion
+	(pop-to-buffer (current-buffer))
+	(delete-other-windows)
+	(ding)
+	;; Display the raw contents briefly.
+	(sit-for 0)
+	(setq truncate-lines t
+	      dots (make-string (/ (- (window-width) 6) 2) ?.))
+	(with-current-buffer cur
+	  (cond ((< (count-lines (point-min) (point-max)) (window-height))
+		 (setq cont (buffer-string)))
+		((< (window-height) 10)
+		 (goto-char (point-min))
+		 (forward-line (max 0 (- (window-height) 2)))
+		 (setq cont
+		       (concat
+			(buffer-substring (point-min) (point))
+			"\n[" dots "snip" dots "]")))
+		(t
+		 (goto-char (point-min))
+		 (forward-line (/ (- (window-height) 4) 2))
+		 (setq cont (concat (buffer-substring (point-min) (point))
+				    "\n[" dots "snip" dots "]\n\n"))
+		 (goto-char (point-max))
+		 (forward-line (/ (- 4 (window-height)) 2))
+		 (setq cont (concat
+			     cont
+			     (buffer-substring (point) (point-max)))))))
+	(insert cont)
+	(goto-char (point-min))
+	(setq type
+	      (condition-case nil
+		  (completing-read
+		   (format "Content type for %s (%s): "
+			   (file-name-nondirectory url)
+			   (if (zerop (length type))
+			       "default download or external-view"
+			     (concat "`" type "' is unknown;\
+ default download or external-view")))
+		   (cons '("Download_or_External-view" ".*" nil nil)
+			 w3m-content-type-alist)
+		   nil t)
+		;; The user forced terminating the session with C-g.
+		(quit
+		 (w3m-process-stop page-buffer) ;; Needless?
+		 (with-current-buffer page-buffer
+		   (setq w3m-current-process nil))
+		 (w3m-view-previous-page))))
+	(unless (equal type "Download_or_External-view")
+	  (setf (w3m-arrived-content-type url) type))))))
+
 (defun w3m-create-page (url type charset page-buffer)
+  "Select a renderer or other handler for URL.
+Choice is based upon content-type or mime-type TYPE."
   ;; Select a content type.
   (unless (and (stringp type)
 	       (assoc type w3m-content-type-alist))
-    (let ((cur (current-buffer))
-	  (mb enable-multibyte-characters)
-	  dots cont)
-      (with-temp-buffer
-	(rename-buffer " *Raw Contents*" t)
-	(set-buffer-multibyte mb)
-	(save-window-excursion
-	  (pop-to-buffer (current-buffer))
-	  (delete-other-windows)
-	  (ding)
-
-	  ;; Display the raw contents briefly.
-	  (sit-for 0)
-	  (setq truncate-lines t
-		dots (make-string (/ (- (window-width) 6) 2) ?.))
-	  (with-current-buffer cur
-	    (cond ((< (count-lines (point-min) (point-max)) (window-height))
-		   (setq cont (buffer-string)))
-		  ((< (window-height) 10)
-		   (goto-char (point-min))
-		   (forward-line (max 0 (- (window-height) 2)))
-		   (setq cont
-			 (concat
-			  (buffer-substring (point-min) (point))
-			  "\n[" dots "snip" dots "]")))
-		  (t
-		   (goto-char (point-min))
-		   (forward-line (/ (- (window-height) 4) 2))
-		   (setq cont (concat (buffer-substring (point-min) (point))
-				      "\n[" dots "snip" dots "]\n\n"))
-		   (goto-char (point-max))
-		   (forward-line (/ (- 4 (window-height)) 2))
-		   (setq cont (concat
-			       cont
-			       (buffer-substring (point) (point-max)))))))
-	  (insert cont)
-	  (goto-char (point-min))
-
-	  (setq type
-		(condition-case nil
-		    (completing-read
-		     (format "Content type for %s (%s): "
-			     (file-name-nondirectory url)
-			     (if (zerop (length type))
-				 "default download or external-view"
-			       (concat "`" type "' is unknown;\
- default download or external-view")))
-		     (cons "Download_or_External-view"
-			   w3m-content-type-alist)
-		     nil t)
-		  ;; The user forced terminating the session with C-g.
-		  (quit
-		   (w3m-process-stop page-buffer) ;; Needless?
-		   (with-current-buffer page-buffer
-		     (setq w3m-current-process nil))
-		   (keyboard-quit))))
-	  (unless (member type '("" "Download_or_External-view"))
-	    (setf (w3m-arrived-content-type url) type))))))
-  (setq w3m-current-coding-system nil)	; Reset decoding status of this buffer.
+    (w3m--prompt-for-unknown-content-type url type page-buffer))
+  (setq w3m-current-coding-system nil)  ; Reset decoding status of this buffer.
   (setq type (w3m-prepare-content url type charset))
   (w3m-safe-decode-buffer url charset type)
   (setq charset (or charset w3m-current-content-charset))
@@ -6415,32 +6447,28 @@ If so return \"text/html\", otherwise \"text/plain\"."
   (cond
    ((string-match "\\`text/" type)
     (w3m-create-text-page url type charset page-buffer))
-   ((and (display-images-p) (string-match "\\`image/" type))
-    (w3m-create-image-page url type charset page-buffer))
-   ((and (display-images-p) (member type w3m-doc-view-content-types))
-    (with-current-buffer page-buffer
-      (setq w3m-current-url (if (w3m-arrived-p url)
-				(w3m-real-url url)
-			      url)))
-    (w3m-doc-view url))
+   ((string-match "\\`image/" type)
+    (if (display-images-p)
+	(w3m-create-image-page url type charset page-buffer)
+      (w3m--unsupported-display page-buffer url type)))
+   ((member type w3m-doc-view-content-types)
+    (if (not (display-images-p))
+	(w3m--unsupported-display page-buffer url type)
+      (with-current-buffer page-buffer
+	(setq w3m-current-url (if (w3m-arrived-p url)
+				  (w3m-real-url url)
+				url)))
+      (w3m-doc-view url)))
    (t
     (with-current-buffer page-buffer
       (setq w3m-current-url (if (w3m-arrived-p url)
 				(w3m-real-url url)
 			      url)
 	    w3m-current-title (file-name-nondirectory w3m-current-url))
-      (let ((inhibit-read-only t))
-	(erase-buffer)
-	(insert (format "This display does not support %s:\n<%s>"
-			(if (string-match "\\`image/" type)
-			    "image" type)
-			url))
-	(center-region (point-min) (point))
-	(goto-char (point-min))
-	(insert-char ?\n (/ (- (window-height) 3) 2)))
       (goto-char (point-min))
       (w3m-external-view url)
-      'external-view))))
+      (w3m-process-stop page-buffer)
+      (w3m-view-previous-page)))))
 
 (defun w3m-relationship-estimate (url)
   "Estimate relationships between a page and others."
@@ -7045,15 +7073,22 @@ command instead."
 		  (no-cache no-cache))
       (w3m-process-do
 	  (type (w3m-content-type url no-cache handler))
-	(when type
+	(if (not type)
+	    (w3m-download url nil no-cache handler)
 	  (lexical-let ((method
 			 (or (nth 2 (assoc type w3m-content-type-alist))
 			     (nth 2 (assoc (w3m-prepare-content url type nil)
-					   w3m-content-type-alist))))
-			(default
-			  (nth 2 (assoc "text/html" w3m-content-type-alist))))
-	    (when (and (not method) default)
-	      (setq method default))
+					   w3m-content-type-alist)))))
+	    (when (consp method)
+	      (let ((result))
+		(setq method
+		      (dolist (elem (nreverse method) result)
+			(push (if (and (stringp elem)
+				       (string-match "^[\"']?%s[\"']?\\'"
+						     elem))
+				  'file
+				elem)
+			      result)))))
 	    (cond
 	     ((not method)
 	      (if (w3m-url-local-p url)
@@ -7072,7 +7107,7 @@ No method to view `%s' is registered. Use `w3m-edit-this-url'"
 					  w3m-external-view-temp-directory)))
 		   suffix)
 		(setq suffix (file-name-nondirectory url))
-		(when (string-match "\\.[a-zA-Z0-9]+" suffix)
+		(when (string-match "\\.[0-9A-Za-z]+\\'" suffix)
 		  (setq suffix (match-string 0 suffix))
 		  (when (< (length suffix) 5)
 		    (setq file (concat file suffix))))
@@ -7114,13 +7149,14 @@ No method to view `%s' is registered. Use `w3m-edit-this-url'"
 		   ;; it is necessary to delay deleting of the file.
 		   (run-at-time 1 nil
 				(lambda (file buffer)
-				  (when (file-exists-p file)
+				  (when (and file (file-exists-p file))
 				    (delete-file file))
 				  (when (buffer-name buffer)
 				    (kill-buffer buffer))
 				  (message ""))
 				file buffer))))))
-	(and (stringp file)
+	(and file
+	     (stringp file)
 	     (file-exists-p file)
 	     (unless (and (processp proc)
 			  (memq (process-status proc) '(run stop)))
