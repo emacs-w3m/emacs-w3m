@@ -4,6 +4,17 @@
 
 2019-07-05  Boruch Baum  <boruch_baum@gmx.com>
 
+	Emulate `awesome-bar' for bookmarked urls (PR#56)
+
+	* w3m-bookmark.el (w3m-bookmark-add, w3m-bookmark-add-all-urls): Add
+	new bookmarks to w3m-input-url-history for `awesome bar' feature.
+
+	* w3m.el (w3m-input-url): Interpret bookmark titles as urls (ala
+	awesome-bar).
+	(w3m--get-url-from-bookmark-title): New function to enable the feature.
+	(w3m-arrived-setup): Add bookmark urls and title strings to variable
+	w3m-input-url-history.
+
 	Bugfixes for content-type handling (PR#55)
 
 	* w3m.el (w3m-create-page): Bugfixes: Properly construct collection for

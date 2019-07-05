@@ -89,6 +89,8 @@
   (autoload 'w3m-bookmark-add-all-urls "w3m-bookmark"
     "Add urls of all pages being visited to the bookmark." t)
   (autoload 'w3m-bookmark-add "w3m-bookmark" "Add URL to bookmark.")
+  (autoload 'w3m-bookmark-iterator "w3m-bookmark"
+    "Iteration bookmark groups/entries.")
   (autoload 'w3m-search "w3m-search"
     "Search a word using search engines." t)
   (autoload 'w3m-search-new-session "w3m-search"
@@ -2890,7 +2892,8 @@ format, they will simply be ignored."
 (defun w3m-arrived-setup ()
   "Load the arrived URLs database file and set up the hashed database.
 It is performed only when `w3m-arrived-db' has not been initialize yet.
-The file is specified by `w3m-arrived-file'."
+The file is specified by `w3m-arrived-file'.  This function also sets
+up `w3m-input-url-history'."
   (unless w3m-arrived-db
     (setq w3m-arrived-db (make-hash-table :test 'equal))
     (let ((list (w3m-arrived-load-list)))
@@ -2906,7 +2909,17 @@ The file is specified by `w3m-arrived-file'."
 			   (when (stringp (nth 4 elem)) (nth 4 elem))
 			   (nth 5 elem))))
       (unless w3m-input-url-history
-	(setq w3m-input-url-history (mapcar (function car) list))))
+	(setq w3m-input-url-history
+	      (let ((result))
+		(dolist (category (w3m-bookmark-iterator))
+		  (dolist (entry (cdr category))
+		    ;; bookmark url
+		    (push (car entry) result)
+		    ;; bookmark title
+		    (push (replace-regexp-in-string "^[\s\t]+" "" (cdr entry))
+			  result)))
+		(nconc (mapcar (function car) list) ;; w3m-input-url-history
+		       result)))))
     (run-hooks 'w3m-arrived-setup-functions)))
 
 (defun w3m-arrived-shutdown ()
@@ -4423,6 +4436,25 @@ This function is used as `minibuffer-default-add-function'."
     (append def2 add2
 	    (delete def2 (delete def (delete add2 (delete to-add all)))))))
 
+(defun w3m--get-url-from-bookmark-title (url)
+  "Return the actual url of a bookmark title entered to `w3m-input-url'.
+If in response to function `w3m-input-url',a user entered a
+bookmark title string, replace it with that bookmark's url."
+  ;; TODO: Consider storing the flat bookmark data in memory instead
+  ;;       of constantly going to disk and re-evaluating it based upon
+  ;;       function `w3m-bookmark-iterator'.
+  (let ((bookmarks (w3m-bookmark-iterator))
+	category entry found)
+    (while (and (not found)
+		(setq category (cdr (pop bookmarks))))
+      (while (and (not found)
+		  (setq entry (pop category)))
+	(when (string= url
+		       (replace-regexp-in-string "^[\s\t]+" "" (cdr entry)))
+	  (setq url (car entry))
+	  (setq found t))))
+    url))
+
 (defun w3m-input-url (&optional prompt initial default quick-start
 				feeling-searchy no-initial)
   "Read a url from the minibuffer, prompting with string PROMPT."
@@ -4506,6 +4538,7 @@ This function is used as `minibuffer-default-add-function'."
 				   (prin1-to-string default)))
 		       (if feeling-searchy "URL or Keyword: " "URL: ")))
 		   initial keymap nil 'w3m-input-url-history default)))
+      (setq url (w3m--get-url-from-bookmark-title url))
       (if (string-equal url "")
 	  (or default ;; It may be a symbol like `popup'.
 	      "")
