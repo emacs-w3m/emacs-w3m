@@ -66,7 +66,6 @@
 ;;; Things should be defined in advance:
 (declare-function w3m-detect-coding-region "w3m-ems" (start end &optional priority-list))
 (declare-function w3m-force-window-update "w3m-ems" (&optional window))
-(declare-function w3m-fb-frame-parameter "w3m-fb" (frame parameter))
 (declare-function w3m-history-restore-position "w3m-hist")
 (declare-function w3m-mode "w3m")
 
@@ -492,8 +491,8 @@ buffer names."
 		 t))
       ;; Don't just return `w3m-fb-buffer-list' for the selected frame
       ;; because `buffers' may have been sorted.
-      (let ((fbs (w3m-fb-frame-parameter w3m-fb-list-buffers-frame
-					 'w3m-fb-buffer-list)))
+      (let ((fbs (frame-parameter w3m-fb-list-buffers-frame
+				  'w3m-fb-buffer-list)))
 	(setq rest buffers)
 	(while rest
 	  (unless (memq (setq buffer (pop rest)) fbs)

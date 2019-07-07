@@ -1,3 +1,8 @@
+2019-07-07  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	* w3m-util.el (w3m-list-buffers): Use frame-parameter instead of
+	abolished compat function w3m-fb-frame-parameter ([emacs-w3m:13491]).
+
 2019-07-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* .travis.yml: Drop Aquamacs.
