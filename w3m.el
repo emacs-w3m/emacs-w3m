@@ -11443,6 +11443,26 @@ FROM-COMMAND is defined in `w3m-minor-mode-map' with the same key in
   :group 'w3m
   :type 'boolean)
 
+(defun w3m-display-mode (style)
+  "Select how to display emacs-w3m buffers.
+
+Refer to variable `w3m-display-mode' for details."
+  (interactive
+   (list
+    (intern
+     (let ((opts '("nil" "plain" "tabbed" "dual-pane" "frames" "tabbed-frames"))
+	   (def (symbol-name w3m-display-mode)))
+       (completing-read "Display mode: " opts nil t nil 'opts def)))))
+  (setq w3m-display-mode style)
+  (let ((vals (pcase style
+		('tabbed	'(t   x   nil))
+		('dual-pane	'(nil t   nil))
+		('frames	'(nil x   t  ))
+		('tabbed-frames	'(t   x   t  )))))
+    (setq w3m-use-tab (car vals))
+    (unless (eq (cadr vals) 'x) (setq w3m-pop-up-windows (cadr vals)))
+    (setq w3m-pop-up-frames (caddr vals))))
+
 (defcustom w3m-display-mode (pcase (list (and w3m-use-tab t)
 					 (and w3m-pop-up-windows t)
 					 (and w3m-pop-up-frames t))
@@ -11508,26 +11528,6 @@ the past, this had been set by the combination: `w3m-use-tab' t
   :set (lambda (symbol value)
 	 (custom-set-default symbol value)
 	 (w3m-display-mode value)))
-
-(defun w3m-display-mode (style)
-  "Select how to display emacs-w3m buffers.
-
-Refer to variable `w3m-display-mode' for details."
-  (interactive
-   (list
-    (intern
-     (let ((opts '("nil" "plain" "tabbed" "dual-pane" "frames" "tabbed-frames"))
-	   (def (symbol-name w3m-display-mode)))
-       (completing-read "Display mode: " opts nil t nil 'opts def)))))
-  (setq w3m-display-mode style)
-  (let ((vals (pcase style
-		('tabbed	'(t   x   nil))
-		('dual-pane	'(nil t   nil))
-		('frames	'(nil x   t  ))
-		('tabbed-frames	'(t   x   t  )))))
-    (setq w3m-use-tab (car vals))
-    (unless (eq (cadr vals) 'x) (setq w3m-pop-up-windows (cadr vals)))
-    (setq w3m-pop-up-frames (caddr vals))))
 
 (defun w3m-cleanup-temp-files ()
   (when w3m-do-cleanup-temp-files

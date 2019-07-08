@@ -8,7 +8,7 @@
 	to the values of w3m-use-tab, w3m-pop-up-windows, and w3m-pop-up-frames;
 	fix custom type; add custom set.
 	(w3m-display-mode(function)): Don't modify w3m-pop-up-windows if it is
-	unnecessary.
+	unnecessary; define it before it is used.
 
 2019-07-07  Hideyuki SHIRAI  <shirai@meadowy.org>
 
