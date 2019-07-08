@@ -112,13 +112,6 @@
 (require 'mime)    ; SEMI
 (require 'w3m-util); w3m-insert-string
 
-;; Make edebug work for the static-* macros in Emacs 24.4+.
-(def-edebug-spec static-cond (&rest (&rest def-form)))
-(def-edebug-spec static-defconst (&define name def-body [&optional def-body]))
-(def-edebug-spec static-if (&rest def-form))
-(def-edebug-spec static-unless (&rest def-form))
-(def-edebug-spec static-when (&rest def-form))
-
 (defvar octet-temp-directory temporary-file-directory
   "A directory to create temporary files.")
 
