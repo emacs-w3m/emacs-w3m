@@ -2,6 +2,14 @@
 
 	* w3m.el: Protect against nil value for ffap-url-regexp (issue #59).
 
+	Temporary fix w3m-display-mode (before improving w3m-popup-buffer)
+
+	* w3m (w3m-display-mode(variable)): Default to the style corresponding
+	to the values of w3m-use-tab, w3m-pop-up-windows, and w3m-pop-up-frames;
+	fix custom type; add custom set.
+	(w3m-display-mode(function)): Don't modify w3m-pop-up-windows if it is
+	unnecessary.
+
 2019-07-07  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	* w3m-util.el (w3m-list-buffers): Use frame-parameter instead of

@@ -11443,7 +11443,17 @@ FROM-COMMAND is defined in `w3m-minor-mode-map' with the same key in
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-display-mode nil
+(defcustom w3m-display-mode (pcase (list (and w3m-use-tab t)
+					 (and w3m-pop-up-windows t)
+					 (and w3m-pop-up-frames t))
+			      ('(nil nil nil) 'plain)
+			      ('(t   nil nil) 'tabbed)
+			      ('(nil t   nil) 'dual-pane)
+			      ('(t   t   nil) 'tabbed)
+			      ('(nil nil t  ) 'frames)
+			      ('(t   nil t  ) 'tabbed-frames)
+			      ('(nil t   t  ) 'frames)
+			      ('(t   t   t  ) 'tabbed-frames))
   "How to display emacs-w3m buffers.
 
 There exist five display modes for emacs-w3m when called
@@ -11489,12 +11499,15 @@ not easily visible to emacs-w3m buffers associated with other
 frames. The window includes a clickable tab bar along the top. In
 the past, this had been set by the combination: `w3m-use-tab' t
 `w3m-pop-up-windows' ignored, and `w3m-pop-up-frames' t."
-  :type '(radio (symbol :format "Nil" nil)
-		(symbol :format "Plain" plain)
-		(symbol :format "Tabbed" tabbed)
-		(symbol :format "Dual-pane" dual-pane)
-		(symbol :format "Dedicated Frames" frames)
-		(symbol :format "Tabbed Dedicated Frames" tabbed-frames)))
+  :type '(radio (const :format "Nil " nil)
+		(const :format "Plain " plain)
+		(const :format "Tabbed " tabbed)
+		(const :format "Dual-pane\n" dual-pane)
+		(const :format "Dedicated Frames " frames)
+		(const :format "Tabbed Dedicated Frames" tabbed-frames))
+  :set (lambda (symbol value)
+	 (custom-set-default symbol value)
+	 (w3m-display-mode value)))
 
 (defun w3m-display-mode (style)
   "Select how to display emacs-w3m buffers.
@@ -11507,12 +11520,14 @@ Refer to variable `w3m-display-mode' for details."
 	   (def (symbol-name w3m-display-mode)))
        (completing-read "Display mode: " opts nil t nil 'opts def)))))
   (setq w3m-display-mode style)
-  (setq w3m-use-tab
-	(if (memq style '(tabbed tabbed-frames)) t nil))
-  (setq w3m-pop-up-windows
-	(if (memq style '(dual-pane)) t nil))
-  (setq w3m-pop-up-frames
-	(if (memq style '(frames tabbed-frames)) t nil)))
+  (let ((vals (pcase style
+		('tabbed	'(t   x   nil))
+		('dual-pane	'(nil t   nil))
+		('frames	'(nil x   t  ))
+		('tabbed-frames	'(t   x   t  )))))
+    (setq w3m-use-tab (car vals))
+    (unless (eq (cadr vals) 'x) (setq w3m-pop-up-windows (cadr vals)))
+    (setq w3m-pop-up-frames (caddr vals))))
 
 (defun w3m-cleanup-temp-files ()
   (when w3m-do-cleanup-temp-files
