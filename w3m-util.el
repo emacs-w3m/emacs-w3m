@@ -523,7 +523,6 @@ buffer names."
   "Return non-nil if `w3m-pop-up-windows' is non-nil and the present
 situation allows it."
   '(and w3m-pop-up-windows
-	(not w3m-use-tab)
 	(not (get-buffer-window w3m-select-buffer-name))))
 
 (defvar w3m-initial-frames nil
@@ -585,8 +584,7 @@ for not deleting frames made for aims other than emacs-w3m sessions.")
 	;; Simply switch to BUFFER in the current frame.
 	(let ((cd default-directory))
 	  (if (w3m-popup-window-p)
-	      (let ((pop-up-windows t))
-		(pop-to-buffer buffer))
+	      (switch-to-buffer-other-window buffer)
 	    (switch-to-buffer buffer))
 	  (setq default-directory cd))
 	(w3m-history-restore-position)))))

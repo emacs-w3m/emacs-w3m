@@ -9418,12 +9418,12 @@ helpful message is presented and the operation is aborted."
     (w3m-refresh-at-time)))
 
 (defun w3m--goto-url--valid-url (url reload charset post-data referer handler
-				     element no-popup save-pos)
+				     element background save-pos)
   "Main function called by `w3m-goto-url' for handling generic URLS."
   (setq url (w3m--url-strip-queries url))
   (w3m-buffer-setup)			; Setup buffer.
   (w3m-arrived-setup)			; Setup arrived database.
-  (unless no-popup
+  (unless background
     (w3m-popup-buffer (current-buffer)))
   (w3m-cancel-refresh-timer (current-buffer))
   (w3m--buffer-busy-error)
@@ -9532,7 +9532,7 @@ helpful message is presented and the operation is aborted."
 
 ;;;###autoload
 (defun w3m-goto-url (url &optional reload charset post-data referer handler
-			 element no-popup save-pos)
+			 element background save-pos)
   "Visit World Wide Web pages in the current buffer.
 
 This is the primitive function of `w3m'.
@@ -9548,7 +9548,7 @@ the car of a cell is used as the content-type and the cdr of a cell is
 used as the body.
 If the fifth argument REFERER is specified, it is used for a Referer:
 field for this request.
-The remaining HANDLER, ELEMENT[1], NO-POPUP, and SAVE-POS[2] are for
+The remaining HANDLER, ELEMENT[1], BACKGROUND, and SAVE-POS[2] are for
 the internal operations of emacs-w3m.
 You can also use \"quicksearch\" url schemes such as \"gg:emacs\" which
 would search for the term \"emacs\" with the Google search engine.
@@ -9564,8 +9564,6 @@ configuration; i.e. to run `w3m-history-store-position'.
 `w3m-history-store-position' should be called in a w3m-mode buffer, so
 this will be convenient if a command that calls this function may be
 invoked in other than a w3m-mode buffer."
-  ;; FIXME: Note the inconsistency in the name given to arg NO-POPUP.
-  ;; Elsewhere it seems to be referred to as BACKGROUND.
   (interactive
    (list (unless (w3m--buffer-busy-error)
 	   (w3m-input-url "Open URL in current buffer" nil nil nil
@@ -9651,11 +9649,11 @@ invoked in other than a w3m-mode buffer."
 	(w3m-goto-url
 	 (w3m-expand-url (substring url (match-beginning 4))
 			 (concat "file://" default-directory))
-	 reload charset post-data referer handler element no-popup))
+	 reload charset post-data referer handler element background))
        (t (w3m-message "No URL at point")))))
    ((w3m-url-valid url)
     (w3m--goto-url--valid-url url reload charset post-data referer handler
-			      element no-popup save-pos))
+			      element background save-pos))
    (t (w3m-message "Invalid URL: %s" url))))
 
 (defun w3m-current-directory (url)
@@ -9746,14 +9744,12 @@ See `w3m-default-directory'."
 
 ;;;###autoload
 (defun w3m-goto-url-new-session (url &optional reload charset post-data
-				     referer no-popup)
+				     referer background)
   "Visit World Wide Web pages in a new buffer.
 
 If you invoke this command in the emacs-w3m buffer, the new buffer
 will be created by copying the current buffer.  Otherwise, the new
 buffer will start afresh."
-  ;; FIXME: Note the inconsistency in the name given to arg NO-POPUP.
-  ;; Elsewhere it seems to be referred to as BACKGROUND.
   (interactive
    (list (w3m-input-url "Open URL in new buffer" nil
 			(or (w3m-active-region-or-url-at-point)
@@ -9763,7 +9759,7 @@ buffer will start afresh."
 	 coding-system-for-read
 	 nil ;; post-data
 	 nil ;; referer
-	 (if current-prefix-arg ;; no-popup
+	 (if current-prefix-arg ;; background
 	     (not w3m-new-session-in-background)
 	   w3m-new-session-in-background)))
   (let (buffer)
@@ -9774,10 +9770,12 @@ buffer will start afresh."
 	(w3m-goto-url url nil charset post-data)
       ;; Store the current position in the history structure.
       (w3m-history-store-position)
-      (setq buffer (w3m-copy-buffer nil "*w3m*" no-popup 'empty t))
-      (if no-popup
+      (setq buffer (w3m-copy-buffer nil "*w3m*" background 'empty t))
+      (if background
 	  (set-buffer buffer)
-	(switch-to-buffer buffer)
+	(if (and (w3m-popup-window-p) (not (w3m-popup-frame-p)))
+	    (switch-to-buffer-other-window buffer)
+	  (switch-to-buffer buffer))
 	(w3m-display-progress-message url))
       (w3m-goto-url
        url
@@ -9790,7 +9788,7 @@ buffer will start afresh."
 	    (w3m-string-match-url-components url)
 	    (match-beginning 8)
 	    'redisplay))
-       charset post-data referer nil nil no-popup)
+       charset post-data referer nil nil background)
       ;; Delete useless newly created buffer if it is empty.
       (w3m-delete-buffer-if-empty buffer))))
 
@@ -9872,7 +9870,7 @@ When called interactively, variables `w3m-user-agent' and
       (setq w3m-user-agent ua-string)))
   ua-string)
 
-(defun w3m-reload-this-page (&optional arg no-popup)
+(defun w3m-reload-this-page (&optional arg background)
   "Reload the current page, disregarding the cached contents.
 If the prefix arg ARG is given, it also clears forms and post data.
 
@@ -9908,7 +9906,7 @@ string to be sent for the reload."
 		      (w3m-history-plist-get :referer)
 		      nil
 		      (w3m-history-element (cadar w3m-history) t)
-		      no-popup)
+		      background)
 	(w3m-history-restore-position))
     (w3m-message "Can't reload this page")))
 

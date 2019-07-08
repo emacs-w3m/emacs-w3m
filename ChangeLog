@@ -1,14 +1,23 @@
 2019-07-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el: Protect against nil value for ffap-url-regexp (issue #59).
+	Fix how w3m-pop-up-windows to control the behavior
 
-	Temporary fix w3m-display-mode (before improving w3m-popup-buffer)
+	* w3m-util.el (w3m-popup-window-p): Don't care w3m-use-tab.
+
+	* w3m-util.el (w3m-popup-buffer):
+	* w3m.el (w3m-goto-url-new-session): Use switch-to-buffer-other-window
+	for the w3m-pop-up-windows case.
 
 	* w3m (w3m-display-mode(variable)): Default to the style corresponding
 	to the values of w3m-use-tab, w3m-pop-up-windows, and w3m-pop-up-frames;
 	fix custom type; add custom set.
 	(w3m-display-mode(function)): Don't modify w3m-pop-up-windows if it is
 	unnecessary; define it before it is used.
+
+	* bookmark-w3m.el, w3m-session.el, w3m.el:
+	Fix the term `no-popup' into `background'.
+
+	* w3m.el: Protect against nil value for ffap-url-regexp (issue #59).
 
 2019-07-07  Hideyuki SHIRAI  <shirai@meadowy.org>
 

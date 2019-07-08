@@ -104,7 +104,7 @@
 
 (declare-function w3m--setup-popup-window "w3m" (toggle buffer-name nomsg))
 (declare-function w3m-goto-url-new-session "w3m"
-		  (url &optional reload charset post-data referer no-popup))
+		  (url &optional reload charset post-data referer background))
 (declare-function w3m-history-slimmed-history-flat "w3m-hist")
 (declare-function w3m-history-tree "w3m-hist" (&optional newpos))
 (declare-function w3m-load-list "w3m" (file &optional coding-system))
@@ -868,7 +868,7 @@ url will be created, only if it does not already exist."
 	(cond
 	 ((setq cbuf (cdr (assoc url w3m-urls))) t)
 	 (t ; ie. (not (assoc url w3m-urls))
-	  (w3m-goto-url-new-session url nil nil nil nil t) ; no-popup
+	  (w3m-goto-url-new-session url nil nil nil nil t) ;; background
 	  (setq buf (car (last (w3m-list-buffers))))
 	  (when (or (and (numberp cnum) (= cnum i))
 		    (and (not cnum) (= i 0)))

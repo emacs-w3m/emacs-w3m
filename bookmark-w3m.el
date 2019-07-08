@@ -55,7 +55,7 @@
 (declare-function bookmark-prop-get "bookmark" (bookmark prop))
 (declare-function w3m-goto-url
 		  "w3m" (url &optional reload charset post-data referer handler
-			     element no-popup))
+			     element background))
 
 (defun bookmark-w3m-bookmark-make-record ()
   "Make a emacs bookmark entry for a w3m buffer."
