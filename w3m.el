@@ -4333,7 +4333,8 @@ It replaces the faces on the arrived anchors from `w3m-anchor' to
 
 (defvar ffap-url-regexp)
 (eval-after-load "ffap"
-  '(if (and (not (string-match ffap-url-regexp "nntp://bar"))
+  '(if (and ffap-url-regexp
+	    (not (string-match ffap-url-regexp "nntp://bar"))
 	    (string-match "\\(\\\\(news\\\\(post\\\\)\\?:\\)\\(\\\\|\\)"
 			  ffap-url-regexp))
        ;; Add nntp:
