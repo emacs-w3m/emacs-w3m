@@ -50,12 +50,16 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl)) ;; c[ad][ad][ad]+r, defsetf, lexical-let
-;; The `defsetf' macro uses this function at compile-time.
-(declare-function gv--defsetter "gv" (name setter do args &optional vars))
-;; `cl' employs `cl-lib' and it provides some macros like `cl-incf', but
-;; is necessary at run time so as to autoload the `cl-remove-if' function.
+;; Whereas `cl-lib' provides some macros like `cl-incf' and those macro
+;; definitions are not necessarily necessary at run time, why `cl-lib' is
+;; always loaded is because of the run time functions like `cl-remove-if'.
+;; Note that `cl-lib' should be loaded before `cl' even though `cl' loads
+;; `cl-lib', otherwise the autoload for `cl-remove-if' etc. will not be
+;; registered in the running Emacs, that was observed with Emacs 27.0.50.
 (require 'cl-lib) ;; cl-decf, cl-incf, cl-labels, cl-remove-if
+(eval-when-compile (require 'cl)) ;; c[ad][ad][ad]+r, defsetf, lexical-let
+;; The `defsetf' macro uses this function at compile time.
+(declare-function gv--defsetter "gv" (name setter do args &optional vars))
 
 (require 'w3m-util)
 (require 'w3m-proc)
