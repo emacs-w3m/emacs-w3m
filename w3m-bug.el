@@ -1,4 +1,4 @@
-;;; w3m-bug.el --- command to report emacs-w3m bugs -*- coding: utf-8 -*-
+;;; w3m-bug.el --- command to report emacs-w3m bugs
 
 ;; Copyright (C) 2002, 2003, 2005, 2007, 2010, 2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

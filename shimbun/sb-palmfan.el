@@ -1,6 +1,6 @@
 ;;; sb-palmfan.el --- shimbun backend class for palmfan web site.
 
-;; Copyright (C) 2002, 2003, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2002, 2003, 2005, 2019 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
@@ -97,7 +97,7 @@ i$PdWyuHC8!1=KH'r,R=fV])N6uQS")))
   (let* ((case-fold-search t)
 	 (url (shimbun-index-url shimbun))
 	 (idbase (concat "palmwarefan."
-			 (if (string-match "^http://\\([^/]+\\)/" url)
+			 (if (string-match "\\`http://\\([^/]+\\)/" url)
 			     (match-string 1 url)
 			   url)))
 	 headers)
@@ -201,7 +201,7 @@ i$PdWyuHC8!1=KH'r,R=fV])N6uQS")))
 (defun shimbun-palmfan-news-headers (shimbun &optional range)
   (let* ((case-fold-search t)
 	 (url (shimbun-index-url shimbun))
-	 (idbase (if (string-match "^http://\\([^/]+\\)/" url)
+	 (idbase (if (string-match "\\`http://\\([^/]+\\)/" url)
 		     (match-string 1 url)
 		   url))
 	 (from "hirose@palmfan.com")
@@ -273,7 +273,8 @@ i$PdWyuHC8!1=KH'r,R=fV])N6uQS")))
 				     day idbase))
 		    (if (shimbun-search-id shimbun id)
 			(throw 'stop nil))
-		    (when (string-match "^[\n\t ]*\\(.*\\)[\n\t ]*$" subject)
+		    (when (string-match "\\`[\n\t ]*\\(.*\\)[\n\t ]*\\'"
+					subject)
 		      (setq subject (match-string 1 subject)))
 		    (let ((case-fold-search t))
 		      (when (string-match "<A href=.*</A>" subject)

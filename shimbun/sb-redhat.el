@@ -80,7 +80,7 @@
       (setq months (nreverse months))
       (dolist (month months)
 	(let ((url (concat (shimbun-index-url shimbun) month "/")))
-	  (when (= (string-match "[0-9]+\\(-q[0-9]\\)?$" month) 0)
+	  (when (= (string-match "[0-9]+\\(-q[0-9]\\)?\\'" month) 0)
 	    (shimbun-mhonarc-set-litemplate-regexp-internal
 	     shimbun shimbun-redhat-litemplate-regexp-old))
 	  (shimbun-retrieve-url url t)

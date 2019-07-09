@@ -1,6 +1,6 @@
 ;;; sb-zeit-de.el --- shimbun backend for <http://www.zeit.de>
 
-;; Copyright (C) 2004, 2005, 2006, 2008, 2009, 2010
+;; Copyright (C) 2004-2006, 2008-2010, 2019
 ;; Andreas Seltenreich <seltenreich@gmx.de>
 
 ;; Author: Andreas Seltenreich <seltenreich@gmx.de>
@@ -69,8 +69,8 @@
    (lambda (header)
      (let ((url (shimbun-header-xref header)))
        ;; remove the "?from=rss" parameter
-       (when (string-match "\\(.*\\)\\?from=rss$" url)
-         (setq url (match-string 1 url)))
+       (when (string-match "\\(.*\\)\\?from=rss\\'" url)
+	 (setq url (match-string 1 url)))
        (cond ((string-match "\\`http://www\\.zeit\\.de" url)
 	      (shimbun-header-set-xref header (concat url "?page=all")))
 	     ((string-match "\\`/" url)

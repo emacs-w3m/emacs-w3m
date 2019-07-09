@@ -384,7 +384,7 @@ If no field in forward, return nil without moving."
 	  (let ((fid (get-text-property (point) 'w3m-form-field-id)))
 	    (when (and fid
 		       (string-match "\
-fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
+fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)\\'"
 				     fid))
 	      (let ((form (nth (string-to-number (match-string 1 fid))
 			       forms))
@@ -543,12 +543,9 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
 	(while (w3m-form-goto-next-field)
 	  (setq fid (get-text-property (point) 'w3m-form-field-id))
 	  (setq filename (get-text-property (point) 'w3m-form-file-name))
-	  (when
-	      (and
-	       fid
-	       (string-match
-		"fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
-		fid))
+	  (when (and fid
+		     (string-match "\
+fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)\\'" fid))
 	    (setq form (nth (string-to-number (match-string 1 fid))
 			    w3m-current-forms)
 		  type (match-string 2 fid)
@@ -1007,7 +1004,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 (defun w3m-form-field-parse (fid)
   (when (and fid
 	     (string-match
-	      "fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)$"
+	      "fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)\\'"
 	      fid))
     (list (match-string 1 fid)
 	  (match-string 2 fid)
@@ -1436,9 +1433,9 @@ textarea")))))
 
 (defun w3m-form-textarea-same-check (str1 str2)
   "Compare STR1 and STR2 without tailed whitespace."
-  (when (string-match "[ \t\n\r]+$" str1)
+  (when (string-match "[ \t\n\r]+\\'" str1)
     (setq str1 (substring str1 0 (match-beginning 0))))
-  (when (string-match "[ \t\n\r]+$" str2)
+  (when (string-match "[ \t\n\r]+\\'" str2)
     (setq str2 (substring str2 0 (match-beginning 0))))
   (string= str1 str2))
 
@@ -1896,8 +1893,8 @@ textarea")))))
       (setq w3m-form-textarea-post-files
 	    (w3m-form-submit-get-textarea-files form))
       (cond ((and (not (string= url orig-url))
-		  (string-match "^https://" orig-url)
-		  (string-match "^http://" url)
+		  (string-match "\\`https://" orig-url)
+		  (string-match "\\`http://" url)
 		  (not (y-or-n-p (format "Send POST data to '%s'?" url))))
 	     (ding))
 	    ((or (eq 'post (w3m-form-method form))

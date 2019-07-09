@@ -91,8 +91,8 @@ e2ibWOZWTFz8j~/m")))
 
 (luna-define-method shimbun-rss-build-message-id
   ((shimbun shimbun-emacswiki) url date)
-  (unless (or (string-match "id=\\(.+\\)$" url)
-	      (string-match "/\\([^/]+\\)$" url))
+  (unless (or (string-match "id=\\(.+\\)\\'" url)
+	      (string-match "/\\([^/]+\\)\\'" url))
     (error "Cannot find message-id base"))
   (concat "<" (match-string 1 url) date "@emacswiki.org>"))
 

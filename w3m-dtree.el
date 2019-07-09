@@ -102,7 +102,7 @@ over the 'w3m-dtree-directory-depth'."
 			       :value ,(aref defaults 1)))))))
 
 (defun w3m-dtree-expand-file-name (path)
-  (if (string-match "^\\(.\\):\\(.*\\)" path)
+  (if (string-match "\\`\\(.\\):\\(.*\\)" path)
       (if w3m-use-cygdrive
 	  (concat "/cygdrive/"
 		  (match-string 1 path) (match-string 2 path))
@@ -112,7 +112,7 @@ over the 'w3m-dtree-directory-depth'."
 (defun w3m-dtree-directory-name (path)
   (when (and w3m-treat-drive-letter
 	     (string-match
-	      "^/\\(?:\\([A-Za-z]\\)[|:]?\\|cygdrive/\\([A-Za-z]\\)\\)/"
+	      "\\`/\\(?:\\([A-Za-z]\\)[|:]?\\|cygdrive/\\([A-Za-z]\\)\\)/"
 	      path))
     (setq path (concat
 		(or (match-string 1 path)
@@ -200,7 +200,7 @@ over the 'w3m-dtree-directory-depth'."
 	(dirprefix "about://dtree")
 	(fileprefix "file://")
 	path)
-    (if (string-match "\\?allfiles=\\(?:\\(true\\)\\|false\\)$" url)
+    (if (string-match "\\?allfiles=\\(?:\\(true\\)\\|false\\)\\'" url)
 	(progn
 	  (setq path (substring url prelen (match-beginning 0)))
 	  (if (match-beginning 1) (setq allfiles t)))

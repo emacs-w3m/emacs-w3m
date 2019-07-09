@@ -90,7 +90,7 @@
   (with-temp-buffer
     (let* ((index-url (shimbun-index-url shimbun))
 	   (group (shimbun-current-group-internal shimbun))
-	   (suffix (if (string-match "^http://\\([^/]+\\)/" index-url)
+	   (suffix (if (string-match "\\`http://\\([^/]+\\)/" index-url)
 		       (match-string 1 index-url)
 		     index-url))
 	   auxs aux id url subject from headers)

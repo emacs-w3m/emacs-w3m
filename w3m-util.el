@@ -378,7 +378,7 @@ An argument of nil means kill the current buffer."
     w3m-current-title)
    ((stringp w3m-current-url)
     (directory-file-name
-     (if (string-match "^[^/:]+:/+" w3m-current-url)
+     (if (string-match "\\`[^/:]+:/+" w3m-current-url)
 	 (substring w3m-current-url (match-end 0))
        w3m-current-url)))
    (t "<no-title>")))
@@ -1153,9 +1153,9 @@ Details are set by `w3m-strip-queries-alist'."
   :type 'boolean)
 
 (defcustom w3m-strip-queries-alist
-  '(("^https?://.*" "&?utm_source=[^&]+")
-    ("^https?://.*" "&?utm_medium=[^&]+")
-    ("^https?://.*" "&?utm_campaign=[^&]+"))
+  '(("\\`https?://.*" "&?utm_source=[^&]+")
+    ("\\`https?://.*" "&?utm_medium=[^&]+")
+    ("\\`https?://.*" "&?utm_campaign=[^&]+"))
   "Alist of url regexes and query regexes to strip from them.
 This is meant to remove unwanted trackers or other data that websites or
 referers embed."
@@ -1178,7 +1178,7 @@ referers embed."
 This is meant to remove unwanted trackers or other data that
 websites or referers embed. See `w3m-strip-queries-alist'."
   (if (or (not w3m-strip-queries)
-	  (not (string-match "^.*\\?" url)))
+	  (not (string-match "\\`.*\\?" url)))
       url
     (let* ((base (match-string 0 url))
 	   (queries (replace-match "" t t url 0)))

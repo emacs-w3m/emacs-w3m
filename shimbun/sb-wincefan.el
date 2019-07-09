@@ -1,6 +1,6 @@
 ;;; sb-wincefan.el --- shimbun backend for WindowsCE FAN
 
-;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+;; Copyright (C) 2003-2005, 2019 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 ;; Keywords: news
@@ -42,7 +42,7 @@
 					 &optional outbuf)
   (let* ((from (shimbun-from-address shimbun))
 	 (group (shimbun-current-group-internal shimbun))
-	 (baseurl (when (string-match "^http://\\([^/]+\\)/*$"
+	 (baseurl (when (string-match "\\`http://\\([^/]+\\)/*\\'"
 				      shimbun-wincefan-url)
 		    (match-string 1 shimbun-wincefan-url)))
 	 (case-fold-search t)
@@ -80,8 +80,8 @@
 	    (setq url (match-string-no-properties 1)
 		  subject (match-string-no-properties 2))
 	    ;; ("/NewsLink/" "【News】")
-	    (when (not (and (string-match "^/.*/$" url)
-			    (string-match "^【.*】$" subject)))
+	    (when (not (and (string-match "\\`/.*/\\'" url)
+			    (string-match "\\`【.*】\\'" subject)))
 	      (setq count (1+ count))
 	      ;; building ID
 	      (setq id (format "<%02d%08d%%%s@%s>" count rawdate group baseurl))

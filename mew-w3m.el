@@ -328,7 +328,7 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
 (defun mew-w3m-cid-retrieve (url &rest args)
   (let ((output-buffer (current-buffer)))
     (with-current-buffer w3m-current-buffer
-      (when (string-match "^cid:\\(.+\\)" url)
+      (when (string-match "\\`cid:\\(.+\\)" url)
 	(setq url (match-string 1 url))
 	(let* ((fld (mew-current-get-fld (mew-frame-id)))
 	       (msg (mew-current-get-msg (mew-frame-id)))
@@ -411,20 +411,21 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
       (cond
        ((string= "application/xhtml+xml" ct)
 	(setq ct "text/html"))
-       ((string-match "^application/.*xml$" ct)
+       ((string-match "\\`application/.*xml\\'" ct)
 	(setq ct "text/xml")))
-      (setq filename (expand-file-name (cond
-					((and (string-match "^[\t ]*$" basename)
-					      (string= ct "text/html"))
-					 "index.html")
-					((and (string-match "^[\t ]*$" basename)
-					      (string= ct "text/xml"))
-					 "index.xml")
-					((string-match "^[\t ]*$" basename)
-					 "dummy")
-					(t
-					 basename))
-				       mew-temp-dir))
+      (setq filename
+	    (expand-file-name (cond
+			       ((and (string-match "\\`[\t ]*\\'" basename)
+				     (string= ct "text/html"))
+				"index.html")
+			       ((and (string-match "\\`[\t ]*\\'" basename)
+				     (string= ct "text/xml"))
+				"index.xml")
+			       ((string-match "\\`[\t ]*\\'" basename)
+				"dummy")
+			       (t
+				basename))
+			      mew-temp-dir))
       (with-temp-buffer
 	(cond
 	 ((string= "text/html" ct)
@@ -447,7 +448,7 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
 	      (setq cs 'utf-8))
 	     (t
 	      (setq cs mew-cs-autoconv)))))
-	 ((string-match "^text/" ct)
+	 ((string-match "\\`text/" ct)
 	  (insert source)
 	  (setq cs mew-cs-autoconv))
 	 (t
@@ -489,7 +490,7 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
 	     (ct (mew-syntax-get-value ctl 'cap))
 	     (params (mew-syntax-get-params ctl))
 	     (ocharset "charset"))
-	(when (and (string-match "^Text" ct) charset)
+	(when (and (string-match "\\`Text" ct) charset)
 	  (setq params (mew-delete ocharset params))
 	  (setq ctl (cons ct (cons (list ocharset charset) params)))
 	  (mew-syntax-set-ct syntax ctl))

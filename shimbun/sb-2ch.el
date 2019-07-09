@@ -164,7 +164,7 @@ If optional NO-BREAK is non-nil, don't stop even when header found."
 Unfortunately, the url name format might have been changed in 2ch"))
       (shimbun-2ch-parse-page shimbun
 			      (save-match-data
-				(string-match "^1-" index))
+				(string-match "\\`1-" index))
 			      (match-string 1 url);; ita
 			      (match-string 2 url);; sure
 			      nil 'no-break))))
@@ -200,7 +200,7 @@ Unfortunately, the url name format might have been changed in 2ch"))
 	    (setq ita (match-string 1 url)
 		  sure (match-string 2 url)))
 	  (setq headers (shimbun-2ch-parse-page shimbun
-						(string-match "^1-"
+						(string-match "\\`1-"
 							      (car indices))
 						ita sure
 						headers))

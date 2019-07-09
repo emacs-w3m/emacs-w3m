@@ -1,6 +1,6 @@
 ;;; sb-sueddeutsche-de.el --- sueddeutsche.de shimbun backend
 
-;; Copyright (C) 2008, 2009, 2010 David Engster
+;; Copyright (C) 2008-2010, 2019 David Engster
 
 ;; Author: David Engster <dengste@eml.cc>
 ;; Keywords: news
@@ -109,7 +109,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEXLyspMSkr///9+fX1
 					 header)
   ;; retrieve real URL and choose print-version
   (let ((url (shimbun-header-xref header)))
-    (when (string-match "html?$" url)
+    (when (string-match "html?\\'" url)
       (setq url
 	    (car (last
 		  (w3m-process-with-wait-handler
@@ -117,7 +117,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEXLyspMSkr///9+fX1
     (cond
      ((string-match "\\(.*jetzt.*sueddeutsche.*de.*\\)texte/anzeigen/\\(.+\\)" url)
       (setq url (concat (match-string 1 url) "drucken/text/" (match-string 2 url))))
-     ((string-match "text/$" url)
+     ((string-match "text/\\'" url)
       (setq url (concat url "print.html"))))
     url))
 

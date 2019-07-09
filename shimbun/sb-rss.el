@@ -333,7 +333,7 @@ is available, otherwise return nil."
 		   (shimbun-rss-node-just-text node)
 		 node))
 	 (cleaned-text (if text (replace-regexp-in-string
-				 "^[ \000-\037\177]+\\|[ \000-\037\177]+$"
+				 "\\`[ \000-\037\177]+\\|[ \000-\037\177]+\\'"
 				 "" text))))
     (if (string-equal "" cleaned-text)
 	nil

@@ -148,7 +148,7 @@ Alist of nnshimbun group parameters.
 Each element should be a cons of a regexp matching group names and a
 plist which contains keyword-value pairs, like the following:
 
-'(\"^nnshimbun\\\\+asahi:\" index-range all prefetch-articles off
+'(\"\\\\`nnshimbun\\\\+asahi:\" index-range all prefetch-articles off
   encapsulate-images on expiry-wait 6)
 
 `index-range' specifies the number of indices that should be checked
@@ -167,7 +167,7 @@ shimbun articles.
 `expiry-wait' overrides the parameter of the same name in Gnus."
  :variable-group nnshimbun
  :variable-type `(repeat (cons :format "%v" (regexp :tag "Group name regexp"
-						    :value "^nnshimbun\\+")
+						    :value "\\`nnshimbun\\+")
 			       ,nnshimbun-group-parameters-custom))
  :parameter-type nnshimbun-group-parameters-custom
  :parameter-document "\
@@ -740,7 +740,7 @@ Other files in the directory are also deleted."
 	  files file subdir)
       (when (file-directory-p dir)
 	(setq files (directory-files
-		     dir  t "^\\([^.]\\|\\.\\([^.]\\|\\..\\)\\).*"))
+		     dir  t "\\`\\([^.]\\|\\.\\([^.]\\|\\..\\)\\).*"))
 	(while files
 	  (setq file (pop files))
 	  (if (eq t (car (file-attributes file)))
@@ -753,7 +753,7 @@ Other files in the directory are also deleted."
       (setq dir (expand-file-name ".." dir))
       (when (and (file-directory-p dir)
 		 (not (directory-files
-		       dir t "^\\([^.]\\|\\.\\([^.]\\|\\..\\)\\).*")))
+		       dir t "\\`\\([^.]\\|\\.\\([^.]\\|\\..\\)\\).*")))
 	(delete-directory dir))
       (when (gnus-buffer-live-p nov)
 	(kill-buffer nov)))

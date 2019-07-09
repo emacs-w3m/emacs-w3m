@@ -1,4 +1,4 @@
-;;; w3m-filter.el --- filtering utility of advertisements on WEB sites -*- coding: utf-8 -*-
+;;; w3m-filter.el --- filtering utility of advertisements on WEB sites
 
 ;; Copyright (C) 2001-2008, 2012-2015, 2017-2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -128,7 +128,7 @@
      "A filter for Wikipedia"
      "\\`http://.*\\.wikipedia\\.org/" w3m-filter-wikipedia)
     (t "filter for github.com repository main page"
-       "\\`http[s]?://github\\.com/[^/]+/[^/]+[/]?$"
+       "\\`http[s]?://github\\.com/[^/]+/[^/]+[/]?\\'"
       w3m-filter-github-repo-main-page)
     (t "xkcd filter" "\\`http[s]?://xkcd.com/" w3m-filter-xkcd)
     (nil

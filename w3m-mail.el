@@ -251,10 +251,10 @@ the one such as \"text/html\", and the rest are the same as those of
 			    (split-string (downcase content-type) "/")))
 	 (basename (file-name-nondirectory (w3m-url-strip-query url)))
 	 (filename (cond
-		    ((and (string-match "^[\t ]*$" basename)
+		    ((and (string-match "\\`[\t ]*\\'" basename)
 			  (equal content-type '("text" "html")))
 		     "index.html")
-		    ((string-match "^[\t ]*$" basename)
+		    ((string-match "\\`[\t ]*\\'" basename)
 		     "dummy")
 		    (t
 		     basename)))

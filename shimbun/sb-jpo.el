@@ -1,6 +1,6 @@
 ;;; sb-jpo.el --- shimbun backend for http://www.jpo.go.jp
 
-;; Copyright (C) 2003, 2004, 2005 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003-2005, 2019 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
@@ -116,7 +116,7 @@
 	(group (shimbun-current-group-internal shimbun))
 	(regexp (format "<td><font color=\"[#0-9A-Z]+\"><a href=\"\\(%s\\.html*\\)\">\\(.*\\)</a>[　 ]*\\([.0-9]+\\)" (or urlregexp "\\(.*\\)")))
 	(urlprefix
-	 (when (string-match "^\\(http:\/\/.+\\/\\)[^\/]+\\.html*" origurl)
+	 (when (string-match "\\`\\(http:\/\/.+\\/\\)[^\/]+\\.html*" origurl)
 	   (match-string 1 origurl)))
 	headers id pagename subject tempdate date url)
     ;; <td><font color="#2346AB"><a href="h1504_pat_kijitu.htm">特許法等の一部を改正する法律の一部の施行期日を定める政令案について</a>　2003.4.21</font></td>
@@ -140,7 +140,7 @@
 	    (throw 'next nil) ; unknown date format
 	  (setq tempdate (list (string-to-number (match-string 1 date))
 			       (string-to-number (match-string 2 date))))
-	  (setq date (nconc tempdate 
+	  (setq date (nconc tempdate
 			    (list
 			     (if (not (match-string 3 date))
 				1
@@ -150,7 +150,7 @@
 	(setq id (format
 		  "<%04d%02d%02d%%%s%%%s@jpo>"
 		  (car date) (nth 1 date) (nth 2 date)
-		  (if (string-match "^http:\/\/.+\\/\\([^\/]+\\.html*\\)"
+		  (if (string-match "\\`http:\/\/.+\\/\\([^\/]+\\.html*\\)"
 				    pagename)
 		      (match-string 1 pagename)
 		    pagename)
@@ -185,7 +185,7 @@
 			   (shimbun-jpo-headers-1
 			    shimbun url nil
 			    (when exceptions
-			      (concat "\\(" 
+			      (concat "\\("
 				      (mapconcat 'regexp-quote exceptions "\\|")
 				      "\\)")))))
       (goto-char (point-min))
@@ -245,7 +245,7 @@
 	      nil t nil)
 	(delete-region (match-beginning 0) (progn (end-of-line) (point))))
       (goto-char (point-min))
-      (while (re-search-forward 
+      (while (re-search-forward
 	      "<tr>\n+<td align=\"left\"><img src=\"\\(\\.\\./\\)?images/title\\.gif\" *[^<>]+\">\\(<\/a>\\)?<\/td>\n+<\/tr>"
 	      nil t nil)
 	(delete-region (match-beginning 0) (match-end 0)))
@@ -256,12 +256,12 @@
 	(delete-region (match-beginning 0) (progn (end-of-line) (point))))
       (goto-char (point-min))
       (while (re-search-forward
-	      ;; PDFファイルを初めてお使いになる方は、Adobe Acrobat Readerダウンロードページへ   
+	      ;; PDFファイルを初めてお使いになる方は、Adobe Acrobat Readerダウンロードページへ
 	      "Adobe Acrobat Reader *ダウンロードページ"
 	      nil t nil)
 	(delete-region (progn (beginning-of-line) (point)) (progn (end-of-line) (point))))
       (goto-char (point-min))
-      (while (re-search-forward 
+      (while (re-search-forward
 	      "<tr>\n+<td align=\"center\"><a href=\"#top\">\
 <img src=\"\\(\\.\\.\/\\)?images/gotop\\.gif\" [^<>]+\">\\(<\/a>\\)?<\/td>\n+<\/tr>"
 	      nil t nil)

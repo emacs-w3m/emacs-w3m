@@ -83,7 +83,7 @@ R[TQ[*i0d##D=I3|g`2yr@sc<pK1SB
 (defvar shimbun-itmedia-content-end "<div class=\"credit-rap\">")
 
 (defvar shimbun-itmedia-retry-fetching 1)
-(defvar shimbun-itmedia-ignored-subject "^PR:")
+(defvar shimbun-itmedia-ignored-subject "\\`PR:")
 
 (luna-define-method initialize-instance :after ((shimbun shimbun-itmedia)
 						&rest init-args)

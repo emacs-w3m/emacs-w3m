@@ -1,6 +1,6 @@
 ;;; sb-tcup.el --- shimbun backend for www.tcup.com
 
-;; Copyright (C) 2001, 2002, 2005 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2005, 2019 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
 ;; Keywords: news
@@ -99,11 +99,11 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
   (let ((url (cadr (assoc group
 			  shimbun-tcup-group-alist))))
     (cond
-     ((string-match "\\(^\\|://\\)\\([^:/]+\\)/\\([^/]+\\)/bbs"
+     ((string-match "\\(\\`\\|://\\)\\([^:/]+\\)/\\([^/]+\\)/bbs"
 		    url)		; "http://6718.teacup.com/yutopia/bbs"
       (cons (match-string 2 url)	; "6718.teacup.com"
 	    (match-string 3 url)))	; "yutopia"
-     ((string-match "\\(^\\|://\\)www[^/]+/\\([0-9]+\\)/\\([^/]+\\)\.html"
+     ((string-match "\\(\\`\\|://\\)www[^/]+/\\([0-9]+\\)/\\([^/]+\\)\\.html"
 		    url)		; "http://www67.tcup.com/6718/yutopia.html"
       (cons (concat
 	     (match-string 2 url)	; "6718"

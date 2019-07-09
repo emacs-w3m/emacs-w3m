@@ -1,6 +1,6 @@
 ;;; sb-opentechpress-jp.el --- shimbun backend for japan.linux.com -*- coding: utf-8 -*-
 
-;; Copyright (C) 2006, 2007, 2009, 2010
+;; Copyright (C) 2006, 2007, 2009, 2010, 2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -47,7 +47,7 @@
 (defvar shimbun-opentechpress-jp-content-end
   "</div><!-- end: class=\"article\" -->")
 
-(defvar shimbun-opentechpress-jp-ignored-subject "^PR:")
+(defvar shimbun-opentechpress-jp-ignored-subject "\\`PR:")
 
 (luna-define-method initialize-instance :after ((shimbun
 						 shimbun-opentechpress-jp)

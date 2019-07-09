@@ -367,7 +367,7 @@ Here is an example of how to set this variable:
 
 (setq w3m-command-arguments-alist
       \\='(;; Don't use the proxy server to visit local web pages.
-	(\"^http://\\\\(?:[^/]*\\\\.\\\\)*your-company\\\\.com\\\\(?:/\\\\|$\\\\)\"
+	(\"\\\\`http://\\\\(?:[^/]*\\\\.\\\\)*your-company\\\\.com\\\\(?:/\\\\|\\\\'\\\\)\"
 	 \"-no-proxy\")
 	;; Use the proxy server to visit any foreign urls.
 	(\"\"
@@ -1046,7 +1046,7 @@ way of `post-command-hook'."
 (defcustom w3m-process-connection-type
   (not (and (memq system-type '(darwin macos))
 	    (let ((ver (shell-command-to-string "uname -r")))
-	      (and (string-match "^\\([0-9]+\\)\\." ver)
+	      (and (string-match "\\`\\([0-9]+\\)\\." ver)
 		   (< (string-to-number (match-string 1 ver)) 7)))))
   "Value for `process-connection-type' used when communicating with w3m."
   :group 'w3m
@@ -2155,7 +2155,7 @@ It shows a percentage of the data loaded from the web server."
 (defcustom w3m-ignored-image-url-regexp nil
   "Regexp matching image urls which you don't want to view.
 It is effective even if `w3m-display-inline-images' is non-nil.
-For instance, the value \"^https?://www\\.google\\.com/\" conceals
+For instance, the value \"\\\\`https?://www\\.google\\.com/\" conceals
 Google's logo and navigation images, but display YouTube's
 thumbnail."
   :group 'w3m
@@ -2916,7 +2916,7 @@ up `w3m-input-url-history'."
 		    ;; bookmark url
 		    (push (car entry) result)
 		    ;; bookmark title
-		    (push (replace-regexp-in-string "^[\s\t]+" "" (cdr entry))
+		    (push (replace-regexp-in-string "\\`[\s\t]+" "" (cdr entry))
 			  result)))
 		(nconc (mapcar (function car) list) ;; w3m-input-url-history
 		       result)))))
@@ -4451,7 +4451,7 @@ bookmark title string, replace it with that bookmark's url."
       (while (and (not found)
 		  (setq entry (pop category)))
 	(when (string= url
-		       (replace-regexp-in-string "^[\s\t]+" "" (cdr entry)))
+		       (replace-regexp-in-string "\\`[\s\t]+" "" (cdr entry)))
 	  (setq url (car entry))
 	  (setq found t))))
     url))
@@ -4677,6 +4677,8 @@ BUFFER is nil, all contents will be inserted in the current buffer."
 ;; FIXME: we need to check whether contents were updated in remote servers.
 (defun w3m-cache-available-p (url)
   "Return non-nil if contents of URL has already been cached."
+  ;; Note that as `string-match'es here are used to find a line in the middle
+  ;; of a header string, "^" and "$" must not be replaced with "\\`" and "\\'".
   (w3m-cache-setup)
   (let (head time expire (case-fold-search t))
     (and (stringp url)
@@ -5284,13 +5286,13 @@ to add the option \"-no-proxy\"."
 	(setq args (cdr def))))
     (when (and w3m-no-proxy-domains
 	       (not (member "-no-proxy" args))
-	       (string-match "^[a-z]+://\\([^/:]+\\)" url)
+	       (string-match "\\`[a-z]+://\\([^/:]+\\)" url)
 	       (catch 'domain-match
 		 (setq host (match-string 1 url))
 		 (dolist (domain w3m-no-proxy-domains)
-		   (when (string-match (concat "\\(?:^\\|\\.\\)"
+		   (when (string-match (concat "\\(?:\\`\\|\\.\\)"
 					       (regexp-quote domain)
-					       "$")
+					       "\\'")
 				       host)
 		     (throw 'domain-match t)))))
       (push "-no-proxy" args))
@@ -5647,7 +5649,7 @@ See RFC2397."
 	     param (or (match-string-no-properties 4 url)
 		       param)
 	     data-string (match-string-no-properties 5 url))
-      (when (string-match "^.*\\(;[ \t]*base64\\)$" param)
+      (when (string-match "\\`.*\\(;[ \t]*base64\\)\\'" param)
 	(setq param (substring param 0 (match-beginning 1)))
 	(setq encode 'base64))
       (when (string-match "charset=\\([^;]+\\)" param)
@@ -5734,8 +5736,8 @@ specifies not using the cached data."
 	    (error "File(%s) is a directory" filename)
 	  (delete-file filename)))
     (let ((basename (file-name-nondirectory (w3m-url-strip-query url))))
-      (when (string-match "^[\t ]*$" basename)
-	(when (string-match "^[\t ]*$"
+      (when (string-match "\\`[\t ]*\\'" basename)
+	(when (string-match "\\`[\t ]*\\'"
 			    (setq basename (file-name-nondirectory url)))
 	  (setq basename "index.html")))
       (while (not filename)
@@ -6635,9 +6637,9 @@ when the URL of the retrieved page matches the REGEXP."
 							   (match-string 1)))
 			     url))))
 
-(defcustom w3m-anchor-list-filter-alist '((".*" . "^cite_.*[0-9]$")
-					  (".*" . "^mw-head$")
-					  (".*" . "^p-search$"))
+(defcustom w3m-anchor-list-filter-alist '((".*" . "\\`cite_.*[0-9]\\'")
+					  (".*" . "\\`mw-head\\'")
+					  (".*" . "\\`p-search\\'"))
   "Identification of \"junk\" anchor to be ignored in user searches.
 The car of each element is a URL regex, and the cdr is a regex of
 anchor names to prune.  This feature was prompted by the large number
@@ -6750,11 +6752,11 @@ If COUNT is zero, you will visit the top of this site."
 	(while (not (zerop count))
 	  (setq count (1- count))
 	  ;; Check whether http://foo/bar/ or http://foo/bar
-	  (if (string-match "/$" parent-url)
-	      (if (string-match "\\(.*\\)/[^/]+/$" parent-url)
+	  (if (string-match "/\\'" parent-url)
+	      (if (string-match "\\(.*\\)/[^/]+/\\'" parent-url)
 		  ;; http://foo/bar/ -> http://foo/
 		  (setq parent-url (concat (match-string 1 parent-url) "/")))
-	    (if (string-match "\\(.*\\)/.+$" parent-url)
+	    (if (string-match "\\(.*\\)/.+\\'" parent-url)
 		;; http://foo/bar -> http://foo/
 		(setq parent-url (concat (match-string 1 parent-url) "/"))))
 	  ;; Ignore "http:/"
@@ -6835,20 +6837,20 @@ COUNT is treated as 1 by default if it is omitted."
 		 (concat base file)))
 	(output ""))
     (save-match-data
-      (while (string-match "^\\(?:\\.\\.?/\\)+" input)
+      (while (string-match "\\`\\(?:\\.\\.?/\\)+" input)
 	(setq input (substring input (match-end 0))))
       (while (not (zerop (length input)))
 	(cond
-	 ((string-match "^/\\.\\(?:/\\|$\\)" input)
+	 ((string-match "\\`/\\.\\(?:/\\|\\'\\)" input)
 	  (setq input (concat "/" (substring input (match-end 0)))))
-	 ((string-match "^/\\.\\.\\(?:/\\|$\\)" input)
+	 ((string-match "\\`/\\.\\.\\(?:/\\|\\'\\)" input)
 	  (setq input (concat "/" (substring input (match-end 0))))
-	  (when (string-match "/?[^/]+$" output)
+	  (when (string-match "/?[^/]+\\'" output)
 	    (setq output (substring output 0 (match-beginning 0)))))
-	 ((string-match "^\\.\\.?$" input)
+	 ((string-match "\\`\\.\\.?\\'" input)
 	  (setq input ""))
 	 (t
-	  (let ((end (and (string-match "^/[^/]*" input)
+	  (let ((end (and (string-match "\\`/[^/]*" input)
 			  (match-end 0))))
 	    (setq output
 		  (concat output (substring input 0 end)))
@@ -6865,7 +6867,7 @@ compatibility which is described in Section 5.2 of RFC 2396.")
 (defconst w3m-buffer-local-url "buffer://")
 (defun w3m-buffer-local-url-p (url)
   (save-match-data
-    (string-match (concat "^" w3m-buffer-local-url) url)))
+    (string-match (concat "\\`" w3m-buffer-local-url) url)))
 
 (defun w3m-expand-url (url &optional base)
   "Convert URL to the absolute address, and canonicalize it."
@@ -7118,7 +7120,7 @@ command instead."
 		(setq method
 		      (dolist (elem (nreverse method) result)
 			(push (if (and (stringp elem)
-				       (string-match "^[\"']?%s[\"']?\\'"
+				       (string-match "\\`[\"']?%s[\"']?\\'"
 						     elem))
 				  'file
 				elem)
@@ -7177,7 +7179,7 @@ No method to view `%s' is registered. Use `w3m-edit-this-url'"
 	     proc
 	     (lambda (proc event)
 	       (let ((buffer (process-buffer proc)))
-		 (when (string-match "^\\(?:finished\\|exited\\)" event)
+		 (when (string-match "\\`\\(?:finished\\|exited\\)" event)
 		   ;; Some program lies that the process has been finished
 		   ;; even though it has not read the temp file yet, so
 		   ;; it is necessary to delay deleting of the file.
@@ -9112,7 +9114,7 @@ not already exist."
 	  (set-buffer-modified-p mod))))))
 
 (defun w3m-convert-ftp-url-for-emacsen (url)
-  (or (and (string-match "^ftp://?\\([^/@]+@\\)?\\([^/]+\\)\\(?:/~/\\)?" url)
+  (or (and (string-match "\\`ftp://?\\([^/@]+@\\)?\\([^/]+\\)\\(?:/~/\\)?" url)
 	   (concat "/"
 		   (if (match-beginning 1)
 		       (substring url (match-beginning 1) (match-end 1))
@@ -9607,7 +9609,7 @@ invoked in other than a w3m-mode buffer."
     (w3m-goto-mailto-url url post-data))
    ;; process torrents and their magnets
    ((or (string-match "\\`magnet:" url)
-	(string-match "\\.torrent$" url))
+	(string-match "\\.torrent\\'" url))
     (w3m--goto-torrent-url url))
    ;; process ftp: protocol
    ((and w3m-use-ange-ftp
@@ -10228,7 +10230,7 @@ The file name will be converted into the file: scheme."
 (defun w3m-cygwin-path (path)
   "Convert PATH in the win32 style into the cygwin format.
 ex. c:/dir/file => //c/dir/file"
-  (if (string-match "^\\([A-Za-z]\\):" path)
+  (if (string-match "\\`\\([A-Za-z]\\):" path)
       (replace-match "//\\1" nil nil path)
     path))
 
@@ -10504,7 +10506,7 @@ A history page is invoked by the `w3m-about-history' command.")
 			    (if about "&lt;" "")
 			    (if (or (not title)
 				    (string-equal "<no-title>" title)
-				    (string-match "^[\t 　]*$" title))
+				    (string-match "\\`[\t 　]*\\'" title))
 				url
 			      (w3m-encode-specials-string title))
 			    (if about "&gt;" "")
@@ -11530,7 +11532,7 @@ the past, this had been set by the combination: `w3m-use-tab' t
 (defun w3m-cleanup-temp-files ()
   (when w3m-do-cleanup-temp-files
     (dolist (f (directory-files w3m-profile-directory t
-				"^w3m\\(cache\\|el\\|src\\|tmp\\)" t))
+				"\\`w3m\\(cache\\|el\\|src\\|tmp\\)" t))
       (delete-file f))))
 
 (defun w3m-show-form-hint ()

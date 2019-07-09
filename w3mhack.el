@@ -136,7 +136,7 @@ There seems to be no shell command which is equivalent to /bin/sh.
 
 (defun w3mhack-module-list ()
   "Returna a list of w3m modules should be byte-compile'd."
-  (let* ((modules (directory-files default-directory nil "^[^#]+\\.el$"))
+  (let* ((modules (directory-files default-directory nil "\\`[^#]+\\.el\\'"))
 	 ;; Modules not to be byte-compiled.
 	 (ignores '(".dir-locals.el" "w3mhack.el"))
 	 (shimbun-dir (file-name-as-directory shimbun-module-directory))
@@ -147,7 +147,7 @@ There seems to be no shell command which is equivalent to /bin/sh.
 	(progn
 	  ;; Add shimbun modules.
 	  (dolist (file (directory-files (expand-file-name shimbun-dir)
-					 nil "^[^#]+\\.el$"))
+					 nil "\\`[^#]+\\.el\\'"))
 	    (setq modules (nconc modules (list (concat shimbun-dir file)))))
 	  ;; mew-shimbun check
 	  (when (or (member "mew-w3m.el" ignores)

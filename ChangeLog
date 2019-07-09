@@ -1,3 +1,20 @@
+2019-07-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Replace ^ and $ with \` and \' in string-match regexps
+	except for the case it runs to find a text in the middle of a string.
+
+	* mew-w3m.el, w3m-bookmark.el, w3m-bug.el, w3m-cookie.el, w3m-dtree.el
+	* w3m-filter.el, w3m-form.el, w3m-mail.el, w3m-session.el, w3m-util.el
+	* w3m.el, w3mhack.el
+	* shimbun/{mew-shimbun.el, nnshimbun.el, sb-2ch.el, sb-atom-hash.el}
+	* shimbun/{sb-emacswiki.el, sb-impress.el, sb-infoshop.el}
+	* shimbun/{sb-itmedia.el, sb-jpo.el, sb-lotusex.el, sb-mailman.el}
+	* shimbun/{sb-opentechpress-jp.el, sb-palmfan.el, sb-redhat.el}
+	* shimbun/{sb-rss.el, sb-sueddeutsche-de.el, sb-tcup.el,}
+	* shimbun/{sb-wincefan.el, sb-yahoo-auctions.el, sb-zeit-de.el}
+
+	* w3m-cookie.el (w3m-cookie-two-dot-domains-regexp): Remove.
+
 2019-07-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Fix how w3m-pop-up-windows to control the behavior

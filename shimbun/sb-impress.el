@@ -1,6 +1,6 @@
 ;;; sb-impress.el --- shimbun backend for www.watch.impress.co.jp
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2008, 2009
+;; Copyright (C) 2001-2006, 2008, 2009, 2019
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
@@ -87,7 +87,7 @@ oSoe'Y.gU#(EqHA5K}v}2ah,QlHa[S^}5ZuTefR\n ZA[pF1_ZNlDB5D_D\
 JzTbXTM!V{ecn<+l,RDM&H3CKdu8tWENJlbRm)a|Hk+limu}hMtR\\E!%r\
 9wC\"6\n ebr5rj1[UJ5zDEDsfo`N7~s%;P`\\JK'#y.w^>K]E~{`wZru")))
 ;;(defvar shimbun-impress-expiration-days 7)
-(defvar shimbun-impress-ignored-subject "^\\(AD\\|PR\\):")
+(defvar shimbun-impress-ignored-subject "\\`\\(AD\\|PR\\):")
 
 (luna-define-method shimbun-index-url ((shimbun shimbun-impress))
   (or (nth 4 (assoc (shimbun-current-group-internal shimbun)

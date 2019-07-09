@@ -1,6 +1,6 @@
 ;;; sb-lotusex.el --- shimbun backend for http://tsuruo.dominohosting.biz
 
-;; Copyright (C) 2003, 2004 NAKAJIMA Mikio <minakaji@namazu.org>
+;; Copyright (C) 2003, 2004, 2019 NAKAJIMA Mikio <minakaji@namazu.org>
 
 ;; Author: NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Keywords: news
@@ -129,13 +129,13 @@
 			(+ (string-to-number (substring time 0 (match-beginning 0)))
 			   12)
 			(substring time (match-end 0)))))
-	  (when (string-match "^ +\\(.+\\)" subject)
+	  (when (string-match "\\` +\\(.+\\)" subject)
 	    (setq subject (match-string 1 subject)))
-	  (when (string-match "^\\(.+\\) +$" subject)
+	  (when (string-match "\\`\\(.+\\) +\\'" subject)
 	    (setq subject (match-string 1 subject)))
-	  (when (string-match "^ +\\(.+\\)" from)
+	  (when (string-match "\\` +\\(.+\\)" from)
 	    (setq from (match-string 1 from)))
-	  (when (string-match "^\\(.+\\) +$" from)
+	  (when (string-match "\\`\\(.+\\) +\\'" from)
 	    (setq from (match-string 1 from)))
 	  (push (shimbun-make-header
 		 0 (shimbun-mime-encode-string subject)
@@ -168,13 +168,13 @@
 	  (throw 'exit nil))
 	(setq date (shimbun-lotusex-make-date-string date)
 	      url (concat shimbun-lotusex-url url))
-	(when (string-match "^ +\\(.+\\)" subject)
+	(when (string-match "\\` +\\(.+\\)" subject)
 	  (setq subject (match-string 1 subject)))
-	(when (string-match "^\\(.+\\) +$" subject)
+	(when (string-match "\\`\\(.+\\) +\\'" subject)
 	  (setq subject (match-string 1 subject)))
-	(when (string-match "^ +\\(.+\\)" from)
+	(when (string-match "\\` +\\(.+\\)" from)
 	  (setq from (match-string 1 from)))
-	(when (string-match "^\\(.+\\) +$" from)
+	(when (string-match "\\`\\(.+\\) +\\'" from)
 	  (setq from (match-string 1 from)))
 	(push (shimbun-make-header
 	       0 (shimbun-mime-encode-string subject)

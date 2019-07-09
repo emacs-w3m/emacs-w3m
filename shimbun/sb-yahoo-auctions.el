@@ -62,7 +62,7 @@ URL is the URL for category or search result."
 
 (luna-define-method shimbun-rss-build-message-id
   ((shimbun shimbun-yahoo-auctions) url date)
-  (unless (string-match "\\([^/]+\\)$" url)
+  (unless (string-match "\\([^/]+\\)\\'" url)
     (error "Cannot find message-id base"))
   (format "<%s@auctions.yahoo.co.jp>" (match-string 1 url)))
 

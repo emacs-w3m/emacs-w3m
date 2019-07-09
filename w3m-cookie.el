@@ -46,15 +46,6 @@
   "A list of cookie elements.
 Currently only browser local cookies are stored.")
 
-(defconst w3m-cookie-two-dot-domains-regexp
-  (concat "\\.\\(?:"
-	  (mapconcat 'identity (list "com" "edu" "net" "org" "gov" "mil" "int")
-		     "\\|")
-	  "\\)$")
-  "A regular expression of top-level domains that only require two dots
-in the domain name in order to set a cookie.
-This constant will never be used if url-domsuf.el(c) is available.")
-
 (defcustom w3m-cookie-accept-domains nil
   "A list of trusted domain name string."
   :group 'w3m
@@ -172,10 +163,10 @@ If ask, ask user whether accept bad cookies or not."
 		    ;; A special case that domain name is ".hostname".
 		    (string= (concat "." host) (w3m-cookie-domain c))
 		    (string-match (concat
-				   (regexp-quote (w3m-cookie-domain c)) "$")
+				   (regexp-quote (w3m-cookie-domain c)) "\\'")
 				  host))
 		   (string-match (concat
-				  "^" (regexp-quote (w3m-cookie-path c)))
+				  "\\`" (regexp-quote (w3m-cookie-path c)))
 				 path))
 	  (if (w3m-cookie-secure c)
 	      (if secure
@@ -282,10 +273,10 @@ If ask, ask user whether accept bad cookies or not."
        ((string= (car accept) ".")
 	(setq regexp ".*"))
        ((string= (car accept) ".local")
-	(setq regexp "^[^\\.]+$"))
+	(setq regexp "\\`[^\\.]+\\'"))
        ((eq (string-to-char (car accept)) ?.)
-	(setq regexp (concat (regexp-quote (car accept)) "$")))
-       (t (setq regexp (concat "^" (regexp-quote (car accept)) "$"))))
+	(setq regexp (concat (regexp-quote (car accept)) "\\'")))
+       (t (setq regexp (concat "\\`" (regexp-quote (car accept)) "\\'"))))
       (when (string-match regexp host)
 	(setq tlen (length (car accept))
 	      accept nil))
@@ -295,10 +286,10 @@ If ask, ask user whether accept bad cookies or not."
        ((string= (car reject) ".")
 	(setq regexp ".*"))
        ((string= (car reject) ".local")
-	(setq regexp "^[^\\.]+$"))
+	(setq regexp "\\`[^\\.]+\\'"))
        ((eq (string-to-char (car reject)) ?.)
-	(setq regexp (concat (regexp-quote (car reject)) "$")))
-       (t (setq regexp (concat "^" (regexp-quote (car reject)) "$"))))
+	(setq regexp (concat (regexp-quote (car reject)) "\\'")))
+       (t (setq regexp (concat "\\`" (regexp-quote (car reject)) "\\'"))))
       (when (string-match regexp host)
 	(setq rlen (length (car reject))
 	      reject nil))

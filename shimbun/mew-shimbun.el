@@ -233,8 +233,8 @@ show below example,
      (shimbun-article ,shimbun ,head)))
 
 (defsubst mew-shimbun-mode-display (group server get count sum)
-  (mew-summary-lock 'shimbun
-		    (format mew-shimbun-lock-format2 group server get count sum))
+  (mew-summary-lock
+   'shimbun (format mew-shimbun-lock-format2 group server get count sum))
   (force-mode-line-update))
 
 (defalias 'mew-shimbun-visit-folder 'mew-summary-visit-folder)
@@ -271,7 +271,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 		   (file-exists-p
 		    (expand-file-name mew-shimbun-db-file
 				      (mew-expand-folder fld))))
-	  (when (string-match "/$" fld)
+	  (when (string-match "/\\'" fld)
 	    (setq removes (cons (substring fld 0 (match-beginning 0)) removes)))
 	  (if (null args)
 	      (setq sbflds (cons fld sbflds))
@@ -281,9 +281,11 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 		  (with-current-buffer fld
 		    (goto-char (point-min))
 		    (when (re-search-forward (or mew-shimbun-unseen-regex
-						 (mew-shimbun-unseen-regex)) nil t)
+						 (mew-shimbun-unseen-regex))
+					     nil t)
 		      (setq sbflds (cons fld sbflds))))
-		(setq cfile (mew-shimbun-folder-file fld mew-summary-cache-file))
+		(setq cfile (mew-shimbun-folder-file
+			     fld mew-summary-cache-file))
 		(when (file-readable-p cfile)
 		  (with-temp-buffer
 		    (mew-frwlet
@@ -291,7 +293,8 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 		     (insert-file-contents cfile nil)
 		     (goto-char (point-min))
 		     (when (re-search-forward (or mew-shimbun-unseen-regex
-						  (mew-shimbun-unseen-regex)) nil t)
+						  (mew-shimbun-unseen-regex))
+					      nil t)
 		       (setq sbflds (cons fld sbflds))))))))))))
     (mapc (lambda (x)
 	    (unless (member x removes)
@@ -305,7 +308,7 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 		 alst
 		 nil t (file-name-as-directory mew-shimbun-folder)
 		 'mew-shimbun-input-hist)))
-    (when (string-match "[*%]$" fld)
+    (when (string-match "[*%]\\'" fld)
       (setq fld (substring fld 0 (match-beginning 0)))
       (setcar mew-shimbun-input-hist fld))
     (setq mew-input-folder-hist (cons fld mew-input-folder-hist))
@@ -324,7 +327,8 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 	   alst server group range)
        (if (not (mew-shimbun-folder-p fld))
 	   (message "This command can not execute here")
-	 (setq alst (assoc (substring fld (match-end 0)) mew-shimbun-folder-groups))
+	 (setq alst (assoc (substring fld (match-end 0))
+			   mew-shimbun-folder-groups))
 	 (if (null alst)
 	     (message "%s is not include 'mew-shimbun-folder-groups'" fld)
 	   (run-hooks 'mew-shimbun-before-retrieve-hook)
@@ -399,10 +403,11 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
     (unwind-protect
 	(let* ((headers (mew-shimbun-headers shimbun range))
 	       (sum (length headers)))
-	  (setq headers (sort headers
-			      (lambda (x y)
-				(string< (mew-time-rfc-to-sortkey (or (elt x 3) ""))
-					 (mew-time-rfc-to-sortkey (or (elt y 3) ""))))))
+	  (setq headers
+		(sort headers
+		      (lambda (x y)
+			(string< (mew-time-rfc-to-sortkey (or (elt x 3) ""))
+				 (mew-time-rfc-to-sortkey (or (elt y 3) ""))))))
 	  (dolist (head headers)
 	    (let ((id (format mew-shimbun-id-format
 			      server group
@@ -466,7 +471,8 @@ If called with '\\[universal-argument]', re-retrieve messages marked with
 	   (mew-decode-syntax-delete)
 	   (mew-shimbun-set-form fld)
 	   (when args
-	     (setq msgs (mew-summary-mark-collect mew-shimbun-mark-re-retrieve)))
+	     (setq msgs (mew-summary-mark-collect
+			 mew-shimbun-mark-re-retrieve)))
 	   (if (null msgs)
 	       (message "No message re-retrieve.")
 	     (setq id-msgs (mew-shimbun-get-id-msgs 'list fld msgs))
@@ -557,10 +563,11 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
     (unwind-protect
 	(let* ((headers (mew-shimbun-headers shimbun range))
 	       (sum (length headers)))
-	  (setq headers (sort headers
-			      (lambda (x y)
-				(string< (mew-time-rfc-to-sortkey (or (elt x 3) ""))
-					 (mew-time-rfc-to-sortkey (or (elt y 3) ""))))))
+	  (setq headers
+		(sort headers
+		      (lambda (x y)
+			(string< (mew-time-rfc-to-sortkey (or (elt x 3) ""))
+				 (mew-time-rfc-to-sortkey (or (elt y 3) ""))))))
 	  (dolist (head headers)
 	    (let ((newid (format mew-shimbun-id-format
 				 server group
@@ -669,10 +676,11 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 		  (goto-char (point-min))
 		  (while (not (eobp))
 		    (when (looking-at "^\\([1-9][0-9]*\\): *\\([^\n]+\\)$")
-		      (setq msg-alist (cons
-				       (cons (match-string 1)
-					     (mew-time-rfc-to-sortkey (match-string 2)))
-				       msg-alist)))
+		      (setq msg-alist
+			    (cons
+			     (cons (match-string 1)
+				   (mew-time-rfc-to-sortkey (match-string 2)))
+			     msg-alist)))
 		    (forward-line 1))))
 	       (setq t1 (decode-time (current-time)))
 	       (setq t1 (append (list (nth 0 t1) (nth 1 t1) (nth 2 t1)
@@ -683,9 +691,10 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 	       (dolist (x msg-alist)
 		 (when (string< (cdr x) days)
 		   (setq msgs (cons (car x) msgs))))
-	       (setq msgs (sort msgs
-				(lambda (x y)
-				  (< (string-to-number x) (string-to-number y)))))
+	       (setq msgs
+		     (sort msgs
+			   (lambda (x y)
+			     (< (string-to-number x) (string-to-number y)))))
 	       (setq t1 (length msgs))
 	       (if (zerop t1)
 		   (message "No expire (%s)" fld)
@@ -716,10 +725,11 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 (defun mew-shimbun-expire-day (fld)
   (catch 'det
     (dolist (x mew-shimbun-expires)
-      (when (string-match (concat "^" (regexp-quote
-				       (concat
-					(file-name-as-directory mew-shimbun-folder)
-					(car x))))
+      (when (string-match (concat "\\`"
+				  (regexp-quote
+				   (concat
+				    (file-name-as-directory mew-shimbun-folder)
+				    (car x))))
 			  fld)
 	(throw 'det (cdr x))))))
 
@@ -741,12 +751,14 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
       (with-temp-buffer
 	(mew-piolet
 	 mew-cs-text-for-read mew-cs-text-for-write
-	 (mew-shimbun-pick "-b" mew-mail-path
-			   "-d" "X-Shimbun-Id:"
-			   "-s" (format "%s %s-%s" (nth 0 args) (nth 1 args) (nth 2 args))))
+	 (mew-shimbun-pick
+	  "-b" mew-mail-path
+	  "-d" "X-Shimbun-Id:"
+	  "-s" (format "%s %s-%s" (nth 0 args) (nth 1 args) (nth 2 args))))
 	(goto-char (point-min))
 	(while (re-search-forward "^\\([1-9][0-9]*\\): \\([^\n]+\\)" nil t)
-	  (setq id-msgs (cons (cons (match-string 2) (match-string 1)) id-msgs))))
+	  (setq id-msgs
+		(cons (cons (match-string 2) (match-string 1)) id-msgs))))
       (nreverse id-msgs))
      ;; something error
      (t nil))))
@@ -792,9 +804,9 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 	(setq end (1- (point)))
 	(setq from (or (buffer-substring beg end) ""))
 	(setq from (or (mew-addrstr-parse-address from) ""))
-	(unless (string-match
-		 "^[-A-Za-z0-9._!%]+@[A-Za-z0-9][-A-Za-z0-9._!]+[A-Za-z0-9]$"
-		 from)
+	(unless (string-match "\
+\\`[-A-Za-z0-9._!%]+@[A-Za-z0-9][-A-Za-z0-9._!]+[A-Za-z0-9]\\'"
+			      from)
 	  ;; strange From:
 	  (goto-char (point-min))
 	  (when (re-search-forward "^From-R13:" nil t)
@@ -881,10 +893,10 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
       (dolist (x mew-shimbun-db-length)
 	(when (and (stringp (car x))
 		   (string-match
-		    (concat "^" (regexp-quote
-				 (concat
-				  (file-name-as-directory mew-shimbun-folder)
-				  (car x))))
+		    (concat "\\`" (regexp-quote
+				   (concat
+				    (file-name-as-directory mew-shimbun-folder)
+				    (car x))))
 		    fld))
 	  (throw 'det (cdr x))))
       (or (cdr (assq t mew-shimbun-db-length))

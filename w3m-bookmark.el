@@ -286,11 +286,11 @@ Optional argument TITLE is title of link."
     (and (string= section "")
 	 (setq section w3m-bookmark-default-section))
     (when (or (not section)
-	      (string-match "^[\t ]*$"  section))
+	      (string-match "\\`[\t ]*\\'"  section))
       (error "%s" "You must specify a bookmark section name"))
     (setq title (read-string "Title: " title 'w3m-bookmark-title-history))
     (when (or (not title)
-	      (string-match "^[\t ]*$" title))
+	      (string-match "\\`[\t ]*\\'" title))
       (error "%s" "You must specify a bookmark title"))
     (setq title (w3m-encode-specials-string title))
     (w3m-bookmark-write-file url
@@ -352,7 +352,7 @@ With prefix, ask for a new url instead of the present one."
 		     'w3m-bookmark-section-history))
       (when (or (not section) (not (stringp section)) (string= section ""))
 	(setq section default-section))
-      (if (string-match "^[\t ]*$" section)
+      (if (string-match "\\`[\t ]*\\'" section)
 	  (w3m-message "You must specify a bookmark section name")
 	(while buffers
 	  (set-buffer (pop buffers))
