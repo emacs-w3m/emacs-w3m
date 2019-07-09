@@ -370,7 +370,7 @@ With prefix, ask for a new url instead of the present one."
 	      (message
 	       "w3m-bookmark: Error saving buffer %s\n  url: %s\n  title: %s"
 	       (current-buffer) w3m-current-url w3m-current-title)
-	      (incf error-count)))))
+	      (cl-incf error-count)))))
 	(when (> error-count 0)
 	  (w3m-message
 	   "%s Errors encountered. See *Messages* buffer for details"

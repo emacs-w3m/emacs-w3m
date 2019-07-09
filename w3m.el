@@ -11443,6 +11443,7 @@ FROM-COMMAND is defined in `w3m-minor-mode-map' with the same key in
   :group 'w3m
   :type 'boolean)
 
+(defvar w3m-display-mode)
 (defun w3m-display-mode (style)
   "Select how to display emacs-w3m buffers.
 
