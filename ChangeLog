@@ -1,3 +1,7 @@
+2019-07-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-scroll-up-or-next-url): Scroll up, not down (issue #62).
+
 2019-07-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Replace ^ and $ with \` and \' in string-match regexps

@@ -8759,7 +8759,7 @@ When called interactively, ARG defaults to 1."
 	(let ((w3m-prefer-cache t))
 	  (w3m-history-store-position)
 	  (w3m-goto-url w3m-previous-url))
-      (w3m-scroll-down arg))))
+      (w3m-scroll-up arg))))
 
 (defun w3m-scroll-down (&optional arg interactive-p)
   "Scroll the current window down ARG lines.
