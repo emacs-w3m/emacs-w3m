@@ -50,12 +50,9 @@
 
 ;;; Code:
 
-;; Whereas `cl-lib' provides some macros like `cl-incf' and those macro
-;; definitions are not necessarily necessary at run time, why `cl-lib' is
-;; always loaded is because of the run time functions like `cl-remove-if'.
-;; Note that `cl-lib' should be loaded before `cl' even though `cl' loads
-;; `cl-lib', otherwise the autoload(s) for `cl-remove-if' etc. will not be
-;; registered at compile time, that was observed with Emacs 27.0.50.
+;; Note that `cl-lib' should be loaded before `cl' even if `cl' loads
+;; `cl-lib', otherwise the functions `cl-lib' provides will be marked
+;; as "might not be defined at runtime" because of `eval-when-compile'.
 (require 'cl-lib) ;; cl-decf, cl-incf, cl-labels, cl-remove-if
 (eval-when-compile (require 'cl)) ;; c[ad][ad][ad]+r, defsetf, lexical-let
 ;; The `defsetf' macro uses this function at compile time.
