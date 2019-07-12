@@ -421,7 +421,14 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)\\'"
 		    (let ((value (w3m-form-get form id)))
 		      (when value
 			(w3m-form-replace
-			 (if (member (nth 4 (w3m-action (point))) value)
+			 (if (if (stringp value)
+				 ;; FIXME: work around rendering certain html
+				 ;; pages embedding java scripts that w3m would
+				 ;; parse inconsistently.  Try visiting
+				 ;; <https://www.excite.co.jp/world/english/>
+				 ;; several times with various window width.
+				 (string= (nth 4 (w3m-action (point))) value)
+			       (member (nth 4 (w3m-action (point))) value))
 			     "*" " ")))
 		      (unless (eq form cform)
 			(w3m-form-put cform id name value))))

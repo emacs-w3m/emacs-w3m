@@ -10015,21 +10015,10 @@ displayed in the other unselected windows will also change unwantedly."
 			   (not w3m-current-process))
 		  (setq w3m-last-window-width width
 			pos (/ (window-start window) (buffer-size) 1.0))
-		  ;; FIXME:
-		  ;; There should be a bug in the forms handling or other.
-		  ;; It will arise on Emacs 26 and greater when performing
-		  ;; `w3m-redisplay-this-page' in the condition the window
-		  ;; width gets too thin.  Try visiting
-		  ;; <https://www.excite.co.jp/world/english/> and type
-		  ;; `C-x 3'.  Note that to enter the debugger you may want
-		  ;; to run this function manually since an error would be
-		  ;; concealed by the special hook that runs this function.
 		  (w3m-condition-case nil
 		      (let (w3m-clear-display-while-reading)
 			(w3m-redisplay-this-page))
-		    ;; Why does `reload' work?  There is no meaningful
-		    ;; difference between the already cached web data and
-		    ;; the newly reloared ones.
+		    ;; Try to do reloading when redisplaying fails.
 		    (error (w3m-reload-this-page)))
 		  (goto-char
 		   (prog1 (point)

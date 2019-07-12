@@ -1,3 +1,13 @@
+2019-07-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Work around certain html pages that embed java scripts
+
+	* w3m-form.el (w3m-form-resume): Work around rendering certain html
+	pages embedding java scripts that w3m would parse inconsistently.
+
+	* w3m.el (w3m-redisplay-pages-automatically): Move FIXME comment to
+	w3m-form-resume.
+
 2019-07-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-scroll-up-or-next-url): Scroll up, not down (issue #61).
