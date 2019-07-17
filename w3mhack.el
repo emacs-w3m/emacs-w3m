@@ -159,8 +159,9 @@ There seems to be no shell command which is equivalent to /bin/sh.
 		      (let ((load-path (list (file-name-directory gnus))))
 			(locate-library "nnimap"))))
 	    (push (concat shimbun-dir "nnshimbun.el") ignores)))
-      (push "mime-w3m.el" ignores)
       (push "octet.el" ignores))
+    (if (not (locate-library "mime-view"))
+        (push "mime-w3m.el" ignores))
     ;; List shimbun modules which cannot be byte-compiled with this system.
     (let (list)
       ;; Byte-compile w3m-util.el first.
