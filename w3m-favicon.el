@@ -87,23 +87,27 @@ If this variable is nil, never expired."
   :group 'w3m
   :type 'integer)
 
-(defcustom w3m-favicon-type
-  (let ((types '(gif png pbm xpm bmp))
-	type)
-    (catch 'det
-      (while types
-	(setq type (car types)
-	      types (cdr types))
-	(if (image-type-available-p type)
-	    (throw 'det type)))))
-  "Image type of display favicon."
+(defcustom w3m-favicon-type (when (boundp 'image-types)
+			      (catch 'det
+				(dolist (type '(gif png pbm svg xpm bmp) nil)
+				  (if (image-type-available-p type)
+				      (throw 'det type)))))
+  "Image type of favicon."
   :group 'w3m
-  :type (cons 'radio
-	      (let ((types (delq 'postscript (copy-sequence image-types))))
+  :type '(radio
+	  :inline t
+	  :convert-widget w3m-widget-type-convert-widget
+	  ;; The variable `image-types' will not be available
+	  ;; if Emacs was built without the graphics stuff.
+	  (if (boundp 'image-types)
+	      (let ((types (delq 'imagemagick
+				 (delq 'postscript
+				       (copy-sequence image-types)))))
 		(nconc (mapcar (lambda (x)
 				 `(const :format "%v  " ,x))
 			       (butlast types))
-		       `((const ,(car (last types))))))))
+		       `((const ,(car (last types))))))
+	    '((const :match (lambda (widget value) t) nil)))))
 
 (defcustom w3m-space-before-favicon " "
   "String of space char(s) to be put in front of favicon in the mode-line.
