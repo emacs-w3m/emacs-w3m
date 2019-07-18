@@ -597,9 +597,9 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)\\'" fid))
 Result form structure is saved to the local variable `w3m-current-forms'.
 If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
   (let ((case-fold-search t)
-	(id 1)
+	(id 0)
 	tag start end internal-start textareas selects forms maps mapval
-	form filename cur-button prev-button)
+	form filename prev-button)
     (setq w3m-form-textarea-files nil)
     (setq w3m-form-use-textarea-backup-p nil)
     (goto-char (point-min))
@@ -665,8 +665,10 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					 candidates)))))
 	    (unless maps (setq maps (w3m-form-new "map" ".")))
 	    (when candidates
-	      (w3m-form-put maps id name (nreverse candidates))
-	      (cl-incf id)))))
+	      (w3m-form-put maps
+			    (cl-incf id)
+			    name
+			    (nreverse candidates))))))
        ((string= tag "img_alt")
 	(w3m-parse-attributes (usemap)
 	  (w3m-search-tag "/img_alt")
@@ -702,6 +704,9 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	    (setq end (match-beginning 0)))
 	  (let ((abs-hseq (or (and (null hseq) 0) (abs hseq)))
 		(face (if readonly 'w3m-form-inactive 'w3m-form)))
+	    (unless (equal prev-button (cons fid abs-hseq))
+	      (cl-incf id)
+	      (setq prev-button (cons fid abs-hseq)))
 	    (setq w3m-max-anchor-sequence
 		  (max abs-hseq w3m-max-anchor-sequence))
 	    (if (eq w3m-type 'w3mmee)
@@ -730,8 +735,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					       w3m-form-new-session
 					       w3m-form-download)
 		   w3m-anchor-sequence ,abs-hseq)
-		 readonly)
-		(setq cur-button (cons fid abs-hseq))))
+		 readonly)))
 	     ((string= type "reset")
 	      (w3m-form-make-button
 	       start end
@@ -739,8 +743,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		 ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
 		 w3m-action (w3m-form-reset ,form)
 		 w3m-anchor-sequence ,abs-hseq)
-	       readonly)
-	      (setq cur-button (cons fid abs-hseq)))
+	       readonly))
 	     ((string= type "textarea")
 	      (if (eq w3m-type 'w3mmee)
 		  (w3m-form-put form id
@@ -876,16 +879,13 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					     w3m-form-new-session
 					     w3m-form-download)
 		 w3m-anchor-sequence ,abs-hseq
-		 w3m-form-readonly ,readonly))))))
-	(unless (and cur-button (equal cur-button prev-button))
-	  (cl-incf id))
-	(setq prev-button cur-button
-	      cur-button nil))))
+		 w3m-form-readonly ,readonly)))))))))
     ;; Process <internal> tag.
     (when (search-forward "<internal>" nil t)
       (setq internal-start (match-beginning 0))
       (while (and (null reuse-forms)
 		  (re-search-forward "<\\([a-z]+\\)_int" nil t))
+	(cl-incf id)
 	(cond
 	 ((string= (match-string 1) "select")
 	  (w3m-parse-attributes ((selectnumber :integer))
@@ -928,8 +928,7 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		   (w3m-decode-entities)
 		   (goto-char (point-min))
 		   (while (search-forward "\r\n" nil t) (replace-match "\n"))
-		   (buffer-string))))))))
-	(cl-incf id))
+		   (buffer-string)))))))))
       (when (search-forward "</internal>" nil t)
 	(delete-region internal-start (match-end 0))))
     (setq w3m-current-forms (if (eq w3m-type 'w3mmee)
