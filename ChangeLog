@@ -1,3 +1,10 @@
+2019-07-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-form.el (w3m-form-resume): Remove workaround.
+	(w3m-form-parse-and-fontify): Don't put sequential numbers to buttons
+	if they are the ones chopped into two or more pieces from a single
+	button because the window width is too narrow.
+
 2019-07-17  Tatsuya Kinoshita  <tats@debian.org>
 
 	* w3mhack.el (w3mhack-module-list): Ignore `mime-w3m.el' when

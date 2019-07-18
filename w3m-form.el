@@ -421,14 +421,7 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)\\'"
 		    (let ((value (w3m-form-get form id)))
 		      (when value
 			(w3m-form-replace
-			 (if (if (stringp value)
-				 ;; FIXME: work around rendering certain html
-				 ;; pages embedding java scripts that w3m would
-				 ;; parse inconsistently.  Try visiting
-				 ;; <https://www.excite.co.jp/world/english/>
-				 ;; several times with various window width.
-				 (string= (nth 4 (w3m-action (point))) value)
-			       (member (nth 4 (w3m-action (point))) value))
+			 (if (member (nth 4 (w3m-action (point))) value)
 			     "*" " ")))
 		      (unless (eq form cform)
 			(w3m-form-put cform id name value))))
@@ -604,9 +597,9 @@ fid=\\([^/]+\\)/type=\\([^/]+\\)/name=\\([^/]*\\)/id=\\(.*\\)\\'" fid))
 Result form structure is saved to the local variable `w3m-current-forms'.
 If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
   (let ((case-fold-search t)
-	(id 0)
+	(id 1)
 	tag start end internal-start textareas selects forms maps mapval
-	form filename)
+	form filename cur-button prev-button)
     (setq w3m-form-textarea-files nil)
     (setq w3m-form-use-textarea-backup-p nil)
     (goto-char (point-min))
@@ -672,10 +665,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					 candidates)))))
 	    (unless maps (setq maps (w3m-form-new "map" ".")))
 	    (when candidates
-	      (w3m-form-put maps
-			    (cl-incf id)
-			    name
-			    (nreverse candidates))))))
+	      (w3m-form-put maps id name (nreverse candidates))
+	      (cl-incf id)))))
        ((string= tag "img_alt")
 	(w3m-parse-attributes (usemap)
 	  (w3m-search-tag "/img_alt")
@@ -704,7 +695,6 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 			       (readonly :bool)
 			       no_effect       ; map
 			       name value)
-	  (cl-incf id)
 	  (when value
 	    (setq value (w3m-decode-entities-string value)))
 	  (save-excursion
@@ -740,7 +730,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					       w3m-form-new-session
 					       w3m-form-download)
 		   w3m-anchor-sequence ,abs-hseq)
-		 readonly)))
+		 readonly)
+		(setq cur-button (cons fid abs-hseq))))
 	     ((string= type "reset")
 	      (w3m-form-make-button
 	       start end
@@ -748,7 +739,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		 ,(format "fid=%d/type=%s/name=%s/id=%d" fid type name id)
 		 w3m-action (w3m-form-reset ,form)
 		 w3m-anchor-sequence ,abs-hseq)
-	       readonly))
+	       readonly)
+	      (setq cur-button (cons fid abs-hseq)))
 	     ((string= type "textarea")
 	      (if (eq w3m-type 'w3mmee)
 		  (w3m-form-put form id
@@ -884,13 +876,16 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 					     w3m-form-new-session
 					     w3m-form-download)
 		 w3m-anchor-sequence ,abs-hseq
-		 w3m-form-readonly ,readonly)))))))))
+		 w3m-form-readonly ,readonly))))))
+	(unless (and cur-button (equal cur-button prev-button))
+	  (cl-incf id))
+	(setq prev-button cur-button
+	      cur-button nil))))
     ;; Process <internal> tag.
     (when (search-forward "<internal>" nil t)
       (setq internal-start (match-beginning 0))
       (while (and (null reuse-forms)
 		  (re-search-forward "<\\([a-z]+\\)_int" nil t))
-	(cl-incf id)
 	(cond
 	 ((string= (match-string 1) "select")
 	  (w3m-parse-attributes ((selectnumber :integer))
@@ -933,7 +928,8 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 		   (w3m-decode-entities)
 		   (goto-char (point-min))
 		   (while (search-forward "\r\n" nil t) (replace-match "\n"))
-		   (buffer-string)))))))))
+		   (buffer-string))))))))
+	(cl-incf id))
       (when (search-forward "</internal>" nil t)
 	(delete-region internal-start (match-end 0))))
     (setq w3m-current-forms (if (eq w3m-type 'w3mmee)
