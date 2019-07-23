@@ -1,3 +1,8 @@
+2019-07-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-redisplay-pages-automatically): Recenter pages displayed
+	in unselected windows as well when window config is changed.
+
 2019-07-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-form.el (w3m-form-resume): Remove workaround.

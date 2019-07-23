@@ -10001,34 +10001,40 @@ displayed in the other unselected windows will also change unwantedly."
   ;; Don't care the page height change that often happens
   ;; if the echo area shows a message in two or more lines.
   (unless (eq (selected-window) (minibuffer-window))
-    (let (buffer buffers width pos)
+    (let (pos bufsize buffer buffers)
       (cl-labels
-	  ((redisplay
+	  ((re--center (pos bufsize)
+		       (goto-char (1+ (round (* (car pos) bufsize))))
+		       (set-window-start nil (line-beginning-position))
+		       (goto-char (1+ (round (* (cdr pos) bufsize))))
+		       (beginning-of-line))
+	   (re--display
 	    (window)
-	    (setq buffer (window-buffer window))
-	    (unless (memq buffer buffers)
-	      (push buffer buffers)
-	      (with-current-buffer buffer
-		(when (and (eq major-mode 'w3m-mode)
-			   (not (eq w3m-last-window-width
-				    (setq width (window-width window))))
-			   (not w3m-current-process))
-		  (setq w3m-last-window-width width
-			pos (/ (window-start window) (buffer-size) 1.0))
-		  (w3m-condition-case nil
-		      (let (w3m-clear-display-while-reading)
-			(w3m-redisplay-this-page))
-		    ;; Try to do reloading when redisplaying fails.
-		    (error (w3m-reload-this-page)))
-		  (goto-char
-		   (prog1 (point)
-		     (goto-char (max (point-min)
-				     (min (point-max)
-					  (round (* pos (buffer-size))))))
-		     (set-window-start window (line-beginning-position))))
-		  (beginning-of-line))))))
-	(redisplay (selected-window))
-	(walk-windows #'redisplay 'ignore-minibuf (selected-frame))))))
+	    (save-selected-window
+	      (select-window window)
+	      (when (and (eq major-mode 'w3m-mode) (not w3m-current-process))
+		(setq bufsize (buffer-size))
+		(if (setq pos (cdr (assoc (setq buffer (window-buffer window))
+					  buffers)))
+		    (re--center pos bufsize)
+		  (setq pos
+			(if (zerop bufsize)
+			    '(0 . 0)
+			  (setq bufsize (float bufsize))
+			  (cons (/ (1- (window-start)) bufsize)
+				(/ (1- (line-beginning-position)) bufsize))))
+		  (push (cons buffer pos) buffers)
+		  (unless (eq w3m-last-window-width
+			      (setq w3m-last-window-width
+				    (window-width window)))
+		    (w3m-condition-case nil
+			(let (w3m-clear-display-while-reading)
+			  (w3m-redisplay-this-page))
+		      ;; Try to do reloading when redisplaying fails.
+		      (error (w3m-reload-this-page)))
+		    (re--center pos (buffer-size))))))))
+	(re--display (selected-window))
+	(walk-windows #'re--display 'ignore-minibuf (selected-frame))))))
 
 (defun w3m-examine-command-line-args ()
   "Return a url when the `w3m' command is invoked from the command line.
