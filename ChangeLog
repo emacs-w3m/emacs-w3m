@@ -1,3 +1,7 @@
+2019-07-23  Manuel Giraud  <manuel@ledu-giraud.fr>
+
+	* aclocal.m4 (AC_EMACS_LISP): Fix redirect spells ([emacs-w3m:13501]).
+
 2019-07-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-redisplay-pages-automatically):
