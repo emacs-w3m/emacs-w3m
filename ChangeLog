@@ -1,3 +1,8 @@
+2019-07-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-redisplay-pages-automatically):
+	Make recentering a little better.
+
 2019-07-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-redisplay-pages-automatically): Recenter pages displayed

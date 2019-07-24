@@ -10003,11 +10003,13 @@ displayed in the other unselected windows will also change unwantedly."
   (unless (eq (selected-window) (minibuffer-window))
     (let (pos bufsize buffer buffers)
       (cl-labels
-	  ((re--center (pos bufsize)
-		       (goto-char (1+ (round (* (car pos) bufsize))))
-		       (set-window-start nil (line-beginning-position))
-		       (goto-char (1+ (round (* (cdr pos) bufsize))))
-		       (beginning-of-line))
+	  ((re--center
+	    (pos bufsize)
+	    (goto-char (1+ (round (* (car pos) bufsize))))
+	    (goto-char
+	     (prog1 (line-beginning-position)
+	       (forward-line (- (round (* (cdr pos) (1- (window-height))))))
+	       (set-window-start nil (point)))))
 	   (re--display
 	    (window)
 	    (save-selected-window
@@ -10020,9 +10022,10 @@ displayed in the other unselected windows will also change unwantedly."
 		  (setq pos
 			(if (zerop bufsize)
 			    '(0 . 0)
-			  (setq bufsize (float bufsize))
-			  (cons (/ (1- (window-start)) bufsize)
-				(/ (1- (line-beginning-position)) bufsize))))
+			  (cons (/ (1- (line-beginning-position))
+				   (float bufsize))
+				(/ (count-lines (window-start) (point))
+				   (float (max 1 (1- (window-height))))))))
 		  (push (cons buffer pos) buffers)
 		  (unless (eq w3m-last-window-width
 			      (setq w3m-last-window-width
