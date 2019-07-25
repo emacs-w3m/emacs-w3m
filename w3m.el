@@ -10019,23 +10019,23 @@ displayed in the other unselected windows will also change unwantedly."
 		(if (setq pos (cdr (assoc (setq buffer (window-buffer window))
 					  buffers)))
 		    (re--center pos bufsize)
-		  (setq pos
-			(if (zerop bufsize)
-			    '(0 . 0)
-			  (cons (/ (1- (line-beginning-position))
-				   (float bufsize))
-				(/ (count-lines (window-start) (point))
-				   (float (max 1 (1- (window-height))))))))
-		  (push (cons buffer pos) buffers)
 		  (unless (eq w3m-last-window-width
 			      (setq w3m-last-window-width
 				    (window-width window)))
+		    (setq pos
+			  (if (zerop bufsize)
+			      '(0 . 0)
+			    (cons (/ (1- (line-beginning-position))
+				     (float bufsize))
+				  (/ (count-lines (window-start) (point))
+				     (float (max 1 (1- (window-height))))))))
 		    (w3m-condition-case nil
 			(let (w3m-clear-display-while-reading)
 			  (w3m-redisplay-this-page))
 		      ;; Try to do reloading when redisplaying fails.
 		      (error (w3m-reload-this-page)))
-		    (re--center pos (buffer-size))))))))
+		    (re--center pos (buffer-size))
+		    (push (cons buffer pos) buffers)))))))
 	(re--display (selected-window))
 	(walk-windows #'re--display 'ignore-minibuf (selected-frame))))))
 
