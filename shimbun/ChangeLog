@@ -1,3 +1,7 @@
+2019-07-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-login, shimbun-sankei-logout): Work.
+
 2019-06-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Remove backlog stuff that didn't work as intended
