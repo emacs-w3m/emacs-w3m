@@ -487,10 +487,9 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
 	      (w3m-process-with-wait-handler
 		(w3m-retrieve-and-render next t nil nil nil handler))
 	      (goto-char (point-min))
-	      (if (not (re-search-forward
-			"^You were redirected to:[\t\n\r ]+\\(http[^\n]+\\)"
-			nil t))
-		  (when interactive-p (message "Failed to login"))
+	      (when (re-search-forward
+		     "^You were redirected to:[\t\n\r ]+\\(http[^\n]+\\)"
+		     nil t)
 		(setq next (match-string-no-properties 1))
 		(w3m-process-with-wait-handler
 		  (w3m-retrieve-and-render next t nil nil nil handler))
@@ -516,15 +515,15 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
 		      (when interactive-p (message "Failed to login"))
 		    (setq form (w3m-form-make-form-data form))
 		    (w3m-process-with-wait-handler
-		      (w3m-retrieve-and-render action t nil form nil handler))
-		    (if (not (and w3m-current-url
-				  (string-match
-				   "\\`https://special.sankei.com/?\\'"
-				   w3m-current-url)))
-			(when interactive-p (message "Failed to login"))
-		      (when interactive-p (message "Logged in"))
-		      (password-cache-add name password)
-		      (when w3m-cookie-save-cookies (w3m-cookie-save)))))))
+		      (w3m-retrieve-and-render action t nil form nil handler)))
+		  (if (not (and w3m-current-url
+				(string-match
+				 "\\`https://special.sankei.com/?\\'"
+				 w3m-current-url)))
+		      (when interactive-p (message "Failed to login"))
+		    (when interactive-p (message "Logged in"))
+		    (password-cache-add name password)
+		    (when w3m-cookie-save-cookies (w3m-cookie-save))))))
 	    (when (get-buffer " *w3m-cookie-parse-temp*")
 	      (kill-buffer (get-buffer " *w3m-cookie-parse-temp*")))
 	    (unless cache (w3m-cache-shutdown)))
