@@ -1,3 +1,8 @@
+2019-07-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-clear-contents): Delete useless buttons.
+	(shimbun-sankei-login): Delete old cookies in advance.
+
 2019-07-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-login, shimbun-sankei-logout): Work.

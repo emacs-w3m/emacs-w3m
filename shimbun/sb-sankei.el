@@ -24,9 +24,6 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl)) ;; lexical-let
-;; Note: the `w3m-process-do-with-temp-buffer' macro uses `lexical-let'.
-
 (require 'sb-multi)
 
 (luna-define-class shimbun-sankei
@@ -378,6 +375,10 @@ src=\"\\([^\"]+\\)[^>]+>\\)[\t\n ]*" nil t)
 class=\"pageNextsubhead\"" nil t)
 	       (shimbun-end-of-tag "p" t))
       (replace-match "\n"))
+    (goto-char (point-min))
+    (while (and (re-search-forward "<button[\t\n ]+" nil t)
+		(shimbun-end-of-tag "button" t))
+      (replace-match "\n"))
     ;; Restore images.
     (when images
       (goto-char (point-min))
@@ -409,6 +410,7 @@ class=\"pageNextsubhead\"" nil t)
   (require 'w3m-form))
 
 (declare-function w3m-cookie-save "w3m-cookie" (&optional domain))
+(declare-function w3m-cookie-setup "w3m-cookie")
 
 (autoload 'password-cache-add "password-cache")
 (autoload 'password-read-from-cache "password-cache")
@@ -469,6 +471,11 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
       (when interactive-p (message "Quit"))
     (when interactive-p (message "Logging in to special.sankei.com..."))
     (require 'w3m-cookie)
+    ;; Delete old login cookies.
+    (w3m-cookie-setup)
+    (dolist (cookie w3m-cookies)
+      (when (string-match "\\.sankei\\..+login" (w3m-cookie-url cookie))
+	(setq w3m-cookies (delq cookie w3m-cookies))))
     (require 'w3m-form)
     (w3m-arrived-setup)
     (let ((cache (buffer-live-p w3m-cache-buffer))
