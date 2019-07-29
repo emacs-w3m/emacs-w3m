@@ -38,9 +38,7 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl)) ;; multiple-value-bind
-;; `cl' employs `cl-lib'.
-;; (require 'cl-lib) ;; cl-decf, cl-incf
+(require 'cl-lib) ;; cl-decf, cl-incf, cl-multiple-value-bind, cl-values-list
 
 (require 'shimbun)
 (require 'sb-rss)
@@ -74,8 +72,8 @@ _=ro*?]4:|n>]ZiLZ2LEo^2nr('C<+`lO~/!R[lH'N'4X&%\\I}8T!wt")))
 
 (luna-define-method shimbun-rss-process-date ((shimbun shimbun-cnet) string)
   "Convert a slightly corrupted date string to a date string in right format."
-  (multiple-value-bind (sec min hour day month year dow dst zone)
-      (values-list (decode-time (shimbun-time-parse-string string)))
+  (cl-multiple-value-bind (sec min hour day month year dow dst zone)
+      (cl-values-list (decode-time (shimbun-time-parse-string string)))
     (setq zone (/ zone 60))
     (shimbun-make-date-string year month day
 			      (format "%02d:%02d" hour min)

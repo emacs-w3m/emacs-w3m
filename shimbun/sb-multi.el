@@ -26,9 +26,7 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl)) ;; multiple-value-bind
-;; `cl' employs `cl-lib'.
-;; (require 'cl-lib) ;; cl-incf
+(require 'cl-lib) ;; cl-incf, cl-multiple-value-bind, cl-values-list
 
 (require 'shimbun)
 
@@ -100,8 +98,8 @@ Return nil, unless a content is cleared successfully.")
 	(setq base-cid (match-string 1 base-cid))
       (error "Cannot extract base CID from %s for %s"
 	     base-cid (shimbun-article-url shimbun header)))
-    (multiple-value-bind (texts images)
-	(values-list
+    (cl-multiple-value-bind (texts images)
+	(cl-values-list
 	 (shimbun-multi-retrieve-next-pages shimbun header base-cid
 					    (shimbun-article-url shimbun
 								 header)))

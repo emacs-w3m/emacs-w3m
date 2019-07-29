@@ -1,3 +1,10 @@
+2019-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-cgi-board.el (shimbun-cgi-board-make-date-string):
+	* sb-cnet.el (shimbun-rss-process-date):
+	* sb-multi.el (shimbun-multi-make-contents): Use cl-multiple-value-bind
+	and cl-values-list instead of multiple-value-bind and values-list.
+
 2019-07-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-clear-contents): Delete useless buttons.
