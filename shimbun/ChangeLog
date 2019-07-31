@@ -1,3 +1,8 @@
+2019-07-31  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-login):
+	Make it work even if some kinds of cookies are left in the cache.
+
 2019-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-cgi-board.el (shimbun-cgi-board-make-date-string):
