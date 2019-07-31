@@ -1218,6 +1218,11 @@ websites or referers embed. See `w3m-strip-queries-alist'."
 			   (not (file-directory-p bin))))
 	      (throw 'found-command bin))))))))
 
+(defun w3m-cancel-timer (timer)
+  "Run `cancel-timer' for TIMER iff it is really active.
+Return t if canceled."
+  (when (timerp timer) (inline (cancel-timer timer)) t))
+
 (defun w3m-cancel-refresh-timer (&optional buffer)
   "Cancel the timer for REFRESH attribute in META tag."
   (when w3m-use-refresh

@@ -1,5 +1,8 @@
 2019-07-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-util.el (w3m-cancel-timer): New function.
+	* w3m.el (w3m-idle-images-show, w3m-idle-images-show-unqueue): Use it.
+
 	Make w3m-scroll-up-or-next-url work again ([emacs-w3m:13503])
 
 	* w3m.el (w3m-relationship-estimate-rules): Update Google regexps.

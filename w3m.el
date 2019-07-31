@@ -3682,17 +3682,16 @@ The database is kept in `w3m-entity-table'."
       (setq repeat (sit-for 0.1 t)))
     (if w3m-idle-images-show-list
 	(when (input-pending-p)
-	  (cancel-timer w3m-idle-images-show-timer)
+	  (w3m-cancel-timer w3m-idle-images-show-timer)
 	  (setq w3m-idle-images-show-timer
 		(run-with-idle-timer w3m-idle-images-show-interval
 				     t
 				     'w3m-idle-images-show)))
-      (cancel-timer w3m-idle-images-show-timer)
+      (w3m-cancel-timer w3m-idle-images-show-timer)
       (setq w3m-idle-images-show-timer nil))))
 
 (defun w3m-idle-images-show-unqueue (buffer)
-  (when w3m-idle-images-show-timer
-    (cancel-timer w3m-idle-images-show-timer)
+  (when (w3m-cancel-timer w3m-idle-images-show-timer)
     (setq w3m-idle-images-show-timer nil)
     (setq w3m-idle-images-show-list
 	  (delq nil
