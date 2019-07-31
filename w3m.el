@@ -1851,18 +1851,12 @@ any time:
      "\\`https?://\\(?:www\\|blogsearch\\|groups\\|news\\|images\\)\
 \\.google\\.[^/]+/\\(?:\\(?:blog\\|code\\)?search\\|groups\\|news\\|images\
 \\|cse\\?cx=\\|custom\\?\\(?:q\\|hl\\)=\\)"
-     ,(concat "<a[^>]+?href=" w3m-html-string-regexp "[^>]*>[\t\n ]*"
-	      "\\(?:\\(?:</?span[^>]*>[\t\n ]*\\)*<span[^>]+>Next</span>"
-	      "\\|\\(?:</?span[^>]*>[\t\n ]*\\)*\\(?:<b>\\)?"
-	      "\\(?:下一頁\\|&#19979;&#19968;&#38913;"
-	      "\\|次へ\\|&#27425;&#12408;"
-	      "\\|다음\\|&#45796;&#51020;\\)[\t\n ]*<\\)")
-     ,(concat "<a[^>]+?href=" w3m-html-string-regexp "[^>]*>[\t\n ]*"
-	      "\\(?:\\(?:</?span[^>]*>[\t\n ]*\\)*<span[^>]+>Previous</span>"
-	      "\\|\\(?:</?span[^>]*>[\t\n ]*\\)*\\(?:<b>\\)?"
-	      "\\(?:上一頁\\|&#19978;&#19968;&#38913;"
-	      "\\|前へ\\|&#21069;&#12408;"
-	      "\\|이전\\|&#51060;&#51204;\\)[\t\n ]*<\\)")
+     ,(concat "<a[^>]+?href=" w3m-html-string-regexp "[^>]*aria-label=\""
+	      "\\(?:Next page\\|次のページ\\|下一页"
+	      "\\|&#45796;&#51020; &#54168;&#51060;&#51648;\\)\"")
+     ,(concat "<a[^>]+?href=" w3m-html-string-regexp "[^>]*aria-label=\""
+	      "\\(?:Previous page\\|前のページ\\|上一页"
+	      "\\|&#51060;&#51204; &#54168;&#51060;&#51648;\\)\"")
      nil nil)
     (w3m-relationship-simple-estimate
      "\\`https?://www\\.google\\.[^/]+/gwt/n\\?u="
@@ -8750,15 +8744,26 @@ When called interactively, ARG defaults to 1."
   (scroll-up (or arg (and interactive-p 1))))
 
 (defun w3m-scroll-up-or-next-url (arg)
-  "Scroll the current window up ARG lines, or go to the next page."
+  "Scroll the current window up ARG lines, or go to the next page.
+\"Next page\" means the page that the current page defines with a
+\"Next page\" link.  Note that the `w3m-relationship-estimate-rules'
+variable and the related functions find it, so the feature will not
+always necessarily work.
+When a page visits only an image, run `image-scroll-up' instead."
   (interactive "P")
   (if (w3m-image-page-displayed-p)
       (image-scroll-up arg)
-    (if (and w3m-previous-url
-	     (pos-visible-in-window-p (point-min)))
+    (if (and w3m-next-url
+	     (pos-visible-in-window-p (let ((cur (point)))
+					(goto-char (point-max))
+					(skip-chars-backward "\t\n\r ")
+					(forward-line 1)
+					(prog1
+					    (point)
+					  (goto-char cur)))))
 	(let ((w3m-prefer-cache t))
 	  (w3m-history-store-position)
-	  (w3m-goto-url w3m-previous-url))
+	  (w3m-goto-url w3m-next-url))
       (w3m-scroll-up arg))))
 
 (defun w3m-scroll-down (&optional arg interactive-p)
@@ -8768,7 +8773,12 @@ When called interactively, ARG defaults to 1."
   (scroll-down (or arg (and interactive-p 1))))
 
 (defun w3m-scroll-down-or-previous-url (arg)
-  "Scroll the current window down ARG lines, or go to the previous page."
+  "Scroll the current window down ARG lines, or go to the previous page.
+\"Previous page\" means the page that the current page defines with a
+\"Previous page\" link.  Note that the `w3m-relationship-estimate-rules'
+variable and the related functions find it, so the feature will not
+always necessarily work.
+When a page visits only an image, run `image-scroll-down' instead."
   (interactive "P")
   (if (w3m-image-page-displayed-p)
       (image-scroll-down arg)
