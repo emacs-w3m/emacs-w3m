@@ -1,6 +1,65 @@
 2019-08-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m-cookie.el (w3m-cookie-clear): Clear cached forms and post-data.
+	Turn on lexical-binding
+
+	* mew-w3m.el (mew-w3m-ext-url-fetch):
+	* w3m-antenna.el (w3m-antenna-check-hns, w3m-antenna-check-rss)
+	(w3m-antenna-check-another-page, w3m-antenna-check-anchor)
+	(w3m-antenna-check-page):
+	* w3m-ems.el (w3m-create-image, w3m-create-resized-image):
+	* w3m-favicon.el (w3m-favicon-retrieve):
+	* w3m-image.el (w3m-imagick-start-convert-buffer):
+	* w3m-proc.el (w3m-process-do-with-temp-buffer):
+	* w3m-weather.el (w3m-about-weather, w3m-weather-run-filter-functions):
+	* w3m.el (w3m-attributes, w3m-idle-images-show)
+	(w3m-resize-inline-image-internal, w3m-w3m-dump-head)
+	(w3m-w3m-attributes-1, w3m-w3m-dump-extra, w3m-w3m-retrieve)
+	(w3m-w3m-retrieve-1, w3m-about-retrieve, w3m-download)
+	(w3m-retrieve-and-render, w3m-external-view, w3m-external-view-file)
+	(w3m-download-this-url, w3m-download-this-image)
+	(w3m--goto-url--valid-url): Set lexical-binding; don't use lexical-let.
+
+	Preparations toward lexical-binding
+
+	* w3m-proc.el (w3m-process-with-null-handler)
+	(w3m-process-with-wait-handler, w3m-process-do)
+	(w3m-process-do-with-temp-buffer):
+	* w3m.el (w3m-rendering-half-dump, w3m-view-this-url, w3m-submit-form)
+	(w3m-external-view-file, w3m-download-this-url)
+	(w3m-download-this-image):
+	Declare variables that look like unused by the compiler as ignorable.
+
+	* mew-w3m.el (mew-w3m-cite-blockquote, mew-w3m-cid-retrieve)
+	(mew-w3m-ext-url-show, mew-w3m-ext-url-fetch):
+	* w3m-antenna.el (w3m-about-antenna):
+	* w3m-ems.el (w3m-insert-image, w3m-form-button)
+	(w3m-tab-double-click-mouse1-function)
+	(w3m-tab-double-click-mouse2-function):
+	* w3m-proc.el (w3m-process-stop, w3m-process-sentinel):
+	* w3m-weather.el (w3m-about-weather, w3m-weather-extract-contents)
+	(w3m-weather-adjust-contents, w3m-weather-insert-title)
+	(w3m-weather-expand-anchors):
+	* w3m.el (w3m-entity-regexp, w3m-make-help-echo)
+	(w3m-resize-inline-image-internal, w3m-canonicalize-url)
+	(w3m-local-attributes, w3m-local-retrieve, w3m-data-retrieve)
+	(w3m-download, w3m-create-image-page, w3m-tab-button-menu2)
+	(w3m--goto-torrent-url, w3m--goto-url--handler-function, w3m-about)
+	(w3m-about-header, w3m-about-history, w3m-about-db-history)
+	(w3m-select-buffer-update):
+	Mark arguments or variables that are unused (or look like unused by
+	the compiler) with leading "_".
+
+	* mew-w3m.el (w3m-mail-compose-with-mew):
+	* w3m-antenna.el (w3m-antenna-check-all-sites):
+	* w3m-ems.el (w3m-tab-move-right):
+	* w3m.el (w3m-arrived-intern, w3m-fontify-anchors)
+	(w3m--get-page-anchors, w3m-delete-buffer, w3m--goto-url--valid-url)
+	(w3m--setup-popup-window):
+	Remove unused or obsolete variables.
+
+	* w3m-ems.el (w3m-image-type-available-p): Don't use the existing
+	variable name `image-type' as an argument.
+	* w3m.el (w3m-key-binding): Fix eval form to run in lexbind world.
 
 2019-07-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
@@ -11,6 +70,10 @@
 
 	* w3m.el (w3m-relationship-estimate-rules): Update Google regexps.
 	(w3m-scroll-up-or-next-url): Make it work (broken at revno b5ec877).
+
+2019-08-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-cookie.el (w3m-cookie-clear): Clear cached forms and post-data.
 
 2019-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 

@@ -1,4 +1,4 @@
-;;; w3m-proc.el --- Functions and macros to control sub-processes
+;;; w3m-proc.el --- Functions and macros to control sub-processes -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2001-2005, 2007-2010, 2012, 2013, 2016-2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -38,9 +38,7 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl)) ;; lexical-let
-;; `cl' employs `cl-lib'.
-;; (require 'cl-lib) ;; cl-incf, cl-labels
+(require 'cl-lib) ;; cl-incf, cl-labels
 
 ;; Delete these two sections and use `gensym' instead of `w3m-gensym'
 ;; when emacs-w3m drops the Emacs 25 support.
@@ -283,7 +281,7 @@ which have no handler."
 			   (w3m-process-handler-new
 			    (w3m-process-buffer obj)
 			    (w3m-process-handler-parent-buffer (car handlers))
-			    (lambda (x) (w3m-kill-buffer (current-buffer))))
+			    (lambda (_x) (w3m-kill-buffer (current-buffer))))
 			   handlers)))
 		     (when (w3m-process-process obj)
 		       (w3m-process-kill-process (w3m-process-process obj)))
@@ -328,7 +326,9 @@ which have no handler."
 When BODY is evaluated, the local variable `handler' keeps the null
 handler."
   (let ((var (w3m-gensym "--tempvar--")))
-    `(let ((,var (let (handler) ,@body)))
+    `(let ((,var (let (handler)
+		   (ignore handler)
+		   ,@body)))
        (when (w3m-process-p ,var)
 	 (w3m-process-start-process ,var))
        ,var)))
@@ -377,7 +377,9 @@ which will wait for the end of the evaluation."
 	   (,result)
 	   (,wait-function (make-symbol "wait-function")))
        (fset ,wait-function 'identity)
-       (setq ,result (let ((handler (list ,wait-function))) ,@body))
+       (setq ,result (let ((handler (list ,wait-function)))
+		       (ignore handler)
+		       ,@body))
        (while (w3m-process-p ,result)
 	 (condition-case error
 	     (let (w3m-process-inhibit-quit inhibit-quit)
@@ -452,6 +454,7 @@ body BODY."
 	(post-function (w3m-gensym "--post-function--")))
     `(let ((,post-function (lambda (,var) ,@body)))
        (let ((,var (let ((handler (cons ,post-function handler)))
+		     (ignore handler)
 		     ,@form)))
 	 (if (w3m-process-p ,var)
 	     (if handler
@@ -475,10 +478,10 @@ evaluated in a temporary buffer."
 	(post-handler (w3m-gensym "--post-handler--"))
 	(temp-buffer (w3m-gensym "--temp-buffer--"))
 	(current-buffer (w3m-gensym "--current-buffer--")))
-    `(lexical-let ((,temp-buffer
-		    (w3m-get-buffer-create
-		     (generate-new-buffer-name w3m-work-buffer-name)))
-		   (,current-buffer (current-buffer)))
+    `(let ((,temp-buffer
+	    (w3m-get-buffer-create
+	     (generate-new-buffer-name w3m-work-buffer-name)))
+	   (,current-buffer (current-buffer)))
        (cl-labels ((,post-body (,var)
 			       (when (buffer-name ,temp-buffer)
 				 (set-buffer ,temp-buffer))
@@ -491,6 +494,7 @@ evaluated in a temporary buffer."
 	 (let ((,var (let ((handler
 			    (cons #',post-body
 				  (cons #',post-handler handler))))
+		       (ignore handler)
 		       (with-current-buffer ,temp-buffer ,@form))))
 	   (if (w3m-process-p ,var)
 	       (if handler
@@ -499,6 +503,7 @@ evaluated in a temporary buffer."
 	     (if (w3m-process-p
 		  (setq ,var (save-current-buffer
 			       (let ((handler (cons #',post-handler handler)))
+				 (ignore handler)
 				 (,post-body ,var)))))
 		 (if handler
 		     ,var
@@ -533,7 +538,7 @@ evaluated in a temporary buffer."
 (defvar w3m-process-background nil
   "Non-nil means that an after handler is being evaluated.")
 
-(defun w3m-process-sentinel (process event &optional ignore-queue)
+(defun w3m-process-sentinel (process _event &optional ignore-queue)
   ;; Ensure that this function will be never called repeatedly.
   (set-process-sentinel process 'ignore)
   (let ((inhibit-quit w3m-process-inhibit-quit)

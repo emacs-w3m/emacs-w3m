@@ -1,4 +1,4 @@
-;;; w3m.el --- an Emacs interface to w3m
+;;; w3m.el --- an Emacs interface to w3m -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2000-2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -54,7 +54,7 @@
 ;; `cl-lib', otherwise the functions `cl-lib' provides will be marked
 ;; as "might not be defined at runtime" because of `eval-when-compile'.
 (require 'cl-lib) ;; cl-decf, cl-incf, cl-labels, cl-remove-if
-(eval-when-compile (require 'cl)) ;; c[ad][ad][ad]+r, defsetf, lexical-let
+(eval-when-compile (require 'cl)) ;; c[ad][ad][ad]+r, defsetf
 ;; The `defsetf' macro uses this function at compile time.
 (declare-function gv--defsetter "gv" (name setter do args &optional vars))
 
@@ -660,7 +660,7 @@ nil which provides Lynx-like keys."
 		  (boundp 'w3m-lynx-like-map))
 		 ;; It won't be bound at the first time.
 		 (eval
-		  '(setq w3m-mode-map (if (eq value 'info)
+		  `(setq w3m-mode-map (if (eq ,value 'info)
 					  w3m-info-like-map
 					w3m-lynx-like-map)
 			 w3m-minor-mode-map (w3m-make-minor-mode-keymap))))
@@ -2095,7 +2095,7 @@ other than ISO 10646.")
 
 (defconst w3m-entity-regexp
   (let (buf)
-    (maphash (lambda (key val) (push key buf))
+    (maphash (lambda (key _val) (push key buf))
 	     w3m-entity-table)
     (concat "&\\(" (regexp-opt buf)
 	    "\\|#\\(?:[xX][0-9a-fA-F]+\\|[0-9]+\\)\\)\\(\\'\\|[^0-9a-zA-Z]\\)"))
@@ -2457,7 +2457,7 @@ nil value means it has not been initialized.")
   (let ((a (when w3m-use-japanese-menu "ア")))
     `("w3m"
       [,(w3m-make-menu-item "この URL を新しいセッションで開く"
-	  "Open This URL in a new session")
+			    "Open This URL in a new session")
        w3m-view-this-url-new-session (or (w3m-anchor) (w3m-image))]
       [,(w3m-make-menu-item "この URL をダウンロードする" "Download This URL")
        w3m-download-this-url (or (w3m-anchor) (w3m-image))]
@@ -2477,20 +2477,20 @@ nil value means it has not been initialized.")
        (w3m-parent-page-available-p)]
       "----" ;; separator
       [,(w3m-make-menu-item "現在のページを browse-url で開く"
-	  "Open The Current Page using browse-url")
+			    "Open The Current Page using browse-url")
        w3m-view-url-with-browse-url w3m-current-url]
       [,(w3m-make-menu-item "このリンクを browse-url で開く"
-	  "Open This Link using browse-url")
+			    "Open This Link using browse-url")
        w3m-view-url-with-browse-url (or (w3m-anchor) (w3m-image))]
       [,(w3m-make-menu-item "このページのソースをコマンドに送る..."
-	  "Pipe Page Source to Command...")
+			    "Pipe Page Source to Command...")
        w3m-pipe-source  w3m-current-url]
       "----" ;; separator
       (,(w3m-make-menu-item "再表示" "Redisplay")
        [,(w3m-make-menu-item "このページを再取得する" "Reload This Page")
 	w3m-reload-this-page w3m-current-url]
        [,(w3m-make-menu-item "すべてのページを再取得する" "Reload All Pages")
-       w3m-reload-all-pages (cdr (w3m-list-buffers))]
+	w3m-reload-all-pages (cdr (w3m-list-buffers))]
        "----" ;; separator
        [,(w3m-make-menu-item "画像表示の切替(全部)" "Toggle Images")
 	w3m-toggle-inline-images (display-images-p)]
@@ -2502,13 +2502,13 @@ nil value means it has not been initialized.")
        [,(w3m-make-menu-item "再描画する" "Redisplay This Page")
 	w3m-redisplay-this-page w3m-current-url]
        [,(w3m-make-menu-item "Charset を指定して再描画する"
-	   "Redisplay This Page with Charset")
+			     "Redisplay This Page with Charset")
 	w3m-redisplay-with-charset w3m-current-url]
        [,(w3m-make-menu-item "Content-type を指定して再描画する"
-	   "Redisplay This Page with Content-type")
+			     "Redisplay This Page with Content-type")
 	w3m-redisplay-with-content-type w3m-current-url]
        [,(w3m-make-menu-item "指定した Charset と Content-type を破棄する"
-	   "Reset Charset and Content-type")
+			     "Reset Charset and Content-type")
 	w3m-redisplay-and-reset w3m-current-url]
        ) ;; end redisplay
       [,(w3m-make-menu-item "ホームページへ移動" "Go to Home Page")
@@ -2772,8 +2772,7 @@ If SOFT is nil, create a key for URL in `w3m-arrived-db' if not exists.
 If SOFT is non-nil, return nil if URL is not found in `w3m-arrived-db'.
 In `w3m-arrived-db' URL is normalized so as not to have the last `/'."
   (let* ((url `(let* ((url ,url)
-		      (len (length url))
-		      val)
+		      (len (length url)))
 		 (if (and (not (zerop len))
 			  (eq (aref url (1- len)) ?/))
 		     (setq url (substring url 0 -1)))))
@@ -2995,7 +2994,7 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
      ((string= "about://emacs-w3m.gif" url)
       (list "image/gif" nil nil nil nil url url))
      ((string-match "\\`about://source/" url)
-      (lexical-let ((src (substring url (match-end 0))))
+      (let ((src (substring url (match-end 0))))
 	(w3m-process-do
 	    (attrs (w3m-attributes src no-cache handler))
 	  (list "text/plain"
@@ -3079,7 +3078,7 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 PROPERTY is a symbol (which doesn't need to be quoted) of a text
 property with the value of a string which should be in the place where
 having to show a help message."
-  `(lambda (window object pos)
+  `(lambda (window _object pos)
      (if w3m-track-mouse
 	 (let ((deactivate-mark nil))
 	   (message nil)	; Clear the echo area.
@@ -3438,7 +3437,7 @@ The database is kept in `w3m-entity-table'."
     (while (re-search-forward "<a[ \t\r\f\n]+" nil t)
       (setq start (match-beginning 0))
       (setq prenames (get-text-property start 'w3m-name-anchor2))
-      (w3m-parse-attributes (href name id charset title
+      (w3m-parse-attributes (href name id title
 				  (rel :case-ignore) (hseq :integer))
 	(unless name
 	  (setq name id))
@@ -3468,7 +3467,7 @@ The database is kept in `w3m-entity-table'."
 			       (concat (w3m-url-transfer-encode-string
 					(substring href 0 (match-beginning 8)))
 				       "#" tmp))
-			 (w3m-url-transfer-encode-string href))))
+			   (w3m-url-transfer-encode-string href))))
 	    (setq hseq (or (and (null hseq) 0) (abs hseq)))
 	    (setq w3m-max-anchor-sequence (max hseq w3m-max-anchor-sequence))
 	    (w3m-add-face-property start end (if (w3m-arrived-p href)
@@ -3590,16 +3589,16 @@ The database is kept in `w3m-entity-table'."
 					 'w3m-image-status 'off
 					 'w3m-image-redundant upper
 					 'keymap w3m-link-map))
-	   (unless (w3m-action start)
-	     ;; No need to use `w3m-add-text-properties' here.
-	     (w3m-add-face-property start end
-				    (if (w3m-anchor start)
-					'w3m-image-anchor
-				      'w3m-image))
-	     (unless (w3m-anchor start)
-	       (add-text-properties start end
-				    (list 'mouse-face 'highlight
-					  'help-echo help)))))))))
+	  (unless (w3m-action start)
+	    ;; No need to use `w3m-add-text-properties' here.
+	    (w3m-add-face-property start end
+				   (if (w3m-anchor start)
+				       'w3m-image-anchor
+				     'w3m-image))
+	    (unless (w3m-anchor start)
+	      (add-text-properties start end
+				   (list 'mouse-face 'highlight
+					 'help-echo help)))))))))
 
 (defvar w3m-idle-images-show-timer nil)
 (defvar w3m-idle-images-show-list nil)
@@ -3648,34 +3647,30 @@ The database is kept in `w3m-entity-table'."
 		  (remove-text-properties start end '(w3m-idle-image-item))
 		  (set-buffer-modified-p nil))
 		(w3m-process-with-null-handler
-		  (lexical-let ((start start)
-				(end end)
-				(iurl iurl)
-				(url url))
-		    (w3m-process-do
-			(image (let ((w3m-current-buffer (current-buffer))
-				     (w3m-message-silent t))
-				 (w3m-create-image
-				  iurl no-cache
-				  url
-				  size handler)))
-		      (when (buffer-live-p (marker-buffer start))
-			(with-current-buffer (marker-buffer start)
-			  (save-restriction
-			    (widen)
-			    (if image
-				(when (equal url w3m-current-url)
-				  (let ((inhibit-read-only t))
-				    (w3m-insert-image start end image iurl))
-				  ;; Redisplay
-				  (when w3m-force-redisplay
-				    (sit-for 0)))
-			      (let ((inhibit-read-only t))
-				(w3m-add-text-properties
-				 start end '(w3m-image-status off))))
-			    (set-buffer-modified-p nil))
-			  (set-marker start nil)
-			  (set-marker end nil))))))))
+		  (w3m-process-do
+		      (image (let ((w3m-current-buffer (current-buffer))
+				   (w3m-message-silent t))
+			       (w3m-create-image
+				iurl no-cache
+				url
+				size handler)))
+		    (when (buffer-live-p (marker-buffer start))
+		      (with-current-buffer (marker-buffer start)
+			(save-restriction
+			  (widen)
+			  (if image
+			      (when (equal url w3m-current-url)
+				(let ((inhibit-read-only t))
+				  (w3m-insert-image start end image iurl))
+				;; Redisplay
+				(when w3m-force-redisplay
+				  (sit-for 0)))
+			    (let ((inhibit-read-only t))
+			      (w3m-add-text-properties
+			       start end '(w3m-image-status off))))
+			  (set-buffer-modified-p nil))
+			(set-marker start nil)
+			(set-marker end nil)))))))
 	  (set-marker start nil)
 	  (set-marker end nil)
 	  (w3m-idle-images-show-unqueue (marker-buffer start))))
@@ -3784,10 +3779,9 @@ You are retrieving non-secure image(s).  Continue? ")
 				   (w3m-url-local-p iurl)
 				   (w3m-cache-available-p iurl))))
 		      (w3m-process-with-null-handler
-			(lexical-let ((start (set-marker (make-marker) start))
-				      (end (set-marker (make-marker) end))
-				      (iurl iurl)
-				      (url w3m-current-url))
+			(setq start (set-marker (make-marker) start)
+			      end (set-marker (make-marker) end))
+			(let ((url w3m-current-url))
 			  (w3m-process-do
 			      (image
 			       (let ((w3m-current-buffer (current-buffer)))
@@ -3866,7 +3860,7 @@ non-nil, cached data will not be used."
   (let (toggle-list begin end)
     (if (region-active-p)
 	(let ((p (region-beginning))
-	    iurl)
+	      iurl)
 	  (setq begin (region-beginning)
 		end (region-end))
 	  (deactivate-mark)
@@ -3875,7 +3869,7 @@ non-nil, cached data will not be used."
 	    (when (and (< p end)
 		       (setq iurl (w3m-image p))
 		       (not (assoc iurl toggle-list)))
-	    (setq toggle-list (cons (cons iurl p) toggle-list)))))
+	      (setq toggle-list (cons (cons iurl p) toggle-list)))))
       (setq toggle-list (and (w3m-image)
 			     `(,(cons (w3m-image) (point))))))
     (if toggle-list
@@ -3979,10 +3973,9 @@ variable is non-nil (default=t)."
       (w3m-message "There are some images considered unsafe;\
  use the prefix arg to force display"))))
 
-(defun w3m-resize-inline-image-internal (url rate)
+(defun w3m-resize-inline-image-internal (_url rate)
   "Resize an inline image on the cursor position.
-URL is a url of an image.  RATE is a number of percent used when
-resizing an image."
+RATE is a number of percent used when resizing an image."
   (let* ((inhibit-read-only t)
 	 (start (point))
 	 (end (or (next-single-property-change start 'w3m-image)
@@ -4017,11 +4010,10 @@ You are retrieving non-secure image(s).  Continue? ")
 			    (message nil))
 			  (setq allow-non-secure-images t))))
 	(w3m-process-with-null-handler
-	  (lexical-let ((start (set-marker (make-marker) start))
-			(end (set-marker (make-marker) end))
-			(iurl iurl)
-			(rate scale)
-			(url w3m-current-url))
+	  (setq start (set-marker (make-marker) start)
+		end (set-marker (make-marker) end))
+	  (let ((rate scale)
+		(url w3m-current-url))
 	    (w3m-process-do
 		(image (let ((w3m-current-buffer (current-buffer)))
 			 (w3m-create-resized-image
@@ -4398,7 +4390,7 @@ domain name."
 	url)
        (feeling-searchy
 	(require 'w3m-search)
-	(w3m-search-do-search (lambda (url &rest rest) url)
+	(w3m-search-do-search (lambda (url &rest _rest) url)
 			      w3m-search-default-engine url))
        (t
 	(concat "https://" url))))))
@@ -4926,7 +4918,7 @@ Users should never modify the value.  See also `w3m-view-source'.")
 (defmacro w3m-local-content-type (url)
   `(car (w3m-local-file-type ,url)))
 
-(defun w3m-local-attributes (url &rest args)
+(defun w3m-local-attributes (url &rest _args)
   "Return a list of attributes corresponding to URL.
 Return nil if it failed in retrieving of the header.
 Otherwise, return a list which includes the following elements:
@@ -4949,7 +4941,7 @@ Otherwise, return a list which includes the following elements:
 	  (nth 5 attr)
 	  (w3m-expand-file-name-as-url (file-truename file)))))
 
-(defun w3m-local-retrieve (url &optional no-uncompress &rest args)
+(defun w3m-local-retrieve (url &optional no-uncompress &rest _args)
   "Retrieve contents of local URL and put it into the current buffer.
 This function will return the content-type of URL as a string when
 retrieval is successful."
@@ -5144,8 +5136,7 @@ Return a list which includes:
 
 (defun w3m-w3m-dump-head (url handler)
   "Return the header string of URL."
-  (lexical-let ((url url)
-		(silent w3m-message-silent))
+  (let ((silent w3m-message-silent))
     (w3m-message "Request sent, waiting for response...")
     (w3m-process-do-with-temp-buffer
 	(success (progn
@@ -5191,24 +5182,21 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 
 (defun w3m-w3m-attributes-1 (url no-cache counter handler)
   "A subroutine for `w3m-w3m-attributes'."
-  (lexical-let ((url url)
-		(no-cache no-cache)
-		(counter counter))
-    (w3m-process-do
-	(header (or (unless no-cache
-		      (w3m-cache-request-header url))
-		    (w3m-w3m-dump-head url handler)))
-      (when header
-	(let ((attr (w3m-w3m-parse-header url header)))
-	  (w3m-cache-header url header)
-	  (if (memq (car attr) '(301 302 303 304 305 306 307))
-	      (if (zerop counter)
-		  ;; Redirect counter exceeds `w3m-follow-redirection'.
-		  (list "text/html" "us-ascii" nil nil nil url)
-		;; Follow redirection.
-		(w3m-w3m-attributes-1 (nth 6 attr) no-cache
-				      (1- counter) handler))
-	    (cdr attr)))))))
+  (w3m-process-do
+      (header (or (unless no-cache
+		    (w3m-cache-request-header url))
+		  (w3m-w3m-dump-head url handler)))
+    (when header
+      (let ((attr (w3m-w3m-parse-header url header)))
+	(w3m-cache-header url header)
+	(if (memq (car attr) '(301 302 303 304 305 306 307))
+	    (if (zerop counter)
+		;; Redirect counter exceeds `w3m-follow-redirection'.
+		(list "text/html" "us-ascii" nil nil nil url)
+	      ;; Follow redirection.
+	      (w3m-w3m-attributes-1 (nth 6 attr) no-cache
+				    (1- counter) handler))
+	  (cdr attr))))))
 
 (defun w3m-w3m-expand-arguments (arguments)
   (apply 'append
@@ -5224,7 +5212,7 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 		    (t
 		     (let (print-level print-length)
 		       (list (prin1-to-string x))))))))
-		arguments)))
+	  arguments)))
 
 (defun w3m--dump-extra--handler-function (url silent success)
   (let ((w3m-message-silent silent))
@@ -5246,8 +5234,7 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 
 (defun w3m-w3m-dump-extra (url handler)
   "Retrive headers and contents pointed to by URL"
-  (lexical-let ((url url)
-		(silent w3m-message-silent))
+  (let ((silent w3m-message-silent))
     (setq w3m-current-url url
 	  url (w3m-url-strip-authinfo url))
     (w3m-message "Reading %s...%s"
@@ -5373,12 +5360,13 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
   (let ((modes (default-file-modes))
 	(cookie (and w3m-use-cookies (w3m-cookie-get url)))
 	args)
-    (setq args (nconc args
-      (list "-o" (concat "user_agent="
-			 (if w3m-add-user-agent
-			     (or (w3m-user-agent-site-specific url)
-				 w3m-user-agent)
-			   "?")))))
+    (setq args
+	  (nconc args
+		 (list "-o" (concat "user_agent="
+				    (if w3m-add-user-agent
+					(or (w3m-user-agent-site-specific url)
+					    w3m-user-agent)
+				      "?")))))
     (when cookie
       (setq args (nconc args
 			(list "-header" (concat "Cookie: " cookie)))))
@@ -5426,10 +5414,9 @@ Third optional CONTENT-TYPE is the Content-Type: field content."
   "Retrieve web contents pointed to by URL using the external w3m command.
 It will put the retrieved contents into the current buffer.  See
 `w3m-retrieve' for how does it work asynchronously with the arguments."
-  (lexical-let ((url (w3m-w3m-canonicalize-url url))
-		(no-uncompress no-uncompress)
-		(current-buffer (current-buffer))
-		(silent w3m-message-silent))
+  (setq url (w3m-w3m-canonicalize-url url))
+  (let ((current-buffer (current-buffer))
+	(silent w3m-message-silent))
     (w3m-process-do-with-temp-buffer
 	(attr (progn
 		(set-buffer-multibyte nil)
@@ -5505,21 +5492,15 @@ It will put the retrieved contents into the current buffer.  See
 				 post-data)
 			       referer
 			       (if (consp post-data) (car post-data))))))
-    (lexical-let ((url url)
-		  (post-data post-data)
-		  (referer referer)
-		  (no-cache no-cache)
-		  (counter counter)
-		  (temp-file temp-file))
-      (w3m-process-do
-	  (attr (or (unless no-cache
-		      (and cachep
-			   (w3m-cache-request-contents url)
-			   (w3m-w3m-parse-header
-			    url (w3m-cache-request-header url))))
-		    (w3m-w3m-dump-extra url handler)))
-	(w3m--retrieve-1--handler-function
-	 url post-data referer no-cache counter handler temp-file attr)))))
+    (w3m-process-do
+	(attr (or (unless no-cache
+		    (and cachep
+			 (w3m-cache-request-contents url)
+			 (w3m-w3m-parse-header
+			  url (w3m-cache-request-header url))))
+		  (w3m-w3m-dump-extra url handler)))
+      (w3m--retrieve-1--handler-function
+       url post-data referer no-cache counter handler temp-file attr))))
 
 (defvar w3m-onload-url nil "Url redirected to by onload.")
 
@@ -5571,20 +5552,20 @@ It will put the retrieved contents into the current buffer.  See
       (set-buffer-multibyte nil))
     "image/gif")
    ((string-match "\\`about://source/" url)
-    (lexical-let ((url (substring url (match-end 0))))
-      (w3m-process-do
-	  (type (w3m-retrieve
-		 url no-uncompress no-cache post-data referer handler))
-	(cond
-	 (type "text/plain")
-	 ((w3m-cache-request-contents url)
-	  (w3m-decode-encoded-contents (w3m-content-encoding url))
-	  "text/plain")
-	 (t nil)))))
+    (setq url (substring url (match-end 0)))
+    (w3m-process-do
+	(type (w3m-retrieve
+	       url no-uncompress no-cache post-data referer handler))
+      (cond
+       (type "text/plain")
+       ((w3m-cache-request-contents url)
+	(w3m-decode-encoded-contents (w3m-content-encoding url))
+	"text/plain")
+       (t nil))))
    ((string-match "\\`about:/*blank/?\\'" url)
     "text/plain")
    (t
-    (lexical-let ((output-buffer (current-buffer)))
+    (let ((output-buffer (current-buffer)))
       (w3m-process-do-with-temp-buffer
 	  (type (let (func)
 		  (setq w3m-current-url url)
@@ -5629,7 +5610,7 @@ NO-CACHE specifies whether functions should not use cached contents."
 			 w3m-cid-retrieve-function-alist))))
     (when func (funcall func url no-uncompress no-cache))))
 
-(defun w3m-data-retrieve (url &optional no-uncompress no-cache)
+(defun w3m-data-retrieve (url &optional _no-uncompress _no-cache)
   "Retrieve contents pointed to by URL prefixed with the data: scheme.
 See RFC2397."
   (let ((case-fold-search t) (mime-type "text/plain")
@@ -5709,11 +5690,10 @@ POST-DATA and REFERER will be sent to the web server with a request."
 	 url no-uncompress no-cache post-data referer handler))))))
 
 ;;;###autoload
-(defun w3m-download (&optional url filename no-cache handler post-data)
+(defun w3m-download (&optional url filename _no-cache handler _post-data)
   "Download contents of URL to a file named FILENAME.
-NO-CACHE (which the prefix argument gives when called interactively)
-specifies not using the cached data."
-  (interactive (list nil nil current-prefix-arg))
+NO-CACHE is ignored (always download)."
+  (interactive)
   (unless url
     (while (string-equal
 	    (setq url (w3m-canonicalize-url
@@ -5764,10 +5744,8 @@ specifies not using the cached data."
 			"(Body==0)&&(Line!=$0){Line=$0; print $0}"
 			"(Body==1){printf \"%s%s\",$0,RT> \"" filename "\"}"
 			"/^$/{Body=1}'")))
-      (lexical-let ((url url)
-		    (filename filename)
-		    (page-buffer (current-buffer))
-		    temp process)
+      (let ((page-buffer (current-buffer))
+	    temp process)
 	(w3m-process-do-with-temp-buffer
 	    (success ;; t if success
 	     (let ((w3m-current-buffer page-buffer)
@@ -5973,6 +5951,7 @@ w3m regards it as an incomplete <a> tag that is not closed."
 	      (setq w3m-display-ins-del 'tag)))))))))
 
 (defun w3m-rendering-half-dump (charset)
+  (ignore charset)
   ;; `charset' is used by `w3m-w3m-expand-arguments' to generate
   ;; arguments for w3mmee and w3m-m17n from `w3m-halfdump-command-arguments'.
   (w3m-set-display-ins-del)
@@ -6196,11 +6175,10 @@ called with t as an argument.  Otherwise, it will be called with nil."
 		    (prog1
 			(y-or-n-p "You are leaving secure page.  Continue? ")
 		      (message nil)))))
-    (lexical-let ((url (w3m-url-strip-fragment url))
-		  (charset charset)
-		  (page-buffer (current-buffer))
-		  (arrival-time (current-time))
-		  (silent w3m-message-silent))
+    (setq url (w3m-url-strip-fragment url))
+    (let ((page-buffer (current-buffer))
+	  (arrival-time (current-time))
+	  (silent w3m-message-silent))
       (w3m-process-do-with-temp-buffer
 	  (type (progn
 		  (w3m-clear-local-variables)
@@ -6356,7 +6334,7 @@ If so return \"text/html\", otherwise \"text/plain\"."
        (string-match "\\`image/" (w3m-content-type w3m-current-url))
        (eq (get-text-property (point-min) 'w3m-image-status) 'on)))
 
-(defun w3m-create-image-page (url type charset page-buffer)
+(defun w3m-create-image-page (url type _charset page-buffer)
   (when (w3m-image-type-available-p (w3m-image-type type))
     (with-current-buffer page-buffer
       (let ((inhibit-read-only t))
@@ -6660,7 +6638,6 @@ SUB-SETS defines from where to draw anchor information.  It defaults to
 SORT-METHOD defaults to `position', but may also be `name' or a function
 that can be passed to `sort'."
   (let ((pos (point-min))
-	(cur-pos (point))
 	anchor-list)
     ;; NOTE: w3m-name-anchor aggregates data from `w3m -half-dump'.
     (unless (eq sub-sets 'w3m-name-anchor2)
@@ -6998,6 +6975,7 @@ Otherwise, if ARG is non-nil, it forces to reload the url at point."
      ((setq act (w3m-action))
       (let ((w3m-form-new-session new-session)
 	    (w3m-form-download nil))
+	(ignore w3m-form-new-session w3m-form-download)
 	(eval act)))
      ((setq url (w3m-url-valid (w3m-anchor)))
       (if new-session
@@ -7094,103 +7072,99 @@ command instead."
 	       t))
 	(let ((w3m-form-new-session new-session)
 	      (w3m-form-download nil))
+	  (ignore w3m-form-new-session w3m-form-download)
 	  (eval submit))
       (w3m-message "Can't submit form at this point"))))
 
 (defun w3m-external-view (url &optional no-cache handler)
   (when (w3m-url-valid url)
-    (lexical-let ((url url)
-		  (no-cache no-cache))
-      (w3m-process-do
-	  (type (w3m-content-type url no-cache handler))
-	(if (not type)
-	    (w3m-download url nil no-cache handler)
-	  (lexical-let ((method
-			 (or (nth 2 (assoc type w3m-content-type-alist))
-			     (nth 2 (assoc (w3m-prepare-content url type nil)
-					   w3m-content-type-alist)))))
-	    (when (consp method)
-	      (let ((result))
-		(setq method
-		      (dolist (elem (nreverse method) result)
-			(push (if (and (stringp elem)
-				       (string-match "\\`[\"']?%s[\"']?\\'"
-						     elem))
-				  'file
-				elem)
-			      result)))))
-	    (cond
-	     ((not method)
-	      (if (w3m-url-local-p url)
-		  (error "\
+    (w3m-process-do
+	(type (w3m-content-type url no-cache handler))
+      (if (not type)
+	  (w3m-download url nil no-cache handler)
+	(let ((method (or (nth 2 (assoc type w3m-content-type-alist))
+			  (nth 2 (assoc (w3m-prepare-content url type nil)
+					w3m-content-type-alist)))))
+	  (when (consp method)
+	    (let ((result))
+	      (setq method
+		    (dolist (elem (nreverse method) result)
+		      (push (if (and (stringp elem)
+				     (string-match "\\`[\"']?%s[\"']?\\'"
+						   elem))
+				'file
+			      elem)
+			    result)))))
+	  (cond
+	   ((not method)
+	    (if (w3m-url-local-p url)
+		(error "\
 No method to view `%s' is registered. Use `w3m-edit-this-url'"
-			 (file-name-nondirectory (w3m-url-to-file-name url)))
-		(w3m-download url nil no-cache handler)))
-	     ((functionp method)
-	      (funcall method url))
-	     ((consp method)
-	      (lexical-let
-		  ((command (w3m-which-command (car method)))
-		   (arguments (cdr method))
-		   (file (make-temp-name (expand-file-name
-					  "w3mel"
-					  w3m-external-view-temp-directory)))
-		   suffix)
-		(setq suffix (file-name-nondirectory url))
-		(when (string-match "\\.[0-9A-Za-z]+\\'" suffix)
-		  (setq suffix (match-string 0 suffix))
-		  (when (< (length suffix) 5)
-		    (setq file (concat file suffix))))
-		(cond
-		 ((and command (memq 'file arguments))
-		  (let ((w3m-current-buffer (current-buffer)))
-		    (w3m-process-do
-			(success (w3m-download url file no-cache handler))
-		      (when success
-			(w3m-external-view-file command file url arguments)))))
-		 (command
-		  (w3m-external-view-file command nil url arguments))
-		 (t
-		  (w3m-download url nil no-cache handler))))))))))))
+		       (file-name-nondirectory (w3m-url-to-file-name url)))
+	      (w3m-download url nil no-cache handler)))
+	   ((functionp method)
+	    (funcall method url))
+	   ((consp method)
+	    (let ((command (w3m-which-command (car method)))
+		  (arguments (cdr method))
+		  (file (make-temp-name (expand-file-name
+					 "w3mel"
+					 w3m-external-view-temp-directory)))
+		  (suffix (file-name-nondirectory url)))
+	      (when (string-match "\\.[0-9A-Za-z]+\\'" suffix)
+		(setq suffix (match-string 0 suffix))
+		(when (< (length suffix) 5)
+		  (setq file (concat file suffix))))
+	      (cond
+	       ((and command (memq 'file arguments))
+		(let ((w3m-current-buffer (current-buffer)))
+		  (w3m-process-do
+		      (success (w3m-download url file no-cache handler))
+		    (when success
+		      (w3m-external-view-file command file url arguments)))))
+	       (command
+		(w3m-external-view-file command nil url arguments))
+	       (t
+		(w3m-download url nil no-cache handler)))))))))))
 
 (defun w3m-external-view-file (command file url arguments)
+  (ignore url)
   ;; The 3rd argument `url' is necessary to handle the constant `url'
   ;; included in the 4th argument `arguments' which is provided by
   ;; `w3m-content-type-alist'.
-  (lexical-let ((file file))
-    (let (proc)
-      (unwind-protect
-	  (with-current-buffer
-	      (generate-new-buffer " *w3m-external-view*")
-	    (setq proc
-		  (apply 'start-process
-			 "w3m-external-view"
-			 (current-buffer)
-			 command
-			 (mapcar (function eval) arguments)))
-	    (w3m-message "Start %s..." (file-name-nondirectory command))
-	    (set-process-sentinel
-	     proc
-	     (lambda (proc event)
-	       (let ((buffer (process-buffer proc)))
-		 (when (string-match "\\`\\(?:finished\\|exited\\)" event)
-		   ;; Some program lies that the process has been finished
-		   ;; even though it has not read the temp file yet, so
-		   ;; it is necessary to delay deleting of the file.
-		   (run-at-time 1 nil
-				(lambda (file buffer)
-				  (when (and file (file-exists-p file))
-				    (delete-file file))
-				  (when (buffer-name buffer)
-				    (kill-buffer buffer))
-				  (message ""))
-				file buffer))))))
-	(and file
-	     (stringp file)
-	     (file-exists-p file)
-	     (unless (and (processp proc)
-			  (memq (process-status proc) '(run stop)))
-	       (delete-file file)))))))
+  (let (proc)
+    (unwind-protect
+	(with-current-buffer
+	    (generate-new-buffer " *w3m-external-view*")
+	  (setq proc
+		(apply 'start-process
+		       "w3m-external-view"
+		       (current-buffer)
+		       command
+		       (mapcar (function eval) arguments)))
+	  (w3m-message "Start %s..." (file-name-nondirectory command))
+	  (set-process-sentinel
+	   proc
+	   (lambda (proc event)
+	     (let ((buffer (process-buffer proc)))
+	       (when (string-match "\\`\\(?:finished\\|exited\\)" event)
+		 ;; Some program lies that the process has been finished
+		 ;; even though it has not read the temp file yet, so
+		 ;; it is necessary to delay deleting of the file.
+		 (run-at-time 1 nil
+			      (lambda (file buffer)
+				(when (and file (file-exists-p file))
+				  (delete-file file))
+				(when (buffer-name buffer)
+				  (kill-buffer buffer))
+				(message ""))
+			      file buffer))))))
+      (and file
+	   (stringp file)
+	   (file-exists-p file)
+	   (unless (and (processp proc)
+			(memq (process-status proc) '(run stop)))
+	     (delete-file file))))))
 
 (defun w3m-view-image ()
   "Display the image under point in the external viewer.
@@ -7269,8 +7243,8 @@ of the url currently displayed.  The browser is defined in
   (let ((url (or (w3m-anchor) (w3m-image))) act)
     (cond
      ((w3m-url-valid url)
-      (lexical-let ((pos (point-marker))
-		    (curl w3m-current-url))
+      (let ((pos (point-marker))
+	    (curl w3m-current-url))
 	(w3m-process-with-null-handler
 	  (w3m-process-do
 	      (success (w3m-download url nil nil handler))
@@ -7282,6 +7256,7 @@ of the url currently displayed.  The browser is defined in
 		     (w3m-refontify-anchor))))))))
      ((setq act (w3m-action))
       (let ((w3m-form-download t))
+	(ignore w3m-form-download)
 	(eval act)))
      (t
       (w3m-message "No URL at point")))))
@@ -7292,8 +7267,8 @@ of the url currently displayed.  The browser is defined in
   (let ((url (w3m-image)) act)
     (cond
      ((w3m-url-valid url)
-      (lexical-let ((pos (point-marker))
-		    (curl w3m-current-url))
+      (let ((pos (point-marker))
+	    (curl w3m-current-url))
 	(w3m-process-with-null-handler
 	  (w3m-process-do
 	      (success (w3m-download url nil nil handler))
@@ -7305,6 +7280,7 @@ of the url currently displayed.  The browser is defined in
 		     (w3m-refontify-anchor))))))))
      ((setq act (w3m-action))
       (let ((w3m-form-download t))
+	(ignore w3m-form-download)
 	(eval act)))
      (t
       (w3m-message "No image at point")))))
@@ -7888,8 +7864,7 @@ launched this buffer."
 	(w3m-idle-images-show-unqueue cur)
 	(when w3m-use-form
 	  (w3m-form-kill-buffer cur))
-	(let ((frame-auto-delete nil)
-	      (ignore-window-parameters t))
+	(let ((ignore-window-parameters t))
 	  (kill-buffer cur)))
       ;; A workaround to restore the window positions correctly when
       ;; this command is called by a mouse event.
@@ -8477,7 +8452,7 @@ or a list which consists of the following elements:
   (setq w3m-tab-button-menu-current-buffer buffer)
   (popup-menu w3m-tab-button-menu))
 
-(defun w3m-tab-button-menu2 (event buffer)
+(defun w3m-tab-button-menu2 (event _buffer)
   (select-window (posn-window (event-start event)))
   (setq w3m-tab-button-menu-current-buffer nil)
   (popup-menu w3m-tab-button-menu))
@@ -8541,7 +8516,7 @@ or a list which consists of the following elements:
   (when (eq major-mode 'w3m-mode)
     (let* ((bufs (w3m-list-buffers))
 	   (right (memq (current-buffer) bufs))
-      unseen)
+	   unseen)
       (setq unseen
 	    (catch 'unseen
 	      (dolist (buf (append right bufs))
@@ -9060,7 +9035,7 @@ not already exist."
 	  (ansi-term cmd buf-name)
 	  (set-process-sentinel
 	   (get-buffer-process (current-buffer))
-	   (lambda (process event)
+	   (lambda (_process event)
 	     (when (string-match "finished" event)
 	       (kill-buffer))))
 	  (bury-buffer))))))
@@ -9345,7 +9320,7 @@ helpful message is presented and the operation is aborted."
  `\\<w3m-mode-map>\\[w3m-search-new-session]' to perform a search in a new buffer.
  `\\<w3m-mode-map>\\[w3m-goto-url-new-session]' to visit a URL in a new buffer."))))
 
-(defun w3m--goto-url--handler-function (url reload charset post-data referer
+(defun w3m--goto-url--handler-function (url reload _charset post-data referer
 					    redisplay name reuse-history action
 					    orig history-position)
   (with-current-buffer w3m-current-buffer
@@ -9454,7 +9429,7 @@ helpful message is presented and the operation is aborted."
 	    (type (save-window-excursion
 		    (prog1
 			(w3m-goto-url (pop urls))
-		      (dotimes (i (length urls))
+		      (dotimes (_i (length urls))
 			(push (w3m-copy-buffer nil nil nil 'empty t)
 			      buffers))
 		      (dolist (url (nreverse urls))
@@ -9462,17 +9437,13 @@ helpful message is presented and the operation is aborted."
 			  (w3m-goto-url url))))))
 	  type))
     ;; Retrieve the page.
-    (lexical-let ((orig url)
-		  (url (w3m-url-strip-authinfo url))
-		  (reload (and (not (eq reload 'redisplay)) reload))
-		  (redisplay (eq reload 'redisplay))
-		  (charset charset)
-		  (post-data post-data)
-		  (referer referer)
-		  (name)
-		  (history-position (get-text-property (point)
-						       'history-position))
-		  (reuse-history w3m-history-reuse-history-elements))
+    (let ((redisplay (eq reload 'redisplay))
+	  (name)
+	  (history-position (get-text-property (point)
+					       'history-position))
+	  (reuse-history w3m-history-reuse-history-elements))
+      (setq url (w3m-url-strip-authinfo url)
+	    reload (and (not redisplay) reload))
       (when w3m-current-forms
 	;; Store the current forms in the history structure.
 	(w3m-history-plist-put :forms w3m-current-forms))
@@ -9506,8 +9477,7 @@ helpful message is presented and the operation is aborted."
 		   (setq url (file-name-as-directory url))
 		   (eq w3m-local-directory-view-method 'w3m-dtree)
 		   (string-match "\\`file:///" url))
-	  (setq url (replace-match "about://dtree/" nil nil url)
-		orig url))
+	  (setq url (replace-match "about://dtree/" nil nil url)))
 	;; Split body and fragments.
 	(w3m-string-match-url-components url)
 	(and (match-beginning 8)
@@ -9868,14 +9838,14 @@ When called interactively, variables `w3m-user-agent' and
   (when (string-equal ua-string "")
     (setq ua-string nil))
   (when (called-interactively-p 'interactive)
-;   Does not work because we use temporary work buffers when
-;   constructing the GET header (eg. `w3m-header-arguments')
-;   (if (y-or-n-p "For this buffer only? ")
-;     (progn
-;       (make-local-variable 'w3m-add-user-agent)
-;       (make-local-variable 'w3m-user-agent))
-;    (kill-local-variable 'w3m-add-user-agent)
-;    (kill-local-variable 'w3m-user-agent))
+    ;; Does not work because we use temporary work buffers when
+    ;; constructing the GET header (eg. `w3m-header-arguments')
+    ;; (if (y-or-n-p "For this buffer only? ")
+    ;;     (progn
+    ;;       (make-local-variable 'w3m-add-user-agent)
+    ;;       (make-local-variable 'w3m-user-agent))
+    ;;   (kill-local-variable 'w3m-add-user-agent)
+    ;;   (kill-local-variable 'w3m-user-agent))
     (if (not ua-string)
 	(setq w3m-add-user-agent nil)
       (setq w3m-add-user-agent t)
@@ -9894,18 +9864,17 @@ and post data, AND prompt the user to change the user-agent
 string to be sent for the reload."
   (interactive "P")
   (if w3m-current-url
-    (let*
-      (;; Don't move the history position.
-       (w3m-history-reuse-history-elements 'reload)
-       (w3m-user-agent
-	(if (or (equal arg '(16)) (equal arg '(64)))
-	    (w3m-user-agent-change)
-	  w3m-user-agent))
-       (w3m-add-user-agent
-	(if (or (equal arg '(16)) (equal arg '(64)))
-	    w3m-user-agent
-	  w3m-add-user-agent))
-       post-data)
+      (let* (;; Don't move the history position.
+	     (w3m-history-reuse-history-elements 'reload)
+	     (w3m-user-agent
+	      (if (or (equal arg '(16)) (equal arg '(64)))
+		  (w3m-user-agent-change)
+		w3m-user-agent))
+	     (w3m-add-user-agent
+	      (if (or (equal arg '(16)) (equal arg '(64)))
+		  w3m-user-agent
+		w3m-add-user-agent))
+	     post-data)
 	(if (or (equal arg '(4)) (equal arg '(64)))
 	    (progn
 	      (w3m-history-remove-properties '(:forms nil :post-data nil))
@@ -10299,7 +10268,7 @@ See `w3m-region' for the optional arguments."
   (w3m-region (point-min) (point-max) url charset))
 
 ;;; About:
-(defun w3m-about (url &rest args)
+(defun w3m-about (_url &rest _args)
   (insert "<!doctype html public \"-//W3C//DTD HTML 3.2//EN\">
 <html>
 <head><title>About emacs-w3m</title></head>
@@ -10340,7 +10309,7 @@ non-ASCII characters."
 	 (t
 	  (w3m-goto-url  (concat "about://source/" w3m-current-url))))
 	(w3m-history-restore-position)
-     t) ; <-- an improvement, but wrong if the above failed (BORUCH)
+	t) ; <-- an improvement, but wrong if the above failed (BORUCH)
     (w3m-message "Can't view page source")))
 
 (defun w3m-make-separator ()
@@ -10349,7 +10318,7 @@ non-ASCII characters."
 		   (make-char 'japanese-jisx0208 40 44))
     (make-string (w3m-display-width) ?-)))
 
-(defun w3m-about-header (url &optional no-uncompress no-cache &rest args)
+(defun w3m-about-header (url &optional _no-uncompress no-cache &rest _args)
   (when (string-match "\\`about://header/" url)
     (setq url (substring url (match-end 0)))
     (insert "Page Information\n"
@@ -10397,7 +10366,7 @@ non-ASCII characters."
 				  (or (unless no-cache
 					(w3m-cache-request-header url))
 				      (w3m-process-with-wait-handler
-				       (w3m-w3m-dump-head url handler)))
+					(w3m-w3m-dump-head url handler)))
 				(w3m-process-timeout nil))))
 	(insert "\n\n" separator "\n\nHeader Information\n\n" header)
 	(goto-char (point-min))
@@ -10456,7 +10425,7 @@ a number.")
   "*Number used to specify the indentation level when showing a history.
 A history page is invoked by the `w3m-about-history' command.")
 
-(defun w3m-about-history (&rest args)
+(defun w3m-about-history (&rest _args)
   "Render the current buffer's tree-structured browsing history in HTML."
   ;; ARGS is not used.  It is necessary in order to >/dev/null
   ;; unnecessary arguments because this function is one of several
@@ -10535,8 +10504,8 @@ A history page is invoked by the `w3m-about-history' command.")
 		    (= (read cur) 1)
 		  (delete-region bol (point))
 		  (insert-char ?  (+ margin (if max-indent
-						 (min max-indent indent)
-					       indent))))
+						(min max-indent indent)
+					      indent))))
 	    (beginning-of-line)
 	    (delete-char 1)
 	    (insert "&gt;"))
@@ -10546,7 +10515,7 @@ A history page is invoked by the `w3m-about-history' command.")
 
 (defvar w3m-db-history-align-to-column nil)
 
-(defun w3m-about-db-history (url &rest args)
+(defun w3m-about-db-history (url &rest _args)
   "Render a flat chronological HTML list of all buffers' browsing history."
   ;; ARGS is not used. It is necessary in order to >/dev/null
   ;; unnecessary arguments because this function is one of several
@@ -10710,8 +10679,8 @@ especially on TTY."
 \\(?:20[1-9][0-9]-[01][0-9]-[0-3][0-9]\\|Today\\)\\|Time/Date\\) *$")
 	  (inhibit-read-only t)
 	  (aspace (propertize
-		  " " 'display
-		  `(space :align-to ,w3m-db-history-align-to-column)))
+		   " " 'display
+		   `(space :align-to ,w3m-db-history-align-to-column)))
 	  (inhibit-read-only t)
 	  num)
       (save-excursion
@@ -10878,8 +10847,7 @@ splitting windows vertically."
 
 TOGGLE toggles the position of the window between being below or
 beside the main window."
-  (let ((selected-window (selected-window))
-	(current-buffer (current-buffer)))
+  (let ((selected-window (selected-window)))
     (when toggle
       (setq w3m-select-buffer-horizontal-window
 	    (not w3m-select-buffer-horizontal-window))
@@ -10918,7 +10886,7 @@ The following command keys are available:
     (w3m-select-buffer-mode)
     (or nomsg (w3m-message w3m-select-buffer-message))))
 
-(defun w3m-select-buffer-update (&rest args)
+(defun w3m-select-buffer-update (&rest _args)
   (when (get-buffer-window w3m-select-buffer-name)
     (save-selected-window
       (w3m-select-buffer nil 'update)))

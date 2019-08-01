@@ -1,4 +1,4 @@
-;;; mew-w3m.el --- View Text/Html content with w3m in Mew
+;;; mew-w3m.el --- View Text/Html content with w3m in Mew -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2001-2006, 2008-2010, 2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -78,7 +78,6 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl)) ;; lexical-let
 (require 'mew)
 (require 'w3m)
 
@@ -220,7 +219,7 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
 	      (setq regexp (concat "^" regexp "\\(?:" regexp "\\)+"))
 	      (goto-char (point-min))
 	      (while (re-search-forward regexp nil t)
-		(dotimes (i (prog1
+		(dotimes (_i (prog1
 				(/ (- (match-end 0) (match-beginning 0))
 				   (length mew-w3m-region-cite-mark))
 			      (delete-region (match-beginning 0)
@@ -318,14 +317,14 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
 	     (setq wcs (mew-charset-to-cs charset))
 	   (setq wcs mew-cs-text-for-write))
 	 (mew-frwlet
-	     mew-cs-dummy wcs
-	   (mew-w3m-region (point)
-			   (progn (insert-buffer-substring cache begin end)
-				  (point))
-			   xref))))
+	  mew-cs-dummy wcs
+	  (mew-w3m-region (point)
+			  (progn (insert-buffer-substring cache begin end)
+				 (point))
+			  xref))))
        (mew-w3m-add-text-properties `(w3m t w3m-images ,mew-w3m-auto-insert-image))))))
 
-(defun mew-w3m-cid-retrieve (url &rest args)
+(defun mew-w3m-cid-retrieve (url &rest _args)
   (let ((output-buffer (current-buffer)))
     (with-current-buffer w3m-current-buffer
       (when (string-match "\\`cid:\\(.+\\)" url)
@@ -352,14 +351,13 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
 (push (cons 'mew-message-mode 'mew-w3m-cid-retrieve)
       w3m-cid-retrieve-function-alist)
 
-(defun mew-w3m-ext-url-show (dummy url)
+(defun mew-w3m-ext-url-show (_dummy url)
   (pop-to-buffer (mew-buffer-message))
   (w3m url))
 
-(defun mew-w3m-ext-url-fetch (dummy url)
-  (lexical-let ((url url)
-		(name (file-name-nondirectory url))
-		handler)
+(defun mew-w3m-ext-url-fetch (_dummy url)
+  (let ((name (file-name-nondirectory url))
+	handler)
     (w3m-process-do
 	(success (prog1
 		     (w3m-download url nil nil handler)
@@ -463,8 +461,8 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
 		       (t
 			(mew-cs-to-charset cs))))
 	(mew-frwlet
-	    mew-cs-text-for-read cs
-	  (write-region (point-min) (point-max) filename nil 'nomsg)))
+	 mew-cs-text-for-read cs
+	 (write-region (point-min) (point-max) filename nil 'nomsg)))
       (when ct
 	(setq ct (mew-capitalize ct)))
       (mew-attach-copy filename (file-name-nondirectory filename))
@@ -485,7 +483,6 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
       ;; charset set
       (let* ((nums (mew-syntax-nums))
 	     (syntax (mew-syntax-get-entry mew-encode-syntax nums))
-	     (file (mew-syntax-get-file syntax))
 	     (ctl (mew-syntax-get-ct syntax))
 	     (ct (mew-syntax-get-value ctl 'cap))
 	     (params (mew-syntax-get-params ctl))

@@ -1,4 +1,4 @@
-;;; w3m-image.el --- Image conversion routines.
+;;; w3m-image.el --- Image conversion routines -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2001-2003, 2005, 2007-2009, 2016-2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -37,8 +37,6 @@
 ;;    http://www.imagemagick.org/
 
 ;;; Code:
-
-(eval-when-compile (require 'cl)) ;; lexical-let
 
 (require 'w3m-util)
 (require 'w3m-proc)
@@ -179,9 +177,9 @@ nil forcibly."
 	(buffer-string))))
 
 (defun w3m-imagick-start-convert-buffer (handler from-type to-type &rest args)
-  (lexical-let ((in-file (make-temp-name
-			  (expand-file-name "w3mel" w3m-profile-directory)))
-		(out-buffer (current-buffer)))
+  (let ((in-file (make-temp-name
+		  (expand-file-name "w3mel" w3m-profile-directory)))
+	(out-buffer (current-buffer)))
     (setq w3m-current-url "non-existent")
     (let ((coding-system-for-write 'binary)
 	  (buffer-file-coding-system 'binary)

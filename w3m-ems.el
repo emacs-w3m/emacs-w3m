@@ -1,4 +1,4 @@
-;;; w3m-ems.el --- GNU Emacs stuff for emacs-w3m
+;;; w3m-ems.el --- GNU Emacs stuff for emacs-w3m -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2001-2013, 2016-2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
@@ -34,9 +34,7 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl)) ;; lexical-let
-;; `cl' employs `cl-lib'.
-;; (require 'cl-lib) ;; cl-incf
+(require 'cl-lib) ;; cl-incf
 
 (require 'w3m-util)
 (require 'w3m-proc)
@@ -132,17 +130,17 @@ If nil, don't play the animation.  If t, loop forever."
 
 (defun w3m-image-animate (image)
   "Start animating IMAGE if possible.  Return IMAGE."
-    (when (and w3m-image-animate-seconds
-	       (cdr (image-multi-frame-p image)))
-      (image-animate image nil w3m-image-animate-seconds)
-      ;; Reset an image to the initial one after playing the animation.
-      ;; FIXME: Is there a better way?
-      (when (numberp w3m-image-animate-seconds)
-	(run-with-timer (1+ w3m-image-animate-seconds) nil
-			(lambda (image)
-			  (image-animate image 0 0))
-			image)))
-    image)
+  (when (and w3m-image-animate-seconds
+	     (cdr (image-multi-frame-p image)))
+    (image-animate image nil w3m-image-animate-seconds)
+    ;; Reset an image to the initial one after playing the animation.
+    ;; FIXME: Is there a better way?
+    (when (numberp w3m-image-animate-seconds)
+      (run-with-timer (1+ w3m-image-animate-seconds) nil
+		      (lambda (image)
+			(image-animate image 0 0))
+		      image)))
+  image)
 
 (defun w3m-create-image (url &optional no-cache referer size handler)
   "Retrieve data from URL and create an image object.
@@ -153,10 +151,9 @@ and its cdr element is used as height."
   (if (not handler)
       (w3m-process-with-wait-handler
 	(w3m-create-image url no-cache referer size handler))
-    (lexical-let ((cur (current-buffer))
-		  (set-size size)
-		  (url url)
-		  image size)
+    (let ((cur (current-buffer))
+	  (set-size size)
+	  image)
       (w3m-process-do-with-temp-buffer
 	  (type (progn
 		  (set-buffer-multibyte nil)
@@ -189,13 +186,12 @@ and its cdr element is used as height."
 				 (car set-size)))  ; width is different
 			(not (eq (cdr size)
 				 (cdr set-size)))) ; height is different
-		    (lexical-let ((image image))
-		      (w3m-process-do
-			  (resized (w3m-resize-image
-				    (plist-get (cdr image) :data)
-				    (car set-size)(cdr set-size)
-				    handler))
-			(if resized (plist-put (cdr image) :data resized)))))))
+		    (w3m-process-do
+			(resized (w3m-resize-image
+				  (plist-get (cdr image) :data)
+				  (car set-size)(cdr set-size)
+				  handler))
+		      (if resized (plist-put (cdr image) :data resized))))))
 	  (with-current-buffer cur (w3m-image-animate image)))))))
 
 (defun w3m-create-resized-image (url rate &optional referer size handler)
@@ -208,9 +204,7 @@ and its cdr element is used as height."
   (if (not handler)
       (w3m-process-with-wait-handler
 	(w3m-create-image url nil referer size handler))
-    (lexical-let ((url url)
-		  (rate rate)
-		  image)
+    (let (image)
       (w3m-process-do-with-temp-buffer
 	  (type (progn
 		  (set-buffer-multibyte nil)
@@ -227,7 +221,7 @@ and its cdr element is used as height."
 	      (if resized (plist-put (cdr image) :data resized))
 	      image)))))))
 
-(defun w3m-insert-image (beg end image &rest args)
+(defun w3m-insert-image (beg end image &rest _args)
   "Display image on the current buffer.
 Buffer string between BEG and END are replaced with IMAGE."
   (let ((faces (get-text-property beg 'face))
@@ -264,10 +258,10 @@ Buffer string between BEG and END are replaced with IMAGE."
       (add-text-properties
        beg end (list 'face underline 'w3m-faces-with-underline nil)))))
 
-(defun w3m-image-type-available-p (image-type)
-  "Return non-nil if an image with IMAGE-TYPE can be displayed inline."
+(defun w3m-image-type-available-p (type)
+  "Return non-nil if an image with TYPE can be displayed inline."
   (and (display-images-p)
-       (image-type-available-p image-type)))
+       (image-type-available-p type)))
 
 ;;; Form buttons
 (defface w3m-form-button
@@ -309,7 +303,7 @@ Buffer string between BEG and END are replaced with IMAGE."
 (define-widget 'w3m-form-button 'push-button
   "Widget for w3m form button."
   :keymap w3m-form-button-keymap
-  :action (function (lambda (widget &optional e)
+  :action (function (lambda (widget &optional _e)
 		      (eval (widget-get widget :w3m-form-action)))))
 
 (defun w3m-form-make-button (start end properties &optional readonly)
@@ -679,10 +673,10 @@ otherwise works in all the emacs-w3m buffers."
 			'help-echo "mouse-2 prompts to input URL"))
 		     ", ")
 		  "")
-		 (propertize
-		  "Location: "
-		  'face (list 'w3m-header-line-location-title))
-		 `(:eval
+		(propertize
+		 "Location: "
+		 'face (list 'w3m-header-line-location-title))
+		`(:eval
 		  (propertize
 		   (if (stringp w3m-current-url)
 		       (replace-regexp-in-string "%" "%%" w3m-current-url)
@@ -731,7 +725,7 @@ otherwise works in all the emacs-w3m buffers."
     (setq w3m-previous-session-buffer prev)
     (w3m-force-window-update window)))
 
-(defun w3m-tab-double-click-mouse1-function (event buffer)
+(defun w3m-tab-double-click-mouse1-function (event _buffer)
   (let ((window (posn-window (event-start event))))
     (when (eq major-mode 'w3m-mode)
       (if w3m-new-session-in-background
@@ -740,7 +734,7 @@ otherwise works in all the emacs-w3m buffers."
 	(w3m-copy-buffer)))
     (w3m-force-window-update window)))
 
-(defun w3m-tab-double-click-mouse2-function (event buffer)
+(defun w3m-tab-double-click-mouse2-function (event _buffer)
   (let ((window (posn-window (event-start event))))
     (when (eq major-mode 'w3m-mode)
       (w3m-delete-buffer))
@@ -870,8 +864,7 @@ EVENT is an internal arg for mouse control."
 	   (dest (or (nth n (memq (current-buffer) buffers))
 		     (car (last buffers))))
 	   (next (w3m-buffer-number dest))
-	   (cur (w3m-buffer-number (current-buffer)))
-	   e posn start)
+	   (cur (w3m-buffer-number (current-buffer))))
       (rename-buffer "*w3m*<0>")
       (w3m-buffer-set-number dest cur)
       (w3m-buffer-set-number (current-buffer) next)
@@ -1186,36 +1179,36 @@ italic font in the modeline."
 	  ;; Don't use graphic icons.
 	  (when (get status 'string)
 	    (set status (get status 'string)))))))
-    (let (file)
-      ;; Spinner
-      (when (and (or force (not w3m-spinner-image-file))
-		 (image-type-available-p 'gif)
-		 w3m-icon-directory
-		 (file-directory-p w3m-icon-directory)
-		 (file-exists-p
-		  (setq file (expand-file-name "spinner.gif"
-					       w3m-icon-directory))))
-	(setq w3m-spinner-image-file file)
-	(define-key (setq w3m-modeline-spinner-map (make-sparse-keymap))
-	  [mode-line mouse-2]
-	  'w3m-process-stop)
-	(put 'w3m-modeline-process-status-on 'risky-local-variable t)
-	(put 'w3m-modeline-process-status-on-icon 'risky-local-variable t))
-      (if (and w3m-show-graphic-icons-in-mode-line
-	       w3m-spinner-image-file
-	       (display-images-p))
-	  (progn
-	    (when (stringp w3m-modeline-process-status-on)
-	      ;; Save the original status strings as properties.
-	      (put 'w3m-modeline-process-status-on 'string
-		   w3m-modeline-process-status-on))
-	    (setq w3m-modeline-process-status-on
-		  '(""
-		    w3m-space-before-modeline-icon
-		    w3m-modeline-process-status-on-icon)))
-	(when (get 'w3m-modeline-process-status-on 'string)
+  (let (file)
+    ;; Spinner
+    (when (and (or force (not w3m-spinner-image-file))
+	       (image-type-available-p 'gif)
+	       w3m-icon-directory
+	       (file-directory-p w3m-icon-directory)
+	       (file-exists-p
+		(setq file (expand-file-name "spinner.gif"
+					     w3m-icon-directory))))
+      (setq w3m-spinner-image-file file)
+      (define-key (setq w3m-modeline-spinner-map (make-sparse-keymap))
+	[mode-line mouse-2]
+	'w3m-process-stop)
+      (put 'w3m-modeline-process-status-on 'risky-local-variable t)
+      (put 'w3m-modeline-process-status-on-icon 'risky-local-variable t))
+    (if (and w3m-show-graphic-icons-in-mode-line
+	     w3m-spinner-image-file
+	     (display-images-p))
+	(progn
+	  (when (stringp w3m-modeline-process-status-on)
+	    ;; Save the original status strings as properties.
+	    (put 'w3m-modeline-process-status-on 'string
+		 w3m-modeline-process-status-on))
 	  (setq w3m-modeline-process-status-on
-		(get 'w3m-modeline-process-status-on 'string))))))
+		'(""
+		  w3m-space-before-modeline-icon
+		  w3m-modeline-process-status-on-icon)))
+      (when (get 'w3m-modeline-process-status-on 'string)
+	(setq w3m-modeline-process-status-on
+	      (get 'w3m-modeline-process-status-on 'string))))))
 
 (defun w3m-make-spinner-image ()
   "Make an image used to show a spinner.

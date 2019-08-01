@@ -1,4 +1,4 @@
-;;; w3m-favicon.el --- utilities for handling favicon in emacs-w3m
+;;; w3m-favicon.el --- utilities for handling favicon in emacs-w3m -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2001-2005, 2007, 2009, 2011, 2017, 2018, 2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -28,8 +28,6 @@
 ;;; Commentary:
 
 ;;; Code:
-
-(eval-when-compile (require 'cl)) ;; lexical-let
 
 (require 'w3m-image)
 
@@ -284,10 +282,7 @@ stored in the `w3m-favicon-image' buffer-local variable."
 		  w3m-favicon-cache-expire-wait)))
       (with-current-buffer target
 	(w3m-favicon-set-image (w3m-favicon-cache-favicon url)))
-    (lexical-let ((url url)
-		  (type type)
-		  (target target)
-		  (silent w3m-message-silent))
+    (let ((silent w3m-message-silent))
       (w3m-process-with-null-handler
 	(w3m-process-do-with-temp-buffer
 	    (ok (w3m-retrieve url 'raw nil nil nil handler))
