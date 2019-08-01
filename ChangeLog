@@ -1,3 +1,7 @@
+2019-08-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-cookie.el (w3m-cookie-clear): Clear cached forms and post-data.
+
 2019-07-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-util.el (w3m-cancel-timer): New function.

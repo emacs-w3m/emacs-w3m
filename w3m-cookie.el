@@ -409,6 +409,7 @@ If ask, ask user whether accept bad cookies or not."
     (with-current-buffer buffer
       (when (equal w3m-current-url "about://cookie/")
 	(let ((w3m-message-silent t))
+	  (w3m-history-remove-properties '(:forms nil :post-data nil))
 	  (w3m-reload-this-page nil t))))))
 
 (defun w3m-cookie-save (&optional domain)
