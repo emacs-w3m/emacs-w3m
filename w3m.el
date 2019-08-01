@@ -6628,7 +6628,8 @@ used for sites such as wikipedia."
     (when (string-match (car filter) w3m-current-url)
       (setq anchor-list
 	    (cl-remove-if
-	     (lambda (x) (string-match (cdr filter) (car x)))
+	     (lambda (x)
+	       (or (not (car x)) (string-match (cdr filter) (car x))))
 	     anchor-list)))))
 
 (defun w3m--get-page-anchors (&optional sub-sets sort-method)

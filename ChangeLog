@@ -1,5 +1,10 @@
 2019-08-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m.el (w3m--filter-page-anchors): Regard nil anchor as junk
+	([emacs-w3m:13510]).
+
+2019-08-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	Turn on lexical-binding
 
 	* mew-w3m.el (mew-w3m-ext-url-fetch):
