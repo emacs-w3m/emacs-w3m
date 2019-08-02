@@ -1474,7 +1474,7 @@ http://markets.nikkei.co.jp/kokunai/bunkatsu3.aspx" (match-string 1)) folder))
 	     0
 	     (subst-char-in-string
 	      ?） ?\)
-	      (subst-char-in-string ?（ ?\( (match-string 4)))
+	     (subst-char-in-string ?（ ?\( (match-string 4)))
 	     shimbun-nikkei-from-address
 	     (shimbun-nikkei-make-date-string
 	      (string-to-number (match-string 3))

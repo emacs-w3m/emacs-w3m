@@ -157,7 +157,7 @@ by way of `post-command-hook'."
 
 (let (current-load-list)
   (defadvice mime-display-message
-    (after add-emacs-w3m-functions-to-pre/post-command-hook activate compile)
+      (after add-emacs-w3m-functions-to-pre/post-command-hook activate compile)
     "Advised by emacs-w3m.
 Add some emacs-w3m utility functions to pre/post-command-hook."
     (when (featurep 'w3m)

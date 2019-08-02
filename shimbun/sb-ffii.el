@@ -56,14 +56,14 @@
 (luna-define-method shimbun-rss-build-message-id ((shimbun shimbun-ffii)
 						  url date)
   (let (page host datedesc)
-    ; Sometimes URLs are broken (e.g. I've seen something like http:http://x/).
-    ; The following expression tries to deal with cases like this.
+    ;; Sometimes URLs are broken (e.g. I've seen something like http:http://x/).
+    ;; The following expression tries to deal with cases like this.
     (unless (string-match "[^:]*:\\/\\/\\([^\/]+\\)\\([^@<>]*\\)" url)
       (error "Cannot parse URL for message-id base"))
     (setq host (match-string-no-properties 1 url)
 	  page (match-string-no-properties 2 url))
-    ; Sometimes dates are broken, therefore the following expression is very
-    ; fault tolerant.
+    ;; Sometimes dates are broken, therefore the following expression is very
+    ;; fault tolerant.
     (unless (string-match "\\([^@<>]*\\)" date)
       (error "Cannot parse date for message-id base"))
     (setq datedesc (concat (match-string-no-properties 1 date)

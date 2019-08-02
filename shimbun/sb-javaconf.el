@@ -65,7 +65,7 @@
 	(shimbun-retrieve-url elem t)
 	(goto-char (point-min))
 	(shimbun-mhonarc-get-headers shimbun elem headers)))
-      headers))
+    headers))
 
 (provide 'sb-javaconf)
 

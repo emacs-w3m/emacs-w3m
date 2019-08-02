@@ -145,7 +145,7 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 	    stime (cdr keys) (car keys))))
 
 (luna-define-method shimbun-get-headers ((shimbun shimbun-tcup)
-				     &optional range)
+					 &optional range)
 ;;;<DEBUG>
 ;;  (shimbun-tcup-get-headers shimbun range))
 ;;

@@ -381,12 +381,13 @@
 		romaji-partial (concat romaji suffix))))
       (let ((collection)
 	    (regexp
-	     ; UTF DEBUG NOTE: This string-match was originaly:
-	     ;            (and (string-match "!&\\'" kanji)
+	     ;; UTF DEBUG NOTE: This string-match was originaly:
+	     ;;            (and (string-match "!&\\'" kanji)
 	     (and (string-match "・\\'" kanji)
 		  (string-match "[aiueo]n\\'" romaji)
 		  (concat "\\`" romaji "n[^aiueoy]"))))
-	(dolist (x (all-completions romaji-partial w3m-weather-completion-table))
+	(dolist (x (all-completions romaji-partial
+				    w3m-weather-completion-table))
 	  (unless (and regexp (string-match regexp x))
 	    (setq x (assoc x w3m-weather-completion-table))
 	    (unless (assoc (cadr x) collection)
@@ -395,8 +396,9 @@
 	 ((not flag)
 	  (let ((s (try-completion kanji collection predicate)))
 	    (if (and (stringp s) (string< s partial))
-		(when (setq s (try-completion romaji-partial
-					      (mapcar (lambda (x) (list (cdr x)))
+		(when (setq s (try-completion
+			       romaji-partial
+			       (mapcar (lambda (x) (list (cdr x)))
 						      collection)
 					      predicate))
 		  (concat kanji (substring s (if romaji (length romaji) 0))))

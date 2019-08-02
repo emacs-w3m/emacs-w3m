@@ -663,8 +663,8 @@ allowed for each string."
 		 (when (let ((dir (nnshimbun-group-pathname group)))
 			 (or (file-directory-p dir)
 			     (ignore-errors
-			      (make-directory dir t)
-			      (file-directory-p dir))))
+			       (make-directory dir t)
+			       (file-directory-p dir))))
 		   (let ((nov (nnshimbun-group-pathname
 			       group nnshimbun-nov-file-name)))
 		     (with-current-buffer buffer

@@ -192,13 +192,14 @@
 		(let ((date (shimbun-mhonarc-header-value)))
 		  (shimbun-header-set-date
 		   header
-		   (if (string-match "\\([-+][0-9][0-9][0-9][0-9]\\) +([a-zA-Z][a-zA-Z][a-zA-Z])\\'"
-				     date)
+		   (if (string-match "\
+\\([-+][0-9][0-9][0-9][0-9]\\) +([a-zA-Z][a-zA-Z][a-zA-Z])\\'" date)
 		       (substring date 0 (match-end 1))
 		     date)))
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "Message-Id: +")
-		(shimbun-header-set-id header
+		(shimbun-header-set-id
+		 header
 		 (concat "<" (shimbun-mhonarc-header-value) ">"))
 		(delete-region (point) (progn (forward-line 1) (point))))
 	       ((looking-at "Reference: +")

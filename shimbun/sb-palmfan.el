@@ -192,7 +192,7 @@ i$PdWyuHC8!1=KH'r,R=fV])N6uQS")))
 					   (shimbun-from-address shimbun)
 					   date id "" 0 0 url)
 		      headers))))))
-    (nreverse headers))))
+      (nreverse headers))))
 
 (defun shimbun-palmfan-bbs-headers (shimbun &optional range)
   ;; not yet
@@ -303,11 +303,11 @@ i$PdWyuHC8!1=KH'r,R=fV])N6uQS")))
     (goto-char first-article)
     (beginning-of-line)
     (forward-char -1)
-  (if (and first-date first-article
-	   (> first-date first-article))
-      ;; XXX it cannot understand non-exsistent day...
-      (setcar (cdr (cdr date)) (1+ (car (cdr (cdr date))))))
-  date))
+    (if (and first-date first-article
+	     (> first-date first-article))
+	;; XXX it cannot understand non-exsistent day...
+	(setcar (cdr (cdr date)) (1+ (car (cdr (cdr date))))))
+    date))
 
 (defun shimbun-palmfan-pickup-date ()
   (let ((start (point))

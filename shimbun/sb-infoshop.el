@@ -44,7 +44,7 @@
   shimbun-infoshop-url)
 
 (luna-define-method shimbun-rss-build-message-id :around
-    ((shimbun shimbun-infoshop) url &optional date)
+  ((shimbun shimbun-infoshop) url &optional date)
   (if (string-match "\\?story=\\(.*+\\)\\'" url)
       (concat "<" (match-string 1 url) "@news.infoshop.org>")
     (luna-call-next-method)))

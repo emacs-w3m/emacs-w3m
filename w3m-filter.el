@@ -86,7 +86,7 @@
     (t
      "A filter for YouTube"
      "\\`https://\\(?:[0-9A-Za-z_~-]+\\.\\)*youtube\\.com\\(?:\\'\\|/\\)"
-      w3m-filter-youtube)
+     w3m-filter-youtube)
     (nil
      ("Remove garbage in http://www.geocities.co.jp/*"
       "http://www.geocities.co.jp/* でゴミを取り除きます")
@@ -129,7 +129,7 @@
      "\\`http://.*\\.wikipedia\\.org/" w3m-filter-wikipedia)
     (t "filter for github.com repository main page"
        "\\`http[s]?://github\\.com/[^/]+/[^/]+[/]?\\'"
-      w3m-filter-github-repo-main-page)
+       w3m-filter-github-repo-main-page)
     (t "xkcd filter" "\\`http[s]?://xkcd.com/" w3m-filter-xkcd)
     (nil
      ("Remove inline frames in all pages"
@@ -1058,19 +1058,26 @@ READ MORE:\\([^<]+\\)\\(</a>\\)?</strong>\\(</p>\\)?"
 
 (defun w3m-filter-github-repo-main-page (url)
   "filter distractions for the main page of a github repository."
-  (w3m-filter-delete-regions url
-    "<div class=\"d-flex" "</header>" nil t nil nil nil 1)
-  (w3m-filter-delete-regions url
-    "<div class=\"signup-prompt-bg" "<div class=\"f4\">" nil t nil nil nil 1)
+  (w3m-filter-delete-regions
+   url
+   "<div class=\"d-flex" "</header>" nil t nil nil nil 1)
+  (w3m-filter-delete-regions
+   url
+   "<div class=\"signup-prompt-bg" "<div class=\"f4\">" nil t nil nil nil 1)
   (insert "<hr>")
-  ; NOTE: There is inconsistency in some pages. Some have DIV element
-  ;       'repository-topics-container', while others have 'overall-summary'.
-  (w3m-filter-delete-regions url
-    "<div class=\"repository-topics-container" "<div class=\"commit-tease" nil t nil nil nil 1)
-  (w3m-filter-delete-regions url
-    "<div class=\"overall-summary" "<div class=\"commit-tease" nil t nil nil nil 1)
-  (w3m-filter-delete-regions url
-    "<div class=\"footer container-lg" "</body>" nil t nil nil nil 1)
+  ;; NOTE: There is inconsistency in some pages. Some have DIV element
+  ;;       'repository-topics-container', while others have 'overall-summary'.
+  (w3m-filter-delete-regions
+   url
+   "<div class=\"repository-topics-container" "<div class=\"commit-tease"
+   nil t nil nil nil 1)
+  (w3m-filter-delete-regions
+   url
+   "<div class=\"overall-summary" "<div class=\"commit-tease"
+   nil t nil nil nil 1)
+  (w3m-filter-delete-regions
+   url
+   "<div class=\"footer container-lg" "</body>" nil t nil nil nil 1)
   (goto-char (point-min))
   (search-forward "<div class=\"commit-tease" nil t)
   (goto-char (match-beginning 0))
@@ -1085,9 +1092,9 @@ READ MORE:\\([^<]+\\)\\(</a>\\)?</strong>\\(</p>\\)?"
 (defun w3m-filter-xkcd (url)
   "filter distractions for xkcd."
   (w3m-filter-delete-regions url
-    "<body>" "<div ide=\"comic\">" t t :count 1)
+			     "<body>" "<div ide=\"comic\">" t t :count 1)
   (w3m-filter-delete-regions url
-    "<div id=\"bottom" "</body>" nil t)
+			     "<div id=\"bottom" "</body>" nil t)
   (w3m-filter-replace-regexp url "</?\\(li\\|ul\\)[^>]*>" "" (point-min))
   (w3m-filter-replace-regexp url "<body>" "<body><center>" (point-min))
   )
@@ -1183,32 +1190,32 @@ READ MORE:\\([^<]+\\)\\(</a>\\)?</strong>\\(</p>\\)?"
 			     "</td>")
 
   (goto-char (point-min))
-    (while (search-forward "<div class=\"user-info \">" nil t)
-	(let ((p1 (match-end 0))
-	      (p2 (if (search-forward "<li" nil t)
-		      (match-beginning 0)
-		    (point-max))))
-	  (w3m-filter-delete-regions
-	   url "<div class=\"user-details\">" "</a>" nil nil nil p1 p2)
-	  (goto-char p1)
-	  (while (re-search-forward "</?div[^>]*>" p2 t)
-	    (replace-match ""))
-	  (goto-char p1)
-	  (while (re-search-forward "<span class=\"reputation-score[^>]*>"
-				    p2 t)
-	    (replace-match "[rep:"))
-	  (goto-char p1)
-	  (while (re-search-forward "<span class=\"badge1\">" p2 t)
-	    (replace-match  "] [gold:"))
-	  (goto-char p1)
-	  (while (re-search-forward "<span class=\"badge2\">" p2 t)
-	    (replace-match  "] [silver:"))
-	  (goto-char p1)
-	  (while (re-search-forward "<span class=\"badge3\">" p2 t)
-	    (replace-match  "] [bronze:"))
-	  (goto-char p1)
-	  (while (re-search-forward "</?span[^>]*>" p2 t)
-	    (replace-match  ""))))
+  (while (search-forward "<div class=\"user-info \">" nil t)
+    (let ((p1 (match-end 0))
+	  (p2 (if (search-forward "<li" nil t)
+		  (match-beginning 0)
+		(point-max))))
+      (w3m-filter-delete-regions
+       url "<div class=\"user-details\">" "</a>" nil nil nil p1 p2)
+      (goto-char p1)
+      (while (re-search-forward "</?div[^>]*>" p2 t)
+	(replace-match ""))
+      (goto-char p1)
+      (while (re-search-forward "<span class=\"reputation-score[^>]*>"
+				p2 t)
+	(replace-match "[rep:"))
+      (goto-char p1)
+      (while (re-search-forward "<span class=\"badge1\">" p2 t)
+	(replace-match  "] [gold:"))
+      (goto-char p1)
+      (while (re-search-forward "<span class=\"badge2\">" p2 t)
+	(replace-match  "] [silver:"))
+      (goto-char p1)
+      (while (re-search-forward "<span class=\"badge3\">" p2 t)
+	(replace-match  "] [bronze:"))
+      (goto-char p1)
+      (while (re-search-forward "</?span[^>]*>" p2 t)
+	(replace-match  ""))))
 
   (w3m-filter-replace-regexp url
 			     "<td" "<td valign=top")
@@ -1329,17 +1336,17 @@ This function replaces that of src= with it."
   (goto-char (point-min))
   (let ((case-fold-search t)
 	st nd data-src)
-  (while (re-search-forward "<img[\t\n ]+[^>]+>" nil t)
-    (setq st (goto-char (match-beginning 0))
-	  nd (cadr (match-data))) ;; a marker version of (match-end 0)
-    (when (re-search-forward "[\t\n ]+data-\\(src=\"[^\"]+\"\\)" nd t)
-      (setq data-src (match-string 1))
-      (replace-match "")
-      (goto-char st)
-      (if (re-search-forward "[\t\n ]+\\(src=\"[^\"]+\"\\)" nd t)
-	  (replace-match data-src nil nil nil 1)
-	(forward-char 4)
-	(insert " " data-src)))
-    (goto-char nd))))
+    (while (re-search-forward "<img[\t\n ]+[^>]+>" nil t)
+      (setq st (goto-char (match-beginning 0))
+	    nd (cadr (match-data))) ;; a marker version of (match-end 0)
+      (when (re-search-forward "[\t\n ]+data-\\(src=\"[^\"]+\"\\)" nd t)
+	(setq data-src (match-string 1))
+	(replace-match "")
+	(goto-char st)
+	(if (re-search-forward "[\t\n ]+\\(src=\"[^\"]+\"\\)" nd t)
+	    (replace-match data-src nil nil nil 1)
+	  (forward-char 4)
+	  (insert " " data-src)))
+      (goto-char nd))))
 
 ;;; w3m-filter.el ends here

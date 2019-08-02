@@ -372,7 +372,7 @@ An argument of nil means kill the current buffer."
   "Return the title of the current buffer."
   (cond
    (w3m-current-process
-     "<retrieving>")
+    "<retrieving>")
    ((and (stringp w3m-current-title)
 	 (not (string= w3m-current-title "<no-title>")))
     w3m-current-title)
@@ -700,7 +700,7 @@ objects will not be deleted:
 Return position of the first occurence of PROPERTY.
 If currently over such PROPERTY, find next such occurence."
   `(defun ,(intern (concat "w3m-goto-next-" (symbol-name name)))
-     (&optional pos)
+       (&optional pos)
      ,(concat "Return position of next " (symbol-name name)
 	      " starting from POS or point.")
      (setq pos (or pos (point)))

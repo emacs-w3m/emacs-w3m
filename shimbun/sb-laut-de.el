@@ -62,7 +62,7 @@
 	  (shimbun-current-group-internal shimbun) ".rdf"))
 
 (luna-define-method shimbun-clear-contents :after ((shimbun shimbun-laut-de)
-						     header)
+						   header)
   (shimbun-remove-tags "script" t)
   (shimbun-remove-tags
    "<img src=\"/images/\\(?:voting\\|leer\\)[^\"]+gif" ">")

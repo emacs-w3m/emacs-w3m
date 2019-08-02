@@ -121,7 +121,7 @@ filtering over an url being matched by the car."
     (?t (lambda (info) (goto-char (cadr info))
 	  (w3m-toggle-inline-image)) "Goto image and toggle it")
     (?T (lambda (info) (save-excursion (goto-char (cadr info))
-				  (w3m-toggle-inline-image)))
+				       (w3m-toggle-inline-image)))
 	"Toggle")
     (?O (lambda (info) (w3m-external-view (nth 2 info))) "View externally")
     (?S (lambda (info) (w3m-download (nth 2 info))) "Save")
@@ -145,8 +145,8 @@ filtering over an url being matched by the car."
 	"Edit url and visit in background")
     (?e (lambda (info) (w3m-edit-url (car info))) "Edit page")
     (?s (lambda (info) (save-excursion
-		    (goto-char (cadr info))
-		    (w3m-download-this-url))) "Download")
+			 (goto-char (cadr info))
+			 (w3m-download-this-url))) "Download")
     (?b (lambda (info)
 	  (w3m-bookmark-add
 	   (car info)

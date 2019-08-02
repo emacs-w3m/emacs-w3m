@@ -83,7 +83,7 @@
 	    (shimbun-current-group-internal shimbun))))
       (subst-char-in-region (point-min) (point-max) ?\t ?  t)
       (while (re-search-forward ">感想を書く<\\/a>│" nil t nil)
-	  (replace-match string)))))
+	(replace-match string)))))
 
 (provide 'sb-rakuten)
 

@@ -163,7 +163,7 @@
 		(const :format "Japanese     " w3m-Japanese-symbol)
 		(const :format "Korean      " w3m-Korean-symbol)
 		,@(when w3m-mule-unicode-symbol
-		   '((const :tag "Mule-Unicode" w3m-mule-unicode-symbol)))
+		    '((const :tag "Mule-Unicode" w3m-mule-unicode-symbol)))
 		(variable :format "%t symbol: %v\n"
 			  :value w3m-default-symbol)
 		,w3m-symbol-custom-type))

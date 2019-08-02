@@ -128,7 +128,7 @@ over the 'w3m-dtree-directory-depth'."
 
 (defun w3m-dtree-create-sub (path allfiles dirprefix fileprefix indent depth)
   (let* ((files (condition-case err
-                  (directory-files path t)
+                    (directory-files path t)
                   (error (list "----"))))
 	 (limit (and (integerp w3m-dtree-directory-depth)
 		     (>= depth w3m-dtree-directory-depth)))

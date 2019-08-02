@@ -131,9 +131,9 @@
 	  (throw 'next nil))
 	(setq url (shimbun-expand-url pagename urlprefix)
 	      subject (with-temp-buffer
-			  (insert subject)
-			  (shimbun-remove-markup)
-			  (buffer-string)))
+			(insert subject)
+			(shimbun-remove-markup)
+			(buffer-string)))
 	;; getting DATE
 	(if (not (string-match
 		  "\\([0-9]+\\)\\.\\([0-9]+\\)\\(\\.[0-9]+\\)?" date))
@@ -143,7 +143,7 @@
 	  (setq date (nconc tempdate
 			    (list
 			     (if (not (match-string 3 date))
-				1
+				 1
 			       (string-to-number
 				(substring (match-string 3 date) 1)))))))
 	;; building ID

@@ -93,7 +93,7 @@
 
 (defun shimbun-lotusex-bbs-headers (shimbun)
   (let (url from date subject end time ampm id headers
-	     case-fold-search)
+	    case-fold-search)
     (subst-char-in-region (point-min) (point-max) ?\t ?  t)
     (goto-char (point-min))
     (catch 'exit
@@ -147,7 +147,7 @@
 
 (defun shimbun-lotusex-headers (shimbun group)
   (let (url from date subject id headers
-	     case-fold-search)
+	    case-fold-search)
     (subst-char-in-region (point-min) (point-max) ?\t ?  t)
     (goto-char (point-min))
     (catch 'exit

@@ -292,8 +292,8 @@ buffer's url history."
 	     (setq titles (cons (cons (car x) (car x)) titles)))
 	   sessions)
      (setq otitle (or w3m-current-title
-		     (with-current-buffer (car bufs)
-		       w3m-current-title)))
+		      (with-current-buffer (car bufs)
+			w3m-current-title)))
      (setq titles (cons (cons otitle otitle) titles))
      (while (not title)
        (setq title (completing-read prompt titles nil nil otitle nil otitle))
@@ -526,11 +526,11 @@ buffer's url history."
 Meant for use  with  `pre-command-hook' and `post-command-hook'."
   (let ((beg (line-beginning-position))
 	(inhibit-read-only t))
-   (put-text-property beg (next-single-property-change beg 'w3m-session-number)
-     'face
-     (if (equal (get-text-property beg 'face) 'w3m-session-select)
-       'w3m-session-selected
-      'w3m-session-select))))
+    (put-text-property
+     beg (next-single-property-change beg 'w3m-session-number)
+     'face (if (equal (get-text-property beg 'face) 'w3m-session-select)
+	       'w3m-session-selected
+	     'w3m-session-select))))
 
 (defun w3m-session-select-list-all-sessions ()
   "List all saved sessions."

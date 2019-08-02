@@ -6265,13 +6265,13 @@ passed to the filter function  corresponding to TYPE if it is
 specified in the `w3m-content-type-alist' variable."
   (let ((filter (nth 3 (assoc type w3m-content-type-alist))))
     (cond
-     ; Filter function is specified.
+     ;; Filter function is specified.
      ((functionp filter) (funcall filter url type charset))
-     ; Equivalent type is specified.
+     ;; Equivalent type is specified.
      ((stringp filter) filter)
-     ; No filter is specified.
+     ;; No filter is specified.
      ((not filter) type)
-     ; Failed.
+     ;; Failed.
      (t ""))))
 
 (defun w3m-prepare-markdown-content (url type charset)
@@ -8289,7 +8289,7 @@ This command updates the `arrived URLs' database."
 	    (when w3m-use-cookies
 	      (w3m-cookie-shutdown))
 	    (w3m-kill-all-buffer)))
-      ; starting here is condition of fb-mode active and in use
+      ;;; starting here is condition of fb-mode active and in use
       (w3m-session-automatic-save)
       (let (buf)
 	(while (setq buf (get-buffer " *w3m buffers*"))
@@ -9563,7 +9563,7 @@ invoked in other than a w3m-mode buffer."
 	   engine-info)
       (when (and uri-replace query
 		 (eq (nth 1 uri-replace) 'w3m-search-uri-replace))
-	; based upon `w3m-search-uri-replace' and `w3m-search-do-search'
+	;; based upon `w3m-search-uri-replace' and `w3m-search-do-search'
 	(setq engine-info (assoc (nth 2 uri-replace) w3m-search-engine-alist))
 	(when (and engine-info (< 3 (length engine-info)))
 	  (setq post-data

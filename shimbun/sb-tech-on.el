@@ -172,7 +172,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAADFBMVEUAAAB/gP+ttr7///8
   (when (re-search-forward "[\t\n ]*\\(?:（[\t\n ]*\\)*<a[\t\n ]+\
 \\(?:[^\t\n >]+[\t\n ]+\\)*href=\"\\([^\"]+\\)\"\
 \\(?:[\t\n ]+[^\t\n >]+\\)*[\t\n ]*>[\t\n ]*次の?ページへ[^<]*</a>"
-		   nil t)
+			   nil t)
     (shimbun-expand-url (match-string 1) url)))
 
 (luna-define-method shimbun-multi-clear-contents :around ((shimbun

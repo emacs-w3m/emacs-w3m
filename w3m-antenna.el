@@ -533,7 +533,7 @@ asynchronous process that has not finished yet."
 
 ;;;###autoload
 (defun w3m-about-antenna (_url &optional _no-decode no-cache
-			      _post-data _referer handler)
+			       _post-data _referer handler)
   (w3m-process-do
       (alist (if no-cache
 		 (w3m-antenna-check-all-sites handler)

@@ -50,7 +50,7 @@
 	 date)))
 
 (luna-define-method shimbun-get-headers :around ((shimbun shimbun-exconn)
-						&optional range)
+						 &optional range)
   (let ((headers (luna-call-next-method)))
     (dolist (header headers)
       (shimbun-header-set-from header (shimbun-from-address shimbun)))

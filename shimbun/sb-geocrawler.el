@@ -60,7 +60,7 @@
   (concat shimbun-geocrawler-url
 	  "3/"
 	  (nth 1 (assoc (shimbun-current-group-internal shimbun)
-			 shimbun-geocrawler-group-alist))
+			shimbun-geocrawler-group-alist))
 	  "/"))
 
 (luna-define-method shimbun-reply-to ((shimbun shimbun-geocrawler))
@@ -155,36 +155,36 @@
 	(categories)
 	(groups)
 	(case-fold-search t))
-  (with-temp-buffer
-    (shimbun-retrieve-url url)
-    (while (re-search-forward
-	    "<a href=\"\\([^\"]+\\)\"><img src=\"/img/cfolder.png" nil t)
-      (push (cons (match-string 1) nil) categories))
-    (erase-buffer)
-    (shimbun-retrieve-url
-     (shimbun-expand-url
-      (car (assoc (completing-read "Category: " categories nil t) categories))
-      url))
-    (while (re-search-forward
-	    "<a href=\"\\([0-9]+\\)/0/\"><img src=\"/img/cfolder.png\"[^>]*> &nbsp;"
-	    nil t)
-      (let* ((id (match-string 1))
-	     (group (buffer-substring
-		     (point)
-		     (progn
-		       (search-forward "</a>" nil t)
-		       (match-beginning 0)))))
-	(push (cons group id) groups)))
-    (let ((ginfo (assoc (completing-read "Group: " groups nil t) groups)))
-      (if (assoc (car ginfo) shimbun-geocrawler-group-alist)
-	  (message "%s has already been registerd." (car ginfo))
-	(customize-save-variable
-	 'shimbun-geocrawler-group-alist
-	 (sort (cons (list (car ginfo) (cdr ginfo) nil nil)
-		     shimbun-geocrawler-group-alist)
-	       (lambda (a b)
-		 (string< (downcase (car a))
-			  (downcase (car b)))))))))))
+    (with-temp-buffer
+      (shimbun-retrieve-url url)
+      (while (re-search-forward
+	      "<a href=\"\\([^\"]+\\)\"><img src=\"/img/cfolder.png" nil t)
+	(push (cons (match-string 1) nil) categories))
+      (erase-buffer)
+      (shimbun-retrieve-url
+       (shimbun-expand-url
+	(car (assoc (completing-read "Category: " categories nil t) categories))
+	url))
+      (while (re-search-forward
+	      "<a href=\"\\([0-9]+\\)/0/\"><img src=\"/img/cfolder.png\"[^>]*> &nbsp;"
+	      nil t)
+	(let* ((id (match-string 1))
+	       (group (buffer-substring
+		       (point)
+		       (progn
+			 (search-forward "</a>" nil t)
+			 (match-beginning 0)))))
+	  (push (cons group id) groups)))
+      (let ((ginfo (assoc (completing-read "Group: " groups nil t) groups)))
+	(if (assoc (car ginfo) shimbun-geocrawler-group-alist)
+	    (message "%s has already been registerd." (car ginfo))
+	  (customize-save-variable
+	   'shimbun-geocrawler-group-alist
+	   (sort (cons (list (car ginfo) (cdr ginfo) nil nil)
+		       shimbun-geocrawler-group-alist)
+		 (lambda (a b)
+		   (string< (downcase (car a))
+			    (downcase (car b)))))))))))
 
 (provide 'sb-geocrawler)
 

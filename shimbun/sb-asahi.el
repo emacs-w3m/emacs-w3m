@@ -952,7 +952,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAAEIAAAAQBAMAAABQPLQnAAAAElBMVEX8rKjd3Nj+7utdXFr
 (defvar shimbun-asahi-expiration-days 6)
 
 (luna-define-method initialize-instance :after ((shimbun shimbun-asahi)
-						 &rest init-args)
+						&rest init-args)
   (shimbun-set-server-name-internal shimbun "朝日新聞")
   (shimbun-set-from-address-internal shimbun "nobody@example.com")
   ;; To share class variables between `shimbun-asahi' and its

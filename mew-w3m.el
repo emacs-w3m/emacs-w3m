@@ -210,7 +210,7 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
 	      (insert mew-w3m-region-cite-mark))
 	    (end-of-line)))
 	(unless inside-blockquote
-	  ; "> > > " --> ">>> "
+	  ;; "> > > " --> ">>> "
 	  (when (and mew-w3m-region-cite-mark
 		     (string-match "&nbsp;\\'" mew-w3m-region-cite-mark))
 	    (let ((base (substring mew-w3m-region-cite-mark
@@ -220,10 +220,10 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
 	      (goto-char (point-min))
 	      (while (re-search-forward regexp nil t)
 		(dotimes (_i (prog1
-				(/ (- (match-end 0) (match-beginning 0))
-				   (length mew-w3m-region-cite-mark))
-			      (delete-region (match-beginning 0)
-					     (match-end 0))))
+				 (/ (- (match-end 0) (match-beginning 0))
+				    (length mew-w3m-region-cite-mark))
+			       (delete-region (match-beginning 0)
+					      (match-end 0))))
 		  (insert base))
 		(insert "&nbsp;"))))
 	  (goto-char (point-min))
@@ -317,11 +317,11 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
 	     (setq wcs (mew-charset-to-cs charset))
 	   (setq wcs mew-cs-text-for-write))
 	 (mew-frwlet
-	  mew-cs-dummy wcs
-	  (mew-w3m-region (point)
-			  (progn (insert-buffer-substring cache begin end)
-				 (point))
-			  xref))))
+	     mew-cs-dummy wcs
+	   (mew-w3m-region (point)
+			   (progn (insert-buffer-substring cache begin end)
+				  (point))
+			   xref))))
        (mew-w3m-add-text-properties `(w3m t w3m-images ,mew-w3m-auto-insert-image))))))
 
 (defun mew-w3m-cid-retrieve (url &rest _args)
@@ -461,8 +461,8 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
 		       (t
 			(mew-cs-to-charset cs))))
 	(mew-frwlet
-	 mew-cs-text-for-read cs
-	 (write-region (point-min) (point-max) filename nil 'nomsg)))
+	    mew-cs-text-for-read cs
+	  (write-region (point-min) (point-max) filename nil 'nomsg)))
       (when ct
 	(setq ct (mew-capitalize ct)))
       (mew-attach-copy filename (file-name-nondirectory filename))
@@ -497,7 +497,6 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
       (when (and (file-exists-p filename) (file-writable-p filename))
 	(delete-file filename)))))
 
-;;;
 (provide 'mew-w3m)
 
 ;; mew-w3m.el ends here

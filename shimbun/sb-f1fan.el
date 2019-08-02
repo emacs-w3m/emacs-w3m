@@ -62,17 +62,17 @@
 	    (id (match-string 3))
 	    (subject (match-string 4)))
 	(setq id (format "<%s.%s.tahara@ps.ksky.ne.jp>"
-			id (shimbun-current-group-internal shimbun)))
+			 id (shimbun-current-group-internal shimbun)))
 	(push (shimbun-create-header
 	       0
 	       subject
 	       (shimbun-from-address shimbun)
 	       nil
 	       id "" 0 0 (concat
-			       (shimbun-url-internal shimbun)
-			       "News"
-			       (format-time-string "%Y")
-			       url))
+			  (shimbun-url-internal shimbun)
+			  "News"
+			  (format-time-string "%Y")
+			  url))
 	      headers)))
     headers))
 

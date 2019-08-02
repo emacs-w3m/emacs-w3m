@@ -94,7 +94,7 @@
 
 (luna-define-method shimbun-reply-to ((shimbun shimbun-wikimedia))
   (concat   (nth 2 (assoc (shimbun-current-group-internal shimbun)
-		shimbun-wikimedia-group-path-alist))
+			  shimbun-wikimedia-group-path-alist))
 	    "@wikipedia.org"))
 
 (defun shimbun-wikimedia-l10n-make-contents (shimbun header)
