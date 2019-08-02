@@ -1,3 +1,12 @@
+2019-08-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-halfdump-command-arguments): Enable the symbol `charset'
+	to be substituted by the lexical one.
+	(w3m-toggle-inline-images-internal): Fix last wrong change made in
+	revno 216aed6 about the lexical variable `end'.
+	(w3m-external-view): Enable the symbols `file' and `url' specified in
+	`w3m-content-type-alist' to be substituted by the lexical ones.
+
 2019-08-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m--filter-page-anchors): Regard nil anchor as junk

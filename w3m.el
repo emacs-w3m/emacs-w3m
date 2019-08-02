@@ -2614,8 +2614,8 @@ If it is nil, the command specified to `w3m-command' is used.")
 	    '(if (eq w3m-input-coding-system 'ctext)
 		 (list "-I" "x-ctext")
 	       (when (and (eq w3m-input-coding-system 'binary)
-			  charset)
-		 (list "-I" 'charset)))
+			  `,charset)
+		 (list "-I" '`,charset)))
 	    "-o" "concurrent=0")
     (list "-halfdump"
 	  "-o" "ext_halfdump=1"
@@ -2624,7 +2624,7 @@ If it is nil, the command specified to `w3m-command' is used.")
 	  "-o" "use_jisx0201=0"
 	  "-o" "ucs_conv=1"
 	  '(if (eq w3m-input-coding-system 'binary)
-	       (if charset (list "-I" 'charset))
+	       (if `,charset (list "-I" '`,charset))
 	     (list "-I" (cond
 			 ((eq w3m-input-coding-system 'utf-8)
 			  "UTF-8")
@@ -3779,9 +3779,9 @@ You are retrieving non-secure image(s).  Continue? ")
 				   (w3m-url-local-p iurl)
 				   (w3m-cache-available-p iurl))))
 		      (w3m-process-with-null-handler
-			(setq start (set-marker (make-marker) start)
-			      end (set-marker (make-marker) end))
-			(let ((url w3m-current-url))
+			(setq start (set-marker (make-marker) start))
+			(let ((end (set-marker (make-marker) end))
+			      (url w3m-current-url))
 			  (w3m-process-do
 			      (image
 			       (let ((w3m-current-buffer (current-buffer)))
@@ -7106,12 +7106,16 @@ No method to view `%s' is registered. Use `w3m-edit-this-url'"
 	   ((functionp method)
 	    (funcall method url))
 	   ((consp method)
-	    (let ((command (w3m-which-command (car method)))
-		  (arguments (cdr method))
-		  (file (make-temp-name (expand-file-name
-					 "w3mel"
-					 w3m-external-view-temp-directory)))
-		  (suffix (file-name-nondirectory url)))
+	    (let* ((command (w3m-which-command (car method)))
+		   (arguments (cdr method))
+		   (args (mapcar (lambda (x) (cond ((eq x 'file) '`,file)
+						   ((eq x 'url) '`,url)
+						   (t x)))
+				 arguments))
+		   (file (make-temp-name (expand-file-name
+					  "w3mel"
+					  w3m-external-view-temp-directory)))
+		   (suffix (file-name-nondirectory url)))
 	      (when (string-match "\\.[0-9A-Za-z]+\\'" suffix)
 		(setq suffix (match-string 0 suffix))
 		(when (< (length suffix) 5)
@@ -7122,9 +7126,9 @@ No method to view `%s' is registered. Use `w3m-edit-this-url'"
 		  (w3m-process-do
 		      (success (w3m-download url file no-cache handler))
 		    (when success
-		      (w3m-external-view-file command file url arguments)))))
+		      (w3m-external-view-file command file url args)))))
 	       (command
-		(w3m-external-view-file command nil url arguments))
+		(w3m-external-view-file command nil url args))
 	       (t
 		(w3m-download url nil no-cache handler)))))))))))
 
