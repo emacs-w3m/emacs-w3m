@@ -7129,9 +7129,8 @@ No method to view `%s' is registered. Use `w3m-edit-this-url'"
 		(w3m-download url nil no-cache handler)))))))))))
 
 (defun w3m-external-view-file (command file url arguments)
-  ;; The 3rd argument `url' is necessary to handle the constant `url'
-  ;; included in the 4th argument `arguments' which is provided by
-  ;; `w3m-content-type-alist'.
+  ;; The values of the arguments `file' and `url' will substitute the
+  ;; symbols specified with the same names in `w3m-content-type-alist'.
   (let (proc)
     (unwind-protect
 	(with-current-buffer
