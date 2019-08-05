@@ -1,3 +1,11 @@
+2019-08-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Work for file and url specified in w3m-content-type-alist (issue #65)
+
+	* w3m.el (w3m-external-view): Revert.
+	(w3m-external-view-file): Substitute `file' and `url' specified in
+	`w3m-content-type-alist' with the values of the lexical argumants.
+
 2019-08-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-halfdump-command-arguments): Enable the symbol `charset'

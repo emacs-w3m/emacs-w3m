@@ -7106,16 +7106,12 @@ No method to view `%s' is registered. Use `w3m-edit-this-url'"
 	   ((functionp method)
 	    (funcall method url))
 	   ((consp method)
-	    (let* ((command (w3m-which-command (car method)))
-		   (arguments (cdr method))
-		   (args (mapcar (lambda (x) (cond ((eq x 'file) '`,file)
-						   ((eq x 'url) '`,url)
-						   (t x)))
-				 arguments))
-		   (file (make-temp-name (expand-file-name
-					  "w3mel"
-					  w3m-external-view-temp-directory)))
-		   (suffix (file-name-nondirectory url)))
+	    (let ((command (w3m-which-command (car method)))
+		  (arguments (cdr method))
+		  (file (make-temp-name (expand-file-name
+					 "w3mel"
+					 w3m-external-view-temp-directory)))
+		  (suffix (file-name-nondirectory url)))
 	      (when (string-match "\\.[0-9A-Za-z]+\\'" suffix)
 		(setq suffix (match-string 0 suffix))
 		(when (< (length suffix) 5)
@@ -7126,14 +7122,13 @@ No method to view `%s' is registered. Use `w3m-edit-this-url'"
 		  (w3m-process-do
 		      (success (w3m-download url file no-cache handler))
 		    (when success
-		      (w3m-external-view-file command file url args)))))
+		      (w3m-external-view-file command file url arguments)))))
 	       (command
-		(w3m-external-view-file command nil url args))
+		(w3m-external-view-file command nil url arguments))
 	       (t
 		(w3m-download url nil no-cache handler)))))))))))
 
 (defun w3m-external-view-file (command file url arguments)
-  (ignore url)
   ;; The 3rd argument `url' is necessary to handle the constant `url'
   ;; included in the 4th argument `arguments' which is provided by
   ;; `w3m-content-type-alist'.
@@ -7146,7 +7141,9 @@ No method to view `%s' is registered. Use `w3m-edit-this-url'"
 		       "w3m-external-view"
 		       (current-buffer)
 		       command
-		       (mapcar (function eval) arguments)))
+		       (mapcar (lambda (x)
+				 (pcase x ('file file) ('url url) (_ x)))
+			       arguments)))
 	  (w3m-message "Start %s..." (file-name-nondirectory command))
 	  (set-process-sentinel
 	   proc
