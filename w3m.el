@@ -2614,8 +2614,8 @@ If it is nil, the command specified to `w3m-command' is used.")
 	    '(if (eq w3m-input-coding-system 'ctext)
 		 (list "-I" "x-ctext")
 	       (when (and (eq w3m-input-coding-system 'binary)
-			  `,charset)
-		 (list "-I" '`,charset)))
+			  charset)
+		 (list "-I" 'charset)))
 	    "-o" "concurrent=0")
     (list "-halfdump"
 	  "-o" "ext_halfdump=1"
@@ -2624,7 +2624,7 @@ If it is nil, the command specified to `w3m-command' is used.")
 	  "-o" "use_jisx0201=0"
 	  "-o" "ucs_conv=1"
 	  '(if (eq w3m-input-coding-system 'binary)
-	       (if `,charset (list "-I" '`,charset))
+	       (if charset (list "-I" 'charset))
 	     (list "-I" (cond
 			 ((eq w3m-input-coding-system 'utf-8)
 			  "UTF-8")
@@ -5198,21 +5198,32 @@ If the optional argument NO-CACHE is non-nil, cache is not used."
 				    (1- counter) handler))
 	  (cdr attr))))))
 
-(defun w3m-w3m-expand-arguments (arguments)
-  (apply 'append
-	 (mapcar
-	  (lambda (x)
-	    (cond
-	     ((stringp x) (list x))
-	     ((setq x (eval x))
-	      (cond ((stringp x)
-		     (list x))
-		    ((listp x)
-		     (w3m-w3m-expand-arguments x))
-		    (t
-		     (let (print-level print-length)
-		       (list (prin1-to-string x))))))))
-	  arguments)))
+(defun w3m-w3m-expand-arguments (arguments &optional charset)
+  "Expand ARGUMENTS so to be used as arguments passed to `w3m-command'.
+CHARSET is used to substitute the `charset' symbols specified in
+ARGUMENTS with its value."
+  (let ((bndp (boundp 'charset))
+	(chst charset))
+    (unless bndp (set (intern "charset") nil))
+    ;; Now `charset' is dynamically bound.  It will match with the symbols
+    ;; of the same name specified in `w3m-halfdump-command-arguments'.
+    (unwind-protect
+	(let ((charset chst))
+	  (apply 'append
+		 (mapcar
+		  (lambda (x)
+		    (cond
+		     ((stringp x) (list x))
+		     ((setq x (eval x))
+		      (cond ((stringp x)
+			     (list x))
+			    ((listp x)
+			     (w3m-w3m-expand-arguments x charset))
+			    (t
+			     (let (print-level print-length)
+			       (list (prin1-to-string x))))))))
+		  arguments)))
+      (unless bndp (makunbound 'charset)))))
 
 (defun w3m--dump-extra--handler-function (url silent success)
   (let ((w3m-message-silent silent))
@@ -5951,9 +5962,10 @@ w3m regards it as an incomplete <a> tag that is not closed."
 	      (setq w3m-display-ins-del 'tag)))))))))
 
 (defun w3m-rendering-half-dump (charset)
+  "Run w3m -halfdump on buffer's contents.
+CHARSET is used to substitute the `charset' symbols specified in
+`w3m-halfdump-command-arguments' with its value."
   (ignore charset)
-  ;; `charset' is used by `w3m-w3m-expand-arguments' to generate
-  ;; arguments for w3mmee and w3m-m17n from `w3m-halfdump-command-arguments'.
   (w3m-set-display-ins-del)
   (let* ((coding-system-for-read w3m-output-coding-system)
 	 (coding-system-for-write (if (eq 'binary w3m-input-coding-system)
@@ -5983,7 +5995,8 @@ w3m regards it as an incomplete <a> tag that is not closed."
 				  "-ppc" (number-to-string
 					  (or w3m-pixels-per-character
 					      (frame-char-width))))
-			  (list "-o" "display_image=off")))))))))
+			  (list "-o" "display_image=off"))))
+	      charset)))))
 
 (defun w3m-markup-urls-nobreak ()
   "Make things that look like urls unbreakable.

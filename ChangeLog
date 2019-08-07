@@ -1,3 +1,15 @@
+2019-08-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make charset symbols in w3m-halfdump-command-arguments substitutable
+	([emacs-w3m:13516])
+
+	* w3m.el (w3m-halfdump-command-arguments): Revert the value to that of
+	before turning lexical-binding on.
+	(w3m-w3m-expand-arguments): Dynamically bind the `charset' symbol
+	temporarily; accept it as an optional argument.
+	(w3m-rendering-half-dump): Pass charset to w3m-w3m-expand-arguments as
+	an argumant; add docstring.
+
 2019-08-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Work for file and url specified in w3m-content-type-alist (issue #65)
