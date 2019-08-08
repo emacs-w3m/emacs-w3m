@@ -37,11 +37,7 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl)) ;; defsetf
-;; The `defsetf' macro uses this function at compile-time.
-(declare-function gv--defsetter "gv" (name setter do args &optional vars))
-;; `cl' employs `cl-lib'.
-;; (require 'cl-lib) ;; cl-incf
+(require 'cl-lib) ;; cl-incf
 
 (require 'w3m-util)
 (require 'w3m)
@@ -216,7 +212,7 @@ It is useful to bind this variable with `let', but do not set it globally.")
   (aset form 1 (if (stringp method)
 		   (intern method)
 		 method)))
-(defsetf w3m-form-method w3m-form-set-method)
+(gv-define-simple-setter w3m-form-method w3m-form-set-method)
 
 (defmacro w3m-form-method (form)
   `(aref ,form 1))

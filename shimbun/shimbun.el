@@ -71,10 +71,6 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl)) ;; defsetf
-;; The `defsetf' macro uses this function at compile-time.
-(declare-function gv--defsetter "gv" (name setter do args &optional vars))
-
 (require 'mcharset)
 (require 'eword-encode)
 (require 'luna)
@@ -517,7 +513,7 @@ Generated article have a multipart/related content-type."
 
 (defun shimbun-entity-set-cid (entity cid)
   (shimbun-entity-set-cid-internal entity cid))
-(defsetf shimbun-entity-cid shimbun-entity-set-cid)
+(gv-define-simple-setter shimbun-entity-cid shimbun-entity-set-cid)
 
 (luna-define-generic shimbun-entity-insert (entity)
   "Insert ENTITY as a MIME part.")

@@ -40,6 +40,7 @@
 ;;; Code:
 
 ;; Delete this section when emacs-w3m drops the Emacs 25 support.
+;; In Emacs 26 and greater, c[ad][ad][ad]+r are what subr.el provides.
 (eval-when-compile
   (unless (>= emacs-major-version 26)
     (require 'cl))) ;; c[ad][ad][ad]+r

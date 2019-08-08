@@ -1,3 +1,12 @@
+2019-08-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Don't load cl for Emacs 26 and greater
+
+	* sb-asahi.el, sb-rss.el, sb-yomiuri.el: Add comment about cl.
+	* sb-emacs-w3m.el, shimbun.el: Don't load cl.
+	* shimbun.el (shimbun-entity-cid): Use gv-define-simple-setter instead
+	of defsetf.
+
 2019-07-31  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-login):

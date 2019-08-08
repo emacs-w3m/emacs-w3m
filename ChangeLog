@@ -1,3 +1,22 @@
+2019-08-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Don't load cl for Emacs 26 and greater
+
+	* w3m-form.el, w3m-proc.el, w3m.el: Don't load cl.
+
+	* w3m-form.el (w3m-form-method):
+	* w3m.el (w3m-arrived-time, w3m-arrived-get):
+	Use gv-define-simple-setter or gv-define-setter instead of defsetf.
+
+	* w3m-proc.el (w3m-gensym): Remove.
+	(gensym): New compiler macro for Emacs 25.
+	(w3m-process-with-null-handler, w3m-process-with-wait-handler)
+	(w3m-process-do, w3m-process-do-with-temp-buffer): Use gensym instead
+	of w3m-gensym.
+
+	* w3m-hist.el, w3m-rss.el, w3m-save.el, w3m-search.el, w3m-session.el:
+	* w3m.el: Add comment about cl.
+
 2019-08-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make charset symbols in w3m-halfdump-command-arguments substitutable

@@ -54,9 +54,12 @@
 ;; `cl-lib', otherwise the functions `cl-lib' provides will be marked
 ;; as "might not be defined at runtime" because of `eval-when-compile'.
 (require 'cl-lib) ;; cl-decf, cl-incf, cl-labels, cl-remove-if
-(eval-when-compile (require 'cl)) ;; c[ad][ad][ad]+r, defsetf
-;; The `defsetf' macro uses this function at compile time.
-(declare-function gv--defsetter "gv" (name setter do args &optional vars))
+
+;; Delete this section when emacs-w3m drops the Emacs 25 support.
+;; In Emacs 26 and greater, c[ad][ad][ad]+r are what subr.el provides.
+(eval-when-compile
+  (unless (>= emacs-major-version 26)
+    (require 'cl))) ;; c[ad][ad][ad]+r
 
 (require 'w3m-util)
 (require 'w3m-proc)
@@ -2818,8 +2821,8 @@ CONTENT-TYPE are also be added."
 Otherwise return nil."
   (let ((v (w3m-arrived-intern url t)))
     (and v (symbol-value v))))
-(defsetf w3m-arrived-time (url) (value)
-  (list 'w3m-arrived-add url nil nil value))
+(gv-define-setter w3m-arrived-time (arrived-time url)
+  `(w3m-arrived-add ,url nil nil ,arrived-time))
 
 (defun w3m-arrived-put (url property value)
   "Store VALUE in the arrived URLs database as the PROPERTY of URL.
@@ -2834,7 +2837,7 @@ If a page of URL has not arrived, return nil."
   (let ((symbol (w3m-arrived-intern url t)))
     (and symbol (get symbol property))))
 
-(defsetf w3m-arrived-get w3m-arrived-put)
+(gv-define-simple-setter w3m-arrived-get w3m-arrived-put)
 
 (defmacro w3m-arrived-title (url)
   "Return the title of URL having stored in the arrived URLs database."

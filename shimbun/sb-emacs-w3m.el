@@ -24,9 +24,7 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
-;; `cl' employs `cl-lib'.
-;; (require 'cl-lib) ;; cl-incf
+(require 'cl-lib) ;; cl-incf
 
 (require 'shimbun)
 (require 'sb-mhonarc)
