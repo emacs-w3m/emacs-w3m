@@ -21,7 +21,7 @@
 
         http://emacs-w3m.namazu.org/info/
 
-   (But the info has not been being maintained for a long periods,
+   (But the info has not been being maintained for a long period,
     so some descriptions might have probably been obsolescent and
     the new features are not necessarily all described, sorry.)
 
@@ -43,7 +43,7 @@
 
    If you want to use the shimbun library that is included in the
    emacs-w3m distribution, you have to install the APEL and the FLIM
-   package in order.  To get those latest sources, visit this page:
+   packages in order.  To get those latest sources, visit this page:
 
        https://github.com/wanderlust/
 
@@ -160,8 +160,7 @@
    improvements, making a suggestion or asking us for help, send a mail
    to the open list <emacs-w3m@namazu.org>.  You can also send a bug
    report using the `report-emacs-w3m-bug' command or the `C-c C-b' key
-   if you have set the `mail-user-agent' variable that will work
-   properly.
+   if you have set the `mail-user-agent' variable so to work properly.
 
 
 6. Acknowledgments
