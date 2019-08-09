@@ -8,6 +8,9 @@
 
        http://w3m.sourceforge.net/
 
+   (See the next section `Requirements' for the place where you can get
+    the latest w3m source.)
+
    Emacs-w3m is a simple Emacs interface to w3m.  Its official web page
    is available at:
 
@@ -17,6 +20,10 @@
    in the form of HTML'ized info:
 
         http://emacs-w3m.namazu.org/info/
+
+   (But the info has not been being maintained for a long periods,
+    so some descriptions might have probably been obsolescent and
+    the new features are not necessarily all described, sorry.)
 
 
 2. Requirements
@@ -29,16 +36,16 @@
 
    Emacs-w3m requires the latest version of w3m (version 0.3.1 and
    later).  Since this program is much sensitive to the version of w3m,
-   you should confirm it if you already have w3m installed.  And we
-   recommend you visit the official w3m web page to check whether a
-   newer version of w3m has been released:
+   you should confirm it with `w3m --version' if you already have w3m
+   installed.  To get the latest source of w3m, visit this page:
 
-       http://prdownloads.sourceforge.net/w3m/
+       https://salsa.debian.org/debian/w3m
 
-   If you want to use the shimbun library which is included in the
-   emacs-w3m distribution, you have to install FLIM package.  For more
-   detail about the shimbun library, see "Shimbun Library" section in
-   Info.
+   If you want to use the shimbun library that is included in the
+   emacs-w3m distribution, you have to install the APEL and the FLIM
+   package in order.  To get those latest sources, visit this page:
+
+       https://github.com/wanderlust/
 
 
 3. Installation
@@ -94,23 +101,26 @@
 
 4. Configuration
 
-   We recommend using the ~/.emacs-w3m file (which is the default
-   value of `w3m-init-file') when you twiddle some variables of
-   emacs-w3m.  This file is similar to ~/.emacs, but is read when
-   emacs-w3m starts.  However, note that there are options which
-   shouldn't be put there, for example, `w3m-command'.
+   When you want to twiddle some options referenced by emacs-w3m, use
+   the ~/.emacs-w3m.el file (its base name is the default value of the
+   `w3m-init-file' variable, the name ~/.emacs-w3m is also allowed).
+   That is similar to Emacs' init file (~/.emacs, etc.) but is read
+   when emacs-w3m starts.  Note that there are a few options, e.g.,
+   `w3m-command', that should be put into Emacs' init file, rather than
+   the ~/.emacs-w3m.el file.
+
 
 4.1. Essential Configuration
 
-     Put this line into your ~/.emacs file:
+     Put this line into your Emacs' init file (i.e., ~/.emacs, etc.):
 
          (require 'w3m-load)
 
 4.2. mime-w3m.el
 
-     In order to handle text/html part with emacs-w3m under SEMI MUAs
-     such as Wanderlust, you have to put the following line in your
-     ~/.emacs file:
+     In order to let SEMI MUAs, such as Wanderlust, render text/html
+     parts in messages using emacs-w3m, put the following line in your
+     Emacs' init file (i.e., ~/.emacs, etc):
 
          (require 'mime-w3m)
 
@@ -119,17 +129,20 @@
      There are some ways to do this, one is to set the "http_proxy"
      environment variable globally in the shell something like:
 
-         setenv http_proxy http://proxy.hogege.com:8000/
+         export http_proxy='http://proxy.hogege.com:8000/'
 
-     Another way is to customize the `w3m-command-arguments' variable to
-     add the options "-o" and "http_proxy=http://PROXY_SERVER_NAME:PORT/".
-     This can also be done in your ~/.emacs-w3m file as shown below:
+     Another way is to customize the `w3m-command-arguments' variable
+     so to have the option:
 
-        (setq w3m-command-arguments
-              (nconc w3m-command-arguments
-                     '("-o" "http_proxy=http://proxy.hogege.com:8000/")))
+         '("-o" "http_proxy=http://PROXY_SERVER_NAME:PORT/")
 
-     To specify `no-proxy' hosts, which shouldn't be connected to with
+     This can be done in your ~/.emacs-w3m.el file as shown below:
+
+     (setq w3m-command-arguments
+           (nconc w3m-command-arguments
+                  '("-o" "http_proxy=http://proxy.hogege.com:8000/")))
+
+     To specify `no-proxy' hosts, that shouldn't be connected to with
      proxy gateways, you can set the "no_proxy" environment variable
      with the comma separated host names, or set the
      `w3m-no-proxy-domains' variable with a list of domain names (not
@@ -153,18 +166,9 @@
 
 6. Acknowledgments
 
-   w3m, which is an essential part of this package, was written by
+   w3m, that is an essential part of this package, was written by
    Akinori ITO.  We'd like to address our thanks to him for his nice
    work.
-
-
-7. Related Information
-
-   Now w3m is beeing actively developed in:
-   https://salsa.debian.org/debian/w3m
-
-   You can get APEL and FLIM from: https://github.com/wanderlust/
-   Install APEL before installing FLIM.
 
 
 Local Variables:
