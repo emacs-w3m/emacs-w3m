@@ -313,7 +313,7 @@ buffer's url history."
 	     (setq cnum i))
 	   (setq i (1+ i))
 	   (setq urls (cons (list w3m-current-url
-				  (copy-sequence (caar w3m-history))
+				  (copy-sequence (cadar w3m-history))
 				  (w3m-session-history-to-save)
 				  w3m-current-title)
 			    urls)))))
@@ -853,7 +853,7 @@ url will be created, only if it does not already exist."
 		   (with-current-buffer x
 		     (cons w3m-current-url x)))
 		 (w3m-list-buffers)))
-	url cbuf cwin buf pos history)
+	url cbuf cwin buf pos history url-title)
     (dolist (win (window-list))
       (when (string-match "\\*w3m\\*" (buffer-name (window-buffer win)))
 	(setq cwin win)))
@@ -863,9 +863,10 @@ url will be created, only if it does not already exist."
       (w3m-message "Session goto(%s)..." title)
       (while (setq url (pop urls))
 	(unless (stringp url)
-	  (setq pos     (nth 1 url)
-		history (nth 2 url)
-		url     (nth 0 url)))
+	  (setq pos       (nth 1 url)
+		history   (nth 2 url)
+		url-title (nth 3 url)
+		url       (nth 0 url)))
 	(cond
 	 ((setq cbuf (cdr (assoc url w3m-urls))) t)
 	 (t ; ie. (not (assoc url w3m-urls))
@@ -876,6 +877,7 @@ url will be created, only if it does not already exist."
 	    (setq cbuf buf))
 	  (when (and buf pos history)
 	    (set-buffer buf)
+	    (push (list url (list :title url-title) pos) history) ;current
 	    (setq w3m-history-flat history)
 	    (w3m-history-tree pos))
 	  (setq i (1+ i))))))
