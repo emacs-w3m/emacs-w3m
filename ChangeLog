@@ -1,3 +1,10 @@
+2019-08-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Bugfix: Don't break the value of w3m-content-type-alist
+
+	* w3m.el (w3m-external-view): Don't run nreverse on an element of
+	w3m-content-type-alist.
+
 2019-08-14  Filipp Gunbin  <fgunbin@fastmail.fm>
 
 	Fix saving and restoring of a session (PR#67)

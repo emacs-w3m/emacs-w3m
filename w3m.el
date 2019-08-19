@@ -7105,7 +7105,7 @@ command instead."
 	  (when (consp method)
 	    (let ((result))
 	      (setq method
-		    (dolist (elem (nreverse method) result)
+		    (dolist (elem method (nreverse result))
 		      (push (if (and (stringp elem)
 				     (string-match "\\`[\"']?%s[\"']?\\'"
 						   elem))
