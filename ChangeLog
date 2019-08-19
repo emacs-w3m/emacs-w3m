@@ -1,3 +1,10 @@
+2019-08-14  Filipp Gunbin  <fgunbin@fastmail.fm>
+
+	Fix saving and restoring of a session (PR#67)
+
+	* w3m-session.el (w3m-session-save): Fix history position to save.
+	(w3m-session-goto-session): Restore it with a title correctly.
+
 2019-08-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Don't load cl for Emacs 26 and greater

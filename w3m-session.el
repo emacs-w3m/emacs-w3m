@@ -877,7 +877,7 @@ url will be created, only if it does not already exist."
 	    (setq cbuf buf))
 	  (when (and buf pos history)
 	    (set-buffer buf)
-	    (push (list url (list :title url-title) pos) history) ;current
+	    (push (list url (list :title url-title) pos) history) ;; current
 	    (setq w3m-history-flat history)
 	    (w3m-history-tree pos))
 	  (setq i (1+ i))))))
