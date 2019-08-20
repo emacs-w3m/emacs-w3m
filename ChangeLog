@@ -27,8 +27,10 @@
 
 	Fix saving and restoring of a session (PR#67)
 
-	* w3m-session.el (w3m-session-save): Fix history position to save.
-	(w3m-session-goto-session): Restore it with a title correctly.
+	* w3m-session.el (w3m-session-save): Fix session saving putting
+	previous position instead of current.
+	(w3m-session-goto-session): Add current page to history before
+	restoring w3m-history.  Data is taken from the session itself.
 
 2019-08-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
