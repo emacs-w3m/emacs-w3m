@@ -1,3 +1,12 @@
+2019-08-20  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	Fix position to be jumped to name anchor ([emacs-w3m:13526])
+
+	* w3m.el (w3m-anchor-list-filter-alist): Allow not-match regexp;
+	don't prune wikipedia's name anchor matching cite_.*[0-9] by default.
+	(w3m--filter-page-anchors): Handle not-match regexp.
+	(w3m--get-page-anchors): Fix name anchor potision to be jumped to.
+
 2019-08-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Fix bug that caused issue #66
