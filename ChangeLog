@@ -1,6 +1,11 @@
 2019-08-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* w3m.el (w3m-about): Renew home page address.
+	Fix bug that caused issue #66
+
+	* w3m.el (w3m-toggle-inline-images-internal): Make lexical variable
+	`start' separate from the one with the same name used in synchronous
+	procedures while running asynchronous processes (issue #66).
+	(w3m-about): Renew home page address.
 
 2019-08-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 

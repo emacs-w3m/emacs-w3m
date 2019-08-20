@@ -3782,8 +3782,8 @@ You are retrieving non-secure image(s).  Continue? ")
 				   (w3m-url-local-p iurl)
 				   (w3m-cache-available-p iurl))))
 		      (w3m-process-with-null-handler
-			(setq start (set-marker (make-marker) start))
-			(let ((end (set-marker (make-marker) end))
+			(let ((start (set-marker (make-marker) start))
+			      (end (set-marker (make-marker) end))
 			      (url w3m-current-url))
 			  (w3m-process-do
 			      (image
