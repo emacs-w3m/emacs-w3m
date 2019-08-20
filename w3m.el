@@ -10291,7 +10291,11 @@ See `w3m-region' for the optional arguments."
 <head><title>About emacs-w3m</title></head>
 <body>
 <center>
-Welcome to <a href=\"http://emacs-w3m.namazu.org/\">\
+Welcome to <a href=\""
+	  (if (equal w3m-language "Japanese")
+	      "https://emacs-w3m.github.io/index-ja.html"
+	    "https://emacs-w3m.github.io/index.html")
+	  "\">\
 <img src=\"about://emacs-w3m.gif\" alt=\"emacs-w3m\" width=\"83\"
 height=\"14\"></a>!<br><br>
 emacs-w3m is an interface program of

@@ -1,3 +1,7 @@
+2019-08-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-about): Renew home page address.
+
 2019-08-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Bugfix: Don't break the value of w3m-content-type-alist
