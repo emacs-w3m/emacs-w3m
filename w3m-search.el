@@ -181,24 +181,22 @@ POST-DATA is optional value which is a string for POST method search engine.
 If CODING is omitted, it defaults to `w3m-default-coding-system'."
   :group 'w3m
   :type `(repeat
-	  (group :indent 2
-		 (string :format "Engine: %v\n")
-		 (string :format "       Action: %v\n")
-		 (coding-system :format "%t: %v\n")
+	  (group :format "%v" :indent 2
+		 (string :format "Engine: %v")
+		 (string :format "Action: %v")
+		 (coding-system :format "%t: %v")
 		 (checklist :inline t
-			    :entry-format ,(if (display-graphic-p)
-					       "%b   %v"
-					     "%b  %v")
-			    (string :format "PostData: %v\n")))))
+			    (string :format "PostData: %v")))))
 
 (defcustom w3m-search-default-engine "google"
   "Name of the default search engine.
 See also `w3m-search-engine-alist'."
   :group 'w3m
-  :type (nconc '(radio) (mapcar
-			 (lambda (x)
-			   (list 'const (substring-no-properties (car x))))
-			 w3m-search-engine-alist)))
+  :type '(radio
+	  :convert-widget w3m-widget-type-convert-widget
+	  `(,@(mapcar (lambda (x)
+			(list 'const (substring-no-properties (car x))))
+		      w3m-search-engine-alist))))
 
 (defcustom w3m-search-word-at-point t
   "Non-nil means that the word at point is used as an initial string.

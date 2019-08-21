@@ -84,10 +84,11 @@
 
 (defconst w3m-namazu-default-index-customize-spec
   '`(choice
+     :format "%{%t%}:\n%[Value Menu%] %v"
      (const :tag "No default index" nil)
      ,@(mapcar (lambda (x) (list 'const (car x)))
 	       w3m-namazu-index-alist)
-     (directory :format "Index directory: %v\n")))
+     (directory :format "Index directory: %v")))
 
 (defcustom w3m-namazu-index-alist
   (when (boundp 'namazu-dir-alist)
@@ -99,12 +100,12 @@
   :group 'w3m-namazu
   :type '(repeat
 	  (group
-	   :indent 0 :inline t
-	   (cons :format "%v"
-		 (string :format "Alias: %v\n")
+	   :format "%v" :inline t
+	   (cons :format "%v" :indent 0
+		 (string :format "Alias: %v")
 		 (repeat
-		  :format "%v%i\n" :indent 8
-		  (directory :format "Index directory: %v\n")))))
+		  :format "%v%i\n" :indent 2
+		  (directory :format "Index directory: %v")))))
   :set (lambda (symbol value)
 	 (custom-set-default symbol value)
 	 (put 'w3m-namazu-default-index 'custom-type

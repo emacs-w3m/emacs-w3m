@@ -58,7 +58,7 @@ be omitted."
   :group 'w3m
   :type '(radio (const :tag "Not specified" nil)
 		(cons :format "%v"
-		      (integer :format "Width: %v " :value 16)
+		      (integer :format "Width: %v " :value 16 :size 8)
 		      (integer :format "Height: %v " :value 16))))
 
 (defconst w3m-favicon-name "favicon.ico"
@@ -122,7 +122,7 @@ Args that are always passed to convert in addition to this value are:
 
 Args might also contain (\"-transparent\" \"COLOR\") in the beginning."
   :group 'w3m
-  :type `(repeat (group :inline t
+  :type `(repeat (group :format "%v" :inline t
 			:match-inline
 			(lambda (widget vals)
 			  (if (and (eq (aref (car vals) 0) ?-)
@@ -132,8 +132,9 @@ Args might also contain (\"-transparent\" \"COLOR\") in the beginning."
 				    (nthcdr 2 vals))
 			    (cons (list (car vals)) (cdr vals))))
 			(string :format "Arg: %v " :value "-")
-			(checklist :inline t
-				   (string :format "Value: %v\n")))))
+			(group :format "%v" :inline t
+			       (checklist :inline t
+					  (string :format "Value: %v"))))))
 
 (defcustom w3m-favicon-default-background nil
   "Color name used as transparent color of favicon image.
@@ -141,7 +142,7 @@ Nil means to use the background color of the Emacs frame.  The null
 string \"\" is special, that will be replaced with the background color
 of the header line or the mode line on which the favicon is displayed."
   :group 'w3m
-  :type '(radio (string :format "Color: %v\n"
+  :type '(radio (string :format "Color: %v"
 			:match (lambda (widget value)
 				 (and (stringp value) (> (length value) 0))))
 		(const :tag "Use the background color of the Emacs frame" nil)

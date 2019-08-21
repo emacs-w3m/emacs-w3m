@@ -1,3 +1,18 @@
+2019-08-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Improve custom type for some user options
+
+	* w3m-antenna.el (w3m-antenna-sites):
+	* w3m-favicon.el (w3m-favicon-size, w3m-favicon-convert-args)
+	(w3m-favicon-default-background):
+	* w3m-filter.el (w3m-filter-configuration, w3m-filter-rules):
+	* w3m-namazu.el (w3m-namazu-default-index-customize-spec)
+	(w3m-namazu-index-alist):
+	* w3m-search.el (w3m-search-engine-alist, w3m-search-default-engine):
+	* w3m-util.el (w3m-strip-queries-alist):
+	* w3m.el (w3m-decoder-alist, w3m-popup-frame-parameters)
+	(w3m-anchor-list-filter-alist): Improve custom type.
+
 2019-08-20  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	Fix position to be jumped to name anchor ([emacs-w3m:13526])

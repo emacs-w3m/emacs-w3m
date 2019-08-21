@@ -181,7 +181,7 @@ FUNCTION
 			       (error "The widget here is not active"))
 			     (apply #',fn args)))))
 	    `((group
-	       :indent 2
+	       :format "\n%v" :indent 0
 	       :value-create
 	       (lambda (widget)
 		 (widget-group-value-create widget)
@@ -192,7 +192,6 @@ FUNCTION
 		      (widget-get (car children) :to)
 		      (widget-get (car (last children)) :to)))))
 	       (checkbox
-		:format "\n%[%v%]"
 		:action
 		(lambda (widget &optional event)
 		  (let ((widget-edit-functions
@@ -214,11 +213,12 @@ FUNCTION
 					:children))) :to)))))))
 		    (widget-checkbox-action widget event))))
 	       (group
-		:inline t
+		:format "%v" :indent 2 :inline t
 		(choice
 		 :format " %v"
 		 (string :format "%v")
-		 (group ,@(if (equal "Japanese" w3m-language)
+		 (group :format "%v"
+			,@(if (equal "Japanese" w3m-language)
 			      '((sexp :format "") (string :format "%v"))
 			    '((string :format "%v") (sexp :format ""))))
 		 (const :format "Not documented\n" nil))
@@ -245,19 +245,19 @@ This variable is semi-obsolete; use `w3m-filter-configuration' instead."
   :group 'w3m
   :type '(repeat
 	  (group :format "%v" :indent 2
-		 (regexp :format "Regexp: %v\n" :value ".*")
+		 (regexp :format "Regexp: %v" :value ".*")
 		 (choice
 		  :tag "Filtering Rule"
 		  (group :inline t
 			 :tag "Delete regions surrounded with these patterns"
 			 (const :format "Function: %v\n"
 				w3m-filter-delete-regions)
-			 (string :format "Start: %v\n"
+			 (string :format "Start: %v"
 				 :value "not a regexp")
-			 (string :format "  End: %v\n"
+			 (string :format "  End: %v"
 				 :value "not a regexp"))
 		  (function :tag "Filter with a user defined function"
-			    :format "Function: %v\n")))))
+			    :format "Function: %v")))))
 
 (defcustom w3m-filter-google-use-utf8 (not (equal "Japanese" w3m-language))
   ;; FIXME: what does this docstring say? - ky

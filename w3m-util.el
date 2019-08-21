@@ -1160,7 +1160,8 @@ Details are set by `w3m-strip-queries-alist'."
 This is meant to remove unwanted trackers or other data that websites or
 referers embed."
   :group 'w3m
-  :type '(repeat (group (string :tag "URL regex")
+  :type '(repeat (group :format "%v"
+			(string :tag "URL regex")
 			(string :tag "Query regex"))))
 
 (defcustom w3m-queries-log nil

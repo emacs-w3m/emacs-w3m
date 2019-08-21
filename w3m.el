@@ -1174,14 +1174,14 @@ Each element is a list which consists of the following data:
   "Alist of encoding types, decoder commands, and arguments."
   :group 'w3m
   :type '(repeat
-	  (group :indent 4
+	  (group :format "\n%v" :indent 4
 		 (radio :format "Encoding: %v"
 			(const :format "%v " gzip)
 			(const :format "%v " bzip)
 			(const deflate))
-		 (string :format "Command: %v\n")
+		 (string :format "Command: %v")
 		 (repeat :tag "Arguments" :extra-offset 2
-			 (string :format "%v\n")))))
+			 (string :format "%v")))))
 
 (defcustom w3m-charset-coding-system-alist
   (let ((rest
@@ -1528,11 +1528,10 @@ It influences only when a new emacs-w3m buffer is created."
 (defcustom w3m-popup-frame-parameters nil
   "Alist of frame parameters used when creating a new emacs-w3m frame."
   :group 'w3m
-  :type '(group :inline t :tag "Frame Parameters"
-		(repeat :inline t :tag "Frame Parameters"
-			(cons :format "%v" :indent 3
-			      (symbol :format "Parameter: %v\n")
-			      (sexp :format "%t: %v\n")))))
+  :type '(repeat :format "Frame Parameters:\n%v%i\n"
+		 (cons :format "%v" :indent 3
+		       (symbol :format "Parameter: %v")
+		       (sexp :format "%t: %v"))))
 
 (defcustom w3m-auto-show t
   "Non-nil means provide the ability to horizontally scroll the window.
@@ -6626,7 +6625,7 @@ when the URL of the retrieved page matches the REGEXP."
 			     url))))
 
 (defcustom w3m-anchor-list-filter-alist
-  '(((".*" . "wikipedia") . "\\`cite_.*[0-9]\\'")
+  '(((".*" . "\\`https://[a-z]+\\.wikipedia\\.org/") . "\\`cite_.*[0-9]\\'")
     (".*" . "\\`mw-head\\'")
     (".*" . "\\`p-search\\'"))
   "Identification of \"junk\" anchor to be ignored in user searches.
@@ -6637,13 +6636,36 @@ regexp matching a URL not to be filtered.  This feature was prompted
 by the large number of useless anchors created by the very popular
 media-wiki software used for sites such as wikipedia."
   :group 'w3m
-  :type '(repeat (cons :format "%v" :indent 9
-		       (choice :format "%[Type%] %v"
-			       (cons :format "%v"
-				     (regexp :format "URL to filter: %v")
-				     (regexp :format "URL not to filter: %v"))
-			       (regexp :format "URL: %v"))
-		       regexp)))
+  :type '(repeat
+	  (cons
+	   :format "%v" :indent 2
+	   (group
+	    :format "%v"
+	    (regexp :format "Regexp matching url to be filtered: %v")
+	    (checklist
+	     :inline t
+	     (regexp :format "Regexp matching url not to be filtered: %v")))
+	   (regexp :format "Regexp matching anchor name: %v")))
+  :get (lambda (symbol)
+	 ;; Be careful so not to modify symbol's value.
+	 (let ((value (default-value symbol))
+	       rest)
+	   (dolist (elem value (nreverse rest))
+	     (push (if (consp (car elem))
+		       (if (consp (cdar elem))
+			   elem
+			 (cons (list (caar elem) (cdar elem)) (cdr elem)))
+		     (cons (list (car elem)) (cdr elem)))
+		   rest))))
+  :set (lambda (symbol value)
+	 (custom-set-default
+	  symbol
+	  (dolist (elem value value)
+	    (when (consp (car elem))
+	      (cond ((consp (cdar elem))
+		     (setcar elem (apply #'cons (car elem))))
+		    ((not (cdar elem))
+		     (setcar elem (caar elem)))))))))
 
 (defun w3m--filter-page-anchors (anchor-list)
   "Prune \"junk\" anchors from ANCHOR-LIST."

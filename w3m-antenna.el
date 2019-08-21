@@ -128,10 +128,10 @@ not to update the page."
   :group 'w3m-antenna
   :type `(repeat
 	  (group
-	   :indent 7
-	   (w3m-antenna-string :format "URL: %v\n"
+	   :indent 2
+	   (w3m-antenna-string :format "URL: %v"
 			       :value-from w3m-antenna-tmp-url)
-	   (w3m-antenna-string :format "Title: %v\n"
+	   (w3m-antenna-string :format "Title: %v"
 			       :value-from w3m-antenna-tmp-title)
 	   (choice
 	    :tag "Procedure"
@@ -140,16 +140,20 @@ not to update the page."
 	    (const :tag "Check its current date provided by Hyper Nikki System"
 		   hns)
 	    (list :tag "Check RSS"
+		  :indent 4
 		  (function-item :format "" w3m-antenna-check-rss)
-		  (string :format "URL: %v\n" :value ""))
+		  (string :format "URL: %v" :value ""))
 	    (list :tag "Check the another changelog page"
+		  :indent 4
 		  (function-item :format "" w3m-antenna-check-another-page)
-		  (string :format "URL: %v\n" :value ""))
+		  (string :format "URL: %v" :value ""))
 	    (list :tag "Check the page linked by the anchor that matches"
+		  :indent 4
 		  (function-item :format "" w3m-antenna-check-anchor)
 		  (regexp :value "")
 		  (integer :value 0))
 	    (cons :tag "Check with a user defined function"
+		  :indent 4
 		  (function
 		   :match (lambda (widget value)
 			    (and (functionp value)
