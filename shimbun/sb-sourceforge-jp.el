@@ -49,11 +49,11 @@
   :type '(repeat
 	  (cons
 	   :format "%v" :indent 2
-	   (string :format "Group Name: %v\n")
+	   (string :format "Group Name: %v")
 	   (radio
 	    :format "Mailing List Name: %v"
 	    (const :format "Same as Group Name " nil)
-	    (string :format "%t: %v\n")))))
+	    (string :format "%t: %v")))))
 
 (defconst shimbun-sourceforge-jp-base-url
   "http://lists.sourceforge.jp/pipermail/"

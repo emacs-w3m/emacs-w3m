@@ -114,7 +114,7 @@ dJrT4Cd<Ls?U!G4}0S%FA~KegR;YZWieoc%`|$4M\\\"i*2avWm?"
 (defcustom shimbun-server-additional-path nil
   "List of additional directories to search for shimbun servers."
   :group 'shimbun
-  :type '(repeat (directory :format "%t: %v\n")))
+  :type '(repeat (directory :format "%t: %v")))
 
 (defcustom shimbun-checking-new-news-format "Checking new news on #S for #g"
   "Format string used to show a progress message while chacking new news.
@@ -771,7 +771,7 @@ you want to use no database."
 	  (const :tag "Use no database" never)
 	  (const :tag "Use BBDB" shimbun-bbdb-get-x-face)
 	  (const :tag "Use LSDB" shimbun-lsdb-get-x-face)
-	  (function :format "User defined function: %v\n")))
+	  (function :format "User defined function: %v")))
 
 (defun shimbun-header-insert (shimbun header)
   (let ((from (shimbun-header-from header))

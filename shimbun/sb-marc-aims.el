@@ -1,6 +1,7 @@
 ;;; sb-marc-aims.el --- shimbun backend for marc.theaimsgroup.com.
 
-;; Copyright (C) 2002, 2003, 2005, 2017 NOKUBI Takatsugu <knok@daionet.gr.jp>
+;; Copyright (C) 2002, 2003, 2005, 2017, 2019
+;; NOKUBI Takatsugu <knok@daionet.gr.jp>
 
 ;; Author: NOKUBI Takatsugu <knok@daionet.gr.jp>
 ;; Keywords: news
@@ -38,14 +39,14 @@
   :group 'shimbun
   :type '(repeat
 	  (group :indent 0
-		 (string :format "Group Name: %v\n")
-		 (string :format " List Name: %v\n")
+		 (string :format "Group Name: %v")
+		 (string :format " List Name: %v")
 		 (radio :format "  Reply-To: %v"
 			(const :format "None " nil)
-			(string :format "Address: %v\n"))
+			(string :format "Address: %v"))
 		 (radio :format "    X-Face: %v"
 			(const :format "None " nil)
-			(string :format "%t: %v\n")))))
+			(string :format "%t: %v")))))
 
 (defvar shimbun-marc-aims-content-start "RAW</a>\\]</b>")
 (defvar shimbun-marc-aims-content-end "<p>\\[<font ")

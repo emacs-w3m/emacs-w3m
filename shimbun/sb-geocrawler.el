@@ -41,14 +41,14 @@
   :group 'shimbun
   :type '(repeat
 	  (group :indent 0
-		 (string :format "Name: %v\n")
-		 (string :format "   List ID: %v\n")
+		 (string :format "Name: %v")
+		 (string :format "   List ID: %v")
 		 (radio :format "  Reply-To: %v"
 			(const :format "None " nil)
-			(string :format "Address: %v\n"))
+			(string :format "Address: %v"))
 		 (radio :format "    X-Face: %v"
 			(const :format "None " nil)
-			(string :format "%t: %v\n")))))
+			(string :format "%t: %v")))))
 
 (defvar shimbun-geocrawler-content-start "<P>&nbsp;<P>")
 (defvar shimbun-geocrawler-content-end "</BODY>")

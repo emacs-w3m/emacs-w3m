@@ -1,3 +1,19 @@
+2019-08-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Improve custom type for some shimbun options
+
+	* mew-shimbun.el (mew-shimbun-folder-groups, mew-shimbun-expires)
+	(mew-shimbun-db-length):
+	* sb-geocrawler.el (shimbun-geocrawler-group-alist):
+	* sb-hns.el (shimbun-hns-group-alist):
+	* sb-marc-aims.el (shimbun-marc-aims-group-alist):
+	* sb-slashdot-jp.el (shimbun-slashdot-jp-group-alist):
+	* sb-sourceforge-jp.el (shimbun-sourceforge-jp-mailing-lists):
+	* sb-tigris.el (shimbun-tigris-group-alist):
+	* sb-wiki.el (shimbun-wiki-group-alist):
+	* shimbun.el (shimbun-server-additional-path)
+	(shimbun-x-face-database-function): Improve custom type.
+
 2019-08-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Don't load cl for Emacs 26 and greater

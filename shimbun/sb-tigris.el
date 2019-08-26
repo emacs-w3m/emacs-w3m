@@ -63,10 +63,11 @@
   :group 'shimbun
   :type '(repeat
 	  (cons
-	   :format "%v" :indent 2
-	   (string :format "Project Name: %v\n")
+	   :format "%v" :indent 0
+	   (string :format "Project Name: %v")
 	   (repeat
-	    (string :format "ML: %v\n"))))
+	    :format "%v%i\n" :indent 12
+	    (string :format "ML: %v"))))
   )
 
 (defmacro shimbun-tigris-get-project (shimbun)

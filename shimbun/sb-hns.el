@@ -43,7 +43,8 @@ It can be defined in the `shimbun-hns-x-face-alist', too.
 (X-FACE in this definition precedes `shimbun-hns-x-face-alist' entry)."
   :group 'shimbun
   :type '(repeat
-	  (group (string :tag "Group name")
+	  (group :format "%v"
+		 (string :tag "Group name")
 		 (string :tag "URL")
 		 (string :tag "Mail address")
 		 (string :tag "X-Face"))))

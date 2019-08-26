@@ -63,7 +63,8 @@ Optional CONTENT-END is a regexp string that represents content
 start of each article."
   :group 'shimbun
   :type '(repeat
-	  (group (string :tag "Group name")
+	  (group :format "%v" :indent 4
+		 (string :tag "Group name")
 		 (string :tag "URL")
 		 (string :tag "Site owner's mail address")
 		 (choice (string :tag "X-Face")
