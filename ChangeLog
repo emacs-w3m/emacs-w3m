@@ -1,3 +1,8 @@
+2019-08-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-anchor-list-filter-alist): Fix custom type so not to say
+	"CHANGED outside Customize" when customizing it initially.
+
 2019-08-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Improve custom type for some user options

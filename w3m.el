@@ -6641,31 +6641,23 @@ media-wiki software used for sites such as wikipedia."
 	   :format "%v" :indent 2
 	   (group
 	    :format "%v"
+	    :match (lambda (_widget value)
+		     (or (consp value) (stringp value)))
+	    :value-to-internal (lambda (_widget value)
+				 (if (consp value)
+				     (if (consp (cdr value))
+					 value
+				       (list (car value) (cdr value)))
+				   (list value)))
+	    :value-to-external (lambda (_widget value)
+				 (if (cdr value)
+				     (apply #'cons value)
+				   (car value)))
 	    (regexp :format "Regexp matching url to be filtered: %v")
 	    (checklist
 	     :inline t
 	     (regexp :format "Regexp matching url not to be filtered: %v")))
-	   (regexp :format "Regexp matching anchor name: %v")))
-  :get (lambda (symbol)
-	 ;; Be careful so not to modify symbol's value.
-	 (let ((value (default-value symbol))
-	       rest)
-	   (dolist (elem value (nreverse rest))
-	     (push (if (consp (car elem))
-		       (if (consp (cdar elem))
-			   elem
-			 (cons (list (caar elem) (cdar elem)) (cdr elem)))
-		     (cons (list (car elem)) (cdr elem)))
-		   rest))))
-  :set (lambda (symbol value)
-	 (custom-set-default
-	  symbol
-	  (dolist (elem value value)
-	    (when (consp (car elem))
-	      (cond ((consp (cdar elem))
-		     (setcar elem (apply #'cons (car elem))))
-		    ((not (cdar elem))
-		     (setcar elem (caar elem)))))))))
+	   (regexp :format "Regexp matching anchor name: %v"))))
 
 (defun w3m--filter-page-anchors (anchor-list)
   "Prune \"junk\" anchors from ANCHOR-LIST."
