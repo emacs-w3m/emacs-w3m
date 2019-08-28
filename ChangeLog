@@ -1,3 +1,10 @@
+2019-08-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Devote system-type on Cygwin platform to be cygwin, not windows-nt
+
+	* w3m.el (w3m-command-environment, w3m-use-cygdrive): Use cygwin, not
+	windows-nt to compare with system-type to check if running on Cygwin.
+
 2019-08-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-anchor-list-filter-alist): Fix custom type so not to say

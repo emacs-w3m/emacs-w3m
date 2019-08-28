@@ -400,15 +400,15 @@ common part of the host names, not a regexp."
 	(list
 	 (if (eq w3m-type 'w3mmee)
 	     (cons "W3MLANG" "ja_JP.kterm"))
-	 (if (eq system-type 'windows-nt)
+	 (if (eq system-type 'cygwin)
 	     (cons "CYGWIN" "binmode"))
 	 (cons "LC_ALL" "C")))
   "Alist of environment variables for subprocesses to inherit."
   :group 'w3m
   :type '(repeat
 	  (cons :format "%v" :indent 4
-		(string :format "Name: %v\n")
-		(string :format "    Value: %v\n"))))
+		(string :format "Name: %v")
+		(string :format "    Value: %v"))))
 
 (defcustom w3m-fill-column -1
   "Integer used as the value for `fill-column' in emacs-w3m buffers.
@@ -680,8 +680,8 @@ nil which provides Lynx-like keys."
 			 (error)))
 		   (setq buffers (cdr buffers)))))))))
 
-(defcustom w3m-use-cygdrive (eq system-type 'windows-nt)
-  "If non-nil, use the /cygdrive/ rule when performing `expand-file-name'."
+(defcustom w3m-use-cygdrive (eq system-type 'cygwin)
+  "If non-nil, use /cygdrive/ prefix when performing `expand-file-name'."
   :group 'w3m
   :type 'boolean)
 
