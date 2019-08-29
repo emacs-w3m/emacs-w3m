@@ -1,3 +1,11 @@
+2019-08-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make w3m-goto-url-new-session work correctly (issue #68)
+
+	* w3m.el (w3m-goto-url-new-session): Work correctly according to
+	w3m-use-tab w3m-pop-up-windows and w3m-pop-up-frames.
+	(w3m-display-mode(function)): Set w3m-pop-up-windows adequately.
+
 2019-08-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Devote system-type on Cygwin platform to be cygwin, not windows-nt

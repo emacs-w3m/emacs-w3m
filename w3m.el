@@ -9788,34 +9788,35 @@ buffer will start afresh."
 	     (not w3m-new-session-in-background)
 	   w3m-new-session-in-background)))
   (let (buffer)
-    (if (not
-	 (or (eq 'w3m-mode major-mode)
-	     (and (setq buffer (w3m-alive-p))
-		  (prog1 t (w3m-popup-buffer buffer)))))
-	(w3m-goto-url url nil charset post-data)
-      ;; Store the current position in the history structure.
-      (w3m-history-store-position)
-      (setq buffer (w3m-copy-buffer nil "*w3m*" background 'empty t))
-      (if background
-	  (set-buffer buffer)
-	(if (and (w3m-popup-window-p) (not (w3m-popup-frame-p)))
-	    (switch-to-buffer-other-window buffer)
-	  (switch-to-buffer buffer))
-	(w3m-display-progress-message url))
-      (w3m-goto-url
-       url
-       (or reload
-	   ;; When new URL has `name' portion, (ir. a URI
-	   ;; "fragment"), we have to goto the base url
-	   ;; because generated buffer has no content at
-	   ;; this moment.
-	   (and
-	    (w3m-string-match-url-components url)
-	    (match-beginning 8)
-	    'redisplay))
-       charset post-data referer nil nil background)
-      ;; Delete useless newly created buffer if it is empty.
-      (w3m-delete-buffer-if-empty buffer))))
+    (if (or (eq 'w3m-mode major-mode)
+	    (and (setq buffer (w3m-alive-p))
+		 (progn (w3m-popup-buffer buffer) t)))
+	(progn
+	  (w3m-history-store-position)
+	  (setq buffer (w3m-copy-buffer nil "*w3m*" background 'empty t)))
+      (setq buffer (w3m-generate-new-buffer "*w3m*")))
+    (if background
+	(set-buffer buffer)
+      (cond ((and w3m-use-tab (eq 'w3m-mode major-mode))
+	     (switch-to-buffer buffer))
+	    ((w3m-popup-frame-p) (switch-to-buffer-other-frame buffer))
+	    ((w3m-popup-window-p) (switch-to-buffer-other-window buffer))
+	    (t (switch-to-buffer buffer)))
+      (w3m-display-progress-message url))
+    (w3m-goto-url
+     url
+     (or reload
+	 ;; When new URL has `name' portion, (ir. a URI
+	 ;; "fragment"), we have to goto the base url
+	 ;; because generated buffer has no content at
+	 ;; this moment.
+	 (and
+	  (w3m-string-match-url-components url)
+	  (match-beginning 8)
+	  'redisplay))
+     charset post-data referer nil nil background)
+    ;; Delete useless newly created buffer if it is empty.
+    (w3m-delete-buffer-if-empty buffer)))
 
 (defun w3m-move-point-for-localcgi (url)
   (when (and (w3m-url-local-p url)
@@ -11479,13 +11480,17 @@ Refer to variable `w3m-display-mode' for details."
        (completing-read "Display mode: " opts nil t nil 'opts def)))))
   (setq w3m-display-mode style)
   (let ((vals (pcase style
-		('tabbed	'(t   x   nil))
+		;; (w3m-use-tab w3m-pop-up-windows w3m-pop-up-frames)
+		('nil		nil)
+		('plain		'(nil nil nil))
+		('tabbed	'(t   nil nil))
 		('dual-pane	'(nil t   nil))
-		('frames	'(nil x   t  ))
-		('tabbed-frames	'(t   x   t  )))))
-    (setq w3m-use-tab (car vals))
-    (unless (eq (cadr vals) 'x) (setq w3m-pop-up-windows (cadr vals)))
-    (setq w3m-pop-up-frames (caddr vals))))
+		('frames	'(nil nil t  ))
+		('tabbed-frames	'(t   nil t  )))))
+    (when vals
+      (setq w3m-use-tab (car vals)
+	    w3m-pop-up-windows (cadr vals)
+	    w3m-pop-up-frames (caddr vals)))))
 
 (defcustom w3m-display-mode (pcase (list (and w3m-use-tab t)
 					 (and w3m-pop-up-windows t)
