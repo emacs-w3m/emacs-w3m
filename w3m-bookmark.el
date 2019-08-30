@@ -60,7 +60,7 @@ of your bookmark file."
   "Default section to add new entry."
   :group 'w3m
   :type '(radio (const :tag "Not specified" nil)
-		(string :format "Default section name: %v\n")))
+		(string :format "Default section name: %v")))
 
 (defcustom w3m-bookmark-mode-hook nil
   "Hook run at the end of function `w3m-bookmark-mode'."

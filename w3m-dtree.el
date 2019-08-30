@@ -44,7 +44,7 @@
   :group 'w3m
   :type '(choice
 	  (const :tag "No limit" nil)
-	  (integer :format "%t: %v\n" :tag "depth" 10)))
+	  (integer :format "%t: %v" :tag "depth" 10)))
 
 (defcustom w3m-dtree-indent-strings ["|-" "+-" "|  " "   "]
   "Vector of strings to be used for indentation with w3m-dtree.
@@ -61,23 +61,24 @@ If you care for another style, set manually and try it :-).
 "
   :group 'w3m
   :type '(radio
-	  (const :format "ASCII: " ["|-" "+-" "|  " "   "])
+	  (const :format "ASCII: [\"|-\" \"+-\" \"|  \" \"   \"]\n"
+		 ["|-" "+-" "|  " "   "])
 	  (vector
 	   :convert-widget w3m-widget-type-convert-widget
 	   (let ((defaults (if (equal w3m-language "Japanese")
 			       (vconcat '("├" "└" "│" "　"))
 			     ["|-" "+-" "|  " "   "])))
 	     `(:format "Others:\n%v" :indent 4
-		       (string :format "%{|-%}          %v\n"
+		       (string :format "%{\"|-\"%}        %v\n"
 			       :sample-face widget-field-face
 			       :value ,(aref defaults 0))
-		       (string :format "%{+-%}          %v\n"
+		       (string :format "%{\"+-\"%}        %v\n"
 			       :sample-face widget-field-face
 			       :value ,(aref defaults 1))
-		       (string :format "%{|  %}         %v\n"
+		       (string :format "%{\"|  \"%}       %v\n"
 			       :sample-face widget-field-face
 			       :value ,(aref defaults 2))
-		       (string :format "%{   %}         %v"
+		       (string :format "%{\"   \"%}        %v"
 			       :sample-face widget-field-face
 			       :value ,(aref defaults 3)))))))
 
@@ -86,18 +87,19 @@ If you care for another style, set manually and try it :-).
 over the 'w3m-dtree-directory-depth'."
   :group 'w3m
   :type '(radio
-	  (const :format "ASCII: " ["|=" "+="])
-	  (const :format "ASCII Bold: " ["<b>|-</b>" "<b>+-</b>"])
+	  (const :format "ASCII: [\"|=\" \"+=\"]\n" ["|=" "+="])
+	  (const :format "ASCII Bold: [\"<b>|-</b>\" \"<b>+-</b>\"]\n"
+		 ["<b>|-</b>" "<b>+-</b>"])
 	  (vector
 	   :convert-widget w3m-widget-type-convert-widget
 	   (let ((defaults (if (equal w3m-language "Japanese")
 			       (vconcat '("┝" "┗"))
 			     ["|=" "+="])))
 	     `(:format "Others:\n%v" :indent 4
-		       (string :format "|=          %{|=%}              %v\n"
+		       (string :format "\"|=\"        \"%{|=%}\"        %v\n"
 			       :sample-face bold
 			       :value ,(aref defaults 0))
-		       (string :format "+=          %{+=%}              %v\n"
+		       (string :format "\"+=\"        \"%{+=%}\"        %v"
 			       :sample-face bold
 			       :value ,(aref defaults 1)))))))
 

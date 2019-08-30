@@ -46,11 +46,11 @@ Valid symbols include `url' which is replaced with the url of the page
 and `title' which is replaced with the page title.  You can also use
 just a string for this variable."
   :group 'w3m
-  :type '(radio (editable-list :format "\n%v%i\n"
+  :type '(radio (editable-list :format "%v%i\n" :indent 0
 			       (radio-button-choice
 				(const :format "%v " url)
 				(const :format "%v " title)
-				string))
+				(string :format "%v    ")))
 		string
 		(const :format "no subject" nil)))
 

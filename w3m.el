@@ -226,14 +226,14 @@ there is currently no way to apply the changing of the w3m command to
 all the emacs-w3m programs safely after loading the w3m.elc module."
   :group 'w3m
   :type '(radio (const :format "Not specified " nil)
-		(string :format "Command: %v\n")))
+		(string :format "Command: %v")))
 
 (defcustom w3m-display-ins-del 'auto
   "Value of `display_ins_del' option."
   :group 'w3m
-  :type '(radio (const :format "Delect automatically" auto)
-		(const :format "Use fontify" fontify)
-		(const :format "Use tag" tag)
+  :type '(radio (const :format "Delect automatically " auto)
+		(const :format "Use fontify\n" fontify)
+		(const :format "Use tag " tag)
 		(const :format "No have option" nil)))
 
 (defvar w3m-type nil
@@ -330,7 +330,8 @@ Mozilla/5.0 (Linux; Android 5.1.1; VS810PP Build/LMY47V) AppleWebKit/537.36\
 Each entry should be a cons of a short descriptive string and
 the user agent string."
   :group 'w3m
-  :type '(repeat (cons (string :tag "Short Description")
+  :type '(repeat (cons :format "%v" :indent 2
+		       (string :tag "Short Description")
 		       (string :tag "User Agent string"))))
 
 (defcustom w3m-user-agent-site-specific-alist nil
@@ -338,30 +339,31 @@ the user agent string."
 Each entry should be a cons of a regexp for the URLs to be
 covered by the rule, and a user-agent string to be used."
   :group 'w3m
-  :type '(repeat (cons (string :tag "URL regexp")
+  :type '(repeat (cons :format "%v" :indent 2
+		       (string :tag "URL regexp")
 		       (string :tag "User Agent string"))))
 
 (defcustom w3m-language (if (equal #1="Japanese" current-language-environment)
 			    #1#)
   "Your preferred language used in emacs-w3m sessions."
   :group 'w3m
-  :type '(radio (const :format "%v " "Japanese")
-		(const :tag "Other" nil))
-  :get (lambda (symbol)
-	 (let ((value (format "%s" (default-value symbol)))
-	       (case-fold-search t))
-	   (prog1
-	       (setq value (if (string-match "\\`japan" value) "Japanese"))
-	     (custom-set-default symbol value))))
-  :set (lambda (symbol value)
-	 (custom-set-default symbol (if (equal value "Japanese") "Japanese"))))
+  :type '(radio
+	  :value-to-internal (lambda (_widget value)
+			       (if (and (stringp value)
+					(let ((case-fold-search t))
+					  (string-match "\\`japan" value)))
+				   "Japanese"))
+	  :value-to-external (lambda (_widget value)
+			       (if (equal value "Japanese") "Japanese"))
+	  (const :format "%v " "Japanese")
+	  (const :tag "Other" nil)))
 
 (defcustom w3m-command-arguments
   (if (eq w3m-type 'w3mmee) '("-o" "concurrent=0" "-F") nil)
   "List of the default arguments passed to the w3m command.
 See also `w3m-command-arguments-alist'."
   :group 'w3m
-  :type '(repeat (string :format "Argument: %v\n")))
+  :type '(repeat (string :format "Argument: %v")))
 
 (defcustom w3m-command-arguments-alist nil
   "Alist of regexps matching urls and additional arguments passed to w3m.
@@ -384,16 +386,16 @@ If you are a novice on the regexps, you can use the
 `w3m-no-proxy-domains' variable instead."
   :group 'w3m
   :type '(repeat (cons :format "%v" :indent 4
-		       (regexp :format "%t: %v\n")
+		       (regexp :format "%t: %v")
 		       (repeat :tag "Arguments passed to w3m command"
-			       (string :format "Arg: %v\n")))))
+			       (string :format "Arg: %v")))))
 
 (defcustom w3m-no-proxy-domains nil
   "List of domain names with which emacs-w3m will not use a proxy server.
 Each element should be exactly a domain name which means the latter
 common part of the host names, not a regexp."
   :group 'w3m
-  :type '(repeat (string :format "Domain name: %v\n")))
+  :type '(repeat (string :format "Domain name: %v")))
 
 (defcustom w3m-command-environment
   (delq nil
@@ -426,7 +428,7 @@ function specified by the `mail-user-agent' variable will be used for
 composing mail messages."
   :group 'w3m
   :type '(radio (const :tag "Not specified" nil)
-		(function :format "%t: %v\n")))
+		(function :format "%t: %v")))
 
 (defcustom w3m-mailto-url-popup-function-alist
   '((cmail-mail-mode . pop-to-buffer)
@@ -444,8 +446,8 @@ Note that the variables `display-buffer-alist',
 nil while popping to a buffer up."
   :group 'w3m
   :type '(repeat (cons :format "%v" :indent 11
-		       (symbol :format "Major-mode: %v\n")
-		       (function :format "%t: %v\n"))))
+		       (symbol :format "Major-mode: %v")
+		       (function :format "%t: %v"))))
 
 (defcustom w3m-use-ange-ftp nil
   "Non-nil means that `ange-ftp' or `efs' is used to access FTP servers."
@@ -504,7 +506,7 @@ character terminal and make `w3m-treat-image-size' effective, you need
 to set this variable properly."
   :group 'w3m
   :type '(radio (const :tag "Auto Detect" nil)
-		(integer :format "Specify Pixels: %v\n")))
+		(integer :format "Specify Pixels: %v")))
 
 (defcustom w3m-image-default-background nil
   "Color name used as transparent color of image.
@@ -512,7 +514,7 @@ Nil means to use the background color of the Emacs frame.  Note that
 this value is effective only to xbm and monochrome pbm images in Emacs
 22 and greater."
   :group 'w3m
-  :type '(radio (string :format "Color: %v\n"
+  :type '(radio (string :format "Color: %v"
 			:match (lambda (widget value)
 				 (and (stringp value) (> (length value) 0))))
 		(const :tag "Use the background color of the Emacs frame" nil)
@@ -605,7 +607,7 @@ is no particular reason.  The value will be referred to by the
   (if (equal "Japanese" w3m-language) '(shift_jis))
   "Coding systems in order of priority used for emacs-w3m sessions."
   :group 'w3m
-  :type '(repeat (coding-system :format "%t: %v\n")))
+  :type '(repeat (coding-system :format "%t: %v")))
 
 (defcustom w3m-url-coding-system-alist
   '(("\\`https?://\\(?:[^./?#]+\\.\\)+google\\(?:\\.[^./?#]+\\)+/"
@@ -632,13 +634,14 @@ url for example, you can add it to this variable as follows:
  \\='w3m-url-coding-system-alist
  \\='(\"\\\\\\=`https?://\\\\(?:[^./?#]+\\\\.\\\\)*example\\\\.com/\" . shift_jis))"
   :group 'w3m
-  :type '(repeat (cons :format "%v" :indent 2
-		       (radio :format "%v"
+  :type '(repeat (cons :format "\n%v" :indent 2
+		       (radio :format "nil or regexp:\n  %v"
 			      (const :format "Any " nil)
 			      regexp)
-		       (radio :format "%v"
+		       (radio :format "coding-system or function:\n  %v"
 			      (const :format "Page's coding system " nil)
-			      coding-system))))
+			      coding-system
+			      function))))
 
 (defcustom w3m-key-binding nil
   "Type of key binding set used in emacs-w3m sessions.
@@ -648,8 +651,6 @@ nil which provides Lynx-like keys."
   :type '(choice
 	  (const :tag "Use Info-like key mapping." info)
 	  (const :tag "Use Lynx-like key mapping." nil))
-  ;; Since the following form won't be byte-compiled, you developers
-  ;; should never use CL macros like `caaaar', `when', `unless' ...
   :set (lambda (symbol value)
 	 (prog1
 	     (custom-set-default symbol value)
@@ -731,11 +732,11 @@ Note that there is an exception: if a page visits a local file or
 visits a remote file using ftp, the directory in which the file exists
 is used as the current directory instead."
   :group 'w3m
-  :type '(radio (directory :format "%{%t%}: %v\n" :value "~/")
-		(symbol :format "%{%t%}: %v\n"
+  :type '(radio (directory :format "%{%t%}: %v" :value "~/")
+		(symbol :format "%{%t%}: %v"
 			:match (lambda (widget value) value)
 			:value default-directory)
-		(function :format "%{%t%}: %v\n")
+		(function :format "%{%t%}: %v")
 		(const nil)))
 
 (defcustom w3m-accept-languages
@@ -753,7 +754,7 @@ is used as the current directory instead."
 The default value is set according to the accept_language entry of the
 w3m configuration file (normally \"~/.w3m/config\")."
   :group 'w3m
-  :type '(repeat (string :format "Lang: %v\n")))
+  :type '(repeat (string :format "Lang: %v")))
 
 (defcustom w3m-delete-duplicated-empty-lines t
   "Non-nil means display two or more continuous empty lines into single."
@@ -828,7 +829,7 @@ new page or reload the current page in an emacs-w3m buffer."
   "Directory where emacs-w3m should find icon files."
   :group 'w3m
   :type '(radio (const :tag "Not specified")
-		(directory :format "%t: %v\n")))
+		(directory :format "%t: %v")))
 
 (defcustom w3m-broken-proxy-cache nil
   "Set it to t if the proxy server seems not to work properly in caching.
@@ -866,7 +867,7 @@ Don't say HP, which is the abbreviated name of a certain company. ;-)"
 			   (getenv "WWW_HOME"))))
 	    (const :tag "About emacs-w3m" "about:")
 	    (const :tag "Blank page" "about:blank")
-	    (string :format "URL: %v\n"))))
+	    (string :format "URL: %v"))))
 
 (defcustom w3m-arrived-file
   (expand-file-name ".arrived" w3m-profile-directory)
@@ -1154,8 +1155,8 @@ Each element is a list which consists of the following data:
   :group 'w3m
   :type '(repeat
 	  (cons :format "%v" :indent 14
-		(string :format "Regexp of Suffixes: %v\n")
-		(string :format "Encoding Type: %v\n"))))
+		(string :format "Regexp of Suffixes: %v")
+		(string :format "Encoding Type: %v"))))
 
 (defcustom w3m-decoder-alist
   `((gzip "gzip" ("-d"))	;; Don't use "gunzip" and "bunzip2"
@@ -1224,8 +1225,8 @@ Each element is a list which consists of the following data:
 Both charsets and coding systems must be symbols."
   :group 'w3m
   :type '(repeat (cons :format "%v" :indent 2
-		       (symbol :format "%t: %v\n")
-		       (coding-system :format "%t: %v\n"))))
+		       (symbol :format "%t: %v")
+		       (coding-system :format "%t: %v"))))
 
 (defcustom w3m-correct-charset-alist
   '(("windows-874"  . "tis-620")
@@ -1248,8 +1249,8 @@ Both charsets and coding systems must be symbols."
   "Alist of MIME charsets; strange ones and standard ones."
   :group 'w3m
   :type '(repeat (cons :format "%v" :indent 11
-		       (string :format "From: %v\n")
-		       (string :format "To: %v\n"))))
+		       (string :format "From: %v")
+		       (string :format "To: %v"))))
 
 (defcustom w3m-horizontal-scroll-columns 10
   "Number of steps in columns used when scrolling a window horizontally."
@@ -1263,19 +1264,14 @@ The term `shifting' means a fine level scrolling."
   :type 'integer)
 
 (defcustom w3m-view-recenter 1
-  "Recenter window contents when going to an anchor.
-An integer is passed to `recenter', for instance the default 1
-    means put the anchor on the second line of the screen.
-t means `recenter' with no arguments, which puts it in the middle
-    of the screen.
-nil means don't recenter, let the display follow point in the
-    usual way."
+  "Argument passed to `recenter' that runs when jumping to an anchor.
+If it is 1 for instance, show the anchor position on the second line
+of the window.  t runs `recenter' with no arguments, and `nil' means
+don't recenter, let the display follow point in the usual way."
   :group 'w3m
-  ;; radio items in the same order as in the docstring, and `integer' first
-  ;; because it's the default
-  :type '(radio (integer :format "%{%t%}: %v\n" :value 1 :size 1)
-		(const :format "%t\n" t)
-		(const :format "%t\n" nil)))
+  :type '(radio (integer :format "%{%t%}: %v  " :value 1 :size 1)
+		(const :format "%v  " t)
+		(const :format "%v" nil)))
 
 (defcustom w3m-clear-display-while-reading t
   "If non-nil, clear the display while reading a new page."
@@ -1333,9 +1329,10 @@ edit a specified page, when either `w3m-edit-current-url' or
 `w3m-edit-this-url' is invoked.  When no suitable function is found
 from this alist, `w3m-edit-function' is used."
   :group 'w3m
-  :type '(repeat (cons :format "%v" :indent 3
-		       (regexp :format "URL: %v\n")
-		       (function))))
+  :type '(repeat (cons :format "%v" :indent 4
+		       (regexp :format "URL: %v")
+		       (function
+			:match-alternatives (functionp symbolp)))))
 
 (defcustom w3m-url-local-directory-alist
   (when (boundp 'yahtml-path-url-alist)
@@ -1351,8 +1348,8 @@ to a value of the `yahtml-path-url-alist' variable which exchanged the
 car and the cdr in each element if it is available."
   :type '(repeat
 	  (cons :format "%v" :indent 3
-		(string :format "URL: %v\n")
-		(directory :format "%t: %v\n")))
+		(string :format "URL: %v")
+		(directory :format "%t: %v")))
   :group 'w3m)
 
 (defcustom w3m-track-mouse t
@@ -1422,8 +1419,10 @@ See also `w3m-display-mode'."
 	    (const :tag "Bookmark" "about://bookmark/")
 	    (const :tag ,(format "Home page (%s)" w3m-home-page)
 		   ,w3m-home-page)
-	    (string :format "URL: %v\n"
-		    :value "http://emacs-w3m.namazu.org"))))
+	    (string :format "URL: %v"
+		    :value ,(if (equal w3m-language "Japanese")
+				"https://emacs-w3m.github.io/index-ja.html"
+			      "https://emacs-w3m.github.io/index.html")))))
 
 (defcustom w3m-make-new-session nil
   "Non-nil means making new emacs-w3m buffers when visiting new pages.
@@ -1562,11 +1561,17 @@ from the right.
 This feature doesn't work if `w3m-auto-show' is nil.  The value must
 be a larger integer than 1."
   :group 'w3m
-  :type 'integer
-  :set (lambda (symbol value)
-	 (custom-set-default symbol (if (and (integerp value) (> value 1))
-					value
-				      4))))
+  :type '(integer :match (lambda (_widget _value) t)
+		  :value-to-internal
+		  (lambda (_widget value)
+		    (if (and (integerp value) (> value 1))
+			(prin1-to-string value) "4"))
+		  :value-to-external
+		  (lambda (_widget value)
+		    (setq value (condition-case nil
+				    (string-to-number value)
+				  (error 4)))
+		    (if (> value 1) value 4))))
 
 (defcustom w3m-show-error-information t
   "Non-nil means show an error information as a web page.
@@ -1577,11 +1582,8 @@ retrieve data."
 
 (defcustom w3m-use-refresh t
   "Non-nil means honor the REFRESH attribute in META tags.
-Emacs-w3m arbitrarily takes you to a url specified by that attribute
-except for search results of Google[1].
-See also `w3m-refresh-minimum-interval'.
-
-[1] URL `https://productforums.google.com/forum/#!topic/websearch/hpzglVb9B5M'"
+If non-nil, emacs-w3m arbitrarily takes you to a url the attribute
+specifies."
   :group 'w3m
   :type 'boolean)
 
@@ -1594,8 +1596,7 @@ this will be used instead of that."
 
 (defcustom w3m-mbconv-command "mbconv"
   "Name of the \"mbconv\" command provided by the \"libmoe\" package.
-The \"libmoe\" package is used when you use the w3mmee command instead
-of the w3m command.  See also `w3m-command'."
+The \"libmoe\" package is what is used when `w3m-command' is w3mmee."
   :group 'w3m
   :type 'string)
 
@@ -1605,11 +1606,14 @@ of the w3m command.  See also `w3m-command'."
     '("markdown"))
    ((w3m-which-command "grip")
     '("grip" "--quiet" "--title" "" "--export" "-")))
-  "List of COMMAND which convert markdown formed files into HTML
-format and its ARGUMENTS."
+  "Command used to convert a file that is markdown formed to html format.
+The value is a list containing a command, and if necessary arguments."
   :group 'w3m
-  :type '(cons (string :format "Command: %v\n")
-	       (repeat (string :format "Arguments:\n%v\n"))))
+  :type '(radio (const :format "none\n")
+		(cons :format "%v"
+		      (string :format "Command: %v")
+		      (repeat :format "Arguments:\n%v%i"
+			      (string :format "%v")))))
 
 (defcustom w3m-local-find-file-regexps
   (cons nil
@@ -1656,10 +1660,10 @@ is set properly."
   :group 'w3m
   :type '(cons (radio :tag "Match"
 		      (const :format "All " nil)
-		      (regexp :format "%t: %v\n"))
+		      (regexp :format "%t: %v"))
 	       (radio :tag "Nomatch"
 		      (const :format "All " nil)
-		      (regexp :format "%t: %v\n"))))
+		      (regexp :format "%t: %v"))))
 
 (defcustom w3m-local-find-file-function
   '(if (w3m-popup-frame-p)
@@ -1691,12 +1695,12 @@ using the w3m-dtree Lisp module."
 	((memq system-type '(OS/2 emx))
 	 (expand-file-name "dirlist.cmd" (getenv "W3M_LIB_DIR")))
 	(t nil))
-  "Name of the CGI program to list a local directory.
+  "Name of the CGI program used to list a local directory.
 If it is nil, the dirlist.cgi module of the w3m command will be used."
   :group 'w3m
   :type `(radio
 	  (const :tag "w3m internal CGI" nil)
-	  (file :format "path of 'dirlist.cgi': %v\n"
+	  (file :format "path of 'dirlist.cgi': %v"
 		:value ,(if (not noninteractive)
 			    (expand-file-name
 			     (concat "../lib/"
@@ -1708,7 +1712,7 @@ If it is nil, the dirlist.cgi module of the w3m command will be used."
 (defcustom w3m-add-referer
   '("\\`https?:" . "\\`https?://\\(?:localhost\\|127\\.0\\.0\\.1\\)/")
   "Rule of sending referers.
-There are five choices as the valid values of this option.
+There are five choices as a valid value for this option.
 
 (1) nil: this means that emacs-w3m never send referers.
 (2) t: this means that emacs-w3m always send referers.
@@ -1719,7 +1723,7 @@ There are five choices as the valid values of this option.
     emacs-w3m send referers when the url of the current page matches
     the first regular expression and does not match the second regular
     expression.  Nil for the regexp matches any url.
-(5) a function: emacs-w3m send referers when this function which has
+(5) a function: emacs-w3m send referers when this function which takes
     two arguments, URL and REFERER, returns non-nil.
 
 If you become nervous about leak of your private WEB browsing history,
@@ -1734,20 +1738,23 @@ follows:
 "
   :group 'w3m
   :type '(choice
+	  :format "%{%t%}:\n%[Value Menu%] %v"
 	  (const :tag "Never send referers" nil)
 	  (const :tag "Always send referers" t)
 	  (const :tag "Send referers when accessing the same server" lambda)
-	  (cons :tag "Send referers when URI matches:"
+	  (cons :tag "Send referers when URI matches"
 		(list :inline t :format "%v"
 		      (radio :indent 2 :sample-face underline
 			     :tag "Allow"
-			     (regexp :format "%t: %v\n")
+			     (regexp :format "%t: %v")
 			     (const :tag "Don't allow all" nil))
 		      (radio :indent 2 :sample-face underline
 			     :tag "Don't allow"
-			     (regexp :format "%t: %v\n")
+			     (regexp :format "%t: %v")
 			     (const :tag "Allow all" nil))))
-	  (function :tag "Send referers when your function returns non-nil")))
+	  (function :tag "Function that takes two arguments" :format
+		    "Send referers when this function returns non-nil\n%v\
+(Note: this function takes two argumants URL and REFERER)\n")))
 
 (defcustom w3m-touch-command (w3m-which-command "touch")
   "Name of the executable file of the touch command.
@@ -1756,16 +1763,10 @@ timestamp with the `-t' option."
   :group 'w3m
   :type 'string)
 
-(defcustom w3m-puny-utf-16be
-  (cond
-   ((w3m-find-coding-system 'utf-16-be-no-signature)
-    'utf-16-be-no-signature)
-   ((w3m-find-coding-system 'utf-16be)
-    'utf-16be)
-   (t nil))
+(defcustom w3m-puny-utf-16be 'utf-16be
   "Coding system for PUNY coding. if nil, don't use PUNY code."
   :group 'w3m
-  :type '(radio (coding-system :tag "UTF-16BE without BOM")
+  :type '(radio (coding-system :tag "UTF-16BE with no signature")
 		(const "Don't use" nil)))
 
 (defcustom w3m-uri-replace-alist
@@ -1818,13 +1819,13 @@ any time:
 	  `((choice
 	     :format "%[Value Menu%] %v" :tag "Replacing URI with"
 	     (list :indent 4 :tag "Replacement Using Pattern"
-		   (regexp :format "%t: %v\n")
+		   (regexp :format "%t: %v")
 		   (function-item :format "" w3m-pattern-uri-replace)
-		   (string :format "Pattern: %v\n"))
+		   (string :format "Pattern: %v"))
 	     (list :format "%t:\n%v" :indent 4 :tag "Quick Search"
-		   (regexp :format "Prefix URI %t: %v\n" :value "")
+		   (regexp :format "Prefix URI %t: %v" :value "")
 		   (function-item :format "" w3m-search-uri-replace)
-		   (string :format "Quick Search Engine: %v\n" :value ""))
+		   (string :format "Quick Search Engine: %v" :value ""))
 	     ,@(progn
 		 (require 'w3m-search)
 		 (mapcar
@@ -2145,9 +2146,13 @@ and base64.")
 
 (defcustom w3m-process-modeline-format " loaded: %s"
   "Format used when displaying the progress of the external w3m process.
+The value should be a format string or a function that takes a string.
 It shows a percentage of the data loaded from the web server."
   :group 'w3m
-  :type '(choice (string :tag "Format") function))
+  :type '(choice :format "%{%t%}:\n%[Value Menu%] %v"
+		 (string :tag "Format")
+		 (function :format
+			   "%t: %v   (Note: it takes a string)\n")))
 
 (defcustom w3m-ignored-image-url-regexp nil
   "Regexp matching image urls which you don't want to view.
@@ -2157,7 +2162,7 @@ Google's logo and navigation images, but display YouTube's
 thumbnail."
   :group 'w3m
   :type '(radio (const :format "Accept any image\n" nil)
-		(regexp :format "URL regexp: %v\n")))
+		(regexp :format "URL regexp: %v")))
 
 (defvar w3m-modeline-process-status-on "<PRC>"
   "Modeline control for displaying the status when the process is running.
@@ -10865,8 +10870,8 @@ the link to a page is preferred unless the prefix argument is given."
 The car is used when splitting windows horizontally and the cdr is for
 splitting windows vertically."
   :group 'w3m
-  :type '(cons (integer :format "H: %v[%%]  ")
-	       (integer :format "V: %v[%%]\n")))
+  :type '(cons (integer :format "H: %v%%  " :size 1)
+	       (integer :format "V: %v%%" :size 1)))
 
 (defvar w3m-select-buffer-window nil)
 (defconst w3m-select-buffer-message

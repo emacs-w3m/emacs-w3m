@@ -114,8 +114,8 @@ The value should be a positive integer in seconds, or nil which means
 not to update the page."
   :group 'w3m-antenna
   :type '(choice
-	  (const :tag "Not reload." nil)
-	  (integer :tag "Interval second.")))
+	  (const :tag "Not reload" nil)
+	  (integer :tag "Interval seconds")))
 
 (defcustom w3m-antenna-sites
   (unless noninteractive
@@ -181,10 +181,11 @@ not to update the page."
   :group 'w3m-antenna
   :type '(choice
 	  :format "%{%t%}:\n %[Value Menu%] %v"
-	  (function-item :tag "Simple style." w3m-antenna-make-summary)
-	  (function-item :tag "Natsumican style."
-			 w3m-antenna-make-summary-like-natsumican)
-	  (function :format "User function: %v\n")))
+	  (function-item :tag "Simple style" :format "%t"
+			 w3m-antenna-make-summary)
+	  (function-item :tag "Natsumican style" :format "%t"
+		 w3m-antenna-make-summary-like-natsumican)
+	  (function :format "User function: %v" :size 8)))
 
 (defcustom w3m-antenna-sort-changed-sites-function
   'w3m-antenna-sort-sites-by-time
@@ -192,11 +193,12 @@ not to update the page."
   :group 'w3m-antenna
   :type '(choice
 	  :format "%{%t%}:\n %[Value Menu%] %v"
-	  (function-item :tag "Sort by last modification time."
+	  (function-item :tag "Sort by last modification time" :format "%t"
 			 w3m-antenna-sort-sites-by-time)
-	  (function-item :tag "Sort by title." w3m-antenna-sort-sites-by-title)
-	  (function-item :tag "Do nothing." identity)
-	  (function :format "User function: %v\n")))
+	  (function-item :tag "Sort by title" :format "%t"
+			 w3m-antenna-sort-sites-by-title)
+	  (function-item :tag "Do nothing" :format "%t" identity)
+	  (function :format "User function: %v" :size 8)))
 
 (defcustom w3m-antenna-sort-unchanged-sites-function
   'w3m-antenna-sort-sites-by-time
@@ -204,11 +206,12 @@ not to update the page."
   :group 'w3m-antenna
   :type '(choice
 	  :format "%{%t%}:\n %[Value Menu%] %v"
-	  (function-item :tag "Sort by last modification time."
+	  (function-item :tag "Sort by last modification time" :format "%t"
 			 w3m-antenna-sort-sites-by-time)
-	  (function-item :tag "Sort by title." w3m-antenna-sort-sites-by-title)
-	  (function-item :tag "Do nothing." identity)
-	  (function :format "User function: %v\n")))
+	  (function-item :tag "Sort by title" :format "%t"
+			 w3m-antenna-sort-sites-by-title)
+	  (function-item :tag "Do nothing" :format "%t" identity)
+	  (function :format "User function: %v" :size 8)))
 
 (defun w3m-antenna-alist ()
   (let ((alist (w3m-load-list w3m-antenna-file)))

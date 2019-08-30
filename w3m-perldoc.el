@@ -51,17 +51,18 @@
 
 (defcustom w3m-perldoc-pod2html-arguments
   '("--noindex")
-  "Arguments of pod2html."
+  "Arguments passed to pod2html."
   :group 'w3m-perldoc
-  :type '(repeat (string :format "Argument: %v\n"))
-  :get (lambda (symbol)
-	 (delq nil (delete "" (mapcar (lambda (x) (if (stringp x) x))
-				      (default-value symbol)))))
-  :set (lambda (symbol value)
-	 (custom-set-default
-	  symbol
-	  (delq nil (delete "" (mapcar (lambda (x) (if (stringp x) x))
-				       value))))))
+  :type '(repeat
+	  :value-to-internal
+	  (lambda (_widget value)
+	    (delq nil (delete ""
+			      (mapcar (lambda (x) (if (stringp x) x)) value))))
+	  :value-to-external
+	  (lambda (_widget value)
+	    (delq nil (delete ""
+			      (mapcar (lambda (x) (if (stringp x) x)) value))))
+	  (string :format "Argument: %v")))
 
 (defcustom w3m-perldoc-input-coding-system
   (if (string= "Japanese" w3m-language)

@@ -39,13 +39,16 @@
 (defvar w3m-symbol-custom-type
   '(list
     :convert-widget w3m-widget-type-convert-widget
-    (let* ((w `(sexp :match (lambda (widget value) (stringp value))
-		     :size 4 :value ""))
+    (let* ((w `(sexp :match (lambda (_widget value) (stringp value))
+		     :size 4))
 	   (a `(,@w :format "%v "))
 	   (b `(,@w :format "%v\n"))
 	   (c (list a a a a a a a b))
 	   (d (list a a a a a b)))
-      `(:indent 4 :tag "Customize"
+      `(:indent 4 :tag "Customized"
+		:value ,(if (equal w3m-language "Japanese")
+			    w3m-Japanese-symbol
+			  w3m-default-symbol)
 		,@c ,@c ,@c ,@c ,@d ,@d ,b ,b))))
 
 (defcustom w3m-default-symbol
@@ -57,7 +60,7 @@
     " =" " x" " %" " *" " o" " #"
     " #"
     "<=UpDn ")
-  "List of symbol string, used by defaultly."
+  "List of symbol string used by default."
   :group 'w3m-symbol
   :type w3m-symbol-custom-type)
 
@@ -162,9 +165,9 @@
 		(const :tag "Chinese GB" w3m-Chinese-GB-symbol)
 		(const :format "Japanese     " w3m-Japanese-symbol)
 		(const :format "Korean      " w3m-Korean-symbol)
-		,@(when w3m-mule-unicode-symbol
-		    '((const :tag "Mule-Unicode" w3m-mule-unicode-symbol)))
-		(variable :format "%t symbol: %v\n"
+		,(when w3m-mule-unicode-symbol
+		   '(const :tag "Mule-Unicode" w3m-mule-unicode-symbol))
+		(variable :format "%t symbol: %v"
 			  :value w3m-default-symbol)
 		,w3m-symbol-custom-type))
 

@@ -196,24 +196,24 @@ is identical to a 'session' that has more than one 'buffer'.")
   :type 'string)
 
 (defcustom w3m-session-load-last-sessions nil
-  "Whether to re-load the most recent session when emacs-w3m
+  "Whether to reload the most recent session when emacs-w3m
 starts."
   :group 'w3m
   :type
   '(radio
-    (const :format "Re-load the last session automatically." t)
-    (const :format "Ask whether to re-load the last session." ask)
-    (const :format "Never re-load the last session automatically." nil)))
+    (const :format "Reload the last session automatically\n" t)
+    (const :format "Ask whether to reload the last session\n" ask)
+    (const :format "Never reload the last session automatically" nil)))
 
 (defcustom w3m-session-load-crashed-sessions 'ask
-  "Whether to re-load a crashed session when emacs-w3m starts.
+  "Whether to reload a crashed session when emacs-w3m starts.
 This is used when emacs-w3m determines that the most recent session crashed."
   :group 'w3m
   :type
   '(radio
-    (const :format "RelLoad the crashed session automatically." t)
-    (const :format "Ask whether to re-load the crashed session." ask)
-    (const :format "Never re-load the crashed session automatically." nil)))
+    (const :format "Reload the crashed session automatically\n" t)
+    (const :format "Ask whether to reload the crashed session\n" ask)
+    (const :format "Never reload the crashed session automatically" nil)))
 
 (defface w3m-session-select
   `((((class color) (background light) (type nil))

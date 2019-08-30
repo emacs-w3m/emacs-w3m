@@ -70,7 +70,7 @@
   "Arguments of Namazu."
   :group 'w3m-namazu
   :type '(repeat
-	  (restricted-sexp :format "Argument: %v\n"
+	  (restricted-sexp :format "Argument: %v"
 			   :match-alternatives
 			   (stringp 'w3m-namazu-page-max 'whence))))
 
@@ -99,13 +99,11 @@
   "Alist of alias and index directories."
   :group 'w3m-namazu
   :type '(repeat
-	  (group
-	   :format "%v" :inline t
 	   (cons :format "%v" :indent 0
 		 (string :format "Alias: %v")
 		 (repeat
-		  :format "%v%i\n" :indent 2
-		  (directory :format "Index directory: %v")))))
+		  :format "  Index directories:\n%v%i\n" :indent 2
+		  (directory :format "%v"))))
   :set (lambda (symbol value)
 	 (custom-set-default symbol value)
 	 (put 'w3m-namazu-default-index 'custom-type

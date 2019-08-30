@@ -95,15 +95,15 @@
 
 (defcustom w3m-lnum-context-alist
   '(("news.ycombinator.com" . 2) ("reddit.com" . 1))
-  "Alist specifying number of additional items to be numbered after \
+  "Alist specifying number of additional items to be numbered after
 filtering over an url being matched by the car."
   :group 'w3m
-  :type 'alist)
+  :type '(repeat (cons :format "%v" :indent 5 (string :tag "Url") integer)))
 
 (defvar w3m-lnum-actions-custom-type
   '(repeat (choice :format "%[Value Menu%] %v"
 		   (string :tag "Information line")
-		   (group :tag "Keycode and Action" :indent 2
+		   (group :tag "Keycode and Action" :format "\n  %v" :indent 2
 			  (character :tag "Key")
 			  function
 			  (string :tag "Prompt")))))

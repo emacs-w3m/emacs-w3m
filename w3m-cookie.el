@@ -49,12 +49,12 @@ Currently only browser local cookies are stored.")
 (defcustom w3m-cookie-accept-domains nil
   "A list of trusted domain name string."
   :group 'w3m
-  :type '(repeat (string :format "Domain name: %v\n")))
+  :type '(repeat (string :format "Domain name: %v")))
 
 (defcustom w3m-cookie-reject-domains nil
   "A list of untrusted domain name string."
   :group 'w3m
-  :type '(repeat (string :format "Domain name: %v\n")))
+  :type '(repeat (string :format "Domain name: %v")))
 
 (defcustom w3m-cookie-accept-bad-cookies nil
   "If nil, don't accept bad cookies.

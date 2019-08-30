@@ -48,40 +48,28 @@
 (defvar w3m-work-buffer-name)
 (defvar w3m-work-buffer-list)
 
-(defcustom w3m-imagick-convert-program (if noninteractive
-					   nil
-					 (w3m-which-command "convert"))
+(defcustom w3m-imagick-convert-program (w3m-which-command "convert")
   "Program name of ImageMagick's `convert'."
   :group 'w3m
-  :set (lambda (symbol value)
-	 (custom-set-default symbol (if (and (not noninteractive)
-					     value)
-					(if (file-name-absolute-p value)
-					    (if (file-executable-p value)
-						value)
-					  (w3m-which-command value)))))
-  :type 'file)
+  :type '(file :match (lambda (_widget value)
+			(or (not value) (stringp value)))
+	       :value-to-internal (lambda (_widget value) (or value "nil"))
+	       :value-to-external (lambda (_widget value)
+				    (unless (equal value "nil") value))))
 
-(defcustom w3m-imagick-identify-program (if noninteractive
-					    nil
-					  (w3m-which-command "identify"))
+(defcustom w3m-imagick-identify-program (w3m-which-command "identify")
   "Program name of ImageMagick's `identify'."
   :group 'w3m
-  :set (lambda (symbol value)
-	 (custom-set-default symbol (if (and (not noninteractive)
-					     value)
-					(if (file-name-absolute-p value)
-					    (if (file-executable-p value)
-						value)
-					  (w3m-which-command value)))))
-  :type 'file)
+  :type '(file :match (lambda (_widget value)
+			(or (not value) (stringp value)))
+	       :value-to-internal (lambda (_widget value) (or value "nil"))
+	       :value-to-external (lambda (_widget value)
+				    (unless (equal value "nil") value))))
 
 ;;; Image handling functions.
 (defcustom w3m-resize-images (and w3m-imagick-convert-program t)
   "If non-nil, resize images to the specified width and height."
   :group 'w3m
-  :set (lambda (symbol value)
-	 (custom-set-default symbol (and w3m-imagick-convert-program value)))
   :type 'boolean)
 
 (put 'w3m-imagick-convert-program 'available-p 'unknown)
@@ -90,7 +78,8 @@
   "Return non-nil if ImageMagick's `convert' program is available.
 If not, `w3m-imagick-convert-program' and `w3m-resize-images' are made
 nil forcibly."
-  (cond ((eq (get 'w3m-imagick-convert-program 'available-p) 'yes)
+  (cond (noninteractive nil)
+	((eq (get 'w3m-imagick-convert-program 'available-p) 'yes)
 	 t)
 	((eq (get 'w3m-imagick-convert-program 'available-p) 'no)
 	 nil)

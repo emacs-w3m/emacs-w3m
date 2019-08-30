@@ -1,3 +1,53 @@
+2019-08-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Improve/fix custom type for some user options
+
+	* mime-w3m.el (mime-w3m-safe-url-regexp):
+	* w3m-antenna.el (w3m-antenna-refresh-interval)
+	(w3m-antenna-make-summary-function, w3m-antenna-make-summary-function)
+	(w3m-antenna-sort-changed-sites-function)
+	(w3m-antenna-sort-unchanged-sites-function):
+	* w3m-bookmark.el (w3m-bookmark-default-section):
+	* w3m-cookie.el (w3m-cookie-accept-domains, w3m-cookie-reject-domains):
+	* w3m-dtree.el (w3m-dtree-directory-depth, w3m-dtree-indent-strings)
+	(w3m-dtree-stop-strings):
+	* w3m-favicon.el (w3m-favicon-size, w3m-favicon-cache-file)
+	(w3m-favicon-type):
+	* w3m-filter.el (w3m-filter-configuration, w3m-filter-rules):
+	* w3m-form.el (w3m-form-textarea-edit-mode):
+	* w3m-image.el (w3m-imagick-convert-program)
+	(w3m-imagick-identify-program, w3m-resize-images):
+	* w3m-lnum (w3m-lnum-context-alist, w3m-lnum-actions-custom-type):
+	* w3m-mail.el (w3m-mail-subject):
+	* w3m-namazu.el (w3m-namazu-arguments, w3m-namazu-index-alist):
+	* w3m-perldoc.el (w3m-perldoc-pod2html-arguments):
+	* w3m-session.el (w3m-session-load-last-sessions)
+	(w3m-session-load-crashed-sessions):
+	* w3m-symbol.el (w3m-symbol-custom-type, w3m-symbol):
+	* w3m-util.el (w3m-strip-queries-alist):
+	* w3m.el (w3m-command, w3m-display-ins-del, w3m-user-agent-alist)
+	(w3m-user-agent-site-specific-alist, w3m-language)
+	(w3m-command-arguments, w3m-command-arguments-alist)
+	(w3m-no-proxy-domains, w3m-command-environment)
+	(w3m-mailto-url-function, w3m-mailto-url-popup-function-alist)
+	(w3m-pixels-per-character, w3m-image-default-background)
+	(w3m-coding-system-priority-list, w3m-url-coding-system-alist)
+	(w3m-default-directory, w3m-accept-languages, w3m-icon-directory)
+	(w3m-home-page, w3m-encoding-type-alist)
+	(w3m-charset-coding-system-alist, w3m-correct-charset-alist)
+	(w3m-view-recenter, w3m-edit-function-alist)
+	(w3m-url-local-directory-alist, w3m-new-session-url)
+	(w3m-horizontal-scroll-division, w3m-markdown-converter)
+	(w3m-dirlist-cgi-program, w3m-add-referer, w3m-puny-utf-16be)
+	(w3m-uri-replace-alist, w3m-process-modeline-format)
+	(w3m-ignored-image-url-regexp, w3m-select-buffer-window-ratio):
+	Improve/fix custom type.
+
+	Changes relation to custom type
+
+	* w3m-image.el (w3m-imagick-convert-program-available-p):
+	Return nil if noninteractive.
+
 2019-08-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make w3m-goto-url-new-session work correctly (issue #68)

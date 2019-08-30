@@ -151,8 +151,8 @@ FLAG
 DESCRIPTION
   Describe what this filter does.  The value may be a string or a list
   of two strings; in the latter case, those descriptions are written in
-  English and Japanese respectively, and only either one is displayed
-  in the customization buffer according to `w3m-language'.
+  English and Japanese in order respectively, and the unwanted one will
+  be hidden according to `w3m-language' when customizing this variable.
 REGEXP
   Regular expression to restrict this filter so as to run only on web
   contents of which the url matches.
@@ -217,10 +217,16 @@ FUNCTION
 		(choice
 		 :format " %v"
 		 (string :format "%v")
-		 (group :format "%v"
-			,@(if (equal "Japanese" w3m-language)
-			      '((sexp :format "") (string :format "%v"))
-			    '((string :format "%v") (sexp :format ""))))
+		 (string :documentation-property
+			 (lambda (value)
+			   (if (equal "Japanese" w3m-language)
+			       (concat (cadr value) "\n(" (car value) ")")
+			     (concat (car value) "\n(" (cadr value) ")")))
+			 :format "%h"
+			 :match
+			 (lambda (_widget value)
+			   (and (stringp (car-safe value))
+				(stringp (car-safe (cdr-safe value))))))
 		 (const :format "Not documented\n" nil))
 		(regexp :format "Regexp matching url: %v")
 		(choice
@@ -247,8 +253,8 @@ This variable is semi-obsolete; use `w3m-filter-configuration' instead."
 	  (group :format "%v" :indent 2
 		 (regexp :format "Regexp: %v" :value ".*")
 		 (choice
-		  :tag "Filtering Rule"
-		  (group :inline t
+		  :format "Filtering Rule:\n  %[Value Menu%]\n  %v"
+		  (group :format "%v" :inline t
 			 :tag "Delete regions surrounded with these patterns"
 			 (const :format "Function: %v\n"
 				w3m-filter-delete-regions)
@@ -257,7 +263,12 @@ This variable is semi-obsolete; use `w3m-filter-configuration' instead."
 			 (string :format "  End: %v"
 				 :value "not a regexp"))
 		  (function :tag "Filter with a user defined function"
-			    :format "Function: %v")))))
+			    :format "Function: %v"
+			    :match
+			    (lambda (_widget value)
+			      (unless (eq value 'w3m-filter-delete-regions)
+				(or (fboundp value) (functionp value)
+				    (symbolp value)))))))))
 
 (defcustom w3m-filter-google-use-utf8 (not (equal "Japanese" w3m-language))
   ;; FIXME: what does this docstring say? - ky

@@ -59,7 +59,7 @@ be omitted."
   :type '(radio (const :tag "Not specified" nil)
 		(cons :format "%v"
 		      (integer :format "Width: %v " :value 16 :size 8)
-		      (integer :format "Height: %v " :value 16))))
+		      (integer :format "Height: %v " :value 16 :size 8))))
 
 (defconst w3m-favicon-name "favicon.ico"
   "The favicon name.")
@@ -77,7 +77,7 @@ It defaults to the file named \".favicon\" under the directory specified
 by the `w3m-profile-directory' variable."
   :group 'w3m
   :type '(radio (const :format "Not specified\n")
-		(file :format "%t: %v\n")))
+		(file :format "%t: %v")))
 
 (defcustom w3m-favicon-cache-expire-wait (* 30 24 60 60)
   "The cache will be expired after specified seconds passed since retrieval.
@@ -93,7 +93,6 @@ If this variable is nil, never expired."
   "Image type of favicon."
   :group 'w3m
   :type '(radio
-	  :inline t
 	  :convert-widget w3m-widget-type-convert-widget
 	  ;; The variable `image-types' will not be available
 	  ;; if Emacs was built without the graphics stuff.

@@ -89,10 +89,14 @@ Files to save text are stored in the directory specified by the
   "Major mode to edit textarea."
   :group 'w3m
   :type '(choice
+	  :format "%{%t%}:\n%[Value Menu%] %v"
 	  (function :tag "Major mode")
 	  (repeat
 	   :tag "Rules to select major modes for the current page"
-	   (cons (choice (regexp :tag "Regexp matches the current page")
+	   :indent 2
+	   (cons :format "%v" :indent 4
+		 (choice :format "%[Value Menu%]\n    %v"
+			 (regexp :tag "Regexp matches the current page")
 			 (function :tag "Predicate checks the current page")
 			 (sexp :tag "Expression checks the current page"))
 		 (function :tag "Major mode")))))

@@ -411,7 +411,7 @@ and every button will use a single icon image."
   `((tool-bar-button-margin . global)
     ,@(unless (featurep 'gtk)
 	'((tool-bar-button-relief . global))))
-  "Alist of the variables and the values controls the tool bar appearance.
+  "Alist of variables and values that controls the tool bar appearance.
 The value `global' means to use the global value of the variable.
 
 If you're annoyed with changing of the frame height of Emacs built for
