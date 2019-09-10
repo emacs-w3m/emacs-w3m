@@ -6495,8 +6495,7 @@ Choice is based upon content-type or mime-type TYPE."
 	    w3m-current-title (file-name-nondirectory w3m-current-url))
       (goto-char (point-min))
       (w3m-external-view url)
-      (w3m-process-stop page-buffer)
-      (w3m-view-previous-page)))))
+      'external-view))))
 
 (defun w3m-relationship-estimate (url)
   "Estimate relationships between a page and others."
@@ -7201,11 +7200,16 @@ No method to view `%s' is registered. Use `w3m-edit-this-url'"
 		 ;; it is necessary to delay deleting of the file.
 		 (run-at-time 1 nil
 			      (lambda (file buffer)
-				(when (and file (file-exists-p file))
-				  (delete-file file))
-				(when (buffer-name buffer)
-				  (kill-buffer buffer))
-				(message ""))
+				(and file
+				     (file-exists-p file)
+				     ;; The file might be busy now.
+				     (condition-case nil
+					 (progn (delete-file file) t)
+				       (error nil))
+				     (buffer-name buffer)
+				     (progn
+				       (kill-buffer buffer)
+				       (message ""))))
 			      file buffer))))))
       (and file
 	   (stringp file)

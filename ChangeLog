@@ -1,5 +1,12 @@
 2019-09-10  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	Don't kill external process that is running (issue #69)
+
+	* w3m.el (w3m-create-page): Fix PR#55; don't kill external process.
+	(w3m-external-view-file): Don't error out when deleting temp file.
+
+2019-09-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* aclocal.m4 (AC_EMACS_LISP): Fix redirect spells.
 
 2019-08-30  Katsumi Yamaoka  <yamaoka@jpl.org>
