@@ -1,3 +1,7 @@
+2019-09-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4 (AC_EMACS_LISP): Fix redirect spells.
+
 2019-08-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Improve/fix custom type for some user options
