@@ -1302,7 +1302,7 @@ multibyteness of the buffer."
     string))
 
 (defun w3m-force-window-update-later (&optional buffer seconds)
-  "Update the header-line appearance in BUFFER after SECONDS.
+  "Update the tab-line appearance in BUFFER after SECONDS.
 BUFFER defaults to the current buffer.  SECONDS defaults to 0.5."
   (run-with-timer (or seconds 0.5) nil
 		  (lambda (buffer)

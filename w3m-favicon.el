@@ -139,7 +139,7 @@ Args might also contain (\"-transparent\" \"COLOR\") in the beginning."
   "Color name used as transparent color of favicon image.
 Nil means to use the background color of the Emacs frame.  The null
 string \"\" is special, that will be replaced with the background color
-of the header line or the mode line on which the favicon is displayed."
+of the tab line or the mode line on which the favicon is displayed."
   :group 'w3m
   :type '(radio (string :format "Color: %v"
 			:match (lambda (widget value)

@@ -36,6 +36,12 @@
 
 (require 'cl-lib) ;; cl-incf
 
+;; Delete this section when emacs-w3m drops the Emacs 25 support.
+;; In Emacs 26 and greater, c[ad][ad][ad]+r are what subr.el provides.
+(eval-when-compile
+  (unless (>= emacs-major-version 26)
+    (require 'cl))) ;; c[ad][ad][ad]+r
+
 (require 'w3m-util)
 (require 'w3m-proc)
 (require 'w3m-image)
@@ -61,14 +67,15 @@
 (defvar w3m-new-session-in-background)
 (defvar w3m-previous-session-buffer)
 (defvar w3m-process-queue)
-(defvar w3m-show-graphic-icons-in-header-line)
 (defvar w3m-show-graphic-icons-in-mode-line)
+(defvar w3m-show-graphic-icons-in-tab-line)
 (defvar w3m-toolbar)
 (defvar w3m-toolbar-buttons)
 (defvar w3m-use-favicon)
 (defvar w3m-use-header-line)
 (defvar w3m-use-header-line-title)
 (defvar w3m-use-tab)
+(defvar w3m-use-tab-line)
 ;; `w3m-tab-move-right' calls the inline function `w3m-buffer-set-number'
 ;; which uses it.
 (defvar w3m-use-title-buffer-name)
@@ -562,7 +569,7 @@ otherwise works in all the emacs-w3m buffers."
     (w3m-toolbar-set-configurations)
     (w3m-toolbar-define-keys w3m-mode-map w3m-toolbar)))
 
-;;; Header line & Tabs
+;;; tab-line & tabs
 (defcustom w3m-tab-width 16
   "w3m tab width."
   :group 'w3m
@@ -649,46 +656,67 @@ otherwise works in all the emacs-w3m buffers."
 (defvar w3m-spinner-map-help-echo "mouse-2 kills the current process"
   "String used for the :help-echo property on the spinner.")
 
-(defun w3m-setup-header-line ()
-  (setq header-line-format
-	(cond (w3m-use-tab
-	       '(:eval (w3m-tab-line)))
-	      (w3m-use-header-line
-	       (list
-		(if w3m-use-header-line-title
-		    (list
-		     (propertize
-		      "Title: "
-		      'face (list 'w3m-header-line-location-title))
-		     `(:eval
-		       (propertize
-			(replace-regexp-in-string "%" "%%" (w3m-current-title))
-			'face (list 'w3m-header-line-location-content)
-			'mouse-face '(highlight :foreground
-						,(face-foreground 'default))
-			'local-map (let ((map (make-sparse-keymap)))
-				     (define-key map [header-line mouse-2]
-				       'w3m-goto-url)
-				     map)
-			'help-echo "mouse-2 prompts to input URL"))
-		     ", ")
-		  "")
-		(propertize
-		 "Location: "
-		 'face (list 'w3m-header-line-location-title))
-		`(:eval
+(defun w3m-setup-tab-line ()
+  (let (format mouse2)
+    (if w3m-use-tab-line
+	(progn
+	  (setq format 'tab-line-format
+		mouse2 [tab-line mouse-2])
+	  (when (or (equal '(:eval (w3m-tab-line)) header-line-format)
+		    (string-match "w3m-header-line-"
+				  (prin1-to-string header-line-format)))
+	    (setq header-line-format nil)))
+      (setq format 'header-line-format
+	    mouse2 [header-line mouse-2])
+      (when (and (boundp 'tab-line-format)
+		 (or (equal '(:eval (w3m-tab-line)) tab-line-format)
+		     (string-match "w3m-header-line-"
+				   (prin1-to-string tab-line-format))))
+	(setq tab-line-format nil)))
+    (set
+     format
+     (cond (w3m-use-tab
+	    '(:eval (w3m-tab-line)))
+	   (w3m-use-header-line
+	    (list
+	     (if w3m-use-header-line-title
+		 (list
 		  (propertize
-		   (if (stringp w3m-current-url)
-		       (replace-regexp-in-string "%" "%%" w3m-current-url)
-		     "")
-		   'face (list 'w3m-header-line-location-content)
-		   'mouse-face '(highlight :foreground
-					   ,(face-foreground 'default))
-		   'local-map (let ((map (make-sparse-keymap)))
-				(define-key map [header-line mouse-2]
-				  'w3m-goto-url)
-				map)
-		   'help-echo "mouse-2 prompts to input URL")))))))
+		   "Title: "
+		   'face (list 'w3m-header-line-title))
+		  `(:eval
+		    (propertize
+		     (replace-regexp-in-string "%" "%%" (w3m-current-title))
+		     'face (list 'w3m-header-line-content)
+		     'mouse-face '(highlight :foreground
+					     ,(face-foreground 'default))
+		     'local-map (let ((map (make-sparse-keymap)))
+				  (define-key map ,mouse2 'w3m-goto-url)
+				  map)
+		     'help-echo "mouse-2 prompts to input URL"))
+		  (propertize ", " 'face (list 'w3m-header-line-background)))
+	       "")
+	     (propertize
+	      "Location: "
+	      'face (list 'w3m-header-line-title))
+	     `(:eval
+	       (propertize
+		(if (stringp w3m-current-url)
+		    (replace-regexp-in-string "%" "%%" w3m-current-url)
+		  "")
+		'face (list 'w3m-header-line-content)
+		'mouse-face '(highlight :foreground
+					,(face-foreground 'default))
+		'local-map (let ((map (make-sparse-keymap)))
+			     (define-key map ,mouse2 'w3m-goto-url)
+			     map)
+		'help-echo "mouse-2 prompts to input URL"))
+	     (propertize " "
+			 'display (list 'space :width (* (window-width) 8))
+			 'face 'w3m-header-line-background)))))))
+
+(define-obsolete-function-alias
+  'w3m-setup-header-line 'w3m-setup-tab-line "27.1")
 
 (defun w3m-force-window-update (&optional window)
   "Force redisplay of WINDOW which defaults to the selected window."
@@ -789,7 +817,7 @@ fast operation of mouse wheel."
 	(let ((frame (selected-frame)))
 	  (while (not (cadr (setq posn (mouse-pixel-position))))
 	    (select-frame-set-input-focus frame)))
-	;; Update the header line.
+	;; Update the tab line.
 	(setq tab (w3m-tab-line))
 	(with-temp-buffer
 	  (insert tab)
@@ -889,10 +917,19 @@ EVENT is an internal arg for mouse control."
 (defvar w3m-tab-spinner-map nil)
 (make-variable-buffer-local 'w3m-tab-spinner-map)
 
-(defun w3m-tab-make-keymap ()
-  (unless w3m-tab-map
+(defun w3m-tab-make-keymap (&optional force)
+  "Make a keymap used for tab-line.  The optional FORCE forces making it.
+It does nothing if the keymap already exists and FORCE is nil.
+Keymap to be made will be the one used for header-line instead of
+tab-line if `w3m-use-tab-line' is nil."
+  (when (or force (not w3m-tab-map)
+	    (not (eq (caadr w3m-tab-map)
+		     (if w3m-use-tab-line 'tab-line 'header-line))))
     (setq w3m-tab-map (make-sparse-keymap))
-    (let* ((cur (current-buffer))
+    (let* ((map1 (make-sparse-keymap))
+	   (map2 (make-sparse-keymap))
+	   (prefix (if w3m-use-tab-line [tab-line] [header-line]))
+	   (cur (current-buffer))
 	   (f1 (lambda (fn) `(lambda (e) (interactive "e") (,fn e ,cur))))
 	   (f2 (lambda (fn) `(lambda (e)
 			       (interactive "e")
@@ -910,47 +947,48 @@ EVENT is an internal arg for mouse control."
 	   (previous-buffer-action (funcall f2 'w3m-tab-previous-buffer))
 	   (move-left-action (funcall f2 'w3m-tab-move-left))
 	   (move-right-action (funcall f2 'w3m-tab-move-right)))
-      (define-key w3m-tab-map [header-line down-mouse-1] 'ignore)
-      (define-key w3m-tab-map [header-line down-mouse-2] 'ignore)
-      (define-key w3m-tab-map [header-line mouse-1] single-action)
-      (define-key w3m-tab-map [header-line mouse-2] single-action)
-      (define-key w3m-tab-map [header-line drag-mouse-1] drag-action)
-      (define-key w3m-tab-map [header-line drag-mouse-2] drag-action)
-      (define-key w3m-tab-map [header-line double-mouse-1] double-action1)
-      (define-key w3m-tab-map [header-line double-mouse-2] double-action2)
-      (define-key w3m-tab-map [header-line mouse-3] menu-action)
-      (define-key w3m-tab-map [header-line wheel-up] previous-buffer-action)
-      (define-key w3m-tab-map [header-line wheel-down] next-buffer-action)
-      (define-key w3m-tab-map [header-line mouse-4] previous-buffer-action)
-      (define-key w3m-tab-map [header-line mouse-5] next-buffer-action)
-      (define-key w3m-tab-map [header-line C-wheel-up] move-left-action)
-      (define-key w3m-tab-map [header-line C-wheel-down] move-right-action)
-      (define-key w3m-tab-map [header-line C-mouse-4] move-left-action)
-      (define-key w3m-tab-map [header-line C-mouse-5] move-right-action)
-      (define-key w3m-mode-map [header-line double-mouse-1]
-	'w3m-goto-new-session-url)
-      (define-key w3m-mode-map [header-line mouse-3] menu-action2)
+      (define-key w3m-tab-map prefix map1)
+      (define-key map1 [down-mouse-1] 'ignore)
+      (define-key map1 [down-mouse-2] 'ignore)
+      (define-key map1 [mouse-1] single-action)
+      (define-key map1 [mouse-2] single-action)
+      (define-key map1 [drag-mouse-1] drag-action)
+      (define-key map1 [drag-mouse-2] drag-action)
+      (define-key map1 [double-mouse-1] double-action1)
+      (define-key map1 [double-mouse-2] double-action2)
+      (define-key map1 [mouse-3] menu-action)
+      (define-key map1 [wheel-up] previous-buffer-action)
+      (define-key map1 [wheel-down] next-buffer-action)
+      (define-key map1 [mouse-4] previous-buffer-action)
+      (define-key map1 [mouse-5] next-buffer-action)
+      (define-key map1 [C-wheel-up] move-left-action)
+      (define-key map1 [C-wheel-down] move-right-action)
+      (define-key map1 [C-mouse-4] move-left-action)
+      (define-key map1 [C-mouse-5] move-right-action)
+      (define-key w3m-mode-map prefix map2)
+      (define-key map2 [double-mouse-1]	'w3m-goto-new-session-url)
+      (define-key map2 [mouse-3] menu-action2)
       ;; The following bindings in `w3m-mode-map', not `w3m-tab-map',
       ;; are required for some platforms, in which mouse wheel events
       ;; sometimes pass by `w3m-tab-map' for the unresolved reason and
       ;; see `w3m-mode-map', or else the `undefined' errors will arise.
-      (define-key w3m-mode-map [header-line mouse-4] 'w3m-tab-previous-buffer)
-      (define-key w3m-mode-map [header-line mouse-5] 'w3m-tab-next-buffer)
-      (define-key w3m-mode-map [header-line wheel-up] 'w3m-tab-previous-buffer)
-      (define-key w3m-mode-map [header-line wheel-down] 'w3m-tab-next-buffer)
-      (define-key w3m-mode-map [header-line C-wheel-up] 'w3m-tab-move-left)
-      (define-key w3m-mode-map [header-line C-wheel-down] 'w3m-tab-move-right)
-      (define-key w3m-mode-map [header-line C-mouse-4] 'w3m-tab-move-left)
-      (define-key w3m-mode-map [header-line C-mouse-5] 'w3m-tab-move-right))
-    (unless w3m-tab-spinner-map
-      (setq w3m-tab-spinner-map (make-sparse-keymap))
-      (define-key w3m-tab-spinner-map [header-line mouse-2]
-	`(lambda (e)
-	   (interactive "e")
-	   (save-current-buffer
-	     ;; Why the `(w3m-process-stop BUFFER)' doesn't work?
-	     (set-buffer ,(current-buffer))
-	     (call-interactively 'w3m-process-stop)))))))
+      (define-key map2 [mouse-4] 'w3m-tab-previous-buffer)
+      (define-key map2 [mouse-5] 'w3m-tab-next-buffer)
+      (define-key map2 [wheel-up] 'w3m-tab-previous-buffer)
+      (define-key map2 [wheel-down] 'w3m-tab-next-buffer)
+      (define-key map2 [C-wheel-up] 'w3m-tab-move-left)
+      (define-key map2 [C-wheel-down] 'w3m-tab-move-right)
+      (define-key map2 [C-mouse-4] 'w3m-tab-move-left)
+      (define-key map2 [C-mouse-5] 'w3m-tab-move-right)
+      (unless w3m-tab-spinner-map
+	(setq w3m-tab-spinner-map (make-sparse-keymap))
+	(define-key w3m-tab-spinner-map (vconcat prefix [mouse-2])
+	  `(lambda (e)
+	     (interactive "e")
+	     (save-current-buffer
+	       ;; Why the `(w3m-process-stop BUFFER)' doesn't work?
+	       (set-buffer ,(current-buffer))
+	       (call-interactively 'w3m-process-stop))))))))
 
 (defvar w3m-tab-half-space
   (propertize " " 'display '(space :width 0.5))
@@ -958,26 +996,22 @@ EVENT is an internal arg for mouse control."
 
 (defvar w3m-tab-separator-map nil)
 
-(unless w3m-tab-separator-map
+(when (or (not w3m-tab-separator-map)
+	  (not (eq (caadr w3m-tab-separator-map)
+		   (if w3m-use-tab-line 'tab-line 'header-line))))
+  (setq w3m-tab-separator-map (make-sparse-keymap))
   (let ((map (make-sparse-keymap)))
-    (setq w3m-tab-separator-map map)
-    (define-key map [header-line wheel-up] 'w3m-tab-previous-buffer)
-    (define-key map [header-line wheel-down] 'w3m-tab-next-buffer)
-    (define-key map [header-line mouse-4] 'w3m-tab-previous-buffer)
-    (define-key map [header-line mouse-5] 'w3m-tab-next-buffer)
-    (define-key map [header-line C-wheel-up] 'w3m-tab-move-left)
-    (define-key map [header-line C-wheel-down] 'w3m-tab-move-right)
-    (define-key map [header-line C-mouse-4] 'w3m-tab-move-left)
-    (define-key map [header-line C-mouse-5] 'w3m-tab-move-right)))
-
-(defvar w3m-tab-separator
-  (propertize " "
-	      'face (list 'w3m-tab-background)
-	      'mouse-face 'w3m-tab-selected-background
-	      'display '(space :width 0.5)
-	      'tab-separator t
-	      'local-map w3m-tab-separator-map)
-  "String used to separate tabs.")
+    (define-key w3m-tab-separator-map
+      (if w3m-use-tab-line [tab-line] [header-line])
+      map)
+    (define-key map [wheel-up] 'w3m-tab-previous-buffer)
+    (define-key map [wheel-down] 'w3m-tab-next-buffer)
+    (define-key map [mouse-4] 'w3m-tab-previous-buffer)
+    (define-key map [mouse-5] 'w3m-tab-next-buffer)
+    (define-key map [C-wheel-up] 'w3m-tab-move-left)
+    (define-key map [C-wheel-down] 'w3m-tab-move-right)
+    (define-key map [C-mouse-4] 'w3m-tab-move-left)
+    (define-key map [C-mouse-5] 'w3m-tab-move-right)))
 
 (defun w3m-tab-line ()
   (let* ((current (current-buffer))
@@ -993,8 +1027,7 @@ EVENT is an internal arg for mouse control."
 		   ;; the width of two space characters.
 		   (if (car (frame-current-scroll-bars)) 2 0)))
 	 (nbuf (length buffers))
-	 (graphic (and w3m-show-graphic-icons-in-header-line
-		       (display-images-p)))
+	 (graphic (and w3m-show-graphic-icons-in-tab-line (display-images-p)))
 	 (margin (if (display-graphic-p)
 		     (+ (if graphic 3.0 0.5)
 			;; Right and left shadows.
@@ -1085,16 +1118,20 @@ EVENT is an internal arg for mouse control."
 	 'mouse-face 'w3m-tab-mouse
 	 'local-map keymap
 	 'help-echo title)
-	w3m-tab-separator)
+	(propertize " "
+		    'face (list 'w3m-tab-background)
+		    'mouse-face 'w3m-tab-selected-background
+		    'display (if graphic '(space :width 0.5))
+		    'tab-separator t
+		    'local-map w3m-tab-separator-map))
        line))
     (concat (apply 'concat (apply 'nconc line))
-	    (propertize (make-string (window-width) ? )
-			'face (list 'w3m-tab-background)
-			'mouse-face 'w3m-tab-selected-background
-			'local-map w3m-tab-separator-map))))
+	    (propertize " "
+			'display (list 'space :width (window-width))
+			'face (list 'w3m-tab-background)))))
 
 (add-hook 'w3m-mode-setup-functions 'w3m-tab-make-keymap)
-(add-hook 'w3m-mode-setup-functions 'w3m-setup-header-line)
+(add-hook 'w3m-mode-setup-functions 'w3m-setup-tab-line)
 (add-hook 'w3m-mode-setup-functions 'w3m-setup-widget-faces)
 (add-hook 'w3m-select-buffer-hook 'w3m-force-window-update)
 
@@ -1107,7 +1144,7 @@ italic font in the modeline."
   :type 'string)
 
 (defvar w3m-spinner-image-file nil
-  "Image file used to show a spinner in the header-line.")
+  "Image file used to show a spinner in the tab-line.")
 
 (defvar w3m-spinner-image-frames 3
   "Number of frames which the spinner image contains.")

@@ -64,11 +64,50 @@
 (require 'w3m-util)
 (require 'w3m-proc)
 
-;; Why this is here is because w3m-ems.el uses.
+;; Why these two variable are here is because w3m-ems.el uses.
 (defcustom w3m-select-buffer-hook nil
   "Hook run when a different emacs-w3m buffer is selected."
   :group 'w3m
   :type 'hook)
+
+(eval-and-compile
+  (defcustom w3m-use-tab-line (boundp 'tab-line-format)
+    "Use `tab-line-format' instead of `header-line-format' to display tabs.
+See also `w3m-use-tab'."
+    :group 'w3m
+    :type 'boolean
+    :set (lambda (symbol value)
+	   (prog1
+	       (setq value (and (boundp 'tab-line-format) value))
+	     (if (boundp symbol)
+		 (unless (equal (symbol-value symbol) value)
+		   (custom-set-default symbol value)
+		   (when (featurep 'w3m-ems)
+		     (defvar w3m-tab-separator-map)
+		     (setcar (cadr w3m-tab-separator-map)
+			     (if value 'tab-line 'header-line))
+		     (let ((cur (cons (selected-frame) (selected-window)))
+			   window)
+		       (dolist (buffer (let (w3m-fb-mode) (ignore w3m-fb-mode)
+					    (w3m-list-buffers t)))
+			 (with-current-buffer buffer
+			   (w3m-setup-tab-line)
+			   (w3m-tab-make-keymap t)
+			   ;; Redisplay window in order to redraw tabs
+			   ;; (`force-mode-line-update', `redraw-display', etc.
+			   ;;  didn't work but is this really necessary?).
+			   (when (setq window
+				       (get-buffer-window buffer 'visible))
+			     (unwind-protect
+				 (progn
+				   (select-frame (window-frame window))
+				   (select-window window t)
+				   (with-temp-buffer
+				     (switch-to-buffer (current-buffer))
+				     (sit-for 0)))
+			       (select-frame (car cur))
+			       (select-window (cdr cur)))))))))
+	       (custom-set-default symbol value))))))
 
 (eval-and-compile (require 'w3m-ems))
 
@@ -1380,13 +1419,11 @@ See also `show-help-function'."
 
 (defcustom w3m-use-tab t
   "Use emacs-w3m in \"Tabbed\" display mode.
-
-This variable is now DEPRECATED! Please use `w3m-display-mode'
-instead.
-
-When non-nil, emacs-w3m will make a reasonable effort to display
-all its buffers in a single window, which has a clickable tab bar
-along the top. See also `w3m-use-tab-menubar'."
+This variable is now DEPRECATED!  Please use `w3m-display-mode'
+instead.  When non-nil, emacs-w3m will make a reasonable effort to
+display all its buffers in a single window, which has a clickable
+tab bar along the top.
+See also `w3m-use-tab-line' and `w3m-use-tab-menubar'."
   :group 'w3m
   :type 'boolean)
 
@@ -1464,9 +1501,13 @@ If it is nil, also the favicon won't be shown in the mode-line even if
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-show-graphic-icons-in-header-line t
-  "Non-nil means show graphic status indicators in the header-line.
-If it is nil, also the favicon won't be shown in the header-line even
+(define-obsolete-variable-alias
+  'w3m-show-graphic-icons-in-header-line 'w3m-show-graphic-icons-in-tab-line
+  "27.1")
+
+(defcustom w3m-show-graphic-icons-in-tab-line t
+  "Non-nil means show graphic status indicators in the tab-line.
+If it is nil, also the favicon won't be shown in the tab-line even
 if `w3m-use-favicon' is non-nil."
   :group 'w3m
   :type 'boolean)
@@ -4309,12 +4350,14 @@ It replaces the faces on the arrived anchors from `w3m-anchor' to
   (w3m-get-text-property-around 'shr-url))
 
 (defun w3m-header-line-url ()
-  "Return w3m-current-url if point stays at header line."
+  "Return w3m-current-url if point stays at header line.
+Where \"header line\" means the first line of a page buffer, not
+header-line that `header-line-format' controls."
   (let ((faces (get-text-property (point) 'face)))
     (when (and (eq major-mode 'w3m-mode)
 	       (listp faces)
-	       (or (memq 'w3m-header-line-location-title faces)
-		   (memq 'w3m-header-line-location-content faces))
+	       (or (memq 'w3m-header-line-title faces)
+		   (memq 'w3m-header-line-content faces))
 	       w3m-current-url)
       w3m-current-url)))
 
@@ -11260,35 +11303,48 @@ This command is only available from the buffer selection pop-up window.")
        (/ (* (frame-height) (cdr w3m-select-buffer-window-ratio)) 100))))
 
 
-;;; Header line
+;;; header line
+;; (Where \"header line\" means the first line of a page buffer, not
+;;  header-line that `header-line-format' controls.)
 (defcustom w3m-use-header-line t
-  "Non-nil means display the header line."
+  "Non-nil means display a page location in the beginning of a window.
+Insert a text in the page body if `w3m-use-tab' is non-nil, otherwise
+use tab-line or heade-line according to `w3m-use-tab-line' to display
+a location."
   :group 'w3m
   :type 'boolean)
 
 (defcustom w3m-use-header-line-title nil
-  "Display the current URI title on the header line.
-
-This variable is ignored when using a tabbed display mode,
-because in such cases the header line is used for the tab
-list. (see `w3m-display-mode')."
+  "Non-nil means display a page title in the beginning of a window.
+This variable will be ignored if `w3m-use-tab' is non-nil (because
+in such cases the tab line is used for the tab list), otherwise use
+tab-line or heade-line according to `w3m-use-tab-line' to display
+a title."
   :group 'w3m
   :type 'boolean)
 
-(defface w3m-header-line-location-title
+(defface w3m-header-line-title
   '((((class color) (background light))
      (:foreground "Blue" :background "Gray90"))
     (((class color) (background dark))
      (:foreground "Cyan" :background "Gray20")))
   "Face used to highlight title when displaying location in the header line."
   :group 'w3m-face)
+(put 'w3m-header-line-location-title 'face-alias 'w3m-header-line-title)
 
-(defface w3m-header-line-location-content
+(defface w3m-header-line-content
   '((((class color) (background light))
      (:foreground "DarkGoldenrod" :background "Gray90"))
     (((class color) (background dark))
      (:foreground "LightGoldenrod" :background "Gray20")))
   "Face used to highlight url when displaying location in the header line."
+  :group 'w3m-face)
+(put 'w3m-header-line-location-content 'face-alias 'w3m-header-line-content)
+
+(defface w3m-header-line-background
+  '((((class color) (background light)) (:background "Gray90"))
+    (((class color) (background dark)) (:background "Gray20")))
+  "Face used to be background of the header line."
   :group 'w3m-face)
 
 (defface w3m-error
@@ -11320,7 +11376,7 @@ list. (see `w3m-display-mode')."
 					   (ct " [T]")
 					   (charset " [C]")
 					   (t "")))))
-    (w3m-add-face-property (point-min) (point) 'w3m-header-line-location-title)
+    (w3m-add-face-property (point-min) (point) 'w3m-header-line-title)
     (let ((start (point)))
       (insert (w3m-puny-decode-url
 	       (if (string-match "[^\000-\177]" w3m-current-url)
@@ -11328,7 +11384,7 @@ list. (see `w3m-display-mode')."
 		 (w3m-url-decode-string w3m-current-url
 					w3m-current-coding-system
 					"%\\([2-9a-f][0-9a-f]\\)"))))
-      (w3m-add-face-property start (point) 'w3m-header-line-location-content)
+      (w3m-add-face-property start (point) 'w3m-header-line-content)
       (w3m-add-text-properties
        start (point)
        `(mouse-face highlight keymap ,w3m-header-line-map
@@ -11341,7 +11397,7 @@ list. (see `w3m-display-mode')."
 			      (frame-width)
 			    (window-width))
 			  (current-column) 1)))
-      (w3m-add-face-property start (point) 'w3m-header-line-location-content)
+      (w3m-add-face-property start (point) 'w3m-header-line-content)
       (unless (eolp)
 	(insert "\n")))))
 
