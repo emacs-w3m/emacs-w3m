@@ -89,6 +89,10 @@
 					  post-data referer handler))
 (declare-function w3m-select-buffer-update "w3m" (&rest args))
 
+;; emacs-nox
+(defvar image-types)
+(declare-function image-size "image.c" (spec &optional pixels frame))
+
 ;;; Coding system and charset.
 
 (defsubst w3m-find-coding-system (obj)

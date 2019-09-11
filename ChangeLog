@@ -1,5 +1,12 @@
 2019-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	Declare some functions and variables for emacs-nox
+
+	* w3m-ems.el (image-size, image-types): Declare.
+	* w3m.el (mwheel): Require it when compiling.
+
+2019-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	Use tab-line if available instead of header-line ([emacs-w3m:13537])
 
 	* w3m.el (w3m-use-tab-line): New user option; default to t if

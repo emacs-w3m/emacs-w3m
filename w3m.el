@@ -8623,6 +8623,8 @@ or a list which consists of the following elements:
 	(run-hooks 'w3m-select-buffer-hook)
 	(w3m-select-buffer-update)))))
 
+(eval-when-compile (require 'mwheel))
+
 (defun w3m-mode ()
   "Major mode for browsing web.
 
