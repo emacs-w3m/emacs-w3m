@@ -7131,15 +7131,29 @@ links.  If Transient Mark mode, deactivate the mark."
       (set-buffer buffer)
       (w3m-goto-url-new-session url reload))))
 
-(defun w3m-view-this-url-new-session ()
-  "Display the page of the link under point in a new session.
+(defun w3m-view-this-url-new-session (&optional background)
+  "Display the page of the link under point in a new buffer.
 If the region is active, use the `w3m-open-all-links-in-new-session'
-command instead."
+command instead.
+
+The buffer will get visible if BACKGROUND is nil or there is no other
+emacs-w3m buffer regardless of BACKGROUND, otherwise (BACKGROUND is
+non-nil) the buffer will be created but not appear to be visible.
+BACKGROUND defaults to the value of `w3m-new-session-in-background',
+but it will be inverted if called interactively with the prefix arg."
   (interactive)
-  (let ((w3m-clear-display-while-reading
-	 ;; Don't show the progress message for the background run.
-	 (unless w3m-new-session-in-background
-	   w3m-clear-display-while-reading)))
+  (let* ((w3m-new-session-in-background
+	  (when (let (w3m-fb-mode) (ignore w3m-fb-mode)
+		     (w3m-list-buffers t))
+	    (if (w3m-interactive-p)
+		(if current-prefix-arg
+		    (not w3m-new-session-in-background)
+		  w3m-new-session-in-background)
+	      (or background w3m-new-session-in-background))))
+	 (w3m-clear-display-while-reading
+	  ;; Don't show the progress message for the background run.
+	  (unless w3m-new-session-in-background
+	    w3m-clear-display-while-reading)))
     (if (region-active-p)
 	(call-interactively 'w3m-open-all-links-in-new-session)
       (w3m-view-this-url nil t))))
@@ -9826,9 +9840,11 @@ See `w3m-default-directory'."
 				     referer background)
   "Visit World Wide Web pages in a new buffer.
 
-If you invoke this command in the emacs-w3m buffer, the new buffer
-will be created by copying the current buffer.  Otherwise, the new
-buffer will start afresh."
+The buffer will get visible if BACKGROUND is nil or there is no other
+emacs-w3m buffer regardless of BACKGROUND, otherwise (BACKGROUND is
+non-nil) the buffer will be created but not appear to be visible.
+BACKGROUND defaults to the value of `w3m-new-session-in-background',
+but it will be inverted if called interactively with the prefix arg."
   (interactive
    (list (w3m-input-url "Open URL in new buffer" nil
 			(or (w3m-active-region-or-url-at-point)
@@ -9838,9 +9854,14 @@ buffer will start afresh."
 	 coding-system-for-read
 	 nil ;; post-data
 	 nil ;; referer
-	 (if current-prefix-arg ;; background
-	     (not w3m-new-session-in-background)
-	   w3m-new-session-in-background)))
+	 nil)) ;; background
+  (setq background (when (let (w3m-fb-mode) (ignore w3m-fb-mode)
+			      (w3m-list-buffers t))
+		     (if (w3m-interactive-p)
+			 (if current-prefix-arg
+			     (not w3m-new-session-in-background)
+			   w3m-new-session-in-background)
+		       (or background w3m-new-session-in-background))))
   (let (buffer)
     (if (or (eq 'w3m-mode major-mode)
 	    (and (setq buffer (w3m-alive-p))

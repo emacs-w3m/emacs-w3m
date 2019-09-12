@@ -1,3 +1,12 @@
+2019-09-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	w3m-view-this-url-new-session work in background ([emacs-w3m:13543])
+
+	* w3m.el (w3m-view-this-url-new-session): Enable it to work in
+	background.
+	(w3m-goto-url-new-session): Disable background mode if there is no
+	other emacs-w3m buffer.
+
 2019-09-12  Jose A. Ortega Ruiz  <jao@gnu.org>
 
 	Fix :set form of w3m-key-binding (issue #70)
