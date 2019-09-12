@@ -1,3 +1,10 @@
+2019-09-12  Jose A. Ortega Ruiz  <jao@gnu.org>
+
+	Fix :set form of w3m-key-binding (issue #70)
+
+	* w3m.el (w3m-key-binding): Fix :set form so as to quote an operand
+	that could be the symbol `info', not only nil.
+
 2019-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Declare some functions and variables for emacs-nox

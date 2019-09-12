@@ -703,7 +703,7 @@ nil which provides Lynx-like keys."
 		  (boundp 'w3m-lynx-like-map))
 		 ;; It won't be bound at the first time.
 		 (eval
-		  `(setq w3m-mode-map (if (eq ,value 'info)
+		  `(setq w3m-mode-map (if (eq ',value 'info)
 					  w3m-info-like-map
 					w3m-lynx-like-map)
 			 w3m-minor-mode-map (w3m-make-minor-mode-keymap))))
