@@ -7133,14 +7133,15 @@ links.  If Transient Mark mode, deactivate the mark."
 
 (defun w3m-view-this-url-new-session (&optional background)
   "Display the page of the link under point in a new buffer.
-If the region is active, use the `w3m-open-all-links-in-new-session'
-command instead.
+Open a new tab if you use tabs, i.e., `w3m-display-mode' is set to
+`tabbed' or `w3m-use-tab' is set to a non-nil value.  If the region is
+active, use the `w3m-open-all-links-in-new-session' command instead.
 
 The buffer will get visible if BACKGROUND is nil or there is no other
 emacs-w3m buffer regardless of BACKGROUND, otherwise (BACKGROUND is
 non-nil) the buffer will be created but not appear to be visible.
 BACKGROUND defaults to the value of `w3m-new-session-in-background',
-but it will be inverted if called interactively with the prefix arg."
+but it could be inverted if called interactively with the prefix arg."
   (interactive)
   (let* ((w3m-new-session-in-background
 	  (when (let (w3m-fb-mode) (ignore w3m-fb-mode)
@@ -9839,12 +9840,14 @@ See `w3m-default-directory'."
 (defun w3m-goto-url-new-session (url &optional reload charset post-data
 				     referer background)
   "Visit World Wide Web pages in a new buffer.
+Open a new tab if you use tabs, i.e., `w3m-display-mode' is set to
+`tabbed' or `w3m-use-tab' is set to a non-nil value.
 
 The buffer will get visible if BACKGROUND is nil or there is no other
 emacs-w3m buffer regardless of BACKGROUND, otherwise (BACKGROUND is
 non-nil) the buffer will be created but not appear to be visible.
 BACKGROUND defaults to the value of `w3m-new-session-in-background',
-but it will be inverted if called interactively with the prefix arg."
+but it could be inverted if called interactively with the prefix arg."
   (interactive
    (list (w3m-input-url "Open URL in new buffer" nil
 			(or (w3m-active-region-or-url-at-point)
