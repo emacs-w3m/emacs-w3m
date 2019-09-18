@@ -9,7 +9,7 @@
 	emacs-w3m-git-revision even if it is unbound; add (featurep 'w3m-load);
 	delete Meadow-version.
 	(report-emacs-w3m-bug): Don't error out when w3m-load.el is missing;
-	unset buffer-modified-p in mail buffer.
+	add autoload cookie; unset buffer-modified-p in mail buffer.
 
 2019-09-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 

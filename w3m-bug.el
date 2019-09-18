@@ -65,6 +65,7 @@
   ;; a Lisp function with no argument or any Lisp form to be evaluated.
   )
 
+;;;###autoload
 (defun report-emacs-w3m-bug (topic &optional buffer)
   "Report a bug in emacs-w3m.
 Prompts for bug subject.  Leaves you in a mail buffer."
