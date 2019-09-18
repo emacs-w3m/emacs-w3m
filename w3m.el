@@ -11681,7 +11681,7 @@ the past, this had been set by the combination: `w3m-use-tab' t
   (let (dir autoloads archive timestamp hash file)
     ;; Look for the directory where this file is installed.  Note that
     ;; `load-history' referenced here is updated after this file is loaded,
-    ;; so this function should run by way of the `after-load-functions' hook.
+    ;; so this function should run by way of the `after-load-functions' hook.\\{
     (let ((hists load-history) hist)
       (while (and (not dir) (setq hist (car (pop hists)))
 		  (string-match "/w3m\\.el\\(?:c\\|\\.[-0-9_a-z]+\\)?\\'" hist)
@@ -11712,7 +11712,7 @@ the past, this had been set by the combination: `w3m-use-tab' t
 		   (or (string-match
 			(concat "/w3m-" (regexp-quote timestamp) "\\'") dir)
 		       (when (string-match
-			      "/w3m-[0-9]\\{8\\}\\.[0-9]\\{4\\}\\'" dir)
+			      "/w3m-[0-9]\\{8\\}\\.[0-9]\\{1,4\\}\\'" dir)
 			 (display-warning 'w3m "\
 You may want to update the emacs-w3m installation")
 			 nil)))
