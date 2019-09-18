@@ -1,3 +1,16 @@
+2019-09-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Create w3m-load.el file in melpa installation ([emacs-w3m:13542])
+
+	* w3m.el (w3m-fix-melpa-installation): New function;
+	add it to after-load-functions.
+
+	* w3m-bug.el (report-emacs-w3m-bug-system-informations): Always show
+	emacs-w3m-git-revision even if it is unbound; add (featurep 'w3m-load);
+	delete Meadow-version.
+	(report-emacs-w3m-bug): Don't error out when w3m-load.el is missing;
+	unset buffer-modified-p in mail buffer.
+
 2019-09-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	w3m-view-this-url-new-session work in background ([emacs-w3m:13543])

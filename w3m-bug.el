@@ -38,18 +38,16 @@
 
 (defconst report-emacs-w3m-bug-system-informations
   (eval
-   '`(,@(if (boundp 'emacs-w3m-git-revision)
-	    ;; Abnormally built (or perhaps released) emacs-w3m might not
-	    ;; provide this constant.
-	    '(emacs-w3m-git-revision))
+   '`(emacs-w3m-git-revision
       emacs-w3m-version
       emacs-version
+      ;; The form ,@(if (boundp 'foo) '(foo)) used here is
+      ;; meant to generate nothing if `foo' is not bound.
       ,@(if (boundp 'mule-version)
 	    '(mule-version))
-      ,@(if (boundp 'Meadow-version)
-	    '(Meadow-version))
       system-type
       (featurep 'gtk)
+      (featurep 'w3m-load)
       w3m-version
       w3m-type
       w3m-compile-options
@@ -95,7 +93,7 @@ Prompts for bug subject.  Leaves you in a mail buffer."
 	     (setq buffer nil)))))
      (list (read-string "Bug Subject: ") buffer)))
   (let (after-load-alist)
-    (load "w3m-load")
+    (load "w3m-load" t t)
     ;; See the comment for `report-emacs-w3m-bug-system-informations'.
     (load "w3m-bug"))
   (compose-mail report-emacs-w3m-bug-address topic nil 'new)
@@ -183,6 +181,7 @@ System Info to help track down your bug:
 	      infos)
 	(push "\n" infos)))
     (apply 'insert (nreverse infos))
-    (goto-char user-point)))
+    (goto-char user-point)
+    (set-buffer-modified-p nil)))
 
 ;;; w3m-bug.el ends here
