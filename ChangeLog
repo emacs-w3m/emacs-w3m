@@ -1,3 +1,8 @@
+2019-09-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-fix-melpa-installation): Fix criteria to check if
+	w3m-load.el should be created or updated; report it if it is done.
+
 2019-09-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Create w3m-load.el file in melpa installation ([emacs-w3m:13542])

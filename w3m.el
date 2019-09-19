@@ -11705,22 +11705,21 @@ the past, this had been set by the combination: `w3m-use-tab' t
 	       (string-match "\\`\\([0-9a-z]\\{7\\}\\)[0-9a-z]+\\'" hash)
 	       (setq hash (match-string 1 hash)))
       (setq file (expand-file-name "w3m-load.el" dir))
-      (unless (and (boundp 'emacs-w3m-git-revision)
-		   (file-exists-p file)
-		   (load file t t)
-		   (boundp 'emacs-w3m-git-revision)
-		   (or (string-match
+      (unless (and (or (string-match
 			(concat "/w3m-" (regexp-quote timestamp) "\\'") dir)
 		       (when (string-match
 			      "/w3m-[0-9]\\{8\\}\\.[0-9]\\{1,4\\}\\'" dir)
 			 (display-warning 'w3m "\
 You may want to update the emacs-w3m installation")
-			 nil)))
+			 nil))
+		   (file-exists-p file)
+		   (or (boundp 'emacs-w3m-git-revision)
+		       (and (load file t t)
+			    (boundp 'emacs-w3m-git-revision))))
 	(if (and (file-writable-p dir)
 		 (file-writable-p autoloads))
 	    ;; Modify w3m-autoloads.el.
-	    (let ((buffer (find-file-noselect autoloads))
-		  (save-silently t) message-log-max)
+	    (let ((buffer (find-file-noselect autoloads)))
 	      (with-current-buffer buffer
 		(goto-char (point-min))
 		(if (re-search-forward
@@ -11733,9 +11732,11 @@ You may want to update the emacs-w3m installation")
 			  "  \"Git revision string of this package.\")\n\n"
 			  "(provide 'w3m-load)\n")
 		  (unless (eobp) (insert "\n")))
-		(save-buffer 0))
+		(let ((save-silently t) message-log-max)
+		  (save-buffer 0)))
 	      (kill-buffer buffer)
 	      (add-name-to-file autoloads file t)
+	      (message "Created w3m-load.el in %s/" (abbreviate-file-name dir))
 	      (load file nil t))
 	  (defconst emacs-w3m-git-revision hash
 	    "Git revision string of this package."))))))
