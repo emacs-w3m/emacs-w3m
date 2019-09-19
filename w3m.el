@@ -11707,11 +11707,12 @@ the past, this had been set by the combination: `w3m-use-tab' t
       (setq file (expand-file-name "w3m-load.el" dir))
       (unless (and (or (string-match
 			(concat "/w3m-" (regexp-quote timestamp) "\\'") dir)
-		       (when (string-match
-			      "/w3m-[0-9]\\{8\\}\\.[0-9]\\{1,4\\}\\'" dir)
-			 (display-warning 'w3m "\
-You may want to update the emacs-w3m installation")
-			 nil))
+		       (prog1
+			   t
+			 (when (string-match
+				"/w3m-[0-9]\\{8\\}\\.[0-9]\\{1,4\\}\\'" dir)
+			   (display-warning 'w3m "\
+You may want to update the emacs-w3m installation"))))
 		   (file-exists-p file)
 		   (or (boundp 'emacs-w3m-git-revision)
 		       (and (load file t t)
@@ -11723,9 +11724,9 @@ You may want to update the emacs-w3m installation")
 	      (with-current-buffer buffer
 		(goto-char (point-min))
 		(if (re-search-forward
-		     "^\\((defconst emacs-w3m-git-revision \"\\)[^\"]+"
+		     "^(defconst emacs-w3m-git-revision \"\\([^\"]+\\)"
 		     nil t)
-		    (replace-match (concat "\\1" hash))
+		    (replace-match hash nil nil nil 1)
 		  (when (re-search-forward "^;; Local\040Variables:" nil 'move)
 		    (goto-char (match-beginning 0)))
 		  (insert "(defconst emacs-w3m-git-revision \"" hash "\"\n"
