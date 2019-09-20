@@ -11703,15 +11703,11 @@ the past, this had been set by the combination: `w3m-use-tab' t
 	       (string-match "\\`\\([0-9a-z]\\{7\\}\\)[0-9a-z]+\\'" hash)
 	       (setq hash (match-string 1 hash)))
       (setq file (expand-file-name "w3m-load.el" dir))
-      (unless (and (or (string-match
-			(concat "/w3m-" (regexp-quote timestamp) "\\'") dir)
-		       (prog1
-			   t
-			 (when (string-match
-				"/w3m-[0-9]\\{8\\}\\.[0-9]\\{1,4\\}\\'" dir)
-			   (display-warning 'w3m "\
-You may want to update the emacs-w3m installation"))))
-		   (file-exists-p file)
+      (or (string-match	(concat "/w3m-" (regexp-quote timestamp) "\\'") dir)
+	  (and (string-match "/w3m-[0-9]\\{8\\}\\.[0-9]\\{1,4\\}\\'" dir)
+	       (display-warning
+		'w3m "You may want to update the emacs-w3m installation")))
+      (unless (and (file-exists-p file)
 		   (or (boundp 'emacs-w3m-git-revision)
 		       (and (load file t t)
 			    (boundp 'emacs-w3m-git-revision))))
