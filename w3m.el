@@ -11671,8 +11671,6 @@ the past, this had been set by the combination: `w3m-use-tab' t
 	(w3m-message "Press %s to send the current form"
 		     (key-description (car keys)))))))
 
-(provide 'w3m)
-
 ;;; Fix melpa installation.
 (defvar package-user-dir)
 (defun w3m-fix-melpa-installation (&optional _arg)
@@ -11742,8 +11740,21 @@ You may want to update the emacs-w3m installation"))))
 	  (defconst emacs-w3m-git-revision hash
 	    "Git revision string of this package."))))))
 
-;; This hook will be removed by `w3m-fix-melpa-installation' itself.
-(add-hook 'after-load-functions #'w3m-fix-melpa-installation)
+(defvar byte-compile-current-file)
+(eval-and-compile
+  (if (featurep 'w3m)
+      ;; Try to create w3m-load.el when performing `package-reinstall'
+      ;; in the case w3m.elc is already loaded.
+      (let ((cur (and (boundp 'byte-compile-current-file)
+		      byte-compile-current-file)))
+	(when (and (stringp cur)
+		   (string-match "/w3m\\.el[^/]*\\'" cur))
+	  (let ((load-history (cons (list cur) load-history)))
+	    (w3m-fix-melpa-installation))))
+    ;; This hook will be removed by `w3m-fix-melpa-installation' itself.
+    (add-hook 'after-load-functions #'w3m-fix-melpa-installation)))
+
+(provide 'w3m)
 
 (unless noninteractive
   (when w3m-init-file
