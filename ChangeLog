@@ -1,5 +1,17 @@
 2019-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	Make TAB key work again in Gnus article buffer (bug#37193)
+
+	* w3m.el (w3m-handle-non-anchor-buttons): Rename variable and function
+	names from w3m-imitate-widget-button.
+	(w3m-fontify-anchors): Add button and category text props to an anchor
+	so that forward-button may recognize it; remove widget-button stuff;
+	add a dummy widget to rendered area for Emacs <=26.
+	(w3m-next-anchor, w3m-previous-anchor): Run forward-button instead of
+	widget-forward.
+
+2019-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* w3m.el (w3m-fix-melpa-installation): Eval-and-compile.
 
 	* doc/Makefile.in (PDFTEX): Default to XeTex instead of LuaTex.

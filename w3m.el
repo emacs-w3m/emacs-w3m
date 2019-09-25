@@ -50,6 +50,12 @@
 
 ;;; Code:
 
+;; Delete this section when emacs-w3m drops the Emacs 25 support.
+;; Note that `gv' should be loaded before `cl-lib' autoloads it.
+(eval-and-compile
+  (unless (>= emacs-major-version 26)
+    (require 'gv))) ;; gv--defsetter
+
 ;; Note that `cl-lib' should be loaded before `cl' even if `cl' loads
 ;; `cl-lib', otherwise the functions `cl-lib' provides will be marked
 ;; as "might not be defined at runtime" because of `eval-when-compile'.
@@ -505,12 +511,18 @@ This overrides `w3m-content-type-alist'."
   :group 'w3m
   :type '(repeat (string :tag "Type" :value "application/")))
 
-(defcustom w3m-imitate-widget-button '(eq major-mode 'gnus-article-mode)
-  "If non-nil, imitate the widget buttons on link (anchor) buttons.
+(define-obsolete-variable-alias
+  'w3m-imitate-widget-button 'w3m-handle-non-anchor-buttons "sometime")
+(define-obsolete-function-alias
+  'w3m-imitate-widget-button 'w3m-handle-non-anchor-buttons "sometime")
+
+(defcustom w3m-handle-non-anchor-buttons '(derived-mode-p 'gnus-article-mode)
+  "If non-nil, regard non anchor buttons as anchor buttons.
 It is useful for moving about in a Gnus article buffer using TAB key.
-It can also be any Lisp form that should return a boolean value."
+The value may be a boolean, or a list that will be `eval'd."
   :group 'w3m
-  :type 'sexp)
+  :type '(radio (const :format "%v " nil) (const :format "%v \n" t)
+		(sexp :format "Sexp to be eval'd: %v")))
 
 (defcustom w3m-treat-image-size t
   "Non-nil means let w3m mind the ratio of the size of images and text.
@@ -3458,13 +3470,13 @@ The database is kept in `w3m-entity-table'."
   "Return an image type which corresponds to CONTENT-TYPE."
   (cdr (assoc content-type w3m-image-type-alist)))
 
-(defun w3m-imitate-widget-button ()
+(defun w3m-handle-non-anchor-buttons ()
   "Return a boolean value corresponding to the variable of the same name."
-  (if (listp w3m-imitate-widget-button)
+  (if (listp w3m-handle-non-anchor-buttons)
       (condition-case nil
-	  (eval w3m-imitate-widget-button)
+	  (eval w3m-handle-non-anchor-buttons)
 	(error nil))
-    (and w3m-imitate-widget-button t)))
+    (and w3m-handle-non-anchor-buttons t)))
 
 (defun w3m-fontify-anchors ()
   "Fontify anchor tags in the buffer which contains halfdump."
@@ -3529,24 +3541,15 @@ The database is kept in `w3m-entity-table'."
 				       (w3m-url-readable-string href))))
 	      (setq bhhref (w3m-url-readable-string href)))
 	    (w3m-add-text-properties start end
-				     (list 'w3m-href-anchor href
+				     (list 'button 'w3m
+					   'category 'w3m
+					   'w3m-href-anchor href
 					   'w3m-balloon-help bhhref
 					   'w3m-anchor-title title
 					   'mouse-face 'highlight
 					   'w3m-anchor-sequence hseq
 					   'help-echo help
 					   'keymap w3m-link-map))
-	    (when (w3m-imitate-widget-button)
-	      (require 'wid-edit)
-	      (let ((widget-button-face (if (w3m-arrived-p href)
-					    'w3m-arrived-anchor
-					  'w3m-anchor))
-		    (widget-mouse-face 'highlight)
-		    w)
-		(setq w (widget-convert-button 'default start end
-					       :button-keymap nil
-					       :help-echo href))
-		(overlay-put (widget-get w :button-overlay) 'evaporate t)))
 	    (when name
 	      (w3m-add-text-properties
 	       start (point-max)
@@ -3559,6 +3562,17 @@ The database is kept in `w3m-entity-table'."
 	   (list 'w3m-name-anchor2
 		 (cons (w3m-decode-entities-string name)
 		       prenames)))))))
+    ;; This section is unnecessary for Emacs 27.1 and greater.
+    (when (and (w3m-handle-non-anchor-buttons)
+	       (save-restriction
+		 (widen)
+		 (goto-char (point-min))
+		 (not (eq (key-binding "\t") 'forward-button))))
+      ;; Add a dummy widget so `forward-button' and `widget-forward' work.
+      (let ((ovl (make-overlay (point-min) (point-max) nil t)))
+	(overlay-put ovl 'evaporate t)
+	(overlay-put ovl 'button '(w3m))
+	(overlay-put ovl 'category 'w3m)))
     (when w3m-icon-data
       (setq w3m-icon-data (cons (and (car w3m-icon-data)
 				     (w3m-expand-url (car w3m-icon-data)))
@@ -7582,8 +7596,8 @@ Return t if highlighting is successful."
       (while (> arg 0)
 	(unless (w3m-goto-next-anchor)
 	  (setq w3m-goto-anchor-hist nil)
-	  (if (w3m-imitate-widget-button)
-	      (widget-forward 1)
+	  (if (w3m-handle-non-anchor-buttons)
+	      (ignore-errors (forward-button 1 t))
 	    (when (setq pos (text-property-any
 			     (point-min) (point-max) 'w3m-anchor-sequence 1))
 	      (goto-char pos))))
@@ -7631,8 +7645,8 @@ Return t if highlighting is successful."
       (while (> arg 0)
 	(unless (w3m-goto-previous-anchor)
 	  (setq w3m-goto-anchor-hist nil)
-	  (if (w3m-imitate-widget-button)
-	      (widget-forward -1)
+	  (if (w3m-handle-non-anchor-buttons)
+	      (ignore-errors (forward-button -1 t))
 	    (when (setq pos (and w3m-max-anchor-sequence
 				 (text-property-any
 				  (point-min) (point-max)
@@ -11525,7 +11539,7 @@ FROM-COMMAND is defined in `w3m-minor-mode-map' with the same key in
 				 (or (cdr pair) (car pair))
 				 keymap w3m-mode-map))
     ;; Inhibit the `widget-button-click' command when
-    ;; `w3m-imitate-widget-button' is activated.
+    ;; `w3m-handle-non-anchor-buttons' is enabled.
     (define-key keymap [down-mouse-2] 'undefined)
     keymap))
 
