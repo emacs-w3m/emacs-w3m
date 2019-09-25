@@ -11673,68 +11673,76 @@ the past, this had been set by the combination: `w3m-use-tab' t
 
 ;;; Fix melpa installation.
 (defvar package-user-dir)
-(defun w3m-fix-melpa-installation (&optional _arg)
-  "Generate w3m-load.el if missing so as to fix melpa installation."
-  (remove-hook 'after-load-functions #'w3m-fix-melpa-installation)
-  (let (dir autoloads archive timestamp hash file)
-    ;; Look for the directory where this file is installed.  Note that
-    ;; `load-history' referenced here is updated after this file is loaded,
-    ;; so this function should run by way of the `after-load-functions' hook.
-    (let ((hists load-history) hist)
-      (while (and (not dir) (setq hist (car (pop hists)))
-		  (string-match "/w3m\\.el\\(?:c\\|\\.[-0-9_a-z]+\\)?\\'" hist)
-		  (setq dir (substring hist 0 (match-beginning 0))))))
-    (when (and dir
-	       (file-exists-p ;; Verify if this file comes from melpa.
-		(setq autoloads (expand-file-name "w3m-autoloads.el" dir)))
-	       (require 'package)
-	       (file-exists-p (setq archive
-				    (expand-file-name
-				     "archives/melpa/archive-contents"
-				     package-user-dir)))
-	       (with-temp-buffer
-		 (ignore-errors
-		   (insert-file-contents archive)
-		   ;; Look for timestamp and revision hash.
-		   (let ((def (cdr (assq 'w3m (read (current-buffer))))))
-		     (setq timestamp (apply #'format "%s.%s" (aref def 0))
-			   hash (cdr (assq :commit (aref def 4)))))))
-	       (stringp hash)
-	       (string-match "\\`\\([0-9a-z]\\{7\\}\\)[0-9a-z]+\\'" hash)
-	       (setq hash (match-string 1 hash)))
-      (setq file (expand-file-name "w3m-load.el" dir))
-      (or (string-match	(concat "/w3m-" (regexp-quote timestamp) "\\'") dir)
-	  (and (string-match "/w3m-[0-9]\\{8\\}\\.[0-9]\\{1,4\\}\\'" dir)
-	       (display-warning
-		'w3m "You may want to update the emacs-w3m installation")))
-      (unless (and (file-exists-p file)
-		   (or (boundp 'emacs-w3m-git-revision)
-		       (and (load file t t)
-			    (boundp 'emacs-w3m-git-revision))))
-	(if (and (file-writable-p dir)
-		 (file-writable-p autoloads))
-	    ;; Modify w3m-autoloads.el.
-	    (let ((buffer (find-file-noselect autoloads)))
-	      (with-current-buffer buffer
-		(goto-char (point-min))
-		(if (re-search-forward
-		     "^(defconst emacs-w3m-git-revision \"\\([^\"]+\\)"
-		     nil t)
-		    (replace-match hash nil nil nil 1)
-		  (when (re-search-forward "^;; Local\040Variables:" nil 'move)
-		    (goto-char (match-beginning 0)))
-		  (insert "(defconst emacs-w3m-git-revision \"" hash "\"\n"
-			  "  \"Git revision string of this package.\")\n\n"
-			  "(provide 'w3m-load)\n")
-		  (unless (eobp) (insert "\n")))
-		(let ((save-silently t) message-log-max)
-		  (save-buffer 0)))
-	      (kill-buffer buffer)
-	      (add-name-to-file autoloads file t)
-	      (message "Created w3m-load.el in %s/" (abbreviate-file-name dir))
-	      (load file nil t))
-	  (defconst emacs-w3m-git-revision hash
-	    "Git revision string of this package."))))))
+(eval-and-compile
+  (defun w3m-fix-melpa-installation (&optional _arg)
+    "Generate w3m-load.el if missing so as to fix melpa installation."
+    (remove-hook 'after-load-functions #'w3m-fix-melpa-installation)
+    (let (dir autoloads archive timestamp hash file)
+      ;; Look for the directory where this file is installed.  Note that
+      ;; `load-history' referenced here is updated after this file is loaded,
+      ;; so this function should run by way of the `after-load-functions' hook.
+      (let ((hists load-history) hist)
+	(while (and (not dir) (setq hist (car (pop hists)))
+		    (string-match "/w3m\\.el\\(?:c\\|\\.[-0-9_a-z]+\\)?\\'"
+				  hist)
+		    (setq dir (substring hist 0 (match-beginning 0))))))
+      (when (and dir
+		 (file-exists-p ;; Verify if this file comes from melpa.
+		  (setq autoloads (expand-file-name "w3m-autoloads.el" dir)))
+		 (require 'package)
+		 (file-exists-p (setq archive
+				      (expand-file-name
+				       "archives/melpa/archive-contents"
+				       package-user-dir)))
+		 (with-temp-buffer
+		   (ignore-errors
+		     (insert-file-contents archive)
+		     ;; Look for timestamp and revision hash.
+		     (let ((def (cdr (assq 'w3m (read (current-buffer))))))
+		       (setq timestamp (apply #'format "%s.%s" (aref def 0))
+			     hash (cdr (assq :commit (aref def 4)))))))
+		 (stringp hash)
+		 (string-match "\\`\\([0-9a-z]\\{7\\}\\)[0-9a-z]+\\'" hash)
+		 (setq hash (match-string 1 hash)))
+	(setq file (expand-file-name "w3m-load.el" dir))
+	(unless (and (or (string-match
+			  (concat "/w3m-" (regexp-quote timestamp) "\\'") dir)
+			 (prog1
+			     t
+			   (when (string-match
+				  "/w3m-[0-9]\\{8\\}\\.[0-9]\\{1,4\\}\\'" dir)
+			     (display-warning 'w3m "\
+You may want to update the emacs-w3m installation"))))
+		     (file-exists-p file)
+		     (or (boundp 'emacs-w3m-git-revision)
+			 (and (load file t t)
+			      (boundp 'emacs-w3m-git-revision))))
+	  (if (and (file-writable-p dir)
+		   (file-writable-p autoloads))
+	      ;; Modify w3m-autoloads.el.
+	      (let ((buffer (find-file-noselect autoloads)))
+		(with-current-buffer buffer
+		  (goto-char (point-min))
+		  (if (re-search-forward
+		       "^(defconst emacs-w3m-git-revision \"\\([^\"]+\\)"
+		       nil t)
+		      (replace-match hash nil nil nil 1)
+		    (when (re-search-forward "^;; Local\040Variables:"
+					     nil 'move)
+		      (goto-char (match-beginning 0)))
+		    (insert "(defconst emacs-w3m-git-revision \"" hash "\"\n"
+			    "  \"Git revision string of this package.\")\n\n"
+			    "(provide 'w3m-load)\n")
+		    (unless (eobp) (insert "\n")))
+		  (let ((save-silently t) message-log-max)
+		    (save-buffer 0)))
+		(kill-buffer buffer)
+		(add-name-to-file autoloads file t)
+		(message "Created w3m-load.el in %s/"
+			 (abbreviate-file-name dir))
+		(load file nil t))
+	    (defconst emacs-w3m-git-revision hash
+	      "Git revision string of this package.")))))))
 
 (defvar byte-compile-current-file)
 (eval-and-compile

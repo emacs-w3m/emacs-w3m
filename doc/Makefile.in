@@ -28,8 +28,8 @@ INFO_DEPS_EN = emacs-w3m.info
 INFO_DEPS_JA = emacs-w3m-ja.info
 INFO_DEPS    = $(INFO_DEPS_EN) $(INFO_DEPS_JA)
 
-# Use xetex if it is your taste.
-PDFTEX=luatex
+# Use luatex if it is your taste.
+PDFTEX=xetex
 
 default: $(INFO_DEPS)
 
