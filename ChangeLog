@@ -1,5 +1,13 @@
 2019-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	Prevent echo area from being enlarged when a url is shown unintendedly
+
+	* w3m.el (w3m-print-this-url): Set message-truncate-lines if this
+	function is called non-interactively.
+	(w3m-fix-melpa-installation): Restore c9cdb7e change.
+
+2019-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	Make TAB key work again in Gnus article buffer (bug#37193)
 
 	* w3m.el (w3m-handle-non-anchor-buttons): Rename variable and function

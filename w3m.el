@@ -7440,7 +7440,9 @@ of the url currently displayed.  The browser is defined in
 	       (w3m-image-alt (point))))
 	(title (if interactive-p
 		   (w3m-anchor-title)
-		 (w3m-anchor-title (point)))))
+		 (w3m-anchor-title (point))))
+	(message-truncate-lines (or message-truncate-lines
+				    (not interactive-p))))
     (when (or url interactive-p)
       (and url interactive-p (kill-new (w3m-url-encode-string-2 url)))
       (setq url (or (w3m-url-readable-string url)
@@ -9342,9 +9344,10 @@ function is designed as the hook function which is registered to
 				   (copy-marker (point-at-eol)))))
 
 (defun w3m-check-current-position ()
-  "Run `w3m-after-cursor-move-hook' if the point gets away from the window.
-This function is designed as the hook function which is registered to
-`post-command-hook' by `w3m-buffer-setup'."
+  "Run `w3m-after-cursor-move-hook' after invoking a command.
+This function is designed as a hook function which is registered to
+`post-command-hook' by `w3m-buffer-setup' for showing some infomations
+when the command moves the point."
   (when (/= (point) (car w3m-current-position))
     ;; To bind `deactivate-mark' to nil protects the mark from being
     ;; deactivated.  `deactivate-mark' is set when any function modifies
@@ -11719,15 +11722,11 @@ the past, this had been set by the combination: `w3m-use-tab' t
 		 (string-match "\\`\\([0-9a-z]\\{7\\}\\)[0-9a-z]+\\'" hash)
 		 (setq hash (match-string 1 hash)))
 	(setq file (expand-file-name "w3m-load.el" dir))
-	(unless (and (or (string-match
-			  (concat "/w3m-" (regexp-quote timestamp) "\\'") dir)
-			 (prog1
-			     t
-			   (when (string-match
-				  "/w3m-[0-9]\\{8\\}\\.[0-9]\\{1,4\\}\\'" dir)
-			     (display-warning 'w3m "\
-You may want to update the emacs-w3m installation"))))
-		     (file-exists-p file)
+	(or (string-match (concat "/w3m-" (regexp-quote timestamp) "\\'") dir)
+	    (and (string-match "/w3m-[0-9]\\{8\\}\\.[0-9]\\{1,4\\}\\'" dir)
+		 (display-warning
+		  'w3m "You may want to update the emacs-w3m installation")))
+	(unless (and (file-exists-p file)
 		     (or (boundp 'emacs-w3m-git-revision)
 			 (and (load file t t)
 			      (boundp 'emacs-w3m-git-revision))))
