@@ -7606,6 +7606,7 @@ Return t if highlighting is successful."
 	    (goto-char pos)
 	    (w3m-horizontal-on-screen)
 	    (w3m-print-this-url))
+	(setq w3m-goto-anchor-hist nil)
 	(or (and (w3m-handle-non-anchor-buttons)
 		 (goto-char (point-min))
 		 (let ((button (next-button (point))))
@@ -7671,6 +7672,7 @@ Return t if highlighting is successful."
 			   pos))
 	    (w3m-horizontal-on-screen)
 	    (w3m-print-this-url))
+	(setq w3m-goto-anchor-hist nil)
 	(or (and nil ;; Ignore non-anchor button because moving to it
 		 ;; would be not so useful.
 		 (w3m-handle-non-anchor-buttons)
