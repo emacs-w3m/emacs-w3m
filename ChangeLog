@@ -1,3 +1,13 @@
+2019-09-30  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Improve TAB command behavior in Gnus article
+
+	* w3m.el (w3m-make-help-echo): Truncate message so to fit window width
+	if backward-button or forward-button calls this function.
+	(w3m-fontify-anchors): Add a button widget to only the first anchor.
+	(w3m-next-anchor, w3m-previous-anchor): Rewrite.
+	(w3m-goto-next-anchor, w3m-goto-previous-anchor): Abolish.
+
 2019-09-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Prevent echo area from being enlarged when a url is shown unintendedly

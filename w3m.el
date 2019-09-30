@@ -3140,11 +3140,15 @@ property with the value of a string which should be in the place where
 having to show a help message."
   `(lambda (window _object pos)
      (if w3m-track-mouse
-	 (let ((deactivate-mark nil))
+	 (let ((deactivate-mark nil)
+	       (msg (w3m-url-readable-string
+		     (get-text-property
+		      pos ',property (window-buffer window)))))
 	   (message nil)	; Clear the echo area.
-	   (w3m-url-readable-string
-	    (get-text-property pos ',property
-			       (window-buffer window)))))))
+	   (if (memq this-command '(backward-button forward-button))
+	       (truncate-string-to-width
+		(subst-char-in-string ?\n ?  msg) (window-width))
+	     msg)))))
 
 (defvar w3m-current-message nil
   "The string currently displayed by `w3m-message' in the echo area.")
@@ -3481,7 +3485,7 @@ The database is kept in `w3m-entity-table'."
 (defun w3m-fontify-anchors ()
   "Fontify anchor tags in the buffer which contains halfdump."
   (let ((help (w3m-make-help-echo w3m-balloon-help))
-	prenames start end bhhref)
+	prenames start end bhhref first)
     (goto-char (point-min))
     (setq w3m-max-anchor-sequence 0)	;; reset max-hseq
     (while (re-search-forward "<_id[ \t\r\f\n]+" nil t)
@@ -3541,15 +3545,22 @@ The database is kept in `w3m-entity-table'."
 				       (w3m-url-readable-string href))))
 	      (setq bhhref (w3m-url-readable-string href)))
 	    (w3m-add-text-properties start end
-				     (list 'button 'w3m
-					   'category 'w3m
-					   'w3m-href-anchor href
+				     (list 'w3m-href-anchor href
 					   'w3m-balloon-help bhhref
 					   'w3m-anchor-title title
 					   'mouse-face 'highlight
 					   'w3m-anchor-sequence hseq
 					   'help-echo help
 					   'keymap w3m-link-map))
+	    (and (w3m-handle-non-anchor-buttons) (not first)
+		 ;; Add a widget so `forward-button' and `widget-forward'
+		 ;; work from outside of rendered area."
+		 (let ((ovl (make-overlay start end)))
+		   (overlay-put ovl 'evaporate t)
+		   (overlay-put ovl 'button '(w3m))
+		   (overlay-put ovl 'category 'w3m)
+		   (add-text-properties start end '(button w3m category w3m))
+		   (setq first t)))
 	    (when name
 	      (w3m-add-text-properties
 	       start (point-max)
@@ -3562,17 +3573,6 @@ The database is kept in `w3m-entity-table'."
 	   (list 'w3m-name-anchor2
 		 (cons (w3m-decode-entities-string name)
 		       prenames)))))))
-    ;; This section is unnecessary for Emacs 27.1 and greater.
-    (when (and (w3m-handle-non-anchor-buttons)
-	       (save-restriction
-		 (widen)
-		 (goto-char (point-min))
-		 (not (eq (key-binding "\t") 'forward-button))))
-      ;; Add a dummy widget so `forward-button' and `widget-forward' work.
-      (let ((ovl (make-overlay (point-min) (point-max) nil t)))
-	(overlay-put ovl 'evaporate t)
-	(overlay-put ovl 'button '(w3m))
-	(overlay-put ovl 'category 'w3m)))
     (when w3m-icon-data
       (setq w3m-icon-data (cons (and (car w3m-icon-data)
 				     (w3m-expand-url (car w3m-icon-data)))
@@ -7567,100 +7567,122 @@ Return t if highlighting is successful."
 (defvar w3m-goto-anchor-hist nil)
 (make-variable-buffer-local 'w3m-goto-anchor-hist)
 
-(defun w3m-goto-next-anchor ()
-  (let ((hseq (w3m-anchor-sequence))
-	(pos (next-single-property-change (point) 'w3m-anchor-sequence)))
-    (if (or (not hseq) (< hseq 1))
-	(and pos (goto-char pos))
-      (setq pos
-	    ;; hseq is not sequence in form.
-	    (catch 'loop
-	      (setq hseq (1+ hseq))
-	      (while (<= hseq w3m-max-anchor-sequence)
-		(setq pos (text-property-any
-			   (point-min) (point-max) 'w3m-anchor-sequence hseq))
-		(when pos (throw 'loop pos))
-		(setq hseq (1+ hseq)))))
-      (and pos (goto-char pos)))))
-
 (defun w3m-next-anchor (&optional arg)
   "Move the point to the next anchor."
   (interactive "p")
-  (unless arg (setq arg 1))
-  (if (null (memq last-command '(w3m-next-anchor w3m-previous-anchor)))
-      (when (setq w3m-goto-anchor-hist (w3m-anchor-sequence))
-	(setq w3m-goto-anchor-hist (list w3m-goto-anchor-hist)))
-    (when (and (eq last-command 'w3m-previous-anchor) w3m-goto-anchor-hist)
-      (setcdr w3m-goto-anchor-hist nil)))
-  (if (< arg 0)
+  (unless (eq last-command 'w3m-next-anchor)
+    (setq w3m-goto-anchor-hist nil))
+  (if (and arg (< arg 0))
       (w3m-previous-anchor (- arg))
-    (let (pos)
-      (while (> arg 0)
-	(unless (w3m-goto-next-anchor)
-	  (setq w3m-goto-anchor-hist nil)
-	  (if (w3m-handle-non-anchor-buttons)
-	      (ignore-errors (forward-button 1 t))
-	    (when (setq pos (text-property-any
-			     (point-min) (point-max) 'w3m-anchor-sequence 1))
-	      (goto-char pos))))
-	(setq arg (1- arg))
-	(if (member (w3m-anchor-sequence) w3m-goto-anchor-hist)
-	    (setq arg (1+ arg))
-	  (push (w3m-anchor-sequence) w3m-goto-anchor-hist))))
-    (w3m-horizontal-on-screen)
-    (w3m-print-this-url)))
-
-(defun w3m-goto-previous-anchor ()
-  (let ((hseq (w3m-anchor-sequence))
-	(pos (previous-single-property-change (point) 'w3m-anchor-sequence)))
-    (cond
-     ((and (not hseq) pos)
-      (if (w3m-anchor-sequence pos)
-	  (goto-char pos)
-	(setq pos (previous-single-property-change pos 'w3m-anchor-sequence))
-	(and pos (goto-char pos))))
-     ((or (not pos) (< hseq 2)) nil)
-     (t
-      (setq pos
-	    ;; hseq is not sequence in form.
-	    (catch 'loop
-	      (setq hseq (1- hseq))
-	      (while (> hseq 0)
-		(setq pos (text-property-any
-			   (point-min) (point-max) 'w3m-anchor-sequence hseq))
-		(when pos (throw 'loop pos))
-		(setq hseq (1- hseq)))))
-      (and pos (goto-char pos))))))
+    (unless arg (setq arg 1))
+    (let ((noanchor (or (not w3m-max-anchor-sequence)
+			(zerop w3m-max-anchor-sequence)))
+	  hseq pos next)
+      (when (and (not (or noanchor (eobp)))
+		 (or (and (setq hseq (w3m-anchor-sequence))
+			  (setq pos (point)))
+		     (and (or (w3m-anchor-sequence (setq pos (point)))
+			      (setq pos (next-single-property-change
+					 (point) 'w3m-anchor-sequence)))
+			  (if (setq hseq (w3m-anchor-sequence pos))
+			      (unless (memq hseq w3m-goto-anchor-hist)
+				(setq arg (1- arg)))
+			    (setq pos nil)))))
+	(while (and (> arg 0) (< pos (point-max)))
+	  (or (and (setq pos (next-single-property-change
+			      pos 'w3m-anchor-sequence))
+		   (or (setq next (w3m-anchor-sequence pos))
+		       (and (setq pos (next-single-property-change
+				       pos 'w3m-anchor-sequence))
+			    (setq next (w3m-anchor-sequence pos))))
+		   (or (eq hseq next)
+		       (memq next w3m-goto-anchor-hist)
+		       (setq hseq next
+			     arg (1- arg))))
+	      (setq arg 0))))
+      (if pos
+	  (progn
+	    (push hseq w3m-goto-anchor-hist)
+	    (goto-char pos)
+	    (w3m-horizontal-on-screen)
+	    (w3m-print-this-url))
+	(or (and (w3m-handle-non-anchor-buttons)
+		 (goto-char (point-min))
+		 (let ((button (next-button (point))))
+		   (if button
+		       (goto-char (button-at button))
+		     (goto-char (point-min))
+		     (ignore-errors (forward-button 1)))))
+	    (if noanchor
+		(w3m-message "No anchor")
+	      (goto-char (point-min))
+	      (w3m-next-anchor 1)))))))
 
 (defun w3m-previous-anchor (&optional arg)
   "Move the point to the previous anchor."
   (interactive "p")
-  (unless arg (setq arg 1))
-  (if (null (memq last-command '(w3m-next-anchor w3m-previous-anchor)))
-      (when (setq w3m-goto-anchor-hist (w3m-anchor-sequence))
-	(setq w3m-goto-anchor-hist (list w3m-goto-anchor-hist)))
-    (when (and (eq last-command 'w3m-next-anchor) w3m-goto-anchor-hist)
-      (setcdr w3m-goto-anchor-hist nil)))
-  (if (< arg 0)
+  (unless (eq last-command 'w3m-previous-anchor)
+    (setq w3m-goto-anchor-hist nil))
+  (if (and arg (< arg 0))
       (w3m-next-anchor (- arg))
-    (let (pos)
-      (while (> arg 0)
-	(unless (w3m-goto-previous-anchor)
-	  (setq w3m-goto-anchor-hist nil)
-	  (if (w3m-handle-non-anchor-buttons)
-	      (ignore-errors (forward-button -1 t))
-	    (when (setq pos (and w3m-max-anchor-sequence
-				 (text-property-any
-				  (point-min) (point-max)
-				  'w3m-anchor-sequence
-				  w3m-max-anchor-sequence)))
-	      (goto-char pos))))
-	(setq arg (1- arg))
-	(if (member (w3m-anchor-sequence) w3m-goto-anchor-hist)
-	    (setq arg (1+ arg))
-	  (push (w3m-anchor-sequence) w3m-goto-anchor-hist))))
-    (w3m-horizontal-on-screen)
-    (w3m-print-this-url)))
+    (unless arg (setq arg 1))
+    (let ((noanchor (or (not w3m-max-anchor-sequence)
+			(zerop w3m-max-anchor-sequence)))
+	  hseq pos prev)
+      (when (and (not (or noanchor (bobp)))
+		 (or (and
+		      (setq hseq (w3m-anchor-sequence))
+		      (prog1
+			  t
+			(setq pos (point-max))
+			(while (not (and
+				     (setq pos (previous-single-property-change
+						pos 'w3m-anchor-sequence))
+				     (eq (w3m-anchor-sequence pos) hseq))))))
+		     (and (or (w3m-anchor-sequence (setq pos (1- (point))))
+			      (and (setq pos (previous-single-property-change
+					      (point) 'w3m-anchor-sequence))
+				   (setq pos
+					 (or (previous-single-property-change
+					      pos 'w3m-anchor-sequence)
+					     (point-min)))))
+			  (if (setq hseq (w3m-anchor-sequence pos))
+			      (unless (memq hseq w3m-goto-anchor-hist)
+				(setq arg (1- arg)))
+			    (setq pos nil)))))
+	(while (and (> arg 0) (> pos (point-min)))
+	  (or (and (setq pos (previous-single-property-change
+			      pos 'w3m-anchor-sequence))
+		   (or (setq prev (w3m-anchor-sequence pos))
+		       (and (setq pos (or (previous-single-property-change
+					   pos 'w3m-anchor-sequence)
+					  (point-min)))
+			    (setq prev (w3m-anchor-sequence pos))))
+		   (or (eq hseq prev)
+		       (memq prev w3m-goto-anchor-hist)
+		       (setq hseq prev
+			     arg (1- arg))))
+	      (setq arg 0))))
+      (if pos
+	  (progn
+	    (push hseq w3m-goto-anchor-hist)
+	    (goto-char (or (text-property-any (point-min) (point-max)
+					      'w3m-anchor-sequence hseq)
+			   pos))
+	    (w3m-horizontal-on-screen)
+	    (w3m-print-this-url))
+	(or (and nil ;; Ignore non-anchor button because moving to it
+		 ;; would be not so useful.
+		 (w3m-handle-non-anchor-buttons)
+		 (let ((button (previous-button (point))))
+		   (if button
+		       (goto-char (button-at button))
+		     (goto-char (point-min))
+		     (ignore-errors (forward-button 1)))))
+	    (if noanchor
+		(w3m-message "No anchor")
+	      (goto-char (point-max))
+	      (w3m-previous-anchor 1)))))))
 
 (defun w3m-goto-next-form ()
   ;; Move the point to the end of the current form.
