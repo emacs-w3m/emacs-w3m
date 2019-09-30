@@ -326,7 +326,7 @@ If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
 			      (cons (list 'nnshimbun-shimbun shimbun) defs))
 	  t))))
 
-(deffoo nnshimbun-close-server (&optional server)
+(deffoo nnshimbun-close-server (&optional server _defs)
   (when (nnshimbun-server-opened server)
     (when nnshimbun-shimbun
       (dolist (group (shimbun-groups nnshimbun-shimbun))
