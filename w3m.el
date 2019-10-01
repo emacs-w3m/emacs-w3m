@@ -7585,6 +7585,7 @@ Return t if highlighting is successful."
 			      (setq pos (next-single-property-change
 					 (point) 'w3m-anchor-sequence)))
 			  (if (setq hseq (w3m-anchor-sequence pos))
+			      ;; Skip the anchor searched once.
 			      (unless (memq hseq w3m-goto-anchor-hist)
 				(setq arg (1- arg)))
 			    (setq pos nil)))))
@@ -7595,7 +7596,8 @@ Return t if highlighting is successful."
 		       (and (setq pos (next-single-property-change
 				       pos 'w3m-anchor-sequence))
 			    (setq next (w3m-anchor-sequence pos))))
-		   (or (eq hseq next)
+		   (or (eq hseq next) ;; Skip the anchor of the same ID.
+		       ;; Skip the anchor searched once.
 		       (memq next w3m-goto-anchor-hist)
 		       (setq hseq next
 			     arg (1- arg))))
@@ -7629,17 +7631,26 @@ Return t if highlighting is successful."
     (unless arg (setq arg 1))
     (let ((noanchor (or (not w3m-max-anchor-sequence)
 			(zerop w3m-max-anchor-sequence)))
-	  hseq pos prev)
+	  hseq pos prev next)
       (when (and (not (or noanchor (bobp)))
 		 (or (and
-		      (setq hseq (w3m-anchor-sequence))
+		      (setq hseq (w3m-anchor-sequence)) ;; <- The current.
+		      ;; Search for the previous anchor from the bottom of
+		      ;; the current anchor lines because the top of the
+		      ;; current anchor might stay above the previous anchor.
 		      (prog1
 			  t
-			(setq pos (point-max))
-			(while (not (and
-				     (setq pos (previous-single-property-change
-						pos 'w3m-anchor-sequence))
-				     (eq (w3m-anchor-sequence pos) hseq))))))
+			;; Go to the bottom.
+			(setq pos (point)
+			      next pos)
+			(while (and
+				(setq next (next-single-property-change
+					    next 'w3m-anchor-sequence))
+				(or (eq (w3m-anchor-sequence next) hseq)
+				    (setq next (text-property-any
+						next (point-max)
+						'w3m-anchor-sequence hseq)))
+				(setq pos next)))))
 		     (and (or (w3m-anchor-sequence (setq pos (1- (point))))
 			      (and (setq pos (previous-single-property-change
 					      (point) 'w3m-anchor-sequence))
@@ -7648,6 +7659,7 @@ Return t if highlighting is successful."
 					      pos 'w3m-anchor-sequence)
 					     (point-min)))))
 			  (if (setq hseq (w3m-anchor-sequence pos))
+			      ;; Skip the anchor searched once.
 			      (unless (memq hseq w3m-goto-anchor-hist)
 				(setq arg (1- arg)))
 			    (setq pos nil)))))
@@ -7659,7 +7671,8 @@ Return t if highlighting is successful."
 					   pos 'w3m-anchor-sequence)
 					  (point-min)))
 			    (setq prev (w3m-anchor-sequence pos))))
-		   (or (eq hseq prev)
+		   (or (eq hseq prev) ;; Skip the anchor of the same ID.
+		       ;; Skip the anchor searched once.
 		       (memq prev w3m-goto-anchor-hist)
 		       (setq hseq prev
 			     arg (1- arg))))
@@ -7667,7 +7680,8 @@ Return t if highlighting is successful."
       (if pos
 	  (progn
 	    (push hseq w3m-goto-anchor-hist)
-	    (goto-char (or (text-property-any (point-min) (point-max)
+	    ;; Go to the beginning of the anchor.
+	    (goto-char (or (text-property-any (point-min) pos
 					      'w3m-anchor-sequence hseq)
 			   pos))
 	    (w3m-horizontal-on-screen)
