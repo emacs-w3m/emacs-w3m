@@ -7607,17 +7607,18 @@ Return t if highlighting is successful."
 	    (push hseq w3m-goto-anchor-hist)
 	    (goto-char pos)
 	    (w3m-horizontal-on-screen)
-	    (w3m-print-this-url))
+	    (w3m-print-this-url)
+	    t)
 	(setq w3m-goto-anchor-hist nil)
 	(or (and (w3m-handle-non-anchor-buttons)
 		 (goto-char (point-min))
 		 (let ((button (next-button (point))))
 		   (if button
-		       (goto-char (button-at button))
+		       (progn (goto-char (button-at button)) t)
 		     (goto-char (point-min))
-		     (ignore-errors (forward-button 1)))))
+		     (and (ignore-errors (forward-button 1)) t))))
 	    (if noanchor
-		(w3m-message "No anchor")
+		(progn (w3m-message "No anchor") nil)
 	      (goto-char (point-min))
 	      (w3m-next-anchor 1)))))))
 
@@ -7685,18 +7686,19 @@ Return t if highlighting is successful."
 					      'w3m-anchor-sequence hseq)
 			   pos))
 	    (w3m-horizontal-on-screen)
-	    (w3m-print-this-url))
+	    (w3m-print-this-url)
+	    t)
 	(setq w3m-goto-anchor-hist nil)
 	(or (and nil ;; Ignore non-anchor button because moving to it
 		 ;; would be not so useful.
 		 (w3m-handle-non-anchor-buttons)
 		 (let ((button (previous-button (point))))
 		   (if button
-		       (goto-char (button-at button))
+		       (progn (goto-char (button-at button)) t)
 		     (goto-char (point-min))
-		     (ignore-errors (forward-button 1)))))
+		     (and (ignore-errors (forward-button 1)) t))))
 	    (if noanchor
-		(w3m-message "No anchor")
+		(progn (w3m-message "No anchor") nil)
 	      (goto-char (point-max))
 	      (w3m-previous-anchor 1)))))))
 
