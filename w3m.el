@@ -7560,7 +7560,7 @@ Return t if highlighting is successful."
 (make-variable-buffer-local 'w3m-goto-anchor-hist)
 
 (defun w3m-next-anchor (&optional arg)
-  "Move the point to the next anchor."
+  "Move point to the next anchor.  Return t if success otherwise nil."
   (interactive "p")
   (unless (eq last-command 'w3m-next-anchor)
     (setq w3m-goto-anchor-hist nil))
@@ -7615,7 +7615,7 @@ Return t if highlighting is successful."
 	      (w3m-next-anchor 1)))))))
 
 (defun w3m-previous-anchor (&optional arg)
-  "Move the point to the previous anchor."
+  "Move point to the previous anchor.  Return t if success otherwise nil."
   (interactive "p")
   (unless (eq last-command 'w3m-previous-anchor)
     (setq w3m-goto-anchor-hist nil))
