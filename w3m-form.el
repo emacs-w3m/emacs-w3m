@@ -707,8 +707,6 @@ If optional REUSE-FORMS is non-nil, reuse it as `w3m-current-form'."
 	    (unless (equal prev-button (cons fid abs-hseq))
 	      (cl-incf id)
 	      (setq prev-button (cons fid abs-hseq)))
-	    (setq w3m-max-anchor-sequence
-		  (max abs-hseq w3m-max-anchor-sequence))
 	    (if (eq w3m-type 'w3mmee)
 		(setq form (nth fid forms))
 	      (setq form (cdr (assq fid forms))))

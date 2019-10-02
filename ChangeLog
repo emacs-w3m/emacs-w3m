@@ -1,3 +1,14 @@
+2019-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Abolish w3m-max-anchor-sequence (issue #71)
+
+	* w3m.el (w3m-max-anchor-sequence): Abolish.
+
+	* w3m-form.el (w3m-form-parse-and-fontify):
+	* w3m.el (w3m-clear-local-variables, w3m-copy-local-variables)
+	(w3m-fontify-anchors, w3m-next-anchor, w3m-previous-anchor):
+	Don't handle/use w3m-max-anchor-sequence.
+
 2019-10-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	w3m-next-anchor and w3m-previous-anchor return t if success (issue #71)

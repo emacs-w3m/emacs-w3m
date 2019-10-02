@@ -2291,8 +2291,6 @@ It is used for favicon data.  The type is often `ico'.")
   "URL as the first document in the author-defined sequence.")
 (defvar w3m-contents-url nil
   "URL as the table of contents for the current page.")
-(defvar w3m-max-anchor-sequence nil
-  "Maximum number of the anchor sequence in the current page.")
 (defvar w3m-current-refresh nil
   "Cons of number of seconds and a url specified by the REFRESH attribute.")
 (defvar w3m-current-ssl nil
@@ -2311,7 +2309,6 @@ It is used for favicon data.  The type is often `ico'.")
 (make-variable-buffer-local 'w3m-previous-url)
 (make-variable-buffer-local 'w3m-start-url)
 (make-variable-buffer-local 'w3m-contents-url)
-(make-variable-buffer-local 'w3m-max-anchor-sequence)
 (make-variable-buffer-local 'w3m-current-refresh)
 (make-variable-buffer-local 'w3m-current-ssl)
 (make-variable-buffer-local 'w3m-name-anchor-from-hist)
@@ -2332,13 +2329,12 @@ It is used for favicon data.  The type is often `ico'.")
 	w3m-previous-url nil
 	w3m-start-url nil
 	w3m-contents-url nil
-	w3m-max-anchor-sequence nil
 	w3m-current-refresh nil
 	w3m-current-ssl nil
 	w3m-name-anchor-from-hist nil))
 
 (defun w3m-copy-local-variables (from-buffer)
-  (let (url base title cs char icon next prev start toc hseq refresh ssl)
+  (let (url base title cs char icon next prev start toc refresh ssl)
     (with-current-buffer from-buffer
       (setq url w3m-current-url
 	    base w3m-current-base-url
@@ -2350,7 +2346,6 @@ It is used for favicon data.  The type is often `ico'.")
 	    prev w3m-previous-url
 	    start w3m-start-url
 	    toc w3m-contents-url
-	    hseq w3m-max-anchor-sequence
 	    refresh w3m-current-refresh
 	    ssl w3m-current-ssl))
     (setq w3m-current-url url
@@ -2363,7 +2358,6 @@ It is used for favicon data.  The type is often `ico'.")
 	  w3m-previous-url prev
 	  w3m-start-url start
 	  w3m-contents-url toc
-	  w3m-max-anchor-sequence hseq
 	  w3m-current-refresh refresh
 	  w3m-current-ssl ssl)))
 
@@ -3487,7 +3481,6 @@ The database is kept in `w3m-entity-table'."
   (let ((help (w3m-make-help-echo w3m-balloon-help))
 	prenames start end bhhref first)
     (goto-char (point-min))
-    (setq w3m-max-anchor-sequence 0)	;; reset max-hseq
     (while (re-search-forward "<_id[ \t\r\f\n]+" nil t)
       (setq start (match-beginning 0))
       (setq prenames (get-text-property start 'w3m-name-anchor))
@@ -3533,7 +3526,6 @@ The database is kept in `w3m-entity-table'."
 				       "#" tmp))
 			   (w3m-url-transfer-encode-string href))))
 	    (setq hseq (or (and (null hseq) 0) (abs hseq)))
-	    (setq w3m-max-anchor-sequence (max hseq w3m-max-anchor-sequence))
 	    (w3m-add-face-property start end (if (w3m-arrived-p href)
 						 'w3m-arrived-anchor
 					       'w3m-anchor))
@@ -7575,8 +7567,8 @@ Return t if highlighting is successful."
   (if (and arg (< arg 0))
       (w3m-previous-anchor (- arg))
     (unless arg (setq arg 1))
-    (let ((noanchor (or (not w3m-max-anchor-sequence)
-			(zerop w3m-max-anchor-sequence)))
+    (let ((noanchor (not (text-property-not-all (point-min) (point-max)
+						'w3m-anchor-sequence nil)))
 	  hseq pos next)
       (when (and (not (or noanchor (eobp)))
 		 (or (and (setq hseq (w3m-anchor-sequence))
@@ -7630,8 +7622,8 @@ Return t if highlighting is successful."
   (if (and arg (< arg 0))
       (w3m-next-anchor (- arg))
     (unless arg (setq arg 1))
-    (let ((noanchor (or (not w3m-max-anchor-sequence)
-			(zerop w3m-max-anchor-sequence)))
+    (let ((noanchor (not (text-property-not-all (point-min) (point-max)
+						'w3m-anchor-sequence nil)))
 	  hseq pos prev next)
       (when (and (not (or noanchor (bobp)))
 		 (or (and
