@@ -7573,9 +7573,8 @@ Return t if highlighting is successful."
       (when (and (not (or noanchor (eobp)))
 		 (or (and (setq hseq (w3m-anchor-sequence))
 			  (setq pos (point)))
-		     (and (or (w3m-anchor-sequence (setq pos (point)))
-			      (setq pos (next-single-property-change
-					 (point) 'w3m-anchor-sequence)))
+		     (and (setq pos (next-single-property-change
+				     (point) 'w3m-anchor-sequence))
 			  (if (setq hseq (w3m-anchor-sequence pos))
 			      ;; Skip the anchor searched once.
 			      (unless (memq hseq w3m-goto-anchor-hist)
