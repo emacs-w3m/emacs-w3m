@@ -39,6 +39,12 @@
   :group 'w3m
   :prefix "w3m-perldoc-")
 
+
+(defcustom w3m-perldoc-base-url "https://perldoc.perl.org/"
+	"The URL domain base to lookup the perldoc with."
+	:group 'w3m-perldoc
+	:type 'string)
+
 (defcustom w3m-perldoc-command "perldoc"
   "Name of the executable file of perldoc."
   :group 'w3m-perldoc
@@ -113,13 +119,30 @@
 		   (insert "::"))
 		 (goto-char (point-max))))
 	     "text/html")))))
+(defun w3m-perldoc-pretty (string)
+	"Make a string more likely to find a perldoc page."
+	(flet ((swap (old new string)
+							 (let ((loc (search old string)))
+								 (if loc
+										 (concat (substring string 0 loc)
+														 new
+														 (swap old new (substring string
+																											(+ (length old) loc))))
+									 string))))
+		(concat (swap " " "/" (swap "::" "/" string))
+						(if (not (string= "" string))
+								".html"
+							"")
+						"#perl_version")))
+
+(defun w3m-ensure-url )
 
 ;;;###autoload
 (defun w3m-perldoc (docname)
   "View Perl documents."
   (interactive "sDocument: ")
-  (w3m-goto-url (concat "about://perldoc/" (w3m-url-encode-string docname))))
-
+  (w3m-goto-url (concat (w3m-ensure-slash w3m-perldoc-base-url)
+												(w3m-perldoc-pretty docname))))
 (provide 'w3m-perldoc)
 
 ;;; w3m-perldoc.el ends here.
