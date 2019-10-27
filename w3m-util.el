@@ -1583,6 +1583,12 @@ the function cell of FUNCs rather than their value cell.
 	  (buffer-substring-no-properties (point-min) (point-max))))
     url))
 
+(defun w3m-ensure-slash (url)
+	"Ensure that a URL ends in a /. Useful for concatenation purposes."
+	(if (string=  "/" (string (elt url (1- (length url)))))
+			url
+		(concat url "/")))
+
 (provide 'w3m-util)
 
 ;;; w3m-util.el ends here
