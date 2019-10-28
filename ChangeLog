@@ -1,3 +1,12 @@
+2019-10-27  Spenser Truex  <web@spensertruex.com>
+
+	Improve perldoc with customizable variable, and saner default (PR#72)
+
+	* w3m-util.el (w3m-ensure-slash): New function.
+	* w3m-perldoc.el (w3m-perldoc-base-url): New user option.
+	(w3m-perldoc-pretty): New function.
+	(w3m-perldoc): Use them.
+
 2019-10-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Abolish w3m-max-anchor-sequence (issue #71)
