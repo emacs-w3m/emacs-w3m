@@ -1353,6 +1353,12 @@ BUFFER defaults to the current buffer.  SECONDS defaults to 0.5."
 (defmacro w3m-interactive-p ()
   '(called-interactively-p 'any))
 
+(defun w3m-ensure-slash (url)
+  "Ensure that a URL ends in a /.  Useful for concatenation purposes."
+  (if (or (equal url "") (eq ?/ (aref url (1- (length url)))))
+      url
+    (concat url "/")))
+
 ;; `flet' got obsolete since Emacs 24.3.
 (defmacro w3m-flet (bindings &rest body)
   "Make temporary overriding function definitions.
@@ -1582,12 +1588,6 @@ the function cell of FUNCs rather than their value cell.
 	      (insert (w3m-puny-encode idn))))
 	  (buffer-substring-no-properties (point-min) (point-max))))
     url))
-
-(defun w3m-ensure-slash (url)
-	"Ensure that a URL ends in a /. Useful for concatenation purposes."
-	(if (string=  "/" (string (elt url (1- (length url)))))
-			url
-		(concat url "/")))
 
 (provide 'w3m-util)
 
