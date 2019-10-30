@@ -70,12 +70,25 @@
 (require 'w3m-util)
 (require 'w3m-proc)
 
-;; Why these two variable are here is because w3m-ems.el uses.
+;; `w3m-use-tab-line' refers to this variable.
+(defcustom w3m-use-tab t
+  "Use emacs-w3m in \"Tabbed\" display mode.
+This variable is now DEPRECATED!  Please use `w3m-display-mode'
+instead.  When non-nil, emacs-w3m will make a reasonable effort to
+display all its buffers in a single window, which has a clickable
+tab bar along the top.
+See also `w3m-use-tab-line' and `w3m-use-tab-menubar'."
+  :group 'w3m
+  :type 'boolean)
+
+;; Why the two variable `w3m-select-buffer-hook' and `w3m-use-tab-line'
+;; are here is because w3m-ems.el uses.
 (defcustom w3m-select-buffer-hook nil
   "Hook run when a different emacs-w3m buffer is selected."
   :group 'w3m
   :type 'hook)
 
+(defvar tab-line-exclude-modes) ;; 27.1
 (eval-and-compile
   (defcustom w3m-use-tab-line (boundp 'tab-line-format)
     "Use `tab-line-format' instead of `header-line-format' to display tabs.
@@ -113,7 +126,15 @@ See also `w3m-use-tab'."
 				     (sit-for 0)))
 			       (select-frame (car cur))
 			       (select-window (cdr cur)))))))))
-	       (custom-set-default symbol value))))))
+	       (custom-set-default symbol value))
+	     (if (and value w3m-use-tab)
+		 (progn
+		   (require 'tab-line)
+		   (when (boundp 'tab-line-exclude-modes)
+		     (add-to-list 'tab-line-exclude-modes 'w3m-mode)))
+	       (when (boundp 'tab-line-exclude-modes)
+		 (setq tab-line-exclude-modes
+		       (delq 'w3m-mode tab-line-exclude-modes))))))))
 
 (eval-and-compile (require 'w3m-ems))
 
@@ -1428,16 +1449,6 @@ See also `show-help-function'."
 	     (custom-set-default symbol value)
 	   (unless noninteractive
 	     (w3m-menu-on-forefront value)))))
-
-(defcustom w3m-use-tab t
-  "Use emacs-w3m in \"Tabbed\" display mode.
-This variable is now DEPRECATED!  Please use `w3m-display-mode'
-instead.  When non-nil, emacs-w3m will make a reasonable effort to
-display all its buffers in a single window, which has a clickable
-tab bar along the top.
-See also `w3m-use-tab-line' and `w3m-use-tab-menubar'."
-  :group 'w3m
-  :type 'boolean)
 
 (defcustom w3m-add-tab-number nil
   "Non-nil means put sequential number to a title on tab."
@@ -11629,7 +11640,15 @@ Refer to variable `w3m-display-mode' for details."
     (when vals
       (setq w3m-use-tab (car vals)
 	    w3m-pop-up-windows (cadr vals)
-	    w3m-pop-up-frames (caddr vals)))))
+	    w3m-pop-up-frames (caddr vals))))
+  (if (and w3m-use-tab w3m-use-tab-line)
+      (progn
+	(require 'tab-line nil t)
+	(when (boundp 'tab-line-exclude-modes)
+	  (add-to-list 'tab-line-exclude-modes 'w3m-mode)))
+    (when (boundp 'tab-line-exclude-modes)
+      (setq tab-line-exclude-modes
+	    (delq 'w3m-mode tab-line-exclude-modes)))))
 
 (defcustom w3m-display-mode (pcase (list (and w3m-use-tab t)
 					 (and w3m-pop-up-windows t)
