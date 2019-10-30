@@ -70,6 +70,9 @@
 (require 'w3m-util)
 (require 'w3m-proc)
 
+(defvar w3m-use-tab-line)
+(defvar tab-line-exclude-modes) ;; 27.1
+
 ;; `w3m-use-tab-line' refers to this variable.
 (defcustom w3m-use-tab t
   "Use emacs-w3m in \"Tabbed\" display mode.
@@ -79,7 +82,21 @@ display all its buffers in a single window, which has a clickable
 tab bar along the top.
 See also `w3m-use-tab-line' and `w3m-use-tab-menubar'."
   :group 'w3m
-  :type 'boolean)
+  :type 'boolean
+  :set (lambda (symbol value)
+	 (prog1
+	     (custom-set-default symbol value)
+	   (when (boundp 'w3m-use-tab-line)
+	     ;; w3m.elc has already been loaded
+	     ;; or `w3m-use-tab-line' has already been set.
+	     (if (and value w3m-use-tab-line)
+		 (progn
+		   (require 'tab-line nil t)
+		   (when (boundp 'tab-line-exclude-modes)
+		     (add-to-list 'tab-line-exclude-modes 'w3m-mode)))
+	       (when (boundp 'tab-line-exclude-modes)
+		 (setq tab-line-exclude-modes
+		       (delq 'w3m-mode tab-line-exclude-modes))))))))
 
 ;; Why the two variable `w3m-select-buffer-hook' and `w3m-use-tab-line'
 ;; are here is because w3m-ems.el uses.
@@ -88,7 +105,6 @@ See also `w3m-use-tab-line' and `w3m-use-tab-menubar'."
   :group 'w3m
   :type 'hook)
 
-(defvar tab-line-exclude-modes) ;; 27.1
 (eval-and-compile
   (defcustom w3m-use-tab-line (boundp 'tab-line-format)
     "Use `tab-line-format' instead of `header-line-format' to display tabs.

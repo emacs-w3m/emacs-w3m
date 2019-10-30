@@ -2,7 +2,7 @@
 
 	Add w3m-mode to tab-line-exclude-modes when necessary
 
-	* w3m.el (w3m-use-tab-line, w3m-display-mode):
+	* w3m.el (w3m-use-tab, w3m-use-tab-line, w3m-display-mode):
 	Add w3m-mode to or remove it from tab-line-exclude-modes.
 
 2019-10-27  Spenser Truex  <web@spensertruex.com>
