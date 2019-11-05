@@ -1,3 +1,10 @@
+2019-11-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Restore tab-line if it is broken
+
+	* w3m.el (w3m-restore-tab-line): New function.
+	(w3m-reload-this-page, w3m-redisplay-this-page): Use it.
+
 2019-10-30  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Add w3m-mode to tab-line-exclude-modes when necessary

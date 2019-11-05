@@ -10049,6 +10049,12 @@ When called interactively, variables `w3m-user-agent' and
       (setq w3m-user-agent ua-string)))
   ua-string)
 
+(defun w3m-restore-tab-line ()
+  "Restore tab-line if it is broken."
+  (and w3m-use-tab w3m-use-tab-line (boundp 'tab-line-format)
+       (not (equal tab-line-format '(:eval (w3m-tab-line))))
+       (setq tab-line-format '(:eval (w3m-tab-line)))))
+
 (defun w3m-reload-this-page (&optional arg background)
   "Reload the current page, disregarding the cached contents.
 If the prefix arg ARG is given, it also clears forms and post data.
@@ -10060,6 +10066,7 @@ If the prefix arg is given three times, do both, ie. clear forms
 and post data, AND prompt the user to change the user-agent
 string to be sent for the reload."
   (interactive "P")
+  (w3m-restore-tab-line)
   (if w3m-current-url
       (let* (;; Don't move the history position.
 	     (w3m-history-reuse-history-elements 'reload)
@@ -10106,6 +10113,7 @@ If the prefix arg ARG is given, it also clears forms and post data."
   "Redisplay the current page.
 If the prefix arg ARG is given, it toggles the visibility of images."
   (interactive "P")
+  (w3m-restore-tab-line)
   (if (null w3m-current-url)
       (w3m-message "Can't redisplay this page")
     (when arg
