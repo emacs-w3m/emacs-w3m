@@ -10097,17 +10097,12 @@ string to be sent for the reload."
 
 (defun w3m-reload-all-pages (&optional arg)
   "Reload all pages, disregarding the cached contents.
-If the prefix arg ARG is given, it also clears forms and post data."
+The prefix arg ARG is passed to `w3m-reload-this-page' as the 1st arg."
   (interactive "P")
-  (if arg
-      (save-window-excursion
-	(dolist (buffer (w3m-list-buffers))
-	  (switch-to-buffer buffer)
-	  (w3m-reload-this-page)))
+  (save-window-excursion
     (dolist (buffer (w3m-list-buffers))
-      (save-window-excursion
-	(switch-to-buffer buffer)
-	(w3m-reload-this-page)))))
+      (switch-to-buffer buffer)
+      (w3m-reload-this-page arg))))
 
 (defun w3m-redisplay-this-page (&optional arg)
   "Redisplay the current page.

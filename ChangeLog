@@ -1,5 +1,11 @@
 2019-11-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	Fix a bug that has been standing for 13.5 years
+
+	* w3m.el (w3m-reload-all-pages): Pass arg to w3m-reload-this-page.
+
+2019-11-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	Restore tab-line if it is broken
 
 	* w3m.el (w3m-restore-tab-line): New function.
