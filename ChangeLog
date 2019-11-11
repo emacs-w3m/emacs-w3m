@@ -1,3 +1,17 @@
+2019-11-11  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make it fast to load w3m.elc (issue #73)
+
+	Change the way to update the value of `w3m-content-type-alist' so to do
+	on demand instead of updating it fully according to `mailcap-mime-data'
+	at the startup.  For example, the initial viewing method for the
+	content type "image/jpeg" is `(mailcap-mime-info "image/jpeg")', but
+	when viewing a jpeg image for the first time it will be replaced with
+	`("real-viewer" file)'.
+	* w3m.el (w3m-content-type-alist): Don't parse mailcap-mime-data.
+	(w3m-external-view): Parse mailcap-mime-data and update
+	w3m-content-type-alist.
+
 2019-11-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Fix a bug that has been standing for 13.5 years
