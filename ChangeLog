@@ -1,3 +1,13 @@
+2019-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Quote lang spec defined in w3m-accept-languages (bug#944519 of debian)
+
+	Language specifications defined with the "accept_language" entry in
+	the ~/.w3m/config file may possibly be the one like "en;q=1.0", of
+	which ";" will break a shell command.  This fix makes it quote such
+	a letter with `\'.
+	* w3m.el (w3m-download): Quote ; as well as whitespace in shell command.
+
 2019-11-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make it fast to load w3m.elc (issue #73)

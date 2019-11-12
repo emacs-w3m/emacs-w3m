@@ -5829,7 +5829,7 @@ NO-CACHE is ignored (always download)."
       (w3m-goto-ftp-url url filename)
     (let ((args (concat (mapconcat
 			 #'(lambda (x) (replace-regexp-in-string
-					"\\([\t ]\\)" "\\\\\\1" x))
+					"\\([\t ;]\\)" "\\\\\\1" x))
 			 `(,w3m-command
 			   ,@w3m-command-arguments
 			   ,@(w3m-w3m-expand-arguments
