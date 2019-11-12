@@ -5837,10 +5837,11 @@ NO-CACHE is ignored (always download)."
 			   ,url)
 			 " ")
 			;; awk should be GNU awk that supports BINMODE and RT.
+			;; END stuff makes it sure to download an empty file.
 			"| awk -v BINMODE=3 'BEGIN{Body=0; Line=\"\"}"
 			"(Body==0)&&(Line!=$0){Line=$0; print $0}"
-			"(Body==1){printf \"%s%s\",$0,RT> \"" filename "\"}"
-			"/^$/{Body=1}'")))
+			"(Body==1){printf \"%s%s\",$0,RT>\"" filename "\"}"
+			"/^$/{Body=1} END{printf \"\">>\"" filename "\"}'")))
       (let ((page-buffer (current-buffer))
 	    temp process)
 	(w3m-process-do-with-temp-buffer
@@ -5859,8 +5860,9 @@ NO-CACHE is ignored (always download)."
 		   (file-exists-p filename)
 		   (progn
 		     (goto-char (point-min))
-		     (search-forward (concat "\nW3m-current-url: " url "\n")
-				     nil t)))
+		     (re-search-forward (concat "^W3m-current-url: "
+						(regexp-quote url) "$")
+					nil t)))
 	      (progn
 		(w3m-cache-header url (buffer-substring (point) (point-max)) t)
 		(set-file-times filename (w3m-last-modified url))

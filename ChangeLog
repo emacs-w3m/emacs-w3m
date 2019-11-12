@@ -1,5 +1,11 @@
 2019-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	Work for downloading empty file (bug#944574 of debian)
+
+	* w3m.el (w3m-download): Make awk create a file even if it is empty.
+
+2019-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	Quote lang spec defined in w3m-accept-languages (bug#944519 of debian)
 
 	Language specifications defined with the "accept_language" entry in
