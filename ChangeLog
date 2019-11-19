@@ -1,3 +1,7 @@
+2019-11-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-download): Check for downloading status.
+
 2019-11-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Work for downloading empty file (bug#944574 of debian)

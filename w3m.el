@@ -5841,50 +5841,61 @@ NO-CACHE is ignored (always download)."
 			"| awk -v BINMODE=3 'BEGIN{Body=0; Line=\"\"}"
 			"(Body==0)&&(Line!=$0){Line=$0; print $0}"
 			"(Body==1){printf \"%s%s\",$0,RT>\"" filename "\"}"
-			"/^$/{Body=1} END{printf \"\">>\"" filename "\"}'")))
-      (let ((page-buffer (current-buffer))
-	    temp process)
-	(w3m-process-do-with-temp-buffer
-	    (success ;; t if success
-	     (let ((w3m-current-buffer page-buffer)
-		   (progress (cons (setq temp (buffer-name)) "-")))
-	       (prog1
-		   (setq process (w3m-process-start handler shell-file-name
-						    (list "-c" args)))
-		 (with-current-buffer page-buffer
-		   (push process w3m-current-process)
-		   (setq w3m-process-modeline-string
-			 (nconc w3m-process-modeline-string
-				(list progress)))))))
-	  (if (and success
-		   (file-exists-p filename)
-		   (progn
-		     (goto-char (point-min))
-		     (re-search-forward (concat "^W3m-current-url: "
-						(regexp-quote url) "$")
-					nil t)))
-	      (progn
-		(w3m-cache-header url (buffer-substring (point) (point-max)) t)
-		(set-file-times filename (w3m-last-modified url))
-		(with-current-buffer page-buffer
-		  (let ((w3m-verbose t))
-		    (w3m-message "File(%s) has been downloaded" filename))))
-	    (let ((reason (when (progn
-				  (goto-char (point-max))
-				  (skip-chars-backward "\t\n ")
-				  (not (bobp)))
-			    (buffer-substring (point-min) (point)))))
+			"/^$/{Body=1} END{printf \"\">>\"" filename "\"}'"))
+	  (page-buffer (current-buffer))
+	  temp process header status reason)
+      (w3m-process-do-with-temp-buffer
+	  (success ;; t if success
+	   (let ((w3m-current-buffer page-buffer)
+		 (progress (cons (setq temp (buffer-name)) "-")))
+	     (prog1
+		 (setq process (w3m-process-start handler shell-file-name
+						  (list "-c" args)))
+	       (with-current-buffer page-buffer
+		 (push process w3m-current-process)
+		 (setq w3m-process-modeline-string
+		       (nconc w3m-process-modeline-string
+			      (list progress)))))))
+	(if (and success
+		 (file-exists-p filename)
+		 (progn
+		   (goto-char (point-min))
+		   (re-search-forward (concat "^W3m-current-url: "
+					      (regexp-quote url) "$")
+				      nil t))
+		 (progn
+		   (setq header (buffer-substring (point) (point-max))
+			 status (car (w3m-w3m-parse-header url header)))
+		   (and (numberp status) (>= status 200) (< status 300))))
+	    (progn
+	      (w3m-cache-header url header t)
+	      (set-file-times filename (w3m-last-modified url))
 	      (with-current-buffer page-buffer
 		(let ((w3m-verbose t))
-		  (w3m-message "File(%s) downloading failed%s"
-			       filename
-			       (if reason (concat ":\n" reason) ""))))))
+		  (w3m-message "File(%s) has been downloaded" filename))))
+	  (when (file-exists-p filename) (delete-file filename))
+	  (setq reason (if (numberp status)
+			   (and (let ((case-fold-search t))
+				  (string-match
+				   "^http[^\t\n\r ]*[\t ]*\\(.+\\)$"
+				   header))
+				(concat ": " (match-string 1 header)))
+			 (when (progn
+				 (goto-char (point-max))
+				 (skip-chars-backward "\t\n ")
+				 (not (bobp)))
+			   (concat ":\n"
+				   (buffer-substring (point-min) (point))))))
 	  (with-current-buffer page-buffer
-	    (setq w3m-process-modeline-string
-		  (delq (assoc temp w3m-process-modeline-string)
-			w3m-process-modeline-string)
-		  w3m-current-process (delq process w3m-current-process)))
-	  success)))))
+	    (let ((w3m-verbose t))
+	      (w3m-message "File(%s) downloading failed%s"
+			   filename (or reason "")))))
+	(with-current-buffer page-buffer
+	  (setq w3m-process-modeline-string
+		(delq (assoc temp w3m-process-modeline-string)
+		      w3m-process-modeline-string)
+		w3m-current-process (delq process w3m-current-process)))
+	success))))
 
 ;;; Retrieve data:
 (defun w3m-remove-comments ()
