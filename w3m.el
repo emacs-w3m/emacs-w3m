@@ -5880,10 +5880,9 @@ NO-CACHE is ignored (always download)."
 				   "^http[^\t\n\r ]*[\t ]*\\(.+\\)$"
 				   header))
 				(concat ": " (match-string 1 header)))
-			 (when (progn
-				 (goto-char (point-max))
-				 (skip-chars-backward "\t\n ")
-				 (not (bobp)))
+			 (goto-char (point-max))
+			 (skip-chars-backward "\t\n ")
+			 (unless (bobp)
 			   (concat ":\n"
 				   (buffer-substring (point-min) (point))))))
 	  (with-current-buffer page-buffer
