@@ -1,3 +1,19 @@
+2019-11-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Enable image/webp, etc. to display
+
+	* w3m.el (w3m-image-type-alist): Build default value from image-types;
+	use defvar instead of defconst.
+	(w3m-image-type): Refer to ImageMagick variables; return `imagemagick',
+	`image-convert' or `convert' if image wants to be converted.
+
+	* w3m-ems.el (w3m-create-image, w3m-create-resized-image):
+	* w3m.el (w3m-create-image-page):
+	Don't use w3m-image-type-available-p redundantly with w3m-image-type.
+
+	* w3m-ems.el (w3m-create-image): Convert image if necessary, or pass
+	content-type to create-image when using image-convert.
+
 2019-11-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-download): Check for downloading status.

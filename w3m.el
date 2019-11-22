@@ -2466,14 +2466,20 @@ nil value means it has not been initialized.")
 (defvar w3m-arrived-shutdown-functions nil
   "Hook functions run after saving the arrived URLs database.")
 
-(defconst w3m-image-type-alist
-  '(("image/jpeg" . jpeg)
-    ("image/gif" . gif)
-    ("image/png" . png)
-    ("image/tiff" . tiff)
-    ("image/x-xbm" . xbm)
-    ("image/x-xpm" . xpm))
-  "Alist of content types and image types defined as the Emacs's features.")
+(defvar w3m-image-type-alist
+  (let ((types (and (boundp 'image-types)
+		    (delq 'imagemagick (copy-sequence image-types)))))
+    (when types
+      (delq nil
+	    (nconc
+	     (mapcar (lambda (type) (cons (format "image/%s" type) type))
+		     types)
+	     (when (memq 'xbm types) '(("image/x-xbm" . xbm)))
+	     (when (memq 'xpm types) '(("image/x-xpm" . xpm)))))))
+  "Alist of content types and image types defined as the Emacs features.
+The content types not listed in this constant, like image/webp, might
+be able to display if image-converter.el and some converter program are
+available, or ImageMagick is built-in in Emacs or installed.")
 
 (defconst w3m-toolbar-buttons
   '("back" "parent" "forward" "reload" "open" "home" "search" "image"
@@ -3495,8 +3501,32 @@ The database is kept in `w3m-entity-table'."
 	   (nreverse (cons (substring str start) buf)))))
 
 (defun w3m-image-type (content-type)
-  "Return an image type which corresponds to CONTENT-TYPE."
-  (cdr (assoc content-type w3m-image-type-alist)))
+  "Return an image type which corresponds to CONTENT-TYPE.
+The return value `image-convert' or `convert' means to convert image
+data to be able to display using the `image-convert' function or the
+external `convert' program respectively."
+  (and content-type w3m-image-type-alist ;; this is not emacs-nox
+       (or (cdr (assoc content-type w3m-image-type-alist))
+	   (let ((case-fold-search t) type)
+	     (and (string-match "\\`image/" content-type)
+		  (or (eq imagemagick-enabled-types t)
+		      (member (downcase (substring content-type (match-end 0)))
+			      (mapcar
+			       (lambda (x) (downcase (symbol-name x)))
+			       (if (fboundp 'imagemagick-types)
+				   (imagemagick-types)
+				 (cons 'WEBP imagemagick-enabled-types)))))
+		  (setq type (if (memq 'imagemagick image-types)
+				 'imagemagick ;; ImageMagick has been built-in
+			       (if (boundp 'image-use-external-converter)
+				   ;; Emacs >=27; to make it work, some
+				   ;; converter program is required to have
+				   ;; been installed; see image-converter.el.
+				   'image-convert
+				 (if (w3m-which-command "convert")
+				     'convert))))
+		  (push (cons content-type type) w3m-image-type-alist)
+		  type)))))
 
 (defun w3m-handle-non-anchor-buttons ()
   "Return a boolean value corresponding to the variable of the same name."
@@ -4124,8 +4154,9 @@ You are retrieving non-secure image(s).  Continue? ")
 
 (defun w3m-resize-image-interactive (image &optional rate changed-rate)
   "Interactively resize IMAGE.
-If RATE is not given, use `w3m-resize-image-scale'.
-CHANGED-RATE is currently changed rate / 100."
+RATE is a number in percent used to enlarge or shrink the image,
+defaults to the value of `w3m-resize-image-scale'.  CHANGED-RATE is
+a float number that says how much the image has already been resized."
   (let* ((msg-prompt "Resize: [+ =] enlarge [-] shrink [0] original [q] quit")
 	 (changed-rate (or changed-rate 1))
 	 (rate (or (and rate (min rate 99)) w3m-resize-image-scale))
@@ -6446,7 +6477,7 @@ If so return \"text/html\", otherwise \"text/plain\"."
        (eq (get-text-property (point-min) 'w3m-image-status) 'on)))
 
 (defun w3m-create-image-page (url type _charset page-buffer)
-  (when (w3m-image-type-available-p (w3m-image-type type))
+  (when (w3m-image-type type)
     (with-current-buffer page-buffer
       (let ((inhibit-read-only t))
 	(w3m-clear-local-variables)

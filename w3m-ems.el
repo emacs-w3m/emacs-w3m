@@ -164,25 +164,34 @@ and its cdr element is used as height."
 	(w3m-create-image url no-cache referer size handler))
     (let ((cur (current-buffer))
 	  (set-size size)
-	  image)
+	  type image)
       (w3m-process-do-with-temp-buffer
-	  (type (progn
-		  (set-buffer-multibyte nil)
-		  (w3m-retrieve url nil no-cache nil referer handler)))
+	  (content-type (progn
+			  (set-buffer-multibyte nil)
+			  (w3m-retrieve url nil no-cache nil referer handler)))
 	(goto-char (point-min))
-	(when (w3m-image-type-available-p
-	       (setq type
-		     (or (and (let (case-fold-search)
-				(looking-at
-				 "\\(GIF8\\)\\|\\(\377\330\\)\\|\211PNG\r\n"))
-			      (cond ((match-beginning 1) 'gif)
+	;; The image type that the Content-Type header specifies might
+	;; sometimes be wrong, so we parse actual image data as for at
+	;; least well-used types.
+	(when (if (let ((case-fold-search nil))
+		    (looking-at "\\(GIF8\\)\\|\\(\377\330\\)\\|\211PNG\r\n"))
+		  (w3m-image-type-available-p
+		   (setq type (cond ((match-beginning 1) 'gif)
 				    ((match-beginning 2) 'jpeg)
-				    (t 'png)))
-			 (w3m-image-type type))))
-	  (setq image (create-image
-		       (buffer-string) type t
-		       :ascent 'center
-		       :background w3m-image-default-background))
+				    (t 'png))))
+		(setq type (w3m-image-type content-type)))
+	  (and (eq type 'convert)
+	       content-type
+	       (string-match "\\`image/" content-type)
+	       (w3m-imagick-convert-buffer
+		(substring content-type (match-end 0)) "png")
+	       (setq type 'png))
+	  (setq image (apply #'create-image
+			     (buffer-string) type t
+			     :ascent 'center
+			     :background w3m-image-default-background
+			     (when (eq type 'image-convert)
+			       (list :format (intern content-type)))))
 	  (if (and w3m-resize-images set-size)
 	      (progn
 		(set-buffer-multibyte t)
@@ -220,7 +229,7 @@ and its cdr element is used as height."
 	  (type (progn
 		  (set-buffer-multibyte nil)
 		  (w3m-retrieve url nil nil nil referer handler)))
-	(when (w3m-image-type-available-p (setq type (w3m-image-type type)))
+	(when (setq type (w3m-image-type type))
 	  (setq image (create-image (buffer-string) type t :ascent 'center))
 	  (progn
 	    (set-buffer-multibyte t)
