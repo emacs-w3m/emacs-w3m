@@ -2477,7 +2477,7 @@ nil value means it has not been initialized.")
 	     (when (memq 'xbm types) '(("image/x-xbm" . xbm)))
 	     (when (memq 'xpm types) '(("image/x-xpm" . xpm)))))))
   "Alist of content types and image types defined as the Emacs features.
-The content types not listed in this constant, like image/webp, might
+The content types not listed in this variable, like image/webp, might
 be able to display if image-converter.el and some converter program are
 available, or ImageMagick is built-in in Emacs or installed.")
 
