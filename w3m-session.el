@@ -855,7 +855,7 @@ url will be created, only if it does not already exist."
 		 (w3m-list-buffers)))
 	url cbuf cwin buf pos history url-title)
     (dolist (win (window-list))
-      (when (string-match "\\*w3m\\*" (buffer-name (window-buffer win)))
+      (when (string-match "\\*w3m.*\\*" (buffer-name (window-buffer win)))
 	(setq cwin win)))
     (when (not cwin)
       (error "No visible w3m windows found."))
