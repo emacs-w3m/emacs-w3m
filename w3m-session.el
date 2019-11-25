@@ -842,23 +842,30 @@ If point is selecting a session, then a buffer will be created for each
 element (url) of that session that does not already exist. If point is
 selecting a session element, then only a single buffer for that
 url will be created, only if it does not already exist."
-  (let ((title (nth 0 session))
-	(urls (nth 2 session))
-	(cnum (nth 3 session))
-	(i 0)
-	(session-buf (current-buffer))
-	(session-win (selected-window))
-	(w3m-urls ; checking for duplicates
-	 (mapcar (lambda(x)
-		   (with-current-buffer x
-		     (cons w3m-current-url x)))
-		 (w3m-list-buffers)))
-	url cbuf cwin buf pos history url-title)
-    (dolist (win (window-list))
-      (when (string-match "\\*w3m.*\\*" (buffer-name (window-buffer win)))
-	(setq cwin win)))
+  (let* ((title (nth 0 session))
+	 (urls (nth 2 session))
+	 (cnum (nth 3 session))
+	 (snum (count-lines (point-min) (line-beginning-position)))
+	 (i 0)
+	 (session-buf (current-buffer))
+	 (session-win (selected-window))
+	 (w3m-urls ; checking for duplicates
+	  (mapcar (lambda(x)
+		    (with-current-buffer x
+		      (cons w3m-current-url x)))
+		  (w3m-list-buffers)))
+	 (cwin (or (catch 'window-to-use
+		     (save-current-buffer
+		       (dolist (win (window-list))
+			 (set-buffer (window-buffer win))
+			 (when (derived-mode-p 'w3m-mode)
+			   (throw 'window-to-use win)))))
+		   ;; There is no w3m-mode window.
+		   session-win))
+	 url cbuf buf pos history url-title
+	 w3m-pop-up-windows w3m-pop-up-frames)
     (when (not cwin)
-      (error "No visible w3m windows found."))
+      (error "No visible w3m window found"))
     (with-selected-window cwin
       (w3m-message "Session goto(%s)..." title)
       (while (setq url (pop urls))
@@ -881,7 +888,8 @@ url will be created, only if it does not already exist."
 	    (setq w3m-history-flat history)
 	    (w3m-history-tree pos))
 	  (setq i (1+ i))))))
-    (set-window-buffer session-win session-buf)
+    (unless (get-buffer-window session-buf)
+      (w3m-session-select snum))
     (when cbuf
       (set-window-buffer cwin cbuf))
     (w3m-message "Session goto(%s)...done" title)))

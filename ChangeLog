@@ -1,3 +1,10 @@
+2019-11-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	See major-mode rather than buffer name to test if it is in w3m-mode
+
+	* w3m-sesseion.el (w3m-session-goto-session): Test major-mode;
+	bind w3m-pop-up-windows and w3m-pop-up-frames to nil.
+
 2019-11-25  Foo Bar  <4829djaskdfj@gmail.com>
 
 	Make regexp match buffer name that is arbitrary but begins with *w3m
