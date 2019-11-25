@@ -1,3 +1,11 @@
+2019-11-25  Foo Bar  <4829djaskdfj@gmail.com>
+
+	Make regexp match buffer name that is arbitrary but begins with *w3m
+
+	* w3m-sesseion.el (w3m-session-goto-session): Fix regex used to detect
+	if there are visible w3m windows.  Used when restoring a w3m session
+	(PR#74).
+
 2019-11-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Enable image/webp, etc. to display
