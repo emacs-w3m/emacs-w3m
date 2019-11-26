@@ -6585,7 +6585,9 @@ to use, and updates the buffer's local variables accordingly."
 Choice is based upon content-type or mime-type TYPE."
   ;; Select a content type.
   (unless (and (stringp type)
-	       (assoc type w3m-content-type-alist))
+	       (if (string-match "\\`image/" type)
+		   (w3m-image-type type)
+		 (assoc type w3m-content-type-alist)))
     (w3m--prompt-for-unknown-content-type url type page-buffer))
   (setq w3m-current-coding-system nil)  ; Reset decoding status of this buffer.
   (setq type (w3m-prepare-content url type charset))
