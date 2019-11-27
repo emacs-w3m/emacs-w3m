@@ -6521,11 +6521,13 @@ Attempting external view or download..."
 
 (defun w3m--prompt-for-unknown-content-type (url type page-buffer)
   "Internal function for `w3m-create-page'.
-Displays a url's raw contents, prompts the user for the mime-type
-to use, and updates the buffer's local variables accordingly."
+Display raw contents, prompt the user for the mime-type to use, and
+update buffer's local variables accordingly.  Return a cons of content
+type and urls, where urls is a cons of a url to have been restored and
+a url to download or external-view."
   (let ((cur (current-buffer))
 	(mb enable-multibyte-characters)
-	dots cont)
+	dots cont restore quit ourl)
     (with-temp-buffer
       (rename-buffer " *Raw Contents*" t)
       (set-buffer-multibyte mb)
@@ -6559,67 +6561,78 @@ to use, and updates the buffer's local variables accordingly."
 			     (buffer-substring (point) (point-max)))))))
 	(insert cont)
 	(goto-char (point-min))
-	(setq type
-	      (condition-case nil
-		  (completing-read
-		   (format "Content type for %s (%s): "
-			   (file-name-nondirectory url)
-			   (if (zerop (length type))
-			       "default download or external-view"
-			     (concat "`" type "' is unknown;\
- default download or external-view")))
-		   (cons '("Download_or_External-view" ".*" nil nil)
-			 w3m-content-type-alist)
-		   nil t)
-		;; The user forced terminating the session with C-g.
-		(quit
-		 (w3m-process-stop page-buffer) ;; Needless?
-		 (with-current-buffer page-buffer
-		   (setq w3m-current-process nil))
-		 (w3m-view-previous-page))))
-	(unless (equal type "Download_or_External-view")
-	  (setf (w3m-arrived-content-type url) type))))))
+	(condition-case nil
+	    (progn
+	      (setq type (completing-read
+			  (format "\
+Content type for %s (%sjust type <RET> to download or external-view): "
+				  (file-name-nondirectory url)
+				  (if (zerop (length type)) ""
+				    (concat "\"" type "\" is unknown; ")))
+			  w3m-content-type-alist nil t))
+	      (if (zerop (length type))
+		  (setq restore t)
+		(setf (w3m-arrived-content-type url) type)))
+	  (quit ;; The user forced terminating the session with C-g.
+	   (setq quit t)))))
+    (when (or restore quit)
+      (w3m-process-stop page-buffer)
+      (with-current-buffer page-buffer
+	(setq w3m-current-process nil)
+	(cond (w3m-current-url
+	       (w3m-redisplay-this-page nil t))
+	      ((caar (w3m-history-backward))
+	       (w3m-view-previous-page nil t))
+	      (quit (w3m-delete-buffer)))
+	(setq ourl w3m-current-url)))
+    (when quit (keyboard-quit))
+    (cons type (and ourl (cons ourl url)))))
 
 (defun w3m-create-page (url type charset page-buffer)
   "Select a renderer or other handler for URL.
 Choice is based upon content-type or mime-type TYPE."
-  ;; Select a content type.
-  (unless (and (stringp type)
-	       (if (string-match "\\`image/" type)
-		   (w3m-image-type type)
-		 (assoc type w3m-content-type-alist)))
-    (w3m--prompt-for-unknown-content-type url type page-buffer))
-  (setq w3m-current-coding-system nil)  ; Reset decoding status of this buffer.
-  (setq type (w3m-prepare-content url type charset))
-  (w3m-safe-decode-buffer url charset type)
-  (setq charset (or charset w3m-current-content-charset))
-  (when w3m-use-filter (w3m-filter url))
-  (w3m-relationship-estimate url)
-  ;; Create pages.
-  (cond
-   ((string-match "\\`text/" type)
-    (w3m-create-text-page url type charset page-buffer))
-   ((string-match "\\`image/" type)
-    (if (display-images-p)
-	(w3m-create-image-page url type charset page-buffer)
-      (w3m--unsupported-display page-buffer url type)))
-   ((member type w3m-doc-view-content-types)
-    (if (not (display-images-p))
-	(w3m--unsupported-display page-buffer url type)
+  (let (download-url)
+    ;; Select a content type.
+    (unless (and (stringp type)
+		 (or (assoc type w3m-content-type-alist)
+		     (w3m-image-type type)))
+      (let ((tem (w3m--prompt-for-unknown-content-type url type page-buffer)))
+	(setq type (car tem))
+	(if (consp (cdr tem))
+	    (setq url (cadr tem)
+		  download-url (cddr tem))
+	  (setq url (or (cdr tem) url)))))
+    (setq w3m-current-coding-system nil) ; Reset decoding status of this buffer.
+    (setq type (w3m-prepare-content url type charset))
+    (w3m-safe-decode-buffer url charset type)
+    (setq charset (or charset w3m-current-content-charset))
+    (when w3m-use-filter (w3m-filter url))
+    (w3m-relationship-estimate url)
+    ;; Create pages.
+    (cond
+     ((string-match "\\`text/" type)
+      (w3m-create-text-page url type charset page-buffer))
+     ((string-match "\\`image/" type)
+      (if (display-images-p)
+	  (w3m-create-image-page url type charset page-buffer)
+	(w3m--unsupported-display page-buffer url type)))
+     ((member type w3m-doc-view-content-types)
+      (if (not (display-images-p))
+	  (w3m--unsupported-display page-buffer url type)
+	(with-current-buffer page-buffer
+	  (setq w3m-current-url (if (w3m-arrived-p url)
+				    (w3m-real-url url)
+				  url)))
+	(w3m-doc-view url)))
+     (t
       (with-current-buffer page-buffer
 	(setq w3m-current-url (if (w3m-arrived-p url)
 				  (w3m-real-url url)
-				url)))
-      (w3m-doc-view url)))
-   (t
-    (with-current-buffer page-buffer
-      (setq w3m-current-url (if (w3m-arrived-p url)
-				(w3m-real-url url)
-			      url)
-	    w3m-current-title (file-name-nondirectory w3m-current-url))
-      (goto-char (point-min))
-      (w3m-external-view url)
-      'external-view))))
+				url)
+	      w3m-current-title (or (w3m-arrived-title w3m-current-url)
+				    (file-name-nondirectory w3m-current-url)))
+	(w3m-external-view (or download-url url))
+	'external-view)))))
 
 (defun w3m-relationship-estimate (url)
   "Estimate relationships between a page and others."
@@ -6914,11 +6927,13 @@ If COUNT is zero, you will visit the top of this site."
 	(error "No parent page for: %s" w3m-current-url))))
    (t (error "w3m-current-url is not set"))))
 
-(defun w3m-view-previous-page (&optional count)
+(defun w3m-view-previous-page (&optional count no-store-pos)
   "Move back COUNT pages in the history.
 If COUNT is a positive integer, move backward COUNT times in the
 history.  If COUNT is a negative integer, moving forward is performed.
-COUNT is treated as 1 by default if it is omitted."
+COUNT is treated as 1 by default if it is omitted.  NO-STORE-POS if it
+is non-nil means not to store the window positions before going to the
+previous page."
   (interactive "p")
   (unless w3m-current-url
     ;; This page may have not been registered in the history since an
@@ -6950,7 +6965,7 @@ COUNT is treated as 1 by default if it is omitted."
 	(if (caar hist)
 	    (let ((w3m-prefer-cache t))
 	      ;; Save last position.
-	      (w3m-history-store-position)
+	      (or no-store-pos (w3m-history-store-position))
 	      (w3m-goto-url (caar hist) nil nil
 			    (w3m-history-plist-get :post-data)
 			    (w3m-history-plist-get :referer)
@@ -6963,7 +6978,7 @@ COUNT is treated as 1 by default if it is omitted."
 	  (if (and (equal w3m-current-url "about://cookie/")
 		   (> (length (w3m-list-buffers t)) 1))
 	      (w3m-delete-buffer)
-	    (message "There's no more history")))))))
+	    (w3m-message "There's no more history")))))))
 
 (defun w3m-view-next-page (&optional count)
   "Move forward COUNT pages in history.
@@ -10164,9 +10179,11 @@ The prefix arg ARG is passed to `w3m-reload-this-page' as the 1st arg."
       (switch-to-buffer buffer)
       (w3m-reload-this-page arg))))
 
-(defun w3m-redisplay-this-page (&optional arg)
+(defun w3m-redisplay-this-page (&optional arg no-store-pos)
   "Redisplay the current page.
-If the prefix arg ARG is given, it toggles the visibility of images."
+If the prefix arg ARG is given, it toggles the visibility of images.
+NO-STORE-POS if it is non-nil means not to store the window positions
+before redisplaying."
   (interactive "P")
   (w3m-restore-tab-line)
   (if (null w3m-current-url)
@@ -10177,7 +10194,7 @@ If the prefix arg ARG is given, it toggles the visibility of images."
 	  (w3m-history-reuse-history-elements
 	   ;; Don't move the history position.
 	   'reload))
-      (w3m-history-store-position)
+      (or no-store-pos (w3m-history-store-position))
       (w3m-goto-url w3m-current-url 'redisplay)
       (w3m-history-restore-position))))
 

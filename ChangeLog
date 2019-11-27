@@ -1,3 +1,16 @@
+2019-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Improve unknown content-type handling
+
+	* w3m.el (w3m--prompt-for-unknown-content-type): Restore the page view
+	if the one of which the content-type is unknown tried to view; return
+	a cons of content-type and urls, where urls is a cons of a url to have
+	been restored and a url to download or external-view.
+	(w3m-create-page): Restore url and title after trying to view url of
+	unknown content-type.
+	(w3m-view-previous-page, w3m-redisplay-this-page): Don't store window
+	potisions to history if the new arg `no-store-pos' is given.
+
 2019-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-create-page): Check if image type is valid as well.
