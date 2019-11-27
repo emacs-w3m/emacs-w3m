@@ -9,7 +9,7 @@
 	(w3m-create-page): Restore url and title after trying to view url of
 	unknown content-type.
 	(w3m-view-previous-page, w3m-redisplay-this-page): Don't store window
-	potisions to history if the new arg `no-store-pos' is given.
+	positions to history if the new arg `no-store-pos' is given.
 
 2019-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
