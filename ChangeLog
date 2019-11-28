@@ -1,3 +1,12 @@
+2019-11-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Miscellaneous fixes
+
+	* w3m.el (w3m--prompt-for-unknown-content-type):
+	Don't use keyboard-quit as it causes "error in process sentinel: Quit".
+	(w3m-create-page): Noop if it does quit.
+	(w3m-redisplay-pages-automatically): Silence w3m-redisplay-this-page.
+
 2019-11-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Improve unknown content-type handling

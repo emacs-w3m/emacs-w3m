@@ -6562,7 +6562,7 @@ a url to download or external-view."
 	(insert cont)
 	(goto-char (point-min))
 	(condition-case nil
-	    (progn
+	    (let ((inhibit-quit nil))
 	      (setq type (completing-read
 			  (format "\
 Content type for %s (%sjust type <RET> to download or external-view): "
@@ -6585,54 +6585,63 @@ Content type for %s (%sjust type <RET> to download or external-view): "
 	       (w3m-view-previous-page nil t))
 	      (quit (w3m-delete-buffer)))
 	(setq ourl w3m-current-url)))
-    (when quit (keyboard-quit))
-    (cons type (and ourl (cons ourl url)))))
+    (if quit
+	'quit
+      (cons type (and ourl (cons ourl url))))))
 
 (defun w3m-create-page (url type charset page-buffer)
   "Select a renderer or other handler for URL.
 Choice is based upon content-type or mime-type TYPE."
   (let (download-url)
     ;; Select a content type.
-    (unless (and (stringp type)
-		 (or (assoc type w3m-content-type-alist)
-		     (w3m-image-type type)))
-      (let ((tem (w3m--prompt-for-unknown-content-type url type page-buffer)))
-	(setq type (car tem))
-	(if (consp (cdr tem))
-	    (setq url (cadr tem)
-		  download-url (cddr tem))
-	  (setq url (or (cdr tem) url)))))
-    (setq w3m-current-coding-system nil) ; Reset decoding status of this buffer.
-    (setq type (w3m-prepare-content url type charset))
-    (w3m-safe-decode-buffer url charset type)
-    (setq charset (or charset w3m-current-content-charset))
-    (when w3m-use-filter (w3m-filter url))
-    (w3m-relationship-estimate url)
-    ;; Create pages.
-    (cond
-     ((string-match "\\`text/" type)
-      (w3m-create-text-page url type charset page-buffer))
-     ((string-match "\\`image/" type)
-      (if (display-images-p)
-	  (w3m-create-image-page url type charset page-buffer)
-	(w3m--unsupported-display page-buffer url type)))
-     ((member type w3m-doc-view-content-types)
-      (if (not (display-images-p))
-	  (w3m--unsupported-display page-buffer url type)
+    (when (or
+	   (and (stringp type)
+		(or (assoc type w3m-content-type-alist)
+		    (w3m-image-type type)))
+	   (let ((tem (w3m--prompt-for-unknown-content-type
+		       url type page-buffer)))
+	     (if (eq tem 'quit) ;; Terminated by C-g.
+		 nil
+	       (setq type (car tem))
+	       ;; If the type is still unknown, i.e. a user gave up deciding,
+	       ;; the above function w3m--prompt-* returns a url to have been
+	       ;; re-visited to, and a url to download or external-view.
+	       (when (consp (cdr tem))
+		 (setq url (cadr tem)
+		       download-url (cddr tem)))
+	       t)))
+      ;; Reset decoding status of this buffer.
+      (setq w3m-current-coding-system nil)
+      (setq type (w3m-prepare-content url type charset))
+      (w3m-safe-decode-buffer url charset type)
+      (setq charset (or charset w3m-current-content-charset))
+      (when w3m-use-filter (w3m-filter url))
+      (w3m-relationship-estimate url)
+      ;; Create pages.
+      (cond
+       ((string-match "\\`text/" type)
+	(w3m-create-text-page url type charset page-buffer))
+       ((string-match "\\`image/" type)
+	(if (display-images-p)
+	    (w3m-create-image-page url type charset page-buffer)
+	  (w3m--unsupported-display page-buffer url type)))
+       ((member type w3m-doc-view-content-types)
+	(if (not (display-images-p))
+	    (w3m--unsupported-display page-buffer url type)
+	  (with-current-buffer page-buffer
+	    (setq w3m-current-url (if (w3m-arrived-p url)
+				      (w3m-real-url url)
+				    url)))
+	  (w3m-doc-view url)))
+       (t
 	(with-current-buffer page-buffer
 	  (setq w3m-current-url (if (w3m-arrived-p url)
 				    (w3m-real-url url)
-				  url)))
-	(w3m-doc-view url)))
-     (t
-      (with-current-buffer page-buffer
-	(setq w3m-current-url (if (w3m-arrived-p url)
-				  (w3m-real-url url)
-				url)
-	      w3m-current-title (or (w3m-arrived-title w3m-current-url)
-				    (file-name-nondirectory w3m-current-url)))
-	(w3m-external-view (or download-url url))
-	'external-view)))))
+				  url)
+		w3m-current-title (or (w3m-arrived-title w3m-current-url)
+				      (file-name-nondirectory w3m-current-url)))
+	  (w3m-external-view (or download-url url))
+	  'external-view))))))
 
 (defun w3m-relationship-estimate (url)
   "Estimate relationships between a page and others."
@@ -10285,7 +10294,8 @@ displayed in the other unselected windows will also change unwantedly."
 				  (/ (count-lines (window-start) (point))
 				     (float (max 1 (1- (window-height))))))))
 		    (w3m-condition-case nil
-			(let (w3m-clear-display-while-reading)
+			(let ((w3m-message-silent t)
+			      w3m-clear-display-while-reading)
 			  (w3m-redisplay-this-page))
 		      ;; Try to do reloading when redisplaying fails.
 		      (error (w3m-reload-this-page)))
