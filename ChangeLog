@@ -1,3 +1,11 @@
+2019-12-15  Boruch Baum  <boruch_baum@gmx.com>
+
+	*  (w3m--download-sentinel): When wget completes successfully, but
+	issues an exit code '4' to indicate a network anomaly, treat the
+	download as 'probably' successful.
+	(w3m-download-using-wget): For pathnames of saved files, convert
+	embedded spaces to underscores.
+
 2019-07-02  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-download.el (w3m-download-refresh-interval): Reduce from 16 to

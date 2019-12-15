@@ -1182,14 +1182,24 @@ Reference `set-process-sentinel'."
      (let ((inhibit-read-only t)
            (kill-buffer-query-functions nil)
            (save-path w3m--download-save-path)
+           (probably "")
            (n 1) metadata-error)
       (goto-char (point-max))
       (insert (concat "\n" event))
       (cond
        ((string-match "^open" event) t)
-       ((string-match "^finished" event)
+       ((or (string-match "^finished" event)
+            (and (search-backward "100%" nil t)
+                 (string= "wget" (car w3m--download-cmd))
+                 (string= " 4" (substring event -3 -1))))
         (pcase (car w3m--download-cmd)
          ("wget"
+           (when (not (string-match "^finished" event))
+             (goto-char (point-max))
+             (w3m--message t 'w3m-warning
+               "Warning: wget is reporting its infamous `error 4` for download %s"
+               w3m--download-url)
+             (setq probably "probably "))
            ;; TODO: Maybe keep buffer open if there was an error in
            ;; performing the metadata tagging?
            (condition-case err
@@ -1199,12 +1209,13 @@ Reference `set-process-sentinel'."
             (while (file-exists-p (format "%s.%d" save-path n))
               (incf n))
             (setq save-path (format "%s.%d" save-path n)))
-           (shell-command (format "mv %s.PART %s" w3m--download-save-path save-path))
+           (shell-command (format "mv \"%s.PART\" \"%s\"" w3m--download-save-path save-path))
            (if metadata-error
              (w3m--message t 'w3m-error
                "Download completed successfully, but failed to apply metadata\n%s"
                save-path)
-            (w3m--message t t "Download completed successfully.\n%s"
+            (w3m--message t t "Download %scompleted successfully.\n%s"
+                              probably
                               (or w3m--download-save-path ""))))
          ("youtube-dl"
            (w3m--message t t "Download completed successfully.\n%s"
@@ -1993,7 +2004,8 @@ Are you trying to resume an aborted partial download? ")))
                (setq alt-extension (file-name-extension alt-basename)))
       (setq basename alt-basename)
       (setq extension alt-extension)
-      (setq save-path (concat w3m-default-save-directory alt-basename)))
+      (unless save-path
+        (setq save-path (concat w3m-default-save-directory alt-basename))))
     (when current-prefix-arg
       (setq save-path
         (w3m-read-file-name
@@ -2002,9 +2014,11 @@ Are you trying to resume an aborted partial download? ")))
           basename)))
     (setq save-path
       (expand-file-name
-        (w3m--download-validate-basename (or save-path url) t)
+        (replace-regexp-in-string " " "_"
+          (w3m--download-validate-basename (or save-path url) t))
         (if save-path
-          (file-name-directory save-path)
+          (or (file-name-directory save-path)
+              w3m-default-save-directory)
          w3m-default-save-directory)))
     (when (and w3m-download-save-metadata
                caption
