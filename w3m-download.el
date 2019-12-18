@@ -583,7 +583,8 @@ ending with a colon `:', followed by the regex for the filter."
   :type '(repeat (string :format "%v\n")))
 
 (defcustom w3m-download-video-alist
-  '(("\\.youtube\\." . "-f 18 --newline"))
+  '(("\\.youtube\\." . "-f 18 --newline")
+    ("\\.youtu\\.be\\." . "-f 18 --newline"))
   "*Specific arguments to use for downloading from specific urls.
 
 This data is used for function `w3m-download-video-at-point' and
@@ -2089,7 +2090,7 @@ requests."
                                         filename))
                           (message nil)))
                 (write-region (point-min) (point-max) filename)
-                (w3m-touch-file filename (w3m-last-modified url))
+                (set-file-times filename (w3m-last-modified url))
                 t))
           (ding)
           (with-current-buffer page-buffer
