@@ -1,3 +1,11 @@
+2019-12-18  Boruch Baum  <boruch_baum@gmx.com>
+
+	Bugfix for changes to PR#50
+
+	* w3m.el (w3m-select-buffer-show-this-line): BUGFIX: Revert commit
+	69064d1e6e and 6dfac56d92 to prevent buffers being marked 'seen' when
+	performing fly-by scroll in select-buffer window.
+
 2019-11-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Miscellaneous fixes

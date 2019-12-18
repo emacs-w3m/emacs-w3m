@@ -8773,10 +8773,12 @@ or a list which consists of the following elements:
 (make-variable-buffer-local 'w3m-buffer-unseen)
 
 (defun w3m-set-buffer-unseen ()
-  (setq w3m-buffer-unseen t))
+  (setq w3m-buffer-unseen t)
+  (add-hook 'pre-command-hook 'w3m-set-buffer-seen nil t))
 
 (defun w3m-set-buffer-seen ()
-  (setq w3m-buffer-unseen nil))
+  (setq w3m-buffer-unseen nil)
+  (remove-hook 'pre-command-hook 'w3m-set-buffer-seen t))
 
 (defun w3m-move-unseen-buffer ()
   "Move to the next unseen buffer."
@@ -11333,8 +11335,6 @@ The following command keys are available:
 		     w3m-select-buffer-horizontal-window)))
      (t (setq w3m-select-buffer-window (get-largest-window))))
     (set-window-buffer w3m-select-buffer-window buffer)
-    (with-current-buffer buffer (w3m-set-buffer-seen))
-    (w3m-select-buffer-generate-contents buffer)
     (when (and interactive-p (eq obuffer buffer))
       (save-selected-window
 	(pop-to-buffer buffer)
