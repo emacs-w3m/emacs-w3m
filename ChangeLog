@@ -1,3 +1,8 @@
+2019-12-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-download): Decompress downloaded file according to
+	Content-Encoding header.
+
 2019-12-18  Boruch Baum  <boruch_baum@gmx.com>
 
 	Bugfix for changes to PR#50

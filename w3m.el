@@ -5898,8 +5898,30 @@ NO-CACHE is ignored (always download)."
 		   (setq header (buffer-substring (point) (point-max))
 			 status (car (w3m-w3m-parse-header url header)))
 		   (and (numberp status) (>= status 200) (< status 300))))
-	    (progn
+	    (let* ((case-fold-search t)
+		   (decoder (when (string-match
+				   "^content-encoding:[\t\n ]*\\([^\t\n ]+\\)"
+				   header)
+			      (downcase (match-string 1 header))))
+		   tempname)
 	      (w3m-cache-header url header t)
+	      (and decoder
+		   (setq decoder (cdr (assoc decoder w3m-encoding-alist)))
+		   (setq decoder (cdr (assq decoder w3m-decoder-alist)))
+		   (setq tempname (concat filename (make-temp-name ".")))
+		   (if (zerop (call-process
+			       shell-file-name nil nil nil
+			       "-c"
+			       (concat "cat \"" filename "\"|"
+				       (car decoder) " "
+				       (mapconcat #'identity
+						  (cadr decoder) " ")
+				       ">\"" tempname "\"")))
+		       (progn
+			 (delete-file filename)
+			 (rename-file tempname filename))
+		     (when (file-exists-p tempname)
+		       (delete-file tempname))))
 	      (set-file-times filename (w3m-last-modified url))
 	      (with-current-buffer page-buffer
 		(let ((w3m-verbose t))
