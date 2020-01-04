@@ -5935,13 +5935,11 @@ NO-CACHE is ignored (always download)."
 		   (if (zerop (call-process
 			       shell-file-name nil nil nil
 			       "-c"
- (setq x1
 			       (concat "cat \"" filename "\"|\""
 				       (car decoder) "\" \""
 				       (mapconcat #'identity
 						  (cadr decoder) "\" \"")
 				       "\">\"" tempname "\"")))
-)
 		       (rename-file tempname filename t)
 		     (when (file-exists-p tempname)
 		       (delete-file tempname))))
