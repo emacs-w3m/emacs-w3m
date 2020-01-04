@@ -1,6 +1,6 @@
 ;;; w3m.el --- an Emacs interface to w3m -*- lexical-binding: t -*-
 
-;; Copyright (C) 2000-2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000-2020 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -5837,25 +5837,48 @@ NO-CACHE is ignored (always download)."
 	(if (file-directory-p filename)
 	    (error "File(%s) is a directory" filename)
 	  (delete-file filename)))
-    (let ((basename (file-name-nondirectory (w3m-url-strip-query url))))
+    (let ((basename (file-name-nondirectory (w3m-url-strip-query url)))
+	  ;; Make the M-p command offer an original url string.
+	  (file-name-history
+	   (cons
+	    (abbreviate-file-name
+	     (expand-file-name
+	      (if (string-match "\\`[^\n\t :]+:/+" url)
+		  (substring url (match-end 0))
+		url)
+	      (condition-case nil
+		  (eval (car (get 'w3m-default-save-directory 'standard-value))
+			t)
+		(error w3m-default-save-directory))))
+	    file-name-history))
+	  dir)
       (when (string-match "\\`[\t ]*\\'" basename)
 	(when (string-match "\\`[\t ]*\\'"
 			    (setq basename (file-name-nondirectory url)))
 	  (setq basename "index.html")))
       (while (not filename)
-	(setq filename
-	      (w3m-read-file-name (format "Download %s to: " url)
-				  w3m-default-save-directory basename))
-	(when (file-exists-p filename)
-	  (if (file-directory-p filename)
-	      (message "File(%s) is a directory" (prog1 filename
-						   (sit-for 1)
-						   (setq filename nil)))
-	    (if (y-or-n-p (format "File(%s) already exists. Overwrite? "
-				  filename))
-		(delete-file filename)
-	      (setq filename nil))
-	    (message nil))))))
+	(setq filename (w3m-read-file-name
+			(format "Download %s to: " url)
+			w3m-default-save-directory basename)
+	      dir (directory-file-name (file-name-directory filename)))
+	(cond ((file-exists-p filename)
+	       (if (file-directory-p filename)
+		   (message "File(%s) is a directory" (prog1 filename
+							(sit-for 1)
+							(setq filename nil)))
+		 (if (y-or-n-p (format "File(%s) already exists. Overwrite? "
+				       filename))
+		     (delete-file filename)
+		   (setq filename nil))))
+	      ((file-exists-p dir)
+	       (unless (file-directory-p dir)
+		 (if (y-or-n-p (format "File(%s) is not a directory. Delete? "
+				       dir))
+		     (delete-file dir)
+		   (setq filename nil)))))
+	(message nil))
+      (unless (file-exists-p dir)
+	(make-directory dir t))))
   (if (and w3m-use-ange-ftp (string-match "\\`ftp://" url))
       (w3m-goto-ftp-url url filename)
     (let ((args (concat (mapconcat
@@ -5912,14 +5935,14 @@ NO-CACHE is ignored (always download)."
 		   (if (zerop (call-process
 			       shell-file-name nil nil nil
 			       "-c"
-			       (concat "cat \"" filename "\"|"
-				       (car decoder) " "
+ (setq x1
+			       (concat "cat \"" filename "\"|\""
+				       (car decoder) "\" \""
 				       (mapconcat #'identity
-						  (cadr decoder) " ")
-				       ">\"" tempname "\"")))
-		       (progn
-			 (delete-file filename)
-			 (rename-file tempname filename))
+						  (cadr decoder) "\" \"")
+				       "\">\"" tempname "\"")))
+)
+		       (rename-file tempname filename t)
 		     (when (file-exists-p tempname)
 		       (delete-file tempname))))
 	      (set-file-times filename (w3m-last-modified url))

@@ -1,3 +1,9 @@
+2020-01-04  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-download): Temporarily add a url string that a query
+	part is not stripped to file-name-history (M-p command shows it);
+	create destination directory if not exists.
+
 2019-12-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-download): Decompress downloaded file according to
