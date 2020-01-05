@@ -1,3 +1,12 @@
+2020-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	New user option w3m-redisplay-pages-automatically-p (issue #75)
+
+	* w3m.el (w3m-redisplay-pages-automatically-p): New user option.
+	(w3m-mode): Don't modify window-configuration-change-hook and
+	window-size-change-functions if it is nil (issue #75).
+	(w3m-use-tab): Eval-and-compile.
+
 2020-01-04  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-download): Temporarily add a url string that a query

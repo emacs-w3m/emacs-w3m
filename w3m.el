@@ -74,29 +74,30 @@
 (defvar tab-line-exclude-modes) ;; 27.1
 
 ;; `w3m-use-tab-line' refers to this variable.
-(defcustom w3m-use-tab t
-  "Use emacs-w3m in \"Tabbed\" display mode.
+(eval-and-compile
+  (defcustom w3m-use-tab t
+    "Use emacs-w3m in \"Tabbed\" display mode.
 This variable is now DEPRECATED!  Please use `w3m-display-mode'
 instead.  When non-nil, emacs-w3m will make a reasonable effort to
 display all its buffers in a single window, which has a clickable
 tab bar along the top.
 See also `w3m-use-tab-line' and `w3m-use-tab-menubar'."
-  :group 'w3m
-  :type 'boolean
-  :set (lambda (symbol value)
-	 (prog1
-	     (custom-set-default symbol value)
-	   (when (boundp 'w3m-use-tab-line)
-	     ;; w3m.elc has already been loaded
-	     ;; or `w3m-use-tab-line' has already been set.
-	     (if (and value w3m-use-tab-line)
-		 (progn
-		   (require 'tab-line nil t)
-		   (when (boundp 'tab-line-exclude-modes)
-		     (add-to-list 'tab-line-exclude-modes 'w3m-mode)))
-	       (when (boundp 'tab-line-exclude-modes)
-		 (setq tab-line-exclude-modes
-		       (delq 'w3m-mode tab-line-exclude-modes))))))))
+    :group 'w3m
+    :type 'boolean
+    :set (lambda (symbol value)
+	   (prog1
+	       (custom-set-default symbol value)
+	     (when (boundp 'w3m-use-tab-line)
+	       ;; w3m.elc has already been loaded
+	       ;; or `w3m-use-tab-line' has already been set.
+	       (if (and value w3m-use-tab-line)
+		   (progn
+		     (require 'tab-line nil t)
+		     (when (boundp 'tab-line-exclude-modes)
+		       (add-to-list 'tab-line-exclude-modes 'w3m-mode)))
+		 (when (boundp 'tab-line-exclude-modes)
+		   (setq tab-line-exclude-modes
+			 (delq 'w3m-mode tab-line-exclude-modes)))))))))
 
 ;; Why the two variable `w3m-select-buffer-hook' and `w3m-use-tab-line'
 ;; are here is because w3m-ems.el uses.
@@ -8843,6 +8844,11 @@ or a list which consists of the following elements:
 
 (eval-when-compile (require 'mwheel))
 
+(defcustom w3m-redisplay-pages-automatically-p t
+  "If non-nil, redisplay pages when some operation changes the page width."
+  :group 'w3m
+  :type 'boolean)
+
 (defun w3m-mode ()
   "Major mode for browsing web.
 
@@ -9016,11 +9022,12 @@ or a list which consists of the following elements:
   (set (make-local-variable 'mwheel-scroll-up-function) #'w3m-scroll-up)
   (set (make-local-variable 'mwheel-scroll-down-function) #'w3m-scroll-down)
   (setq w3m-last-window-width (window-width))
-  (add-hook 'window-configuration-change-hook
-	    #'w3m-redisplay-pages-automatically)
-  (when (= emacs-major-version 26)
-    (add-hook 'window-size-change-functions
-	      #'w3m-redisplay-pages-automatically))
+  (when w3m-redisplay-pages-automatically-p
+    (add-hook 'window-configuration-change-hook
+	      #'w3m-redisplay-pages-automatically)
+    (when (= emacs-major-version 26)
+      (add-hook 'window-size-change-functions
+		#'w3m-redisplay-pages-automatically)))
   (w3m-setup-toolbar)
   (w3m-setup-menu)
   (run-hooks 'w3m-mode-setup-functions)
