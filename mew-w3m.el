@@ -111,7 +111,17 @@ Text/Html contents."
 		 (const :tag "Use Cite Mark \"> \"" "&gt;&nbsp;")
 		 (string :tag "Use Other Mark")))
 
-(defconst mew-w3m-safe-url-regexp "\\`cid:")
+(defcustom mew-w3m-safe-url-regexp "\\`\\(cid\\|data\\):"
+  "Regexp that matches safe url names.
+Some HTML mails might have the trick of spammers using <img> tags.  It
+is likely to be intended to verify whether you have read the mail.
+You can prevent your personal informations from leaking by setting
+this to the regexp which matches the safe url names.  The value of the
+variable `w3m-safe-url-regexp' will be bound with this value.  You may
+set this value to nil if you consider all the urls to be safe."
+  :group 'mew-w3m
+  :type '(choice (regexp :format "%t: %v")
+		 (const :tag "All URLs are safe" nil)))
 
 ;; Avoid bytecompile errors and warnings.
 (defvar mew-use-text/html)

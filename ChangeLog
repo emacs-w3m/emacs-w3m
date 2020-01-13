@@ -1,3 +1,12 @@
+2020-01-11  Hideyuki SHIRAI  <shirai@meadowy.org>
+
+	Work for <img src="data:..."> ([emacs-w3m:13583])
+
+	cf. <https://groups.google.com/d/msgid/mew-ja/467DC098-3A95-40A5-960A-183492B7D717%40beaupix.com>
+
+	* mew-w3m.el (mew-w3m-safe-url-regexp): Add data:; make customizable.
+	* w3m.el (w3m-toggle-inline-images): Fix position to fetch safe-url.
+
 2020-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	New user option w3m-redisplay-pages-automatically-p (issue #75)

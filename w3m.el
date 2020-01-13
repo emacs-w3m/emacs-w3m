@@ -4050,7 +4050,7 @@ variable is non-nil (default=t)."
       (setq beg (point-min)
 	    end (point-max)))
     (unless status
-      (when (setq safe-regexp (get-text-property (point) 'w3m-safe-url-regexp))
+      (when (setq safe-regexp (get-text-property beg 'w3m-safe-url-regexp))
 	;; Scan the buffer for searching for an insecure image url.
 	(setq pos beg)
 	(setq
