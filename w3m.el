@@ -8000,14 +8000,17 @@ Return t if highlighting is successful."
 If BUFFER is nil, the current buffer is assumed.
 
 If NEW-NAME is nil, a name is created based on the name of the current
-buffer.  If BACKGROUND is non-nil, do not switch to the new buffer.
+buffer.  If BACKGROUND is non-nil, it won't switch to the new buffer.
 
 When called interactively, you will be prompted for NEW-NAME if and
 only if a prefix argument is given, and BACKGROUND inherits the value
 of `w3m-new-session-in-background'.
 
-If EMPTY is non-nil, an empty buffer is created, but with the current
-buffer's history and settings.
+If EMPTY is non-nil, with the current buffer's history and settings
+an empty buffer is created.  It implies setting BACKGROUND as well
+and will not switch to the new buffer.  So, you may want to run
+`switch-to-buffer' or the like to the return value (i.e., the new
+buffer) after rendering something in it if necessary.
 
 If LAST is non-nil, the new buffer will be buried as the final w3m
 buffer; otherwise, it will be sequenced next to the current buffer."
