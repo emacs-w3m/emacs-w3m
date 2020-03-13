@@ -1,3 +1,8 @@
+2020-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-anchor, w3m-arrived-anchor, w3m-current-anchor):
+	Improve the links visivility (bug#953631 of debian).
+
 2020-01-11  Hideyuki SHIRAI  <shirai@meadowy.org>
 
 	Work for <img src="data:..."> ([emacs-w3m:13583])

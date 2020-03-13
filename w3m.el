@@ -1007,21 +1007,25 @@ of the original request method."
   :type 'integer)
 
 (defface w3m-anchor
-  '((((class color) (background light)) (:foreground "blue"))
-    (((class color) (background dark)) (:foreground "cyan"))
-    (t (:underline t)))
+  '((((class color) (background light))
+     (:foreground "blue" :bold t :underline t))
+    (((class color) (background dark))
+     (:foreground "cyan" :bold t :underline t))
+    (t (:bold t) (:underline t)))
   "Face used for displaying anchors."
   :group 'w3m-face)
 
 (defface w3m-arrived-anchor
-  '((((class color) (background light)) (:foreground "navy"))
-    (((class color) (background dark)) (:foreground "LightSkyBlue"))
-    (t (:underline t)))
+  '((((class color) (background light))
+     (:foreground "navy" :bold t :underline t))
+    (((class color) (background dark))
+     (:foreground "LightSkyBlue" :bold t :underline t))
+    (t (:bold t) (:underline t)))
   "Face used for displaying anchors which have already arrived."
   :group 'w3m-face)
 
 (defface w3m-current-anchor
-  '((t (:underline t :bold t)))
+  '((t (:underline (:style wave))))
   "Face used to highlight the current anchor."
   :group 'w3m-face)
 
