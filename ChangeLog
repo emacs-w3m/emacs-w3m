@@ -1,4 +1,16 @@
-2020-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+2020-03-14  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Distinguish two or more consecutive same images (issue #76)
+
+	* w3m.el (w3m-fontify-images): Mark an image with seq#.
+	(w3m-search-for-next-image, w3m-search-for-previous-image):
+	New functions that use seq# for searching for an image boundary.
+	(w3m-toggle-inline-images-internal, w3m-toggle-inline-image)
+	(w3m-toggle-inline-image, w3m-resize-inline-image-internal)
+	(w3m-goto-next-image, w3m-goto-previous-image): Use them.
+	(w3m-next-image, w3m-previous-image): Simplify.
+
+(2020-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-anchor, w3m-arrived-anchor, w3m-current-anchor):
 	Improve the links visivility (bug#953631 of debian).

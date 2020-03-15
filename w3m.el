@@ -3667,9 +3667,11 @@ external `convert' program respectively."
 (defun w3m-fontify-images ()
   "Fontify img_alt strings of images in the buffer containing halfdump."
   (goto-char (point-min))
-  (let (upper start end help src1)
-    (while (re-search-forward "<\\(img_alt\\)[^>]+>" nil t)
-      (setq upper (string= (match-string 1) "IMG_ALT")
+  (let (hseq upper start end help src1)
+    (while (re-search-forward
+	    "<\\(img_alt\\)\\(?:[^>]+hseq=\"\\([0-9]+\\)\\)?[^>]+>" nil t)
+      (setq hseq (when (match-beginning 2) (string-to-number (match-string 2)))
+	    upper (string= (match-string 1) "IMG_ALT")
 	    start (match-beginning 0)
 	    end (match-end 0))
       (goto-char (match-end 1))
@@ -3698,7 +3700,8 @@ external `convert' program respectively."
 	   (t
 	    (setq help (format "img: %s" src))))
 	  (w3m-add-text-properties start end
-				   (list 'w3m-image src
+				   (list 'w3m-image-hseq hseq
+					 'w3m-image src
 					 'w3m-image-size
 					 (when (or width height)
 					   (cons width height))
@@ -3829,6 +3832,19 @@ off this option."
   :group 'w3m
   :type 'boolean)
 
+;; Note: third party software might not use `w3m-image-hseq'.
+(defsubst w3m-search-for-next-image (start &optional end)
+  "Search for the next image boundary within START and END.
+Return the point or nil if not found."
+  (or (next-single-property-change start 'w3m-image-hseq nil end)
+      (next-single-property-change start 'w3m-image nil end)))
+
+(defsubst w3m-search-for-previous-image (start)
+  "Search for the image boundary backward from START.
+Return the point or nil if not found."
+  (or (previous-single-property-change start 'w3m-image-hseq)
+      (previous-single-property-change start 'w3m-image)))
+
 (defvar w3m-image-no-idle-timer nil)
 (defun w3m-toggle-inline-images-internal (status
 					  &optional no-cache url
@@ -3849,10 +3865,9 @@ If URL is specified, only the image with URL is toggled."
 	  (while (< (setq start
 			  (if (w3m-image end)
 			      end
-			    (next-single-property-change end 'w3m-image
-							 nil end-pos)))
+			    (w3m-search-for-next-image end end-pos)))
 		    end-pos)
-	    (setq end (or (next-single-property-change start 'w3m-image)
+	    (setq end (or (w3m-search-for-next-image start)
 			  (point-max))
 		  iurl (w3m-image start)
 		  size (get-text-property start 'w3m-image-size))
@@ -3940,10 +3955,9 @@ You are retrieving non-secure image(s).  Continue? ")
 	;; Remove.
 	(while (< (setq start (if (w3m-image end)
 				  end
-				(next-single-property-change end 'w3m-image
-							     nil end-pos)))
+				(w3m-search-for-next-image end end-pos)))
 		  end-pos)
-	  (setq end (or (next-single-property-change start 'w3m-image)
+	  (setq end (or (w3m-search-for-next-image start)
 			(point-max))
 		iurl (w3m-image start))
 	  ;; IMAGE-ALT-STRING DUMMY-STRING
@@ -3984,7 +3998,7 @@ non-nil, cached data will not be used."
 		end (region-end))
 	  (deactivate-mark)
 	  (while (< p end)
-	    (setq p (next-single-property-change p 'w3m-image nil end))
+	    (setq p (w3m-search-for-next-image p end))
 	    (when (and (< p end)
 		       (setq iurl (w3m-image p))
 		       (not (assoc iurl toggle-list)))
@@ -4015,8 +4029,10 @@ non-nil, cached data will not be used."
 			    (string-match safe-regexp url))
 			(w3m-toggle-inline-images-internal
 			 status no-cache url
-			 (or begin (point-min))
-			 (or end (point-max)))
+			 (or begin (w3m-search-for-previous-image (point))
+			     (point-min))
+			 (or end (w3m-search-for-next-image (point))
+			     (point-max)))
 		      (when (w3m-interactive-p)
 			(w3m-message "This image is considered to be unsafe;\
  use the prefix arg to force display"))))))))
@@ -4063,16 +4079,14 @@ variable is non-nil (default=t)."
 	   (when (setq url (get-text-property pos 'w3m-image))
 	     (unless (string-match safe-regexp url)
 	       (throw 'done nil))
-	     (setq pos (next-single-property-change pos 'w3m-image)))
+	     (setq pos (w3m-search-for-next-image pos)))
 	   (while (< pos end)
 	     (when (and
-		    (setq pos (next-single-property-change pos 'w3m-image
-							   nil end))
+		    (setq pos (w3m-search-for-next-image pos end))
 		    (setq url (get-text-property pos 'w3m-image)))
 	       (unless (string-match safe-regexp url)
 		 (throw 'done nil)))
-	     (setq pos (next-single-property-change pos 'w3m-image
-						    nil end)))
+	     (setq pos (w3m-search-for-next-image pos end)))
 	   t))))
     (if (or force
 	    status
@@ -4097,7 +4111,7 @@ variable is non-nil (default=t)."
 RATE is a number of percent used when resizing an image."
   (let* ((inhibit-read-only t)
 	 (start (point))
-	 (end (or (next-single-property-change start 'w3m-image)
+	 (end (or (w3m-search-for-next-image start)
 		  (point-max)))
 	 (iurl (w3m-image start))
 	 (size (get-text-property start 'w3m-image-size))
@@ -7925,12 +7939,13 @@ Return t if highlighting is successful."
     (w3m-print-this-url)))
 
 (defun w3m-goto-next-image ()
+  "Go to the bginning of the next image."
   ;; Move the point to the end of the current image.
   (when (w3m-image (point))
-    (goto-char (next-single-property-change (point) 'w3m-image)))
-  ;; Find the next form or image.
+    (goto-char (w3m-search-for-next-image (point))))
+  ;; Find the next image.
   (or (w3m-image (point))
-      (let ((pos (next-single-property-change (point) 'w3m-image)))
+      (let ((pos (w3m-search-for-next-image (point))))
 	(when pos
 	  (goto-char pos)
 	  t))))
@@ -7939,62 +7954,41 @@ Return t if highlighting is successful."
   "Move the point to the next image."
   (interactive "p")
   (unless arg (setq arg 1))
-  (if (null (memq last-command
-		  '(w3m-next-image w3m-previous-image)))
-      (when (setq w3m-goto-anchor-hist (w3m-image (point)))
-	(setq w3m-goto-anchor-hist (list w3m-goto-anchor-hist)))
-    (when (and (eq last-command 'w3m-previous-image)
-	       w3m-goto-anchor-hist)
-      (setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-previous-image (- arg))
     (while (> arg 0)
       (unless (w3m-goto-next-image)
 	;; Make a search for an image from the beginning of the buffer.
-	(setq w3m-goto-anchor-hist nil)
 	(goto-char (point-min))
 	(w3m-goto-next-image))
-      (setq arg (1- arg))
-      (if (member (w3m-image (point)) w3m-goto-anchor-hist)
-	  (setq arg (1+ arg))
-	(push (w3m-image (point)) w3m-goto-anchor-hist)))
+      (setq arg (1- arg)))
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
 (defun w3m-goto-previous-image ()
+  "Go to the bginning of the previous image."
   ;; Move the point to the beginning of the current image.
   (when (w3m-image (point))
-    (goto-char (previous-single-property-change (1+ (point))
-						'w3m-image)))
-  ;; Find the previous form or image.
-  (let ((pos (previous-single-property-change (point) 'w3m-image)))
+    (goto-char (w3m-search-for-previous-image (1+ (point)))))
+  ;; Find the previous image.
+  (let ((pos (w3m-search-for-previous-image (point))))
     (if pos
 	(goto-char
 	 (if (w3m-image pos) pos
-	   (previous-single-property-change pos 'w3m-image))))))
+	   (w3m-search-for-previous-image pos))))))
 
 (defun w3m-previous-image (&optional arg)
   "Move the point to the previous image."
   (interactive "p")
   (unless arg (setq arg 1))
-  (if (null (memq last-command '(w3m-next-image w3m-previous-image)))
-      (when (setq w3m-goto-anchor-hist (w3m-image (point)))
-	(setq w3m-goto-anchor-hist (list w3m-goto-anchor-hist)))
-    (when (and (eq last-command 'w3m-next-image)
-	       w3m-goto-anchor-hist)
-      (setcdr w3m-goto-anchor-hist nil)))
   (if (< arg 0)
       (w3m-next-image (- arg))
     (while (> arg 0)
       (unless (w3m-goto-previous-image)
 	;; Make a search from the end of the buffer.
-	(setq w3m-goto-anchor-hist nil)
 	(goto-char (point-max))
 	(w3m-goto-previous-image))
-      (setq arg (1- arg))
-      (if (member (w3m-image (point)) w3m-goto-anchor-hist)
-	  (setq arg (1+ arg))
-	(push (w3m-image (point)) w3m-goto-anchor-hist)))
+      (setq arg (1- arg)))
     (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
