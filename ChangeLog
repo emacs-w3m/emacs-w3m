@@ -10,7 +10,7 @@
 	(w3m-goto-next-image, w3m-goto-previous-image): Use them.
 	(w3m-next-image, w3m-previous-image): Simplify.
 
-(2020-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+2020-03-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-anchor, w3m-arrived-anchor, w3m-current-anchor):
 	Improve the links visivility (bug#953631 of debian).
