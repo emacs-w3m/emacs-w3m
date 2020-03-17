@@ -1,5 +1,16 @@
 2020-03-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	Fix how it works at just the image boundary (issue #76)
+
+	* w3m.el (w3m-search-for-next-image-boundary)
+	(w3m-search-for-previous-image-boundary): Rename from
+	w3m-search-for-next-image and w3m-search-for-previous-image.
+	(w3m-search-for-previous-image-boundary): Don't search for the one
+	previous image if it is at just the boundary position.
+	(w3m-toggle-inline-image): Turn off a single image, not all.
+
+2020-03-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	Abolish own horizontal scrolling stuff (bug#953768 of debian)
 
 	* w3m.el (w3m-auto-show, w3m-horizontal-on-screen): Abolish.
