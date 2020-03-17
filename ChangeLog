@@ -1,4 +1,17 @@
-2020-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+2020-03-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Abolish own horizontal scrolling stuff (bug#953768 of debian)
+
+	* w3m.el (w3m-auto-show, w3m-horizontal-on-screen): Abolish.
+	(w3m-after-cursor-move-hook): Remove w3m-auto-show.
+	(w3m-auto-show, w3m-horizontal-scroll-division)
+	(w3m-next-anchor, w3m-previous-anchor, w3m-next-form)
+	(w3m-previous-form, w3m-next-image, w3m-previous-image):
+	Don't run w3m-horizontal-on-screen.
+	(w3m-mode): Don't modify auto-hscroll-mode.
+	(w3m-horizontal-scroll): No need to move point.
+
+(2020-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Distinguish two or more consecutive same images (issue #76)
 

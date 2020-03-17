@@ -9,7 +9,7 @@
 @synindex pg cp
 
 @copying
-Copyright @copyright{} 2000-2019 @w{TSUCHIYA Masatoshi}
+Copyright @copyright{} 2000-2020 @w{TSUCHIYA Masatoshi}
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -2442,17 +2442,6 @@ non-@code{nil} ならば、リクエストヘッダに User-Agent を含めま�
 @vindex w3m-arrived-file
 閲覧した @acronym{URL} のデータベースを保存するファイル名。
 
-@item w3m-auto-show
-@vindex w3m-auto-show
-non-@code{nil} ならばウィンドウの水平スクロールを有効にする。point がウィ
-ンドウの両端の外に出た場合に自動的に水平スクロールするが、
-@code{truncate-lines} が @code{nil} ならば何も起こらない。
-
-この機能は特定の emacs-w3m のコードのみで使われる。すなわち、通
-常 @code{auto-hscroll-mode}、@code{automatic-hscrolling}、
-@code{auto-show-mode} および @code{hscroll-mode} はすべて emacs-w3m のバッ
-ファでは無効になるだろう。
-
 @item w3m-charset-coding-system-alist
 @vindex w3m-charset-coding-system-alist
 @acronym{MIME} charset とコーディングシステムの連想配列。charset とコー
@@ -2671,21 +2660,6 @@ emacs-w3m が起動した時に開く URL の文字列を指定します。某�
 @item w3m-horizontal-scroll-columns
 @c @vindex w3m-horizontal-scroll-columns
 ウィンドウを水平スクロールする時に、スクロールする文字数。
-
-@item w3m-horizontal-scroll-division
-@vindex w3m-horizontal-scroll-division
-カーソル位置がきちんと表示されるようにするのに使われる数字。emacs-w3m の
-バッファでアンカーやフォームを移動していてカーソルがウィンドウの外に出て
-しまってもカーソルが見つからなくなることは決してありません。
-
-この変数の値を N とします。カーソルがウィンドウの左に出てしまう
-と emacs-w3m はウィンドウをスクロールし、カーソルがウィンドウの左からウィ
-ンドウの幅の 1/N の所に置かれるようにします。同様にカーソルがウィンドウ
-の右から出てしまうと、emacs-w3m はウィンドウをスクロールし、カーソルがウィ
-ンドウの右からウィンドウの幅の 1/N の所に置かれるようにします。
-
-@code{w3m-auto-show} が @code{nil} ならばこの機能は動きません。値
-は 1 よりも大きい整数でなければいけません。
 
 @item w3m-horizontal-shift-columns
 @c @vindex w3m-horizontal-shift-columns

@@ -1120,8 +1120,7 @@ is evaluated by the `w3m-goto-url' function."
 (defcustom w3m-after-cursor-move-hook
   '(w3m-highlight-current-anchor
     w3m-show-form-hint
-    w3m-print-this-url
-    w3m-auto-show)
+    w3m-print-this-url)
   "Hook run each time after the cursor moves in emacs-w3m buffers.
 This hook is called by the `w3m-check-current-position' function by
 way of `post-command-hook'."
@@ -1619,47 +1618,6 @@ It influences only when a new emacs-w3m buffer is created."
 		 (cons :format "%v" :indent 3
 		       (symbol :format "Parameter: %v")
 		       (sexp :format "%t: %v"))))
-
-(defcustom w3m-auto-show t
-  "Non-nil means provide the ability to horizontally scroll the window.
-Automatic horizontal scrolling is made when the point gets away from
-both ends of the window, but nothing occurs if `truncate-lines' is set
-to nil.
-
-This feature works with the specially made program in emacs-w3m; usual
-`auto-hscroll-mode', `automatic-hscrolling', `auto-show-mode' or
-`hscroll-mode' will all be invalidated in emacs-w3m buffers."
-  :group 'w3m
-  :type 'boolean)
-
-(defcustom w3m-horizontal-scroll-division 4
-  "Integer used by the program making the point certainly visible.
-The cursor definitely does not go missing even when it has been driven
-out of the window while wandering around anchors and forms in an
-emacs-w3m buffer.
-
-Suppose that the value of this variable is N.  When the point is
-outside the left of the window, emacs-w3m scrolls the window so that
-the point may be displayed on the position within 1/N of the width of
-the window from the left.  Similarly, when the point is outside the
-right of the window, emacs-w3m scrolls the window so that the point
-may be displayed on the position of 1/N of the width of the window
-from the right.
-
-This feature doesn't work if `w3m-auto-show' is nil.  The value must
-be a larger integer than 1."
-  :group 'w3m
-  :type '(integer :match (lambda (_widget _value) t)
-		  :value-to-internal
-		  (lambda (_widget value)
-		    (if (and (integerp value) (> value 1))
-			(prin1-to-string value) "4"))
-		  :value-to-external
-		  (lambda (_widget value)
-		    (setq value (condition-case nil
-				    (string-to-number value)
-				  (error 4)))
-		    (if (> value 1) value 4))))
 
 (defcustom w3m-show-error-information t
   "Non-nil means show an error information as a web page.
@@ -7770,7 +7728,6 @@ Return t if highlighting is successful."
 	  (progn
 	    (push hseq w3m-goto-anchor-hist)
 	    (goto-char pos)
-	    (w3m-horizontal-on-screen)
 	    (w3m-print-this-url)
 	    t)
 	(setq w3m-goto-anchor-hist nil)
@@ -7849,7 +7806,6 @@ Return t if highlighting is successful."
 	    (goto-char (or (text-property-any (point-min) pos
 					      'w3m-anchor-sequence hseq)
 			   pos))
-	    (w3m-horizontal-on-screen)
 	    (w3m-print-this-url)
 	    t)
 	(setq w3m-goto-anchor-hist nil)
@@ -7898,7 +7854,6 @@ Return t if highlighting is successful."
       (if (member (w3m-action (point)) w3m-goto-anchor-hist)
 	  (setq arg (1+ arg))
 	(push (w3m-action (point)) w3m-goto-anchor-hist)))
-    (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
 (defun w3m-goto-previous-form ()
@@ -7935,7 +7890,6 @@ Return t if highlighting is successful."
       (if (member (w3m-action (point)) w3m-goto-anchor-hist)
 	  (setq arg (1+ arg))
 	(push (w3m-action (point)) w3m-goto-anchor-hist)))
-    (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
 (defun w3m-goto-next-image ()
@@ -7962,7 +7916,6 @@ Return t if highlighting is successful."
 	(goto-char (point-min))
 	(w3m-goto-next-image))
       (setq arg (1- arg)))
-    (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
 (defun w3m-goto-previous-image ()
@@ -7989,7 +7942,6 @@ Return t if highlighting is successful."
 	(goto-char (point-max))
 	(w3m-goto-previous-image))
       (setq arg (1- arg)))
-    (w3m-horizontal-on-screen)
     (w3m-print-this-url)))
 
 (defun w3m-copy-buffer (&optional buffer new-name background empty last)
@@ -9017,8 +8969,6 @@ or a list which consists of the following elements:
   (set (make-local-variable 'nobreak-char-display) nil)
   (setq	truncate-lines t
 	w3m-display-inline-images w3m-default-display-inline-images)
-  (when w3m-auto-show
-    (set (make-local-variable 'auto-hscroll-mode) nil))
   (setq show-trailing-whitespace nil)
   (set (make-local-variable 'mwheel-scroll-up-function) #'w3m-scroll-up)
   (set (make-local-variable 'mwheel-scroll-down-function) #'w3m-scroll-down)
@@ -9164,26 +9114,6 @@ Otherwise, it defaults to `w3m-horizontal-shift-columns'."
 (defvar w3m-current-position '(-1 0 0))
 (make-variable-buffer-local 'w3m-current-position)
 
-(defun w3m-auto-show ()
-  "Scroll horizontally so that the point is visible."
-  (when (and truncate-lines
-	     w3m-auto-show
-	     (not w3m-horizontal-scroll-done)
-	     (not (and (eq last-command this-command)
-		       (or (eq (point) (point-min))
-			   (eq (point) (point-max)))))
-	     (or (memq this-command '(beginning-of-buffer end-of-buffer))
-		 (and (symbolp this-command)
-		      (string-match "\\`i?search-" (symbol-name this-command)))
-		 (and (markerp (nth 1 w3m-current-position))
-		      (markerp (nth 2 w3m-current-position))
-		      (>= (point)
-			  (marker-position (nth 1 w3m-current-position)))
-		      (<= (point)
-			  (marker-position (nth 2 w3m-current-position))))))
-    (w3m-horizontal-on-screen))
-  (setq w3m-horizontal-scroll-done nil))
-
 (defun w3m-horizontal-scroll (direction ncol)
   "Scroll the window NCOL columns horizontally to DIRECTION.
 DIRECTON should be the symbol `left' which specifies to scroll to the
@@ -9196,32 +9126,7 @@ commands `w3m-scroll-left', `w3m-scroll-right', `w3m-shift-left' and
     (set-window-hscroll nil
 			(max 0
 			     (+ (window-hscroll)
-				(if (eq direction 'left) ncol (- ncol)))))
-    (let ((hs (window-hscroll)))
-      (unless (and (>= (- (current-column) hs) 0)
-		   (< (- (current-column) hs) (window-width)))
-	(move-to-column (if (eq direction 'left)
-			    hs
-			  (+ hs (window-width) -2)))))))
-
-(defun w3m-horizontal-on-screen ()
-  "Scroll the window horizontally so that the current position is visible.
-See the documentation for the `w3m-horizontal-scroll-division' variable
-for details."
-  (when w3m-auto-show
-    (setq w3m-horizontal-scroll-done t)
-    (let ((cc (current-column))
-	  (hs (window-hscroll))
-	  (ww (window-width))
-	  (inhibit-point-motion-hooks t))
-      (unless (and (>= (- cc hs) 0)
-		   (< (+ (- cc hs) (if (eolp) 0 2)) ww))
-	(set-window-hscroll
-	 nil
-	 (max 0 (- cc (if (> hs cc)
-			  (/ ww w3m-horizontal-scroll-division)
-			(* (/ ww w3m-horizontal-scroll-division)
-			   (1- w3m-horizontal-scroll-division))))))))))
+				(if (eq direction 'left) ncol (- ncol)))))))
 
 (defun w3m-horizontal-recenter (&optional arg)
   "Recenter horizontally.  With ARG, put the point on the column ARG.

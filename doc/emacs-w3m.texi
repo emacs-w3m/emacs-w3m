@@ -8,7 +8,7 @@
 @synindex pg cp
 
 @copying
-Copyright @copyright{} 2000-2019 @w{TSUCHIYA Masatoshi}
+Copyright @copyright{} 2000-2020 @w{TSUCHIYA Masatoshi}
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -2372,18 +2372,6 @@ The value of @code{w3m-user-agent} is used for the field body.
 @vindex w3m-arrived-file
 Name of the file to keep the arrived @acronym{URL}s database.
 
-@item w3m-auto-show
-@vindex w3m-auto-show
-Non-@code{nil} means provide the ability to horizontally scroll the
-window.  Automatic horizontal scrolling happens when the point gets away
-from both ends of the window, but nothing occurs if
-@code{truncate-lines} is set to @code{nil}.
-
-This feature works with specific emacs-w3m code; usual
-@code{auto-hscroll-mode}, @code{automatic-hscrolling},
-@code{auto-show-mode} or @code{hscroll-mode} will all be invalidated in
-emacs-w3m buffers.
-
 @item w3m-charset-coding-system-alist
 @vindex w3m-charset-coding-system-alist
 Alist of @acronym{MIME} charsets and coding systems.  Both charsets and
@@ -2605,23 +2593,6 @@ Don't say HP, it's the abbreviated name of a certain company. ;-)
 @item w3m-horizontal-scroll-columns
 @c @vindex w3m-horizontal-scroll-columns
 Number of steps in columns used when scrolling a window horizontally.
-
-@item w3m-horizontal-scroll-division
-@vindex w3m-horizontal-scroll-division
-Integer used by the program making the point certainly visible.  The
-cursor definitely does not go missing even when it has been driven out
-of the window while wandering around anchors and forms in an emacs-w3m
-buffer.
-
-Suppose that the value of this variable is N.  When the point is outside
-the left of the window, emacs-w3m scrolls the window so that the point
-may be displayed on the position within 1/N of the width of the window
-from the left.  Similarly, when the point is outside the right of the
-window, emacs-w3m scrolls the window so that the point may be displayed
-on the position of 1/N of the width of the window from the right.
-
-This feature doesn't work if @code{w3m-auto-show} is @code{nil}.  The
-value must be a larger integer than 1.
 
 @item w3m-horizontal-shift-columns
 @c @vindex w3m-horizontal-shift-columns
