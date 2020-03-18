@@ -1,3 +1,10 @@
+2020-03-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make w3m-toggle-inline-image work properly when region is active
+
+	* w3m.el (w3m-search-for-previous-image-boundary): Refactor.
+	(w3m-toggle-inline-image): Work properly when region is active.
+
 2020-03-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Fix how it works at just the image boundary (issue #76)

@@ -3793,23 +3793,23 @@ off this option."
 ;; Note: third party software might not use `w3m-image-hseq'.
 (defsubst w3m-search-for-next-image-boundary (start &optional end)
   "Search for the next image boundary within START and END.
-Return the point or nil if not found."
+Return the boundary position or nil if not found.  Note that return
+END if it is non-nil even if the boundary is not found."
   (or (next-single-property-change start 'w3m-image-hseq nil end)
       (next-single-property-change start 'w3m-image nil end)))
 
 (defsubst w3m-search-for-previous-image-boundary (start)
   "Search for the image boundary backward from START.
 Return the point or nil if not found."
-  (let ((img (or (get-text-property start 'w3m-image-hseq)
-		 (get-text-property start 'w3m-image))))
-    (if (or (and img (= start (point-min)))
-	    ;; Is the point just the boundary?
-	    (not (equal img
-			(or (get-text-property (1- start) 'w3m-image-hseq)
-			    (get-text-property (1- start) 'w3m-image)))))
-	start
-      (or (previous-single-property-change start 'w3m-image-hseq)
-	  (previous-single-property-change start 'w3m-image)))))
+  (unless (= start (point-min))
+    (if ;; is the point not just the boundary?
+	(let ((img (get-text-property start 'w3m-image-hseq)))
+	  (and (equal img (get-text-property (1- start) 'w3m-image-hseq))
+	       (or img (equal (get-text-property start 'w3m-image)
+			      (get-text-property (1- start) 'w3m-image)))))
+	(or (previous-single-property-change start 'w3m-image-hseq)
+	    (previous-single-property-change start 'w3m-image))
+      start)))
 
 (defvar w3m-image-no-idle-timer nil)
 (defun w3m-toggle-inline-images-internal (status
@@ -3964,9 +3964,12 @@ non-nil, cached data will not be used."
 	  (setq begin (region-beginning)
 		end (region-end))
 	  (deactivate-mark)
+	  (when (get-text-property begin 'w3m-image)
+	    (setq begin (or (w3m-search-for-previous-image-boundary begin)
+			    (point-min))))
 	  (while (< p end)
 	    (setq p (w3m-search-for-next-image-boundary p end))
-	    (when (and (< p end)
+	    (when (and (<= p end)
 		       (setq iurl (w3m-image p))
 		       (not (assoc iurl toggle-list)))
 	      (setq toggle-list (cons (cons iurl p) toggle-list)))))
