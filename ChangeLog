@@ -1,3 +1,8 @@
+2020-03-18  Kazuhiro Ito  <kzhr@d1.dion.ne.jp>
+
+	* doc/emacs-w3m-ja.texi (Installing Emacs-w3m): Add dropped @samp
+	command for --without-compress-install option.
+
 2020-03-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make w3m-toggle-inline-image work properly when region is active
