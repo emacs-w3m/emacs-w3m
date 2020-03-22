@@ -353,7 +353,7 @@ Emacs-w3m を CVS で取得したのならば、@samp{configure} スクリプト
 デフォルトではインストーラ (つまり @samp{make install}) は gzip によって
 インストールされる Lisp のソースファイルと info ファイルを圧縮します。も
 しそれらのファイルが圧縮されることを望まないのであれば、configure オプショ
-ンの {--without-compress-install} を使ってください。
+ンの @samp{--without-compress-install} を使ってください。
 
 @item
 単に @samp{make} と @samp{make install} を実行します。
