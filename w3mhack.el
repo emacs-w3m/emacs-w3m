@@ -301,6 +301,56 @@ install-info:
 	     info-dir))
   (message ""))
 
+(defun w3mhack-do-itemize (from)
+  ;; An improved version of `texinfo-do-itemize'.
+  (save-excursion
+    (save-restriction
+      (narrow-to-region from (point))
+      (goto-char from)
+      (while (re-search-forward "\\([^\n]\\)\b" nil t)
+	(replace-match "\\1\n\b"))
+      (goto-char from)
+      (while (not (eobp))
+	(unless (looking-at "\b\\|[\t ]*$")
+	  (insert "     "))
+	(forward-line 1))
+      (goto-char from)
+      (let (st b fill-prefix)
+	(while (re-search-forward "^\b" nil t)
+	  (delete-char -1)
+	  (setq st (point))
+	  (when (and (not (eq (following-char) ? ))
+		     (progn
+		       (forward-line 1)
+		       (looking-at "\\(?:[\t ]*\n\\)+")))
+	    (delete-region (point) (match-end 0)))
+	  (unless (eq (following-char) ?\b)
+	    (setq b (point))
+	    (re-search-forward "\\(^\b\\)\\|^[\t ]*$" nil 'move)
+	    (save-restriction
+	      (narrow-to-region b (if (match-beginning 1)
+				      (1- (match-beginning 0))
+				    (point)))
+	      (goto-char b)
+	      (while (re-search-forward
+		      "\\(\\cj\\)?[\t ]*\n[\t ]*\\(\\cj\\)?" nil t)
+		(replace-match
+		 (if (and (match-beginning 1) (match-beginning 2))
+		     "\\1\\2" "\\1 \\2")))
+	      (goto-char b)
+	      (when (looking-at
+		     "[\t ]*\\(?:\\*\\|[0-9a-z]\\.\\|([0-9]+)\\)?[\t ]*")
+		(goto-char (match-end 0))
+		(setq fill-prefix (make-string (- (match-end 0) b) ? )))
+	      (fill-paragraph)
+	      (goto-char (point-max))
+	      (widen)
+	      (unless (and (= (line-beginning-position) st)
+			   (looking-at "\n\b"))
+		(insert "\n")))))))))
+
+(byte-compile 'w3mhack-do-itemize)
+
 (defun w3mhack-makeinfo ()
   "Emacs makeinfo in batch mode.
 NOTE: This function must be called from the top directory."
@@ -346,6 +396,9 @@ otherwise, insert URL-TITLE followed by URL in parentheses."
 		(if (nth 1 args)
 		    (insert  (nth 1 args) " (" (nth 0 args) ")")
 		  (insert "`" (nth 0 args) "'"))))))
+
+    ;; Override the function definition.
+    (defalias 'texinfo-do-itemize 'w3mhack-do-itemize)
 
     (cd "doc")
     (condition-case err
