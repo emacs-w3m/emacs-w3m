@@ -38,7 +38,7 @@
 	(w3m-mode): Don't modify auto-hscroll-mode.
 	(w3m-horizontal-scroll): No need to move point.
 
-(2020-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+2020-03-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Distinguish two or more consecutive same images (issue #76)
 
