@@ -269,22 +269,8 @@ Return content-type of URL as string when retrieval succeeded."
 	      (delete-region (point-min) pos))))
       ;; retrieve URL
       (when url
-	(if (string-match "\\`https://www\\.sankei\\.com" url)
-	    ;; FIXME: Why is this necessary?  --- ky
-	    ;; To make Sankei work, it is necessary to display some
-	    ;; extra buffer while retrieving headers.
-	    (let ((buf (get-buffer-create "*Messages*"))
-		  (cur (current-buffer)))
-	      (save-window-excursion
-		(split-window-vertically)
-		(switch-to-buffer-other-window buf)
-		(shrink-window (max (- (window-height) 3) 0))
-		(set-window-start nil (point-max))
-		(set-buffer cur)
-		(setq type (w3m-retrieve (w3m-url-transfer-encode-string url)
-					 nil no-cache nil referer))))
-	  (setq type (w3m-retrieve (w3m-url-transfer-encode-string url)
-				   nil no-cache nil referer)))))
+	(setq type (w3m-retrieve (w3m-url-transfer-encode-string url)
+				 nil no-cache nil referer))))
     (if type
 	(progn
 	  (unless no-decode
