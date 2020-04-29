@@ -827,6 +827,7 @@ Meant for use with `post-command-hook'."
     buffer-read-only t
     buffer-invisibility-spec (list 'yes))
   (cursor-intangible-mode)
+  (buffer-disable-undo)
   (use-local-map w3m-download-queue-mode-map)
   (setq w3m--download-refresh-buffer-timer
     (run-with-timer
@@ -1081,18 +1082,20 @@ Others?"
            (w3m--download-from-queue)))
        t))))
 
-(defun w3m--download-queue-adjust (direction)
+(defun w3m--download-queue-adjust (direction &optional pos)
   "Change the current entry's position in the w3m-download queue.
-DIRECTION is either 'raise or 'drop. This function is called by
-the interactive functions `w3m-download-queue-raise' and
-`w3m-download-queue-raise'."
+DIRECTION is either 'raise or 'drop. POS is how many positions to
+move.This function is called by the interactive functions
+`w3m-download-queue-raise' and `w3m-download-queue-raise'."
   (if (not (eq major-mode 'w3m-download-queue-mode))
     (w3m--message t 'w3m-error
       "This command is available only in w3m-download-queue buffers.")
-   (let ((inhibit-read-only t)
-         (current-column (current-column))
-         (url (get-text-property (point) 'url))
-         urls pos pos-end queue elem prior result)
+   (with-mutex w3m--download-mutex
+     (let ((inhibit-read-only t)
+           (current-column (current-column))
+           (url (get-text-property (point) 'url))
+           (which-queue (get-text-property (point) 'state))
+           (pos (or pos 1)))
 
 ; TODO: Although `transient-mark-mode' is non-nil, `region-active-p'
 ;       always returns nil, so I can't get region commands to work...
@@ -1106,45 +1109,57 @@ the interactive functions `w3m-download-queue-raise' and
 ;       (setq pos nil))))
 ; (message "debug: urls: %s; beg: %s; end: %s" urls (region-beginning)(region-end))
 
-    ; modify the queue
-    (with-mutex w3m--download-mutex
-      (setq queue w3m--download-queued)
+      ; modify the queue
       (cond
        ((eq direction 'top)
-        (setq elem (assoc url queue))
-        (when elem
-          (setq w3m--download-queued (delq elem w3m--download-queued)))
-          (push elem w3m--download-queued))
+        (let* ((queue (symbol-value which-queue))
+               (elem (assoc url queue)))
+          (when elem
+            (set which-queue (delq elem queue)))
+            (push elem (symbol-value which-queue))))
        ((eq direction 'bottom)
-        (setq elem (assoc url queue))
-        (when elem
-          (setq w3m--download-queued (delq elem w3m--download-queued)))
-          (add-to-list 'w3m--download-queued elem t))
+        (let* ((queue (symbol-value which-queue))
+               (elem (assoc url queue)))
+          (when elem
+            (set which-queue (delq elem queue)))
+            (add-to-list which-queue elem t)))
        ((eq direction 'raise)
-        (while queue
-          (cond
-           ((equal url (car (setq elem (pop queue))))
-            (push elem result))
-           (t
+        (while (< 0 pos)
+          (setq pos (1- pos))
+          (let ((queue (symbol-value which-queue))
+                elem result prior)
+            (while queue
+              (cond
+               ((equal url (car (setq elem (pop queue))))
+                (push elem result)
+                (unless prior
+                  (setq pos 0)))
+               (t
+                (when prior
+                  (push prior result))
+                (setq prior elem))))
             (push prior result)
-            (setq prior elem))))
-        (push prior result)
-        (setq w3m--download-queued (reverse (delq nil result))))
+            (set which-queue (reverse (delq nil result))))))
        ((eq direction 'drop)
-        (while queue
-          (cond
-           ((equal url (car (setq elem (pop queue))))
+        (while (< 0 pos)
+          (setq pos (1- pos))
+          (let ((queue (symbol-value which-queue))
+                elem result prior)
+            (while queue
+              (cond
+               ((equal url (car (setq elem (pop queue))))
+                (setq prior elem)
+                (unless queue
+                  (setq pos 0)))
+               (t
+                (push elem result)
+                (when prior
+                  (push prior result)
+                  (setq prior nil)))))
             (push prior result)
-            (setq prior elem))
-           (t
-            (push elem result)
-            (when prior
-              (push prior result)
-              (setq prior nil)))))
-        (push prior result)
-        (setq w3m--download-queued (reverse (delq nil result))))))
-    ; redisplay the queue elements
-    (w3m--download-update-display-queue-list url current-column nil))))
+            (set which-queue (reverse (delq nil result)))))))
+      ; redisplay the queue elements
+      (w3m--download-update-display-queue-list url current-column nil)))))
 
 (defun w3m--download-check-and-use-cache (url save-path metadata)
   "If URL exists in the cache, use that copy.
@@ -1539,17 +1554,17 @@ to function `w3m-download-delete-all-download-buffers'."
          (when (string-match "w3m-download" (buffer-name buf))
            (kill-buffer buf)))))))
 
-(defun w3m-download-queue-drop ()
+(defun w3m-download-queue-drop (&optional arg)
   "Move the curent entry down one position in the queue.
 This means it will be downloaded later."
-  (interactive)
-  (w3m--download-queue-adjust 'drop))
+  (interactive "p")
+  (w3m--download-queue-adjust 'drop arg))
 
-(defun w3m-download-queue-raise ()
+(defun w3m-download-queue-raise (&optional arg)
   "Move the curent entry up one position in the queue.
 This means it will be downloaded sooner."
-  (interactive)
-  (w3m--download-queue-adjust 'raise))
+  (interactive "p")
+  (w3m--download-queue-adjust 'raise arg))
 
 (defun w3m-download-queue-top ()
   "Move the curent entry to the top of the queue.

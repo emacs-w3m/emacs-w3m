@@ -1,3 +1,11 @@
+2020-04-28  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el (w3m-download-queue-mode): disable undo in download buffer.
+	(w3m--download-queue-adjust): change position of mutex, allow operation
+	for all queues.
+	(w3m--download-queue-adjust, w3m-download-queue-raise)
+	(w3m-download-queue-drop): Use prefix-arg to move multiple positions in queues.
+
 2019-12-18  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-download.el (w3m-download-video-alist): Add entry for youtu.be.
