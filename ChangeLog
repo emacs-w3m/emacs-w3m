@@ -1,5 +1,13 @@
 2020-05-01  Boruch Baum  <boruch_baum@gmx.com>
 
+	* w3m-download.el (w3m-download-ambiguous-basename-alist): Data
+	strucure for handling troublesomely repetitive filenames.
+	(w3m-download--make-basename-from-path+query): Default function for
+	renaming troublesomely repetitive filenames.
+	(w3m-download-video): Use the new data structure and function.
+
+2020-04-29  Boruch Baum  <boruch_baum@gmx.com>
+
 	* w3m-download.el (w3m-download-using-wget, w3m-download-using-w3m):
 	perform w3m-canonicalize-url for w3m-input-url.
 
