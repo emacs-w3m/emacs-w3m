@@ -2008,8 +2008,9 @@ further information."
 Are you trying to resume an aborted partial download? ")))
     (unless url
       (while (string-equal ""
-               (setq url (w3m-input-url download-prompt nil
-                           "" nil nil 'no-initial)))
+               (setq url (w3m-canonicalize-url
+                           (w3m-input-url download-prompt nil
+                             "" nil nil 'no-initial))))
         (w3m--message t 'w3m-error "A url is required")
         (sit-for 1)))
     (setq url (w3m-url-decode-string url))
@@ -2074,10 +2075,11 @@ requests."
   (interactive (list nil nil current-prefix-arg))
   (unless url
     (while (string-equal ""
-             (setq url (w3m-input-url
-                         "Download URL: " nil
-                         (or (w3m-active-region-or-url-at-point) "")
-                         nil nil 'no-initial)))
+             (setq url (w3m-canonicalize-url
+                         (w3m-input-url
+                           "Download URL: " nil
+                           (or (w3m-active-region-or-url-at-point) "")
+                           nil nil 'no-initial))))
       (w3m--message t 'w3m-error "A url is required")
       (sit-for 1)))
   (setq url (w3m-url-decode-string url))
