@@ -604,21 +604,22 @@ arguments."
 
 (defcustom w3m-download-ambiguous-basename-alist
   ;; FIXME: The spec for m-x customize-option is a "mis-match'!!
-  ;; TODO: Maybe the car of each element of this feature should be
-  ;;       a regex instead of a string?
-  '(("downloadhandler.ashx"  (("^.*\\?[^#]+$" nil w3m-download--make-basename-from-path+query))))
+  '(("^downloadhandler.ashx$"
+     (("hebrewbooks.org" nil w3m-download--make-basename-from-path+query ".pdf")
+      ("^.*\\?[^#]+$"    nil w3m-download--make-basename-from-path+query ".mp3")))))
   "How to handle ambiguous or commonly duplicated save-file names.
 
-The car of each element of this list is a troublesome download
-FILE-NAME string.
+The car of each element of this list is a regex describing a
+troublesome download file-name string.
 
 The cdr is a list. Its first element is a url regex string
 WHITE-LIST rule describing where FILE-NAME is troublesome and
 undesirable. Its second element is either nil or a list of url
 regex strings BLACK-LIST for specific over-rides of the
-WHITE-LIST rule. The final element is a function to be used to
-generate the desired replacement FILE-NAME. The function should
-accept a single argument, the url of the download."
+WHITE-LIST rule. The third element is a function to be used to
+generate the desired replacement FILE-NAME; it must accept two
+arguments, the download url string, and an arg-list list. The
+final elements are the elements of said arg-list."
   :group 'w3m
   :type '(repeat
           (list
@@ -1514,12 +1515,12 @@ See `w3m-download-resume' for options."
   (w3m--message t 'w3m-error
     "This command is available only in the w3m-download-queue buffer"))
 
-(defun w3m-download--make-basename-from-path+query (url)
+(defun w3m-download--make-basename-from-path+query (url arg-list)
   "Default function to resolve ambiguous or commonly duplicated save-file names.
 See `w3m-download-ambiguous-basename-alist'."
   (setq url (replace-regexp-in-string "\\." "_" url))
   (when (string-match "^[^:]+://\\([^/]+\\)/[^?]+\\?req=\\(.*\\)$" url)
-    (concat (match-string 1 url) "_" (match-string 2 url) ".pdf")))
+    (concat (match-string 1 url) "_" (match-string 2 url) (car arg-list))))
 
 
 
@@ -2059,7 +2060,14 @@ Are you trying to resume an aborted partial download? ")))
       (setq extension alt-extension)
       (unless save-path
         (setq save-path (concat w3m-default-save-directory alt-basename))))
-    (when (setq ambiguous (cadr (assoc basename w3m-download-ambiguous-basename-alist)))
+    (when (setq ambiguous
+            (let ((ambig-name-alist w3m-download-ambiguous-basename-alist)
+                  this result)
+              (while (setq this (pop ambig-name-alist))
+                (when (string-match (car this) basename)
+                  (setq result (cadr this))
+                  (setq ambig-name-alist nil)))
+              result))
       (let (white-rule black-list black-rule result)
         (while (setq white-rule (pop ambiguous))
           (when (string-match (pop white-rule) url) ;; we have a matching whitelist
@@ -2071,9 +2079,9 @@ Are you trying to resume an aborted partial download? ")))
                   (setq white-rule nil)
                   (setq ambiguous nil)))
               (when white-rule
-                (setq result (funcall (car white-rule) url))))
+                (setq result (apply (pop white-rule) url white-rule))))
              (t (setq ambiguous nil)
-                (setq result (funcall (car white-rule) url))
+                (setq result (funcall (pop white-rule) url white-rule))
                 (setq white-rule nil)))))
         (if (not result)
           (setq current-prefix-arg t)
