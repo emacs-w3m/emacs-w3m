@@ -603,10 +603,9 @@ arguments."
         (string :format "args for youtube-dl: %v"))))
 
 (defcustom w3m-download-ambiguous-basename-alist
-  ;; FIXME: The spec for m-x customize-option is a "mis-match'!!
   '(("^downloadhandler.ashx$"
-     (("hebrewbooks.org" nil w3m-download--make-basename-from-path+query ".pdf")
-      ("^.*\\?[^#]+$"    nil w3m-download--make-basename-from-path+query ".mp3")))))
+     ("hebrewbooks.org" nil w3m-download--make-basename-from-path+query (".pdf"))
+     ("^.*\\?[^#]+$"    nil w3m-download--make-basename-from-path+query (".mp3"))))
   "How to handle ambiguous or commonly duplicated save-file names.
 
 The car of each element of this list is a regex describing a
@@ -618,20 +617,21 @@ undesirable. Its second element is either nil or a list of url
 regex strings BLACK-LIST for specific over-rides of the
 WHITE-LIST rule. The third element is a function to be used to
 generate the desired replacement FILE-NAME; it must accept two
-arguments, the download url string, and an arg-list list. The
-final elements are the elements of said arg-list."
+arguments, the download url string, and an ARG-LIST. The
+final element is said ARG-LIST."
   :group 'w3m
   :type '(repeat
-          (list
-           (string :format "String matching troublesome filename: %v")
-           (list (repeat
-            :format "%v"
+          (cons :indent 2
+           (regexp :format "Regexp for troublesome filename: %v" :length 20)
+           (repeat (list :indent 4
              (regexp :format "Regexp matching url to apply rule: %v")
-             (choice
+             (choice :format "Exceptions: %[Value Menu%] %v"
               (const :tag "none" nil)
-              (list (repeat (regexp :format "Regexp matching url not to be filtered: %v"))))
-             (function :format "Function to create good filename: %v"))))))
-
+              (list :tag "list of url regexps not to be filtered"
+               (repeat (regexp :format "Regexp matching url not to be filtered: %v"))))
+             (function :format "Function to create good filename: %v")
+             (repeat :indent 6
+              (string :format "Arg for the function: %v")))))))
 
 
 ;;; Faces:
@@ -2065,7 +2065,7 @@ Are you trying to resume an aborted partial download? ")))
                   this result)
               (while (setq this (pop ambig-name-alist))
                 (when (string-match (car this) basename)
-                  (setq result (cadr this))
+                  (setq result (cdr this))
                   (setq ambig-name-alist nil)))
               result))
       (let (white-rule black-list black-rule result)
@@ -2079,9 +2079,9 @@ Are you trying to resume an aborted partial download? ")))
                   (setq white-rule nil)
                   (setq ambiguous nil)))
               (when white-rule
-                (setq result (apply (pop white-rule) url white-rule))))
+                (setq result (apply (pop white-rule) url (car white-rule)))))
              (t (setq ambiguous nil)
-                (setq result (funcall (pop white-rule) url white-rule))
+                (setq result (funcall (pop white-rule) url (car white-rule)))
                 (setq white-rule nil)))))
         (if (not result)
           (setq current-prefix-arg t)

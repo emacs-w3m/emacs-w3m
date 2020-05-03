@@ -5,6 +5,8 @@
 	(w3m-download--make-basename-from-path+query): Let search items be
 	regex's, let function handlers accept arbitrary number of args, and let
 	default handler accept arg for filename extension.
+	(w3m-download-using-wget, w3m-download-ambiguous-basename-alist): Fix
+	defcustom for M-x customize-variable.
 
 2020-05-01  Boruch Baum  <boruch_baum@gmx.com>
 
