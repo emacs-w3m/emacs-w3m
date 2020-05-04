@@ -1,3 +1,10 @@
+2020-05-04  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el (w3m-download-select)
+	(w3m-download-select-deep-search): Feature to search for links embedded
+	in <script> and other places in the HTML source. Also, now check for
+	links in plaintext of HTML, even if not anchored.
+
 2020-05-03  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-download.el (w3m-download-using-wget)

@@ -93,6 +93,14 @@
 ;;
 ;;     + Dedicated faces for each download category.
 ;;
+;;   + Download links that are 'hidden' within HTML source code inside
+;;     <script> elements or other places can optionally be used. See
+;;     variable `w3m-download-select-deep-search'.
+;;
+;;   + Downloads with commonly duplicated names can be uniquified to
+;;     user-meaningful file-names. See variable
+;;     `w3m-download-ambiguous-basename-alist'.
+
 ;; This file also absorbed most of the legacy download functions,
 ;; those which were basically wrappers for `w3m-download', to keep all
 ;; (most) functionality in one place. The functions and defcustom not
@@ -633,6 +641,15 @@ final element is said ARG-LIST."
              (repeat :indent 6
               (string :format "Arg for the function: %v")))))))
 
+(defcustom w3m-download-select-deep-search nil
+  "Whether to thoroughly search the HTML source for links.
+
+The default for this option is NIL, because it searches even
+inside <script> elements, and even inside HTML comments, and is
+not able to respect a user's request to limit the search to a
+just a buffer region; the HTML source for the entire buffer  will be searched."
+  :group 'w3m
+  :type 'boolean)
 
 ;;; Faces:
 
@@ -2218,13 +2235,15 @@ resume instead of restarting from scratch."
          nil nil nil
          'w3m--download-select-filter-history))
       current-prefix-arg))
-  (let ((pos start)
+  (let ((return-point (point)) ; fix bug with save-mark-and-excursion
+        (pos start)
         (not-done t)
         (regex (if (string-match "^[^ ]*: +" filter)
                   (substring filter (match-end 0))
                  filter))
         anchor anchor-list buf)
    (save-mark-and-excursion
+     ;; part 1: normal anchors / links
      (while not-done
        (when (setq anchor (or (get-text-property pos 'w3m-href-anchor)
                               (get-text-property pos 'w3m-image)))
@@ -2251,7 +2270,19 @@ resume instead of restarting from scratch."
                   (and image-pos
                        (or (not pos) (> pos image-pos))
                        (setq pos image-pos))))
-            pos)))))
+            pos))))
+     ;; part 2: text links for which no anchors exist
+     (goto-char start)
+     (while (re-search-forward regex end t)
+       (push (match-string 0) anchor-list))
+     ;; part 3: links in html source / embedded <script>
+     (when w3m-download-select-deep-search
+       (w3m-view-source)
+       (goto-char (point-min))
+       (while (re-search-forward regex nil t)
+         (push (match-string 0) anchor-list))
+       (w3m-view-source)))
+   (goto-char return-point)
    (if (not anchor-list)
      (w3m--message t 'w3m-error "No links found in region.")
     (setq anchor-list (reverse anchor-list))
@@ -2291,6 +2322,8 @@ Review the links selected [X] for downloading.\n
       (goto-char (point-min))
       (re-search-forward "^\\[")
       (w3m--download-update-faces-post-command))))))
+
+
 
 ;;;###autoload
 (defun w3m-download (url
