@@ -2279,7 +2279,7 @@ resume instead of restarting from scratch."
      (when w3m-download-select-deep-search
        (w3m-view-source)
        (goto-char (point-min))
-       (while (re-search-forward regex nil t)
+       (while (re-search-forward (concat "https?://[^'\"]+" regex) nil t)
          (push (match-string 0) anchor-list))
        (w3m-view-source)))
    (goto-char return-point)
