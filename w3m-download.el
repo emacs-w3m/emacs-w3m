@@ -294,19 +294,6 @@ These are:`w3m--download-queued', `w3m--download-running',
 Update this value whenever altering the dowload queue buffer's
 heading.")
 
-(defconst w3m--download-queue-buffer-header-string "
- This buffer displays running, queued, paused, failed, and completed downloads.\n
-   +/-      Adjust maximum number of simultaneous downloads.
-   C-o      Toggle a line's details (C-c C-o for all lines)
-   p        Pause or re-queue an entry
-   C-C C-n  Move an entry line down the queue (later download)
-   C-c C-p  Move an entry line up the queue (sooner download)
-   C-C C-a  Move an entry line to top of queue (first to download)
-   C-C C-e  Move an entry line to bottom of queue (last to download)
-   C-k      Delete an entry line (file or fragment will remain on disk)
-   C-g      Refresh this buffer now (C-u C-g to set auto-refresh rate)
-   q        Close this buffer (or just kill the buffer)\n\n>\n\n")
-
 
 
 ;;; Global variables:
@@ -347,6 +334,7 @@ heading.")
     (define-key map "\C-g"      'w3m-download-refresh-buffer)
     (define-key map "+"         'w3m-download-increase-simultaneous)
     (define-key map "-"         'w3m-download-decrease-simultaneous)
+    (define-key map "?"         'describe-mode)
     (setq w3m-download-queue-mode-map map)))
 
 (defvar w3m--download-queued nil
@@ -850,10 +838,32 @@ Meant for use with `post-command-hook'."
   (add-hook 'post-command-hook 'w3m--download-update-faces-post-command t t)
   (add-hook 'post-command-hook 'w3m--download-update-statistics t t))
 
+(defun w3m--download-queue-buffer-header-string ()
+  "Return a list of current keybindings for `w3m-download-queue-mode-map'.
+This is displayed at the top of the buffer as cheat sheet.
+IMPORTANT: Keep this function's value synchronized with the
+docstring of `w3m-download-queue-mode'."
+  (let ((zz (lambda (x)
+              (key-description
+                (where-is-internal x w3m-download-queue-mode-map t)))))
+    (concat
+" This buffer displays running, queued, paused, failed, and completed downloads.\n
+   " (funcall zz 'w3m-download-increase-simultaneous)"/" (funcall zz 'w3m-download-decrease-simultaneous)"      Adjust maximum number of simultaneous downloads.
+   " (funcall zz 'w3m-download-toggle-details) "      Toggle a line's details (C-c C-o for all lines)
+   " (funcall zz 'w3m-download-toggle-pause) "        Pause or re-queue an entry
+   " (funcall zz 'w3m-download-queue-drop) "  Move an entry line down the queue (later download)
+   " (funcall zz 'w3m-download-queue-raise) "  Move an entry line up the queue (sooner download)
+   " (funcall zz 'w3m-download-queue-raise) "  Move an entry line to top of queue (first to download)
+   " (funcall zz 'w3m-download-queue-bottom) "  Move an entry line to bottom of queue (last to download)
+   " (funcall zz 'w3m-download-delete-line) "      Delete an entry line (file or fragment will remain on disk)
+   " (funcall zz 'w3m-download-refresh-buffer) "      Refresh this buffer now (C-u "
+(funcall zz 'w3m-download-refresh-buffer)" to set auto-refresh rate)
+   " (funcall zz 'w3m-download-buffer-quit) "        Close this buffer (or just kill the buffer)\n\n>\n\n")))
+
 (defun w3m-download-queue-mode ()
   "Major mode for viewing and editing the `w3m-download' queue.
 
-\\[w3m-download-toggle-pause]    Toggle pause state of the download.
+\\[w3m-download-toggle-pause]          Toggle pause state of the download.
 \\[w3m-download-queue-drop]    Move current line down the queue.
 \\[w3m-download-queue-raise]    Move current line up the queue.
 \\[w3m-download-queue-top]    Move current line to the top of the queue.
@@ -861,10 +871,12 @@ Meant for use with `post-command-hook'."
 \\[w3m-download-delete-line]        Delete current line.
 \\[w3m-download-increase-simultaneous] / \\[w3m-download-decrease-simultaneous]  \
     Increase /Decrease numner of parallel downloads.
+\\[w3m-download-toggle-details]        Toggle a line's details (\\[w3m-download-toggle-all-details] for all lines)
 \\[w3m-download-refresh-buffer]        Refresh (update) the buffer contents.
 \\[universal-argument] \\[w3m-download-refresh-buffer]\
     Change the buffer auto-refresh interval.
 \\[w3m-download-buffer-quit]          Quit.\n\n
+
 \\{w3m-download-queue-mode-map}\n\n"
   ; Note that this mode shares functions with `w3m-download-select-mode'.
   (setq
@@ -1768,7 +1780,7 @@ function `w3m-download-set-refresh-interval'."
          (let ((inhibit-read-only t)
                pos)
            (erase-buffer)
-           (insert (propertize w3m--download-queue-buffer-header-string
+           (insert (propertize (w3m--download-queue-buffer-header-string)
                       'cursor-intangible t 'field t 'front-sticky t))
            (w3m--download-display-queue-list))
          (goto-char (point-min))

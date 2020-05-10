@@ -1,3 +1,10 @@
+2020-05-10  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el (w3m-download-queue-mode-map): Bind '?' to describe mode.
+	(w3m-download-select-mode-map)
+	(w3m--download-queue-buffer-header-string, w3m-download-view-queue):
+	Don't hard-code keybinding hints.
+
 2020-05-06  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-download.el (w3m-download-select): Improve regexp for deep search option
