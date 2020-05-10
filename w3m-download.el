@@ -565,13 +565,13 @@ partial downloads."
 
 (defcustom w3m-download-select-filter-list
   '("all_links: .*$"
-    "e-books:   \\.\\(pdf\\)\\|\\(epub\\)\\|\\(mobi\\)$"
-    "archives:  \\.\\(t?gz\\)\\|\\(zip\\)\\|\\(xz\\)\\|\\(lzma\\)$"
+    "e-books:   \\.\\(\\(pdf\\)\\|\\(epub\\)\\|\\(mobi\\)\\)$"
+    "archives:  \\.\\(\\(t?gz\\)\\|\\(zip\\)\\|\\(xz\\)\\|\\(lzma\\)\\)$"
     "text:      \\.txt$"
-    "images:    \\.\\(png\\)\\|\\(jpe?g\\)\\|\\(gif\\)$"
-    "audio:     \\.\\(og[ag]\\)\\|\\(mp3\\)$"
-    "video:     \\.\\(ogv\\)\\|\\(mp4\\)$"
-    "iso/img:   \\.\\(iso\\)\\|\\(img\\)$")
+    "images:    \\.\\(\\(png\\)\\|\\(jpe?g\\)\\|\\(gif\\)\\)$"
+    "audio:     \\.\\(\\(og[ag]\\)\\|\\(mp3\\)\\)$"
+    "video:     \\.\\(\\(ogv\\)\\|\\(mp4\\)\\)$"
+    "iso/img:   \\.\\(\\(iso\\)\\|\\(img\\)\\)$")
   "Regex patterns for filtering downloads.
 Each regex string may begin with an optional single descriptive word
 ending with a colon `:', followed by the regex for the filter."
@@ -2238,14 +2238,15 @@ resume instead of restarting from scratch."
     (list
       (if (region-active-p) (region-beginning) (point-min))
       (if (region-active-p) (region-end) (point-max))
-      (if current-prefix-arg ".*"
-       (completing-read
-         "Download filter regex: "
-         (if w3m--download-select-filter-history
-           (cons (car w3m--download-select-filter-history) w3m-download-select-filter-list)
-          w3m-download-select-filter-list)
-         nil nil nil
-         'w3m--download-select-filter-history))
+      (if current-prefix-arg ".+"
+       (or (completing-read
+             "Download filter regex: "
+             (if w3m--download-select-filter-history
+               (cons (car w3m--download-select-filter-history) w3m-download-select-filter-list)
+              w3m-download-select-filter-list)
+             nil nil nil
+             'w3m--download-select-filter-history)
+           ".+"))
       current-prefix-arg))
   (let ((return-point (point)) ; fix bug with save-mark-and-excursion
         (pos start)
@@ -2285,8 +2286,14 @@ resume instead of restarting from scratch."
             pos))))
      ;; part 2: text links for which no anchors exist
      (goto-char start)
-     (while (re-search-forward regex end t)
-       (push (match-string 0) anchor-list))
+     (let ((regex (concat "^\\(https?://\\)?.+" regex))
+           hold)
+       (while (re-search-forward regex end t)
+         (push
+           (if (string-match "^https?://" (setq hold (match-string 0)))
+             hold
+            (concat "https://" hold))
+           anchor-list)))
      ;; part 3: links in html source / embedded <script>
      (when w3m-download-select-deep-search
        (w3m-view-source)
