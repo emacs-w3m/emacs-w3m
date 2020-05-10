@@ -5,6 +5,8 @@
 	(w3m--download-queue-buffer-header-string, w3m-download-view-queue):
 	Don't hard-code keybinding hints.
 	(w3m-download-select): Fix regex for text searches. Fix blank entry.
+	Remove duplicates. Prune trailing single-quotes. Use thing-at-point to
+	identify urls.
 	(w3m-download-select-filter-list): Fix regex groupings.
 
 2020-05-06  Boruch Baum  <boruch_baum@gmx.com>

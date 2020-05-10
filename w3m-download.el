@@ -2254,7 +2254,7 @@ resume instead of restarting from scratch."
         (regex (if (string-match "^[^ ]*: +" filter)
                   (substring filter (match-end 0))
                  filter))
-        anchor anchor-list buf)
+        anchor anchor-list buf hold)
    (save-mark-and-excursion
      ;; part 1: normal anchors / links
      (while not-done
@@ -2284,22 +2284,30 @@ resume instead of restarting from scratch."
                        (or (not pos) (> pos image-pos))
                        (setq pos image-pos))))
             pos))))
+     ;; parts 2 & 3 operate on the buffer, not on the anchor list, so
+     ;; we remove end markers
+     (setq regex (replace-regexp-in-string "\\$" "" regex))
+     ;; NOTE: single-quote: RFC1738 explicitly lists the single-quote
+     ;; character as a permitted 'extra' character in urls. We remove
+     ;; it in this when it is a trailing character, on presumption that
+     ;; in our case it is almost definitely an external delimiter.
+     ;;
      ;; part 2: text links for which no anchors exist
      (goto-char start)
-     (let ((regex (concat "^\\(https?://\\)?.+" regex))
-           hold)
-       (while (re-search-forward regex end t)
-         (push
-           (if (string-match "^https?://" (setq hold (match-string 0)))
-             hold
-            (concat "https://" hold))
-           anchor-list)))
+     (while (re-search-forward regex end t)
+       (when (setq hold (w3m-url-at-point))
+         (setq hold (replace-regexp-in-string "'$" "" hold)) ; See note: "single-quote"
+         (when (not (member hold anchor-list))
+            (push hold anchor-list))))
      ;; part 3: links in html source / embedded <script>
      (when w3m-download-select-deep-search
        (w3m-view-source)
        (goto-char (point-min))
-       (while (re-search-forward (concat "https?://[^'\"]+" regex) nil t)
-         (push (match-string 0) anchor-list))
+       (while (re-search-forward regex nil t)
+         (when (setq hold (w3m-url-at-point))
+           (setq hold (replace-regexp-in-string "'$" "" hold)) ; See note: "single-quote"
+           (when (not (member hold anchor-list))
+             (push hold anchor-list))))
        (w3m-view-source)))
    (goto-char return-point)
    (if (not anchor-list)
