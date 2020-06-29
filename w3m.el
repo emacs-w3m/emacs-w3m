@@ -11822,7 +11822,7 @@ the past, this had been set by the combination: `w3m-use-tab' t
   (defun w3m-fix-melpa-installation (&optional _arg)
     "Generate w3m-load.el if missing so as to fix melpa installation."
     (remove-hook 'after-load-functions #'w3m-fix-melpa-installation)
-    (let (dir autoloads archive timestamp hash file)
+    (let (dir pkg autoloads archive timestamp hash file)
       ;; Look for the directory where this file is installed.  Note that
       ;; `load-history' referenced here is updated after this file is loaded,
       ;; so this function should run by way of the `after-load-functions' hook.
@@ -11834,18 +11834,33 @@ the past, this had been set by the combination: `w3m-use-tab' t
       (when (and dir
 		 (file-exists-p ;; Verify if this file comes from melpa.
 		  (setq autoloads (expand-file-name "w3m-autoloads.el" dir)))
-		 (require 'package)
-		 (file-exists-p (setq archive
-				      (expand-file-name
-				       "archives/melpa/archive-contents"
-				       package-user-dir)))
-		 (with-temp-buffer
-		   (ignore-errors
-		     (insert-file-contents archive)
-		     ;; Look for timestamp and revision hash.
-		     (let ((def (cdr (assq 'w3m (read (current-buffer))))))
-		       (setq timestamp (apply #'format "%s.%s" (aref def 0))
-			     hash (cdr (assq :commit (aref def 4)))))))
+		 (or (and (file-exists-p
+			   (setq pkg (expand-file-name "w3m-pkg.el" dir)))
+			  (with-temp-buffer
+			    (ignore-errors
+			      (insert-file-contents pkg)
+			      (goto-char (point-min))
+			      ;; Look for timestamp and revision hash.
+			      (let ((def (read (current-buffer))))
+				(setq timestamp (nth 2 def)
+				      hash (cadr (memq :commit def))))))
+			  (stringp timestamp))
+		     (and
+		      (require 'package) ;; `package-user-dir`
+		      (file-exists-p (setq archive
+					   (expand-file-name
+					    "archives/melpa/archive-contents"
+					    package-user-dir)))
+		      (with-temp-buffer
+			(ignore-errors
+			  (insert-file-contents archive)
+			  (goto-char (point-min))
+			  ;; Look for timestamp and revision hash.
+			  (let ((def (cdr (assq 'w3m
+						(read (current-buffer))))))
+			    (setq timestamp (apply #'format "%s.%s"
+						   (aref def 0))
+				  hash (cdr (assq :commit (aref def 4)))))))))
 		 (stringp hash)
 		 (string-match "\\`\\([0-9a-z]\\{7\\}\\)[0-9a-z]+\\'" hash)
 		 (setq hash (match-string 1 hash)))

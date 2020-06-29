@@ -1,3 +1,8 @@
+2020-06-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-fix-melpa-installation): Find the git revision hash
+	in w3m-pkg.el precedently than archive-contents.
+
 2020-03-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-makeinfo): Override texinfo-do-itemize.
