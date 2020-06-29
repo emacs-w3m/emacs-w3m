@@ -3791,12 +3791,18 @@ off this option."
   :type 'boolean)
 
 ;; Note: third party software might not use `w3m-image-hseq'.
-(defsubst w3m-search-for-next-image-boundary (start &optional end)
+(defmacro w3m-search-for-next-image-boundary (start &optional end)
   "Search for the next image boundary within START and END.
 Return the boundary position or nil if not found.  Note that return
 END if it is non-nil even if the boundary is not found."
-  (or (next-single-property-change start 'w3m-image-hseq nil end)
-      (next-single-property-change start 'w3m-image nil end)))
+  (if end
+      `(let* ((st ,start) (nd ,end)
+	      (img (next-single-property-change st 'w3m-image-hseq nil nd)))
+	 (or (and img (< img nd) img)
+	     (next-single-property-change st 'w3m-image nil nd)))
+    `(let ((st ,start))
+       (or (next-single-property-change st 'w3m-image-hseq)
+	   (next-single-property-change st 'w3m-image)))))
 
 (defsubst w3m-search-for-previous-image-boundary (start)
   "Search for the image boundary backward from START.
