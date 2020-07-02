@@ -1,3 +1,7 @@
+2020-07-01  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-search.el (w3m-search-engine-alist): Update url for duckduckgo
+
 2020-06-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-search-for-next-image-boundary): Fix a bug that it tried
