@@ -6486,7 +6486,34 @@ If so return \"text/html\", otherwise \"text/plain\"."
 	"text/html"
       "text/plain")))
 
-(defun w3m-create-text-page (url type charset page-buffer)
+(defvar text-scale-mode)
+(defvar text-scale-mode-remapping)
+
+(defmacro w3m-with-text-scale-mode (page-buffer &rest body)
+  "Scale display sizes based upon faces remapped by `text-scale-mode'.
+This macro scales the return values of frame-char-height/width and
+window-height/width according to `text-scale-mode' of PAGE-BUFFER
+while running BODY."
+  `(let ((scale (with-current-buffer (or ,page-buffer (current-buffer))
+		  (and (boundp 'text-scale-mode)
+		       text-scale-mode
+		       (ignore-errors
+			 (cadr (memq :height text-scale-mode-remapping))))))
+	 fns def)
+     (when (and (numberp scale) (> scale 0))
+       (dolist (fn '(frame-char-height frame-char-width))
+	 (push (cons fn (setq def (symbol-function fn))) fns)
+	 (fset fn `(lambda (&rest args)
+		     (ceiling (* (apply #',def args) ,scale)))))
+       (dolist (fn '(window-height window-width))
+	 (push (cons fn (setq def (symbol-function fn))) fns)
+	 (fset fn `(lambda (&rest args)
+		     (floor (/ (apply #',def args) ,scale))))))
+     (unwind-protect
+	 (progn ,@body)
+       (dolist (fn fns) (fset (car fn) (cdr fn))))))
+
+(defsubst w3m-create-text-page-1 (url type charset page-buffer)
   (w3m-safe-decode-buffer url charset type)
   (setq w3m-current-url (if (w3m-arrived-p url)
 			    (w3m-real-url url)
@@ -6512,6 +6539,11 @@ If so return \"text/html\", otherwise \"text/plain\"."
 	(set-buffer-file-coding-system w3m-current-coding-system)
 	(when (string= "text/html" type) (w3m-fontify))
 	'text-page))))
+
+(defun w3m-create-text-page (url type charset page-buffer)
+  (w3m-with-text-scale-mode
+   page-buffer
+   (w3m-create-text-page-1 url type charset page-buffer)))
 
 (defsubst w3m-image-page-displayed-p ()
   (and w3m-current-url
@@ -8631,6 +8663,23 @@ See also `w3m-quit'."
 	    w3m-info-like-map
 	  w3m-lynx-like-map)))
 
+(when (and (fboundp #'text-scale-adjust)
+	   (not (where-is-internal #'w3m-text-scale-adjust w3m-mode-map)))
+  (define-key w3m-mode-map [remap text-scale-adjust] #'w3m-text-scale-adjust))
+
+(defun w3m-text-scale-adjust (inc)
+  "Run `text-scale-adjust' and redisplay the page."
+  (interactive "p")
+  (text-scale-adjust inc)
+  (set-transient-map
+   (let ((map (make-sparse-keymap)))
+     (dolist (mods '(() (control)))
+       (dolist (key '(?- ?+ ?= ?0)) ;; = is often unshifted +.
+	 (define-key map (vector (append mods (list key)))
+	   (lambda () (interactive) (w3m-text-scale-adjust (abs inc))))))
+     map))
+  (w3m-redisplay-this-page))
+
 (defun w3m-mouse-major-mode-menu (event)
   "Pop up a W3M mode-specific menu of mouse commands."
   (interactive "e")
@@ -10182,7 +10231,8 @@ before redisplaying."
     (let ((w3m-prefer-cache t)
 	  (w3m-history-reuse-history-elements
 	   ;; Don't move the history position.
-	   'reload))
+	   'reload)
+	  (w3m-clear-display-while-reading nil))
       (or no-store-pos (w3m-history-store-position))
       (w3m-goto-url w3m-current-url 'redisplay)
       (w3m-history-restore-position))))

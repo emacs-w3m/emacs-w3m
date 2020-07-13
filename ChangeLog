@@ -1,3 +1,12 @@
+2020-07-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Automatic refilling page according to `text-scale-mode'
+
+	* w3m.el (w3m-with-text-scale-mode): New macro.
+	(w3m-create-text-page): Use it.
+	(w3m-text-scale-adjust): New command that overrides text-scale-adjust.
+	(w3m-redisplay-this-page): Don't show progress message.
+
 2020-07-01  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-search.el (w3m-search-engine-alist): Update url for duckduckgo.
