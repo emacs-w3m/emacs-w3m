@@ -1,6 +1,6 @@
 ;;; sb-yomiuri.el --- shimbun backend for www.yomiuri.co.jp
 
-;; Copyright (C) 2001-2008, 2017, 2019
+;; Copyright (C) 2001-2008, 2017, 2019, 2020
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -31,12 +31,6 @@
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>.
 
 ;;; Code:
-
-;; Delete this section when emacs-w3m drops the Emacs 25 support.
-;; In Emacs 26 and greater, c[ad][ad][ad]+r are what subr.el provides.
-(eval-when-compile
-  (unless (>= emacs-major-version 26)
-    (require 'cl))) ;; c[ad][ad][ad]+r
 
 (require 'shimbun)
 

@@ -1,18 +1,18 @@
 Emacs-w3m NEWS -- history of user-visible changes.
 
-Copyright (C) 2019 TSUCHIYA Masatoshi
+Copyright (C) 2020 TSUCHIYA Masatoshi
 See the end of the file for license conditions.
 
 Please send bug reports to emacs-w3m@namazu.org.
 If possible, use M-x report-emacs-w3m-bug.
 
-This file is about emacs-w3m as of June 2019.
+This file is about emacs-w3m as of August 2020.
 
 
 * Required Emacs version changes
 
 ** Emacs-w3m no longer works with old Emacs versions.
-Now emacs-w3m will work with Emacs 25, 26, and hopefully 27 (not
+Now emacs-w3m will work with Emacs 26, 27, and hopefully 28 (not
 released yet, though).  XEmacs support has been dropped.
 
 

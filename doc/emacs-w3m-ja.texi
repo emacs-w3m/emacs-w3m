@@ -233,7 +233,7 @@ Emacs-w3m Functions
 @section どんなバージョンの Emacs で使えるの?
 @cindex Possible Emacs versions
 
-現在 emacs-w3m は Emacs 25、26、そしてうまくいけば 27 (まだリリースされ
+現在 emacs-w3m は Emacs 26、27、そしてうまくいけば 28 (まだリリースされ
 ていませんが) で動作するでしょう。XEmacs サポートは終了しました。
 
 @node You Need w3m
@@ -3969,7 +3969,7 @@ w3m を Emacs 上で動かすインターフェースプログラムです。Ema
 @item
 Q. 動作する Emacs は?
 
-現在 emacs-w3m は Emacs 25、26、そしてうまくいけば 27 (まだリリースされ
+現在 emacs-w3m は Emacs 26、27、そしてうまくいけば 28 (まだリリースされ
 ていませんが) で動作するでしょう。XEmacs サポートは終了しました。
 
 @item

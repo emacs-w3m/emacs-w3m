@@ -1,6 +1,6 @@
 ;;; w3m-save.el --- Save the page to the local files
 
-;; Copyright (C) 2015-2017, 2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2015-2017, 2019, 2020 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -27,12 +27,6 @@
 ;; are portable; you can move them to any place including a web site.
 
 ;;; Code:
-
-;; Delete this section when emacs-w3m drops the Emacs 25 support.
-;; In Emacs 26 and greater, c[ad][ad][ad]+r are what subr.el provides.
-(eval-when-compile
-  (unless (>= emacs-major-version 26)
-    (require 'cl))) ;; c[ad][ad][ad]+r
 
 (require 'w3m)
 

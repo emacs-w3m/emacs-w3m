@@ -1,6 +1,6 @@
 ;;; w3m-search.el --- functions convenient to access web search engines
 
-;; Copyright (C) 2001--2012, 2017-2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001--2012, 2017-2020 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Keisuke Nishida    <kxn30@po.cwru.edu>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -33,12 +33,6 @@
 ;;    http://emacs-w3m.namazu.org/
 
 ;;; Code:
-
-;; Delete this section when emacs-w3m drops the Emacs 25 support.
-;; In Emacs 26 and greater, c[ad][ad][ad]+r are what subr.el provides.
-(eval-when-compile
-  (unless (>= emacs-major-version 26)
-    (require 'cl))) ;; c[ad][ad][ad]+r
 
 (require 'w3m)
 

@@ -1,6 +1,6 @@
 ;;; sb-asahi.el --- shimbun backend for asahi.com
 
-;; Copyright (C) 2001-2011, 2013-2019 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001-2011, 2013-2020 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -31,12 +31,6 @@
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>.
 
 ;;; Code:
-
-;; Delete this section when emacs-w3m drops the Emacs 25 support.
-;; In Emacs 26 and greater, c[ad][ad][ad]+r are what subr.el provides.
-(eval-when-compile
-  (unless (>= emacs-major-version 26)
-    (require 'cl))) ;; c[ad][ad][ad]+r
 
 (require 'shimbun)
 (require 'sb-multi)

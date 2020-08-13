@@ -1,6 +1,6 @@
 ;;; w3m-ems.el --- GNU Emacs stuff for emacs-w3m -*- lexical-binding: t -*-
 
-;; Copyright (C) 2001-2013, 2016-2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2013, 2016-2020 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -35,13 +35,6 @@
 ;;; Code:
 
 (require 'cl-lib) ;; cl-incf
-
-;; Delete this section when emacs-w3m drops the Emacs 25 support.
-;; In Emacs 26 and greater, c[ad][ad][ad]+r are what subr.el provides.
-(eval-when-compile
-  (unless (>= emacs-major-version 26)
-    (require 'cl))) ;; c[ad][ad][ad]+r
-
 (require 'w3m-util)
 (require 'w3m-proc)
 (require 'w3m-image)

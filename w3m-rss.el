@@ -1,6 +1,7 @@
 ;;; w3m-rss.el --- RSS functions
 
-;; Copyright (C) 2004, 2005, 2012, 2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2004, 2005, 2012, 2019, 2020
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -39,14 +40,7 @@
 
 ;;; Code:
 
-;; Delete this section when emacs-w3m drops the Emacs 25 support.
-;; In Emacs 26 and greater, c[ad][ad][ad]+r are what subr.el provides.
-(eval-when-compile
-  (unless (>= emacs-major-version 26)
-    (require 'cl))) ;; c[ad][ad][ad]+r
-
 (require 'cl-lib) ;; cl-labels
-
 (require 'w3m-util)
 
 (eval-and-compile

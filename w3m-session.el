@@ -1,6 +1,6 @@
 ;;; w3m-session.el --- Functions to operate session of w3m
 
-;; Copyright (C) 2001-2003, 2005-2013, 2017-2019
+;; Copyright (C) 2001-2003, 2005-2013, 2017-2020
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Hideyuki SHIRAI <shirai@meadowy.org>
@@ -85,12 +85,6 @@
 
 
 ;;; Code:
-
-;; Delete this section when emacs-w3m drops the Emacs 25 support.
-;; In Emacs 26 and greater, c[ad][ad][ad]+r are what subr.el provides.
-(eval-when-compile
-  (unless (>= emacs-major-version 26)
-    (require 'cl))) ;; c[ad][ad][ad]+r
 
 (require 'w3m-util)
 

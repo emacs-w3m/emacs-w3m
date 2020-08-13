@@ -50,23 +50,7 @@
 
 ;;; Code:
 
-;; Delete this section when emacs-w3m drops the Emacs 25 support.
-;; Note that `gv' should be loaded before `cl-lib' autoloads it.
-(eval-and-compile
-  (unless (>= emacs-major-version 26)
-    (require 'gv))) ;; gv--defsetter
-
-;; Note that `cl-lib' should be loaded before `cl' even if `cl' loads
-;; `cl-lib', otherwise the functions `cl-lib' provides will be marked
-;; as "might not be defined at runtime" because of `eval-when-compile'.
 (require 'cl-lib) ;; cl-decf, cl-incf, cl-labels, cl-remove-if
-
-;; Delete this section when emacs-w3m drops the Emacs 25 support.
-;; In Emacs 26 and greater, c[ad][ad][ad]+r are what subr.el provides.
-(eval-when-compile
-  (unless (>= emacs-major-version 26)
-    (require 'cl))) ;; c[ad][ad][ad]+r
-
 (require 'w3m-util)
 (require 'w3m-proc)
 

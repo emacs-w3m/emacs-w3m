@@ -1,8 +1,8 @@
 ;;; sb-rss.el --- shimbun backend for RSS (Rich Site Summary).
 
-;; Copyright (C) 2003-2011, 2013, 2019
+;; Copyright (C) 2003-2011, 2013, 2019, 2020
 ;; Koichiro Ohba <koichiro@meadowy.org>
-;; Copyright (C) 2003-2011, 2013, 2019
+;; Copyright (C) 2003-2011, 2013, 2019, 2020
 ;; NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
@@ -30,12 +30,6 @@
 ;;; Commentary:
 
 ;;; Code:
-
-;; Delete this section when emacs-w3m drops the Emacs 25 support.
-;; In Emacs 26 and greater, c[ad][ad][ad]+r are what subr.el provides.
-(eval-when-compile
-  (unless (>= emacs-major-version 26)
-    (require 'cl))) ;; c[ad][ad][ad]+r
 
 (require 'shimbun)
 (eval-when-compile

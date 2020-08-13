@@ -212,7 +212,7 @@ you're not that lucky, read on to learn how to install emacs-w3m.
 @section What version of Emacs can be used?
 @cindex Possible Emacs versions
 
-Now emacs-w3m will work with Emacs 25, 26, and hopefully 27 (not
+Now emacs-w3m will work with Emacs 26, 27, and hopefully 28 (not
 released yet, though).  XEmacs support has been dropped.
 
 @node You Need w3m
@@ -3908,7 +3908,7 @@ information, see @ref{Introduction}.
 @item
 Q. Which emacs versions are supported?
 
-Now emacs-w3m will work with Emacs 25, 26, and hopefully 27 (not
+Now emacs-w3m will work with Emacs 26, 27, and hopefully 28 (not
 released yet, though).  XEmacs support has been dropped.
 
 @item

@@ -1,3 +1,11 @@
+2020-08-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Drop Emacs 25 support
+
+	* .travis.yml, aclocal.m4, w3m-ems.el, w3m-hist.el, w3m-proc.el,
+	* w3m-rss.el, w3m-save.el, w3m-search.el, w3m-session.el, w3m.el:
+	Drop Emacs 25 support because of Emacs 27.1 having been released.
+
 2020-07-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Automatic refilling page according to `text-scale-mode'

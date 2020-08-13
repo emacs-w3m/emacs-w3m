@@ -11,19 +11,19 @@ matrix:
   include:
     - os: linux
       dist: xenial
-      env: EMACS=emacs25
+      env: EMACS=emacs26
     - os: linux
       dist: xenial
-      env: EMACS=emacs26
+      env: EMACS=emacs27
     - os: linux
       dist: xenial
       env: EMACS=emacs-snapshot
     - os: osx
       osx_image: xcode10.1
-      env: EMACS=emacs25
+      env: EMACS=emacs26
     - os: osx
       osx_image: xcode10.1
-      env: EMACS=emacs26
+      env: EMACS=emacs27
     - os: osx
       osx_image: xcode10.1
       env: EMACS=emacs-snapshot
@@ -37,19 +37,19 @@ matrix:
 #    - env: EMACS=aquamacs
 
 install:
-  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'linux--emacs25' ]; then
-      export EMACS_EXE=emacs25;
-      sudo add-apt-repository -y ppa:kelleyk/emacs &&
-      sudo apt-get -qq update &&
-      sudo apt-get -qq -f install &&
-      sudo apt-get -qq install emacs25 emacs25-el;
-    fi
   - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'linux--emacs26' ]; then
       export EMACS_EXE=emacs26;
       sudo add-apt-repository -y ppa:kelleyk/emacs &&
       sudo apt-get -qq update &&
       sudo apt-get -qq -f install &&
       sudo apt-get -qq install emacs26 emacs26-el;
+    fi
+  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'linux--emacs27' ]; then
+      export EMACS_EXE=emacs27;
+      sudo add-apt-repository -y ppa:kelleyk/emacs &&
+      sudo apt-get -qq update &&
+      sudo apt-get -qq -f install &&
+      sudo apt-get -qq install emacs27 emacs27-el;
     fi
   - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'linux--emacs-snapshot' ]; then
       export EMACS_EXE=emacs-snapshot;
@@ -58,14 +58,14 @@ install:
       sudo apt-get -qq -f install &&
       sudo apt-get -qq install emacs-snapshot emacs-snapshot-el;
     fi
-  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'osx--emacs25' ]; then
-      export EMACS_EXE=emacs25;
+  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'osx--emacs26' ]; then
+      export EMACS_EXE=emacs26;
       brew install w3m &&
-      wget https://emacsformacosx.com/emacs-builds/Emacs-25.2-universal.dmg &&
-      hdiutil attach Emacs-25.2-universal.dmg &&
+      wget https://emacsformacosx.com/emacs-builds/Emacs-26.3-universal.dmg &&
+      hdiutil attach Emacs-26.3-universal.dmg &&
       sudo ln -s /Volumes/Emacs/Emacs.app/Contents/MacOS/Emacs /usr/local/bin/${EMACS_EXE};
     fi
-  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'osx--emacs26' ]; then
+  - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'osx--emacs27' ]; then
       export EMACS_EXE=emacs;
       brew install emacs  &&
       brew install w3m;
