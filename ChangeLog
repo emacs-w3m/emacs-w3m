@@ -1,3 +1,7 @@
+2020-08-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* .travis.yml (before_script): Fix melpa url.
+
 2020-08-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Drop Emacs 25 support

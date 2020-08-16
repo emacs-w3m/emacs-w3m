@@ -98,7 +98,7 @@ before_script:
     (progn
       (message "%s" emacs-version)
       (require (quote package))
-      (push (cons "melpa" "http://melpa.milkbox.net/packages/")  package-archives)
+      (push (cons "melpa" "http://melpa.org/packages/") package-archives)
       (package-refresh-contents)
       (package-initialize)
       (package-install (quote apel))
