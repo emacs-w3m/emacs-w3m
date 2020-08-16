@@ -1,6 +1,8 @@
 2020-08-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* .travis.yml (before_script): Fix melpa url.
+	* .travis.yml (allow_failures): Temporarily add builds on emacs27
+	that doesn't seem to be available on Travis CI at this time.
+	(before_script): Fix melpa url.
 
 2020-08-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
