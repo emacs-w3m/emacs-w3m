@@ -30,15 +30,6 @@
 
 (require 'w3m)
 
-(defcustom w3m-save-buffer-directory (expand-file-name
-				      "saved/"
-				      w3m-default-save-directory)
-  "DEPRECATED: Use `w3m-default-save-directory' instead!
-
-Default directory for saved pages and their image files."
-  :group 'w3m
-  :type 'directory)
-
 (defcustom w3m-save-buffer-use-cache t
   "If non-nil, use cached data if available."
   :group 'w3m

@@ -4809,10 +4809,10 @@ BUFFER is nil, all contents will be inserted in the current buffer."
   "Prompt the user for a file-path name, and returns that value.
 
 This is basically a wrapper for the emacs-native function
- `read-file-name'. If PROMPT is NIL, use default string 'Save
- to'. If DIR is NIL, use `w3m-default=dave-directory'. DEFAULT-FILENAME,
- MUSTMATCH, and INITIAL are as documented for function
- `read-file-name'."
+`read-file-name'.  If PROMPT is nil, use default string 'Save to'.
+If DIR is nil, use `w3m-default-save-directory'.  DEFAULT-FILENAME,
+MUSTMATCH, and INITIAL are as documented for function
+`read-file-name'."
   (unless prompt
     (setq prompt (if (and initial (not (string-equal initial "")))
 		     (format "Save to (%s): " initial)
