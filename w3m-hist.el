@@ -726,6 +726,25 @@ Function `w3m-scrub-command' uses the first entry on the list
 that it finds available on the host OS; if none are found, it
 will use the insecure emacs function `delete-file'.")
 
+(defvar w3m-history-scrub-optional-elements nil
+  ;; TODO: Make this a defcustom
+  "List of extra things to scrub and how to scrub them.
+If an item in this list is a CONS, then its CAR is interpreted to
+be an emacs variable name and its CDR is a function to perform
+for the scrub. Otherwise, an item in this list may be a string,
+in which case if it names an existing file, that file will be
+scrubbed per `w3m-scrub-command-list', and if it names an
+existing directory, it -should- scrub everything in that
+sub-tree, but just now I'm too cowardly to publish anything that
+performs something like 'rm -rf'.
+
+   Here's an example:
+
+  '((kill-ring         (setq kill-ring (list "")))
+    (file-name-history (setq file-name-history (list "")))
+    \"~/my-temporary-bookmarks.html\")
+  ")
+
 (defun w3m-history-scrub ()
   "Initializes history, cache, cookies, and temp files.
 
@@ -756,6 +775,7 @@ a crashed emacs session."
     (t
      (message nil) ; clear the echo area immediately,
      (erase-buffer)
+     (w3m-mode)
      (let* ((w3m-fb-mode nil)
             (w3m-message-silent t)
             (cookie-buf (get-buffer " *w3m-cookie-parse-temp*"))
@@ -768,7 +788,7 @@ a crashed emacs session."
             (cmd-string (if cmd
                           (format "%s %s" (car cmd) (cadr cmd))
                          "emacs' delete-file"))
-            files)
+            files target)
       (switch-to-buffer stdout-buf)
       (redisplay)
       (insert "Beginning emacs-w3m history scrub "
@@ -837,6 +857,10 @@ a crashed emacs session."
         (setq w3m--download-completed nil))
       (insert " Complete.\nScrubbing download queue save-file ...\n")
       (condition-case err
+        ;; policy for condition-case err is to abort, let the use fix
+        ;; the problem, and then re-try. TODO: So maybe then put
+        ;; everything under a single condition-case instead of having
+        ;; duplicate ones throughout this function...
         (let ((file (expand-file-name w3m-download-save-file)))
           (cond
            (cmd
@@ -873,8 +897,50 @@ a crashed emacs session."
         (if (not (w3m-save-list w3m-session-file sessions))
           (insert (format "\n  FAILURE! - Unable to write to %s\n  Aborting..."
                     w3m-session-file))
-         (insert " Complete.\n\nemacs-w3m history scrub completed "))
-        (insert (format-time-string "%Y-%m-%d %H:%M:%S.%N\n"))))))))
+         (insert " Complete.\n")))
+      (insert "Scrubbing optional elements (C-h v `w3m-history-scrub-optional-elements') ...\n")
+      (condition-case err
+        ;; policy for condition-case err is to abort, let the use fix
+        ;; the problem, and then re-try. TODO: So maybe then put
+        ;; everything under a single condition-case instead of having
+        ;; duplicate ones throughout this function...
+        (dolist (elem w3m-history-scrub-optional-elements)
+          (cond
+            ;; TODO: Think about whether it makes sense to support
+            ;; scrubbing other data that exists outside of emacs. What
+            ;; candidates cold there be? System environment variables?
+            ((symbol-value (setq target (car elem))) ; legitimate emacs variable
+              (insert (format " Initializing `%s' from memory ..." target))
+              (eval (cadr elem))
+              (insert " Complete.\n"))
+            ((stringp target)
+              (cond
+               ((file-directory-p target)
+                (when (yes-or-no-p
+                        (format "About to delete everything under %s
+A re you absolutely sure? " target))
+                  (insert (format "WARNING: %s not processed (you crazy man)!!\n" target)))
+                  ;; NOTE: For using `/bin/rm' this could be perfomed simply by
+                  ;; using "rm -rf", but for `/usr/bin/shred' the file-tree would
+                  ;; need to be manually traversed and files would need to be
+                  ;; individually shredded. Also, I haven't tested whether `shred'
+                  ;; would take a burdensomely long time. In the end, it is the
+                  ;; user's decision...
+                )
+               ((file-exists-p target)
+                (insert (format "Performing: %s %s\n" cmd-string target))
+                (if cmd
+                  (call-process (car cmd) nil t t (cadr cmd) target)
+                 (delete-target target)))
+               (t (insert (format "WARNING: %s not processed !!\n" target)))))
+          (t (insert (format "WARNING: %s not processed !!\n" target)))))
+        (error ; Handler for `condition-case'
+          (insert (format "WARNING: %s scrub FAILURE! - %s\n    Aborting..."
+                    target (error-message-string err)))
+          (error "w3m: history scrub unsuccessful. See buffer for details.")))
+      (insert "Scrubbing optional elements ... Complete.\n")
+      (insert "\nemacs-w3m history scrub completed: "
+        (format-time-string "%Y-%m-%d %H:%M:%S.%N\n")))))))
 
 (eval-when-compile
   (defvar w3m-arrived-db)

@@ -1,3 +1,8 @@
+2020-08-17  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-hist.el (w3m-history-scrub-optional-elements): New option.
+	(w3m-history-scrub): Use the new option.
+
 2019-07-02  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-hist.el (w3m-history-scrub): Render display earlier. Initialize
