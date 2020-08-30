@@ -740,8 +740,8 @@ performs something like 'rm -rf'.
 
    Here's an example:
 
-  '((kill-ring         (setq kill-ring (list "")))
-    (file-name-history (setq file-name-history (list "")))
+  '((kill-ring         (setq kill-ring (list \"\")))
+    (file-name-history (setq file-name-history (list \"\")))
     \"~/my-temporary-bookmarks.html\")
   ")
 
