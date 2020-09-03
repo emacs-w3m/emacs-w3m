@@ -2774,8 +2774,7 @@ to this function."
 	(let ((x (w3m-url-decode-string url w3m-file-name-coding-system)))
 	  (if (file-exists-p x) x url)))))
    ((string-match "\\`\\(?:[~/]\\|[a-zA-Z]:/\\|\\.\\.?/\\)" url) url)
-   (t
-    (catch 'found-file
+   ((catch 'found-file
       (dolist (pair w3m-url-local-directory-alist)
 	(and (string-match (concat "\\`"
 				   (regexp-quote
@@ -2787,7 +2786,25 @@ to this function."
 			 (file-exists-p
 			  (setq file (w3m-url-decode-string
 				      file w3m-file-name-coding-system))))
-		 (throw 'found-file file)))))))))
+		 (throw 'found-file file)))))))
+   ;; Like "file:foo.txt", that doesn't specify server and/or directory.
+   ((string-match "\\`file:\\([^/].+\\)\\'" url)
+    (let ((name (match-string 1 url))
+	  file)
+      (or
+       ;; The case a user specified `w3m-default-directory' expressly.
+       (and w3m-default-directory
+	    (file-exists-p
+	     (setq file (expand-file-name name w3m-default-directory)))
+	    file)
+       ;; FIXME: Is this file really what a user looks for?  In this case
+       ;; the directory where the file might be would be ~/.w3m/ that is the
+       ;; default when `w3m-default-directory' and `w3m-profile-directory'
+       ;; haven't been customized.
+       (and (file-exists-p name) (expand-file-name name))
+       ;; Assume that the file is in the home directory.
+       (and (file-exists-p (setq file (expand-file-name name "~")))
+	    file))))))
 
 (defun w3m-expand-file-name-as-url (file &optional directory)
   "Return a url string which points to the FILE.

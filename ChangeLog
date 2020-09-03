@@ -1,3 +1,14 @@
+2020-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Allow url like "file:foo.txt" (bug#969386 of debian)
+	emacs-w3m assumes the file to be existent in `w3m-default-directory'
+	(if specified), the current directory, or the home directory.
+
+	* w3m.el (w3m-url-to-file-name): Allow url like "file:foo.txt",
+	that doesn't specify server and/or directory.
+
+	* w3m-util.el (w3m-url-local-p): Check also if the file really exists.
+
 2020-08-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-save.el (w3m-save-buffer-directory): Abolish.
