@@ -1,3 +1,12 @@
+2020-09-07  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-next-page-label, w3m-previous-page-label)
+	(w3m-scroll-up-or-next-url, w3m-scroll-down-or-previous-url):
+	Additional logic to catch 'next' and 'previous' page links not
+	identified within an HTML tag.
+	(w3m-scroll-interval, w3m-set-scroll-interval): New defcustom to set
+	default scroll interval for 'long scrolls'
+
 2020-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Allow url like "file:foo.txt" (bug#969386 of debian)

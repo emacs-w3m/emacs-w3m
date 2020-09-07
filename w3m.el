@@ -9060,34 +9060,94 @@ or a list which consists of the following elements:
   (run-hooks 'w3m-mode-setup-functions)
   (run-mode-hooks 'w3m-mode-hook))
 
+(defvar-local w3m-next-page-label nil
+  "How to resolve ambiguous navigation forward.
+
+Used by function `w3m-scroll-up-or-next-url'.")
+
+(defvar-local w3m-previous-page-label nil
+  "How to resolve ambiguous navigation backward.
+
+Used by function `w3m-scroll-down-or-previous-url'.")
+
+(defcustom w3m-scroll-interval nil
+  "How many lines to scroll a page, or NIL for a screen-full.
+
+You can modify this for your current session using command
+`w3m-set-scroll-interval'."
+  :group 'w3m
+  :type 'integer)
+
+(defun w3m-set-scroll-interval (num-lines)
+  "Set how many lines a scroll action will perform.
+
+This setting is used for functions
+`w3m-scroll-down-or-previous-url' and
+`w3m-scroll-up-or-next-url'. The slow-scroll functions
+`w3m-scroll-up' and `w3m-scroll-down' alway default to scrolling
+a single line.
+
+This command only modifies the setting for the current session.
+To permanently modify the setting, modify variable
+`w3m-scroll-interval' directly."
+  (interactive "nScroll how many lines (zero for screen-full)? ")
+  (setq w3m-scroll-interval (if (zerop num-lines) nil num-lines)))
+
 (defun w3m-scroll-up (&optional arg interactive-p)
   "Scroll the current window up ARG lines.
 When called interactively, ARG defaults to 1."
   (interactive (list current-prefix-arg t))
   (scroll-up (or arg (and interactive-p 1))))
 
-(defun w3m-scroll-up-or-next-url (arg)
+(defun w3m-scroll-up-or-next-url (&optional arg)
   "Scroll the current window up ARG lines, or go to the next page.
+
+When a page visits only an image, this performs `image-scroll-up'.
+
 \"Next page\" means the page that the current page defines with a
-\"Next page\" link.  Note that the `w3m-relationship-estimate-rules'
-variable and the related functions find it, so the feature will not
-always necessarily work.
-When a page visits only an image, run `image-scroll-up' instead."
+\"Next page\" link. If the next page is ambiguous to w3m, you
+will be prompted for the alternatives for that URL domain. You
+can change your decision by calling this command with the
+PREFIX-ARG."
+;; See `w3m-relationship-estimate-rules' variable and the related
+;; functions
   (interactive "P")
-  (if (w3m-image-page-displayed-p)
-      (image-scroll-up arg)
-    (if (and w3m-next-url
-	     (pos-visible-in-window-p (let ((cur (point)))
-					(goto-char (point-max))
-					(skip-chars-backward "\t\n\r ")
-					(forward-line 1)
-					(prog1
-					    (point)
-					  (goto-char cur)))))
-	(let ((w3m-prefer-cache t))
-	  (w3m-history-store-position)
-	  (w3m-goto-url w3m-next-url))
-      (w3m-scroll-up arg))))
+  (when arg (setq w3m-next-page-label nil))
+  (cond
+   ((w3m-image-page-displayed-p)
+     (image-scroll-up w3m-scroll-interval))
+   ((not (pos-visible-in-window-p
+           (let ((cur (point)))
+             (goto-char (point-max))
+             (skip-chars-backward "\t\n\r ")
+             (forward-line 1)
+             (prog1 (point)
+                    (goto-char cur)))))
+     (w3m-scroll-up w3m-scroll-interval))
+   (w3m-next-url ; the page parser found a 'next' url
+     (let ((w3m-prefer-cache t))
+       (w3m-history-store-position)
+      (w3m-goto-url w3m-next-url)))
+   (t ; try searching link text
+     (let ((label w3m-next-page-label)
+           (pos (goto-char (point-min)))
+           txt options next minibuffer-history)
+       (while (and (w3m-goto-next-anchor)
+                   (> (point) pos))
+         (setq txt (buffer-substring-no-properties (point) (next-property-change (point))))
+         (when (string-match ".*next" (downcase txt))
+           (add-to-list 'options (list txt (get-text-property (point) 'w3m-href-anchor)) t)))
+       (when options
+         (cond
+          ((setq next (assoc label options))
+            (w3m-goto-url (cadr next))
+            (setq w3m-next-page-label label))
+          (t
+            (while (or (not label) (zerop (length label)))
+              (setq minibuffer-history '(""))
+              (setq label (completing-read "Where to next? " (mapcar 'car options) nil t)))
+            (w3m-goto-url (cadr (assoc label options)))
+            (setq w3m-next-page-label label))))))))
 
 (defun w3m-scroll-down (&optional arg interactive-p)
   "Scroll the current window down ARG lines.
@@ -9095,22 +9155,51 @@ When called interactively, ARG defaults to 1."
   (interactive (list current-prefix-arg t))
   (scroll-down (or arg (and interactive-p 1))))
 
-(defun w3m-scroll-down-or-previous-url (arg)
+(defun w3m-scroll-down-or-previous-url (&optional arg)
   "Scroll the current window down ARG lines, or go to the previous page.
+
+When a page visits only an image, this performs `image-scroll-up'.
+
 \"Previous page\" means the page that the current page defines with a
-\"Previous page\" link.  Note that the `w3m-relationship-estimate-rules'
-variable and the related functions find it, so the feature will not
-always necessarily work.
-When a page visits only an image, run `image-scroll-down' instead."
+\"Previous page\" link. If the previous page is ambiguous to w3m, you
+will be prompted for the alternatives for that URL domain. You
+can change your decision by calling this command with the
+PREFIX-ARG."
+;; See `w3m-relationship-estimate-rules' variable and the related
+;; functions
   (interactive "P")
-  (if (w3m-image-page-displayed-p)
-      (image-scroll-down arg)
-    (if (and w3m-previous-url
-	     (pos-visible-in-window-p (point-min)))
-	(let ((w3m-prefer-cache t))
-	  (w3m-history-store-position)
-	  (w3m-goto-url w3m-previous-url))
-      (w3m-scroll-down arg))))
+  (when arg (setq w3m-previous-page-label nil))
+  (cond
+   ((w3m-image-page-displayed-p)
+     (image-scroll-down w3m-scroll-interval))
+   ((not (pos-visible-in-window-p
+           (let ((cur (point)))
+             (goto-char (point-min)))))
+     (w3m-scroll-down w3m-scroll-interval))
+   (w3m-previous-url ; the page parser found a 'previous' url
+     (let ((w3m-prefer-cache t))
+       (w3m-history-store-position)
+      (w3m-goto-url w3m-previous-url)))
+   (t ; try searching link text
+     (let ((label w3m-previous-page-label)
+           (pos (goto-char (point-min)))
+           txt options next minibuffer-history)
+       (while (and (w3m-goto-next-anchor)
+                   (> (point) pos))
+         (setq txt (buffer-substring-no-properties (point) (next-property-change (point))))
+         (when (string-match ".*prev" (downcase txt))
+           (add-to-list 'options (list txt (get-text-property (point) 'w3m-href-anchor)) t)))
+       (when options
+         (cond
+          ((setq next (assoc label options))
+            (w3m-goto-url (cadr next))
+            (setq w3m-previous-page-label label))
+          (t
+            (while (or (not label) (zerop (length label)))
+              (setq minibuffer-history '(""))
+              (setq label (completing-read "Where to next? " (mapcar 'car options) nil t)))
+            (w3m-goto-url (cadr (assoc label options)))
+            (setq w3m-previous-page-label label))))))))
 
 (defvar w3m-current-longest-line nil
   "The length of the longest line in the window.")
