@@ -6949,9 +6949,9 @@ onto the history stack."
       ;; But is the following way really a right solution?
       ;; cf. <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=969744#5>
       (when (string-match "\\`[0-9]+\\'" name)
-	(let* ((nonum "[^\t\n\r 0-9]")
+	(let* ((nonum "[^\C-@- 0-9]")
 	       (regexp (concat "\\`" nonum "+" name nonum "*\\'"
-			       "\\|" nonum "*" name nonum "+\\'")))
+			       "\\|\\`" nonum "*" name nonum "+\\'")))
 	  (setq jump-to-pos (cdr (cl-assoc-if (lambda (elem)
 						(string-match regexp elem))
 					      anchor-list))))))
