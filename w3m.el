@@ -9070,6 +9070,28 @@ Used by function `w3m-scroll-up-or-next-url'.")
 
 Used by function `w3m-scroll-down-or-previous-url'.")
 
+(defcustom w3m-page-navigation-labels
+  ; At time of commit only English tested!
+  '((".*prev" . ".*next")    ; English most commonly used first
+    (".*back" . ".*forward") ; English more
+    (".*back" . ".*fwd")     ; English remote possibility
+    (".*קודם" . ".*הבא")     ; Hebrew looks wrong because of unicode RTL bug?
+    ; Blame: Google translate & too much free time
+    (".*前" . ".*次")               ; Japanese
+    (".*上" . ".*下")               ; Chinese
+    (".*anterior" . ".*próxima")    ; Portugese
+    (".*vorherige" . ".*nächste")   ; German
+    (".*Предыдущ" . ".*Следующ")    ; Russian
+    (".*anterior" . ".*siguiente")  ; Spanish
+    (".*précédente" . ".*suivante")); French
+"Text identifying URL links to a website's prev/next pages.
+
+The regexps in this list are used as a backup method by functions
+`w3m-scroll-up-or-next-url', `w3m-scroll-down-or-previous-url'."
+  :group 'w3m
+  :type '(repeat (cons (regexp :tag "Regexp for 'previous page' URL text")
+                       (regexp :tag "Regexp for 'next page' URL text"))))
+
 (defcustom w3m-scroll-interval nil
   "How many lines to scroll a page, or NIL for a screen-full.
 
@@ -9131,23 +9153,26 @@ PREFIX-ARG."
    (t ; try searching link text
      (let ((label w3m-next-page-label)
            (pos (goto-char (point-min)))
-           txt options next minibuffer-history)
+           txt options next new-label minibuffer-history)
        (while (and (w3m-goto-next-anchor)
                    (> (point) pos))
-         (setq txt (buffer-substring-no-properties (point) (next-property-change (point))))
-         (when (string-match ".*next" (downcase txt))
-           (add-to-list 'options (list txt (get-text-property (point) 'w3m-href-anchor)) t)))
+         (setq txt
+           (downcase (buffer-substring-no-properties (point) (next-property-change (point)))))
+         (dolist (regex w3m-page-navigation-labels)
+           (when (string-match (cdr regex) txt)
+             (cl-pushnew (list txt (get-text-property (point) 'w3m-href-anchor))
+                         options))))
        (when options
          (cond
           ((setq next (assoc label options))
             (w3m-goto-url (cadr next))
             (setq w3m-next-page-label label))
           (t
-            (while (or (not label) (zerop (length label)))
+            (while (or (not new-label) (zerop (length new-label)))
               (setq minibuffer-history '(""))
-              (setq label (completing-read "Where to next? " (mapcar 'car options) nil t)))
-            (w3m-goto-url (cadr (assoc label options)))
-            (setq w3m-next-page-label label))))))))
+              (setq new-label (completing-read "Where to next? " (mapcar 'car options) nil t)))
+            (w3m-goto-url (cadr (assoc new-label options)))
+            (setq w3m-next-page-label new-label))))))))
 
 (defun w3m-scroll-down (&optional arg interactive-p)
   "Scroll the current window down ARG lines.
@@ -9172,9 +9197,7 @@ PREFIX-ARG."
   (cond
    ((w3m-image-page-displayed-p)
      (image-scroll-down w3m-scroll-interval))
-   ((not (pos-visible-in-window-p
-           (let ((cur (point)))
-             (goto-char (point-min)))))
+   ((not (pos-visible-in-window-p (goto-char (point-min))))
      (w3m-scroll-down w3m-scroll-interval))
    (w3m-previous-url ; the page parser found a 'previous' url
      (let ((w3m-prefer-cache t))
@@ -9183,23 +9206,27 @@ PREFIX-ARG."
    (t ; try searching link text
      (let ((label w3m-previous-page-label)
            (pos (goto-char (point-min)))
-           txt options next minibuffer-history)
+           txt options next new-label minibuffer-history)
        (while (and (w3m-goto-next-anchor)
                    (> (point) pos))
-         (setq txt (buffer-substring-no-properties (point) (next-property-change (point))))
-         (when (string-match ".*prev" (downcase txt))
-           (add-to-list 'options (list txt (get-text-property (point) 'w3m-href-anchor)) t)))
+         (setq txt
+           (downcase (buffer-substring-no-properties (point) (next-property-change (point)))))
+         (dolist (regex w3m-page-navigation-labels)
+           (when (string-match (car regex) txt)
+             (cl-pushnew (list txt (get-text-property (point) 'w3m-href-anchor))
+                         options))))
        (when options
          (cond
           ((setq next (assoc label options))
             (w3m-goto-url (cadr next))
             (setq w3m-previous-page-label label))
           (t
-            (while (or (not label) (zerop (length label)))
+            (goto-char (point-min))
+            (while (or (not new-label) (zerop (length new-label)))
               (setq minibuffer-history '(""))
-              (setq label (completing-read "Where to next? " (mapcar 'car options) nil t)))
-            (w3m-goto-url (cadr (assoc label options)))
-            (setq w3m-previous-page-label label))))))))
+              (setq new-label (completing-read "Where to next? " (mapcar 'car options) nil t)))
+            (w3m-goto-url (cadr (assoc new-label options)))
+            (setq w3m-previous-page-label new-label))))))))
 
 (defvar w3m-current-longest-line nil
   "The length of the longest line in the window.")

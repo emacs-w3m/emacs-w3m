@@ -6,6 +6,11 @@
 	identified within an HTML tag.
 	(w3m-scroll-interval, w3m-set-scroll-interval): New defcustom to set
 	default scroll interval for 'long scrolls'
+	(w3m-page-navigation-labels): regexp cons list for identifying labels
+	(w3m-scroll-up-or-next-url, w3m-scroll-down-or-previous-url):  Use new
+	variable.
+	(w3m-scroll-down-or-previous-url, w3m-scroll-up-or-next-url): bugfix:
+	when new page no longer uses old label.
 
 2020-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
