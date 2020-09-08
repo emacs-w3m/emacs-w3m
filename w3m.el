@@ -9078,6 +9078,9 @@ Used by function `w3m-scroll-down-or-previous-url'.")
     (".*קודם" . ".*הבא")     ; Hebrew looks wrong because of unicode RTL bug?
     ; Blame: Google translate & too much free time
     (".*前" . ".*次")               ; Japanese
+    (".*السابق" . ".*التالى")       ; Arabic
+    (".*السابقة" . ".*التالية")       ; Arabic
+    (".*قبلی"    . ".*بعد")         ; Farsi
     (".*上" . ".*下")               ; Chinese
     (".*anterior" . ".*próxima")    ; Portugese
     (".*vorherige" . ".*nächste")   ; German
