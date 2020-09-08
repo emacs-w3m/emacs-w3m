@@ -1,3 +1,9 @@
+2020-09-08  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-ems.el (w3m-tab-move-right, w3m-tab-move-left): BUGFIX: moving
+	with prefix-arg > 1 was swapping tab positions instead of adjusting all
+	tab numbers in between.
+
 2020-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Allow url like "file:foo.txt" (bug#969386 of debian)
