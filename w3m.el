@@ -6942,11 +6942,22 @@ onto the history stack."
 		      "Name: "
 		      (w3m--get-page-anchors 'w3m-name-anchor2) nil t)
 		     nil nil))
-  (let ((anchor-list (w3m--get-page-anchors)) jump-to-pos)
-    (if (not (assoc name anchor-list))
+  (let* ((anchor-list (w3m--get-page-anchors))
+	 (jump-to-pos (cdr (assoc name anchor-list))))
+    (unless jump-to-pos
+      ;; FIXME: Try to find something like "msg36" against name="36".
+      ;; But is the following way really a right solution?
+      ;; cf. <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=969744#5>
+      (when (string-match "\\`[0-9]+\\'" name)
+	(let* ((nonum "[^\t\n\r 0-9]")
+	       (regexp (concat "\\`" nonum "+" name nonum "*\\'"
+			       "\\|" nonum "*" name nonum "+\\'")))
+	  (setq jump-to-pos (cdr (cl-assoc-if (lambda (elem)
+						(string-match regexp elem))
+					      anchor-list))))))
+    (if (not jump-to-pos)
 	(unless quiet
 	  (w3m-message "No such anchor: %s" name))
-      (setq jump-to-pos (cdr (assoc name anchor-list)))
       (when (and (not no-record)
 		 (/= (point) jump-to-pos))
 	(setq w3m-name-anchor-from-hist

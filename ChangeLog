@@ -1,3 +1,12 @@
+2020-09-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Work for a url like "...#36" (bug#969744 of debian)
+	but "#36" is a part of the url, not the name, and acutually
+	the name anchor is specified as "msg36" in the html source.
+	cf. <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=969744#5>
+
+	* w3m.el (w3m-search-name-anchor): Allow url as mentioned above.
+
 2020-09-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Allow url like "file:foo.txt" (bug#969386 of debian)
