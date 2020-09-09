@@ -6909,7 +6909,7 @@ SUB-SETS defines from where to draw anchor information.  It defaults to
 SORT-METHOD defaults to `position', but may also be `name' or a function
 that can be passed to `sort'."
   (let ((pos (point-min))
-	anchor-list anchor2)
+	anchor-list anchor2 name)
     ;; NOTE: w3m-name-anchor aggregates data from `w3m -half-dump'.
     (unless (eq sub-sets 'w3m-name-anchor2)
       (while (setq pos (next-single-property-change pos 'w3m-name-anchor))
@@ -6918,9 +6918,11 @@ that can be passed to `sort'."
       (setq pos (point-min)))
     (unless (eq sub-sets 'w3m-name-anchor)
       (while (setq pos (next-single-property-change pos 'w3m-name-anchor2))
-	(setq anchor2 (car (get-text-property pos 'w3m-name-anchor2)))
-	(unless (assoc anchor2 anchor-list)
-	  (push (cons anchor2 pos) anchor-list))))
+	(setq anchor2 (get-text-property pos 'w3m-name-anchor2))
+	(while anchor2
+	  (if (assoc (setq name (pop anchor2)) anchor-list)
+	      (setq anchor2 nil)
+	    (push (cons name pos) anchor-list)))))
     (setq anchor-list (w3m--filter-page-anchors anchor-list))
     (sort anchor-list
 	  (cond
@@ -6942,22 +6944,11 @@ onto the history stack."
 		      "Name: "
 		      (w3m--get-page-anchors 'w3m-name-anchor2) nil t)
 		     nil nil))
-  (let* ((anchor-list (w3m--get-page-anchors))
-	 (jump-to-pos (cdr (assoc name anchor-list))))
-    (unless jump-to-pos
-      ;; FIXME: Try to find something like "msg36" against name="36".
-      ;; But is the following way really a right solution?
-      ;; cf. <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=969744#5>
-      (when (string-match "\\`[0-9]+\\'" name)
-	(let* ((nonum "[^\C-@- 0-9]")
-	       (regexp (concat "\\`" nonum "+" name nonum "*\\'"
-			       "\\|\\`" nonum "*" name nonum "+\\'")))
-	  (setq jump-to-pos (cdr (cl-assoc-if (lambda (elem)
-						(string-match regexp elem))
-					      anchor-list))))))
-    (if (not jump-to-pos)
+  (let ((anchor-list (w3m--get-page-anchors)) jump-to-pos)
+    (if (not (assoc name anchor-list))
 	(unless quiet
 	  (w3m-message "No such anchor: %s" name))
+      (setq jump-to-pos (cdr (assoc name anchor-list)))
       (when (and (not no-record)
 		 (/= (point) jump-to-pos))
 	(setq w3m-name-anchor-from-hist
