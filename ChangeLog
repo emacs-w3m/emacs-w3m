@@ -1,3 +1,9 @@
+2020-09-09  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-scroll-down-or-previous-url): BUGFIX: scrolling to top of
+	page sometimes cycled back to bottom.
+	(w3m-page-navigation-labels): Improve english regex.
+
 2020-09-07  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m-next-page-label, w3m-previous-page-label)
