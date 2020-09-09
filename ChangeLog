@@ -1,3 +1,11 @@
+2020-09-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Real fix to bug#969744 of debian
+
+	* w3m.el (w3m--get-page-anchors):
+	Don't miss some of plural name anchors that point to the same place.
+	(w3m-search-name-anchor): Revert.
+
 2020-09-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Work for a url like "...#36" (bug#969744 of debian)
