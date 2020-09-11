@@ -9095,6 +9095,88 @@ The regexps in this list are used as a backup method by functions
   :type '(repeat (cons (regexp :tag "Regexp for 'previous page' URL text")
                        (regexp :tag "Regexp for 'next page' URL text"))))
 
+(defun w3m-page-nav--google-style-next ()
+  "How to navigate forward in google search pages.
+
+This function is meant to be an element in data structure
+`w3m-page-navigation-sites', for use by function
+`w3m-scroll-up-or-next-url'.
+
+This function is NOT hard-coded for google, so it can be used for
+other websites that use the same technique."
+  (let (url found)
+   (cond
+    ((string-match ".*&start=[^0]" w3m-current-url)
+     ; this is not the first page of a search
+      (goto-char (point-max))
+      (while (and (not found)
+                  (w3m-goto-previous-anchor))
+        (setq txt
+              (buffer-substring-no-properties (point) (next-property-change (point))))
+        (when (and (string-match ">" txt)
+                   (string-match ".*&start=[^0]" (setq url (w3m-anchor))))
+          (w3m-goto-url url)
+          (setq found t))))
+    (t
+     ; this is the first page of a search
+      (goto-char (point-max))
+      (while (and (not found)
+                  (w3m-goto-previous-anchor))
+        (setq txt
+              (buffer-substring-no-properties (point) (next-property-change (point))))
+        (when (string-match "Next" txt)
+          (w3m-goto-url (w3m-anchor))
+          (setq found t))))))
+  t)
+
+(defun w3m-page-nav--google-style-previous ()
+  "How to navigate backward in google search pages.
+
+This function is meant to be an element in data structure
+`w3m-page-navigation-sites', for use by functions
+`w3m-scroll-down-or-previous-url'.
+
+This function is NOT hard-coded for google, so it can be used for
+other websites that use the same technique."
+  (when (string-match ".*&start=[^0]" w3m-current-url)
+    ; this is not the first page of a search
+    (let (url found)
+      (goto-char (point-max))
+      (while (and (not found)
+                  (w3m-goto-previous-anchor))
+        (setq txt
+              (buffer-substring-no-properties (point) (next-property-change (point))))
+        (when (and (string-match "<" txt)
+                   (string-match ".*&start=" (setq url (w3m-anchor))))
+          (w3m-goto-url url)
+          (setq found t)))))
+  t)
+
+(defcustom w3m-page-navigation-sites
+  '(("https://www.google.com/search"
+     w3m-page-nav--google-style-previous
+     w3m-page-nav--google-style-next
+    )
+    ("https://lite.duckduckgo.com/lite"
+    (lambda () nil) ; look for html form '< Previous Page'
+    (lambda () nil) ; look for html form 'Next Page >'
+    )
+   )
+"How to handle special cases of website page navigation.
+
+Each element of this list has three components: A website URL
+string, which should match the result of performing
+\"(w3m-url-strip-query w3m-current-url)\"; A function to use for
+navigating to a prior page, and; A function to use for navigating
+to a subsequent page. The functions should return NON-NIL upon
+success or to avoid continue processing, and should return NIL to
+proceed to the more standard \"guesswork\" performed using
+`w3m-page-navigation-labels'."
+  :group 'w3m
+  :type '(repeat (list (string :tag "Website URL")
+                       (function :tag "Function for previous page")
+                       (function :tag "Function for next page"))))
+
 (defcustom w3m-scroll-interval nil
   "How many lines to scroll a page, or NIL for a screen-full.
 
@@ -9153,6 +9235,12 @@ PREFIX-ARG."
      (let ((w3m-prefer-cache t))
        (w3m-history-store-position)
       (w3m-goto-url w3m-next-url)))
+   ((funcall (nth 2 (assoc (w3m-url-strip-query w3m-current-url)
+                           w3m-page-navigation-sites))))
+     ;; The functions must return NON-NIL in order to avoid the next
+     ;; clause of the `cond' statement. The functions can return NIL
+     ;; on failure in order to search text anyway, but will that ever
+     ;; be sensible?
    (t ; try searching link text
      (let ((label w3m-next-page-label)
            (pos (goto-char (point-min)))
@@ -9206,6 +9294,12 @@ PREFIX-ARG."
      (let ((w3m-prefer-cache t))
        (w3m-history-store-position)
       (w3m-goto-url w3m-previous-url)))
+   ((funcall (nth 1 (assoc (w3m-url-strip-query w3m-current-url)
+                           w3m-page-navigation-sites))))
+     ;; The functions must return NON-NIL in order to avoid the next
+     ;; clause of the `cond' statement. The functions can return NIL
+     ;; on failure in order to search text anyway, but will that ever
+     ;; be sensible?
    (t ; try searching link text
      (let ((label w3m-previous-page-label)
            (pos (goto-char (point-min)))

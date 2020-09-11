@@ -1,3 +1,13 @@
+2020-09-11  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-scroll-up-or-next-url, w3m-scroll-down-or-previous-url):
+	Add support for website-specific navigation logic.
+	(w3m-page-navigation-sites): New defcustom data structure to support
+	website-specific navigation logic.
+	(w3m-page-nav--google-style-next)
+	(w3m-page-nav--google-style-previous): Add support for the website
+	navigation style used in google search pages.
+
 2020-09-09  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m-scroll-down-or-previous-url): BUGFIX: scrolling to top of
