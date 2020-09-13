@@ -9104,14 +9104,19 @@ This function is meant to be an element in data structure
 
 This function is NOT hard-coded for google, so it can be used for
 other websites that use the same technique."
-  (let (url found)
+  (let ((pos (point))
+        url found)
     (goto-char (point-max))
     (while (and (not found)
                 (w3m-goto-previous-anchor))
-      (when (string-match ".*&start=[^0]" (setq url (w3m-anchor)))
-        (w3m-goto-url url)
-        (setq found t))))
-  t)
+      (setq txt
+            (buffer-substring-no-properties (point) (next-property-change (point))))
+      (when (and (string-match ".*>" txt)
+                 (string-match ".*&start=[^0]" (setq url (or (w3m-anchor) ""))))
+        (setq found t)))
+    (if found
+      (w3m-goto-url url)
+     (goto-char pos))))
 
 (defun w3m-page-nav--google-style-previous ()
   "How to navigate backward in google search pages.
@@ -9124,38 +9129,99 @@ This function is NOT hard-coded for google, so it can be used for
 other websites that use the same technique."
   (when (string-match ".*&start=[^0]" w3m-current-url)
     ; this is not the first page of a search
-    (let (url found)
+    (let ((pos (point))
+          url found)
       (goto-char (point-max))
       (while (and (not found)
                   (w3m-goto-previous-anchor))
         (setq txt
               (buffer-substring-no-properties (point) (next-property-change (point))))
         (when (and (string-match "<" txt)
-                   (string-match ".*&start=" (setq url (w3m-anchor))))
-          (w3m-goto-url url)
-          (setq found t)))))
-  t)
+                   (string-match ".*&start=" (setq url (or (w3m-anchor) ""))))
+        (setq found t)))
+      (if found
+        (w3m-goto-url url)
+       (goto-char pos)))))
+
+(defun w3m-page-nav--duckduckgo-style-next ()
+  "How to navigate forward in duckduckgo search pages.
+
+This function is meant to be an element in data structure
+`w3m-page-navigation-sites', for use by functions
+`w3m-scroll-up-or-next-url'.
+
+This function is NOT hard-coded for duckduckgo, so it can be used
+for other websites that on some remote chance use the exact same
+technique."
+  (interactive)
+  (let ((pos (point))
+        this-submit this-form-submit this-sub-list this-cons found)
+    (goto-char (point-max))
+    (while (and (not found)
+                (w3m-goto-previous-anchor))
+      (and (setq this-submit      (get-text-property (point) 'w3m-submit))
+           (setq this-form-submit (plist-get  this-submit 'w3m-form-submit))
+           (setq this-sub-list    (car (last (append this-form-submit nil))))
+           (while (and (not found)
+                       (setq this-cons (pop this-sub-list)))
+             (and (listp this-cons)
+                  (equal "dc" (car (setq this-cons (cadr this-cons))))
+                  (< 0 (string-to-number (cdr this-cons)))
+                  (setq found t)))))
+    (if found
+      (widget-button-press pos)
+     (goto-char pos))))
+
+(defun w3m-page-nav--duckduckgo-style-previous ()
+  "How to navigate backward in duckduckgo search pages.
+
+This function is meant to be an element in data structure
+`w3m-page-navigation-sites', for use by functions
+`w3m-scroll-down-or-previous-url'.
+
+This function is NOT hard-coded for duckduckgo, so it can be used
+for other websites that on some remote chance use the exact same
+technique."
+  (interactive)
+  (let ((pos (point))
+        this-submit this-form-submit this-sub-list this-cons found)
+    (goto-char (point-max))
+    (while (and (not found)
+                (w3m-goto-previous-anchor))
+      (and (setq this-submit      (get-text-property (point) 'w3m-submit))
+           (setq this-form-submit (plist-get  this-submit 'w3m-form-submit))
+           (setq this-sub-list    (car (last (append this-form-submit nil))))
+           (while (and (not found)
+                       (setq this-cons (pop this-sub-list)))
+             (and (listp this-cons)
+                  (equal "dc" (car (setq this-cons (cadr this-cons))))
+                  (> 0 (string-to-number (cdr this-cons)))
+                  (setq found t)))))
+    (if found
+      (widget-button-press (point))
+     (goto-char pos))))
 
 (defcustom w3m-page-navigation-sites
   '(("https://www.google.com/search"
      w3m-page-nav--google-style-previous
      w3m-page-nav--google-style-next
     )
-    ("https://lite.duckduckgo.com/lite"
-    (lambda () nil) ; look for html form '< Previous Page'
-    (lambda () nil) ; look for html form 'Next Page >'
+    ("https://lite.duckduckgo.com/lite/?"
+    w3m-page-nav--duckduckgo-style-previous
+    w3m-page-nav--duckduckgo-style-next
     )
+;;  ("https://your.site.com"
+;;  (lambda () nil) ; look for html form '< Previous Page'
+;;  (lambda () nil) ; look for html form 'Next Page >'
+;;  )
    )
 "How to handle special cases of website page navigation.
 
-Each element of this list has three components: A website URL
-string, which should match the result of performing
+Each element of this list has three components: A regex for a
+website URL string, which should match the result of performing
 \"(w3m-url-strip-query w3m-current-url)\"; A function to use for
 navigating to a prior page, and; A function to use for navigating
-to a subsequent page. The functions should return NON-NIL upon
-success or to avoid continue processing, and should return NIL to
-proceed to the more standard \"guesswork\" performed using
-`w3m-page-navigation-labels'."
+to a subsequent page."
   :group 'w3m
   :type '(repeat (list (string :tag "Website URL")
                        (function :tag "Function for previous page")
@@ -9219,12 +9285,15 @@ PREFIX-ARG."
      (let ((w3m-prefer-cache t))
        (w3m-history-store-position)
       (w3m-goto-url w3m-next-url)))
-   ((funcall (nth 2 (assoc (w3m-url-strip-query w3m-current-url)
-                           w3m-page-navigation-sites))))
-     ;; The functions must return NON-NIL in order to avoid the next
-     ;; clause of the `cond' statement. The functions can return NIL
-     ;; on failure in order to search text anyway, but will that ever
-     ;; be sensible?
+   ((let ((url (w3m-url-strip-query w3m-current-url))
+	  (sites w3m-page-navigation-sites)
+	  site found)
+      (while (and (not found)
+		  (setq site (pop sites)))
+	(when (string-match (car site) url)
+          (setq found t)
+          (funcall (nth 2 site))))
+      found))
    (t ; try searching link text
      (let ((label w3m-next-page-label)
            (pos (goto-char (point-min)))
@@ -9278,12 +9347,15 @@ PREFIX-ARG."
      (let ((w3m-prefer-cache t))
        (w3m-history-store-position)
       (w3m-goto-url w3m-previous-url)))
-   ((funcall (nth 1 (assoc (w3m-url-strip-query w3m-current-url)
-                           w3m-page-navigation-sites))))
-     ;; The functions must return NON-NIL in order to avoid the next
-     ;; clause of the `cond' statement. The functions can return NIL
-     ;; on failure in order to search text anyway, but will that ever
-     ;; be sensible?
+   ((let ((url (w3m-url-strip-query w3m-current-url))
+	  (sites w3m-page-navigation-sites)
+	  site found)
+      (while (and (not found)
+		  (setq site (pop sites)))
+	(when (string-match (car site) url)
+          (setq found t)
+          (funcall (nth 1 site))))
+      found))
    (t ; try searching link text
      (let ((label w3m-previous-page-label)
            (pos (goto-char (point-min)))

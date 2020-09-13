@@ -2,6 +2,13 @@
 
 	* w3m.el (w3m-page-nav--google-style-next): Simplify and make
 	language-agnostic
+	(w3m-page-nav--google-style-next)
+	(w3m-page-nav--google-style-previous, w3m-scroll-up-or-next-url)
+	(w3m-scroll-down-or-previous-url): Improve error handling, remove
+	return value requirement.
+	(w3m-page-nav--duckduckgo-style-next)
+	(w3m-page-nav--duckduckgo-style-previous, w3m-page-navigation-sites):
+	Add handling for duckduckgo search.
 
 2020-09-11  Boruch Baum  <boruch_baum@gmx.com>
 
