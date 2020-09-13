@@ -9105,28 +9105,12 @@ This function is meant to be an element in data structure
 This function is NOT hard-coded for google, so it can be used for
 other websites that use the same technique."
   (let (url found)
-   (cond
-    ((string-match ".*&start=[^0]" w3m-current-url)
-     ; this is not the first page of a search
-      (goto-char (point-max))
-      (while (and (not found)
-                  (w3m-goto-previous-anchor))
-        (setq txt
-              (buffer-substring-no-properties (point) (next-property-change (point))))
-        (when (and (string-match ">" txt)
-                   (string-match ".*&start=[^0]" (setq url (w3m-anchor))))
-          (w3m-goto-url url)
-          (setq found t))))
-    (t
-     ; this is the first page of a search
-      (goto-char (point-max))
-      (while (and (not found)
-                  (w3m-goto-previous-anchor))
-        (setq txt
-              (buffer-substring-no-properties (point) (next-property-change (point))))
-        (when (string-match "Next" txt)
-          (w3m-goto-url (w3m-anchor))
-          (setq found t))))))
+    (goto-char (point-max))
+    (while (and (not found)
+                (w3m-goto-previous-anchor))
+      (when (string-match ".*&start=[^0]" (setq url (w3m-anchor)))
+        (w3m-goto-url url)
+        (setq found t))))
   t)
 
 (defun w3m-page-nav--google-style-previous ()
