@@ -1,3 +1,8 @@
+2020-09-13  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-page-nav--google-style-next): Simplify and make
+	language-agnostic
+
 2020-09-11  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m-scroll-up-or-next-url, w3m-scroll-down-or-previous-url):
