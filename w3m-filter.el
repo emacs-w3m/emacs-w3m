@@ -1,6 +1,6 @@
 ;;; w3m-filter.el --- filtering utility of advertisements on WEB sites
 
-;; Copyright (C) 2001-2008, 2012-2015, 2017-2019
+;; Copyright (C) 2001-2008, 2012-2015, 2017-2020
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -83,10 +83,6 @@
      "Filter top and bottom cruft for stackexchange.com"
      "\\`https://\\(?:[0-9A-Za-z_~-]+\\.\\)*stackexchange\\.com\\(?:\\'\\|/\\)"
      w3m-filter-stackexchange)
-    (t
-     "A filter for YouTube"
-     "\\`https://\\(?:[0-9A-Za-z_~-]+\\.\\)*youtube\\.com\\(?:\\'\\|/\\)"
-     w3m-filter-youtube)
     (nil
      ("Remove garbage in http://www.geocities.co.jp/*"
       "http://www.geocities.co.jp/* でゴミを取り除きます")
@@ -1279,51 +1275,6 @@ READ MORE:\\([^<]+\\)\\(</a>\\)?</strong>\\(</p>\\)?"
       (w3m-filter-replace-regexp url "<b>" "" p1 p2)
       (w3m-filter-replace-regexp url "<a[^>]+>" "" p1 p2)
       (w3m-filter-replace-regexp url "</?p[^>]*>" "" p1 p2))))
-
-(defun w3m-filter-youtube (url)
-  (w3m-filter-delete-regions url "<head>" "<title>" t t)
-  (w3m-filter-delete-regions url "</title>" "</head>" t t)
-  (insert "<body>")
-  (w3m-filter-delete-regions url
-			     "<body" "<p class=\"num-results" nil t (point))
-  (w3m-filter-delete-regions url
-			     "<div id=\"footer-container\"" "</body>" nil t)
-  (w3m-filter-replace-regexp url "</?h4[^>]*>" "")
-  (goto-char (point-min))
-  (let ((p1 (point)) (p2 (search-forward "<ol" nil t)))
-    (w3m-filter-replace-regexp url "<li>" " | " p1 p2)
-    (w3m-filter-replace-regexp url "<ul>" "" p1 p2)
-    (w3m-filter-replace-regexp url
-			       "<li><div class=\"yt-lockup[^>]*>" "<p><li>" p2)
-    (w3m-filter-replace-regexp url "<button.*</button>" "")
-    (w3m-filter-replace-regexp url "<a aria-hidden[^>]*>" "")
-    (w3m-filter-replace-regexp url "</?h3[^>]*>" "")
-    (goto-char (point-min))
-    (while (search-forward "<ul class=\"yt-lockup-meta-info\">" nil t)
-      (delete-region (match-beginning 0) (match-end 0))
-      (setq p1 (point) p2 (search-forward "</ul>" nil t))
-      (w3m-filter-replace-regexp url "</?li>" " " p1 p2)
-      (w3m-filter-replace-regexp url "</ul>" "" p1 nil 1))
-    (goto-char (point-min))
-    (while (search-forward "<ul class=\"yt-badge-list \">" nil t)
-      (replace-match "")
-      (setq p1 (point) p2 (search-forward "</ul>" nil t))
-      (insert " ")
-      (w3m-filter-replace-regexp url "</?li[^>]*>" " " p1 p2)
-      (w3m-filter-replace-regexp url "</ul>" "" p1 nil 1))
-    (w3m-filter-replace-regexp url
-			       "</div><div class=\"yt-lockup-meta \">" "")
-    (goto-char (point-min))
-    (while (search-forward "<img" nil t)
-      (let ((p1 (match-end 0)) (p2 (search-forward ">" nil t)))
-	(goto-char p1)
-	(when (search-forward "data-thumb=" p2 t)
-	  (goto-char p1)
-	  (when (re-search-forward "src=\"[^\"]*\"" p2 t)
-	    (replace-match "")
-	    (goto-char p1)
-	    (re-search-forward "data-thumb=" p2 t)
-	    (replace-match "src=")))))))
 
 (defun w3m-filter-geocities-remove-garbage (url)
   "Remove garbage in http://www.geocities.co.jp/*."
