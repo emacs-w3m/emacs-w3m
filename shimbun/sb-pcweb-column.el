@@ -3,7 +3,7 @@
 ;; Copyright (C) 2002-2007, 2019 OHASHI Akira <bg66@koka-in.org>
 
 ;; Author: OHASHI Akira <bg66@koka-in.org>
-;;         Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;;         Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.

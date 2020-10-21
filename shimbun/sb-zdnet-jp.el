@@ -1,8 +1,8 @@
 ;;; sb-zdnet-jp.el --- shimbun backend for ZDNet Japan -*- coding: utf-8 -*-
 
-;; Copyright (C) 2005, 2006, 2019 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2005, 2006, 2019 Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 
-;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Author: Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 ;; Keywords: news
 ;; Created: Jun 14, 2003
 

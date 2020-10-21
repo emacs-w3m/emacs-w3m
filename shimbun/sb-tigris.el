@@ -1,9 +1,9 @@
 ;;; sb-tigris.el --- shimbun backend for tigris.org ML
 
 ;; Copyright (C) 2005, 2007, 2009, 2017, 2019
-;; Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 
-;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Author: Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.

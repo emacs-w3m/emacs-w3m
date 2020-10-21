@@ -1,8 +1,8 @@
 ;;; sb-excite.el --- shimbun backend for excite
 
-;; Copyright (C) 2004, 2005, 2006, 2010 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2004, 2005, 2006, 2010 Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 
-;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Author: Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 ;; Keywords: news
 ;; Created: Dec 24, 2004
 

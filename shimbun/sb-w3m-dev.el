@@ -4,7 +4,7 @@
 ;; Copyright (C) 2005 Tsuyoshi CHO
 
 ;; Authors: NAKAJIMA Mikio <minakaji@namazu.org>,
-;;          Tsuyoshi CHO   <tsuyoshi_cho@ybb.ne.jp>
+;;          Tsuyoshi CHO   <Tsuyoshi.CHO@Gmail.com>
 ;; Keywords: news
 
 ;; This file is a part of shimbun.

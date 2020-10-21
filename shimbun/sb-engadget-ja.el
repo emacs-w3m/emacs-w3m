@@ -1,8 +1,8 @@
 ;;; sb-engadget-ja.el --- shimbun backend for japanese.engadget.com
 
-;; Copyright (C) 2005, 2006, 2007 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2005, 2006, 2007 Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 
-;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Author: Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 ;; Keywords: news
 ;; Created: July 1, 2005
 

@@ -1,8 +1,8 @@
 ;;; sb-cnn-jp.el --- shimbun backend for CNN Japan
 
-;; Copyright (C) 2003-2005, 2008, 2019 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2003-2005, 2008, 2019 Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 
-;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Author: Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 ;; Keywords: news
 ;; Created: May 22, 2004
 
