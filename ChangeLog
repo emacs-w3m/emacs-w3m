@@ -1,3 +1,10 @@
+2020-10-21  Tsuyoshi CHO  <Tsuyoshi.CHO@Gmail.com>
+
+	File author Tsuyoshi CHO's email address updated.
+	Old was non-reach to the latest.
+
+	* w3m.el: File author Tsuyoshi CHO's email address updated.
+
 2020-09-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Remove youtube filter that no longer works

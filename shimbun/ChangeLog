@@ -1,3 +1,14 @@
+2020-10-21  Tsuyoshi CHO  <Tsuyoshi.CHO@Gmail.com>
+
+	File author Tsuyoshi CHO's email address updated.
+	Old was non-reach to the latest.
+
+	* sb-arch-bluegate.el, sb-atom-hash.el, sb-atom.el, sb-cnet-jp.el,
+	sb-cnn-jp.el, sb-engadget-ja.el, sb-excite.el, sb-hash.el, sb-mailman.el,
+	sb-pcweb-column.el, sb-rss-hash.el, sb-scipy.el, sb-tigris.el, sb-w3m-dev.el,
+	sb-wikimedia.el, sb-x51.el, sb-zdnet-jp.el:
+	File author Tsuyoshi CHO's email address updated.
+
 2020-08-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Drop Emacs 25 support

@@ -3,7 +3,7 @@
 ;; Copyright (C) 2005, 2006 S V N Vishwanathan <vishketan@yahoo.com>
 
 ;; Author: S V N Vishwanathan <vishketan@yahoo.com>
-;;         Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;;         Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 ;; Keywords: news, scipy
 
 ;; This file is not a part of shimbun.

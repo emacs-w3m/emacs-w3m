@@ -1,8 +1,8 @@
 ;;; sb-atom.el --- shimbun backend for ATOM (Rich Site Summary).
 
-;; Copyright (C) 2006, 2008-2011,2019 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2006, 2008-2011,2019 Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 
-;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Author: Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 ;; Keywords: news
 ;; Created: Jun 14, 2003
 

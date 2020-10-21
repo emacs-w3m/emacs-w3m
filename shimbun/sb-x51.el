@@ -1,8 +1,8 @@
 ;;; sb-x51.el --- shimbun backend for x51.org
 
-;; Copyright (C) 2004-2006, 2010, 2019 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2004-2006, 2010, 2019 Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 
-;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Author: Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 ;; Keywords: news blog
 ;; Created: Feb 21, 2004
 

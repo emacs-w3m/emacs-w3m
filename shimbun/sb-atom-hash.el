@@ -1,8 +1,8 @@
 ;;; sb-atom-hash.el --- shimbun backend for atom content -*- coding: utf-8 -*-
 
-;; Copyright (C) 2006-2009, 2011, 2019 Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Copyright (C) 2006-2009, 2011, 2019 Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 
-;; Author: Tsuyoshi CHO <tsuyoshi_cho@ybb.ne.jp>
+;; Author: Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 ;; Keywords: shimbun
 
 ;; This file is a part of shimbun.

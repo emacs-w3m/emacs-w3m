@@ -5,7 +5,7 @@
 ;; Author: NAKAJIMA Mikio     <minakaji@namazu.org>,
 ;;         TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Katsumi Yamaoka    <yamaoka@jpl.org>,
-;;         Tsuyoshi CHO       <tsuyoshi_cho@ybb.ne.jp>
+;;         Tsuyoshi CHO       <Tsuyoshi.CHO@Gmail.com>
 ;; Keywords: news
 ;; Created: Jun 14, 2003
 
