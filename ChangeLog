@@ -1,3 +1,10 @@
+2020-10-27  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el (w3m-download-queue-help)
+	(w3m--download-queue-buffer-header-string)
+	(w3m--download-queue-buffer-help-string): New keybinding help feature,
+	bound to '?'
+
 2020-05-10  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-download.el (w3m-download-queue-mode-map): Bind '?' to describe mode.

@@ -334,7 +334,7 @@ heading.")
     (define-key map "\C-g"      'w3m-download-refresh-buffer)
     (define-key map "+"         'w3m-download-increase-simultaneous)
     (define-key map "-"         'w3m-download-decrease-simultaneous)
-    (define-key map "?"         'describe-mode)
+    (define-key map "?"         'w3m-download-queue-help)
     (setq w3m-download-queue-mode-map map)))
 
 (defvar w3m--download-queued nil
@@ -838,7 +838,7 @@ Meant for use with `post-command-hook'."
   (add-hook 'post-command-hook 'w3m--download-update-faces-post-command t t)
   (add-hook 'post-command-hook 'w3m--download-update-statistics t t))
 
-(defun w3m--download-queue-buffer-header-string ()
+(defun w3m--download-queue-buffer-help-string ()
   "Return a list of current keybindings for `w3m-download-queue-mode-map'.
 This is displayed at the top of the buffer as cheat sheet.
 IMPORTANT: Keep this function's value synchronized with the
@@ -846,9 +846,8 @@ docstring of `w3m-download-queue-mode'."
   (let ((zz (lambda (x)
               (key-description
                 (where-is-internal x w3m-download-queue-mode-map t)))))
-    (concat
-" This buffer displays running, queued, paused, failed, and completed downloads.\n
-   " (funcall zz 'w3m-download-increase-simultaneous)"/" (funcall zz 'w3m-download-decrease-simultaneous)"      Adjust maximum number of simultaneous downloads.
+    (concat "   "
+     (funcall zz 'w3m-download-increase-simultaneous)"/" (funcall zz 'w3m-download-decrease-simultaneous)"      Adjust maximum number of simultaneous downloads.
    " (funcall zz 'w3m-download-toggle-details) "      Toggle a line's details (C-c C-o for all lines)
    " (funcall zz 'w3m-download-toggle-pause) "        Pause or re-queue an entry
    " (funcall zz 'w3m-download-queue-drop) "  Move an entry line down the queue (later download)
@@ -858,7 +857,15 @@ docstring of `w3m-download-queue-mode'."
    " (funcall zz 'w3m-download-delete-line) "      Delete an entry line (file or fragment will remain on disk)
    " (funcall zz 'w3m-download-refresh-buffer) "      Refresh this buffer now (C-u "
 (funcall zz 'w3m-download-refresh-buffer)" to set auto-refresh rate)
-   " (funcall zz 'w3m-download-buffer-quit) "        Close this buffer (or just kill the buffer)\n\n>\n\n")))
+   " (funcall zz 'w3m-download-buffer-quit) "        Close this buffer (or just kill the buffer)")))
+
+(defun w3m--download-queue-buffer-header-string ()
+  "Return a list of current keybindings for `w3m-download-queue-mode-map'.
+This is displayed at the top of the buffer as cheat sheet.
+IMPORTANT: Keep this function's value synchronized with the
+docstring of `w3m-download-queue-mode'."
+  (concat " This buffer displays running, queued, paused, failed, and completed downloads.\n"
+          (w3m--download-queue-buffer-help-string) "\n\n>\n\n"))
 
 (defun w3m-download-queue-mode ()
   "Major mode for viewing and editing the `w3m-download' queue.
@@ -1554,6 +1561,12 @@ See `w3m-download-ambiguous-basename-alist'."
 
 
 ;;; Interactive and user-facing functions:
+
+(defun w3m-download-queue-help ()
+  "Display help information for the w3m-download-queue buffer."
+  (interactive)
+  (when (eq major-mode 'w3m-download-queue-mode)
+    (message (w3m--download-queue-buffer-help-string))))
 
 (defun w3m-download-queue-next-entry (&optional arg)
   "Advance point to beginning of next entry in the queue buffer.
