@@ -1,3 +1,8 @@
+2020-10-27  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-filter.el (w3m-filter-youtube): Empty the content of the filter,
+	because site is now full javascript.
+
 2019-04-10  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-filter.el (w3m-filter-stackexchange): bugfix: re-search-forward
