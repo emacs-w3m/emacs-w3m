@@ -257,8 +257,6 @@
 ;;; Dependencies:
 (require 'w3m-util)
 
-
-
 ;;; Temporary compatability operation(s):
 
 ;; My development git fork has a different messaging standard, based
@@ -1035,6 +1033,7 @@ for the initial buffer creation, and by
         (goto-char (point-max))
         (setq result nil))))
   (w3m--download-progress-percent-display)
+  (delete-trailing-whitespace (point-min) (point-max))
   (goto-char (point-max))
 ; (delete-backward-char 1)
   (w3m--download-update-statistics))
@@ -1099,17 +1098,26 @@ can be manually invoked via the `w3m-download-refresh-buffer'.
 This function also saves the download lists to
 `w3m-download-save-file'."
   (let ((buf (get-buffer "*w3m-download-queue*"))
-        (inhibit-read-only t))
+        (inhibit-read-only t)
+        (buf-mark-active mark-active)
+        mark pos)
    (if (not buf)
      (w3m--download-queue-buffer-kill)
-    (w3m--download-update-progress)
-    (w3m--download-save-lists)
-    (with-current-buffer buf
-      (w3m--download-update-display-queue-list
-        (get-text-property (point) 'url)
-        (current-column)
-        (1- (string-to-number (format-mode-line "%l"))))
-      (w3m--download-update-faces-post-command)))))
+    (save-match-data
+      (w3m--download-update-progress)
+      (w3m--download-save-lists)
+      (with-current-buffer buf
+        (setq pos (point))
+        (setq mark (mark))
+        (w3m--download-update-display-queue-list
+          (get-text-property (point) 'url)
+          (current-column)
+          (1- (string-to-number (format-mode-line "%l"))))
+        (w3m--download-update-faces-post-command)
+        (set-mark mark)
+        (if (not buf-mark-active)
+          (deactivate-mark))
+        (goto-char pos))))))
 
 (defun w3m--download-apply-metadata-tags ()
   "Run a shell command to apply metadata tags to a saved file.
@@ -1566,7 +1574,8 @@ See `w3m-download-ambiguous-basename-alist'."
   "Display help information for the w3m-download-queue buffer."
   (interactive)
   (when (eq major-mode 'w3m-download-queue-mode)
-    (message (w3m--download-queue-buffer-help-string))))
+    (let (message-log-max) ; disable message logging
+      (message (w3m--download-queue-buffer-help-string)))))
 
 (defun w3m-download-queue-next-entry (&optional arg)
   "Advance point to beginning of next entry in the queue buffer.
@@ -1659,18 +1668,17 @@ This means it will be downloaded last."
 
 (defun w3m-download-set-refresh-interval (&optional arg)
   "Change value `w3m-download-refresh-interval'.
-ARG must be a positive integer, in seconds. The default is 16."
+ARG must be a positive integer, in seconds. The default is
+`w3m-download-refresh-interval'."
   (interactive)
-  (let
-    ((default 16)
-     (prompt
-       "refresh interval for download queue buffer (integer seconds)? "))
+  (let ((prompt
+          "refresh interval for download queue buffer (integer seconds)? "))
    (setq w3m-download-refresh-interval
      (if (> 1 (if (integerp arg)
                 arg
-               (setq arg (read-number prompt default))
+               (setq arg (read-number prompt w3m-download-refresh-interval))
                (if (integerp arg) arg -1)))
-       default
+       w3m-download-refresh-interval
       arg))))
 
 (defun w3m-download-toggle-all-details ()
@@ -2134,7 +2142,7 @@ Are you trying to resume an aborted partial download? ")))
         (w3m-read-file-name
           (format "Download %s to: " url)
           w3m-default-save-directory
-          basename)))
+          nil nil basename)))
     (setq save-path
       (expand-file-name
         (replace-regexp-in-string " " "_"

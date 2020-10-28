@@ -1,3 +1,11 @@
+2020-10-28  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el (w3m--download-refresh-buffer): Improve operation of
+	kill-ring-save.
+	(w3m--download-display-queue-list): delete trailing whitespace
+	(w3m-download-set-refresh-interval): improve default handling
+	(w3m-download-queue-help): disable logging to *Messages* buffer
+
 2020-10-27  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-download.el (w3m-download-queue-help)
