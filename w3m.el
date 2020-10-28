@@ -9169,7 +9169,7 @@ technique."
                   (< 0 (string-to-number (cdr this-cons)))
                   (setq found t)))))
     (if found
-      (widget-button-press pos)
+      (progn (setq pos (point)) (goto-char (point-min)) (widget-button-press pos) (goto-char (point-min)))
      (goto-char pos))))
 
 (defun w3m-page-nav--duckduckgo-style-previous ()
