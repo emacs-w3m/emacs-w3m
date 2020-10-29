@@ -1325,7 +1325,20 @@
 
 2019-02-12  Boruch Baum  <boruch_baum@gmx.com>
 
-	* w3m-dtree.el (w3m-dtree-create-sub): BUGFIX: don't abort if a subdir
+	* w3m-util.el (w3m--send-to-gui-clipboard): New function.
+	(w3m-gui-clipboard-commands): New defcustom. WARNING: This has a known
+	bug that the radio buttons are not initializing properly - they always
+	set to the first button in the list.
+
+	* w3m.el (w3m-print-current-url, w3m-print-this-url,
+	w3m-print-this-image-url): Use the new feature.
+
+	* w3m-lnum.el (w3m-lnum-print-this-url): Use the new feature
+	(w3m-lnum-bookmark-add-this-url, w3m-lnum-download-this-url,
+	w3m-lnum-print-this-url, w3m-lnum-edit-this-url,
+	w3m-lnum-external-view-this-url): Alter docstring.
+
+* w3m-dtree.el (w3m-dtree-create-sub): BUGFIX: don't abort if a subdir
 	denies permission to read.
 
 2019-02-03  Boruch Baum  <boruch_baum@gmx.com>

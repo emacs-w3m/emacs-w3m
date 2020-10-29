@@ -7594,17 +7594,23 @@ of the url currently displayed.  The browser is defined in
       (w3m-message "No image at point")))))
 
 (defun w3m-print-current-url ()
-  "Display the current url in the echo area and put it into `kill-ring'."
+  "Display the current url in the echo area.
+
+Also, put it into the `kill-ring' and the OS clipboard."
   (interactive)
   (when w3m-current-url
-    (let ((deactivate-mark nil))
-      (kill-new (w3m-url-encode-string-2 w3m-current-url))
+    (let ((deactivate-mark nil)
+          (url (w3m-url-encode-string-2 w3m-current-url)))
+      (kill-new url)
+      (w3m--send-to-gui-clipboard url)
       (w3m-message "%s" (w3m-url-readable-string w3m-current-url)))))
 
 (defvar message-truncate-lines)
 
 (defun w3m-print-this-url (&optional interactive-p)
-  "Display the url under point in the echo area and put it into `kill-ring'."
+  "Display the url under point in the echo area.
+
+Also, put it into the `kill-ring' and the OS clipboard."
   (interactive (list t))
   (let ((deactivate-mark nil)
 	(url (if interactive-p
@@ -7628,7 +7634,9 @@ of the url currently displayed.  The browser is defined in
 	(message-truncate-lines (or message-truncate-lines
 				    (not interactive-p))))
     (when (or url interactive-p)
-      (and url interactive-p (kill-new (w3m-url-encode-string-2 url)))
+      (when (and url interactive-p)
+        (kill-new (w3m-url-encode-string-2 url))
+        (w3m--send-to-gui-clipboard url))
       (setq url (or (w3m-url-readable-string url)
 		    (and (w3m-action) "There is a form")
 		    "There is no url under point"))
@@ -7648,7 +7656,9 @@ of the url currently displayed.  The browser is defined in
 			  url))))))
 
 (defun w3m-print-this-image-url (&optional interactive-p)
-  "Display image url under point in echo area and put it into `kill-ring'."
+  "Display image url under point in echo area.
+
+Also, put it into the `kill-ring' and the OS clipboard."
   (interactive (list t))
   (let ((deactivate-mark nil)
 	(url (if interactive-p
@@ -7658,7 +7668,9 @@ of the url currently displayed.  The browser is defined in
 		 (w3m-image-alt)
 	       (w3m-image-alt (point)))))
     (when (or url interactive-p)
-      (and url interactive-p (kill-new (w3m-url-encode-string-2 url)))
+      (when (and url interactive-p)
+        (kill-new (w3m-url-encode-string-2 url))
+        (w3m--send-to-gui-clipboard url))
       (w3m-message "%s%s"
 		   (if (zerop (length alt))
 		       ""
