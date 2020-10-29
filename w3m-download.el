@@ -783,7 +783,7 @@ Meant for use with `pre-command-hook'."
               (next-single-property-change (point) 'url nil (point-max))))
         (inhibit-read-only t))
     (unless  (= (point) (point-max))
-      (w3m--remove-face-property beg end '(:weight bold)))
+      (w3m-remove-face-property beg end '(:weight bold)))
     (goto-char pos)))
 
 (defun w3m--download-update-faces-post-command ()
