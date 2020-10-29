@@ -170,14 +170,17 @@ into it."
     (while (< pos end)
       (setq prop (get-text-property pos 'face object))
       (setq next (next-single-property-change pos 'face object end))
-      (setq new-prop nil)
-      (while prop
-	(setq elem (pop prop))
-	(unless (eq elem name)
-	  (push elem new-prop)))
+      (setq new-prop (cond
+		      ((listp prop)
+		       (setq new-prop (remove name prop))
+		       (if (>= 1 (length new-prop))
+			   (car new-prop)
+			 new-prop))
+		      ((equal name prop) nil)
+		      (t prop)))
+      (remove-text-properties pos next 'face object)
       (when new-prop
-	(w3m-add-text-properties pos next
-				 (list 'face new-prop)))
+	(add-text-properties pos next (list 'face new-prop) object))
       (setq pos next))))
 
 (defmacro w3m-get-text-property-around (prop)

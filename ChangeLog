@@ -1,3 +1,8 @@
+2020-10-29  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-util.el (w3m-remove-face-property): Work as it should do.
+	([emacs-w3m:13684])
+
 2020-10-21  Tsuyoshi CHO  <Tsuyoshi.CHO@Gmail.com>
 
 	File author Tsuyoshi CHO's email address updated.
