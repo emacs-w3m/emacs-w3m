@@ -31,16 +31,16 @@ matrix:
 #      osx_image: xcode10.1
 #      env: EMACS=aquamacs
   allow_failures:
-    - os: linux
-      dist: xenial
-      env: EMACS=emacs27
-    - os: osx
-      osx_image: xcode10.1
-      env: EMACS=emacs27
-    - os: osx
-      osx_image: xcode10.1
-      env: EMACS=emacs-snapshot
-#    - env: EMACS=aquamacs
+#    - os: linux
+#      dist: xenial
+#      env: EMACS=emacs27
+#    - os: osx
+#      osx_image: xcode10.1
+#      env: EMACS=emacs27
+#    - os: osx
+#      osx_image: xcode10.1
+#      env: EMACS=emacs-snapshot
+##    - env: EMACS=aquamacs
 
 install:
   - if [ "$TRAVIS_OS_NAME--${EMACS}" = 'linux--emacs26' ]; then
