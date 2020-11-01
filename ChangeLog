@@ -1,3 +1,8 @@
+2020-10-31  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-search.el (w3m-search-engine-alist): Update wikipedia search
+	urls.
+
 2020-10-29  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-util.el (w3m-remove-face-property): Work as it should do.
