@@ -158,10 +158,10 @@ __mk_ja_JP=%%83J%%83%%5E%%83J%%83i&url=search-alias%%3Daps&field-keywords=%s"
 __mk_ja_JP=%%83J%%83%%5E%%83J%%83i&url=search-alias%%3Daps&field-keywords=%s"
 	     shift_jis)))
       ("emacswiki" "https://www.emacswiki.org/cgi-bin/wiki?search=%s")
-      ("en.wikipedia" "https://en.wikipedia.org/wiki/Special:Search?search=%s")
-      ("de.wikipedia" "https://de.wikipedia.org/wiki/Spezial:Search?search=%s"
+      ("en.wikipedia" "https://en.wikipedia.org/wiki/Special:Search?search=%s&sourceid=Mozilla-search&ns0=1")
+      ("de.wikipedia" "https://de.wikipedia.org/wiki/Spezial:Search?search=%s&sourceid=Mozilla-search&ns0=1"
        utf-8)
-      ("ja.wikipedia" "https://ja.wikipedia.org/wiki/Special:Search?search=%s"
+      ("ja.wikipedia" "https://ja.wikipedia.org/wiki/Special:Search?search=%s&sourceid=Mozilla-search&ns0=1"
        utf-8)
       ("msdn" "https://search.msdn.microsoft.com/search/default.aspx?query=%s")
       ("duckduckgo" "https://lite.duckduckgo.com/lite" utf-8 "q=%s")))
