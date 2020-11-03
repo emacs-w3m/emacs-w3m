@@ -1,3 +1,9 @@
+2020-11-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Move cursor to target dir when browsing local dir (bug#973666 of debian)
+
+	* w3m.el (w3m--goto-url--handler-function): Move cursor to target dir.
+
 2020-10-31  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-search.el (w3m-search-engine-alist): Update wikipedia search

@@ -9638,9 +9638,11 @@ helpful message is presented and the operation is aborted."
       (w3m-string-match-url-components w3m-current-url)
       (and (match-beginning 8)
 	   (setq name (match-string 9 w3m-current-url)))
-      (when (and name
-		 (w3m-search-name-anchor name nil
-					 (not (eq action 'cursor-moved))))
+      (cond
+       ;; Go to name anchor
+       ((and name
+	     (w3m-search-name-anchor name nil
+				     (not (eq action 'cursor-moved))))
 	(setf (w3m-arrived-time (w3m-url-strip-authinfo orig))
 	      (w3m-arrived-time url))
 	(unless (or w3m-message-silent
@@ -9657,6 +9659,25 @@ helpful message is presented and the operation is aborted."
 	   (prog1
 	       w3m-after-cursor-move-hook
 	     (setq w3m-after-cursor-move-hook nil)))))
+       ;; Go to local target directory
+       ((and (w3m-url-local-p w3m-current-url)
+	     (file-directory-p (w3m-url-to-file-name w3m-current-url)))
+	(let* ((dir (directory-file-name w3m-current-url))
+	       (dir2 (concat dir "/"))
+	       (st (point-min))
+	       (nd (point-max))
+	       prop)
+	  (unless (get-text-property st 'w3m-href-anchor)
+	    (setq st (text-property-not-all st nd 'w3m-href-anchor nil)))
+	  (while (and st
+		      (progn
+			(setq prop (get-text-property st 'w3m-href-anchor))
+			(not (or (equal dir prop) (equal dir2 prop)))))
+	    (and (setq st (text-property-any st nd 'w3m-href-anchor nil))
+		 (setq st (text-property-not-all st nd 'w3m-href-anchor nil))
+		 (setq prop (get-text-property st 'w3m-href-anchor))))
+	  (when st (goto-char st))))
+	(t nil))
       (unless (eq action 'cursor-moved)
 	(if (equal referer "about://history/")
 	    ;; Don't sprout a new branch for
