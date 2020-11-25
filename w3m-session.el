@@ -998,7 +998,7 @@ that session.  In that case delete the buffer entry."
   "Setup w3m session items in menubar."
   (unless (lookup-key w3m-mode-map [menu-bar Session])
     (easy-menu-define w3m-session-menu w3m-mode-map "" '("Session"))
-    (easy-menu-add w3m-session-menu)
+    (w3m-easy-menu-add w3m-session-menu)
     (add-hook 'menu-bar-update-hook 'w3m-session-menubar-update)))
 
 (defvar w3m-session-menu-items-pre nil)

@@ -3617,7 +3617,7 @@ external `convert' program respectively."
       (easy-menu-define
 	w3m-mode-menu w3m-mode-map
 	"w3m menu item" w3m-menubar)
-      (easy-menu-add w3m-mode-menu))
+      (w3m-easy-menu-add w3m-mode-menu))
     (let ((map (make-sparse-keymap)))
       (easy-menu-define
 	w3m-rmouse-menu map

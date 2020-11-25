@@ -1,6 +1,6 @@
 ;;; w3m-tabmenu.el --- Functions for TAB menu browsing
 
-;; Copyright (C) 2001-2007, 2009, 2011-2012, 2019
+;; Copyright (C) 2001-2007, 2009, 2011-2012, 2019, 2020
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Hideyuki SHIRAI    <shirai@meadowy.org>,
@@ -43,7 +43,7 @@
   (when (and w3m-use-tab-menubar
 	     (not (lookup-key w3m-mode-map [menu-bar Tab])))
     (easy-menu-define w3m-tab-menu w3m-mode-map "" '("Tab"))
-    (easy-menu-add w3m-tab-menu)
+    (w3m-easy-menu-add w3m-tab-menu)
     (add-hook 'menu-bar-update-hook 'w3m-tab-menubar-update)))
 
 (defun w3m-switch-buffer ()

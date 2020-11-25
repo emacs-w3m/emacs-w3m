@@ -1,6 +1,6 @@
 ;;; w3mhack.el --- a hack to setup the environment for building w3m
 
-;; Copyright (C) 2001-2010, 2012, 2013, 2015, 2017, 2019
+;; Copyright (C) 2001-2010, 2012, 2013, 2015, 2017, 2019, 2020
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
@@ -556,4 +556,9 @@ otherwise, insert URL-TITLE followed by URL in parentheses."
   (let (print-level print-length)
     (princ emacs-w3m-version)))
 
+;; Local Variables:
+;; version-control: never
+;; no-byte-compile: t
+;; no-update-autoloads: t
+;; End:
 ;;; w3mhack.el ends here

@@ -1,3 +1,15 @@
+2020-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Silence the byte compiler
+
+	* w3m-util.el (w3m-easy-menu-add): New compat macro.
+	* w3m-bookmark.el (w3m-setup-bookmark-menu): Use it.
+	* w3m-session.el (w3m-setup-session-menu): Use it.
+	* w3m-tabmenu.el (w3m-setup-tab-menu): Use it.
+	* w3m.el (w3m-setup-menu): Use it.
+
+	* w3mhack.el (Local Variables): Set no-byte-compile and others.
+
 2020-11-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Move cursor to target dir when browsing local dir (bug#973666 of debian)
