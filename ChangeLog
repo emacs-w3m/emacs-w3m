@@ -1,5 +1,9 @@
 2020-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3mhack.el (w3mhack-generate-load-file): Quote "Local Variables".
+
+2020-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	Silence the byte compiler
 
 	* w3m-util.el (w3m-easy-menu-add): New compat macro.

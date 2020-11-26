@@ -536,7 +536,7 @@ otherwise, insert URL-TITLE followed by URL in parentheses."
 	(w3mhack-insert-git-revision)
 	(insert "\n(provide '"
 		(file-name-sans-extension w3mhack-load-file) ")\n\n\
-;; Local Variables:
+;; Local\040Variables:
 ;; version-control: never
 ;; no-update-autoloads: t
 ;; End:\n\n;;; " w3mhack-load-file " ends here\n")
