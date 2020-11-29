@@ -12000,11 +12000,17 @@ the past, this had been set by the combination: `w3m-use-tab' t
 (provide 'w3m)
 
 (unless noninteractive
-  (when w3m-init-file
-    (if (string-match "\\.el\\'" w3m-init-file)
-	(or (load (concat w3m-init-file "c") t t t)
-	    (load w3m-init-file t t t))
-      (load w3m-init-file t t))))
+  (when (stringp w3m-init-file)
+    (condition-case err
+	(if (string-match "\\.el\\'" w3m-init-file)
+	    (or (load (concat w3m-init-file "c") t t t)
+		(load w3m-init-file t t t))
+	  (load w3m-init-file t t))
+      (error
+       (display-warning 'w3m
+			(format "Error while loading \"%s\":\n%s\n"
+				(abbreviate-file-name w3m-init-file)
+				(error-message-string err)))))))
 
 (run-hooks 'w3m-load-hook)
 

@@ -1,3 +1,7 @@
+2020-11-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el: Display error that occurs when loading w3m-init-file.
+
 2020-11-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-generate-load-file): Quote "Local Variables".
