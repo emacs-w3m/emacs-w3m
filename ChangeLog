@@ -1,3 +1,8 @@
+2020-12-19  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el (w3m--download-check-and-use-cache): Update for new
+	hash table handling.
+
 2020-10-29  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-util.el (w3m-remove-face-property): bugfixes for handling of
