@@ -819,8 +819,10 @@ a crashed emacs session."
       (with-current-buffer w3m-cache-buffer
         (let ((inhibit-read-only t))
         (erase-buffer)))
+      (kill-buffer w3m-cache-buffer)
       (setq w3m-cache-hashtb nil
             w3m-cache-articles nil)
+      (w3m-cache-setup)
       (insert " Complete.\nInitializing input URL history from memory ...")
       (setq w3m-input-url-history nil)
       (insert " Complete.\nInitializing cookies from memory ...")
