@@ -1,3 +1,12 @@
+2020-12-22  Boruch Baum  <boruch_baum@gmx.com>
+
+	Protect against the nil value for a history plist [emacs-w3m:13716]
+	Note: as the cause of it is not made clear yet, the one that should
+	be fixed might be in another place.
+
+	* w3m-hist.el (w3m-history-set-plist, w3m-history-modify-properties):
+	Protect against the nil value for a history plist.
+
 2020-11-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el: Display error that occurs when loading w3m-init-file.

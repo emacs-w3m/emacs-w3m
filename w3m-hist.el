@@ -268,6 +268,8 @@ of the elements of the `car' of `w3m-history' (which see)."
 If VALUE is nil, the pair of PROPERTY and VALUE is removed from PLIST.
 Exceptionally, if PLIST is made empty because of removing, it will be
 instead set to `(nil nil)'.  Return PLIST itself."
+  (unless plist ;; FIXME: when/where/why is it made nil?
+    (setq plist (list nil nil)))
   (let ((pair (memq property plist)))
     (if pair
 	(if value
@@ -299,6 +301,8 @@ removing, it will be instead set to `(nil nil)'."
       (while new
 	(w3m-history-set-plist old (car new) (cadr new))
 	(setq new (cddr new))))
+    (unless old ;; FIXME: when/where/why is it made nil?
+      (setq old (list nil nil)))
     (setq new (copy-sequence old))
     (while new
       (w3m-history-set-plist old (car new) (cadr new))
