@@ -1,5 +1,10 @@
 2020-12-22  Boruch Baum  <boruch_baum@gmx.com>
 
+	* w3m-filter.el (w3m-filter-stackexchange): Update filter and correct
+	bound errors.
+
+2020-10-27  Boruch Baum  <boruch_baum@gmx.com>
+
 	Protect against the nil value for a history plist [emacs-w3m:13716]
 	Note: as the cause of it is not made clear yet, the one that should
 	be fixed might be in another place.

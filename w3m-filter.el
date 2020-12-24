@@ -1243,23 +1243,21 @@ READ MORE:\\([^<]+\\)\\(</a>\\)?</strong>\\(</p>\\)?"
   (when (search-forward "<h4 id=\"h-linked\">Linked</h4>" nil t)
     (replace-match "<p><b>Linked</b><br>")
     (let ((p1 (match-end 0))
-	  (p2 (progn
-		(search-forward "<h4" nil t)
-		(match-beginning 0))))
-      (goto-char p1)
-      (while (re-search-forward "^\t</a>" p2 t)
-	(replace-match  ""))
-      (goto-char p1)
-      (while (re-search-forward "</a>" p2 t)
-	(replace-match "</a><br>"))
-      (goto-char p1)
-      (while (re-search-forward "</div>" p2 t)
-	(replace-match " "))
+	  p2)
+      (dolist (strs '(("^\t</a>"  "")
+                      ("</a>"     "</a><br>")
+                      ("</div>"   " ")))
+        (goto-char p1)
+        (when (setq p2 (when (search-forward "<h4" nil t)
+                         (match-beginning 0)))
+          (goto-char p1)
+          (while (re-search-forward (car strs) p2 t)
+            (replace-match (cadr strs))))))
       (w3m-filter-delete-regions
        url
        "<div class=\"spacer\">"
        "<div class=\"answer-votes answered-accepted [^>]+>"
-       nil nil t)))
+       nil nil t))
 
   (goto-char (point-min))
   (when (search-forward "<table id=\"qinfo\">" nil t)
