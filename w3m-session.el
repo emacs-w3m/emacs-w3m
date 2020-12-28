@@ -509,6 +509,7 @@ buffer's url history."
 	   buffer-read-only nil
 	   major-mode 'w3m-session-select-mode
 	   w3m-session-select-sessions sessions
+           buffer-quit-function 'w3m-session-select-quit
 	   buffer-read-only t)
      (setq w3m-session-group-open nil)
      (use-local-map w3m-session-select-mode-map)
