@@ -1,6 +1,6 @@
 ;;; w3m.el --- an Emacs interface to w3m -*- lexical-binding: t -*-
 
-;; Copyright (C) 2000-2020 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000-2021 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -11354,7 +11354,7 @@ The following command keys are available:
 	mode-name "w3m buffers"
 	truncate-lines t
 	buffer-read-only t
-        buffer-quit-function 'w3m-select-buffer-quit)
+	buffer-quit-function 'w3m-select-buffer-quit)
   (use-local-map w3m-select-buffer-mode-map)
   (run-mode-hooks 'w3m-select-buffer-mode-hook))
 

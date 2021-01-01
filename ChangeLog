@@ -1,9 +1,8 @@
 2020-12-28  Boruch Baum  <boruch_baum@gmx.com>
 
-	* w3m.el (w3m-select-buffer-mode): Set variable buffer-quit-function.
-
+	* w3m.el (w3m-select-buffer-mode):
 	* w3m-session.el (w3m-session-select-mode): Set variable
-	buffer-quit-function.
+	buffer-quit-function (PR#88).
 
 2020-12-22  Boruch Baum  <boruch_baum@gmx.com>
 
