@@ -9254,7 +9254,9 @@ To permanently modify the setting, modify variable
   "Scroll the current window up ARG lines.
 When called interactively, ARG defaults to 1."
   (interactive (list current-prefix-arg t))
-  (scroll-up (or arg (and interactive-p 1))))
+  (if (pos-visible-in-window-p (point-max))
+    (forward-line (or arg (and interactive-p 1)))
+   (scroll-up (or arg (and interactive-p 1)))))
 
 (defun w3m-scroll-up-or-next-url (&optional arg)
   "Scroll the current window up ARG lines, or go to the next page.
@@ -9280,7 +9282,10 @@ PREFIX-ARG."
              (forward-line 1)
              (prog1 (point)
                     (goto-char cur)))))
-     (w3m-scroll-up w3m-scroll-interval))
+     (w3m-scroll-up w3m-scroll-interval)
+     ;; Ensure end of page is always at bottom of window
+     (while  (pos-visible-in-window-p (point-max))
+         (w3m-scroll-down 1)))
    (w3m-next-url ; the page parser found a 'next' url
      (let ((w3m-prefer-cache t))
        (w3m-history-store-position)
