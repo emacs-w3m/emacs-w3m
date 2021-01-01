@@ -11353,7 +11353,8 @@ The following command keys are available:
   (setq major-mode 'w3m-select-buffer-mode
 	mode-name "w3m buffers"
 	truncate-lines t
-	buffer-read-only t)
+	buffer-read-only t
+        buffer-quit-function 'w3m-select-buffer-quit)
   (use-local-map w3m-select-buffer-mode-map)
   (run-mode-hooks 'w3m-select-buffer-mode-hook))
 
