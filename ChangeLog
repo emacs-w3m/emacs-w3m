@@ -1,6 +1,10 @@
 2021-01-03  Boruch Baum  <boruch_baum@gmx.com>
 
-	* w3m-hist.el (w3m-history-push): Don't put history pages in the history.
+	* w3m.el (w3m-view-previous-page): When currently in an "about://" url,
+	return to the calling url (PR#89 for upstream).
+
+	* w3m-hist.el (w3m-history-push): Don't put "about://" pages in the
+	history (PR#89 for upstream).
 
 2020-12-31  Boruch Baum  <boruch_baum@gmx.com>
 

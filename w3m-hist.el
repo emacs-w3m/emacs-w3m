@@ -475,7 +475,7 @@ The case where `w3m-history-reuse-history-elements' is non-nil:
 If REPLACE is nil, NEWPROPS is merged into properties of the current
 history element.  Otherwise, properties of the current history element
 are replaced with NEWPROPS."
-  (unless (equal url "about://history/")
+  (unless (string-match "^about://" url)
     (let ((element (w3m-history-seek-element url newprops replace))
           position class number branch)
       (if element
@@ -496,7 +496,6 @@ are replaced with NEWPROPS."
         ;; visiting a page when moving back, moving forward or jumping from
         ;; the about://history/ page.
         (w3m-history-set-current position))
-
        (t
         ;; Sprout a new history element.
         (setq position (copy-sequence (cadar w3m-history))
