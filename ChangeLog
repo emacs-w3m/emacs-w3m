@@ -1,3 +1,24 @@
+2021-01-03  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-hist.el (w3m-history-push): Don't put history pages in the history.
+
+2020-12-31  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-scroll-up-or-next-url, w3m-scroll-up): Ensure end of page
+	remains at bottom of window.
+
+2020-12-28  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-select-buffer-mode): Set variable buffer-quit-function.
+
+	* w3m-session.el (w3m-session-select-mode): Set variable
+	buffer-quit-function.
+
+2020-12-23  Boruch Baum  <boruch_baum@gmx.com>
+
+        * w3m.el (w3m--retrieve-1--handler-function): Fix Debian bug 933371 for
+	url queries.
+
 2020-12-22  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-filter.el (w3m-filter-stackexchange): Update filter and correct
