@@ -7056,7 +7056,7 @@ previous page."
 	 ((caar hist)
 	  (let ((w3m-prefer-cache t))
 	    ;; Save last position.
-	    (w3m-history-store-position)
+	    (or no-store-pos (w3m-history-store-position))
 	    (w3m-goto-url (caar hist) nil nil
 			  (w3m-history-plist-get :post-data)
 			  (w3m-history-plist-get :referer)
