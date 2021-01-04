@@ -5853,7 +5853,7 @@ NO-CACHE is ignored (always download)."
 	      (if (string-match "\\`[^\n\t :]+:/+" url)
 		  (substring url (match-end 0))
 		url)
-              w3m-default-save-directory))
+	      w3m-default-save-directory))
 	    file-name-history))
 	  dir)
       (when (string-match "\\`[\t ]*\\'" basename)
@@ -7029,55 +7029,55 @@ previous page."
     ;; This page may have not been registered in the history since an
     ;; accident has probably occurred, so we should skip the page.
     (if (integerp count)
-        (when (> count 0)
-          (cl-decf count))
+	(when (> count 0)
+	  (cl-decf count))
       (setq count 0)))
   (let ((index (car w3m-name-anchor-from-hist))
-        pos)
+	pos)
     (if (and (integerp count)
-             (integerp index)
-             (< 0 (setq index (+ index count)))
-             (setq pos (nth index w3m-name-anchor-from-hist)))
-        (progn
-          (when (and (= (point) pos)
-                     (nth (1+ index) w3m-name-anchor-from-hist))
-            (setq index (1+ index)))
-          (goto-char (nth index w3m-name-anchor-from-hist))
-          (setcar w3m-name-anchor-from-hist index)
-          ;; Restore last position.
-          (w3m-history-restore-position))
+	     (integerp index)
+	     (< 0 (setq index (+ index count)))
+	     (setq pos (nth index w3m-name-anchor-from-hist)))
+	(progn
+	  (when (and (= (point) pos)
+		     (nth (1+ index) w3m-name-anchor-from-hist))
+	    (setq index (1+ index)))
+	  (goto-char (nth index w3m-name-anchor-from-hist))
+	  (setcar w3m-name-anchor-from-hist index)
+	  ;; Restore last position.
+	  (w3m-history-restore-position))
       (let ((hist ;; Cons of a new history element and position pointers.
-             (if (integerp count)
-                 (w3m-history-backward count)
-               (w3m-history-backward)))
-            ;; Inhibit sprouting of a new history.
-            (w3m-history-reuse-history-elements t))
-        (cond
-         ((caar hist)
-           (let ((w3m-prefer-cache t))
-             ;; Save last position.
-             (w3m-history-store-position)
-             (w3m-goto-url (caar hist) nil nil
-                    (w3m-history-plist-get :post-data)
-                    (w3m-history-plist-get :referer)
-                    nil
-                    (w3m-history-element (caddr hist) t))
-             ;; Set the position pointers in the history.
-             (setcar w3m-history (cdr hist))
-             ;; Restore last position.
-             (w3m-history-restore-position)))
-         ((and (equal w3m-current-url "about://cookie/")
-               (> (length (w3m-list-buffers t)) 1))
-           (w3m-delete-buffer))
-         ((string-match "^about://" w3m-current-url)
-           (setq hist (w3m-history-backward 0))
-           (w3m-goto-url (caar hist) nil nil
-                         (w3m-history-plist-get :post-data)
-                         (w3m-history-plist-get :referer)
-                         nil
-                         (w3m-history-element (caddr hist) t)))
-         (t
-           (w3m-message "There's no more history")))))))
+	     (if (integerp count)
+		 (w3m-history-backward count)
+	       (w3m-history-backward)))
+	    ;; Inhibit sprouting of a new history.
+	    (w3m-history-reuse-history-elements t))
+	(cond
+	 ((caar hist)
+	  (let ((w3m-prefer-cache t))
+	    ;; Save last position.
+	    (w3m-history-store-position)
+	    (w3m-goto-url (caar hist) nil nil
+			  (w3m-history-plist-get :post-data)
+			  (w3m-history-plist-get :referer)
+			  nil
+			  (w3m-history-element (caddr hist) t))
+	    ;; Set the position pointers in the history.
+	    (setcar w3m-history (cdr hist))
+	    ;; Restore last position.
+	    (w3m-history-restore-position)))
+	 ((and (equal w3m-current-url "about://cookie/")
+	       (> (length (w3m-list-buffers t)) 1))
+	  (w3m-delete-buffer))
+	 ((string-match "^about://" w3m-current-url)
+	  (setq hist (w3m-history-backward 0))
+	  (w3m-goto-url (caar hist) nil nil
+			(w3m-history-plist-get :post-data)
+			(w3m-history-plist-get :referer)
+			nil
+			(w3m-history-element (caddr hist) t)))
+	 (t
+	  (w3m-message "There's no more history")))))))
 
 (defun w3m-view-next-page (&optional count)
   "Move forward COUNT pages in history.
