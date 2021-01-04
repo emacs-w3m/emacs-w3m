@@ -475,51 +475,51 @@ The case where `w3m-history-reuse-history-elements' is non-nil:
 If REPLACE is nil, NEWPROPS is merged into properties of the current
 history element.  Otherwise, properties of the current history element
 are replaced with NEWPROPS."
-  (let ((element (w3m-history-seek-element url newprops replace))
-	position class number branch)
-    (if element
-	(setcdr (cdr element) nil)
-      (setq element (list url (w3m-history-modify-properties newprops nil))))
-    (cond
-     ((null w3m-history)
-      ;; The dawn of the history.
-      (setq position (list nil (list 0) nil)
-	    w3m-history (list position element)
-	    w3m-history-flat (list (append element (list (list 0)))))
-      position)
+  (unless (string-match "^about://" url)
+    (let ((element (w3m-history-seek-element url newprops replace))
+          position class number branch)
+      (if element
+          (setcdr (cdr element) nil)
+        (setq element (list url (w3m-history-modify-properties newprops nil))))
+      (cond
+       ((null w3m-history)
+        ;; The dawn of the history.
+        (setq position (list nil (list 0) nil)
+              w3m-history (list position element)
+              w3m-history-flat (list (append element (list (list 0)))))
+        position)
 
-     ((and w3m-history-reuse-history-elements
-	   (setq position (caddr (w3m-history-assoc url))))
-      ;; Reuse the existing history element assigned to the current one.
-      ;; The position pointers will be fixed with correct values after
-      ;; visiting a page when moving back, moving forward or jumping from
-      ;; the about://history/ page.
-      (w3m-history-set-current position))
-
-     (t
-      ;; Sprout a new history element.
-      (setq position (copy-sequence (cadar w3m-history))
-	    class (1- (length position))
-	    number 0
-	    branch (nthcdr (car position) (cdr w3m-history)))
-      (while (> class number)
-	(setq number (1+ number)
-	      branch (nth (nth number position) (cddar branch))
-	      number (1+ number)
-	      branch (nthcdr (nth number position) branch)))
-      (if (cdr branch)
-	  ;; We should sprout a new branch.
-	  (progn
-	    (setq number (1- (length (car branch))))
-	    (setcdr (nthcdr class position) (list (1- number) 0))
-	    (setcdr (nthcdr number (car branch)) (list (list element))))
-	;; The current position is the last of the branch.
-	(setcar (nthcdr class position)
-		(1+ (car (nthcdr class position))))
-	(setcdr branch (list element)))
-      (setq w3m-history-flat (nconc w3m-history-flat
-				    (list (append element (list position)))))
-      (setcar w3m-history (list (cadar w3m-history) position nil))))))
+       ((and w3m-history-reuse-history-elements
+             (setq position (caddr (w3m-history-assoc url))))
+        ;; Reuse the existing history element assigned to the current one.
+        ;; The position pointers will be fixed with correct values after
+        ;; visiting a page when moving back, moving forward or jumping from
+        ;; the about://history/ page.
+        (w3m-history-set-current position))
+       (t
+        ;; Sprout a new history element.
+        (setq position (copy-sequence (cadar w3m-history))
+              class (1- (length position))
+              number 0
+              branch (nthcdr (car position) (cdr w3m-history)))
+        (while (> class number)
+          (setq number (1+ number)
+                branch (nth (nth number position) (cddar branch))
+                number (1+ number)
+                branch (nthcdr (nth number position) branch)))
+        (if (cdr branch)
+            ;; We should sprout a new branch.
+            (progn
+              (setq number (1- (length (car branch))))
+              (setcdr (nthcdr class position) (list (1- number) 0))
+              (setcdr (nthcdr number (car branch)) (list (list element))))
+          ;; The current position is the last of the branch.
+          (setcar (nthcdr class position)
+          	(1+ (car (nthcdr class position))))
+          (setcdr branch (list element)))
+        (setq w3m-history-flat (nconc w3m-history-flat
+          			    (list (append element (list position)))))
+        (setcar w3m-history (list (cadar w3m-history) position nil)))))))
 
 (defun w3m-history-copy (buffer)
   "Copy the history structure from BUFFER to the current buffer.
