@@ -5892,6 +5892,9 @@ NO-CACHE is ignored (always download)."
 			   ,@w3m-command-arguments
 			   ,@(w3m-w3m-expand-arguments
 			      w3m-dump-head-source-command-arguments)
+			   ;; Enable w3m to download any kinds of contents.
+			   ,@(unless (eq w3m-type 'w3mmee)
+			       '("-o" "accept_media=*/*"))
 			   ,url)
 			 " ")
 			;; awk should be GNU awk that supports BINMODE and RT.
