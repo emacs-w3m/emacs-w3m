@@ -1,7 +1,7 @@
 2020-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-download): Add option to w3m so to work for downloading
-	any kinds of ontents ([emacs-w3m:13731]).  Thanks to Kinoshita-san.
+	any kinds of contents ([emacs-w3m:13731]).  Thanks to Kinoshita-san.
 
 2021-01-03  Boruch Baum  <boruch_baum@gmx.com>
 
