@@ -3802,21 +3802,20 @@ END if it is non-nil even if the boundary is not found."
 	 (or (and img (< img nd) img)
 	     (next-single-property-change st 'w3m-image nil nd)))
     `(let ((st ,start))
-       (or (next-single-property-change st 'w3m-image-hseq)
-	   (next-single-property-change st 'w3m-image)))))
+       (unless (= st (point-max))
+	 (or (next-single-property-change st 'w3m-image-hseq)
+	     (next-single-property-change st 'w3m-image)
+	     (and (or (w3m-image st) (w3m-image (1+ st)))
+		  (point-max)))))))
 
 (defsubst w3m-search-for-previous-image-boundary (start)
   "Search for the image boundary backward from START.
 Return the point or nil if not found."
   (unless (= start (point-min))
-    (if ;; is the point not just the boundary?
-	(let ((img (get-text-property start 'w3m-image-hseq)))
-	  (and (equal img (get-text-property (1- start) 'w3m-image-hseq))
-	       (or img (equal (get-text-property start 'w3m-image)
-			      (get-text-property (1- start) 'w3m-image)))))
-	(or (previous-single-property-change start 'w3m-image-hseq)
-	    (previous-single-property-change start 'w3m-image))
-      start)))
+    (or (previous-single-property-change start 'w3m-image-hseq)
+	(previous-single-property-change start 'w3m-image)
+	(and (or (w3m-image start) (w3m-image (1- start)))
+	     (point-min)))))
 
 (defvar w3m-image-no-idle-timer nil)
 (defun w3m-toggle-inline-images-internal (status
@@ -7971,11 +7970,13 @@ Return t if highlighting is successful."
   (when (w3m-image (point))
     (goto-char (w3m-search-for-next-image-boundary (point))))
   ;; Find the next image.
-  (or (w3m-image (point))
-      (let ((pos (w3m-search-for-next-image-boundary (point))))
-	(when pos
+  (let ((pos (w3m-search-for-next-image-boundary (point))))
+    (when pos
+      (if (w3m-image pos)
 	  (goto-char pos)
-	  t))))
+	(when (and (setq pos (w3m-search-for-next-image-boundary pos))
+		   (w3m-image pos))
+	  (goto-char pos))))))
 
 (defun w3m-next-image (&optional arg)
   "Move the point to the next image."
@@ -7987,7 +7988,8 @@ Return t if highlighting is successful."
       (unless (w3m-goto-next-image)
 	;; Make a search for an image from the beginning of the buffer.
 	(goto-char (point-min))
-	(w3m-goto-next-image))
+	(unless (w3m-image (point))
+	  (w3m-goto-next-image)))
       (setq arg (1- arg)))
     (w3m-print-this-url)))
 
@@ -7998,10 +8000,12 @@ Return t if highlighting is successful."
     (goto-char (w3m-search-for-previous-image-boundary (1+ (point)))))
   ;; Find the previous image.
   (let ((pos (w3m-search-for-previous-image-boundary (point))))
-    (if pos
-	(goto-char
-	 (if (w3m-image pos) pos
-	   (w3m-search-for-previous-image-boundary pos))))))
+    (when pos
+      (if (w3m-image pos)
+	  (goto-char pos)
+	(when (and (setq pos (w3m-search-for-previous-image-boundary pos))
+		   (w3m-image pos))
+	  (goto-char pos))))))
 
 (defun w3m-previous-image (&optional arg)
   "Move the point to the previous image."

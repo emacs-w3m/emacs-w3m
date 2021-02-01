@@ -1,3 +1,15 @@
+2020-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Bugfix 'w3m-previous-image doesn't work' ([emacs-w3m:13747])
+
+	* w3m.el (w3m-search-for-next-image-boundary)
+	(w3m-search-for-previous-image-boundary): Make it work for an image
+	on the bottom edge or the top edge of the page.
+	(w3m-goto-next-image): Refactor.
+	(w3m-next-image): Don't miss an image on the top edge of the page.
+	(w3m-goto-previous-image): Make sure an image exists at the position to
+	go to.
+
 2020-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-download): Add option to w3m so to work for downloading
