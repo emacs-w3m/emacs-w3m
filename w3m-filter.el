@@ -1,6 +1,6 @@
 ;;; w3m-filter.el --- filtering utility of advertisements on WEB sites
 
-;; Copyright (C) 2001-2008, 2012-2015, 2017-2020
+;; Copyright (C) 2001-2008, 2012-2015, 2017-2021
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
