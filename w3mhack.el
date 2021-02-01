@@ -528,6 +528,16 @@ otherwise, insert URL-TITLE followed by URL in parentheses."
 	  (setq generated-autoload-load-name
 		(file-name-sans-extension (file-name-nondirectory file)))
 	  (autoload-generate-file-autoloads file (current-buffer)))
+	(when (boundp 'byte-compile-docstring-max-column) ;; Emacs >= 28
+	  ;; Fold long `\(fn ARGS...)' lines.
+	  (let* ((col (max byte-compile-docstring-max-column fill-column))
+		 (regexp (concat "^\\\\?(fn [^\"]\\{" (int-to-string (- col 4))
+				 ",\\}\""))
+		 (fill-column col)
+		 (fill-prefix " "))
+	    (goto-char (point-min))
+	    (while (re-search-forward regexp nil t)
+	      (fill-region (match-beginning 0) (1- (match-end 0))))))
 	(goto-char (point-min))
 	(insert ";;; " w3mhack-load-file
 		" --- automatically extracted autoload\n;;

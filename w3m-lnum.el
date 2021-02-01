@@ -876,10 +876,10 @@ Function has to take one argument that is selection info."
 
 ;;;###autoload
 (defun w3m-lnum-universal ()
-  "Turn on link numbers, ask for one and offer actions over it \
-depending on selection type.
-Actions may be selected either by hitting corresponding key,
-pressing <return> over the action line or left clicking."
+  "Turn on link numbers, ask for one and offer actions over it.
+It will be done depending on the selection type.  Actions may be
+selected either by hitting corresponding key, pressing <return> over
+the action line or left clicking."
   (interactive)
   (let ((filter "")
 	(label w3m-current-url)

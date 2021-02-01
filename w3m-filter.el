@@ -325,10 +325,9 @@ This variable is semi-obsolete; use `w3m-filter-configuration' instead."
 
 ;;;###autoload
 (defun w3m-toggle-filtering (arg)
-  "Toggle whether web pages will have their html modified by w3m's \
-filters before being rendered.
-When called with a prefix argument, prompt for a single filter to
-toggle with completion (a function toggled last will first appear)."
+  "Toggle whether to modify html source by the filters before rendering.
+With prefix arg, prompt for a single filter to toggle (a function
+toggled last will first appear) with completion."
   (interactive "P")
   (if (not arg)
       ;; toggle state for all filters

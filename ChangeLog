@@ -1,5 +1,14 @@
 2020-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	Docfix so not to be wider than 80 chars
+
+	* w3m-filter.el (w3m-toggle-filtering):
+	* w3m-lnum.el (w3m-lnum-universal): Docfix.
+
+	* w3mhack.el (w3mhack-generate-load-file): Fold long `\(fn ' lines.
+
+2020-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	Bugfix 'w3m-previous-image doesn't work' ([emacs-w3m:13747])
 
 	* w3m.el (w3m-search-for-next-image-boundary)

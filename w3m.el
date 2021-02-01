@@ -195,9 +195,7 @@ See also `w3m-use-tab'."
   (autoload 'w3m-form-make-form-data "w3m-form")
   (autoload 'w3m-filter "w3m-filter")
   (autoload 'w3m-toggle-filtering "w3m-filter"
-    "Toggle whether web pages will have their html modified by w3m's \
-filters before being rendered."
-    t)
+    "Toggle whether to modify html source by the filters before rendering." t)
   (autoload 'w3m-setup-tab-menu "w3m-tabmenu")
   (autoload 'w3m-setup-bookmark-menu "w3m-bookmark")
   (autoload 'w3m-switch-buffer "w3m-tabmenu")
