@@ -1,4 +1,4 @@
-2020-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+2021-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Docfix so not to be wider than 80 chars
 
@@ -7,7 +7,7 @@
 
 	* w3mhack.el (w3mhack-generate-load-file): Fold long `\(fn ' lines.
 
-2020-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+2021-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Bugfix 'w3m-previous-image doesn't work' ([emacs-w3m:13747])
 
@@ -19,7 +19,7 @@
 	(w3m-goto-previous-image): Make sure an image exists at the position to
 	go to.
 
-2020-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+2021-01-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-download): Add option to w3m so to work for downloading
 	any kinds of contents ([emacs-w3m:13731]).  Thanks to Kinoshita-san.
