@@ -1766,7 +1766,7 @@ faster."
 	  (delete-char 1)
 	  (insert "＆")))))
   (if (or (and (fboundp 'libxml-available-p) (libxml-available-p))
-	  ;; Emacs <=26
+	  ;; Emacs >=26
 	  (fboundp 'libxml-parse-xml-region))
       (save-excursion
 	(goto-char (point-min))
