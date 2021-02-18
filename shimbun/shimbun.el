@@ -1765,9 +1765,8 @@ faster."
 		   (not (looking-at xml-entity-or-char-ref-re)))
 	  (delete-char 1)
 	  (insert "＆")))))
-  (if (or (and (fboundp 'libxml-available-p) (libxml-available-p))
-	  ;; Emacs >=26
-	  (fboundp 'libxml-parse-xml-region))
+  (if (or (and (fboundp 'libxml-available-p) (libxml-available-p)) ;; Emacs >=27
+	  (fboundp 'libxml-parse-xml-region)) ;; Emacs <= 26
       (save-excursion
 	(goto-char (point-min))
 	(let ((xml (when (search-forward "<" nil t)
