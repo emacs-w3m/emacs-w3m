@@ -1,3 +1,10 @@
+2021-02-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make text-scale-adjust work
+
+	* w3m.el (w3m-with-text-scale-mode): Fix way to refer remapped face.
+	Reported by Dan Jacobson.
+
 2021-02-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Docfix so not to be wider than 80 chars

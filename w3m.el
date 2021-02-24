@@ -6492,7 +6492,6 @@ If so return \"text/html\", otherwise \"text/plain\"."
       "text/plain")))
 
 (defvar text-scale-mode)
-(defvar text-scale-mode-remapping)
 
 (defmacro w3m-with-text-scale-mode (page-buffer &rest body)
   "Scale display sizes based upon faces remapped by `text-scale-mode'.
@@ -6503,7 +6502,8 @@ while running BODY."
 		  (and (boundp 'text-scale-mode)
 		       text-scale-mode
 		       (ignore-errors
-			 (cadr (memq :height text-scale-mode-remapping))))))
+			 (cadr (assq :height
+				     (assq 'default face-remapping-alist)))))))
 	 fns def)
      (when (and (numberp scale) (> scale 0))
        (dolist (fn '(frame-char-height frame-char-width))
