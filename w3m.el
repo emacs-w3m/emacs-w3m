@@ -8699,7 +8699,8 @@ See also `w3m-quit'."
 	 (define-key map (vector (append mods (list key)))
 	   (lambda () (interactive) (w3m-text-scale-adjust (abs inc))))))
      map))
-  (w3m-redisplay-this-page))
+  (let ((inhibit-redisplay t)) ;; Don't show a halfway of redisplay.
+    (w3m-redisplay-this-page)))
 
 (defun w3m-mouse-major-mode-menu (event)
   "Pop up a W3M mode-specific menu of mouse commands."

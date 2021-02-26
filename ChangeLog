@@ -1,3 +1,9 @@
+2021-02-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Don't show a backstage while performing `text-scale-adjust'
+
+	* w3m.el (w3m-text-scale-adjust): Don't show a halfway of redisplay.
+
 2021-02-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make text-scale-adjust work
