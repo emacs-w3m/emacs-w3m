@@ -1,6 +1,6 @@
 ;;; mew-w3m.el --- View Text/Html content with w3m in Mew -*- lexical-binding: t -*-
 
-;; Copyright (C) 2001-2006, 2008-2010, 2019
+;; Copyright (C) 2001-2006, 2008-2010, 2019, 2021
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Shun-ichi GOTO  <gotoh@taiyo.co.jp>,
@@ -367,7 +367,7 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
 
 (defun mew-w3m-ext-url-fetch (_dummy url)
   (let ((name (file-name-nondirectory url))
-	handler)
+	(handler nil))
     (w3m-process-do
 	(success (prog1
 		     (w3m-download url nil nil handler)

@@ -1,3 +1,11 @@
+2021-03-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Silence the byte compiler on Emacs 28
+
+	* mew-w3m.el (mew-w3m-ext-url-fetch):
+	* w3m-proc.el (w3m-process-with-null-handler):
+	Init let-bound var `handler' to nil explicitly.
+
 2021-02-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Don't show a backstage while performing `text-scale-adjust'
