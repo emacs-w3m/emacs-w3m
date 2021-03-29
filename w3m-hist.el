@@ -587,22 +587,17 @@ added to the global properties instead."
 	     newprops))
     (let ((element (w3m-history-element (cadar w3m-history) t))
 	  properties)
-      (if element
-	  (progn
-	    (setq properties (cdddr element)
-		  properties
-		  (if properties
-		      (w3m-history-modify-properties properties newprops)
-		    ;; Use `w3m-history-modify-properties' to remove
-		    ;; keyword-value pairs whose value is nil.
-		    (w3m-history-modify-properties newprops nil)))
-	    (unless (car properties) ;; check whether it is `(nil nil)'.
-	      (setq properties nil))
-	    (setcdr (cddr element) properties))
-	(message "\
-Warning: the history database in this session seems corrupted.")
-	(sit-for 1)
-	nil))))
+      (when element
+	(setq properties (cdddr element)
+	      properties (if properties
+			     (w3m-history-modify-properties properties
+							    newprops)
+			   ;; Use `w3m-history-modify-properties' to remove
+			   ;; keyword-value pairs whose value is nil.
+			   (w3m-history-modify-properties newprops nil)))
+	(unless (car properties) ;; check whether it is `(nil nil)'.
+	  (setq properties nil))
+	(setcdr (cddr element) properties)))))
 
 (defun w3m-history-plist-put (keyword value &optional not-buffer-local)
   "Put KEYWORD and VALUE into the current history element.

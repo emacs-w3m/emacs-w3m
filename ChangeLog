@@ -1,3 +1,9 @@
+2021-03-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Delete useless history warning
+
+	* w3m-hist.el (w3m-history-add-properties): Don't warn about null hist.
+
 2021-03-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Silence the byte compiler on Emacs 28
