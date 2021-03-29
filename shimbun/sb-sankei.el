@@ -1,6 +1,6 @@
 ;;; sb-sankei.el --- shimbun backend for the Sankei News
 
-;; Copyright (C) 2003-2011, 2013-2019 Katsumi Yamaoka
+;; Copyright (C) 2003-2011, 2013-2019, 2021 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -523,8 +523,9 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
 		(w3m-process-with-wait-handler
 		  (w3m-retrieve-and-render action t nil form nil handler)))
 	      (if (not (and w3m-current-url
-			    (string-match "\\`https://special.sankei.com/?\\'"
-					  w3m-current-url)))
+			    (string-match
+			     "\\`https://www.sankei.com/\\?[0-9]+\\'"
+			     w3m-current-url)))
 		  (when interactive-p (message "Failed to login"))
 		(when interactive-p (message "Logged in"))
 		(password-cache-add name password)
