@@ -4034,7 +4034,7 @@ even in new sessions if the `w3m-toggle-inline-images-permanently'
 variable is non-nil (default=t)."
   (interactive "P")
   (unless (display-images-p)
-    (error "Can't display images in this environment"))
+    (user-error "Can't display images in this environment"))
   (let ((status (cond ((eq force 'turnoff) t)
 		      (force nil)
 		      (t w3m-display-inline-images)))
@@ -6552,7 +6552,7 @@ while running BODY."
 
 (defsubst w3m-image-page-displayed-p ()
   (and w3m-current-url
-       (string-match "\\`image/" (w3m-content-type w3m-current-url))
+       (string-match "\\`image/" (or (w3m-content-type w3m-current-url) ""))
        (eq (get-text-property (point-min) 'w3m-image-status) 'on)))
 
 (defun w3m-create-image-page (url type _charset page-buffer)
@@ -7069,7 +7069,7 @@ previous page."
 	 ((and (equal w3m-current-url "about://cookie/")
 	       (> (length (w3m-list-buffers t)) 1))
 	  (w3m-delete-buffer))
-	 ((string-match "^about://" w3m-current-url)
+	 ((string-match "^about://" (or w3m-current-url ""))
 	  (setq hist (w3m-history-backward 0))
 	  (w3m-goto-url (caar hist) nil nil
 			(w3m-history-plist-get :post-data)
@@ -9646,6 +9646,7 @@ helpful message is presented and the operation is aborted."
 					    redisplay name reuse-history action
 					    orig history-position)
   (with-current-buffer w3m-current-buffer
+    (when w3m-current-url
     (setq w3m-current-process nil)
     (if (not action)
 	(w3m-history-push w3m-current-url
@@ -9744,7 +9745,7 @@ helpful message is presented and the operation is aborted."
     (when (or reload redisplay)
       (w3m-history-restore-position))
     (unless redisplay (w3m-set-buffer-unseen))
-    (w3m-refresh-at-time)))
+    (w3m-refresh-at-time))))
 
 (defun w3m--goto-url--valid-url (url reload charset post-data referer handler
 				     element background save-pos)
@@ -9756,7 +9757,7 @@ helpful message is presented and the operation is aborted."
     (w3m-popup-buffer (current-buffer)))
   (w3m-cancel-refresh-timer (current-buffer))
   (w3m--buffer-busy-error)
-  (w3m-process-stop (current-buffer))	; Stop all processes retrieving images.
+  (w3m-process-stop (current-buffer) 'kill)	; Stop all processes retrieving images.
   (w3m-idle-images-show-unqueue (current-buffer))
   ;; Store the current position in the history structure if SAVE-POS
   ;; is set or `w3m-goto-url' is called interactively.

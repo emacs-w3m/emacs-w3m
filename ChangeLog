@@ -1,3 +1,13 @@
+2021-04-08  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-proc.el (w3m-process-stop): Add optional arg to kill the current buffer.
+	* w3m.el (w3m--goto-url--valid-url): Use it.
+	(w3m-toggle-inline-images): Don't let user-error start a backtrace when
+	toggle-debug-on-error is set.
+	(w3m-image-page-displayed-p, w3m-view-previous-page)
+	(w3m--goto-url--handler-function): when w3m-current-url is NIL, don't
+	perform string operations on it.
+
 2021-03-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Delete useless history warning
