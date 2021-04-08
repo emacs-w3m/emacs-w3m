@@ -1,6 +1,10 @@
 2021-04-08  Boruch Baum  <boruch_baum@gmx.com>
 
-	* w3m-proc.el (w3m-process-stop): Add optional arg to kill the current buffer.
+	Fixes for w3m-current-url = NIL, loading images from ext program (PR#92)
+
+	* w3m-proc.el (w3m-process-stop):
+	Add optional arg to kill the current buffer.
+
 	* w3m.el (w3m--goto-url--valid-url): Use it.
 	(w3m-toggle-inline-images): Don't let user-error start a backtrace when
 	toggle-debug-on-error is set.
