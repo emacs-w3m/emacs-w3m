@@ -231,9 +231,10 @@ number of current working processes is less than `w3m-process-max'."
 	      (throw 'last nil)
 	    (w3m-process-start-process obj)))))))
 
-(defun w3m-process-stop (buffer)
-  "Remove handlers related to the buffer BUFFER, and stop processes
-which have no handler."
+(defun w3m-process-stop (buffer &optional kill)
+  "Remove handlers related to the buffer BUFFER, and stop
+processes which have no handler. When optional arg KILL is
+non-nil, kill the buffer BUFFER."
   (interactive (list (current-buffer)))
   (w3m-cancel-refresh-timer buffer)
   (setq w3m-process-queue
@@ -286,14 +287,16 @@ which have no handler."
 	(goto-char (point-min))
 	(if (re-search-forward "\n*\\( *\\)Reading [^\n]+\\(\\.\\.\\.\\)"
 			       nil t)
-	    (let ((inhibit-read-only t))
-	      (delete-region (match-beginning 2) (point-max))
-	      (insert "\n\n" (match-string 1) "Operation aborted by user.")
-	      (delete-region 1 (min 3 (match-beginning 1)))
-	      (set-buffer-modified-p nil)
-	      (setq w3m-current-url nil
-		    w3m-current-title nil))
-	  (goto-char pt)))))
+            (if kill
+              (kill-buffer buffer)
+             (let ((inhibit-read-only t))
+               (delete-region (match-beginning 2) (point-max))
+               (insert "\n\n" (match-string 1) "Operation aborted by user.")
+               (delete-region 1 (min 3 (match-beginning 1)))
+               (set-buffer-modified-p nil)
+               (setq w3m-current-url nil
+                     w3m-current-title nil)))
+          (goto-char pt)))))
   (w3m-force-window-update-later buffer))
 
 (defun w3m-process-shutdown ()
