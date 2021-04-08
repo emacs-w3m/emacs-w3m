@@ -8222,15 +8222,16 @@ it may be useless if the command is invoked for visiting a local file
 or a mail buffer.  This command will delete BUFFER if it is empty or
 there is only a progress message.  It also deletes windows and frames
 related to BUFFER."
-  (with-current-buffer buffer
-    (unless (or w3m-current-process
-		w3m-current-url
-		(not (or (zerop (buffer-size))
-			 (and (get-text-property (point-min)
-						 'w3m-progress-message)
-			      (get-text-property (1- (point-max))
-						 'w3m-progress-message)))))
-      (w3m-delete-buffer t))))
+  (when (buffer-live-p buffer)
+    (with-current-buffer buffer
+      (unless (or w3m-current-process
+                  w3m-current-url
+                  (not (or (zerop (buffer-size))
+                           (and (get-text-property (point-min)
+                                                   'w3m-progress-message)
+                                (get-text-property (1- (point-max))
+                                                   'w3m-progress-message)))))
+        (w3m-delete-buffer t)))))
 
 (defun w3m-pack-buffer-numbers ()
   "Renumber suffixes of names of emacs-w3m buffers.

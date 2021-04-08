@@ -7,6 +7,7 @@
 	(w3m-image-page-displayed-p, w3m-view-previous-page)
 	(w3m--goto-url--handler-function): when w3m-current-url is NIL, don't
 	perform string operations on it.
+	(w3m-delete-buffer-if-empty): Only operate on live buffers.
 
 2021-03-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
