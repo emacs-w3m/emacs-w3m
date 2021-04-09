@@ -9760,8 +9760,7 @@ helpful message is presented and the operation is aborted."
     (w3m-popup-buffer (current-buffer)))
   (w3m-cancel-refresh-timer (current-buffer))
   (w3m--buffer-busy-error)
-  (w3m-process-stop (current-buffer)
-		    'kill)		; Stop all processes retrieving images.
+  (w3m-process-stop (current-buffer))	; Stop all processes retrieving images.
   (w3m-idle-images-show-unqueue (current-buffer))
   ;; Store the current position in the history structure if SAVE-POS
   ;; is set or `w3m-goto-url' is called interactively.

@@ -1,3 +1,11 @@
+2021-04-09  Boruch Baum  <boruch_baum@gmx.com>
+
+	Revert last change that made `w3m-process-stop' do kill page buffer
+
+	* w3m-proc.el (w3m-process-stop): Revert.
+
+	* w3m.el (w3m--goto-url--valid-url): Revert.
+
 2021-04-08  Boruch Baum  <boruch_baum@gmx.com>
 
 	Fixes for w3m-current-url = NIL, loading images from ext program (PR#92)
