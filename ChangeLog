@@ -1,3 +1,26 @@
+2021-04-13  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el (w3m--download-queue-hardcoded-point-min): Eliminate
+	awful constant integer.
+	(w3m--download-queue-list-point-min): Replace with nice new variable.
+	(w3m-download-queue-previous-entry): Use it.
+	(w3m--download-update-statistics)
+	(w3m--download-update-faces-pre-command)
+	(w3m--download-update-faces-post-command): Use it.
+	(w3m--download-queue-buffer-header-string) Eliminate awful function.
+	(w3m--download-queue-buffer-header-string): Replace with nice constant
+	string.
+	(w3m-download-queue-mode): Use header-line-format to prettify buffer.
+	(w3m--download-update-display-queue-list)
+	(w3m--download-refresh-buffer): Attempt to fix bouncing cursor when
+	buffer is empty.
+	(w3m-download-queue-help): Use package key-assist to improve help feature.
+	(w3m-download-view-queue): Display queue buffer even when empty, and
+	don't display help lines in header.
+	(w3m-download-increase-simultaneous)
+	(w3m-download-decrease-simultaneous, w3m-download-buffer-quit): Minor
+	docstring improvements.
+
 2020-12-19  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-download.el (w3m--download-check-and-use-cache): Update for new

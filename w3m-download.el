@@ -1,6 +1,6 @@
 ;;; w3m-download.el --- download using emacs-w3m -*- coding: utf-8 ; lexical-binding: t -*-
 
-;; Copyright © 2019 Boruch Baum <boruch_baum@gmx.com>
+;; Copyright © 2019-2021 Boruch Baum <boruch_baum@gmx.com>
 
 ;; Authors:    Boruch Baum <boruch_baum@gmx.com>
 ;; Keywords:   w3m, WWW, hypermedia
@@ -112,6 +112,10 @@
 ;;   w3m-lnum.el   w3m-lnum-actions-image-alist
 ;;   w3m-lnum.el   w3m-lnum-save-image ()
 
+;;; Dependencies:
+
+;; w3m-util   ; for ??
+;; key-assist ; for key-assist
 
 
 ;;; Usage:
@@ -255,7 +259,8 @@
 ;;; Code:
 
 ;;; Dependencies:
-(require 'w3m-util)
+(require 'w3m-util)   ; for ??
+(require 'key-assist) ; for key-assist
 
 ;;; Temporary compatability operation(s):
 
@@ -287,10 +292,9 @@ These are:`w3m--download-queued', `w3m--download-running',
   "\\([0-9.]+%\\) of \\([^ ]+\\) at +\\([^ ]+\\) \\(.*\\)\n?$"
   "Parses four values from youtube-dl progress messages.")
 
-(defconst w3m--download-queue-hardcoded-point-min 767
-  "Uugh. A simple efficient awful kludge.
-Update this value whenever altering the dowload queue buffer's
-heading.")
+(defconst w3m--download-queue-buffer-header-string ">\n\n"
+  "The minimum value of the download queue buffer header.
+This will be augmented during run-time with the queue statistics data.")
 
 
 
@@ -716,6 +720,10 @@ buffer.")
 A text string. This variable is set buffer-local in the
   download's progress buffer.")
 
+(defvar-local w3m--download-queue-list-point-min 1
+  "Beginning of the dowload queue buffer's lists.
+The point after the summary line..")
+
 
 
 ;;; Hook functions:
@@ -764,6 +772,7 @@ Meant for use with `post-command-hook'."
           'face 'w3m-download-failed)
         (propertize (format " %d completed;" (length w3m--download-completed))
           'face 'w3m-download-completed)))
+      (setq w3m--download-queue-list-point-min (point))
       (put-text-property (point-min) (min (point-max) (+ 3 (point))) 'field t)
       (put-text-property (point-min) (min (point-max) (+ 3 (point))) 'front-sticky t)
       (put-text-property (point-min) (min (point-max) (+ 3 (point))) 'cursor-intangible t))
@@ -777,7 +786,7 @@ Meant for use with `pre-command-hook'."
                (line-beginning-position)
               (previous-single-property-change
                 (min (1+ (point)) (point-max))
-                'url nil w3m--download-queue-hardcoded-point-min)))
+                'url nil w3m--download-queue-list-point-min)))
         (end (if (eq major-mode 'w3m-download-select-mode)
                (line-end-position)
               (next-single-property-change (point) 'url nil (point-max))))
@@ -794,12 +803,13 @@ Meant for use with `post-command-hook'."
                (line-beginning-position)
               (previous-single-property-change
                 (min (1+ (point)) (point-max))
-                'url nil w3m--download-queue-hardcoded-point-min)))
+                'url nil w3m--download-queue-list-point-min)))
         (end (if (eq major-mode 'w3m-download-select-mode)
                (line-end-position)
               (next-single-property-change (point) 'url nil (point-max))))
         (inhibit-read-only t))
-    (unless (= (point) (point-max))
+    (unless (or (= (point) (point-max))
+                (>= beg end))
       (add-face-text-property beg end '(:weight bold)))
     (goto-char pos)))
 
@@ -857,14 +867,6 @@ docstring of `w3m-download-queue-mode'."
 (funcall zz 'w3m-download-refresh-buffer)" to set auto-refresh rate)
    " (funcall zz 'w3m-download-buffer-quit) "        Close this buffer (or just kill the buffer)")))
 
-(defun w3m--download-queue-buffer-header-string ()
-  "Return a list of current keybindings for `w3m-download-queue-mode-map'.
-This is displayed at the top of the buffer as cheat sheet.
-IMPORTANT: Keep this function's value synchronized with the
-docstring of `w3m-download-queue-mode'."
-  (concat " This buffer displays running, queued, paused, failed, and completed downloads.\n"
-          (w3m--download-queue-buffer-help-string) "\n\n>\n\n"))
-
 (defun w3m-download-queue-mode ()
   "Major mode for viewing and editing the `w3m-download' queue.
 
@@ -886,6 +888,7 @@ docstring of `w3m-download-queue-mode'."
   ; Note that this mode shares functions with `w3m-download-select-mode'.
   (setq
     mode-name "w3m download queue"
+    header-line-format "w3m download queue -- (running, queued, paused, failed, and completed)"
     truncate-lines t
     major-mode 'w3m-download-queue-mode
     buffer-read-only t
@@ -1071,25 +1074,28 @@ interpreted as a 0. This function is meant to be called by
 `w3m--download-refresh-buffer', `w3m-download-toggle-details',
 `w3m-download-toggle-all-details', and
 `w3m-download-toggle-pause'."
-  (goto-char (point-min))
-  (re-search-forward "^>" nil t)
-  (forward-line 2)
-  (delete-region (point) (point-max))
-  (w3m--download-display-queue-list)
-  (goto-char (point-min))
-  (cond
-   (url
-    (if (re-search-forward url nil t)
-      (forward-line 0)
-     (if current-line
-       (forward-line current-line)
-      (re-search-forward w3m--download-category-regex nil t))))
-   (current-line
-    (forward-line current-line))
-   (t
-    (re-search-forward w3m--download-category-regex nil t)))
-  (when (/= (point) (point-max))
-    (forward-char (or current-column 0))))
+  (let ((pos (point)))
+    (goto-char (point-min))
+    (if (not (re-search-forward "^>" nil t))
+      (error "Can't update w3m-download queue buffer")
+     (forward-line 2)
+     (delete-region (point) (point-max))
+     (w3m--download-display-queue-list)
+     (goto-char (point-min))
+     (cond
+      (url
+       (if (re-search-forward url nil t)
+         (forward-line 0)
+        (if current-line
+          (forward-line current-line)
+         (re-search-forward w3m--download-category-regex nil t))))
+      (current-line
+       (forward-line current-line))
+      (t
+       (re-search-forward w3m--download-category-regex nil t)))
+     (when (/= (point) (point-max))
+       (forward-char (or current-column 0))))
+    (goto-char pos)))
 
 (defun w3m--download-refresh-buffer ()
   "Refresh the `w3m-download-queue' buffer.
@@ -1104,11 +1110,11 @@ This function also saves the download lists to
    (if (not buf)
      (w3m--download-queue-buffer-kill)
     (save-match-data
-      (w3m--download-update-progress)
-      (w3m--download-save-lists)
       (with-current-buffer buf
         (setq pos (point))
         (setq mark (mark))
+        (w3m--download-update-progress)
+        (w3m--download-save-lists)
         (w3m--download-update-display-queue-list
           (get-text-property (point) 'url)
           (current-column)
@@ -1572,11 +1578,23 @@ See `w3m-download-ambiguous-basename-alist'."
 ;;; Interactive and user-facing functions:
 
 (defun w3m-download-queue-help ()
-  "Display help information for the w3m-download-queue buffer."
+  "Display helpful information and keybindings."
   (interactive)
   (when (eq major-mode 'w3m-download-queue-mode)
-    (let (message-log-max) ; disable message logging
-      (message (w3m--download-queue-buffer-help-string)))))
+    (let ((spec (list
+                  'w3m-download-increase-simultaneous
+                  'w3m-download-decrease-simultaneous
+                  'w3m-download-toggle-details
+                  'w3m-download-toggle-pause
+                  'w3m-download-queue-drop
+                  'w3m-download-queue-raise
+                  'w3m-download-queue-raise
+                  'w3m-download-queue-bottom
+                  'w3m-download-delete-line
+                  'w3m-download-refresh-buffer
+                  'w3m-download-buffer-quit
+                  )))
+      (key-assist spec nil t))))
 
 (defun w3m-download-queue-next-entry (&optional arg)
   "Advance point to beginning of next entry in the queue buffer.
@@ -1599,7 +1617,7 @@ With the prefix-ARG, advance that many entries."
   (interactive "p")
   (if (not (eq major-mode 'w3m-download-queue-mode))
     (w3m--download-msg--queue-only)
-   (let ((pos-min (+ 3 w3m--download-queue-hardcoded-point-min)))
+   (let ((pos-min (+ 3 w3m--download-queue-list-point-min)))
      (while (> arg 0)
        (when (= (point) pos-min)
          (goto-char (point-max)))
@@ -1775,7 +1793,7 @@ or failed, restart or continue it."
     (w3m--download-restore-point-sensibly state cur-col))))
 
 (defun w3m-download-refresh-buffer (&optional arg)
-  "Refresh the `w3m-download' buffer.
+  "Refresh the `w3m-download-queue' buffer.
 If ARG is non-nil, change the auto-refresh interval, using
 function `w3m-download-set-refresh-interval'."
   (interactive "P")
@@ -1787,27 +1805,27 @@ function `w3m-download-set-refresh-interval'."
 (defun w3m-download-view-queue ()
   "View the `w3m-download' queue and allow editing it."
   (interactive)
-  (if (and (not w3m--download-queued)
+  (when (and (not w3m--download-queued)
            (not w3m--download-running)
            (not w3m--download-paused)
            (not w3m--download-failed)
            (not w3m--download-completed))
-    (w3m--message t 'w3m-error "Download lists are empty. Nothing to display.")
-   (let* ((buf-string "*w3m-download-queue*")
-          (buf (get-buffer buf-string)))
-     (unless buf
-       (with-current-buffer
-         (setq buf (get-buffer-create buf-string))
-         (w3m-download-queue-mode)
-         (let ((inhibit-read-only t)
-               pos)
-           (erase-buffer)
-           (insert (propertize (w3m--download-queue-buffer-header-string)
-                      'cursor-intangible t 'field t 'front-sticky t))
-           (w3m--download-display-queue-list))
-         (goto-char (point-min))
-         (re-search-forward w3m--download-category-regex)))
-     (switch-to-buffer buf))))
+    (w3m--message t 'w3m-error "Download lists are empty. Nothing to display."))
+  (let* ((buf-string "*w3m-download-queue*")
+         (buf (get-buffer buf-string)))
+    (unless buf
+      (with-current-buffer
+        (setq buf (get-buffer-create buf-string))
+        (w3m-download-queue-mode)
+        (let ((inhibit-read-only t)
+              pos)
+          (erase-buffer)
+          (insert (propertize w3m--download-queue-buffer-header-string
+                     'cursor-intangible t 'field t 'front-sticky t))
+          (w3m--download-display-queue-list))
+        (goto-char (point-min))
+        (re-search-forward w3m--download-category-regex nil t)))
+    (switch-to-buffer buf)))
 
 (defun w3m-download-select-exec ()
   "Initiate a bulk download from the download-select buffer."
@@ -1823,14 +1841,15 @@ function `w3m-download-set-refresh-interval'."
    (kill-buffer (current-buffer))))
 
 (defun w3m-download-increase-simultaneous (&optional inc)
-  "Adjust variable `w3m-download-max-simultaneous'.
+  "Increase maximum number of simultaneous downloads.
 
 Increment by one, or by the predix argument INC, the maximum
 number of simultaneous w3m-downloads. A negative prefix argument
 would decrement the value, but you could just use the other
 function `w3m-download-decrease-simultaneous'. This variable and
 functiononly applies to downloads using `wget', not those using
-`w3m'."
+`w3m'. This function adjusts variable
+`w3m-download-max-simultaneous'."
   (interactive "p")
   (setq w3m-download-max-simultaneous
     (max 1 (+ w3m-download-max-simultaneous
@@ -1839,14 +1858,15 @@ functiononly applies to downloads using `wget', not those using
                     w3m-download-max-simultaneous))
 
 (defun w3m-download-decrease-simultaneous (&optional dec)
-  "Adjust variable `w3m-download-max-simultaneous'.
+  "Decrease maximum number of simultaneous downloads.
 
 Decrement by one, or by the predix argument DEC, the maximum
 number of simultaneous w3m-downloads. A negative prefix argument
 would increment the value, but you could just use the other
 function `w3m-download-increase-simultaneous'. This variable and
 functiononly applies to downloads using `wget', not those using
-`w3m'."
+`w3m'. This function adjusts variable
+`w3m-download-max-simultaneous'."
   (interactive "p")
   (setq w3m-download-max-simultaneous
     (max 1 (- w3m-download-max-simultaneous
@@ -1855,7 +1875,7 @@ functiononly applies to downloads using `wget', not those using
                     w3m-download-max-simultaneous))
 
 (defun w3m-download-buffer-quit ()
-  "Exit from a `w3m-download' buffer."
+  "Exit from a `w3m-download-queue' buffer."
   (interactive)
   (if (not (or (eq major-mode 'w3m-download-select-mode)
                (eq major-mode 'w3m-download-queue-mode)))
