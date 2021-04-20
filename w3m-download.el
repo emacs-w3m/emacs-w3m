@@ -336,6 +336,7 @@ These are:`w3m--download-queued', `w3m--download-running',
     (define-key map "\C-g"      'w3m-download-refresh-buffer)
     (define-key map "+"         'w3m-download-increase-simultaneous)
     (define-key map "-"         'w3m-download-decrease-simultaneous)
+    (define-key map "w"         'w3m-download-toggle-line-wrap)
     (define-key map "?"         'w3m-download-queue-help)
     (setq w3m-download-queue-mode-map map)))
 
@@ -870,6 +871,7 @@ docstring of `w3m-download-queue-mode'."
 \\[w3m-download-increase-simultaneous] / \\[w3m-download-decrease-simultaneous]  \
     Increase /Decrease numner of parallel downloads.
 \\[w3m-download-toggle-details]        Toggle a line's details (\\[w3m-download-toggle-all-details] for all lines)
+\\[w3m-download-toggle-line-wrap]          Toggle `visual-line-mode' for the buffer.
 \\[w3m-download-refresh-buffer]        Refresh (update) the buffer contents.
 \\[universal-argument] \\[w3m-download-refresh-buffer]\
     Change the buffer auto-refresh interval.
@@ -1576,6 +1578,7 @@ See `w3m-download-ambiguous-basename-alist'."
                   'w3m-download-decrease-simultaneous
                   'w3m-download-toggle-details
                   'w3m-download-toggle-pause
+                  'w3m-download-toggle-line-wrap
                   'w3m-download-queue-drop
                   'w3m-download-queue-raise
                   'w3m-download-queue-raise
@@ -1585,6 +1588,13 @@ See `w3m-download-ambiguous-basename-alist'."
                   'w3m-download-buffer-quit
                   )))
       (key-assist spec nil t)))))
+
+(defun w3m-download-toggle-line-wrap ()
+  "Toggle mode `visual-line-mode' for the download queue buffer."
+  (interactive)
+  (if (not (eq major-mode 'w3m-download-queue-mode))
+    (w3m--download-msg--queue-only)
+   (visual-line-mode 'toggle)))
 
 (defun w3m-download-queue-next-entry (&optional arg)
   "Advance point to beginning of next entry in the queue buffer.

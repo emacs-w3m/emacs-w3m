@@ -1,5 +1,12 @@
 2021-04-20  Boruch Baum  <boruch_baum@gmx.com>
 
+	* w3m-download.el (w3m-download-toggle-line-wrap): New function.
+	(w3m-download-queue-mode-map): Add it to keymap.
+	(w3m-download-queue-help): Add it to mode help.
+	(w3m-download-queue-mode): Add it to the mode docstring.
+
+2021-04-20  Boruch Baum  <boruch_baum@gmx.com>
+
 	* w3m-download.el (w3m--download-header-prefix)
 	(w3m--download-update-statistics)
 	(w3m-download-queue-mode): Replace summary statistics line with static
