@@ -1,5 +1,19 @@
 2021-04-20  Boruch Baum  <boruch_baum@gmx.com>
 
+	* w3m-download.el (w3m--download-header-prefix)
+	(w3m--download-update-statistics)
+	(w3m-download-queue-mode): Replace summary statistics line with static
+	header line.
+	(w3m--download-queue-buffer-header-string)
+	(w3m--download-buffer-sequence, w3m--download-queue-list-point-min)
+	(w3m--download-update-faces-pre-command)
+	(w3m--download-update-faces-post-command)
+	(w3m--download-update-display-queue-list)
+	(w3m-download-queue-previous-entry, w3m-download-view-queue): Remove
+	associated cruft.
+
+2021-04-20  Boruch Baum  <boruch_baum@gmx.com>
+
 	* w3m-download.el (key-assist): Add requirement.
 	(w3m-download-queue-help): Use it.
 
