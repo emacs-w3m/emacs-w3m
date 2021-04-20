@@ -1,3 +1,8 @@
+2021-04-20  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el (key-assist): Add requirement.
+	(w3m-download-queue-help): Use it.
+
 2021-04-13  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-download.el (w3m--download-queue-hardcoded-point-min): Eliminate

@@ -259,8 +259,8 @@
 ;;; Code:
 
 ;;; Dependencies:
-(require 'w3m-util)   ; for ??
-(require 'key-assist) ; for key-assist
+(require 'w3m-util)         ; for ??
+(require 'key-assist nil t) ; for key-assist
 
 ;;; Temporary compatability operation(s):
 
@@ -1581,6 +1581,8 @@ See `w3m-download-ambiguous-basename-alist'."
   "Display helpful information and keybindings."
   (interactive)
   (when (eq major-mode 'w3m-download-queue-mode)
+    (if (not (featurep 'key-assist))
+      (describe-mode)
     (let ((spec (list
                   'w3m-download-increase-simultaneous
                   'w3m-download-decrease-simultaneous
@@ -1594,7 +1596,7 @@ See `w3m-download-ambiguous-basename-alist'."
                   'w3m-download-refresh-buffer
                   'w3m-download-buffer-quit
                   )))
-      (key-assist spec nil t))))
+      (key-assist spec nil t)))))
 
 (defun w3m-download-queue-next-entry (&optional arg)
   "Advance point to beginning of next entry in the queue buffer.
