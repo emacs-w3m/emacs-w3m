@@ -7437,7 +7437,14 @@ No method to view `%s' is registered. Use `w3m-edit-this-url'"
 	       (command
 		(w3m-external-view-file command nil url arguments))
 	       (t
-		(w3m-download url nil no-cache handler)))))))))))
+		(w3m-download url nil no-cache handler)))))))))
+      (let ((pos (point)))
+        (goto-char (point-min))
+        (if (not (re-search-forward "\n+\\( *\\)Reading [^\n]+\n\n" nil t))
+          (goto-char pos)
+         (kill-buffer)
+         (keyboard-quit)))))
+
 
 (defun w3m-external-view-file (command file url arguments)
   ;; The values of the arguments `file' and `url' will substitute the
