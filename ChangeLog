@@ -1,5 +1,10 @@
 2021-04-21  Boruch Baum  <boruch_baum@gmx.com>
 
+	* w3m-download.el (w3m-download-delete-line): Add prefix arg option to
+	delete multiple lines
+
+2021-04-21  Boruch Baum  <boruch_baum@gmx.com>
+
 	* w3m-download.el (w3m--download-header-prefix): Remove constant.
 	(w3m--download-queue-header-prefix)
 	(w3m--download-select-header-prefix): Replacement constants.

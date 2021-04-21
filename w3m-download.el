@@ -1920,34 +1920,41 @@ functiononly applies to downloads using `wget', not those using
    (let ((kill-buffer-query-functions nil))
      (kill-buffer (current-buffer)))))
 
-(defun w3m-download-delete-line ()
+(defun w3m-download-delete-line (&optional num)
   "Delete the current URL entry.
-Used in `w3m-download-select' and `w3m-download-queue' buffers."
-  (interactive)
-  (cond
-   ((eq major-mode 'w3m-download-queue-mode)
-    (let ((inhibit-read-only t)
-          (kill-buffer-query-functions nil)
-          (cur-col (current-column))
-          (cur-lin (1- (string-to-number (format-mode-line "%l"))))
-          (url  (get-text-property (point) 'url))
-          (from (get-text-property (point) 'state)))
-     (when (eq from 'w3m--download-running)
-       (let ((elem (assoc url w3m--download-running)))
-         (when (and elem
-                    (< 8 (length elem))
-                    (buffer-live-p (nth 8 elem)))
-           (kill-buffer (nth 8 elem)))))
-     (w3m--download-xfer-entry url from nil)
-     (w3m--download-update-display-queue-list nil cur-col cur-lin)
-     (w3m--download-restore-point-sensibly from cur-col)))
-   ((eq major-mode 'w3m-download-select-mode)
-    (let ((inhibit-read-only t))
-     (delete-region
-       (line-beginning-position)
-       (line-beginning-position 2))))
-   (t
-    (w3m--download-msg--download-only))))
+Use optional prefix-argument NUM to delete multiple lines
+forward. This function is for use only in `w3m-download-select'
+and `w3m-download-queue' buffers."
+  (interactive "p")
+  (let ((pos (line-beginning-position))
+        (num (or num 1))
+        (x 0))
+  (while (< x num)
+    (cond
+     ((eq major-mode 'w3m-download-queue-mode)
+      (let ((inhibit-read-only t)
+            (kill-buffer-query-functions nil)
+            (cur-col (current-column))
+            (cur-lin (1- (string-to-number (format-mode-line "%l"))))
+            (url  (get-text-property (point) 'url))
+            (from (get-text-property (point) 'state)))
+       (when (eq from 'w3m--download-running)
+         (let ((elem (assoc url w3m--download-running)))
+           (when (and elem
+                      (< 8 (length elem))
+                      (buffer-live-p (nth 8 elem)))
+             (kill-buffer (nth 8 elem)))))
+       (w3m--download-xfer-entry url from nil)
+       (w3m--download-update-display-queue-list nil cur-col cur-lin)
+       (w3m--download-restore-point-sensibly from cur-col)))
+     ((eq major-mode 'w3m-download-select-mode)
+      (let ((inhibit-read-only t))
+       (delete-region
+         (line-beginning-position)
+         (line-beginning-position 2))))
+     (t
+      (w3m--download-msg--download-only)))
+    (setq x (if (< pos (point-max)) (1+ x) num)))))
 
 (defun w3m-download-select-toggle-line ()
   "Change selection status of the current URL entry.
