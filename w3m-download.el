@@ -120,6 +120,11 @@
 
 ;;; Usage:
 
+;; From anywhere within `emacs-w3m' you can get a combination context
+;; help and command launcher:
+;;
+;;     `w3m-download-help'
+;;
 ;; For downloading single items at point, there exist multiple
 ;; functions that seem redundant:
 ;;
@@ -277,9 +282,13 @@
 
 ;;; Global constants:
 
-(defconst w3m--download-header-prefix
+(defconst w3m--download-queue-header-prefix
   (concat (propertize "w3m download queue:" 'face 'underline) " ")
   "Beginning of download queue buffer's variable `header-line-format'.")
+
+(defconst w3m--download-select-header-prefix
+  (concat (propertize "w3m download select:" 'face 'underline) " ")
+  "Beginning of download select buffer's variable `header-line-format'.")
 
 (defconst w3m--download-mutex (make-mutex "w3m-download")
   "Control manipulation of download state lists.
@@ -313,6 +322,7 @@ These are:`w3m--download-queued', `w3m--download-running',
     (define-key map "\C-c\C-c"  'w3m-download-select-exec)
     (define-key map "+"         'w3m-download-increase-simultaneous)
     (define-key map "-"         'w3m-download-decrease-simultaneous)
+    (define-key map "?"         'w3m-download-help)
     (setq w3m-download-select-mode-map map)))
 
 (defvar w3m-download-queue-mode-map nil
@@ -337,7 +347,7 @@ These are:`w3m--download-queued', `w3m--download-running',
     (define-key map "+"         'w3m-download-increase-simultaneous)
     (define-key map "-"         'w3m-download-decrease-simultaneous)
     (define-key map "w"         'w3m-download-toggle-line-wrap)
-    (define-key map "?"         'w3m-download-queue-help)
+    (define-key map "?"         'w3m-download-help)
     (setq w3m-download-queue-mode-map map)))
 
 (defvar w3m--download-queued nil
@@ -645,7 +655,7 @@ just a buffer region; the HTML source for the entire buffer  will be searched."
 ;;; Faces:
 
 (defface w3m-download-selected
-  '((t :inherit 'w3m-session-select))
+  '((t :underline nil :inherit 'w3m-session-select))
   "Face of URL selected for download in w3m-download-select
 buffer."
   :group 'w3m)
@@ -672,7 +682,7 @@ buffer."
   :group 'w3m)
 
 (defface w3m-download-paused
-  '((t :weight normal :foreground "yellow"))
+  '((t :weight normal :underline nil :foreground "yellow"))
   "Face of failed downloads in w3m-download buffer."
 ; TODO: Make this more sophisticated to be consistent with other
 ; project faces, to account for light/dark themes and window-display-p
@@ -686,7 +696,7 @@ buffer."
   :group 'w3m)
 
 (defface w3m-download-completed
-  '((t :weight normal :foreground "blue"))
+  '((t :weight normal :underline nil :foreground "blue"))
   "Face of failed downloads in w3m-download buffer."
 ; TODO: Make this more sophisticated to be consistent with other
 ; project faces, to account for light/dark themes and window-display-p
@@ -749,12 +759,16 @@ Meant for use with `post-command-hook'."
     (when (eq major-mode 'w3m-download-select-mode)
       (goto-char (point-min))
       (while (re-search-forward "^\\[X" nil t)
-        (setq num-selected (1+ num-selected))))
+        (setq num-selected (1+ num-selected)))
+      (goto-char pos))
     (setq header-line-format
       (concat
-        w3m--download-header-prefix
         (if (eq major-mode 'w3m-download-select-mode)
-          (format "%d selected; " num-selected)
+          w3m--download-select-header-prefix
+         w3m--download-queue-header-prefix)
+        (if (eq major-mode 'w3m-download-select-mode)
+          (propertize (format "%d selected; " num-selected)
+                      'face 'w3m-download-selected)
          "")
         (propertize (format "%d/%d running/max;"
                       (length w3m--download-running)
@@ -767,8 +781,8 @@ Meant for use with `post-command-hook'."
         (propertize (format " %d failed;" (length w3m--download-failed))
           'face 'w3m-download-failed)
         (propertize (format " %d completed;" (length w3m--download-completed))
-          'face 'w3m-download-completed)))
-    (goto-char (min pos (point-max)))))
+          'face 'w3m-download-completed)))))
+
 
 (defun w3m--download-update-faces-pre-command ()
   "Hook function for `w3m-download-select' and `w3m-download-queue' buffers.
@@ -805,6 +819,7 @@ Meant for use with `post-command-hook'."
       (add-face-text-property beg end '(:weight bold)))
     (goto-char pos)))
 
+
 (defun w3m--download-queue-buffer-kill ()
   "Hook function to run when killing a w3m-download-queue buffer."
   ; intentionally redundant and unnecessary code, for safety
@@ -829,6 +844,7 @@ Meant for use with `post-command-hook'."
 \\{w3m-download-select-mode-map}\n\n"
   (setq
     mode-name "w3m download select"
+    header-line-format "w3m download select -- (selected, running, queued, paused, failed, and completed)"
     truncate-lines t
     major-mode 'w3m-download-select-mode
     buffer-read-only t)
@@ -1567,27 +1583,51 @@ See `w3m-download-ambiguous-basename-alist'."
 
 ;;; Interactive and user-facing functions:
 
-(defun w3m-download-queue-help ()
+;;;###autoload
+(defun w3m-download-help ()
   "Display helpful information and keybindings."
   (interactive)
-  (when (eq major-mode 'w3m-download-queue-mode)
-    (if (not (featurep 'key-assist))
-      (describe-mode)
-    (let ((spec (list
-                  'w3m-download-increase-simultaneous
-                  'w3m-download-decrease-simultaneous
-                  'w3m-download-toggle-details
-                  'w3m-download-toggle-pause
-                  'w3m-download-toggle-line-wrap
-                  'w3m-download-queue-drop
-                  'w3m-download-queue-raise
-                  'w3m-download-queue-raise
-                  'w3m-download-queue-bottom
-                  'w3m-download-delete-line
-                  'w3m-download-refresh-buffer
-                  'w3m-download-buffer-quit
-                  )))
-      (key-assist spec nil t)))))
+  (unless (or (eq major-mode 'w3m-download-queue-mode)
+              (eq major-mode 'w3m-download-select-mode)
+              (eq major-mode 'w3m-mode))
+    (user-error ""))
+  (if (not (featurep 'key-assist))
+    (describe-mode)
+   (let ((spec (cond
+                ((eq major-mode 'w3m-mode)
+                  (list
+                    'w3m-download-view-queue
+                    'w3m-download-this-url
+                    'w3m-download-this-image
+                    'w3m-save-image
+                    'w3m-download-video
+                    'w3m-download-video-at-point
+                    'w3m-download-using-wget
+                    'w3m-download-select
+                    'w3m-download))
+                ((eq major-mode 'w3m-download-select-mode)
+                  (list
+                    'w3m-download-increase-simultaneous ; +/- Adjust maximum number of simultaneous downloads.
+                    'w3m-download-decrease-simultaneous
+                    'w3m-download-select-toggle-line    ; Toggle a link's status
+                    'w3m-download-select-exec           ; Begin downloading
+                    'w3m-download-delete-line           ; Delete an entry line
+                    'w3m-download-buffer-quit))         ; Abort (or just kill the buffer)
+                ((eq major-mode 'w3m-download-queue-mode)
+                  (list
+                    'w3m-download-increase-simultaneous
+                    'w3m-download-decrease-simultaneous
+                    'w3m-download-toggle-details
+                    'w3m-download-toggle-pause
+                    'w3m-download-toggle-line-wrap
+                    'w3m-download-queue-drop
+                    'w3m-download-queue-raise
+                    'w3m-download-queue-raise
+                    'w3m-download-queue-bottom
+                    'w3m-download-delete-line
+                    'w3m-download-refresh-buffer
+                    'w3m-download-buffer-quit)))))
+      (key-assist spec nil t))))
 
 (defun w3m-download-toggle-line-wrap ()
   "Toggle mode `visual-line-mode' for the download queue buffer."
@@ -2364,14 +2404,8 @@ resume instead of restarting from scratch."
         (let ((inhibit-read-only t) pos)
           (erase-buffer)
           (insert (propertize
-                    "  w3m-download-select buffer\n
-Review the links selected [X] for downloading.\n
-  C-c C-c  Begin downloading
-  <SPACE>  Toggle a link's status
-  +/-      Adjust maximum number of simultaneous downloads.
-  C-k      Delete an entry line
-  q        Abort (or just kill the buffer)\n\n\n>\n\n"
-                     'cursor-intangible t 'field t 'front-sticky t))
+                    "Review the links selected [X] for downloading.\n"
+                    'cursor-intangible t 'field t 'front-sticky t))
           ;; feature-creep:
           ;; + handle persistence and retries
           (dolist (anchor anchor-list)

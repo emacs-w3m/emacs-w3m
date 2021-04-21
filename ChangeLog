@@ -1,3 +1,17 @@
+2021-04-21  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el (w3m--download-header-prefix): Remove constant.
+	(w3m--download-queue-header-prefix)
+	(w3m--download-select-header-prefix): Replacement constants.
+	(w3m-download-queue-help): Remove function.
+	(w3m-download-help): Replacement function.
+	(w3m-download-select-mode-map, w3m-download-queue-mode-map): Give it keybindings.
+	(w3m-download-selected, w3m-download-paused, w3m-download-completed):
+	Ensure no underlines in these faces.
+	(w3m--download-update-statistics, w3m-download-select-mode): Fix
+	header-line for session buffers.
+	(w3m-download-select): Remove help hints from select buffers.
+
 2021-04-20  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-download.el (w3m-download-toggle-line-wrap): New function.
