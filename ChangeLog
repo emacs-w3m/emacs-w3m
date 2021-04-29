@@ -1,3 +1,8 @@
+2021-04-29  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el (w3m--download-progress-percent-display): Begin
+	search at point-min.
+
 2021-04-21  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-download.el (w3m-download-delete-line): Add prefix arg option to

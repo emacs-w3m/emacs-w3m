@@ -983,7 +983,7 @@ This is a primitve. It expects the current buffer and point to be
 prepared! This function is meant to be called by
 `w3m--download-display-queue-list'."
   (let ((win-width (window-width))
-        (pos-1 (next-single-property-change (point-min) 'url nil (point-max)))
+        (pos-1 (point-min)) ;;(next-single-property-change (point-min) 'url nil (point-max)))
         (pos-2 0)
          percent cols)
     (while (and (< pos-1 (point-max))
@@ -1310,7 +1310,7 @@ Reference `set-process-sentinel'."
             (err (setq metadata-error t)))
            (when (file-exists-p save-path)
             (while (file-exists-p (format "%s.%d" save-path n))
-              (incf n))
+              (cl-incf n))
             (setq save-path (format "%s.%d" save-path n)))
            (shell-command (format "mv \"%s.PART\" \"%s\"" w3m--download-save-path save-path))
            (if metadata-error
@@ -1649,7 +1649,7 @@ With the prefix-ARG, advance that many entries."
            pos
           (goto-char (point-min))
           (next-single-property-change (point) 'url nil (point-max)))))
-     (decf arg))))
+     (cl-decf arg))))
 
 (defun w3m-download-queue-previous-entry (&optional arg)
   "Move point to beginning of previous entry in the queue buffer.
@@ -1661,7 +1661,7 @@ With the prefix-ARG, advance that many entries."
      (when (= (point) (point-min))
        (goto-char (point-max)))
      (goto-char (previous-single-property-change (point) 'url nil (point-min)))
-     (decf arg))))
+     (cl-decf arg))))
 
 (defun w3m-download-kill-all-asociated-processes (&optional arg)
   "Kill all `w3m-download' processes and progress buffers.
