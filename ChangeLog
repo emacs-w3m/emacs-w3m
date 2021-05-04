@@ -1,3 +1,10 @@
+2021-05-04  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el (w3m-download--resolve-ambiguous-basenames)
+	(w3m-download--respect-query-basename, w3m--download-create-basename):
+	New functions.
+	(w3m--download-validate-basename, w3m-download-using-wget): Use them.
+
 2021-04-29  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-download.el (w3m--download-progress-percent-display): Begin

@@ -1527,20 +1527,67 @@ Time: %s\nURL : %s\nExec: %s\n\n"
        (add-to-list 'w3m--download-running job t))
      (w3m--message t t "Requesting download."))))
 
+(defun w3m-download--resolve-ambiguous-basenames (url basename)
+  "Attempt to create unique BASENAME in ambiguous circumstances.
+See variable `w3m-download-ambiguous-basename-alist'."
+  (let ((ambig-name-alist w3m-download-ambiguous-basename-alist)
+        ambiguous white-rule black-list black-rule this)
+    (while (setq this (pop ambig-name-alist))
+      (when (string-match (car this) basename)
+        (setq ambiguous (cdr this))
+        (setq ambig-name-alist nil)))
+    (when ambiguous
+      (setq basename nil)
+      (while (setq white-rule (pop ambiguous))
+        (when (string-match (pop white-rule) url) ;; we have a matching whitelist
+          (cond
+           ((setq black-list (pop white-rule))      ;; there are black-list regex(es)
+            (while (setq black-rule (pop black-list))
+              (when (string-match black-rule url)
+                (setq black-list nil)
+                (setq white-rule nil)
+                (setq ambiguous nil)))
+            (when white-rule
+              (setq basename (apply (pop white-rule) url (car white-rule)))))
+           (t (setq ambiguous nil)
+              (setq basename (funcall (pop white-rule) url (car white-rule)))
+              (setq white-rule nil))))))
+     basename))
+
+(defun w3m-download--respect-query-basename (url basename)
+  "Use certain URL queries as a replacement for BASENAME.
+Specifically, query 'filename=', as used by the likes of
+cloudflare, infuria.io, and ipfs.io."
+  (let ((queries (w3m--url-get-queries url))
+        query filename)
+    (if (and queries (setq query (assoc "filename" queries)))
+      (cdr query)
+      basename)))
+
+(defun w3m--download-create-basename ()
+  "Return a unique name for downloads with undefined names."
+  (let ((base "w3m-download-file-")
+        (int 0))
+    (while (file-exists-p (format "%s%s%d" w3m-default-save-directory
+                                           base
+                                           (cl-incf int))))
+    (concat base (number-to-string int))))
+
 (defun w3m--download-validate-basename (url &optional verbose)
   "Return a valid basename, based upon URL.
-With VERBOSE non-nil, send warning messages to the user."
+With VERBOSE non-nil, send warning messages to the user. This
+function checks that the basename will not be all whitespace."
   ;; TODO: Check the project codebase to see if this is duplicated anywhere
   (let ((basename (file-name-nondirectory (w3m-url-strip-query url))))
     (when (string-match "^[\t ]*$" basename)
       (when (string-match
               "^[\t ]*$"
               (setq basename (file-name-nondirectory url)))
+        (setq basename (w3m--download-create-basename))
         (when verbose
           (w3m--message t 'w3m-warning
-            "Undefined file-name. Saving as \'index.html\'")
-          (sit-for 2))
-        (setq basename "index.html")))
+            "Undefined file-name. Saving as \'%s\'" basename)
+          (sit-for 2))))
     basename))
 
 (defun w3m--download-init ()
@@ -2135,28 +2182,28 @@ was itself interactively and thus whether the user may be prompted for
 further information."
   (interactive (list (w3m-active-region-or-url-at-point) nil nil t))
   (let* (basename extension metadata caption found-file
-         alt-basename alt-extension ambiguous
-        (num-in-progress (length w3m--download-processes-list))
-        (others-in-progress-prompt
-          (if (zerop num-in-progress) ""
-           (format "(%d other download%s in progress)"
-                   num-in-progress
-                   (if (= 1 num-in-progress) "" "s"))))
-        (download-prompt
-          (concat "Download URL"
-                  (if (zerop num-in-progress) ""
-                   (concat "(" others-in-progress-prompt ")"))
-                  ": "))
-        (overwrite-prompt
-          (format "%s%s"
-            (if (zerop num-in-progress) ""
-             (concat others-in-progress-prompt "\n"))
-            "File(%s) already exists. Overwrite? "))
-        (resume-prompt
-          (format "%s%s"
-            (if (zerop num-in-progress) ""
-             (concat others-in-progress-prompt "\n"))
-            "File(%s) already exists.
+         alt-basename alt-extension
+         (num-in-progress (length w3m--download-processes-list))
+         (others-in-progress-prompt
+           (if (zerop num-in-progress) ""
+            (format "(%d other download%s in progress)"
+                    num-in-progress
+                    (if (= 1 num-in-progress) "" "s"))))
+         (download-prompt
+           (concat "Download URL"
+                   (if (zerop num-in-progress) ""
+                    (concat "(" others-in-progress-prompt ")"))
+                   ": "))
+         (overwrite-prompt
+           (format "%s%s"
+             (if (zerop num-in-progress) ""
+              (concat others-in-progress-prompt "\n"))
+             "File(%s) already exists. Overwrite? "))
+         (resume-prompt
+           (format "%s%s"
+             (if (zerop num-in-progress) ""
+              (concat others-in-progress-prompt "\n"))
+             "File(%s) already exists.
 Are you trying to resume an aborted partial download? ")))
     (unless url
       (while (string-equal ""
@@ -2167,42 +2214,20 @@ Are you trying to resume an aborted partial download? ")))
         (sit-for 1)))
     (setq url (w3m-url-decode-string url))
     (setq basename (w3m--download-validate-basename url))
+    (setq basename (w3m-download--respect-query-basename url basename))
+    ;; If the filename candidate has no extension, let's try and get
+    ;; it from a caption if one exists. This also prepares us for
+    ;; metadata collection, below.
     (when (and (setq caption (w3m-image-alt))
                (not (setq extension (file-name-extension basename)))
                (setq alt-basename (w3m--download-validate-basename caption))
                (setq alt-extension (file-name-extension alt-basename)))
       (setq basename alt-basename)
-      (setq extension alt-extension)
-      (unless save-path
-        (setq save-path (concat w3m-default-save-directory alt-basename))))
-    (when (setq ambiguous
-            (let ((ambig-name-alist w3m-download-ambiguous-basename-alist)
-                  this result)
-              (while (setq this (pop ambig-name-alist))
-                (when (string-match (car this) basename)
-                  (setq result (cdr this))
-                  (setq ambig-name-alist nil)))
-              result))
-      (let (white-rule black-list black-rule result)
-        (while (setq white-rule (pop ambiguous))
-          (when (string-match (pop white-rule) url) ;; we have a matching whitelist
-            (cond
-             ((setq black-list (pop white-rule))      ;; there are black-list regex(es)
-              (while (setq black-rule (pop black-list))
-                (when (string-match black-rule url)
-                  (setq black-list nil)
-                  (setq white-rule nil)
-                  (setq ambiguous nil)))
-              (when white-rule
-                (setq result (apply (pop white-rule) url (car white-rule)))))
-             (t (setq ambiguous nil)
-                (setq result (funcall (pop white-rule) url (car white-rule)))
-                (setq white-rule nil)))))
-        (if (not result)
-          (setq current-prefix-arg t)
-         (setq basename result)
-         (setq save-path result))))
-    (when current-prefix-arg
+      (setq extension alt-extension))
+    (setq basename (w3m-download--resolve-ambiguous-basenames url basename))
+    (unless save-path
+      (setq save-path (concat w3m-default-save-directory basename)))
+    (when (or current-prefix-arg (not basename))
       (setq save-path
         (w3m-read-file-name
           (format "Download %s to: " url)
