@@ -5560,7 +5560,7 @@ It will put the retrieved contents into the current buffer.  See
 (defun w3m--retrieve-1--handler-function (url post-data referer no-cache
 					      counter handler temp-file attr)
   (when (nth 6 attr)
-    (setf (nth 6 attr) (w3m--url-strip-queries (nth 6 attr))))
+    (setf (nth 6 attr) (w3m--url-strip-unwanted-queries (nth 6 attr))))
   (and temp-file
        (file-exists-p temp-file)
        (delete-file temp-file))
@@ -9759,7 +9759,7 @@ helpful message is presented and the operation is aborted."
 (defun w3m--goto-url--valid-url (url reload charset post-data referer handler
 				     element background save-pos)
   "Main function called by `w3m-goto-url' for handling generic URLS."
-  (setq url (w3m--url-strip-queries url))
+  (setq url (w3m--url-strip-unwanted-queries url))
   (w3m-buffer-setup)			; Setup buffer.
   (w3m-arrived-setup)			; Setup arrived database.
   (unless background

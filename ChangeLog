@@ -1,3 +1,14 @@
+2021-05-04  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-util.el (w3m-queries-log-file): Improve defcustom.
+	(w3m--url-get-queries): New function.
+	(w3m--url-strip-unwanted-queries): Improve name of function. was
+	w3m--url-strip-queries.
+
+	* w3m.el (w3m--retrieve-1--handler-function)
+	(w3m--goto-url--valid-url): Apply new function name.
+
+
 2021-04-13  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m-external-view): When a w3m buffer is created for the sole
