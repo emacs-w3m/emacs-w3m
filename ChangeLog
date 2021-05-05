@@ -1,5 +1,9 @@
 2021-05-04  Boruch Baum  <boruch_baum@gmx.com>
 
+	* w3m-download.el (w3m-download-select): BUGFIX for regex such as ".*$"
+
+2021-05-04  Boruch Baum  <boruch_baum@gmx.com>
+
 	* w3m-download.el (w3m-download--resolve-ambiguous-basenames)
 	(w3m-download--respect-query-basename, w3m--download-create-basename):
 	New functions.

@@ -2405,11 +2405,12 @@ resume instead of restarting from scratch."
      ;;
      ;; part 2: text links for which no anchors exist
      (goto-char start)
-     (while (re-search-forward regex end t)
+     (while (and (re-search-forward regex end t) (< (point) end))
        (when (setq hold (w3m-url-at-point))
          (setq hold (replace-regexp-in-string "'$" "" hold)) ; See note: "single-quote"
          (when (not (member hold anchor-list))
-            (push hold anchor-list))))
+            (push hold anchor-list)))
+       (when (eolp) (forward-char)))
      ;; part 3: links in html source / embedded <script>
      (when w3m-download-select-deep-search
        (w3m-view-source)
