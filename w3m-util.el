@@ -1190,8 +1190,9 @@ referers embed."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-queries-log-file (concat w3m-profile-directory
-                                        "emacs-w3m-queries_log.txt")
+(defcustom w3m-queries-log-file (expand-file-name
+				  "emacs-w3m-queries_log.txt"
+				  w3m-profile-directory)
   "File in which to log URL queries."
   :group 'w3m
   :type 'file)
