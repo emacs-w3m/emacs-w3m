@@ -1295,64 +1295,64 @@ Reference `set-process-sentinel'."
             (and (search-backward "100%" nil t)
                  (string= "wget" (car w3m--download-cmd))
                  (string= " 4" (substring event -3 -1))))
-        (pcase (car w3m--download-cmd)
-         ("wget"
-           (when (not (string-match "^finished" event))
-             (goto-char (point-max))
-             (w3m--message t 'w3m-warning
-               "Warning: wget is reporting its infamous `error 4` for download %s"
-               w3m--download-url)
-             (setq probably "probably "))
-           ;; TODO: Maybe keep buffer open if there was an error in
-           ;; performing the metadata tagging?
-           (condition-case err
-             (w3m--download-apply-metadata-tags)
-            (err (setq metadata-error t)))
-           (when (file-exists-p save-path)
-            (while (file-exists-p (format "%s.%d" save-path n))
-              (cl-incf n))
-            (setq save-path (format "%s.%d" save-path n)))
-           (shell-command (format "mv \"%s.PART\" \"%s\"" w3m--download-save-path save-path))
-           (if metadata-error
-             (w3m--message t 'w3m-error
-               "Download completed successfully, but failed to apply metadata\n%s"
-               save-path)
-            (w3m--message t t "Download %scompleted successfully.\n%s"
-                              probably
+         (pcase (car w3m--download-cmd)
+          ("wget"
+            (when (not (string-match "^finished" event))
+              (goto-char (point-max))
+              (w3m--message t 'w3m-warning
+                "Warning: wget is reporting its infamous `error 4` for download %s"
+                w3m--download-url)
+              (setq probably "probably "))
+            ;; TODO: Maybe keep buffer open if there was an error in
+            ;; performing the metadata tagging?
+            (condition-case err
+              (w3m--download-apply-metadata-tags)
+             (err (setq metadata-error t)))
+            (when (file-exists-p save-path)
+             (while (file-exists-p (format "%s.%d" save-path n))
+               (cl-incf n))
+             (setq save-path (format "%s.%d" save-path n)))
+            (shell-command (format "mv \"%s.PART\" \"%s\"" w3m--download-save-path save-path))
+            (if metadata-error
+              (w3m--message t 'w3m-error
+                "Download completed successfully, but failed to apply metadata\n%s"
+                save-path)
+             (w3m--message t t "Download %scompleted successfully.\n%s"
+                               probably
+                               (or w3m--download-save-path ""))))
+          ("youtube-dl"
+            (w3m--message t t "Download completed successfully.\n%s"
                               (or w3m--download-save-path ""))))
-         ("youtube-dl"
-           (w3m--message t t "Download completed successfully.\n%s"
-                             (or w3m--download-save-path ""))))
-         (setq w3m--download-processes-list
-           (assq-delete-all proc w3m--download-processes-list))
-         (let ((elem (assoc w3m--download-url w3m--download-running))
-               txt index)
-           (if (not elem)
-             nil ; an error, but I'm undecided what to do about it
-            (pcase (car w3m--download-cmd)
-             ("wget"
-               (when (re-search-backward
-                       " 100%\\[=+> *\\] +\\([^ ]+\\) +\\([^ ]+\\) +\\(.*\\)$" nil t)
-                 (setq txt (format "%s, %s, %s"
-                             (match-string 1)
-                             (match-string 2)
-                             (replace-regexp-in-string "  +" " " (match-string 3)))))
-               (goto-char (point-max))
-               (when (re-search-backward "saved \\[\\([0-9/]+\\)\\]$" nil t)
-                 (setq txt (concat txt (format ", %s bytes." (match-string 1))))))
-             ("youtube-dl"
-               (when (re-search-backward
-                       " 100% of \\([^ ]+\\) in \\([^ \n]+\\)" nil t)
-                 (setq txt (format "%s, in %s\n    Saved to:\n      %s"
-                             (match-string 1)
-                             (match-string 2)
-                             (or save-path ""))))))
-            (with-mutex w3m--download-mutex t
-              (setq w3m--download-running (delq elem w3m--download-running))
-              (push `(,@(butlast elem 3)
-                      ,(concat "Completed: " (current-time-string))
-                      ,txt)
-                     w3m--download-completed))))
+          (setq w3m--download-processes-list
+            (assq-delete-all proc w3m--download-processes-list))
+          (let ((elem (assoc w3m--download-url w3m--download-running))
+                txt index)
+            (if (not elem)
+              nil ; an error, but I'm undecided what to do about it
+             (pcase (car w3m--download-cmd)
+              ("wget"
+                (when (re-search-backward
+                        " 100%\\[=+> *\\] +\\([^ ]+\\) +\\([^ ]+\\) +\\(.*\\)$" nil t)
+                  (setq txt (format "%s, %s, %s"
+                              (match-string 1)
+                              (match-string 2)
+                              (replace-regexp-in-string "  +" " " (match-string 3)))))
+                (goto-char (point-max))
+                (when (re-search-backward "saved \\[\\([0-9/]+\\)\\]$" nil t)
+                  (setq txt (concat txt (format ", %s bytes." (match-string 1))))))
+              ("youtube-dl"
+                (when (re-search-backward
+                        " 100% of \\([^ ]+\\) in \\([^ \n]+\\)" nil t)
+                  (setq txt (format "%s, in %s\n    Saved to:\n      %s"
+                              (match-string 1)
+                              (match-string 2)
+                              (or save-path ""))))))
+             (with-mutex w3m--download-mutex t
+               (setq w3m--download-running (delq elem w3m--download-running))
+               (push `(,@(butlast elem 3)
+                       ,(concat "Completed: " (current-time-string))
+                       ,txt)
+                      w3m--download-completed))))
           (kill-buffer buf))
         ((string-match
             "\\(deleted\\)\\|\\(terminated\\)\\|\\(interrupt\\)\\|\\(killed\\)"
@@ -1464,23 +1464,22 @@ If METADATA is non-nil, it should be a shell command to be used
 to add metadata to SAVE-PATH."
   (when (not (when (not no-cache)
                (w3m--download-check-and-use-cache url save-path metadata)))
-    (with-mutex w3m--download-mutex
-      (add-to-list 'w3m--download-queued
-        (list
-          url
-          (split-string
-            (format "wget -c %s %s %s -O %s %s"
-              (if w3m-download-enable-xattr "--xattr" "")
-              (if (not w3m-download-throttle) ""
-                 (format "--limit-rate=%d" w3m-download-throttle))
-              (or w3m-download-wget-options "")
-              (concat save-path ".PART")
-              url))
-          save-path
-          metadata
-          t) ; SHOW-STATE = details begin as invisible/hidden
-       t)) ; t = append to end of list
-    (w3m--download-from-queue)))
+    (lexical-let ; lexical- required for `add-to-list' to recognize `cmd'
+      ((cmd (split-string
+              (format "wget -c %s %s %s -O %s"
+                (if w3m-download-enable-xattr "--xattr" "")
+                (if (not w3m-download-throttle) ""
+                   (format "--limit-rate=%d" w3m-download-throttle))
+                (or w3m-download-wget-options "")
+                (concat save-path ".PART"))))
+       (url-escaped (replace-regexp-in-string " " "%20" url t t)))
+     (add-to-list 'cmd url-escaped 'append (lambda (x y) nil))
+     (with-mutex w3m--download-mutex
+       (add-to-list 'w3m--download-queued
+         (list url cmd save-path metadata
+               t) ; SHOW-STATE = details begin as invisible/hidden
+        t)) ; t = append to end of list
+     (w3m--download-from-queue))))
 
 (defun w3m--download-from-queue ()
   "Set-up a download progress buffer and begin a download process."

@@ -1,3 +1,9 @@
+2021-05-06  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-download.el (w3m--download-sentinel): Indentation fix.
+	(w3m--download--cache-or-queue): Change construction of list, add
+	conversion of spaces to %20 in url argument.
+
 2021-05-04  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-download.el (w3m-download-select): BUGFIX for regex such as ".*$"
