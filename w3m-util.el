@@ -1157,14 +1157,14 @@ ie. For anything after the first '?', for each segment until the
 next '&' or end-of-string, a CONS whose CAR is what is to the
 left of '=' and whose CDR is to the right of it."
   (let ((parameters (when (string-match "[^?]+\\?\\(.*\\)$" url)
-                      (match-string 1 url)))
-        split query result)
+		      (match-string 1 url)))
+	split query result)
     (when parameters
       (setq split (split-string parameters "&" 'omit-nulls))
       (while (setq query (pop split))
-        (if (string-match "\\([^=]+\\)=\\(.*\\)$" query)
-          (push (cons (match-string 1 query) (match-string 2 query)) result)
-         (push (cons query "") result))))
+	(if (string-match "\\([^=]+\\)=\\(.*\\)$" query)
+	    (push (cons (match-string 1 query) (match-string 2 query)) result)
+	  (push (cons query "") result))))
     result))
 
 (defcustom w3m-strip-queries t
@@ -1191,8 +1191,8 @@ referers embed."
   :type 'boolean)
 
 (defcustom w3m-queries-log-file (expand-file-name
-				  "emacs-w3m-queries_log.txt"
-				  w3m-profile-directory)
+				 "emacs-w3m-queries_log.txt"
+				 w3m-profile-directory)
   "File in which to log URL queries."
   :group 'w3m
   :type 'file)
