@@ -1,3 +1,10 @@
+2021-05-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Move w3m-queries-log-file from w3m-util.el to w3m.el
+
+	* w3m-util.el (w3m-queries-log-file): Move it to w3m.el.
+	* w3m.el (w3m-queries-log-file): Move it from w3m-util.el.
+
 2021-05-06  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-util.el (w3m-queries-log-file): Use expand-file-name for variable

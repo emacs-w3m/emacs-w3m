@@ -810,6 +810,13 @@ is used as the current directory instead."
 		(function :format "%{%t%}: %v")
 		(const nil)))
 
+(defcustom w3m-queries-log-file (expand-file-name
+				 "emacs-w3m-queries_log.txt"
+				 w3m-profile-directory)
+  "File in which to log URL queries."
+  :group 'w3m
+  :type 'file)
+
 (defcustom w3m-accept-languages
   (let ((file (expand-file-name "config" w3m-profile-directory)))
     (or (when (file-readable-p file)

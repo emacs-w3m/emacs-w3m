@@ -1190,13 +1190,6 @@ referers embed."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-queries-log-file (expand-file-name
-				 "emacs-w3m-queries_log.txt"
-				 w3m-profile-directory)
-  "File in which to log URL queries."
-  :group 'w3m
-  :type 'file)
-
 (defun w3m--url-strip-unwanted-queries (url)
   "Strip unwanted queries from a url.
 This is meant to remove unwanted trackers or other data that
