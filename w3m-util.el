@@ -1190,6 +1190,8 @@ referers embed."
   :group 'w3m
   :type 'boolean)
 
+(defvar w3m-queries-log-file)
+
 (defun w3m--url-strip-unwanted-queries (url)
   "Strip unwanted queries from a url.
 This is meant to remove unwanted trackers or other data that
