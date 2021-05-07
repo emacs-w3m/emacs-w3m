@@ -1151,6 +1151,22 @@ Otherwise return nil."
       (match-string 1 url)
     url))
 
+(defun w3m--url-get-queries (url)
+  "Returns an ALIST of queries in URL.
+ie. For anything after the first '?', for each segment until the
+next '&' or end-of-string, a CONS whose CAR is what is to the
+left of '=' and whose CDR is to the right of it."
+  (let ((parameters (when (string-match "[^?]+\\?\\(.*\\)$" url)
+                      (match-string 1 url)))
+        split query result)
+    (when parameters
+      (setq split (split-string parameters "&" 'omit-nulls))
+      (while (setq query (pop split))
+        (if (string-match "\\([^=]+\\)=\\(.*\\)$" query)
+          (push (cons (match-string 1 query) (match-string 2 query)) result)
+         (push (cons query "") result))))
+    result))
+
 (defcustom w3m-strip-queries t
   "Remove unwanted queries from URLs.
 Details are set by `w3m-strip-queries-alist'."
@@ -1174,12 +1190,14 @@ referers embed."
   :group 'w3m
   :type 'boolean)
 
-(defcustom w3m-queries-log-file "~/emacs-w3m-queries_log.txt"
+(defcustom w3m-queries-log-file (expand-file-name
+				  "emacs-w3m-queries_log.txt"
+				  w3m-profile-directory)
   "File in which to log URL queries."
   :group 'w3m
-  :type 'boolean)
+  :type 'file)
 
-(defun w3m--url-strip-queries (url)
+(defun w3m--url-strip-unwanted-queries (url)
   "Strip unwanted queries from a url.
 This is meant to remove unwanted trackers or other data that
 websites or referers embed. See `w3m-strip-queries-alist'."
