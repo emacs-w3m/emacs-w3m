@@ -1,3 +1,8 @@
+2021-05-09  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-util.el (w3m--url-get-queries): Handle weird case of '&' embedded
+	in query.
+
 2021-05-06  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-download.el (w3m--download-sentinel): Indentation fix.

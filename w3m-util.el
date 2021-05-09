@@ -1257,6 +1257,74 @@ Otherwise return nil."
       (match-string 1 url)
     url))
 
+(defun w3m--url-get-queries (url)
+  "Returns an ALIST of queries in URL.
+ie. For anything after the first '?', for each segment until the
+next '&' or end-of-string, a CONS whose CAR is what is to the
+left of '=' and whose CDR is to the right of it."
+  (let ((parms (when (string-match "[^?]+\\?\\(.*\\)$" url)
+                       (match-string 1 url)))
+        (start 0)
+        query result)
+    (when parms
+      (while (string-match "&?\\([^=]+\\)=\\([^&]+\\)" parms start)
+        (push (cons (match-string 1 parms) (match-string 2 parms)) result)
+        (setq start (match-end 0)))
+      (when (string-match "&[^=]+$" parms start)
+        ;; This is the weird case encountered with a '&' embedded in a query
+        ;; eg. occassionally by cloudflare query 'filename='
+        (setq query (pop result))
+        (push (cons (car query) (concat (cdr query) (match-string 0 parms))) result))
+      (nreverse result))))
+
+(defcustom w3m-strip-queries t
+  "Remove unwanted queries from URLs.
+Details are set by `w3m-strip-queries-alist'."
+  :group 'w3m
+  :type 'boolean)
+
+(defcustom w3m-strip-queries-alist
+  '(("^https?://.*" "&?utm_source=[^&]+")
+    ("^https?://.*" "&?utm_medium=[^&]+")
+    ("^https?://.*" "&?utm_campaign=[^&]+")
+    ("^https?://.*" "&?email_source=[^&]+")
+    ("^https?://.*" "&?email_token=[^&]+")
+    )
+  "Alist of url regexes and query regexes to strip from them.
+This is meant to remove unwanted trackers or other data that
+websites or referers embed."
+  :group 'w3m
+  :type '(repeat (cons (string :tag "URL regex")
+		       (string :tag "Query regex"))))
+
+(defcustom w3m-queries-log nil
+  "Whether to log URL queries to `w3m-queries-log-file'."
+  :group 'w3m
+  :type 'boolean)
+
+(defvar w3m-queries-log-file)
+
+(defun w3m--url-strip-unwanted-queries (url)
+  "Strip unwanted queries from a url.
+This is meant to remove unwanted trackers or other data that
+websites or referers embed. See `w3m-strip-queries-alist'."
+  (if (or (not w3m-strip-queries)
+          (not (string-match "^.*\\?" url)))
+    url
+   (let* ((base (match-string 0 url))
+          (queries (replace-match "" t t url 0)))
+     (when (and w3m-queries-log queries)
+       (shell-command
+         (format "printf \"%s\n\" >> %s" queries w3m-queries-log-file)))
+     (dolist (strip w3m-strip-queries-alist)
+       (when (string-match (car strip) base)
+         (while (string-match (cadr strip) queries)
+           (setq queries (replace-match "" t t queries 0)))))
+     (if (string-match-p "\\`[ \t\n\r]*\\'" queries)
+       (substring base 0 -1)
+      (concat base queries)))))
+
+>>>>>>> Stashed changes
 (defun w3m-get-server-hostname (url)
   "Extract a server root from URL."
   (when (string-match "\\`about://[^/?#]+/" url)
