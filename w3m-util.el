@@ -1324,7 +1324,6 @@ websites or referers embed. See `w3m-strip-queries-alist'."
        (substring base 0 -1)
       (concat base queries)))))
 
->>>>>>> Stashed changes
 (defun w3m-get-server-hostname (url)
   "Extract a server root from URL."
   (when (string-match "\\`about://[^/?#]+/" url)
