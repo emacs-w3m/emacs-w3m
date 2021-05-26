@@ -1,3 +1,11 @@
+2021-05-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make Asahi work (as for at least the rss group)
+
+	* sb-asahi.el (shimbun-asahi-content-start)
+	(shimbun-asahi-content-end): Update.
+	(shimbun-asahi-clear-contents): Rewrite.
+
 2021-03-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-login): Update regexp used to check if
