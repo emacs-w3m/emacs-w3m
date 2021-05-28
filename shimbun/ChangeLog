@@ -1,3 +1,10 @@
+2021-05-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make Mainichi work
+
+	* sb-mainichi.el (shimbun-mainichi-clear-contents):
+	Update regexps and filters.
+
 2021-05-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make Asahi work (as for at least the rss group)

@@ -1,6 +1,6 @@
 ;;; sb-mainichi.el --- shimbun backend for Mainichi jp
 
-;; Copyright (C) 2001-2009, 2011-2013, 2015-2019
+;; Copyright (C) 2001-2009, 2011-2013, 2015-2019, 2021
 ;; Koichiro Ohba <koichiro@meadowy.org>
 
 ;; Author: Koichiro Ohba <koichiro@meadowy.org>
@@ -385,22 +385,40 @@ Face: iVBORw0KGgoAAAANSUhEUgAAABwAAAAcBAMAAACAI8KnAAAABGdBTUEAALGPC/xhBQAAABh
 (defun shimbun-mainichi-clear-contents (shimbun header)
   (shimbun-strip-cr)
   (goto-char (point-min))
-  (if (and (re-search-forward
-	    "<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"main-text\"" nil t)
-	   (shimbun-end-of-tag "div"))
+  (if (and (re-search-forward "<section[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
+class=\"articledetail-body\\(?: is-mustpay\\)?\"" nil t)
+	   (shimbun-end-of-tag "section"))
       (let ((group (shimbun-current-group-internal shimbun))
 	    (hankaku (shimbun-japanese-hankaku shimbun))
 	    regexp)
 	(delete-region (match-end 2) (point-max))
-	(delete-region (point-min) (match-beginning 2))
-	(dolist (rm '("class=\"img-left[\t\n ]+ad\""
-		      "class=\"txtad\"" "id=\"tools\""))
-	  (setq regexp (concat "<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*" rm))
-	  (goto-char (point-min))
-	  (while (re-search-forward regexp nil t)
-	    (when (shimbun-end-of-tag "div" t)
-	      (delete-region (goto-char (match-beginning 0)) (match-end 0))
-	      (insert "\n"))))
+	(delete-region (point-min) (goto-char (match-beginning 2)))
+	(while (and (re-search-forward "<img[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
+class=\"lazyload\"" nil t)
+		    (shimbun-end-of-tag))
+	  (save-restriction
+	    (narrow-to-region (goto-char (match-beginning 0)) (match-end 0))
+	    (when (re-search-forward "[\t\n ]+\\(data-\\)src=\"[^\">]+\""
+				     nil t)
+	      (goto-char (point-min))
+	      (save-match-data
+		(when (re-search-forward "[\t\n ]+src=\"[^\">]+\"" nil t)
+		  (delete-region (match-beginning 0) (match-end 0))))
+	      (delete-region (match-beginning 1) (match-end 1)))))
+	(goto-char (point-min))
+	(while (and (re-search-forward "<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
+class=\"articledetail-video\"" nil t)
+		    (shimbun-end-of-tag "div"))
+	  (delete-region (match-beginning 0) (match-end 0)))
+	(goto-char (point-min))
+	(while (and (search-forward "<figcaption>" nil t)
+		    (shimbun-end-of-tag "figcaption"))
+	  (delete-region (match-beginning 0) (match-end 0)))
+	(goto-char (point-min))
+	(while (and (re-search-forward "<a[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
+class=\"articledetail-image-scale\"" nil t)
+		    (shimbun-end-of-tag "a"))
+	  (delete-region (match-beginning 0) (match-end 0)))
 	(when (string-equal group "opinion.yoroku")
 	  (goto-char (point-min))
 	  (while (search-forward "▲" nil t)
