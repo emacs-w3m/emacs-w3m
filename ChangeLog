@@ -1,3 +1,7 @@
+2021-05-30  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m-util.el (w3m--send-to-gui-clipboard): Handle '%' in urls.
+
 2019-02-12  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m-util.el (w3m--send-to-gui-clipboard): New function.
