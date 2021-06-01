@@ -335,6 +335,7 @@ These are:`w3m--download-queued', `w3m--download-running',
     (define-key map [?\t]       'w3m-download-queue-next-entry)
     (define-key map [backtab]   'w3m-download-queue-previous-entry)
     (define-key map "p"         'w3m-download-toggle-pause)
+    (define-key map "r"         'w3m-download-retry)
     (define-key map "\C-k"      'w3m-download-delete-line)
     (define-key map "q"         'w3m-download-buffer-quit)
     (define-key map "Q"         'w3m-download-buffer-quit)
@@ -1865,14 +1866,43 @@ or failed, restart or continue it."
            (setq txt (nth 6 elem))
            (when (and txt (string-match ",  " txt))
              (setq txt (substring txt 0 (match-beginning 0)))))
-         (setq base (butlast elem (if (eq state 'w3m--download-queued) 2 4)))
-
          (setq elem `(,@(butlast elem (if (eq state 'w3m--download-queued) 2 4))
                       ,(unless (eq state 'w3m--download-completed)
                          (format "%s\n    Paused:    %s"
                                  (nth 5 elem) (current-time-string)))
                       ,txt))
          (add-to-list 'w3m--download-paused elem t)))))
+    (w3m--download-update-display-queue-list nil cur-col
+      (1- (string-to-number (format-mode-line "%l"))))
+    (w3m--download-restore-point-sensibly state cur-col))))
+
+(defun w3m-download-retry ()
+  "Retry the download at point.
+This operation returns an entry to the queue. It may be performed
+on entries listed as failed, paused, or even completed."
+  (interactive)
+  (if (not (eq major-mode 'w3m-download-queue-mode))
+    (w3m--download-msg--queue-only)
+   (let* ((inhibit-read-only t)
+          (kill-buffer-query-functions nil)
+          (update-err-msg
+            "Entry has changed state since last display refresh")
+          (state (get-text-property (point) 'state))
+          (url  (get-text-property (point) 'url))
+          (cur-col (current-column))
+          elem timestamp txt)
+     (when (or (eq state 'w3m--download-queued)
+               (eq state 'w3m--download-running))
+       (w3m--message t 'w3m-error
+         "w3m-download-retry: Nothing to do."))
+    (with-mutex w3m--download-mutex
+      (setq elem (assoc url (eval state)))
+      (if (not elem)
+        (w3m--message t 'w3m-error update-err-msg)
+       (eval `(setq ,state (delq (quote ,elem) ,state)))
+       (setq elem `(,@(butlast elem  (if (eq state 'w3m--download-paused) 2 4))))
+       (add-to-list 'w3m--download-queued elem t)))
+    (w3m--download-from-queue)
     (w3m--download-update-display-queue-list nil cur-col
       (1- (string-to-number (format-mode-line "%l"))))
     (w3m--download-restore-point-sensibly state cur-col))))
