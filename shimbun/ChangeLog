@@ -1,3 +1,15 @@
+2021-06-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make Sankei work
+
+	* sb-sankei.el (sb-multi): Don't use it.
+	(shimbun-sankei-group-table): Update.
+	(shimbun-sankei-category-name-alist)
+	(shimbun-sankei-get-headers-special)
+	(shimbun-sankei-multi-next-url): Abolish.
+	(shimbun-sankei-get-headers, shimbun-sankei-clear-contents): Rewrite.
+	(shimbun-sankei-login): No need to run.
+
 2021-05-28  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make Mainichi work
