@@ -5090,14 +5090,11 @@ nikkei.release.service.etc nikkei.release.const.const
 nikkei.release.const.house nikkei.release.const.etc nikkei.shasetsu
 
 @item @uref{http://www.sankei.com/, 産経ニュース}
-sankei.affairs sankei.column sankei.column.editorial
-sankei.column.sankeisyo sankei.column.seiron sankei.economy
-sankei.entertainments sankei.flash sankei.life sankei.politics
-sankei.region.chubu sankei.region.chugoku-shikoku
-sankei.region.hokkaido-tohoku sankei.region.kanto sankei.region.kinki
-sankei.region.kyushu-okinawa sankei.sports sankei.top
-sankei.west.affairs sankei.west.economy sankei.west.essay
-sankei.west.flash sankei.west.life sankei.west.sports sankei.world
+sankei.top sankei.flash sankei.affairs sankei.politics sankei.world
+sankei.economy sankei.sports sankei.entertainments sankei.life
+sankei.column sankei.column.editorial sankei.column.seiron
+sankei.column.sankeisyo sankei.column.naniwa sankei.west
+sankei.west.essay
 
 @item @uref{http://www.spiegel.de/, Spiegel Online}
 spiegel.news
