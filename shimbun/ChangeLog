@@ -1,3 +1,11 @@
+2021-06-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Fetch more images
+
+	* sb-sankei.el (shimbun-sankei-get-headers): Bugfix: memq -> member.
+	(shimbun-sankei-clear-contents): Fetch more images.
+	(shimbun-sankei-extract-images): New subroutine.
+
 2021-06-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make Sankei work
