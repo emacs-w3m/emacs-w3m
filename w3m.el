@@ -11240,14 +11240,14 @@ beside the main window."
 	    (w3m-popup-buffer buffer)
 	  (w3m-goto-url (or w3m-home-page "about:")))))
     (set-buffer (w3m-get-buffer-create buffer-name))
-    (unless (eq nomsg 'update)
-      (setq w3m-select-buffer-window selected-window))
     (let ((w (or (get-buffer-window buffer-name)
 		 (split-window (selected-window)
 			       (w3m-select-buffer-window-size)
 			       w3m-select-buffer-horizontal-window))))
       (set-window-buffer w (current-buffer))
-      (select-window w))))
+      (select-window w)
+      (unless (eq nomsg 'update)
+	(setq w3m-select-buffer-window (selected-window))))))
 
 (defun w3m-select-buffer (&optional toggle nomsg)
   "Pop-up an emacs-w3m buffers selection window.
