@@ -318,8 +318,8 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 		"</p>\n"))
       (when contents
 	(setq maxwidth (max (- (window-width) 10) 10))
-	(if (member (shimbun-current-group-internal shimbun)
-		    '("column.sankeisyo" "column.naniwa"))
+	(if (string-match "産経抄\\|浪速風"
+			  (shimbun-header-from-internal header))
 	    (setq fn (lambda (str)
 		       (when (eq (aref str 0) ?▼)
 			 (setq str (substring str 1)))
