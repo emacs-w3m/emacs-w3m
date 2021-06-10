@@ -122,10 +122,12 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 						 &optional range)
   (shimbun-sankei-get-headers shimbun range))
 
+(autoload 'timezone-parse-date "timezone")
+
 (defun shimbun-sankei-get-headers (shimbun range)
   "Get headers for the group that SHIMBUN specifies in RANGE."
   (let ((group (shimbun-current-group-internal shimbun))
-	nd url id st ids date subject names tem headers)
+	nd url id st ids tem date subject names headers)
     (goto-char (point-min))
     (while (re-search-forward
 	    "\"website_url\":\"\\([^\"]+-\\([0-9A-Z]\\{26\\}\\)[^\"]*\\)"
@@ -148,12 +150,44 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 		   (shimbun-search-id shimbun id))
 	    (save-restriction
 	      (narrow-to-region (goto-char st) nd)
-	      (setq date (decode-time ;; Default to the current time.
-			  (and (re-search-forward "\"display_date\":\"\
+
+	      ;; The version that works on Emacs 28 and elders.
+	      ;;(setq date (decode-time ;; Default to the current time.
+	      ;;            (and (re-search-forward "\"display_date\":\"\
+;;\\(20[2-9][0-9]-[01][0-9]-[0-3][0-9]T[0-5][0-9]:[0-5][0-9]:[^\"]+\\)" nil t)
+	      ;;                (ignore-errors
+	      ;;                  (encode-time
+	      ;;                   (parse-time-string (match-string 1)))))))
+
+	      ;; `parse-time-string' doesn't support ISO8601 date on Emacs 27
+	      ;; and earlier.
+	      ;; `encode-time' doesn't accept the 1st argument that is a list
+	      ;; style on Emacs 26 and earlier.
+
+	      ;; The version that supports Emacs 27 and 26.
+	      (setq date
+		    (decode-time ;; Default to the current time.
+		     (and (re-search-forward "\"display_date\":\"\
 \\(20[2-9][0-9]-[01][0-9]-[0-3][0-9]T[0-5][0-9]:[0-5][0-9]:[^\"]+\\)" nil t)
-			       (ignore-errors
-				 (encode-time
-				  (parse-time-string (match-string 1)))))))
+			  (ignore-errors
+			    (setq tem (match-string 1)
+				  date (parse-time-string tem))
+			    (if (car date) ;; true on Emacs 28
+				(encode-time date)
+			      (setq date (timezone-parse-date tem)
+				    tem (split-string (aref date 3) ":")
+				    date (list
+					  (string-to-number (caddr tem))
+					  (string-to-number (cadr tem))
+					  (string-to-number (car tem))
+					  (string-to-number (aref date 2))
+					  (string-to-number (aref date 1))
+					  (string-to-number (aref date 0))
+					  nil nil nil))
+			      (condition-case nil
+				  (encode-time date) ;; works on Emacs 27
+				(error ;; Emacs 26
+				 (apply #'encode-time date))))))))
 	      (goto-char st)
 	      (when (re-search-forward "\"headlines\":{\"basic\":\"\\([^\"]+\\)"
 				       nil t)
