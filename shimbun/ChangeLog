@@ -1,3 +1,11 @@
+2021-06-10  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Make Sankei work on Emacs 26 and 27
+
+	* sb-sankei.el (shimbun-sankei-get-headers): Use timezone-parse-date
+	instead of parse-time-string on Emacs 26 and 27; fix incompatible args
+	issue on encode-time.
+
 2021-06-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Fetch more images
