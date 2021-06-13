@@ -260,14 +260,15 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 	      (if (search-forward "\"type\":\"image\"" nd t)
 		  (progn
 		    (goto-char st)
-		    (setq caption (and (search-forward "\"caption\":" nd t)
-				       (eq (following-char) ?\")
-				       (setq tem (ignore-errors
-						   (replace-regexp-in-string
-						    "\\`[\t ]+\\|[\t ]+\\'" ""
-						    (read (current-buffer)))))
-				       (not (zerop (length tem)))
-				       tem))
+		    (setq caption
+			  (and (search-forward "\"caption\":" nd t)
+			       (eq (following-char) ?\")
+			       (setq tem (ignore-errors
+					   (replace-regexp-in-string
+					    "\\`[\t 　]+\\|[\t 　]+\\'" ""
+					    (read (current-buffer)))))
+			       (not (zerop (length tem)))
+			       tem))
 		    (unless (member id ids)
 		      (goto-char st)
 		      (setq img (and (search-forward
@@ -305,7 +306,7 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 			 (setq tem (ignore-errors (read (current-buffer)))))
 		    (progn
 		      (setq tem (replace-regexp-in-string
-				 "\\`[\t ]+\\|[\t ]+\\'" "" tem))
+				 "\\`[\t 　]+\\|[\t 　]+\\'" "" tem))
 		      (unless (zerop (length tem))
 			(push tem contents)))
 		  (goto-char nd)))
