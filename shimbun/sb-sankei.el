@@ -257,51 +257,93 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 		nd (match-end 0)
 		id (match-string 1))
 	  (if (ignore-errors (forward-sexp 1) (setq nd (point)) (goto-char st))
-	      (if (search-forward "\"type\":\"image\"" nd t)
-		  (progn
-		    (goto-char st)
-		    (setq caption
-			  (and (search-forward "\"caption\":" nd t)
-			       (eq (following-char) ?\")
-			       (setq tem (ignore-errors
-					   (replace-regexp-in-string
-					    "\\`[\t 　]+\\|[\t 　]+\\'" ""
-					    (read (current-buffer)))))
-			       (not (zerop (length tem)))
-			       tem))
-		    (if (member id ids)
-			(goto-char nd)
-		      (goto-char st)
-		      (setq img (and (search-forward
-				      "\"type\":\"image\",\"url\":"
-				      nd t)
-				     (eq (following-char) ?\")
-				     (ignore-errors (read (current-buffer)))))
-		      (goto-char st)
-		      (and (or (search-forward "\"articleLarge\":" nd t)
-			       (search-forward "\"articleSmall\":" nd t)
-			       ;; very large
-			       (and (not img) (search-forward
-					       "\"type\":\"image\",\"url\":"
-					       nd t))
-			       ;; portrait is trimmed?
-			       (search-forward "\"articleSnsShareImage\":"
-					       nd t))
+	      (cond
+	       ((search-forward "\"type\":\"image\"" nd t)
+		(goto-char st)
+		(setq caption
+		      (and (search-forward "\"caption\":" nd t)
 			   (eq (following-char) ?\")
-			   (setq tem (ignore-errors (read (current-buffer))))
-			   (progn
-			     (push id ids)
-			     (push (concat (if img
-					       (concat "<a href=\"" img "\">")
-					     "")
-					   "<img src=\"" tem
-					   "\" alt=\"[写真]\">"
-					   (if img "</a>" "")
-					   (if caption
-					       (concat "<br>\n" caption
-						       "<br><br>")
-					     ""))
-				   contents)))))
+			   (setq tem (ignore-errors
+				       (replace-regexp-in-string
+					"\\`[\t 　]+\\|[\t 　]+\\'" ""
+					(read (current-buffer)))))
+			   (not (zerop (length tem)))
+			   tem))
+		(if (member id ids)
+		    (goto-char nd)
+		  (goto-char st)
+		  (setq img (and (search-forward
+				  "\"type\":\"image\",\"url\":"
+				  nd t)
+				 (eq (following-char) ?\")
+				 (ignore-errors (read (current-buffer)))))
+		  (goto-char st)
+		  (and (or (search-forward "\"articleLarge\":" nd t)
+			   (search-forward "\"articleSmall\":" nd t)
+			   ;; very large
+			   (and (not img) (search-forward
+					   "\"type\":\"image\",\"url\":"
+					   nd t))
+			   ;; portrait is trimmed?
+			   (search-forward "\"articleSnsShareImage\":"
+					   nd t))
+		       (eq (following-char) ?\")
+		       (setq tem (ignore-errors (read (current-buffer))))
+		       (progn
+			 (push id ids)
+			 (push (concat (if img
+					   (concat "<a href=\"" img "\">")
+					 "")
+				       "<img src=\"" tem
+				       "\" alt=\"[写真]\">"
+				       (if img "</a>" "")
+				       (if caption
+					   (concat "<br>\n" caption
+						   ;;"<br><br>")
+						   )
+					 ""))
+			       contents)))))
+	       ((search-forward "\"type\":\"raw_html\"" nd t)
+		(goto-char st)
+		(if (and (search-forward "\"content\":" nd t)
+			 (eq (following-char) ?\")
+			 (setq tem (ignore-errors (read (current-buffer)))))
+		    (with-temp-buffer
+		      (insert tem)
+		      (shimbun-strip-cr)
+		      (goto-char (point-min))
+		      (while (and (re-search-forward "\
+<div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"sankei_netshop\"" nil t)
+				  (shimbun-end-of-tag "div" t))
+			(delete-region (match-beginning 0) (match-end 0))
+			(insert "\n"))
+		      (goto-char (point-min))
+		      (while (re-search-forward
+			      "[\t\n 　]*\\(?:<\\(?:br\\|/?p\\)>[\t\n 　]*\\)+"
+			      nil t)
+			(replace-match "\n\n"))
+		      (goto-char (point-min))
+		      (while (re-search-forward "^[\t 　]+\\|[\t 　]+$"
+						nil t)
+			(delete-region (match-beginning 0) (match-end 0)))
+		      (goto-char (point-min))
+		      (while (and (re-search-forward "<img[\t ]" nil t)
+				  (shimbun-end-of-tag))
+			(goto-char (match-beginning 0))
+			(unless (save-match-data
+				  (re-search-forward "[\t ]alt=\""
+						     (match-end 0) 'move))
+			  (forward-char -1)
+			  (insert " alt=\"[写真]\"")))
+		      (goto-char (point-min))
+		      (while (re-search-forward ">$" nil t)
+			(or (looking-at "\n\n")
+			    (looking-back "<br>" nil)
+			    (insert "<br>")))
+		      (when (setq tem (split-string (buffer-string) "\n\n+" t))
+			(setq contents (nconc (nreverse tem) contents)))))
+		  (goto-char nd))
+	       (t
 		(if (and (search-forward "\"content\":" nd t)
 			 (eq (following-char) ?\")
 			 (setq tem (ignore-errors (read (current-buffer)))))
@@ -310,7 +352,7 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 				 "\\`[\t 　]+\\|[\t 　]+\\'" "" tem))
 		      (unless (zerop (length tem))
 			(push tem contents)))
-		  (goto-char nd)))
+		  (goto-char nd))))
 	    (goto-char nd))))
       (goto-char nd)
       (setq eimgs (car (shimbun-sankei-extract-images nil ids)))
@@ -325,7 +367,8 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 	    (setq fn (lambda (str)
 		       (when (eq (aref str 0) ?▼)
 			 (setq str (substring str 1)))
-		       (if (string-match "\\`<\\(?:a\\|img\\) " str)
+		       (if (or (not (eq (char-syntax (aref str 0)) ?w))
+			       (eq (aref str (1- (length str))) ?>))
 			   str
 			 (concat "<p>"
 				 (if (and (string-match "[,.、。]" str)
@@ -333,7 +376,8 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 				     "　" "")
 				 str "</p>"))))
 	  (setq fn (lambda (str)
-		     (if (string-match "\\`<\\(?:a\\|img\\) " str)
+		     (if (or (not (eq (char-syntax (aref str 0)) ?w))
+			     (eq (aref str (1- (length str))) ?>))
 			 str
 		       (concat "<p>"
 			       (if (and (string-match "[,.、。]" str)
