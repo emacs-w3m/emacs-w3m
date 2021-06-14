@@ -269,7 +269,8 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 					    (read (current-buffer)))))
 			       (not (zerop (length tem)))
 			       tem))
-		    (unless (member id ids)
+		    (if (member id ids)
+			(goto-char nd)
 		      (goto-char st)
 		      (setq img (and (search-forward
 				      "\"type\":\"image\",\"url\":"
@@ -300,8 +301,7 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 					       (concat "<br>\n" caption
 						       "<br><br>")
 					     ""))
-				   contents))))
-		    (goto-char nd))
+				   contents)))))
 		(if (and (search-forward "\"content\":" nd t)
 			 (eq (following-char) ?\")
 			 (setq tem (ignore-errors (read (current-buffer)))))
