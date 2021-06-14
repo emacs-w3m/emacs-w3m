@@ -300,7 +300,8 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 					       (concat "<br>\n" caption
 						       "<br><br>")
 					     ""))
-				   contents)))))
+				   contents))))
+		    (goto-char nd))
 		(if (and (search-forward "\"content\":" nd t)
 			 (eq (following-char) ?\")
 			 (setq tem (ignore-errors (read (current-buffer)))))
