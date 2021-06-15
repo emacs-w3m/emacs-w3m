@@ -11227,27 +11227,26 @@ splitting windows vertically."
 
 TOGGLE toggles the position of the window between being below or
 beside the main window."
-  (let ((selected-window (selected-window)))
-    (when toggle
-      (setq w3m-select-buffer-horizontal-window
-	    (not w3m-select-buffer-horizontal-window))
-      (when (get-buffer-window buffer-name)
-	(delete-windows-on buffer-name)))
-    (unless (memq major-mode
-		  '(w3m-mode w3m-select-buffer-mode w3m-session-select-mode))
-      (let ((buffer (w3m-alive-p t)))
-	(if buffer
-	    (w3m-popup-buffer buffer)
-	  (w3m-goto-url (or w3m-home-page "about:")))))
-    (set-buffer (w3m-get-buffer-create buffer-name))
-    (unless (eq nomsg 'update)
-      (setq w3m-select-buffer-window (selected-window)))
-    (let ((w (or (get-buffer-window buffer-name)
-		 (split-window (selected-window)
-			       (w3m-select-buffer-window-size)
-			       w3m-select-buffer-horizontal-window))))
-      (set-window-buffer w (current-buffer))
-      (select-window w))))
+  (when toggle
+    (setq w3m-select-buffer-horizontal-window
+	  (not w3m-select-buffer-horizontal-window))
+    (when (get-buffer-window buffer-name)
+      (delete-windows-on buffer-name)))
+  (unless (memq major-mode
+		'(w3m-mode w3m-select-buffer-mode w3m-session-select-mode))
+    (let ((buffer (w3m-alive-p t)))
+      (if buffer
+	  (w3m-popup-buffer buffer)
+	(w3m-goto-url (or w3m-home-page "about:")))))
+  (set-buffer (w3m-get-buffer-create buffer-name))
+  (unless (eq nomsg 'update)
+    (setq w3m-select-buffer-window (selected-window)))
+  (let ((w (or (get-buffer-window buffer-name)
+	       (split-window (selected-window)
+			     (w3m-select-buffer-window-size)
+			     w3m-select-buffer-horizontal-window))))
+    (set-window-buffer w (current-buffer))
+    (select-window w)))
 
 (defun w3m-select-buffer (&optional toggle nomsg)
   "Pop-up an emacs-w3m buffers selection window.

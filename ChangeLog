@@ -1,3 +1,10 @@
+2021-06-15  Victor J. Orlikowski  <vjo@duke.edu>
+
+	Bugfix: make w3m-select-buffer-toggle-style work properly (PR#95)
+
+	* w3m.el (w3m--setup-popup-window): Run selected-window each time
+	because it varies during the process (PR#95).
+
 2021-05-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Move w3m-queries-log-file from w3m-util.el to w3m.el
