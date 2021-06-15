@@ -238,20 +238,44 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 
 (defun shimbun-sankei-clear-contents (shimbun header)
   "Collect contents and create an html page in the current buffer."
-  (let (st nd ids simgs id caption tem img contents eimgs maxwidth fn)
+  (let (st nd tem headline ids simgs id caption img contents eimgs maxwidth fn)
     (goto-char (point-min))
-    (when (and (search-forward "Fusion.globalContent=" nil t)
+    (when (and (search-forward ";Fusion.globalContent=" nil t)
 	       (eq (following-char) ?{)
 	       (progn
 		 (setq st (point))
 		 (ignore-errors (forward-sexp 1) (setq nd (point)))))
+      (goto-char st)
+      (when (and (search-forward ",\"promo_items\":" nd t)
+		 (eq (following-char) ?{)
+		 (progn
+		   (setq tem (match-beginning 0))
+		   (ignore-errors (forward-sexp 1) t)))
+	;; The other headlines are there.
+	(delete-region tem (point)))
+      (goto-char st)
+      (when (and (search-forward ",\"headlines\":{\"basic\":" nd t)
+		 (eq (following-char) ?\")
+		 (setq tem (ignore-errors
+			     (replace-regexp-in-string
+			      "\\`[\t 　]+\\|[\t 　]+\\'" ""
+			      (read (current-buffer)))))
+		 (not (zerop (length tem))))
+	(setq headline tem))
+      (goto-char st)
+      (when (and (search-forward ",\"content_elements\":" nd t)
+		 (eq (following-char) ?\[)
+		 (progn
+		   (setq tem (point))
+		   (ignore-errors (forward-sexp 1) t)))
+	(setq st (1+ tem)
+	      nd (1- (point))))
       (goto-char (point-min))
       (setq ids (shimbun-sankei-extract-images st nil)
 	    simgs (car ids)
 	    ids (cadr ids))
       (save-restriction
 	(narrow-to-region (goto-char st) nd)
-	(search-forward "\"content_elements\":" nil t)
 	(while (re-search-forward "{\"_id\":\"\\([^\"]\\{26\\}\\)\"" nil t)
 	  (setq st (goto-char (match-beginning 0))
 		nd (match-end 0)
@@ -357,6 +381,8 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
       (goto-char nd)
       (setq eimgs (car (shimbun-sankei-extract-images nil ids)))
       (erase-buffer)
+      (when headline
+	(insert "<p>" headline "</p>\n"))
       (when simgs
 	(insert "<p>" (mapconcat #'identity (nreverse simgs) "</p>\n<p>")
 		"</p>\n"))

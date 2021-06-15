@@ -1,3 +1,9 @@
+2021-06-15  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Display headline that might be the only place to show the author
+
+	* sb-sankei.el (shimbun-sankei-clear-contents): Show headline.
+
 2021-06-14  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make Sankei support raw html embedded in java script
