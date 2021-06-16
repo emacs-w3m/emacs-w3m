@@ -127,7 +127,7 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 (defun shimbun-sankei-get-headers (shimbun range)
   "Get headers for the group that SHIMBUN specifies in RANGE."
   (let ((group (shimbun-current-group-internal shimbun))
-	nd url id st ids tem date subject names headers)
+	nd url id st ids date tem subject names headers)
     (goto-char (point-min))
     (while (re-search-forward
 	    "\"website_url\":\"\\([^\"]+-\\([0-9A-Z]\\{26\\}\\)[^\"]*\\)"
@@ -138,98 +138,103 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
       (when (and (search-backward (concat "{\"_id\":\"" id "\"") nil t)
 		 (progn
 		   (setq st (match-beginning 0))
-		   (or (ignore-errors (forward-sexp 1) (setq nd (point)))
+		   (or (ignore-errors (setq nd (scan-sexps st 1)))
 		       (progn (goto-char nd) nil))))
 	(setq id (concat "<" id "."
 			 (mapconcat #'identity
 				    (nreverse (split-string group "\\."))
 				    ".")
 			 "%" shimbun-sankei-top-level-domain ">"))
-	(or (member id ids)
-	    (progn (push id ids)
-		   (shimbun-search-id shimbun id))
-	    (save-restriction
-	      (narrow-to-region (goto-char st) nd)
+	(if (or (member id ids)
+		(progn (push id ids)
+		       (shimbun-search-id shimbun id)))
+	    (goto-char nd)
+	  (save-restriction
+	    (narrow-to-region (goto-char st) nd)
 
-	      ;; The version that works on Emacs 28 and elders.
-	      ;;(setq date (decode-time ;; Default to the current time.
-	      ;;            (and (re-search-forward "\"display_date\":\"\
+	    ;; The version that works on Emacs 28 and elders.
+	    ;;(setq date (decode-time ;; Default to the current time.
+	    ;;            (and (re-search-forward "\"display_date\":\"\
 ;;\\(20[2-9][0-9]-[01][0-9]-[0-3][0-9]T[0-5][0-9]:[0-5][0-9]:[^\"]+\\)" nil t)
-	      ;;                (ignore-errors
-	      ;;                  (encode-time
-	      ;;                   (parse-time-string (match-string 1)))))))
+	    ;;                 (ignore-errors
+	    ;;                   (encode-time
+	    ;;                    (parse-time-string (match-string 1)))))))
 
-	      ;; `parse-time-string' doesn't support ISO8601 date on Emacs 27
-	      ;; and earlier.
-	      ;; `encode-time' doesn't accept the 1st argument that is a list
-	      ;; style on Emacs 26 and earlier.
+	    ;; On Emacs 27 and earliers `parse-time-string' doesn't support
+	    ;; ISO8601 date.
+	    ;; On Emacs 26 and earliers `encode-time' doesn't accept the 1st
+	    ;; argument that is a list style.
 
-	      ;; The version that supports Emacs 27 and 26.
-	      (setq date
-		    (decode-time ;; Default to the current time.
-		     (and (re-search-forward "\"display_date\":\"\
+	    ;; The version that supports Emacs 27 and 26.
+	    (setq date
+		  (decode-time ;; Default to the current time.
+		   (and (re-search-forward "\"display_date\":\"\
 \\(20[2-9][0-9]-[01][0-9]-[0-3][0-9]T[0-5][0-9]:[0-5][0-9]:[^\"]+\\)" nil t)
-			  (ignore-errors
-			    (setq tem (match-string 1)
-				  date (parse-time-string tem))
-			    (if (car date) ;; true on Emacs 28
-				(encode-time date)
-			      (setq date (timezone-parse-date tem)
-				    tem (split-string (aref date 3) ":")
-				    date (list
-					  (string-to-number (caddr tem))
-					  (string-to-number (cadr tem))
-					  (string-to-number (car tem))
-					  (string-to-number (aref date 2))
-					  (string-to-number (aref date 1))
-					  (string-to-number (aref date 0))
-					  nil nil nil))
-			      (condition-case nil
-				  (encode-time date) ;; works on Emacs 27
-				(error ;; Emacs 26
-				 (apply #'encode-time date))))))))
+			(ignore-errors
+			  (setq tem (match-string 1)
+				date (parse-time-string tem))
+			  (if (car date) ;; true on Emacs 28
+			      (encode-time date)
+			    (setq date (timezone-parse-date tem)
+				  tem (split-string (aref date 3) ":")
+				  date (list
+					(string-to-number (caddr tem))
+					(string-to-number (cadr tem))
+					(string-to-number (car tem))
+					(string-to-number (aref date 2))
+					(string-to-number (aref date 1))
+					(string-to-number (aref date 0))
+					nil nil nil))
+			    (condition-case nil
+				(encode-time date) ;; works on Emacs 27
+			      (error ;; Emacs 26
+			       (apply #'encode-time date))))))))
+	    (goto-char st)
+	    (when (and (search-forward "\"headlines\":{\"basic\":" nil t)
+		       (eq (following-char) ?\"))
+	      (setq subject (condition-case nil
+				(replace-regexp-in-string
+				 "\\`[\t 　]+\\|[\t 　]+\\'" ""
+				 (read (current-buffer)))
+			      (error "(failed to fetch subject)")))
 	      (goto-char st)
-	      (when (re-search-forward "\"headlines\":{\"basic\":\"\\([^\"]+\\)"
-				       nil t)
-		(setq subject (match-string 1))
-		(goto-char st)
-		(setq names nil)
-		(when (and (search-forward "\"taxonomy\":" nil t)
-			   (eq (following-char) ?{)
-			   (ignore-errors (forward-sexp 1) t))
-		  (save-restriction
-		    (narrow-to-region (1- (match-end 0)) (point))
-		    (goto-char (point-min))
-		    (while (re-search-forward "\"name\":\"\\([^\"]+\\)\"" nil t)
-		      (push (match-string 1) names))))
-		(when (or (not names)
-			  (not (setq
-				tem
-				(cdr (assoc
-				      group
-				      '(("column.editorial" . "主張")
-					("column.seiron" . "正論")
-					("column.sankeisyo" . "産経抄")
-					("column.naniwa" . "浪速風")
-					("west.essay" . "朝晴れエッセー"))))))
-			  (member tem names))
-		  (push (shimbun-create-header
-			 0 subject
-			 (concat shimbun-sankei-server-name
-				 (if names
-				     (concat " (" (mapconcat #'identity
-							     (last names 2)
-							     " ")
-					     ")")
-				   ""))
-			 (shimbun-make-date-string
-			  (nth 5 date) (nth 4 date) (nth 3 date)
-			  (format "%02d:%02d:%02d"
-				  (nth 2 date) (nth 1 date) (nth 0 date)))
-			 id "" 0 0
-			 (shimbun-expand-url url shimbun-sankei-url))
-			headers)))
-	      (goto-char nd)))))
+	      (setq names nil)
+	      (when (and (search-forward "\"taxonomy\":" nil t)
+			 (eq (following-char) ?{)
+			 (setq tem (ignore-errors
+				     (scan-sexps (match-end 0) 1))))
+		(save-restriction
+		  (narrow-to-region (match-end 0) tem)
+		  (while (re-search-forward "\"name\":\"\\([^\"]+\\)\"" nil t)
+		    (push (match-string 1) names))))
+	      (when (or (not names)
+			(not (setq
+			      tem
+			      (cdr (assoc
+				    group
+				    '(("column.editorial" . "主張")
+				      ("column.seiron" . "正論")
+				      ("column.sankeisyo" . "産経抄")
+				      ("column.naniwa" . "浪速風")
+				      ("west.essay" . "朝晴れエッセー"))))))
+			(member tem names))
+		(push (shimbun-create-header
+		       0 subject
+		       (concat shimbun-sankei-server-name
+			       (if names
+				   (concat " (" (mapconcat #'identity
+							   (last names 2)
+							   " ")
+					   ")")
+				 ""))
+		       (shimbun-make-date-string
+			(nth 5 date) (nth 4 date) (nth 3 date)
+			(format "%02d:%02d:%02d"
+				(nth 2 date) (nth 1 date) (nth 0 date)))
+		       id "" 0 0
+		       (shimbun-expand-url url shimbun-sankei-url))
+		      headers)))
+	    (goto-char nd)))))
     (shimbun-sort-headers headers)))
 
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-sankei)
@@ -242,34 +247,30 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
     (goto-char (point-min))
     (when (and (search-forward ";Fusion.globalContent=" nil t)
 	       (eq (following-char) ?{)
-	       (progn
-		 (setq st (point))
-		 (ignore-errors (forward-sexp 1) (setq nd (point)))))
-      (goto-char st)
+	       (setq st (match-end 0)
+		     nd (ignore-errors (copy-marker (scan-sexps st 1)))))
       (when (and (search-forward ",\"promo_items\":" nd t)
-		 (eq (following-char) ?{)
+		 (eq (following-char) ?{))
+	(ignore-errors ;; The other headlines are there.
+	  (delete-region (match-beginning 0) (scan-sexps (match-end 0) 1))))
+      (setq nd (prog1 (marker-position nd) (set-marker nd nil)))
+      (goto-char nd)
+      (when (and (search-backward ",\"headlines\":{\"basic\":" st t)
 		 (progn
-		   (setq tem (match-beginning 0))
-		   (ignore-errors (forward-sexp 1) t)))
-	;; The other headlines are there.
-	(delete-region tem (point)))
-      (goto-char st)
-      (when (and (search-forward ",\"headlines\":{\"basic\":" nd t)
-		 (eq (following-char) ?\")
-		 (setq tem (ignore-errors
-			     (replace-regexp-in-string
-			      "\\`[\t 　]+\\|[\t 　]+\\'" ""
-			      (read (current-buffer)))))
-		 (not (zerop (length tem))))
+		   (goto-char (match-end 0))
+		   (eq (following-char) ?\")
+		   (setq tem (ignore-errors
+			       (replace-regexp-in-string
+				"\\`[\t 　]+\\|[\t 　]+\\'" ""
+				(read (current-buffer)))))
+		   (not (zerop (length tem)))))
 	(setq headline tem))
       (goto-char st)
       (when (and (search-forward ",\"content_elements\":" nd t)
-		 (eq (following-char) ?\[)
-		 (progn
-		   (setq tem (point))
-		   (ignore-errors (forward-sexp 1) t)))
-	(setq st (1+ tem)
-	      nd (1- (point))))
+		 (eq (following-char) ?\[))
+	(ignore-errors
+	  (setq nd (1- (scan-sexps (match-end 0) 1))
+		st (1+ (match-end 0)))))
       (goto-char (point-min))
       (setq ids (shimbun-sankei-extract-images st nil)
 	    simgs (car ids)
@@ -280,7 +281,7 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 	  (setq st (goto-char (match-beginning 0))
 		nd (match-end 0)
 		id (match-string 1))
-	  (if (ignore-errors (forward-sexp 1) (setq nd (point)) (goto-char st))
+	  (if (ignore-errors (setq nd (scan-sexps st 1)))
 	      (cond
 	       ((search-forward "\"type\":\"image\"" nd t)
 		(goto-char st)
@@ -367,6 +368,23 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 		      (when (setq tem (split-string (buffer-string) "\n\n+" t))
 			(setq contents (nconc (nreverse tem) contents)))))
 		  (goto-char nd))
+	       ((search-forward "\"type\":\"interstitial_link\"" nd t)
+		(goto-char st)
+		(and (setq caption (and (search-forward "\"content\":" nd t)
+					(eq (following-char) ?\")
+					(ignore-errors
+					  (replace-regexp-in-string
+					   "\\`[\t 　]+\\|[\t 　]+\\'" ""
+					   (read (current-buffer))))))
+		     (not (zerop (length caption)))
+		     (progn
+		       (goto-char st)
+		       (setq tem (and (search-forward "\"url\":" nd t)
+				      (eq (following-char) ?\")
+				      (ignore-errors
+					(read (current-buffer))))))
+		     (push (concat "<a href=\"" tem "\">" caption "</a>")
+			   contents)))
 	       (t
 		(if (and (search-forward "\"content\":" nd t)
 			 (eq (following-char) ?\")

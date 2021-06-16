@@ -1,3 +1,12 @@
+2021-06-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Display most detailed headline
+
+	* sb-sankei.el (shimbun-sankei-clear-contents):
+	Fetch most detailed headline; support interstitial link.
+	(shimbun-sankei-get-headers, shimbun-sankei-clear-contents):
+	Replace `forward-sexp' with `scan-sexps'.
+
 2021-06-15  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Display headline that might be the only place to show the author
