@@ -413,7 +413,7 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 			 (setq str (substring str 1)))
 		       (if (or (not (eq (char-syntax (aref str 0)) ?w))
 			       (eq (aref str (1- (length str))) ?>))
-			   str
+			   (concat str "<br><br>")
 			 (concat "<p>"
 				 (if (and (string-match "[,.、。]" str)
 					  (>= (string-width str) maxwidth))
@@ -422,7 +422,7 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 	  (setq fn (lambda (str)
 		     (if (or (not (eq (char-syntax (aref str 0)) ?w))
 			     (eq (aref str (1- (length str))) ?>))
-			 str
+			 (concat str "<br><br>")
 		       (concat "<p>"
 			       (if (and (string-match "[,.、。]" str)
 					(>= (string-width str) maxwidth))
