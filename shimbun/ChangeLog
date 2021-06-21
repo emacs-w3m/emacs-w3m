@@ -1,3 +1,7 @@
+2021-06-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-yoshirin.el: Spelling fix: thumnail -> thumbnail
+
 2021-06-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Display most detailed headline

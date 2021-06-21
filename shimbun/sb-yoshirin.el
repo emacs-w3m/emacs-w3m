@@ -1,6 +1,6 @@
 ;;; sb-yoshirin.el --- shimbun backend for Yoshinori Kobayashi Official Site
 
-;; Copyright (C) 2015, 2016 Katsumi Yamaoka
+;; Copyright (C) 2015, 2016, 2021 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -129,16 +129,17 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAADFBMVEUAAAD///9fX1/d3d1
    "\\([^<]+\\)"
    "</a>"))
 
-(defun shimbun-yoshirin-get-thumnail (limit)
-  "Get a thumnail of the article in the area from LIMIT to the header."
+(defun shimbun-yoshirin-get-thumbnail (limit)
+  "Get a thumbnail of the article in the area from LIMIT to the header."
   (save-excursion
+    ;; Note: the site misspells "thumbnail" as "thumnail".
     (and (re-search-backward "\
-<div\\(?:[\t\n\r ]+[^\t\n\r >]+\\)*[\t\n\r ]+class=\"thumnail\"" limit t)
+<div\\(?:[\t\n\r ]+[^\t\n\r >]+\\)*[\t\n\r ]+class=\"thumb?nail\"" limit t)
 	 (shimbun-end-of-tag "div")
 	 (save-restriction
 	   (narrow-to-region (goto-char (match-beginning 2)) (match-end 2))
 	   (re-search-forward "<img[\t\n\r ]+[^>]+>" nil t))
-	 (list (cons 'Thumnail
+	 (list (cons 'Thumbnail
 		     (base64-encode-string
 		      (encode-coding-string (match-string 0) 'utf-8)
 		      t))))))
@@ -173,7 +174,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAADFBMVEUAAAD///9fX1/d3d1
 					     (string-to-number month)
 					     (string-to-number day))
 		   id "" 0 0 url
-		   (shimbun-yoshirin-get-thumnail limit))
+		   (shimbun-yoshirin-get-thumbnail limit))
 		  headers))
 	  (setq limit (point)))))
     headers))
@@ -211,7 +212,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAADFBMVEUAAAD///9fX1/d3d1
 					       (string-to-number month)
 					       (string-to-number day))
 		     id "" 0 0 url
-		     (shimbun-yoshirin-get-thumnail limit))
+		     (shimbun-yoshirin-get-thumbnail limit))
 		    headers)
 	      (setq limit (point)))
 	    (when (and count (<= (setq count (1- count)) 0))
@@ -252,27 +253,29 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAADFBMVEUAAAD///9fX1/d3d1
       (when (re-search-forward "\\(?:[\t\n\r ]*<p>&nbsp;</p>\\)*[\t\n\r ]*\
 <div\\(?:[\t\n\r ]+[^\t\n\r >]+\\)*[\t\n\r ]+class=\"post_facebook\"" nil t)
 	(delete-region (match-beginning 0) (point-max))))
-    (let ((thumnail (cdr (assq 'Thumnail (shimbun-header-extra header))))
+    (let ((thumbnail (cdr (or (assq 'Thumbnail (shimbun-header-extra header))
+			      (assq 'Thumnail (shimbun-header-extra header)))))
 	  (case-fold-search t)
 	  src caption)
-      (when (and thumnail
+      (when (and thumbnail
 		 (progn
-		   (setq thumnail (decode-coding-string
-				   (base64-decode-string thumnail) 'utf-8))
-		   (string-match "src=\"[^\"]+\"" thumnail))
+		   (setq thumbnail (decode-coding-string
+				   (base64-decode-string thumbnail) 'utf-8))
+		   (string-match "src=\"[^\"]+\"" thumbnail))
 		 (progn
-		   (setq src (regexp-quote (match-string 0 thumnail)))
+		   (setq src (regexp-quote (match-string 0 thumbnail)))
 		   (goto-char (point-min))
 		   (not (re-search-forward (concat "\
 <img\\(?:[\t\n\r ]+[^\t\n\r >]+\\)*[\t\n\r ]+" src) nil t))))
-	(when (string-match "[\t ]+alt=\"\\([^\"]+\\)\"" thumnail)
-	  (setq caption (match-string 1 thumnail)
-		thumnail (concat (substring thumnail 0 (match-beginning 0))
-				 (substring thumnail (match-end 0))))
+	(when (string-match "[\t ]+alt=\"\\([^\"]+\\)\"" thumbnail)
+	  (setq caption (match-string 1 thumbnail)
+		thumbnail (concat (substring thumbnail 0 (match-beginning 0))
+				 (substring thumbnail (match-end 0))))
 	  (when (string-match "\\`\\(?:%[0-9a-f][0-9a-f:]\\)+\\'" caption)
 	    (setq caption (w3m-url-decode-string caption 'utf-8)))
-	  (insert caption "<br>\n"))
-	(insert thumnail "\n")))))
+	  (unless (string-match "\\`thumb?nail\\'" caption)
+	    (insert caption "<br>\n")))
+	(insert thumbnail "\n")))))
 
 (provide 'sb-yoshirin)
 
