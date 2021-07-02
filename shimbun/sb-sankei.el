@@ -190,21 +190,19 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 			      (error ;; Emacs 26
 			       (apply #'encode-time date))))))))
 	    (goto-char st)
-	    (when (and (search-forward "\"headlines\":{\"basic\":" nil t)
-		       (eq (following-char) ?\"))
+	    (when (re-search-forward "\"headlines\":{\"basic\":\\(\"\\)" nil t)
 	      (setq subject (condition-case nil
 				(replace-regexp-in-string
 				 "\\`[\t 　]+\\|[\t 　]+\\'" ""
-				 (read (current-buffer)))
+				 (read (nth 2 (match-data))))
 			      (error "(failed to fetch subject)")))
 	      (goto-char st)
 	      (setq names nil)
-	      (when (and (search-forward "\"taxonomy\":" nil t)
-			 (eq (following-char) ?{)
+	      (when (and (re-search-forward "\"taxonomy\":\\({\\)" nil t)
 			 (setq tem (ignore-errors
-				     (scan-sexps (match-end 0) 1))))
+				     (scan-sexps (match-beginning 1) 1))))
 		(save-restriction
-		  (narrow-to-region (match-end 0) tem)
+		  (narrow-to-region (match-beginning 1) tem)
 		  (while (re-search-forward "\"name\":\"\\([^\"]+\\)\"" nil t)
 		    (push (match-string 1) names))))
 	      (when (or (not names)
@@ -245,32 +243,28 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
   "Collect contents and create an html page in the current buffer."
   (let (st nd tem headline ids simgs id caption img contents eimgs maxwidth fn)
     (goto-char (point-min))
-    (when (and (search-forward ";Fusion.globalContent=" nil t)
-	       (eq (following-char) ?{)
-	       (setq st (match-end 0)
+    (when (and (re-search-forward ";Fusion.globalContent=\\({\\)" nil t)
+	       (setq st (match-beginning 1)
 		     nd (ignore-errors (copy-marker (scan-sexps st 1)))))
-      (when (and (search-forward ",\"promo_items\":" nd t)
-		 (eq (following-char) ?{))
+      (when (re-search-forward ",\"promo_items\":\\({\\)" nd t)
 	(ignore-errors ;; The other headlines are there.
-	  (delete-region (match-beginning 0) (scan-sexps (match-end 0) 1))))
+	  (delete-region (match-beginning 0)
+			 (scan-sexps (match-beginning 1) 1))))
       (setq nd (prog1 (marker-position nd) (set-marker nd nil)))
       (goto-char nd)
-      (when (and (search-backward ",\"headlines\":{\"basic\":" st t)
+      (when (and (re-search-backward ",\"headlines\":{\"basic\":\\(\"\\)" st t)
 		 (progn
-		   (goto-char (match-end 0))
-		   (eq (following-char) ?\")
 		   (setq tem (ignore-errors
 			       (replace-regexp-in-string
 				"\\`[\t 　]+\\|[\t 　]+\\'" ""
-				(read (current-buffer)))))
+				(read (nth 2 (match-data))))))
 		   (not (zerop (length tem)))))
 	(setq headline tem))
       (goto-char st)
-      (when (and (search-forward ",\"content_elements\":" nd t)
-		 (eq (following-char) ?\[))
+      (when (re-search-forward ",\"content_elements\":\\(\\[\\)" nd t)
 	(ignore-errors
-	  (setq nd (1- (scan-sexps (match-end 0) 1))
-		st (1+ (match-end 0)))))
+	  (setq st (match-end 0))
+	  (setq nd (1- (scan-sexps (match-beginning 1) 1)))))
       (goto-char (point-min))
       (setq ids (shimbun-sankei-extract-images st nil)
 	    simgs (car ids)
@@ -286,34 +280,33 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 	       ((search-forward "\"type\":\"image\"" nd t)
 		(goto-char st)
 		(setq caption
-		      (and (search-forward "\"caption\":" nd t)
-			   (eq (following-char) ?\")
+		      (and (re-search-forward "\"caption\":\\(\"\\)" nd t)
 			   (setq tem (ignore-errors
 				       (replace-regexp-in-string
 					"\\`[\t 　]+\\|[\t 　]+\\'" ""
-					(read (current-buffer)))))
+					(read (nth 2 (match-data))))))
 			   (not (zerop (length tem)))
 			   tem))
 		(if (member id ids)
 		    (goto-char nd)
 		  (goto-char st)
-		  (setq img (and (search-forward
-				  "\"type\":\"image\",\"url\":"
+		  (setq img (and (re-search-forward
+				  "\"type\":\"image\",\"url\":\\(\"\\)"
 				  nd t)
-				 (eq (following-char) ?\")
-				 (ignore-errors (read (current-buffer)))))
+				 (ignore-errors
+				   (read (nth 2 (match-data))))))
 		  (goto-char st)
-		  (and (or (search-forward "\"articleLarge\":" nd t)
-			   (search-forward "\"articleSmall\":" nd t)
+		  (and (or (re-search-forward "\"articleLarge\":\\(\"\\)" nd t)
+			   (re-search-forward "\"articleSmall\":\\(\"\\)" nd t)
 			   ;; very large
-			   (and (not img) (search-forward
-					   "\"type\":\"image\",\"url\":"
-					   nd t))
+			   (and (not img)
+				(re-search-forward
+				 "\"type\":\"image\",\"url\":\\(\"\\)" nd t))
 			   ;; portrait is trimmed?
-			   (search-forward "\"articleSnsShareImage\":"
-					   nd t))
-		       (eq (following-char) ?\")
-		       (setq tem (ignore-errors (read (current-buffer))))
+			   (re-search-forward
+			    "\"articleSnsShareImage\":\\(\"\\)" nd t))
+		       (setq tem (ignore-errors
+				   (read (nth 2 (match-data)))))
 		       (progn
 			 (push id ids)
 			 (push (concat (if img
@@ -330,9 +323,9 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 			       contents)))))
 	       ((search-forward "\"type\":\"raw_html\"" nd t)
 		(goto-char st)
-		(if (and (search-forward "\"content\":" nd t)
-			 (eq (following-char) ?\")
-			 (setq tem (ignore-errors (read (current-buffer)))))
+		(if (and (re-search-forward "\"content\":\\(\"\\)" nd t)
+			 (setq tem (ignore-errors
+				     (read (nth 2 (match-data))))))
 		    (with-temp-buffer
 		      (insert tem)
 		      (shimbun-strip-cr)
@@ -370,25 +363,25 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 		  (goto-char nd))
 	       ((search-forward "\"type\":\"interstitial_link\"" nd t)
 		(goto-char st)
-		(and (setq caption (and (search-forward "\"content\":" nd t)
-					(eq (following-char) ?\")
+		(and (setq caption (and (re-search-forward
+					 "\"content\":\\(\"\\)" nd t)
 					(ignore-errors
 					  (replace-regexp-in-string
 					   "\\`[\t 　]+\\|[\t 　]+\\'" ""
-					   (read (current-buffer))))))
+					   (read (nth 2 (match-data)))))))
 		     (not (zerop (length caption)))
 		     (progn
 		       (goto-char st)
-		       (setq tem (and (search-forward "\"url\":" nd t)
-				      (eq (following-char) ?\")
+		       (setq tem (and (re-search-forward "\"url\":\\(\"\\)"
+							 nd t)
 				      (ignore-errors
-					(read (current-buffer))))))
+					(read (nth 2 (match-data)))))))
 		     (push (concat "<a href=\"" tem "\">" caption "</a>")
 			   contents)))
 	       (t
-		(if (and (search-forward "\"content\":" nd t)
-			 (eq (following-char) ?\")
-			 (setq tem (ignore-errors (read (current-buffer)))))
+		(if (and (re-search-forward "\"content\":\\(\"\\)" nd t)
+			 (setq tem (ignore-errors
+				     (read (nth 2 (match-data))))))
 		    (progn
 		      (setq tem (replace-regexp-in-string
 				 "\\`[\t 　]+\\|[\t 　]+\\'" "" tem))
