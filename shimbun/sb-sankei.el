@@ -25,8 +25,10 @@
 ;;; Code:
 
 (require 'shimbun)
+(require 'sb-multi)
 
-(luna-define-class shimbun-sankei (shimbun-japanese-newspaper shimbun) ())
+(luna-define-class shimbun-sankei (shimbun-japanese-newspaper shimbun-multi
+							      shimbun) ())
 
 (defvar shimbun-sankei-url "https://www.sankei.com/")
 
@@ -485,6 +487,37 @@ src=\"[^\"]+/\\([0-9A-Z]\\{26\\}\\)\\.[^\"]+\"" nd t))
 <a href=\""
 	  (shimbun-article-base-url shimbun header) "\">&lt;"
 	  (shimbun-article-base-url shimbun header) "&gt;</a>\n</div>\n"))
+
+(luna-define-method shimbun-multi-next-url ((shimbun shimbun-sankei)
+					    header url)
+  (shimbun-sankei-multi-next-url shimbun header url))
+
+(defun shimbun-sankei-multi-next-url (shimbun header url)
+  (goto-char (point-min))
+  (when (and (re-search-forward "<a\\(?:[\t\n ]+[^\t\n >]+\\)*\
+\\(?:[\t\n ]+data-gtm-action=\"move to next article page\"\
+\\|>[\t\n ]*続きを見る[\t\n ]*<\\)" nil t)
+	     (progn
+	       (goto-char (match-beginning 0))
+	       (re-search-forward "href=\"\\([^\"]+\\)" nil t)))
+    (shimbun-expand-url (match-string 1) url)))
+
+(luna-define-method shimbun-multi-clear-contents :around ((shimbun
+							   shimbun-sankei)
+							  header
+							  has-previous-page
+							  has-next-page)
+  (shimbun-sankei-multi-clear-contents shimbun header
+				       has-previous-page has-next-page))
+
+(defun shimbun-sankei-multi-clear-contents (shimbun header
+						    has-previous-page
+						    has-next-page)
+  (when (luna-call-next-method)
+    (when has-previous-page
+      (goto-char (point-min))
+      (insert "&#012;\n"))
+    t))
 
 (eval-when-compile
   (require 'w3m-cookie)
