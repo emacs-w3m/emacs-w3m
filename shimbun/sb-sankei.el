@@ -252,7 +252,9 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 \\|data-gtm-label=\"article header author link\\)" nil t)
 		   (shimbun-end-of-tag "a"))
 	      (re-search-forward "{\"byline\":\"\\(\\([^\"}]+\\)\\)\"" nil t))
-      (setq author (replace-regexp-in-string "[\t 　]+" "" (match-string 2))))
+      (setq author (replace-regexp-in-string
+		    "\\`[\t 　]+\\|\\(\\cj\\)[\t 　]+\\(\\cj\\)\\|[\t 　]+\\'"
+		    "\\1\\2" (match-string 2))))
     (goto-char (point-min))
     (when (and (re-search-forward ";Fusion.globalContent=\\({\\)" nil t)
 	       (setq st (match-beginning 1)
