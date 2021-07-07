@@ -1,3 +1,8 @@
+2021-07-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-clear-contents):
+	Show author name if it is expressed clearly in the original.
+
 2021-07-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-get-headers)

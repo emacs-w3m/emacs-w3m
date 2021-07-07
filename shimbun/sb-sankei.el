@@ -241,7 +241,16 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 
 (defun shimbun-sankei-clear-contents (shimbun header)
   "Collect contents and create an html page in the current buffer."
-  (let (st nd tem headline ids simgs id caption img contents eimgs maxwidth fn)
+  (let (author st nd tem headline ids simgs id caption img contents eimgs
+	       maxwidth fn)
+    (goto-char (point-min))
+    (when (or (and (re-search-forward "<a[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
+\\(?:class=\"gtm-click author-name\"\\|href=\"/author/\
+\\|data-gtm-action=\"move to author page\"\
+\\|data-gtm-label=\"article header author link\\)" nil t)
+		   (shimbun-end-of-tag "a"))
+	      (re-search-forward "{\"byline\":\"\\(\\([^\"}]+\\)\\)\"}" nil t))
+      (setq author (replace-regexp-in-string "[\t 　]+" "" (match-string 2))))
     (goto-char (point-min))
     (when (and (re-search-forward ";Fusion.globalContent=\\({\\)" nil t)
 	       (setq st (match-beginning 1)
@@ -393,7 +402,10 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
       (setq eimgs (car (shimbun-sankei-extract-images nil ids)))
       (erase-buffer)
       (when headline
-	(insert "<p>" headline "</p>\n"))
+	(insert "<p>" headline)
+	(when (and author (not (string-match (regexp-quote author) headline)))
+	  (insert "<br>\n<b>" author "</b>"))
+	(insert "</p>\n"))
       (when simgs
 	(insert "<p>" (mapconcat #'identity (nreverse simgs) "</p>\n<p>")
 		"</p>\n"))
