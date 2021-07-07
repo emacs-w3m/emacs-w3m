@@ -401,11 +401,15 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
       (goto-char nd)
       (setq eimgs (car (shimbun-sankei-extract-images nil ids)))
       (erase-buffer)
-      (when headline
-	(insert "<p>" headline)
-	(when (and author (not (string-match (regexp-quote author) headline)))
-	  (insert "<br>\n<b>" author "</b>"))
-	(insert "</p>\n"))
+      (if headline
+	  (progn
+	    (insert "<p>" headline)
+	    (when (and author
+		       (not (string-match (regexp-quote author) headline)))
+	      (insert "<br>\n<b>" author "</b>"))
+	    (insert "</p>\n"))
+	(when author
+	  (insert "<p><b>" author "</b></p>\n")))
       (when simgs
 	(insert "<p>" (mapconcat #'identity (nreverse simgs) "</p>\n<p>")
 		"</p>\n"))
