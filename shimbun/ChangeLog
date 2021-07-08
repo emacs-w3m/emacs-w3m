@@ -1,3 +1,9 @@
+2021-07-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Add links to embedded movies
+
+	* sb-sankei.el (shimbun-sankei-clear-contents): Add links to movies.
+
 2021-07-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Support multiple article pages

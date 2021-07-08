@@ -391,6 +391,12 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 					(read (nth 2 (match-data)))))))
 		     (push (concat "<a href=\"" tem "\">" caption "</a>")
 			   contents)))
+	       ((search-forward "\"raw_oembed\":{\"html\":\"<iframe" nd t)
+		(when (re-search-forward
+		       " src=\\\\\"\\([^ \">?]+\\)\\(?:[^ \">]+\\)?\\\\\""
+		       nd t)
+		  (push (concat "<a href=\"" (match-string 1) "\">[動画]</a>")
+			contents)))
 	       (t
 		(if (and (re-search-forward "\"content\":\\(\"\\)" nd t)
 			 (setq tem (ignore-errors
@@ -398,7 +404,9 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 		    (progn
 		      (setq tem (replace-regexp-in-string
 				 "\\`[\t 　]+\\|[\t 　]+\\'" "" tem))
-		      (unless (zerop (length tem))
+		      (unless (or (zerop (length tem))
+				  ;; <br/> only case
+				  (string-match "\\`<[^>]*>\\'" tem))
 			(push tem contents)))
 		  (goto-char nd))))
 	    (goto-char nd))))
@@ -421,30 +429,36 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 	(setq maxwidth (max (- (window-width) 10) 10))
 	(if (string-match "産経抄\\|浪速風"
 			  (shimbun-header-from-internal header))
-	    (setq fn (lambda (str)
+	    (setq fn (lambda (str &optional last)
 		       (when (eq (aref str 0) ?▼)
 			 (setq str (substring str 1)))
 		       (if (or (not (eq (char-syntax (aref str 0)) ?w))
 			       (eq (aref str (1- (length str))) ?>))
-			   (concat str "<br><br>")
-			 (concat "<p>"
+			   (concat str "<br>" (if last "" "<br>"))
+			 (concat (if last "" "<p>")
 				 (if (and (string-match "[,.、。]" str)
 					  (>= (string-width str) maxwidth))
 				     "　" "")
-				 str "</p>"))))
-	  (setq fn (lambda (str)
+				 str (if last "" "</p>")))))
+	  (setq fn (lambda (str &optional last)
 		     (if (or (not (eq (char-syntax (aref str 0)) ?w))
 			     (eq (aref str (1- (length str))) ?>))
-			 (concat str "<br><br>")
-		       (concat "<p>"
+			 (concat str "<br>" (if last "" "<br>"))
+		       (concat (if last "" "<p>")
 			       (if (and (string-match "[,.、。]" str)
 					(>= (string-width str) maxwidth))
 				   "　" "")
-			       str "</p>")))))
-	(insert (mapconcat fn (nreverse contents) "\n") "\n"))
+			       str (if last "" "</p>"))))))
+	(if eimgs
+	    (insert (mapconcat fn (nreverse contents) "\n") "\n")
+	  (when (cdr contents)
+	    (insert (mapconcat fn (reverse (cdr contents)) "\n") "\n"))
+	  (insert (funcall fn (car contents) t) "\n")))
       (when eimgs
-	(insert "<p>" (mapconcat #'identity (nreverse eimgs) "</p>\n<p>")
-		"</p>\n"))
+	(when (cdr eimgs)
+	  (insert "<p>" (mapconcat #'identity (reverse (cdr eimgs)) "</p>\n<p>")
+		  "</p>\n"))
+	(insert (car eimgs) "\n"))
       (unless (memq (shimbun-japanese-hankaku shimbun) '(header subject nil))
 	(shimbun-japanese-hankaku-buffer t))
       t)))
