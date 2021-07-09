@@ -393,14 +393,13 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 			   contents)))
 	       ((re-search-forward
 		 "\"raw_oembed\":{\"html\":\\(\"<iframe[\t\n ]+\\)" nd t)
-		(condition-case nil
-		    (setq tem (replace-regexp-in-string
-			       ">[^<]*</iframe"	">[動画]</iframe"
-			       (read (nth 2 (match-data)))))
-		  (error (setq tem "[動画]")))
-		(when (string-match "[\t\n ]src=\"\\([^ \">?]+\\)" tem)
-		  (push (concat "<a href=\"" (match-string 1 tem) "\">"
-				tem "</a>")
+		(when (setq tem (ignore-errors (read (nth 2 (match-data)))))
+		  (setq tem (replace-regexp-in-string
+			     ">[^<]*</iframe" ">[動画]</iframe" tem))
+		  (push (if (string-match "[\t\n ]src=\"\\([^ \">?]+\\)" tem)
+			    (concat "<a href=\"" (match-string 1 tem) "\">"
+				    tem "</a>")
+			  tem)
 			contents)))
 	       (t
 		(if (and (re-search-forward "\"content\":\\(\"\\)" nd t)
