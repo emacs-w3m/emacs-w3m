@@ -398,11 +398,9 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 			       ">[^<]*</iframe"	">[動画]</iframe"
 			       (read (nth 2 (match-data)))))
 		  (error (setq tem "[動画]")))
-		(goto-char (match-end 0))
-		(when (re-search-forward
-		       " src=\\\\\"\\([^ \">?]+\\)\\(?:[^ \">]+\\)?\\\\\""
-		       nd t)
-		  (push (concat "<a href=\"" (match-string 1) "\">" tem "</a>")
+		(when (string-match "[\t\n ]src=\"\\([^ \">?]+\\)" tem)
+		  (push (concat "<a href=\"" (match-string 1 tem) "\">"
+				tem "</a>")
 			contents)))
 	       (t
 		(if (and (re-search-forward "\"content\":\\(\"\\)" nd t)
