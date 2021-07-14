@@ -250,11 +250,16 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 \\(?:class=\"gtm-click author-name\"\\|href=\"/author/\
 \\|data-gtm-action=\"move to author page\"\
 \\|data-gtm-label=\"article header author link\\)" nil t)
-		   (shimbun-end-of-tag "a"))
-	      (re-search-forward "{\"byline\":\"\\(\\([^\"}]+\\)\\)\"" nil t))
+		   (shimbun-end-of-tag "a")
+		   (setq author (match-string 2)))
+	      (and (progn
+		     (goto-char (point-min))
+		     (re-search-forward "{\"byline\":\"\\([^\"}]+\\)\"" nil t))
+		   (not (member (match-string 1) '("提供")))
+		   (setq author (propertize (match-string 1) 'byliner t))))
       (setq author (replace-regexp-in-string
 		    "\\`[\t 　]+\\|\\(\\cj\\)[\t 　]+\\(\\cj\\)\\|[\t 　]+\\'"
-		    "\\1\\2" (match-string 2))))
+		    "\\1\\2" author)))
     (goto-char (point-min))
     (when (and (re-search-forward ";Fusion.globalContent=\\({\\)" nil t)
 	       (setq st (match-beginning 1)
@@ -420,12 +425,15 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
       (if headline
 	  (progn
 	    (insert "<p>" headline)
-	    (when (and author
-		       (not (string-match (regexp-quote author) headline)))
-	      (insert "<br>\n<b>" author "</b>"))
+	    (when author
+	      (if (get-text-property 0 'byliner author)
+		  (insert "<br>\n(記: " author ")")
+		(unless (string-match (regexp-quote author) headline)
+		  (insert "<br>\n(著: " author ")"))))
 	    (insert "</p>\n"))
 	(when author
-	  (insert "<p><b>" author "</b></p>\n")))
+	  (insert "<p>(" (if (get-text-property 0 'byliner author) "記" "著")
+		  ": " author ")</p>\n")))
       (when simgs
 	(insert "<p>" (mapconcat #'identity (nreverse simgs) "</p>\n<p>")
 		"</p>\n"))
