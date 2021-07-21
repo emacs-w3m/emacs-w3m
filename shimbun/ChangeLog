@@ -1,3 +1,10 @@
+2021-07-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Delete nonsense distinction of writer and byliner
+
+	* sb-sankei.el (shimbun-sankei-clear-contents):
+	Fix the way to extract the author name.
+
 2021-07-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Add links to embedded movies

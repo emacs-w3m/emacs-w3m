@@ -254,9 +254,10 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 		   (setq author (match-string 2)))
 	      (and (progn
 		     (goto-char (point-min))
-		     (re-search-forward "{\"byline\":\"\\([^\"}]+\\)\"" nil t))
-		   (not (member (match-string 1) '("提供")))
-		   (setq author (propertize (match-string 1) 'byliner t))))
+		     (re-search-forward
+		      "{[^{}]*\"original\":{[^{}]*\"byline\":\"\\([^\"}]+\\)\""
+		      nil t))
+		   (setq author (match-string 1))))
       (setq author (replace-regexp-in-string
 		    "\\`[\t 　]+\\|\\(\\cj\\)[\t 　]+\\(\\cj\\)\\|[\t 　]+\\'"
 		    "\\1\\2" author)))
@@ -423,17 +424,11 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
       (setq eimgs (car (shimbun-sankei-extract-images nil ids)))
       (erase-buffer)
       (if headline
-	  (progn
-	    (insert "<p>" headline)
-	    (when author
-	      (if (get-text-property 0 'byliner author)
-		  (insert "<br>\n(記: " author ")")
-		(unless (string-match (regexp-quote author) headline)
-		  (insert "<br>\n(著: " author ")"))))
-	    (insert "</p>\n"))
+	  (insert "<p>" headline
+		  (if author (concat "<br>\n(" author ")") "")
+		  "</p>\n")
 	(when author
-	  (insert "<p>(" (if (get-text-property 0 'byliner author) "記" "著")
-		  ": " author ")</p>\n")))
+	  (insert "<p>(" author ")</p>\n")))
       (when simgs
 	(insert "<p>" (mapconcat #'identity (nreverse simgs) "</p>\n<p>")
 		"</p>\n"))
