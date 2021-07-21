@@ -425,7 +425,9 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
       (erase-buffer)
       (if headline
 	  (insert "<p>" headline
-		  (if author (concat "<br>\n(" author ")") "")
+		  (if (and author
+			   (not (string-match (regexp-quote author) headline)))
+		      (concat "<br>\n(" author ")") "")
 		  "</p>\n")
 	(when author
 	  (insert "<p>(" author ")</p>\n")))
