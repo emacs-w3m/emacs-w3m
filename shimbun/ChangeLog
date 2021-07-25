@@ -1,3 +1,7 @@
+2021-07-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-clear-contents): Show restrictions.
+
 2021-07-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Delete nonsense distinction of writer and byliner

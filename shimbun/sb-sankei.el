@@ -243,204 +243,237 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 
 (defun shimbun-sankei-clear-contents (shimbun header)
   "Collect contents and create an html page in the current buffer."
-  (let (author st nd tem headline ids simgs id caption img contents eimgs
-	       maxwidth fn)
-    (goto-char (point-min))
-    (when (or (and (re-search-forward "<a[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
+  (if (zerop (buffer-size))
+      (insert "お探しのページは見つかりませんでした。<br>\n"
+	      "ページが削除されたか移動した可能性があります。\n")
+    (let (author restrictions st nd tem headline ids simgs id caption img
+		 contents eimgs maxwidth fn)
+      (goto-char (point-min))
+      (when (or (and (re-search-forward "<a[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
 \\(?:class=\"gtm-click author-name\"\\|href=\"/author/\
 \\|data-gtm-action=\"move to author page\"\
 \\|data-gtm-label=\"article header author link\\)" nil t)
-		   (shimbun-end-of-tag "a")
-		   (setq author (match-string 2)))
-	      (and (progn
-		     (goto-char (point-min))
-		     (re-search-forward
-		      "{[^{}]*\"original\":{[^{}]*\"byline\":\"\\([^\"}]+\\)\""
-		      nil t))
-		   (setq author (match-string 1))))
-      (setq author (replace-regexp-in-string
-		    "\\`[\t 　]+\\|\\(\\cj\\)[\t 　]+\\(\\cj\\)\\|[\t 　]+\\'"
-		    "\\1\\2" author)))
-    (goto-char (point-min))
-    (when (and (re-search-forward ";Fusion.globalContent=\\({\\)" nil t)
-	       (setq st (match-beginning 1)
-		     nd (ignore-errors (copy-marker (scan-sexps st 1)))))
-      (when (re-search-forward ",\"promo_items\":\\({\\)" nd t)
-	(ignore-errors ;; The other headlines are there.
-	  (delete-region (match-beginning 0)
-			 (scan-sexps (match-beginning 1) 1))))
-      (setq nd (prog1 (marker-position nd) (set-marker nd nil)))
-      (goto-char nd)
-      (when (and (re-search-backward ",\"headlines\":{\"basic\":\\(\"\\)" st t)
-		 (progn
-		   (setq tem (ignore-errors
-			       (replace-regexp-in-string
-				"\\`[\t 　]+\\|[\t 　]+\\'" ""
-				(read (nth 2 (match-data))))))
-		   (not (zerop (length tem)))))
-	(setq headline tem))
-      (goto-char st)
-      (when (re-search-forward ",\"content_elements\":\\(\\[\\)" nd t)
-	(ignore-errors
-	  (setq st (match-end 0))
-	  (setq nd (1- (scan-sexps (match-beginning 1) 1)))))
+		     (shimbun-end-of-tag "a")
+		     (setq author (match-string 2)))
+		(and (progn
+		       (goto-char (point-min))
+		       (re-search-forward "\
+{[^{}]*\"original\":{[^{}]*\"byline\":\"\\([^\"}]+\\)\"" nil t))
+		     (setq author (match-string 1))))
+	(setq author
+	      (replace-regexp-in-string
+	       "\\`[\t 　]+\\|\\(\\cj\\)[\t 　]+\\(\\cj\\)\\|[\t 　]+\\'"
+	       "\\1\\2" author)))
       (goto-char (point-min))
-      (setq ids (shimbun-sankei-extract-images st nil)
-	    simgs (car ids)
-	    ids (cadr ids))
-      (save-restriction
-	(narrow-to-region (goto-char st) nd)
-	(while (re-search-forward "{\"_id\":\"\\([^\"]\\{26\\}\\)\"" nil t)
-	  (setq st (goto-char (match-beginning 0))
-		nd (match-end 0)
-		id (match-string 1))
-	  (if (ignore-errors (setq nd (scan-sexps st 1)))
-	      (cond
-	       ((search-forward "\"type\":\"image\"" nd t)
-		(goto-char st)
-		(setq caption
-		      (and (re-search-forward "\"caption\":\\(\"\\)" nd t)
+      (when (and (re-search-forward "<span[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
+class=\"restrictions\"" nil t)
+		 (shimbun-end-of-tag "span")
+		 (progn
+		   (goto-char (match-beginning 1))
+		   (re-search-forward "<span[\t\n >]" (match-end 1) t)
+		   (shimbun-end-of-tag "span")))
+	(setq restrictions (match-string 2)))
+      (goto-char (point-min))
+      (when (and (re-search-forward ";Fusion.globalContent=\\({\\)" nil t)
+		 (setq st (match-beginning 1)
+		       nd (ignore-errors (copy-marker (scan-sexps st 1)))))
+	(when (re-search-forward ",\"promo_items\":\\({\\)" nd t)
+	  (ignore-errors ;; The other headlines are there.
+	    (delete-region (match-beginning 0)
+			   (scan-sexps (match-beginning 1) 1))))
+	(setq nd (prog1 (marker-position nd) (set-marker nd nil)))
+	(goto-char nd)
+	(when (and (re-search-backward ",\"headlines\":{\"basic\":\\(\"\\)"
+				       st t)
+		   (progn
+		     (setq tem (ignore-errors
+				 (replace-regexp-in-string
+				  "\\`[\t 　]+\\|[\t 　]+\\'" ""
+				  (read (nth 2 (match-data))))))
+		     (not (zerop (length tem)))))
+	  (setq headline tem))
+	(goto-char st)
+	(when (re-search-forward ",\"content_elements\":\\(\\[\\)" nd t)
+	  (ignore-errors
+	    (setq st (match-end 0))
+	    (setq nd (1- (scan-sexps (match-beginning 1) 1)))))
+	(goto-char (point-min))
+	(setq ids (shimbun-sankei-extract-images st nil)
+	      simgs (car ids)
+	      ids (cadr ids))
+	(save-restriction
+	  (narrow-to-region (goto-char st) nd)
+	  (while (re-search-forward "{\"_id\":\"\\([^\"]\\{26\\}\\)\"" nil t)
+	    (setq st (goto-char (match-beginning 0))
+		  nd (match-end 0)
+		  id (match-string 1))
+	    (if (ignore-errors (setq nd (scan-sexps st 1)))
+		(cond
+		 ((search-forward "\"type\":\"image\"" nd t)
+		  (goto-char st)
+		  (setq caption
+			(and (re-search-forward "\"caption\":\\(\"\\)" nd t)
+			     (setq tem (ignore-errors
+					 (replace-regexp-in-string
+					  "\\`[\t 　]+\\|[\t 　]+\\'" ""
+					  (read (nth 2 (match-data))))))
+			     (not (zerop (length tem)))
+			     tem))
+		  (if (member id ids)
+		      (goto-char nd)
+		    (goto-char st)
+		    (setq img (and (re-search-forward
+				    "\"type\":\"image\",\"url\":\\(\"\\)"
+				    nd t)
+				   (ignore-errors
+				     (read (nth 2 (match-data))))))
+		    (goto-char st)
+		    (and (or (re-search-forward "\"articleLarge\":\\(\"\\)"
+						nd t)
+			     (re-search-forward "\"articleSmall\":\\(\"\\)"
+						nd t)
+			     ;; very large
+			     (and (not img)
+				  (re-search-forward
+				   "\"type\":\"image\",\"url\":\\(\"\\)" nd t))
+			     ;; portrait is trimmed?
+			     (re-search-forward
+			      "\"articleSnsShareImage\":\\(\"\\)" nd t))
+			 (setq tem (ignore-errors
+				     (read (nth 2 (match-data)))))
+			 (progn
+			   (push id ids)
+			   (push (concat (if img
+					     (concat "<a href=\"" img "\">")
+					   "")
+					 "<img src=\"" tem
+					 "\" alt=\"[写真]\">"
+					 (if img "</a>" "")
+					 (if caption
+					     (concat "<br>\n" caption)
+					   ""))
+				 contents)))))
+		 ((search-forward "\"type\":\"raw_html\"" nd t)
+		  (goto-char st)
+		  (if (and (re-search-forward "\"content\":\\(\"\\)" nd t)
 			   (setq tem (ignore-errors
-				       (replace-regexp-in-string
-					"\\`[\t 　]+\\|[\t 　]+\\'" ""
-					(read (nth 2 (match-data))))))
-			   (not (zerop (length tem)))
-			   tem))
-		(if (member id ids)
-		    (goto-char nd)
-		  (goto-char st)
-		  (setq img (and (re-search-forward
-				  "\"type\":\"image\",\"url\":\\(\"\\)"
-				  nd t)
-				 (ignore-errors
-				   (read (nth 2 (match-data))))))
-		  (goto-char st)
-		  (and (or (re-search-forward "\"articleLarge\":\\(\"\\)" nd t)
-			   (re-search-forward "\"articleSmall\":\\(\"\\)" nd t)
-			   ;; very large
-			   (and (not img)
-				(re-search-forward
-				 "\"type\":\"image\",\"url\":\\(\"\\)" nd t))
-			   ;; portrait is trimmed?
-			   (re-search-forward
-			    "\"articleSnsShareImage\":\\(\"\\)" nd t))
-		       (setq tem (ignore-errors
-				   (read (nth 2 (match-data)))))
-		       (progn
-			 (push id ids)
-			 (push (concat (if img
-					   (concat "<a href=\"" img "\">")
-					 "")
-				       "<img src=\"" tem
-				       "\" alt=\"[写真]\">"
-				       (if img "</a>" "")
-				       (if caption
-					   (concat "<br>\n" caption
-						   ;;"<br><br>")
-						   )
-					 ""))
-			       contents)))))
-	       ((search-forward "\"type\":\"raw_html\"" nd t)
-		(goto-char st)
-		(if (and (re-search-forward "\"content\":\\(\"\\)" nd t)
-			 (setq tem (ignore-errors
-				     (read (nth 2 (match-data))))))
-		    (with-temp-buffer
-		      (insert tem)
-		      (shimbun-strip-cr)
-		      (goto-char (point-min))
-		      (while (and (re-search-forward "\
+				       (read (nth 2 (match-data))))))
+		      (with-temp-buffer
+			(insert tem)
+			(shimbun-strip-cr)
+			(goto-char (point-min))
+			(while (and (re-search-forward "\
 <div[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*class=\"sankei_netshop\"" nil t)
-				  (shimbun-end-of-tag "div" t))
-			(delete-region (match-beginning 0) (match-end 0))
-			(insert "\n"))
-		      (goto-char (point-min))
-		      (while (re-search-forward
-			      "[\t\n 　]*\\(?:<\\(?:br\\|/?p\\)>[\t\n 　]*\\)+"
-			      nil t)
-			(replace-match "\n\n"))
-		      (goto-char (point-min))
-		      (while (re-search-forward "^[\t 　]+\\|[\t 　]+$"
-						nil t)
-			(delete-region (match-beginning 0) (match-end 0)))
-		      (goto-char (point-min))
-		      (while (and (re-search-forward "<img[\t ]" nil t)
-				  (shimbun-end-of-tag))
-			(goto-char (match-beginning 0))
-			(unless (save-match-data
-				  (re-search-forward "[\t ]alt=\""
-						     (match-end 0) 'move))
-			  (forward-char -1)
-			  (insert " alt=\"[写真]\"")))
-		      (goto-char (point-min))
-		      (while (re-search-forward ">$" nil t)
-			(or (looking-at "\n\n")
-			    (looking-back "<br>" nil)
-			    (insert "<br>")))
-		      (when (setq tem (split-string (buffer-string) "\n\n+" t))
-			(setq contents (nconc (nreverse tem) contents)))))
+				    (shimbun-end-of-tag "div" t))
+			  (delete-region (match-beginning 0) (match-end 0))
+			  (insert "\n"))
+			(goto-char (point-min))
+			(while (re-search-forward "\
+[\t\n 　]*\\(?:<\\(?:br\\|/?p\\)>[\t\n 　]*\\)+" nil t)
+			  (replace-match "\n\n"))
+			(goto-char (point-min))
+			(while (re-search-forward "^[\t 　]+\\|[\t 　]+$"
+						  nil t)
+			  (delete-region (match-beginning 0) (match-end 0)))
+			(goto-char (point-min))
+			(while (and (re-search-forward "<img[\t ]" nil t)
+				    (shimbun-end-of-tag))
+			  (goto-char (match-beginning 0))
+			  (unless (save-match-data
+				    (re-search-forward "[\t ]alt=\""
+						       (match-end 0) 'move))
+			    (forward-char -1)
+			    (insert " alt=\"[写真]\"")))
+			(goto-char (point-min))
+			(while (re-search-forward ">$" nil t)
+			  (or (looking-at "\n\n")
+			      (looking-back "<br>" nil)
+			      (insert "<br>")))
+			(when (setq tem (split-string (buffer-string) "\n\n+"
+						      t))
+			  (setq contents (nconc (nreverse tem) contents)))))
 		  (goto-char nd))
-	       ((search-forward "\"type\":\"interstitial_link\"" nd t)
-		(goto-char st)
-		(and (setq caption (and (re-search-forward
-					 "\"content\":\\(\"\\)" nd t)
+		 ((search-forward "\"type\":\"interstitial_link\"" nd t)
+		  (goto-char st)
+		  (and (setq caption (and (re-search-forward
+					   "\"content\":\\(\"\\)" nd t)
+					  (ignore-errors
+					    (replace-regexp-in-string
+					     "\\`[\t 　]+\\|[\t 　]+\\'" ""
+					     (read (nth 2 (match-data)))))))
+		       (not (zerop (length caption)))
+		       (progn
+			 (goto-char st)
+			 (setq tem (and (re-search-forward "\"url\":\\(\"\\)"
+							   nd t)
 					(ignore-errors
-					  (replace-regexp-in-string
-					   "\\`[\t 　]+\\|[\t 　]+\\'" ""
-					   (read (nth 2 (match-data)))))))
-		     (not (zerop (length caption)))
-		     (progn
-		       (goto-char st)
-		       (setq tem (and (re-search-forward "\"url\":\\(\"\\)"
-							 nd t)
-				      (ignore-errors
-					(read (nth 2 (match-data)))))))
-		     (push (concat "<a href=\"" tem "\">" caption "</a>")
-			   contents)))
-	       ((re-search-forward
-		 "\"raw_oembed\":{\"html\":\\(\"<iframe[\t\n ]+\\)" nd t)
-		(when (setq tem (ignore-errors (read (nth 2 (match-data)))))
-		  (setq tem (replace-regexp-in-string
-			     ">[^<]*</iframe" ">[動画]</iframe" tem))
-		  (push (if (string-match "[\t\n ]src=\"\\([^ \">?]+\\)" tem)
-			    (concat "<a href=\"" (match-string 1 tem) "\">"
-				    tem "</a>")
-			  tem)
-			contents)))
-	       (t
-		(if (and (re-search-forward "\"content\":\\(\"\\)" nd t)
-			 (setq tem (ignore-errors
-				     (read (nth 2 (match-data))))))
-		    (progn
-		      (setq tem (replace-regexp-in-string
-				 "\\`[\t 　]+\\|[\t 　]+\\'" "" tem))
-		      (unless (or (zerop (length tem))
-				  ;; <br/> only case
-				  (string-match "\\`<[^>]*>\\'" tem))
-			(push tem contents)))
-		  (goto-char nd))))
-	    (goto-char nd))))
-      (goto-char nd)
-      (setq eimgs (car (shimbun-sankei-extract-images nil ids)))
-      (erase-buffer)
-      (if headline
-	  (insert "<p>" headline
-		  (if (and author
-			   (not (string-match (regexp-quote author) headline)))
-		      (concat "<br>\n(" author ")") "")
-		  "</p>\n")
-	(when author
-	  (insert "<p>(" author ")</p>\n")))
-      (when simgs
-	(insert "<p>" (mapconcat #'identity (nreverse simgs) "</p>\n<p>")
-		"</p>\n"))
-      (when contents
-	(setq maxwidth (max (- (window-width) 10) 10))
-	(if (string-match "産経抄\\|浪速風"
-			  (shimbun-header-from-internal header))
+					  (read (nth 2 (match-data)))))))
+		       (push (concat "<a href=\"" tem "\">" caption "</a>")
+			     contents)))
+		 ((re-search-forward
+		   "\"raw_oembed\":{\"html\":\\(\"<iframe[\t\n ]+\\)" nd t)
+		  (when (setq tem (ignore-errors (read (nth 2 (match-data)))))
+		    (setq tem (replace-regexp-in-string
+			       ">[^<]*</iframe" ">[動画]</iframe" tem))
+		    (push (if (string-match "[\t\n ]src=\"\\([^ \">?]+\\)" tem)
+			      (concat "<a href=\"" (match-string 1 tem) "\">"
+				      tem "</a>")
+			    tem)
+			  contents)))
+		 (t
+		  (if (and (re-search-forward "\"content\":\\(\"\\)" nd t)
+			   (setq tem (ignore-errors
+				       (read (nth 2 (match-data))))))
+		      (progn
+			(setq tem (replace-regexp-in-string
+				   "\\`[\t 　]+\\|[\t 　]+\\'" "" tem))
+			(unless (or (zerop (length tem))
+				    ;; <br/> only case
+				    (string-match "\\`<[^>]*>\\'" tem))
+			  (push tem contents)))
+		    (goto-char nd))))
+	      (goto-char nd))))
+	(goto-char nd)
+	(setq eimgs (car (shimbun-sankei-extract-images nil ids)))
+	(erase-buffer)
+	(when (and author headline
+		   (string-match (regexp-quote author) headline))
+	  (setq author nil))
+	(if headline
+	    (insert "<p>" headline
+		    (if restrictions
+			(concat "<br>\n--- " restrictions " ---"
+				(if author
+				    (concat " (" author ")") ""))
+		      (if author
+			  (concat "<br>\n(" author ")") ""))
+		    "</p>\n")
+	  (if restrictions
+	      (insert "<p>--- " restrictions " ---"
+		      (if author
+			  (concat " (" author ")") "")
+		      "</p>\n")
+	    (when author
+	      (insert "<p>(" author ")</p>\n"))))
+	(when simgs
+	  (insert "<p>" (mapconcat #'identity (nreverse simgs) "</p>\n<p>")
+		  "</p>\n"))
+	(when contents
+	  (setq maxwidth (max (- (window-width) 10) 10))
+	  (if (string-match "産経抄\\|浪速風"
+			    (shimbun-header-from-internal header))
+	      (setq fn (lambda (str &optional last)
+			 (when (eq (aref str 0) ?▼)
+			   (setq str (substring str 1)))
+			 (if (or (not (eq (char-syntax (aref str 0)) ?w))
+				 (eq (aref str (1- (length str))) ?>))
+			     (concat str "<br>" (if last "" "<br>"))
+			   (concat (if last "" "<p>")
+				   (if (and (string-match "[,.、。]" str)
+					    (>= (string-width str) maxwidth))
+				       "　" "")
+				   str (if last "" "</p>")))))
 	    (setq fn (lambda (str &optional last)
-		       (when (eq (aref str 0) ?▼)
-			 (setq str (substring str 1)))
 		       (if (or (not (eq (char-syntax (aref str 0)) ?w))
 			       (eq (aref str (1- (length str))) ?>))
 			   (concat str "<br>" (if last "" "<br>"))
@@ -448,29 +481,21 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 				 (if (and (string-match "[,.、。]" str)
 					  (>= (string-width str) maxwidth))
 				     "　" "")
-				 str (if last "" "</p>")))))
-	  (setq fn (lambda (str &optional last)
-		     (if (or (not (eq (char-syntax (aref str 0)) ?w))
-			     (eq (aref str (1- (length str))) ?>))
-			 (concat str "<br>" (if last "" "<br>"))
-		       (concat (if last "" "<p>")
-			       (if (and (string-match "[,.、。]" str)
-					(>= (string-width str) maxwidth))
-				   "　" "")
-			       str (if last "" "</p>"))))))
-	(if eimgs
-	    (insert (mapconcat fn (nreverse contents) "\n") "\n")
-	  (when (cdr contents)
-	    (insert (mapconcat fn (reverse (cdr contents)) "\n") "\n"))
-	  (insert (funcall fn (car contents) t) "\n")))
-      (when eimgs
-	(when (cdr eimgs)
-	  (insert "<p>" (mapconcat #'identity (reverse (cdr eimgs)) "</p>\n<p>")
-		  "</p>\n"))
-	(insert (car eimgs) "\n"))
-      (unless (memq (shimbun-japanese-hankaku shimbun) '(header subject nil))
-	(shimbun-japanese-hankaku-buffer t))
-      t)))
+				 str (if last "" "</p>"))))))
+	  (if eimgs
+	      (insert (mapconcat fn (nreverse contents) "\n") "\n")
+	    (when (cdr contents)
+	      (insert (mapconcat fn (reverse (cdr contents)) "\n") "\n"))
+	    (insert (funcall fn (car contents) t) "\n")))
+	(when eimgs
+	  (when (cdr eimgs)
+	    (insert "<p>" (mapconcat #'identity (reverse (cdr eimgs))
+				     "</p>\n<p>")
+		    "</p>\n"))
+	  (insert (car eimgs) "\n"))
+	(unless (memq (shimbun-japanese-hankaku shimbun) '(header subject nil))
+	  (shimbun-japanese-hankaku-buffer t))
+	t))))
 
 (defun shimbun-sankei-extract-images (end ids)
   "Extract images existing in the area from the current position to END.
