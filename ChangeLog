@@ -1,6 +1,8 @@
 2021-07-28  Boruch Baum  <boruch_baum@gmx.com>
 
-	*  (w3m--ignore-fill-column, w3m-force-wide-list): New variables.
+	force-wide-display (PR#98)
+
+	* w3m.el (w3m--ignore-fill-column, w3m-force-wide-list): New variables.
 	(w3m-create-page, w3m-display-width): Use them.
 	(w3m-display-width): Logic bug fixes.
 	(w3m-about-db-history): Reverse layout so time/date are on left side.

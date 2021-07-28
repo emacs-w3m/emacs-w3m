@@ -6717,13 +6717,12 @@ Choice is based upon content-type or mime-type TYPE."
       (setq charset (or charset w3m-current-content-charset))
       (when w3m-use-filter (w3m-filter url))
       (w3m-relationship-estimate url)
-      (cl-loop
-        for regex in w3m-force-wide-list
-        when (string-match regex url)
-        do (setq-local w3m--ignore-fill-column t)
-           (when (require 'hl-line nil t)
-             (with-current-buffer page-buffer (hl-line-mode)))
-        and return t)
+      (cl-loop for regex in w3m-force-wide-list
+	       when (string-match regex url)
+	       do (setq-local w3m--ignore-fill-column t)
+	       (when (require 'hl-line nil t)
+		 (with-current-buffer page-buffer (hl-line-mode)))
+	       and return t)
       ;; Create pages.
       (cond
        ((string-match "\\`text/" type)
@@ -10935,7 +10934,7 @@ A history page is invoked by the `w3m-about-history' command.")
   (let* ((start 0)
 	 (size 0)
 	 (print-all t)
-         (w3m-fill-column -1)
+	 (w3m-fill-column -1)
 	 (width (- (w3m-display-width) (if (display-graphic-p) 18 19)))
 	 (now (current-time))
 	 (ellipsis "…")
@@ -11019,15 +11018,15 @@ A history page is invoked by the `w3m-about-history' command.")
 		 (if (> (string-width title) width)
 		     (truncate-string-to-width title (1- width) nil ?  ellipsis)
 		   title)))))
-        (insert "<tr><td>"
-          (when time
+	(insert "<tr><td>"
+		(when time
 		  (if (<= (w3m-time-lapse-seconds time now)
 			  64800) ;; = (* 60 60 18) 18hours.
 		      (format-time-string "%H:%M:%S&nbsp;Today" time)
-                    (format-time-string "%H:%M:%S&nbsp;%Y-%m-%d" time)))
-          "</td>")
-        (insert (format "<td><nobr><a href=\"%s\">%s</a></nobr></td>"
-                        url title))
+		    (format-time-string "%H:%M:%S&nbsp;%Y-%m-%d" time)))
+		"</td>")
+	(insert (format "<td><nobr><a href=\"%s\">%s</a></nobr></td>"
+			url title))
 	(insert "</tr>\n"))
       (insert "</table>"
 	      (if next "\n<br>\n<hr>\n" "")
@@ -11243,13 +11242,13 @@ splitting windows vertically."
   "Return the maximum width which should display lines within the value."
   (let ((w3m-fill-column (if w3m--ignore-fill-column -1 w3m-fill-column)))
     (if (< 0 w3m-fill-column)
-        w3m-fill-column
+	w3m-fill-column
       (+ (if (and w3m-select-buffer-horizontal-window
-                  (get-buffer-window w3m-select-buffer-name))
-             ;; Show pages as if there is no buffers selection window.
-             (frame-width)
-           (window-width))
-         w3m-fill-column))))
+		  (get-buffer-window w3m-select-buffer-name))
+	     ;; Show pages as if there is no buffers selection window.
+	     (frame-width)
+	   (window-width))
+	 w3m-fill-column))))
 
 (defun w3m--setup-popup-window (toggle buffer-name nomsg)
   "Create a generic w3m popup window and its buffer.
