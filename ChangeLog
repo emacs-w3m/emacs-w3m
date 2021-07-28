@@ -1,3 +1,11 @@
+2021-07-28  Boruch Baum  <boruch_baum@gmx.com>
+
+	*  (w3m--ignore-fill-column, w3m-force-wide-list): New variables.
+	(w3m-create-page, w3m-display-width): Use them.
+	(w3m-display-width): Logic bug fixes.
+	(w3m-about-db-history): Reverse layout so time/date are on left side.
+	Manually force variable w3m-fill-column to -1.
+
 2021-06-15  Victor J. Orlikowski  <vjo@duke.edu>
 
 	Bugfix: make w3m-select-buffer-toggle-style work properly (PR#95)
