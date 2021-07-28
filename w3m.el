@@ -6675,6 +6675,20 @@ Content type for %s (%sjust type <RET> to download or external-view): "
 	'quit
       (cons type (and ourl (cons ourl url))))))
 
+(defvar-local w3m--ignore-fill-column nil
+  "Internal variable to force wide display.
+When non-NIL, forces wide display by causing the value of
+variable `w3m-fill-column' to be ignored. This was initially
+introduced for about://db-history, but could be explanded with an
+alist to operate or any URL regex.")
+
+(defcustom w3m-force-wide-list (list "about://db-history")
+  "URI regexes for which to force wide display.
+Use this to over-ride the value of variable `w3m-fill-column'.
+See also internal variable `w3m--ignore-fill-column'."
+  :group 'w3m
+  :type '(repeat (regexp)))
+
 (defun w3m-create-page (url type charset page-buffer)
   "Select a renderer or other handler for URL.
 Choice is based upon content-type or mime-type TYPE."
@@ -6703,6 +6717,13 @@ Choice is based upon content-type or mime-type TYPE."
       (setq charset (or charset w3m-current-content-charset))
       (when w3m-use-filter (w3m-filter url))
       (w3m-relationship-estimate url)
+      (cl-loop
+        for regex in w3m-force-wide-list
+        when (string-match regex url)
+        do (setq-local w3m--ignore-fill-column t)
+           (when (require 'hl-line nil t)
+             (with-current-buffer page-buffer (hl-line-mode)))
+        and return t)
       ;; Create pages.
       (cond
        ((string-match "\\`text/" type)
@@ -10904,6 +10925,7 @@ A history page is invoked by the `w3m-about-history' command.")
   (let* ((start 0)
 	 (size 0)
 	 (print-all t)
+         (w3m-fill-column -1)
 	 (width (- (w3m-display-width) (if (display-graphic-p) 18 19)))
 	 (now (current-time))
 	 (ellipsis "…")
@@ -10966,7 +10988,7 @@ A history page is invoked by the `w3m-about-history' command.")
     (if (null alist)
 	(insert "<em>Nothing in DataBase.</em>\n")
       (insert prev "<table width=100% cellpadding=0>
-<tr><td><h2>Title/URL</h2></td><td><h2>Time/Date</h2></td></tr>\n")
+<tr><td><h2>Time/Date</h2></td><td><h2>Title/URL</h2></td></tr>\n")
       (while (and alist (or (>= (cl-decf size) 0) print-all))
 	(setq url (car (car alist))
 	      time (cdr (car alist))
@@ -10987,15 +11009,15 @@ A history page is invoked by the `w3m-about-history' command.")
 		 (if (> (string-width title) width)
 		     (truncate-string-to-width title (1- width) nil ?  ellipsis)
 		   title)))))
-	(insert (format "<tr><td><nobr><a href=\"%s\">%s</a></nobr></td>"
-			url title))
-	(when time
-	  (insert "<td>"
+        (insert "<tr><td>"
+          (when time
 		  (if (<= (w3m-time-lapse-seconds time now)
 			  64800) ;; = (* 60 60 18) 18hours.
 		      (format-time-string "%H:%M:%S&nbsp;Today" time)
-		    (format-time-string "%H:%M:%S&nbsp;%Y-%m-%d" time))
-		  "</td>"))
+                    (format-time-string "%H:%M:%S&nbsp;%Y-%m-%d" time)))
+          "</td>")
+        (insert (format "<td><nobr><a href=\"%s\">%s</a></nobr></td>"
+                        url title))
 	(insert "</tr>\n"))
       (insert "</table>"
 	      (if next "\n<br>\n<hr>\n" "")
@@ -11209,18 +11231,15 @@ splitting windows vertically."
 ;; `w3m-select-buffer-horizontal-window' and `w3m-session-select-mode'.
 (defun w3m-display-width ()
   "Return the maximum width which should display lines within the value."
-  (if (< 0 w3m-fill-column)
-      w3m-fill-column
-    (+ (if (or (and w3m-select-buffer-horizontal-window
-		    (get-buffer-window w3m-select-buffer-name))
-	       ;; FIXME: that the session-select window is selected
-	       ;; at this time would probably be due to a bug.
-	       (with-current-buffer (window-buffer)
-		 (eq major-mode 'w3m-session-select-mode)))
-	   ;; Show a page as if there is no selection window.
-	   (frame-width)
-	 (window-width))
-       (or w3m-fill-column -1))))
+  (let ((w3m-fill-column (if w3m--ignore-fill-column -1 w3m-fill-column)))
+    (if (< 0 w3m-fill-column)
+        w3m-fill-column
+      (+ (if (and w3m-select-buffer-horizontal-window
+                  (get-buffer-window w3m-select-buffer-name))
+             ;; Show pages as if there is no buffers selection window.
+             (frame-width)
+           (window-width))
+         w3m-fill-column))))
 
 (defun w3m--setup-popup-window (toggle buffer-name nomsg)
   "Create a generic w3m popup window and its buffer.
