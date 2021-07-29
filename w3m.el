@@ -9680,6 +9680,13 @@ helpful message is presented and the operation is aborted."
 (defun w3m--goto-url--handler-function (url reload _charset post-data referer
 					    redisplay name reuse-history action
 					    orig history-position)
+  "Actions to be taken after rendering a page.
+
+This function is called by function `w3m--goto-url--valid-url' as
+it's asynchronous handler, after the `w3m' back-end process has
+rendered a page. It performs all of the browser's
+\"post-processing\", including but not limited to updating
+histories and forms."
   (with-current-buffer w3m-current-buffer
     (when w3m-current-url
       (setq w3m-current-process nil)
