@@ -9679,6 +9679,13 @@ helpful message is presented and the operation is aborted."
 (defun w3m--goto-url--handler-function (url reload _charset post-data referer
 					    redisplay name reuse-history action
 					    orig history-position)
+  "Actions to be taken after rendering a page.
+
+This function is called by function `w3m--goto-url--valid-url' as
+it's asynchronous handler, after the `w3m' back-end process has
+rendered a page. It performs all of the browser's
+\"post-processing\", including but not limited to updating
+histories and forms."
   (with-current-buffer w3m-current-buffer
     (when w3m-current-url
       (setq w3m-current-process nil)
@@ -9771,12 +9778,15 @@ helpful message is presented and the operation is aborted."
 	(run-hook-with-args 'w3m-display-hook real-url))
       (w3m-select-buffer-update)
       (w3m-session-crash-recovery-save)
-      (and w3m-current-url
-	   (stringp w3m-current-url)
-	   (or (string-match "\\`about://\\(?:header\\|source\\)/"
-			     w3m-current-url)
-	       (equal (w3m-content-type w3m-current-url) "text/plain"))
-	   (setq truncate-lines nil))
+      (when (and w3m-current-url
+                 (stringp w3m-current-url))
+        (when (or (string-match "\\`about://\\(?:header\\|source\\)/"
+                                w3m-current-url)
+                  (equal (w3m-content-type w3m-current-url) "text/plain"))
+          (setq truncate-lines nil))
+        (when (string-match "\\`about://db-history/" w3m-current-url)
+          (forward-line 6)
+          (w3m-next-anchor)))
       ;; restore position must call after hooks for localcgi.
       (when (or reload redisplay)
 	(w3m-history-restore-position))
