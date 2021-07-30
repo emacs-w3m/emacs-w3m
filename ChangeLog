@@ -1,3 +1,8 @@
+2021-07-29  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m--goto-url--handler-function): Position point on the first
+	entry in the db history; add a docstring.  (PR#99)
+
 2021-07-28  Boruch Baum  <boruch_baum@gmx.com>
 
 	force-wide-display (PR#98)

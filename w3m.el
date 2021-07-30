@@ -9778,15 +9778,14 @@ histories and forms."
 	(run-hook-with-args 'w3m-display-hook real-url))
       (w3m-select-buffer-update)
       (w3m-session-crash-recovery-save)
-      (when (and w3m-current-url
-                 (stringp w3m-current-url))
-        (when (or (string-match "\\`about://\\(?:header\\|source\\)/"
-                                w3m-current-url)
-                  (equal (w3m-content-type w3m-current-url) "text/plain"))
-          (setq truncate-lines nil))
-        (when (string-match "\\`about://db-history/" w3m-current-url)
-          (forward-line 3)
-          (w3m-next-anchor)))
+      (when (stringp w3m-current-url)
+	(when (or (string-match "\\`about://\\(?:header\\|source\\)/"
+				w3m-current-url)
+		  (equal (w3m-content-type w3m-current-url) "text/plain"))
+	  (setq truncate-lines nil))
+	(when (string-match "\\`about://db-history/" w3m-current-url)
+	  (forward-line 3)
+	  (w3m-next-anchor)))
       ;; restore position must call after hooks for localcgi.
       (when (or reload redisplay)
 	(w3m-history-restore-position))
