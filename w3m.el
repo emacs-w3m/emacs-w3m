@@ -9784,7 +9784,7 @@ histories and forms."
 		  (equal (w3m-content-type w3m-current-url) "text/plain"))
 	  (setq truncate-lines nil))
 	(when (string-match "\\`about://db-history/" w3m-current-url)
-	  (forward-line 6)
+	  (forward-line 3)
 	  (w3m-next-anchor)))
       ;; restore position must call after hooks for localcgi.
       (when (or reload redisplay)

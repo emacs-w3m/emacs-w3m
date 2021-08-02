@@ -1,3 +1,7 @@
+2021-08-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m--goto-url--handler-function): Fix point position. (PR#99)
+
 2021-07-29  Boruch Baum  <boruch_baum@gmx.com>
 
 	* w3m.el (w3m--goto-url--handler-function): Position point on the first
