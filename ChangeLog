@@ -1,6 +1,8 @@
-2021-08-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+2021-08-02  Boruch Baum  <boruch_baum@gmx.com>
 
-	* w3m.el (w3m--goto-url--handler-function): Fix point position. (PR#99)
+	Bugfix: db-history single-page advances point too far (PR#100)
+
+	* w3m.el (w3m--goto-url--handler-function): Do.
 
 2021-07-29  Boruch Baum  <boruch_baum@gmx.com>
 
