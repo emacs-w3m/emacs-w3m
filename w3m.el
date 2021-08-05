@@ -839,7 +839,7 @@ w3m configuration file (normally \"~/.w3m/config\")."
   :group 'w3m
   :type 'boolean)
 
-(defvar w3m-display-inline-images nil
+(defvar-local w3m-display-inline-images nil
   "Internal variable controls whether to show images in emacs-w3m buffers.
 This variable is buffer-local which defaults to the value of
 `w3m-default-display-inline-images'.  Don't set it directly; modify
@@ -847,7 +847,6 @@ the `w3m-default-display-inline-images' variable or use the\
  `\\<w3m-mode-map>\\[w3m-toggle-inline-images]' command
 to change the appearance of images.
 See also `w3m-toggle-inline-images-permanently'.")
-(make-variable-buffer-local 'w3m-display-inline-images)
 
 (defcustom w3m-default-display-inline-images nil
   "Non-nil means display images inline in emacs-w3m buffers.
@@ -2230,17 +2229,15 @@ This variable will be made buffer-local.")
   "Favicon image of the page.
 This variable will be made buffer-local")
 
-(defvar w3m-current-process nil
+(defvar-local w3m-current-process nil
   "List of external processes running in the buffer.
 Mainly used for a flag to say whether an external process runs.
 This variable will be made buffer-local.")
-(make-variable-buffer-local 'w3m-current-process)
 
-(defvar w3m-refresh-timer nil
+(defvar-local w3m-refresh-timer nil
   "Variable used to keep a timer object for refreshing a page.
 It will be supplied by the REFRESH attribute in the META tag, and made
 buffer-local in each emacs-w3m buffer.")
-(make-variable-buffer-local 'w3m-refresh-timer)
 
 (defvar w3m-mail-user-agents '(gnus-user-agent
 			       message-user-agent
@@ -2250,55 +2247,39 @@ buffer-local in each emacs-w3m buffer.")
   "List of mail user agents that `w3m-mail' supports.
 See also w3m-mail.el.")
 
-(defvar w3m-current-base-url nil
+(defvar-local w3m-current-base-url nil
   "URL specified by <base...> tag in <head> element of the page source.")
-(defvar w3m-current-forms nil
+(defvar-local w3m-current-forms nil
   "Variable used to keep forms data for the current emacs-w3m buffer.")
-(defvar w3m-current-coding-system nil
+(defvar-local w3m-current-coding-system nil
   "Coding system used when decoding the current emacs-w3m buffer.")
-(defvar w3m-current-content-charset nil
+(defvar-local w3m-current-content-charset nil
   "Content charset of the page specified by the server or the META tag.")
-(defvar w3m-current-title nil
+(defvar-local w3m-current-title nil
   "Title of a page visiting in the current buffer.")
-(defvar w3m-current-url nil
+(defvar-local w3m-current-url nil
   "A url of a page visiting in the current buffer.")
-(defvar w3m-icon-data nil
+(defvar-local w3m-icon-data nil
   "Cons of icon data and its image-type for the current emacs-w3m buffer.
 It is used for favicon data.  The type is often `ico'.")
-(defvar w3m-next-url nil
+(defvar-local w3m-next-url nil
   "URL as the next document in the author-defined sequence.")
-(defvar w3m-previous-url nil
+(defvar-local w3m-previous-url nil
   "URL as the previous document in the author-defined sequence.")
-(defvar w3m-start-url nil
+(defvar-local w3m-start-url nil
   "URL as the first document in the author-defined sequence.")
-(defvar w3m-contents-url nil
+(defvar-local w3m-contents-url nil
   "URL as the table of contents for the current page.")
-(defvar w3m-current-refresh nil
+(defvar-local w3m-current-refresh nil
   "Cons of number of seconds and a url specified by the REFRESH attribute.")
-(defvar w3m-current-ssl nil
+(defvar-local w3m-current-ssl nil
   "SSL certification indicator for the current emacs-w3m buffer.")
-(defvar w3m-name-anchor-from-hist nil
+(defvar-local w3m-name-anchor-from-hist nil
   "List of the points of where `w3m-search-name-anchor' come from.")
 
-(make-variable-buffer-local 'w3m-current-url)
-(make-variable-buffer-local 'w3m-current-base-url)
-(make-variable-buffer-local 'w3m-current-title)
-(make-variable-buffer-local 'w3m-current-forms)
-(make-variable-buffer-local 'w3m-current-coding-system)
-(make-variable-buffer-local 'w3m-current-content-charset)
-(make-variable-buffer-local 'w3m-icon-data)
-(make-variable-buffer-local 'w3m-next-url)
-(make-variable-buffer-local 'w3m-previous-url)
-(make-variable-buffer-local 'w3m-start-url)
-(make-variable-buffer-local 'w3m-contents-url)
-(make-variable-buffer-local 'w3m-current-refresh)
-(make-variable-buffer-local 'w3m-current-ssl)
-(make-variable-buffer-local 'w3m-name-anchor-from-hist)
-
-(defvar w3m-last-window-width nil
+(defvar-local w3m-last-window-width nil
   "Variable that keeps the last window width of the w3m-mode window.
 `w3m-redisplay-pages-automatically' uses this.")
-(make-variable-buffer-local 'w3m-last-window-width)
 
 (defun w3m-clear-local-variables ()
   (setq w3m-current-url nil
@@ -7790,8 +7771,7 @@ Return t if highlighting is successful."
 	(w3m-edit-url url)
       (w3m-message "No URL at point"))))
 
-(defvar w3m-goto-anchor-hist nil)
-(make-variable-buffer-local 'w3m-goto-anchor-hist)
+(defvar-local w3m-goto-anchor-hist nil)
 
 (defun w3m-next-anchor (&optional arg)
   "Move point to the next anchor.  Return t if success otherwise nil."
@@ -8125,11 +8105,10 @@ buffer; otherwise, it will be sequenced next to the current buffer."
 	(set-window-buffer (selected-window) buffer))))
     new))
 
-(defvar w3m-previous-session-buffer nil
+(defvar-local w3m-previous-session-buffer nil
   "A buffer of the session having selected just before this session.
 This will be the session to be selected after `w3m-delete-buffer'
 deletes the current session.")
-(make-variable-buffer-local 'w3m-previous-session-buffer)
 
 (defun w3m-next-buffer (arg &optional buffer)
   "Turn ARG pages of emacs-w3m buffers ahead.
@@ -8893,8 +8872,7 @@ or a list which consists of the following elements:
   (mouse-set-point event)
   (popup-menu w3m-link-menu))
 
-(defvar w3m-buffer-unseen nil)
-(make-variable-buffer-local 'w3m-buffer-unseen)
+(defvar-local w3m-buffer-unseen nil)
 
 (defun w3m-set-buffer-unseen ()
   (setq w3m-buffer-unseen t)
@@ -9236,10 +9214,8 @@ Otherwise, it defaults to `w3m-horizontal-shift-columns'."
 	  (ding))
       (w3m-horizontal-scroll 'right arg))))
 
-(defvar w3m-horizontal-scroll-done nil)
-(make-variable-buffer-local 'w3m-horizontal-scroll-done)
-(defvar w3m-current-position '(-1 0 0))
-(make-variable-buffer-local 'w3m-current-position)
+(defvar-local w3m-horizontal-scroll-done nil)
+(defvar-local w3m-current-position '(-1 0 0))
 
 (defun w3m-horizontal-scroll (direction ncol)
   "Scroll the window NCOL columns horizontally to DIRECTION.
@@ -9620,16 +9596,14 @@ generate a new buffer."
 		    "Loading..."))
 	   (:eval (w3m-modeline-title))))))
 
-(defvar w3m-modeline-title-string nil
+(defvar-local w3m-modeline-title-string nil
   "Internal variable used to keep contents to be shown in the mode line.
 This is a buffer-local variable.")
-(make-variable-buffer-local 'w3m-modeline-title-string)
 
-(defvar w3m-modeline-title-timer nil
+(defvar-local w3m-modeline-title-timer nil
   "Say time has not gone by after the mode line was updated last time.
 It is used to control the `w3m-modeline-title' function running too
 frequently, set by the function itself and cleared by a timer.")
-(make-variable-buffer-local 'w3m-modeline-title-timer)
 
 (defun w3m-modeline-title ()
   "Return a truncated title not to cut the right end of the mode line."
@@ -11816,8 +11790,7 @@ FROM-COMMAND is defined in `w3m-minor-mode-map' with the same key in
   :group 'w3m
   :type 'hook)
 
-(defvar w3m-minor-mode nil "Non-nil if w3m minor mode is enabled.")
-(make-variable-buffer-local 'w3m-minor-mode)
+(defvar-local w3m-minor-mode nil "Non-nil if w3m minor mode is enabled.")
 (unless (assq 'w3m-minor-mode minor-mode-alist)
   (push (list 'w3m-minor-mode " w3m") minor-mode-alist))
 (unless (assq 'w3m-minor-mode minor-mode-map-alist)
