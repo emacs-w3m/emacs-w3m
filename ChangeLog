@@ -1,3 +1,10 @@
+2021-08-05  Boruch Baum  <boruch_baum@gmx.com>
+
+	Replace (progn (defvar VAR VAL "DOC") (make-variable-buffer-local 'VAR))
+	with (defvar-local VAR VAL "DOC") --- (PR#101)
+
+	* w3m.el: Do it.
+
 2021-08-02  Boruch Baum  <boruch_baum@gmx.com>
 
 	Bugfix: db-history single-page advances point too far (PR#100)
