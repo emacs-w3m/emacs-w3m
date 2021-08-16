@@ -5814,6 +5814,8 @@ POST-DATA and REFERER will be sent to the web server with a request."
   "Download contents of URL to a file named FILENAME.
 NO-CACHE is ignored (always download)."
   (interactive)
+  (unless (executable-find "sh")
+    (error "Shell named \"sh\" not found"))
   (unless url
     (while (string-equal
 	    (setq url (w3m-canonicalize-url
@@ -5895,7 +5897,7 @@ NO-CACHE is ignored (always download)."
 	   (let ((w3m-current-buffer page-buffer)
 		 (progress (cons (setq temp (buffer-name)) "-")))
 	     (prog1
-		 (setq process (w3m-process-start handler shell-file-name
+		 (setq process (w3m-process-start handler "sh"
 						  (list "-c" args)))
 	       (with-current-buffer page-buffer
 		 (push process w3m-current-process)

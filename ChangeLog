@@ -1,3 +1,9 @@
+2021-08-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Hard-code the shell used in `w3m-download' with "sh" ([emacs-w3m:13826])
+
+	* w3m.el (w3m-download): Replace `shell-file-name' with "sh".
+
 2021-08-05  Boruch Baum  <boruch_baum@gmx.com>
 
 	Replace (progn (defvar VAR VAL "DOC") (make-variable-buffer-local 'VAR))
