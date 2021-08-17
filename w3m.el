@@ -5809,6 +5809,27 @@ POST-DATA and REFERER will be sent to the web server with a request."
 	(w3m-w3m-retrieve
 	 url no-uncompress no-cache post-data referer handler))))))
 
+(defun w3m-download-timeout (time work-buffer page-buffer process url)
+  "Kill download process in the timeout seconds TIME."
+  (run-at-time
+   time nil
+   #'(lambda (work-buffer page-buffer process url)
+       (when (and (buffer-name work-buffer)
+		  (buffer-name page-buffer)
+		  (with-current-buffer work-buffer
+		    (goto-char (point-min))
+		    (not (re-search-forward "^W3m-in-progress:" nil t))))
+	 (with-current-buffer page-buffer
+	   (when (memq process w3m-current-process)
+	     (let* ((w3m-current-process (list process))
+		    (w3m-process-queue w3m-current-process)
+		    (w3m-clear-display-while-reading nil))
+	       (w3m-process-stop page-buffer))
+	     (setq w3m-current-process (delq process w3m-current-process)
+		   w3m-process-queue w3m-current-process)
+	     (w3m-message "Downloading timed out: %s" url)))))
+   work-buffer page-buffer process url))
+
 ;;;###autoload
 (defun w3m-download (&optional url filename _no-cache handler _post-data)
   "Download contents of URL to a file named FILENAME.
@@ -5903,7 +5924,9 @@ NO-CACHE is ignored (always download)."
 		 (push process w3m-current-process)
 		 (setq w3m-process-modeline-string
 		       (nconc w3m-process-modeline-string
-			      (list progress)))))))
+			      (list progress))))
+	       (w3m-download-timeout 60 (current-buffer) page-buffer
+				     process url))))
 	(if (and success
 		 (file-exists-p filename)
 		 (progn
