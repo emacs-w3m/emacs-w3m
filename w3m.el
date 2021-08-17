@@ -5927,8 +5927,7 @@ NO-CACHE is ignored (always download)."
 		   (setq decoder (cdr (assq decoder w3m-decoder-alist)))
 		   (setq tempname (concat filename (make-temp-name ".")))
 		   (if (zerop (call-process
-			       shell-file-name nil nil nil
-			       "-c"
+			       "sh" nil nil nil "-c"
 			       (concat "cat \"" filename "\"|\""
 				       (car decoder) "\" \""
 				       (mapconcat #'identity
