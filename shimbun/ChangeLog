@@ -1,3 +1,10 @@
+2021-08-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Keep logging in in Sankei
+
+	* sb-sankei.el (shimbun-sankei-keep-login): New function.
+	(shimbun-get-headers, shimbun-article): Use it.
+
 2021-07-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-clear-contents): Show restrictions.

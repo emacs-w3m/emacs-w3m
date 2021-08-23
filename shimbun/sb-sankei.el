@@ -128,6 +128,7 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 
 (defun shimbun-sankei-get-headers (shimbun range)
   "Get headers for the group that SHIMBUN specifies in RANGE."
+  (shimbun-sankei-keep-login)
   (let ((group (shimbun-current-group-internal shimbun))
 	nd url id st ids date tem subject names headers)
     (goto-char (point-min))
@@ -734,7 +735,22 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
 	       (message "Error while logging out from special.sankei.com:\n %s"
 			(error-message-string err)))))))
 
-;;(shimbun-sankei-login)
+(defvar shimbun-sankei-last-login nil
+  "Timestamp when `shimbun-sankei-login' did run last.")
+
+(defun shimbun-sankei-keep-login (&optional force interactive-p)
+  "Keep logging in in Sankei."
+  (interactive (list t t))
+  (when (and shimbun-sankei-login-name shimbun-sankei-login-password
+	     (or force (not shimbun-sankei-last-login)
+		 (> (time-to-seconds (time-since shimbun-sankei-last-login))
+		    1800)))
+    (shimbun-sankei-login nil nil interactive-p)
+    (setq shimbun-sankei-last-login (current-time))))
+
+(luna-define-method shimbun-article :before ((shimbun shimbun-sankei)
+					     header &optional outbuf)
+  (shimbun-sankei-keep-login))
 
 (provide 'sb-sankei)
 
