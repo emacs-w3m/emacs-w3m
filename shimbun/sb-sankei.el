@@ -738,14 +738,17 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
 (defvar shimbun-sankei-last-login nil
   "Timestamp when `shimbun-sankei-login' did run last.")
 
-(defun shimbun-sankei-keep-login (&optional force interactive-p)
+(defun shimbun-sankei-keep-login (&optional force)
   "Keep logging in in Sankei."
-  (interactive (list t t))
-  (when (and shimbun-sankei-login-name shimbun-sankei-login-password
+  (interactive (list t))
+  (when (and w3m-use-cookies w3m-use-form
+	     shimbun-sankei-login-name shimbun-sankei-login-password
 	     (or force (not shimbun-sankei-last-login)
 		 (> (time-to-seconds (time-since shimbun-sankei-last-login))
 		    1800)))
-    (shimbun-sankei-login nil nil interactive-p)
+    (shimbun-sankei-login shimbun-sankei-login-name
+			  shimbun-sankei-login-password
+			  t)
     (setq shimbun-sankei-last-login (current-time))))
 
 (luna-define-method shimbun-article :before ((shimbun shimbun-sankei)
