@@ -589,7 +589,7 @@ NAME and PASSWORD default to `shimbun-sankei-login-name' and
 `shimbun-sankei-login-password' respectively.  `password-data', if
 cached, overrides `shimbun-sankei-login-password'.  If the prefix
 argument is given, you will be prompted for new NAME and PASSWORD."
-  (interactive (let ((pass (copy-sequence shimbun-sankei-login-password))
+  (interactive (let ((pass shimbun-sankei-login-password)
 		     name default password)
 		 (unless (and w3m-use-cookies w3m-use-form)
 		   (error "\
@@ -602,14 +602,8 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
 			      shimbun-sankei-login-name))
 		 (when (and name (string-match "\\`[\t ]*\\'" name))
 		   (setq name nil))
-		 (setq default (and name
-				    (or (password-read-from-cache name)
-					;; `password-cache' will expire
-					;; the password by filling it with
-					;; C-@'s, so we use a copy of
-					;; the original.
-					(copy-sequence
-					 shimbun-sankei-login-password)))
+		 (setq default (and name (or (password-read-from-cache name)
+					     shimbun-sankei-login-password))
 		       password (and name
 				     (if current-prefix-arg
 					 (read-passwd
@@ -630,9 +624,8 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
   (unless interactive-p
     (if (or name (setq name shimbun-sankei-login-name))
 	(or password
-	    (setq password
-		  (or (password-read-from-cache name)
-		      (copy-sequence shimbun-sankei-login-password)))
+	    (setq password (or (password-read-from-cache name)
+			       shimbun-sankei-login-password))
 	    (setq name nil))
       (setq password nil)))
   (if (not (and w3m-use-cookies w3m-use-form name password))
@@ -697,7 +690,8 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
 		  (when interactive-p (message "Failed to login"))
 		(setq shimbun-sankei-last-login (current-time))
 		(when interactive-p (message "Logged in"))
-		(password-cache-add name password)
+		;; Use a copy of the password so not to be expired by C-@s.
+		(password-cache-add name (copy-sequence password))
 		(when w3m-cookie-save-cookies (w3m-cookie-save))))
 	    (when (get-buffer " *w3m-cookie-parse-temp*")
 	      (kill-buffer (get-buffer " *w3m-cookie-parse-temp*")))

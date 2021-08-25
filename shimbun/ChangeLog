@@ -1,7 +1,8 @@
 2021-08-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	* sb-sankei.el (shimbun-sankei-logout{in|out}): Make those functions,
-	instead of shimbun-sankei-keep-login, manage shimbun-sankei-last-login.
+	* sb-sankei.el (shimbun-sankei-login): Cache a copy of password always.
+	(shimbun-sankei-log{in|out}): Make those functions, instead of
+	shimbun-sankei-keep-login, manage shimbun-sankei-last-login.
 
 2021-08-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
