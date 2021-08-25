@@ -580,6 +580,9 @@ src=\"[^\"]+/\\([0-9A-Z]\\{26\\}\\)\\.[^\"]+\"" nd t))
 (autoload 'password-cache-add "password-cache")
 (autoload 'password-read-from-cache "password-cache")
 
+(defvar shimbun-sankei-last-login nil
+  "Timestamp when `shimbun-sankei-login' did run last.")
+
 (defun shimbun-sankei-login (&optional name password interactive-p)
   "Login to special.sankei.com with NAME and PASSWORD.
 NAME and PASSWORD default to `shimbun-sankei-login-name' and
@@ -692,6 +695,7 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
 			     "\\`https://www.sankei.com/\\?[0-9]+\\'"
 			     w3m-current-url)))
 		  (when interactive-p (message "Failed to login"))
+		(setq shimbun-sankei-last-login (current-time))
 		(when interactive-p (message "Logged in"))
 		(password-cache-add name password)
 		(when w3m-cookie-save-cookies (w3m-cookie-save))))
@@ -725,6 +729,7 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
 		(setq next (match-string-no-properties 1))
 	      (w3m-process-with-wait-handler
 		(w3m-retrieve-and-render next t nil nil nil handler))
+	      (setq shimbun-sankei-last-login nil)
 	      (when interactive-p (message "Logged out"))
 	      (setq done t)))
 	  (when (get-buffer " *w3m-cookie-parse-temp*")
@@ -734,9 +739,6 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
 		 (signal (car err) (cdr err))
 	       (message "Error while logging out from special.sankei.com:\n %s"
 			(error-message-string err)))))))
-
-(defvar shimbun-sankei-last-login nil
-  "Timestamp when `shimbun-sankei-login' did run last.")
 
 (defun shimbun-sankei-keep-login (&optional force)
   "Keep logging in in Sankei."
@@ -748,8 +750,7 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
 		    1800)))
     (shimbun-sankei-login shimbun-sankei-login-name
 			  shimbun-sankei-login-password
-			  t)
-    (setq shimbun-sankei-last-login (current-time))))
+			  t)))
 
 (luna-define-method shimbun-article :before ((shimbun shimbun-sankei)
 					     header &optional outbuf)
