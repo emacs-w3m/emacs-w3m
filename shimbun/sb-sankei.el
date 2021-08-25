@@ -128,7 +128,6 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 
 (defun shimbun-sankei-get-headers (shimbun range)
   "Get headers for the group that SHIMBUN specifies in RANGE."
-  (shimbun-sankei-keep-login)
   (let ((group (shimbun-current-group-internal shimbun))
 	nd url id st ids date tem subject names headers)
     (goto-char (point-min))
@@ -745,6 +744,10 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
     (shimbun-sankei-login shimbun-sankei-login-name
 			  shimbun-sankei-login-password
 			  t)))
+
+(luna-define-method shimbun-headers :before ((shimbun shimbun-sankei)
+					     &optional range)
+  (shimbun-sankei-keep-login))
 
 (luna-define-method shimbun-article :before ((shimbun shimbun-sankei)
 					     header &optional outbuf)
