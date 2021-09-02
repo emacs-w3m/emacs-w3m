@@ -1,8 +1,10 @@
 2021-09-02  Boruch Baum  <boruch_baum@gmx.com>
 
+	New and improved filter for github (PR#105)
+
 	* w3m-filter.el (w3m-filter-github-repo-main-page): Delete obsolete
 	function.
-	(w3m-filter-github, (w3m-filter-configuration): Replace with new one.
+	(w3m-filter-github, w3m-filter-configuration): Replace with new one.
 
 2021-08-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
