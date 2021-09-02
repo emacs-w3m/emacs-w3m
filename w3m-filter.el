@@ -1065,180 +1065,198 @@ READ MORE:\\([^<]+\\)\\(</a>\\)?</strong>\\(</p>\\)?"
 (defun w3m-filter-github (url)
   "filter for github.com."
   (let (p0 p1)
-  (cond
-   ;; condition: home page
-   ((string-match "github.com/$" url)
-     (goto-char (point-min))
-     ;; improve readability of search form
-     (when (search-forward "<input" nil t)
-       (replace-match "<hr><b>Search GitHub</b>: \\&"))
-     ;; rm other search cruft
-     (w3m-filter-delete-regions url "<ul" "{{ message }}" nil nil nil (point) nil 1)
-     (insert "<hr>")
-     ;; rm broken sign-up
-     (and (search-forward "Email address" nil t)
-	  (setq p0 (search-backward "<div class=\"overflow-hidden\"" nil t))
-	  (search-forward "</form>" nil t 2)
-	  (delete-region p0 (match-end 0)))
-     ;; rm line numbers in sample code
-     (w3m-filter-delete-regions url "<pre" "</pre>" nil nil nil nil nil 1)
-     ;; rm duplicate text lines
-     (w3m-filter-delete-regions url "<h2 data-optimizely-variation=\"ko\"" "</h2>"))
-   ;; condition: repository main page
-   ((string-match "github.com/[^/]+/[^/?&]+$" url)
-     ;; can't perform star or notification w/o JS, so delete
-     (w3m-filter-delete-regions url "</h1>" "</ul>" t nil nil nil nil 1)
-     (when (search-forward "forks" nil t)
-       (w3m-filter-delete-regions url "<div" "<nav" nil t nil (point) nil 1))
-     ;; place homepage link, license, stars, forks on same line
-     (goto-char (point-min))
-     (and (search-forward "<svg" nil t)
-	  (setq p0 (point))
-	  (search-forward "<nav" nil t)
-	  (setq p1 (match-beginning 0))
-	  (w3m-filter-delete-regions url "</?div" ">" nil nil t p0 p1))
-     ;; rm broken "switching branches/tags" via form
-     (goto-char (setq p1 (point-min)))
-     (and (search-forward "title=\"Switch branches or tags\"" nil t)
-	  (search-backward "<div" nil t)
-	  (setq p1 (point))
-	  (search-forward "</details>" nil t)
-	  (search-forward "</div>" nil t)
-	  (delete-region p1 (point)))
-     (goto-char p1)
-     ;; rm 'launching github desktop' etc.
-     (and (search-forward "<get-repo class=\"\">" nil t)
-	  (setq p1 (match-beginning 0))
-	  (search-forward "Git stats</h2>" nil t)
-	  (delete-region p1 (point)))
-     (goto-char p1)
-     (when (search-forward "<h2 id=\"files\"  class=\"sr-only\">Files</h2>" nil t)
-       (replace-match ""))
-     (goto-char (point-min))
-     (when (search-forward "Permalink</a>" nil t)
-       (insert "<p><b>Files</b><hr>")
-       (setq p1 (point))
-       (and (search-forward "Commit time</div>" nil t)
-	    (search-forward "</div>" nil t)
-	    (delete-region p1 (point))))
-     ;; delimit end of files with <hr>
-     (goto-char (point-min))
-     (when (and (search-forward "<readme-toc>" nil t)
-		(setq p1 (match-beginning 0))
-		(search-backward "<button" nil t))
-	  (delete-region (match-beginning 0) p1)
-	  (insert "<hr>")))
-   ;; condition: user-account main page
-   ((string-match "github.com/[^/]+$" url)
-    ;; rm second of duplicate account heading
-    (goto-char (point-min))
-    (and (search-forward "<div class=\"user-profile-sticky-bar" nil t 2)
-	 (setq p0 (match-beginning 0))
-	 (search-forward "<span class=\"user-following-container\">" nil t)
-	 (search-forward "</span>" nil t 2)
-	 (delete-region p0 (match-end 0)))
-    ;; rm duplicate achievements
-    (dolist (elem
-	     '(">Achievements</h2>"
-	       "<div class=\"table-list-header-toggle states flex-auto pl-0\">"))
-      (w3m-filter-delete-regions url
-	elem elem nil t nil nil nil 1))
-    ;; rm broken 'follow' button
-    (w3m-filter-delete-regions url "<span class=\"follow d-block\">" "</span>")
-    ;; rm 'block or report'
-    (goto-char (point-min))
-    (and (search-forward "Block or Report" nil t)
-	 (search-backward "<details" nil t)
-	 (setq p0 (match-beginning 0))
-	 (search-forward "</details>" nil t)
-	 (delete-region p0 (match-end 0)))
-    ;; sections: Pinned, Contributions
-    (goto-char (point-min))
-    (let ((elem "<div class=\"js-yearly-contributions\">")
-	  case-fold-search)
-      (when (search-forward "Pinned" nil t)
-	(setq p0 (match-end 0))
-	;; give 'pinned' heading better description
-	(replace-match "\\& Repositories")
-	;; rm vertical space in pinned repositories section
-	(when (search-forward elem nil t)
-	  (setq p1 (match-beginning 0))
-	  (w3m-filter-replace-regexp url "</?p[^>]*>" "" p0 p1)
-	  (goto-char p0)
-	  (search-forward elem nil t)
-	  (setq p1 (match-beginning 0))
-	  (w3m-filter-replace-regexp url "</li>" "<p>" p0 p1)))
-      ;; rm broken contributions graph with months display
+    (cond
+     ;; condition: home page
+     ((string-match "github.com/$" url)
       (goto-char (point-min))
-      (when (search-forward elem nil t)
-	(setq p0 (match-end 0))
+      ;; improve readability of search form
+      (when (search-forward "<input" nil t)
+	(replace-match "<hr><b>Search GitHub</b>: \\&"))
+      ;; rm other search cruft
+      (w3m-filter-delete-regions
+       url "<ul" "{{ message }}" nil nil nil (point) nil 1)
+      (insert "<hr>")
+      ;; rm broken sign-up
+      (and (search-forward "Email address" nil t)
+	   (setq p0 (search-backward "<div class=\"overflow-hidden\"" nil t))
+	   (search-forward "</form>" nil t 2)
+	   (delete-region p0 (match-end 0)))
+      ;; rm line numbers in sample code
+      (w3m-filter-delete-regions url "<pre" "</pre>" nil nil nil nil nil 1)
+      ;; rm duplicate text lines
+      (w3m-filter-delete-regions
+       url "<h2 data-optimizely-variation=\"ko\"" "</h2>"))
+     ;; condition: repository main page
+     ((string-match "github.com/[^/]+/[^/?&]+$" url)
+      ;; can't perform star or notification w/o JS, so delete
+      (w3m-filter-delete-regions url "</h1>" "</ul>" t nil nil nil nil 1)
+      (when (search-forward "forks" nil t)
+	(w3m-filter-delete-regions url "<div" "<nav" nil t nil (point) nil 1))
+      ;; place homepage link, license, stars, forks on same line
+      (goto-char (point-min))
+      (and (search-forward "<svg" nil t)
+	   (setq p0 (point))
+	   (search-forward "<nav" nil t)
+	   (setq p1 (match-beginning 0))
+	   (w3m-filter-delete-regions url "</?div" ">" nil nil t p0 p1))
+      ;; rm broken "switching branches/tags" via form
+      (goto-char (setq p1 (point-min)))
+      (and (search-forward "title=\"Switch branches or tags\"" nil t)
+	   (search-backward "<div" nil t)
+	   (setq p1 (point))
+	   (search-forward "</details>" nil t)
+	   (search-forward "</div>" nil t)
+	   (delete-region p1 (point)))
+      (goto-char p1)
+      ;; rm 'launching github desktop' etc.
+      (and (search-forward "<get-repo class=\"\">" nil t)
+	   (setq p1 (match-beginning 0))
+	   (search-forward "Git stats</h2>" nil t)
+	   (delete-region p1 (point)))
+      (goto-char p1)
+      (when (search-forward "<h2 id=\"files\"  class=\"sr-only\">Files</h2>"
+			    nil t)
+	(replace-match ""))
+      (goto-char (point-min))
+      (when (search-forward "Permalink</a>" nil t)
+	(insert "<p><b>Files</b><hr>")
+	(setq p1 (point))
+	(and (search-forward "Commit time</div>" nil t)
+	     (search-forward "</div>" nil t)
+	     (delete-region p1 (point))))
+      ;; delimit end of files with <hr>
+      (goto-char (point-min))
+      (when (and (search-forward "<readme-toc>" nil t)
+		 (setq p1 (match-beginning 0))
+		 (search-backward "<button" nil t))
+	(delete-region (match-beginning 0) p1)
+	(insert "<hr>")))
+     ;; condition: user-account main page
+     ((string-match "github.com/[^/]+$" url)
+      ;; rm second of duplicate account heading
+      (goto-char (point-min))
+      (and (search-forward "<div class=\"user-profile-sticky-bar" nil t 2)
+	   (setq p0 (match-beginning 0))
+	   (search-forward "<span class=\"user-following-container\">" nil t)
+	   (search-forward "</span>" nil t 2)
+	   (delete-region p0 (match-end 0)))
+      ;; rm duplicate achievements
+      (dolist (elem '(">Achievements</h2>"
+		      "\
+<div class=\"table-list-header-toggle states flex-auto pl-0\">"))
 	(w3m-filter-delete-regions url
-	  "</h2>" "<div id=\"js-contribution-activity\"" t t nil p0 nil 1)))
+				   elem elem nil t nil nil nil 1))
+      ;; rm broken 'follow' button
+      (w3m-filter-delete-regions
+       url "<span class=\"follow d-block\">" "</span>")
+      ;; rm 'block or report'
+      (goto-char (point-min))
+      (and (search-forward "Block or Report" nil t)
+	   (search-backward "<details" nil t)
+	   (setq p0 (match-beginning 0))
+	   (search-forward "</details>" nil t)
+	   (delete-region p0 (match-end 0)))
+      ;; sections: Pinned, Contributions
+      (goto-char (point-min))
+      (let ((elem "<div class=\"js-yearly-contributions\">")
+	    case-fold-search)
+	(when (search-forward "Pinned" nil t)
+	  (setq p0 (match-end 0))
+	  ;; give 'pinned' heading better description
+	  (replace-match "\\& Repositories")
+	  ;; rm vertical space in pinned repositories section
+	  (when (search-forward elem nil t)
+	    (setq p1 (match-beginning 0))
+	    (w3m-filter-replace-regexp url "</?p[^>]*>" "" p0 p1)
+	    (goto-char p0)
+	    (search-forward elem nil t)
+	    (setq p1 (match-beginning 0))
+	    (w3m-filter-replace-regexp url "</li>" "<p>" p0 p1)))
+	;; rm broken contributions graph with months display
+	(goto-char (point-min))
+	(when (search-forward elem nil t)
+	  (setq p0 (match-end 0))
+	  (w3m-filter-delete-regions
+	   url "</h2>" "<div id=\"js-contribution-activity\""
+	   t t nil p0 nil 1)))
       ;; in user repositories tab, separate list elements with <hr>
       (and (string-match "\\?tab=repositories$" url)
 	   (search-forward "<div id=\"user-repositories-list\">" nil t)
 	   (setq p0 (match-end 0))
 	   (w3m-filter-replace-regexp url "<li[^>]+>" "<hr>" p0)))
-   ;; condition: all other pages
-   (t
-    ;; Simple replacements
-    (dolist (elem '(
-	       ("<div class=\"SelectMenu-list\">"   . "")  ; make sorts horizontal
-  ;;           ("<div class=\"SelectMenu-filter\">" . "")  ; make filters horizontal
-	       ("Most reactions</div>" . "Most reactions")            ; react horiz #1
-	       ("<div class=\"clearfix ws-normal p-3 p-sm-2\">" . "") ; react horiz #2
-	       ("Sorry, something went wrong." . "")            ; remove js error msg
-	       ("<!-- Rendered timeline since"  . "<hr>\\&")    ; add horiz line
-	       ("<div class=\"TimelineItem[^-]" . "<hr>\\&")    ; add horiz line
-	       ("<div id=\"issue_"              . "<hr><p>\\&") ; add horiz line
-		 ))
+     ;; condition: all other pages
+     (t
+      ;; Simple replacements
+      (dolist (elem
+	       '(;; make sorts horizontal
+		 ("<div class=\"SelectMenu-list\">"	. "")
+		 ;; make filters horizontal
+		 ;;("<div class=\"SelectMenu-filter\">" . "")
+		 ;; react horiz #1
+		 ("Most reactions</div>"  . "Most reactions")
+		 ;; react horiz #2
+		 ("<div class=\"clearfix ws-normal p-3 p-sm-2\">" . "")
+		 ;; remove js error msg
+		 ("Sorry, something went wrong."	. "")
+		 ;; add horiz line
+		 ("<!-- Rendered timeline since"	. "<hr>\\&")
+		 ;; add horiz line
+		 ("<div class=\"TimelineItem[^-]"	. "<hr>\\&")
+		 ;; add horiz line
+		 ("<div id=\"issue_"			. "<hr><p>\\&")))
+	(goto-char (point-min))
+	(while (search-forward (car elem) nil t)
+	  (replace-match (cdr elem))))
+      ;; rm broken filters
       (goto-char (point-min))
-      (while (search-forward (car elem) nil t)
-	(replace-match (cdr elem))))
-    ;; rm broken filters
-    (goto-char (point-min))
-    (and (search-forward "<summary class=\"btn-link\" title=\"Author\"" nil t)
-	 (setq p0 (match-beginning 0))
-	 (search-forward "<summary class=\"btn-link\" title=\"Assignees\"" nil t)
-	 (search-forward "</details>" nil t)
-	 (delete-region p0 (match-beginning 0)))
-    ;; Other removals
-    (w3m-filter-delete-regions url
-      "<div class=\"footer container-xl" "</body" nil t nil nil nil 1)
-    (w3m-filter-delete-regions url
-      "<nav class=\"subnav-links float-left d-flex no-wrap\" aria-label=\"Issue\">"
-      "</nav>"
-      nil t nil nil nil 1)
-    (w3m-filter-delete-regions url
-      "<div class=\"px-4\">" "to your account" nil nil nil nil nil 1)
-    (w3m-filter-delete-regions url
-      "<!-- Rendered timeline since"
-      "<div id=\"partial-users-participants"
-      nil t nil nil nil 1)
-    (w3m-filter-delete-regions url "<footer class=\"SelectMenu-footer\">" "</footer>")
-    (w3m-filter-delete-regions url "<summary id=\"sponsor-button-repo\"" "</summary>")
-    (w3m-filter-delete-regions url "<summary class=\"btn-link\" title=\"Sort\"" "</summary>")
-    (w3m-filter-delete-regions url "<clipboard-copy" "</clipboard-copy>"))
-    ) ; end 'cond'
-  ;; condition: all but the home page
-  (unless (string-match "github.com/$" url)
-    ;; rm header banner, manu, sign up, etc
-    (w3m-filter-delete-regions url
-      "<body[^>]*>" "<div>{{ message }}</div>"  t nil t nil nil 1)
-    ;; remove footer
-    (w3m-filter-delete-regions url
-      "<div class=\"footer container-xl" "</body" nil t nil nil nil 1))
-  ;; condition: all pages
-  ;; rm duplicate list: code, issues, pr, actions. proj, wiki, secur, insights
-  (w3m-filter-delete-regions url
-    "<span class=\"sr-only\">More</span>" "</nav>" nil t nil nil nil 1)
-  ;; compress list of links into single line (duplicate code!)
-  (dolist (elem '(("<ul[^>]*>"   . "")
-		  ("</ul[^>]*>"  . "<p>")
-		  ("</?li[^>]*>" . "")))
-    (goto-char (point-min))
-    (while (re-search-forward (car elem) nil t)
-      (replace-match (cdr elem))))))
+      (and (search-forward "<summary class=\"btn-link\" title=\"Author\""
+			   nil t)
+	   (setq p0 (match-beginning 0))
+	   (search-forward "<summary class=\"btn-link\" title=\"Assignees\""
+			   nil t)
+	   (search-forward "</details>" nil t)
+	   (delete-region p0 (match-beginning 0)))
+      ;; Other removals
+      (w3m-filter-delete-regions
+       url "<div class=\"footer container-xl" "</body" nil t nil nil nil 1)
+      (w3m-filter-delete-regions
+       url "\
+<nav class=\"subnav-links float-left d-flex no-wrap\" aria-label=\"Issue\">"
+       "</nav>" nil t nil nil nil 1)
+      (w3m-filter-delete-regions
+       url "<div class=\"px-4\">" "to your account" nil nil nil nil nil 1)
+      (w3m-filter-delete-regions
+       url
+       "<!-- Rendered timeline since" "<div id=\"partial-users-participants"
+       nil t nil nil nil 1)
+      (w3m-filter-delete-regions
+       url "<footer class=\"SelectMenu-footer\">" "</footer>")
+      (w3m-filter-delete-regions
+       url "<summary id=\"sponsor-button-repo\"" "</summary>")
+      (w3m-filter-delete-regions
+       url "<summary class=\"btn-link\" title=\"Sort\"" "</summary>")
+      (w3m-filter-delete-regions
+       url "<clipboard-copy" "</clipboard-copy>"))
+     ) ; end 'cond'
+    ;; condition: all but the home page
+    (unless (string-match "github.com/$" url)
+      ;; rm header banner, manu, sign up, etc
+      (w3m-filter-delete-regions
+       url "<body[^>]*>" "<div>{{ message }}</div>"  t nil t nil nil 1)
+      ;; remove footer
+      (w3m-filter-delete-regions
+       url "<div class=\"footer container-xl" "</body" nil t nil nil nil 1))
+    ;; condition: all pages
+    ;; rm duplicate list: code, issues, pr, actions, proj, wiki, secur, insights
+    (w3m-filter-delete-regions
+     url "<span class=\"sr-only\">More</span>" "</nav>" nil t nil nil nil 1)
+    ;; compress list of links into single line (duplicate code!)
+    (dolist (elem '(("<ul[^>]*>"   . "")
+		    ("</ul[^>]*>"  . "<p>")
+		    ("</?li[^>]*>" . "")))
+      (goto-char (point-min))
+      (while (re-search-forward (car elem) nil t)
+	(replace-match (cdr elem))))))
 
 (defun w3m-filter-xkcd (url)
   "filter distractions for xkcd."
