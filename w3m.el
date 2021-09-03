@@ -365,7 +365,7 @@ The value of `w3m-user-agent' is used for the field body."
   :type 'boolean)
 
 (defvar w3m-user-agent-default-alist
-  `(("Emacs-w3m (user default)" . w3m-user-agent)
+  `(("Emacs-w3m (user default)" . ,w3m-user-agent)
     ("Emacs-w3m (package default)"
      . ,(concat "Emacs-w3m/" emacs-w3m-version " " w3m-version)))
   "An default alist of user agent strings.

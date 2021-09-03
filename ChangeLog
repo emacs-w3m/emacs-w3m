@@ -1,3 +1,7 @@
+2021-09-03  Boruch Baum  <boruch_baum@gmx.com>
+
+	* w3m.el (w3m-user-agent-default-alist): Fix macro element.
+
 2021-09-02  Boruch Baum  <boruch_baum@gmx.com>
 
 	New and improved filter for github (PR#105)
