@@ -374,23 +374,20 @@ agent strings. This should normally not be modified; instead modify
 `w3m-user-agent-alist'.")
 
 (defcustom w3m-user-agent-alist
-  '(("Android Webkit" . "\
-Mozilla/5.0 (Linux; U; Android 4.0.3; ko-kr; LG-L160L Build/IML74K)\
- AppleWebkit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30")
-    ("Firefox 57" . "\
-Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0")
-    ("IE Mobile" . "\
-Mozilla/5.0 (compatible; MSIE 9.0; Windows Phone OS 7.5; Trident/5.0;\
- IEMobile/9.0)")
-    ("Opera Mini 9.80" . "\
-Opera/9.80 (J2ME/MIDP; Opera Mini/9.80 (S60; SymbOS; Opera Mobi/23.348; U; en)\
- Presto/2.5.25 Version/10.54")
-    ("Opera Mobile 12" . "\
-Opera/12.02 (Android 4.1; Linux; Opera Mobi/ADR-1111101157; U; en-US)\
- Presto/2.9.201 Version/12.02")
-    ("Chrome 51" . "\
-Mozilla/5.0 (Linux; Android 5.1.1; VS810PP Build/LMY47V) AppleWebKit/537.36\
- (KHTML, like Gecko) Chrome/51.0.2704.81 Mobile Safari/537.36"))
+'(("Android" . "Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36")
+  ("Apple iOS" . "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Mobile/15E148 Safari/604.1")
+  ("Linux Chrome" . "Mozilla/5.0 (X11; CrOS armv7l 9592.96.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.114 Safari/537.36")
+  ("Linux Firefox" . "Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0")
+  ("Mac OS Chrome" . "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36")
+  ("Mac OS Firefox" . "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:56.0) Gecko/20100101 Firefox/56.0")
+  ("Mac OS Opera" . "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.78 Safari/537.36 OPR/47.0.2631.55")
+  ("Mac OS Safari" . "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.3.5 (KHTML, like Gecko) Version/11.0.1 Safari/604.3.5")
+  ("Windows Chrome" . "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.9 Safari/537.36")
+  ("Windows Edge" . "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36 Edge/15.15063")
+  ("Windows Explorer" . "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko")
+  ("Windows Firefox" . "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:56.0) Gecko/20100101 Firefox/56.0")
+  ("Windows Opera" . "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36 OPR/48.0.2685.52")
+  ("Windows Safari" . "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.20.25 (KHTML, like Gecko) Version/5.0.4 Safari/533.20.27"))
   "An alist of user agent strings.
 Each entry should be a cons of a short descriptive string and
 the user agent string."
@@ -401,8 +398,10 @@ the user agent string."
 
 (defcustom w3m-user-agent-site-specific-alist nil
   "An alist of user-agent strings to be used for specific URLs.
-Each entry should be a cons of a regexp for the URLs to be
-covered by the rule, and a user-agent string to be used."
+Each entry should be a CONS, whose CAR is a regexp of the URLs
+to be covered by the rule, and whose CDR is either a user-agent
+string to be used or a string matching a CAR of variable
+`w3m-user-agent-alist'."
   :group 'w3m
   :type '(repeat (cons :format "%v" :indent 2
 		       (string :tag "URL regexp")
@@ -10201,7 +10200,8 @@ NIL if none match."
   (let ((check-list w3m-user-agent-site-specific-alist) result entry)
     (while (and (not result) (setq entry (pop check-list)))
       (when (string-match (car entry) url)
-	(setq result (cdr entry))))
+	(setq result (assoc (cdr entry) w3m-user-agent-alist))
+	(setq result (cdr (or result entry)))))
     result))
 
 (defun w3m-user-agent-change (&optional ua-string)

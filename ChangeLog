@@ -1,5 +1,13 @@
 2021-09-03  Boruch Baum  <boruch_baum@gmx.com>
 
+	* w3m.el (w3m-user-agent-alist): Update values.
+	(w3m-user-agent-site-specific): New feature: Allow referencing to
+	elements in variable w3m-user-agent-alist.
+	(w3m-user-agent-site-specific-alist): Update definition for new
+	feature.
+
+2021-09-03  Boruch Baum  <boruch_baum@gmx.com>
+
 	* w3m.el (w3m-user-agent-default-alist): Fix macro element.
 
 2021-09-02  Boruch Baum  <boruch_baum@gmx.com>
