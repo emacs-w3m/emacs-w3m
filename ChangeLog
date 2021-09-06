@@ -1,5 +1,7 @@
 2021-09-03  Boruch Baum  <boruch_baum@gmx.com>
 
+	user-agents: bugfix, update, improve friendliness (PR#106)
+
 	* w3m.el (w3m-user-agent-alist): Update values.
 	(w3m-user-agent-site-specific): New feature: Allow referencing to
 	elements in variable w3m-user-agent-alist.
