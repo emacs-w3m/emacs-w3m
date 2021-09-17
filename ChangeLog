@@ -1,3 +1,10 @@
+2021-09-17  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Treat application/emacs-lisp as text/plain ([emacs-w3m:13845])
+
+	* w3m.el (w3m-content-type-alist): Add application/emacs-lisp so to be
+	treated as text/plain.
+
 2021-09-03  Boruch Baum  <boruch_baum@gmx.com>
 
 	user-agents: bugfix, update, improve friendliness (PR#106)

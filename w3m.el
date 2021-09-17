@@ -1166,6 +1166,7 @@ way of `post-command-hook'."
 	 '(("text/sgml" "\\.sgml?\\'" nil "text/plain")
 	   ("text/xml" "\\.xml\\'" nil "text/plain")
 	   ("text/x-markdown" "\\.md\\'" nil w3m-prepare-markdown-content)
+	   ("application/emacs-lisp" "\\.el\\'" nil "text/plain")
 	   ("application/xml" "\\.xml\\'" nil w3m-detect-xml-type)
 	   ("application/rdf+xml" "\\.rdf\\'" nil "text/plain")
 	   ("application/rss+xml" "\\.rss\\'" nil "text/plain")
