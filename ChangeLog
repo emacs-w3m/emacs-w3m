@@ -1,5 +1,7 @@
 2021-09-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* w3m-filter.el (w3m-filter-configuration): Make Custom-set work.
+
 	* w3m-bookmark.el (w3m-bookmark-menubar-update): Add a workaround
 	to avoid a miscellaneous error.
 

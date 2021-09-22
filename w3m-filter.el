@@ -159,6 +159,31 @@ FUNCTION
   argument even if it is useless.  Use the latter (i.e. a function and
   arguments) if the function requires rest arguments."
   :group 'w3m
+  :get (lambda (symbol)
+	 (mapcar (lambda (elem)
+		   (when (consp (cadr elem))
+		     (setcar (cdr (setq elem (copy-sequence elem)))
+			     (if (equal "Japanese" w3m-language)
+				 (concat (cadadr elem) "\n(" (caadr elem) ")")
+			       (concat (caadr elem) "\n(" (cadadr elem) ")"))))
+		   elem)
+		 (default-value symbol)))
+  :set (lambda (symbol value)
+	 (custom-set-default
+	  symbol
+	  (mapcar
+	   (lambda (elem)
+	     (let ((s (cadr elem)))
+	       (cond ((null s))
+		     ((consp s))
+		     ((string-match "\\`\\(.+\\)\n(\\(.+\\))\\'" s)
+		      (setcar
+		       (cdr (setq elem (copy-sequence elem)))
+		       (if (equal "Japanese" w3m-language)
+			   (list (match-string 2 s) (match-string 1 s))
+			 (list (match-string 1 s) (match-string 2 s))))))
+	       elem))
+	   value)))
   :type '(repeat
 	  :convert-widget w3m-widget-type-convert-widget
 	  (let ((locker (lambda (fn)
@@ -206,23 +231,15 @@ FUNCTION
 				       (widget-get
 					(car (last
 					      (widget-get parent :children)))
-					:children))) :to)))))))
+					:children)))
+				 :to)))))))
 		    (widget-checkbox-action widget event))))
 	       (group
 		:format "%v" :indent 2 :inline t
 		(choice
 		 :format " %v"
-		 (string :format "%v")
-		 (string :documentation-property
-			 (lambda (value)
-			   (if (equal "Japanese" w3m-language)
-			       (concat (cadr value) "\n(" (car value) ")")
-			     (concat (car value) "\n(" (cadr value) ")")))
-			 :format "%h"
-			 :match
-			 (lambda (_widget value)
-			   (and (stringp (car-safe value))
-				(stringp (car-safe (cdr-safe value))))))
+		 (string :format "%h"
+			 :documentation-property identity)
 		 (const :format "Not documented\n" nil))
 		(regexp :format "Regexp matching url: %v")
 		(choice
