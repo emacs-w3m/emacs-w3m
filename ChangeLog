@@ -1,3 +1,8 @@
+2021-09-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-bookmark.el (w3m-bookmark-menubar-update): Add a workaround
+	to avoid a miscellaneous error.
+
 2021-09-17  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Treat application/emacs-lisp as text/plain ([emacs-w3m:13845])

@@ -1,6 +1,6 @@
 ;;; w3m-bookmark.el --- Functions to operate bookmark file of w3m
 
-;; Copyright (C) 2001-2003, 2005-2012, 2017, 2019, 2020
+;; Copyright (C) 2001-2003, 2005-2012, 2017, 2019-2021
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -528,7 +528,12 @@ The car is used if `w3m-bookmark-mode' is nil, otherwise the cdr is used.")
     (let ((items (if w3m-bookmark-mode
 		     (cdr w3m-bookmark-menu-items)
 		   (car w3m-bookmark-menu-items)))
-	  (pages (w3m-bookmark-make-menu-items)))
+	  (pages
+	   (ignore-errors ;; <- FIXME:
+	     ;; A workaround to avoid a miscellaneous error caused when first
+	     ;; invoking `M-x w3m-cookie', etc. on freshly launched Emacs
+	     ;; (some hash table has not been initialized at that time).
+	     (w3m-bookmark-make-menu-items))))
       (easy-menu-define w3m-bookmark-menu w3m-mode-map
 	"The menu kepmap for the emacs-w3m bookmark."
 	(cons "Bookmark" (if pages
