@@ -239,6 +239,11 @@ FUNCTION
 		(choice
 		 :format " %v"
 		 (string :format "%h"
+			 :value ,(if (equal "Japanese" w3m-language)
+				     "日本語の説明 − 改行で終える
+(英語の説明 − 括弧で囲む)"
+				   "Description in English − end with newline
+(Description in Japanese − enclose in parentheses)")
 			 :documentation-property identity)
 		 (const :format "Not documented\n" nil))
 		(regexp :format "Regexp matching url: %v")
