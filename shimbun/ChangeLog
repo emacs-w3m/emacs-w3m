@@ -1,3 +1,13 @@
+2021-09-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-keep-login): Consult akamai cookie
+	instead of local timer for expiry period.
+	(shimbun-sankei-logout): Remove login/out cookies first and save last.
+	(shimbun-sankei-login): Remove akamai cookie first as well.
+	(shimbun-sankei-last-login): Remove variable.
+	(shimbun-sankei-get-headers): Use date-to-time instead of encode-time
+	and parse-time-string or timezone-parse-date.
+
 2021-08-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-headers): Instead of shimbun-clear-contents,
