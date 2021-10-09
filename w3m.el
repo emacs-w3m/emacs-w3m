@@ -245,7 +245,8 @@ See also `w3m-use-tab'."
 (declare-function image-scroll-down "image-mode" (&optional n))
 (declare-function image-scroll-up "image-mode" (&optional n))
 (declare-function quit-window "window" (&optional kill window))
-(declare-function rfc2368-parse-mailto-url "rfc2368" (mailto-url))
+(declare-function rfc2368-parse-mailto-url "rfc2368" (mailto-url)) ;; Emacs<=27
+(declare-function rfc6068-parse-mailto-url "rfc6068" (mailto-url)) ;; Emacs>=28
 (declare-function w3m-search-escape-query-string "w3m-search"
 		  (str &optional coding))
 (declare-function widget-convert-button "wid-edit" (type from to &rest args))
@@ -9416,7 +9417,7 @@ not already exist."
   (let ((before (nreverse (buffer-list)))
 	comp info body buffers buffer function)
     (setq url (replace-regexp-in-string
-	       "\n" "%0a" ;; `rfc2368-parse-mailto-url' replaces it with "\n".
+	       "\n" "%0a" ;; `rfc6068-parse-mailto-url' replaces it with "\n".
 	       (replace-regexp-in-string
 		"\\(?:\r\\|%0[Dd]\\)+" ""
 		(w3m-url-readable-string url))))
@@ -9426,8 +9427,10 @@ not already exist."
 	(unless (and (setq comp (get mail-user-agent 'composefunc))
 		     (functionp comp))
 	  (error "No mail composing function for `%s'" mail-user-agent))
-	(require 'rfc2368)
-	(setq info (rfc2368-parse-mailto-url url)
+	(setq info (if (require 'rfc6068 nil t)
+		       (rfc6068-parse-mailto-url url)
+		     (require 'rfc2368)
+		     (rfc2368-parse-mailto-url url))
 	      body (assoc "Body" info)
 	      info (delq body info)
 	      body (delq nil (list (cdr body))))
