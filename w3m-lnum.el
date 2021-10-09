@@ -631,8 +631,7 @@ Return selected anchor."
     marked-label))
 
 (defmacro w3m-lnum-get-match-info (condition found-tag)
-  "For the first overlay matching CONDITION throw through FOUND-TAG \
-anchor info."
+  "Throw anchor info to FOUND-TAG for the 1st overlay matching CONDITION."
   `(dolist (overlay (overlays-in (max (1- (window-start)) (point-min))
 				 (min (window-end) (point-max))))
      (if ,condition
@@ -655,8 +654,8 @@ If NUM is not specified, use currently highlighted anchor."
 			       'found))))
 
 (defun w3m-lnum-get-action (&optional prompt type)
-  "Turn on link numbers and return list of url or action, position \
-and image url if such of PROMPT selected anchor.
+  "Turn on link numbers and return data if PROMPT is selected.
+Data returned will be a list of url or action, position and image url.
 TYPE sets types of anchors to be numbered: 0 - no numbering,
 1 - only links, 2 - only images, otherwise - all anchors.
 Highlight every intermediate result anchor.
