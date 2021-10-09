@@ -1,6 +1,6 @@
 2021-10-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	Use rfc6068.el if possible insted of rfc2368.el (issue #109)
+	Use rfc6068.el if possible instead of rfc2368.el (issue #109)
 
 	* w3m.el (w3m-goto-mailto-url): Use rfc6068.el for newer Emacsen.
 
