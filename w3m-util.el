@@ -193,16 +193,16 @@ into it."
       (setq prop (get-text-property pos 'face object))
       (setq next (next-single-property-change pos 'face object end))
       (setq new-prop (cond
-                      ((listp prop)
-                        (setq new-prop (remove name prop))
-                        (if (>= 1 (length new-prop))
-                          (car new-prop)
-                         new-prop))
-                      ((equal name prop) nil)
-                      (t                 prop)))
+		      ((listp prop)
+			(setq new-prop (remove name prop))
+			(if (>= 1 (length new-prop))
+			  (car new-prop)
+			 new-prop))
+		      ((equal name prop) nil)
+		      (t                 prop)))
       (remove-text-properties pos next 'face object)
       (when new-prop
-        (add-text-properties pos next (list 'face new-prop) object))
+	(add-text-properties pos next (list 'face new-prop) object))
       (setq pos next))))
 
 (defmacro w3m-get-text-property-around (prop)
@@ -923,7 +923,7 @@ has to initially exist between the end position of the closing-tag and
 the previous tag as follows:
 
 <!-- foo <bar ...<baz ...>...> -->
-                              ^^^
+			      ^^^
 If INCLUDE-WHITESPACE is non-nil, include leading and trailing
 whitespace.  Return the end-point and set the match-data #0, #1, #2,
 and #3 as follows (\"___\" shows whitespace):
@@ -1263,18 +1263,18 @@ ie. For anything after the first '?', for each segment until the
 next '&' or end-of-string, a CONS whose CAR is what is to the
 left of '=' and whose CDR is to the right of it."
   (let ((parms (when (string-match "[^?]+\\?\\(.*\\)$" url)
-                       (match-string 1 url)))
-        (start 0)
-        query result)
+		       (match-string 1 url)))
+	(start 0)
+	query result)
     (when parms
       (while (string-match "&?\\([^=]+\\)=\\([^&]+\\)" parms start)
-        (push (cons (match-string 1 parms) (match-string 2 parms)) result)
-        (setq start (match-end 0)))
+	(push (cons (match-string 1 parms) (match-string 2 parms)) result)
+	(setq start (match-end 0)))
       (when (string-match "&[^=]+$" parms start)
-        ;; This is the weird case encountered with a '&' embedded in a query
-        ;; eg. occassionally by cloudflare query 'filename='
-        (setq query (pop result))
-        (push (cons (car query) (concat (cdr query) (match-string 0 parms))) result))
+	;; This is the weird case encountered with a '&' embedded in a query
+	;; eg. occassionally by cloudflare query 'filename='
+	(setq query (pop result))
+	(push (cons (car query) (concat (cdr query) (match-string 0 parms))) result))
       (nreverse result))))
 
 (defcustom w3m-strip-queries t
@@ -1309,17 +1309,17 @@ websites or referers embed."
 This is meant to remove unwanted trackers or other data that
 websites or referers embed. See `w3m-strip-queries-alist'."
   (if (or (not w3m-strip-queries)
-          (not (string-match "^.*\\?" url)))
+	  (not (string-match "^.*\\?" url)))
     url
    (let* ((base (match-string 0 url))
-          (queries (replace-match "" t t url 0)))
+	  (queries (replace-match "" t t url 0)))
      (when (and w3m-queries-log queries)
        (shell-command
-         (format "printf \"%s\n\" >> %s" queries w3m-queries-log-file)))
+	 (format "printf \"%s\n\" >> %s" queries w3m-queries-log-file)))
      (dolist (strip w3m-strip-queries-alist)
        (when (string-match (car strip) base)
-         (while (string-match (cadr strip) queries)
-           (setq queries (replace-match "" t t queries 0)))))
+	 (while (string-match (cadr strip) queries)
+	   (setq queries (replace-match "" t t queries 0)))))
      (if (string-match-p "\\`[ \t\n\r]*\\'" queries)
        (substring base 0 -1)
       (concat base queries)))))

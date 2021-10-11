@@ -486,9 +486,9 @@ When DOMAIN is non-nil, only save cookies whose domains match it."
 	  (w3m-cookie-save))
 	(setq w3m-cookie-init nil)
 	(w3m-cookie-clear)
-        (let ((buf (get-buffer " *w3m-cookie-parse-temp*")))
-         (when buf
-           (kill-buffer buf))))
+	(let ((buf (get-buffer " *w3m-cookie-parse-temp*")))
+	 (when buf
+	   (kill-buffer buf))))
     (error
      (if interactive-p
 	 (signal (car err) (cdr err))

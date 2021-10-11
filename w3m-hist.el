@@ -71,15 +71,15 @@ This variable is effective when creating of the new session by copying
 This is a buffer-local variable.  For example, it will grow as follows:
 
 \[Branch-1.0.0.0]:                 +--> U1.0.0.0.0 --> U1.0.0.0.1
-                                  |
+				  |
     [Branch-1.0]:         +--> U1.0.0 --> U1.0.1 --> U1.0.2
-                          |
-         [Trunk]: U0 --> U1 --> U2 --> U3 --> U4 --> U5 --> U6
-                                 |
+			  |
+	 [Trunk]: U0 --> U1 --> U2 --> U3 --> U4 --> U5 --> U6
+				 |
     [Branch-2.0]:                +--> U2.0.0 --> U2.0.1
-                                 |
+				 |
     [Branch-2.1]:                +--> U2.1.0 --> U2.1.1 --> U2.1.2
-                                                    |
+						    |
 \[Branch-2.1.1.0]:                                   +--> U2.1.1.0.0
 
 In this case, the U1.0.0.0.0 history element represents the first link

@@ -135,7 +135,7 @@
      "A filter for Wikipedia"
      "\\`http://.*\\.wikipedia\\.org/" w3m-filter-wikipedia)
     (t "filter for github.com repository main page"
-        "\\`http[s]?://github\\.com/[^/]+/[^/]+[/]?$"
+	"\\`http[s]?://github\\.com/[^/]+/[^/]+[/]?$"
       w3m-filter-github-repo-main-page)
     (t "xkcd filter" "\\`http[s]?://xkcd.com/" w3m-filter-xkcd)
     (nil

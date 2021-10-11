@@ -4285,33 +4285,33 @@ You are retrieving non-secure image(s).  Continue? ")
 If RATE is not given, use `w3m-resize-image-scale'.
 CHANGED-RATE is currently changed rate / 100."
   (let* ((msg-prompt "Resize: [+ =] enlarge [-] shrink [0] original [q] quit")
-         (changed-rate (or changed-rate 1))
-         (rate (or (and rate (min rate 99)) w3m-resize-image-scale))
-         char)
+	 (changed-rate (or changed-rate 1))
+	 (rate (or (and rate (min rate 99)) w3m-resize-image-scale))
+	 char)
     (while
       (cond
        ((memq
-          (setq char
-            (w3m-static-if (featurep 'xemacs)
-              (progn
-                 (w3m-message msg-prompt)
-                 (char-octet (read-char-exclusive)))
-             (read-char-exclusive
-               (propertize msg-prompt 'face 'w3m-lnum-minibuffer-prompt))))
-          '(?+ ?=))
-        (let ((percent (+ 100 rate)))
-          (w3m-resize-inline-image-internal image percent)
-          (setq changed-rate (* changed-rate
-                                (/ percent 100.0)))))
+	  (setq char
+	    (w3m-static-if (featurep 'xemacs)
+	      (progn
+		 (w3m-message msg-prompt)
+		 (char-octet (read-char-exclusive)))
+	     (read-char-exclusive
+	       (propertize msg-prompt 'face 'w3m-lnum-minibuffer-prompt))))
+	  '(?+ ?=))
+	(let ((percent (+ 100 rate)))
+	  (w3m-resize-inline-image-internal image percent)
+	  (setq changed-rate (* changed-rate
+				(/ percent 100.0)))))
        ((eq char ?-)
-        (let ((percent (/ 10000.0 (+ 100 rate))))
-          (w3m-resize-inline-image-internal image percent)
-          (setq changed-rate (* changed-rate
-                                (/ percent 100.0)))))
+	(let ((percent (/ 10000.0 (+ 100 rate))))
+	  (w3m-resize-inline-image-internal image percent)
+	  (setq changed-rate (* changed-rate
+				(/ percent 100.0)))))
        ((eq char ?0)
-        (w3m-resize-inline-image-internal image
-                                          (/ 100.0 changed-rate))
-        (setq changed-rate 1))
+	(w3m-resize-inline-image-internal image
+					  (/ 100.0 changed-rate))
+	(setq changed-rate 1))
        (t nil)))))
 
 (defun w3m-zoom-in-image (&optional rate)
@@ -11642,7 +11642,7 @@ Refer to variable `w3m-display-mode' for details."
 (defun w3m-cleanup-temp-files ()
   (when w3m-do-cleanup-temp-files
     (dolist (f (directory-files w3m-profile-directory t "^w3m\\(cache\\|el\\|src\\|tmp\\)" t))
-        (delete-file f))))
+	(delete-file f))))
 
 (defun w3m-show-form-hint ()
   "Show sending form hint when the cursor is in a form."
