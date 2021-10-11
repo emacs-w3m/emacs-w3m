@@ -612,6 +612,7 @@ arguments."
 	(string :format "url base:            %v")
 	(string :format "args for youtube-dl: %v"))))
 
+
 (defcustom w3m-download-ambiguous-basename-alist
   '(("^downloadhandler.ashx$"
      ("hebrewbooks.org" nil w3m-download--make-basename-from-path+query (".pdf"))
@@ -2516,6 +2517,15 @@ further information."
   (if (executable-find "wget")
     (w3m-download-using-wget url filename no-cache interactive)
    (w3m-download-using-w3m url filename no-cache handler post-data)))
+
+
+;;; Eval after load
+(push '("\\`https?://youtu.be/\\(.*\\)"
+	w3m-pattern-uri-replace "http://youtube.com/watch?v=\\1")
+      w3m-uri-replace-alist)
+;; Alternatively:
+;;   (push '("^https?://youtu.be/" . "Linux Firefox")
+;;         w3m-user-agent-site-specific-alist)
 
 
 
