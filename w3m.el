@@ -2428,9 +2428,10 @@ nil value means it has not been initialized.")
 	     (when (memq 'xbm types) '(("image/x-xbm" . xbm)))
 	     (when (memq 'xpm types) '(("image/x-xpm" . xpm)))))))
   "Alist of content types and image types defined as the Emacs features.
-The content types not listed in this variable, like image/webp, might
-be able to display if image-converter.el and some converter program are
-available, or ImageMagick is built-in in Emacs or installed.")
+The content types not listed in this variable, like image/webp on Emacs
+28 and olders, might be able to display if image-converter.el and some
+converter program are available, or ImageMagick is built-in in Emacs or
+installed.")
 
 (defconst w3m-toolbar-buttons
   '("back" "parent" "forward" "reload" "open" "home" "search" "image"
