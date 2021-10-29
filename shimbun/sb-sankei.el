@@ -539,7 +539,7 @@ src=\"[^\"]+/\\([0-9A-Z]\\{26\\}\\)\\.[^\"]+\"" nd t))
   (require 'w3m-form))
 
 (declare-function w3m-cookie-save "w3m-cookie" (&optional domain))
-(declare-function w3m-cookie-setup "w3m-cookie")
+(autoload 'w3m-cookie-setup "w3m-cookie")
 
 (autoload 'password-cache-add "password-cache")
 (autoload 'password-read-from-cache "password-cache")

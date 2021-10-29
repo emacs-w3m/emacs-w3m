@@ -1,5 +1,9 @@
 2021-09-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	* sb-sankei.el (w3m-cookie-setup): Autoload it.
+
+2021-09-24  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	* sb-sankei.el (shimbun-sankei-keep-login): Consult akamai cookie
 	instead of local timer for expiry period.
 	(shimbun-sankei-logout): Remove login/out cookies first and save last.
