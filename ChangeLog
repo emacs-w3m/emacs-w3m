@@ -1,3 +1,9 @@
+2021-11-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Conceal warnings for the case SEMI is absent (issue #108)
+
+	* mime-w3m.el: Silent the byte compiler.
+
 2021-10-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Use rfc6068.el if possible instead of rfc2368.el (issue #109)

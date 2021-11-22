@@ -1,6 +1,6 @@
 ;;; mime-w3m.el --- mime-view content filter for text
 
-;; Copyright (C) 2001-2005, 2009, 2010, 2012, 2013, 2017, 2019
+;; Copyright (C) 2001-2005, 2009, 2010, 2012, 2013, 2017, 2019, 2021
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -34,7 +34,33 @@
 ;;; Code:
 
 (eval-when-compile (require 'cl-lib)) ;; cl-labels
-(require 'mime-view)
+(eval-and-compile
+  ;; Conceal the warnings that will be issued unless the SEMI package
+  ;; and its requirements have been installed.
+  (unless (require 'mime-view nil t)
+    (defvar mime-view-text/html-previewer nil)
+    (if (<= emacs-major-version 27)
+	(progn
+	  (autoload 'ctree-set-calist-strictly "calist")
+	  (autoload 'mime-content-type-parameter "mime-def")
+	  (dolist (fn '(mime-entity-content
+			mime-entity-content-type mime-entity-fetch-field
+			mime-entity-type/subtype
+			mime-find-entity-from-content-id mime-find-root-entity
+			mime-insert-text-content mime-uri-parse-cid))
+	    (autoload fn "mime"))
+	  (autoload 'set-alist "alist"))
+      (declare-function ctree-set-calist-strictly "calist")
+      (declare-function mime-content-type-parameter "mime-def")
+      (declare-function mime-entity-content "mime")
+      (declare-function mime-entity-content-type "mime")
+      (declare-function mime-entity-fetch-field "mime")
+      (declare-function mime-entity-type/subtype "mime")
+      (declare-function mime-find-entity-from-content-id "mime")
+      (declare-function mime-find-root-entity "mime")
+      (declare-function mime-insert-text-content "mime")
+      (declare-function mime-uri-parse-cid "mime")
+      (declare-function set-alist "alist"))))
 (require 'w3m)
 
 (defcustom mime-w3m-display-inline-images 'default
