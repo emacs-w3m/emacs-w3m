@@ -34,10 +34,11 @@
 ;;; Code:
 
 (eval-when-compile (require 'cl-lib)) ;; cl-labels
-(eval-and-compile
+(eval-when-compile
   ;; Conceal the warnings that will be issued unless the SEMI package
   ;; and its requirements have been installed.
   (unless (require 'mime-view nil t)
+    (provide 'mime-view)
     (defvar mime-view-text/html-previewer nil)
     (if (<= emacs-major-version 27)
 	(progn
@@ -61,6 +62,7 @@
       (declare-function mime-insert-text-content "mime")
       (declare-function mime-uri-parse-cid "mime")
       (declare-function set-alist "alist"))))
+(require 'mime-view)
 (require 'w3m)
 
 (defcustom mime-w3m-display-inline-images 'default
