@@ -2,7 +2,7 @@
 
 	Conceal warnings for the case SEMI is absent (issue #108)
 
-	* mime-w3m.el: Silent the byte compiler.
+	* mime-w3m.el: Silence the byte compiler.
 
 2021-10-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
