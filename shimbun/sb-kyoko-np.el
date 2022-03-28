@@ -1,6 +1,6 @@
 ;;; sb-kyoko-np.el --- shimbun backend for Kyoko Shimbun News
 
-;; Copyright (C) 2015, 2018, 2022 Katsumi Yamaoka
+;; Copyright (C) 2015, 2018 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -101,15 +101,6 @@ class=\"app[\t\n ]+text-center\"" nil t)
     (unless (memq (shimbun-japanese-hankaku shimbun)
 		  '(header subject nil))
       (shimbun-japanese-hankaku-buffer t))
-    (let ((time (ignore-errors
-		  (w3m-last-modified (shimbun-header-xref header)))))
-      (when time
-	(setq time (decode-time time))
-	(shimbun-header-set-date
-	 header
-	 (shimbun-make-date-string
-	  (nth 5 time) (nth 4 time) (nth 3 time)
-	  (format "%02d:%02d:%02d" (nth 2 time) (nth 1 time) (nth 0 time))))))
     t))
 
 (luna-define-method shimbun-footer :around ((shimbun shimbun-kyoko-np)
