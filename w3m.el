@@ -1,6 +1,6 @@
 ;;; w3m.el --- an Emacs interface to w3m -*- lexical-binding: t -*-
 
-;; Copyright (C) 2000-2021 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000-2022 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -245,7 +245,7 @@ See also `w3m-use-tab'."
 (declare-function image-scroll-down "image-mode" (&optional n))
 (declare-function image-scroll-up "image-mode" (&optional n))
 (declare-function quit-window "window" (&optional kill window))
-(declare-function rfc2368-parse-mailto-url "rfc2368" (mailto-url)) ;; Emacs<=27
+(declare-function rfc2368-parse-mailto-url "rfc2368" (mailto-url)) ;; Emacs=27
 (declare-function rfc6068-parse-mailto-url "rfc6068" (mailto-url)) ;; Emacs>=28
 (declare-function w3m-search-escape-query-string "w3m-search"
 		  (str &optional coding))
@@ -3485,17 +3485,16 @@ external `convert' program respectively."
 			       (if (fboundp 'imagemagick-types)
 				   (imagemagick-types)
 				 (cons 'WEBP imagemagick-enabled-types)))))
-		  (setq type (if (memq 'imagemagick image-types)
-				 'imagemagick ;; ImageMagick has been built-in
-			       (if (boundp 'image-use-external-converter)
-				   ;; Emacs >=27; to make it work, some
-				   ;; converter program is required to have
-				   ;; been installed; see image-converter.el.
-				   'image-convert
-				 (if (w3m-which-command "convert")
-				     'convert))))
-		  (push (cons content-type type) w3m-image-type-alist)
-		  type)))))
+		  (progn
+		    (setq type (if (memq 'imagemagick image-types)
+				   ;; ImageMagick has been built-in
+				   'imagemagick
+				 ;; To make it work, some converter
+				 ;; program is required to have been
+				 ;; installed; see image-converter.el.
+				 'image-convert))
+		    (push (cons content-type type) w3m-image-type-alist)
+		    type))))))
 
 (defun w3m-handle-non-anchor-buttons ()
   "Return a boolean value corresponding to the variable of the same name."
@@ -8693,10 +8692,7 @@ This command updates the `arrived URLs' database."
       (w3m-fb-delete-frame-buffers)
       (display-buffer-same-window (other-buffer) nil))
     (remove-hook 'window-configuration-change-hook
-		 #'w3m-redisplay-pages-automatically)
-    (when (= emacs-major-version 26)
-      (remove-hook 'window-size-change-functions
-		   #'w3m-redisplay-pages-automatically))))
+		 #'w3m-redisplay-pages-automatically)))
 
 (defun w3m-close-window ()
   "Bury emacs-w3m buffers and close windows and frames.
@@ -9123,10 +9119,7 @@ or a list which consists of the following elements:
   (setq w3m-last-window-width (window-width))
   (when w3m-redisplay-pages-automatically-p
     (add-hook 'window-configuration-change-hook
-	      #'w3m-redisplay-pages-automatically)
-    (when (= emacs-major-version 26)
-      (add-hook 'window-size-change-functions
-		#'w3m-redisplay-pages-automatically)))
+	      #'w3m-redisplay-pages-automatically))
   (w3m-setup-toolbar)
   (w3m-setup-menu)
   (run-hooks 'w3m-mode-setup-functions)

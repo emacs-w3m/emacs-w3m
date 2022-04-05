@@ -1,6 +1,6 @@
 ;;; mime-w3m.el --- mime-view content filter for text
 
-;; Copyright (C) 2001-2005, 2009, 2010, 2012, 2013, 2017, 2019, 2021
+;; Copyright (C) 2001-2005, 2009, 2010, 2012, 2013, 2017, 2019, 2021, 2022
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -34,13 +34,13 @@
 ;;; Code:
 
 (eval-when-compile (require 'cl-lib)) ;; cl-labels
-(eval-when-compile
-  ;; Conceal the warnings that will be issued unless the SEMI package
-  ;; and its requirements have been installed.
-  (unless (require 'mime-view nil t)
-    (provide 'mime-view)
+(require 'mime-view nil t)
+(eval-and-compile
+  (unless (featurep 'mime-view)
+    ;; Conceal the warnings that will be issued unless the SEMI package
+    ;; and its requirements have been installed.
     (defvar mime-view-text/html-previewer nil)
-    (if (<= emacs-major-version 27)
+    (if (= emacs-major-version 27)
 	(progn
 	  (autoload 'ctree-set-calist-strictly "calist")
 	  (autoload 'mime-content-type-parameter "mime-def")
@@ -62,7 +62,6 @@
       (declare-function mime-insert-text-content "mime")
       (declare-function mime-uri-parse-cid "mime")
       (declare-function set-alist "alist"))))
-(require 'mime-view)
 (require 'w3m)
 
 (defcustom mime-w3m-display-inline-images 'default

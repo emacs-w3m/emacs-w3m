@@ -1,6 +1,6 @@
 ;;; shimbun.el --- interfacing with web newspapers
 
-;; Copyright (C) 2001-2014, 2017-2019, 2021
+;; Copyright (C) 2001-2014, 2017-2019, 2021, 2022
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -1765,8 +1765,7 @@ faster."
 		   (not (looking-at xml-entity-or-char-ref-re)))
 	  (delete-char 1)
 	  (insert "＆")))))
-  (if (or (and (fboundp 'libxml-available-p) (libxml-available-p)) ;; Emacs >=27
-	  (fboundp 'libxml-parse-xml-region)) ;; Emacs <= 26
+  (if (libxml-available-p)
       (save-excursion
 	(goto-char (point-min))
 	(let ((xml (when (search-forward "<" nil t)

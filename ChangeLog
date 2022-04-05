@@ -1,3 +1,10 @@
+2022-04-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Drop Emacs 26 support
+
+	* aclocal.m4, mime-w3m.el, w3m-util.el, w3m.el, shimbun/shimbun.el
+	Drop Emacs 26 support because of Emacs 28.1 having been released.
+
 2021-11-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Conceal warnings for the case SEMI is absent (issue #108)

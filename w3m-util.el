@@ -1,6 +1,6 @@
 ;;; w3m-util.el --- Utility macros and functions for emacs-w3m
 
-;; Copyright (C) 2001-2014, 2016-2021 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2014, 2016-2022 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -1401,8 +1401,8 @@ the function cell of FUNCs rather than their value cell.
 	   (eval (car (widget-get widget :args))))))
 
 (defmacro w3m-easy-menu-add (menu &optional map)
-  "Run `easy-menu-add' (obsolete since 28.1) on Emacs 27 and earlier."
-  (if (<= emacs-major-version 27)
+  "Run `easy-menu-add' (obsolete since 28.1) on Emacs 27."
+  (if (= emacs-major-version 27)
       `(easy-menu-add ,menu ,map)))
 
 ;;; Punycode RFC 3492:
