@@ -1,5 +1,12 @@
 2022-04-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
+	Make the builder work for autoconf 2.70 and up as well
+
+	* aclocal.m4 (AC_CACHE_VAL): Replace AC_FD_CC with AS_MESSAGE_LOG_FD.
+	* configure.ac: Rename from configure.in; run autoupdate.
+
+2022-04-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
 	Drop Emacs 26 support
 
 	* aclocal.m4, mime-w3m.el, w3m-util.el, w3m.el, shimbun/shimbun.el
