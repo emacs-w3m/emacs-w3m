@@ -4,6 +4,7 @@
 
 	* aclocal.m4 (AC_CACHE_VAL): Replace AC_FD_CC with AS_MESSAGE_LOG_FD.
 	* configure.ac: Rename from configure.in; run autoupdate.
+	* Makefile.in (configure): Replace configure.in with configure.ac.
 
 2022-04-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
