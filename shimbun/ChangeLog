@@ -1,3 +1,10 @@
+2022-04-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Drop Emacs 26 support
+
+	* shimbun.el (shimbun-xml-parse-buffer): Say `libxml-available-p'
+	always exists.
+
 2021-09-24  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (w3m-cookie-setup): Autoload it.
