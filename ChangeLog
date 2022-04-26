@@ -1,3 +1,17 @@
+2022-04-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Work for Emacs 29.1 that implemented new timestamp format
+
+	* w3m-antenna.el (w3m-antenna-check-rss, w3m-antenna-site-update):
+	* w3m-form.el (w3m-form-make-form-data):
+	* w3m-session.el (w3m-session-save, w3m-session-automatic-save)
+	(w3m-session-deleted-save, w3m-session-crash-recovery-save)
+	(w3m-session-select-copy):
+	* w3m.el (w3m--retrieve-and-render--handler-function)
+	(w3m-retrieve-and-render): Use old timestamp format.
+
+	* w3m-util.el (w3m-time-newer-p, w3m-time-lapse-seconds): Refactor.
+
 2022-04-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make the builder work for autoconf 2.70 and up as well

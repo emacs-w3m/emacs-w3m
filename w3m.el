@@ -6294,7 +6294,8 @@ to fold them).  Things in textarea won't be modified."
       (if type
 	  (if (string= type "X-w3m-error/redirection")
 	      (when (w3m-show-redirection-error-information url page-buffer)
-		(w3m-arrived-add url nil (current-time) (current-time))
+		(let ((current-time (time-convert nil 'list)))
+		  (w3m-arrived-add url nil current-time current-time))
 		(w3m-message "Cannot retrieve URL: %s" url))
 	    (let ((modified-time (w3m-last-modified url)))
 	      (w3m-arrived-add url nil modified-time arrival-time)
@@ -6344,7 +6345,8 @@ to fold them).  Things in textarea won't be modified."
 				 'face 'w3m-error)
 	      (setq w3m-current-url url
 		    w3m-current-title "Fail"))))
-	(w3m-arrived-add url nil (current-time) (current-time))
+	(let ((current-time (time-convert nil 'list)))
+	  (w3m-arrived-add url nil current-time current-time))
 	(ding)
 	(when (eq (car w3m-current-forms) t)
 	  (setq w3m-current-forms (cdr w3m-current-forms)))
@@ -6396,7 +6398,7 @@ called with t as an argument.  Otherwise, it will be called with nil."
 		      (message nil)))))
     (setq url (w3m-url-strip-fragment url))
     (let ((page-buffer (current-buffer))
-	  (arrival-time (current-time))
+	  (arrival-time (time-convert nil 'list))
 	  (silent w3m-message-silent))
       (w3m-process-do-with-temp-buffer
 	  (type (progn

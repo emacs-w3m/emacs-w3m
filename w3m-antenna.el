@@ -1,6 +1,6 @@
 ;;; w3m-antenna.el --- Utility to detect changes of WEB -*- lexical-binding: t -*-
 
-;; Copyright (C) 2001-2005, 2007, 2017, 2019
+;; Copyright (C) 2001-2005, 2007, 2017, 2019, 2022
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -298,7 +298,7 @@ In order to use this function, `xml.el' is required."
 		       (w3m-rss-find-el 'pubDate items)))
 	  (when dates
 	    ;; Ignore future entries to display site announcements.
-	    (let ((now (current-time)))
+	    (let ((now (time-convert nil 'list)))
 	      (let ((low (+ (nth 1 now) 3600))) ; 3600 = clock skew margin
 		(setq now
 		      (if (>= low 65536)
@@ -391,9 +391,9 @@ It consists of 3 steps:
 			 (w3m-antenna-site-size site)
 			 (= size (w3m-antenna-site-size site)))
 		(w3m-antenna-site-size-detected site))
-	      (current-time))))
+	      (time-convert nil 'list))))
   (setf (w3m-antenna-site-url site) url)
-  (setf (w3m-antenna-site-last-modified site) time)
+  (setf (w3m-antenna-site-last-modified site) (time-convert time 'list))
   (setf (w3m-antenna-site-size site) size)
   site)
 

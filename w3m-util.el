@@ -1095,24 +1095,16 @@ But this function should work even if STRING is considerably long."
     (error ;; Stack overflow in regexp matcher
      (w3m-string-match-url-components-1 string))))
 
-;; Faster than (> (time-to-seconds (time-subtract a b)) 0).
 (defun w3m-time-newer-p (a b)
   "Return t, if A is newer than B.  Otherwise return nil.
-A and B are lists which represent time in Emacs-style.  If value is
-nil, it is regarded as the oldest time."
+If value is nil, it is regarded as the oldest time."
   (and a
        (or (not b)
-	   (or (> (car a) (car b))
-	       (and (= (car a) (car b))
-		    (> (nth 1 a) (nth 1 b)))))))
+	   (> (time-to-seconds (time-subtract a b)) 0))))
 
-;; Generally faster than (time-subtract end start).
 (defun w3m-time-lapse-seconds (start end)
-  "Return lapse seconds from START to END.
-START and END are lists which represent time in Emacs-style."
-  (+ (* (- (car end) (car start)) 65536)
-     (cadr end)
-     (- (cadr start))))
+  "Return lapse seconds from START to END."
+  (time-to-seconds (time-subtract end start)))
 
 (defun w3m-url-local-p (url)
   "If URL points a file on the local system, return non-nil value.

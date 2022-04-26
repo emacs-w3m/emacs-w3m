@@ -1,6 +1,7 @@
 ;;; w3m-form.el --- Stuffs to handle <form> tag
 
-;; Copyright (C) 2001-2014, 2017, 2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2014, 2017, 2019, 2022
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -323,7 +324,8 @@ If no field in forward, return nil without moving."
     (when bufs
       (setq bufs (sort bufs #'car-less-than-car))
       (if (eq (w3m-form-enctype form) 'multipart/form-data)
-	  (let ((boundary (apply 'format "--_%d_%d_%d" (current-time)))
+	  (let ((boundary (apply 'format "--_%d_%d_%d"
+				 (time-convert nil 'list)))
 		file type)
 	    ;; (setq buf (nreverse buf))
 	    (cons
