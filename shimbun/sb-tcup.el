@@ -1,6 +1,7 @@
 ;;; sb-tcup.el --- shimbun backend for www.tcup.com
 
-;; Copyright (C) 2001, 2002, 2005, 2019 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2005, 2019, 2022
+;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: Yuuichi Teranishi <teranisi@gohome.org>
 ;; Keywords: news
@@ -189,9 +190,9 @@ w!!gb8HQ,s0F*e6f*xs\"HR}{':>)Q_|+67gobo%?|n_SdjfzLI6kJ(T;q{+?p?")))
 			   (t
 			    (setq stime (list ms ls)))))))
 		((looking-at "\\([^<]+\\)<")
-		 (setq stime (shimbun-tcup-make-time)))
+		 (setq stime (time-convert (shimbun-tcup-make-time) 'list)))
 		(t
-		 (setq stime (current-time))))
+		 (setq stime (time-convert nil 'list))))
 	  (let ((system-time-locale "C"))
 	    (setq date (format-time-string "%d %b %Y %T %z" stime)))
 	  (setq stime (format "%05d%05d" (car stime) (cadr stime)))

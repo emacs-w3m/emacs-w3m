@@ -1,3 +1,14 @@
+2022-04-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Work for Emacs 29.1 that implemented new timestamp format
+
+	* sb-nikkei.el (shimbun-nikkei-make-date-string):
+	* sb-tcup.el (shimbun-get-headers):
+	* shimbun.el (initialize-instance, shimbun-time-parse-string)
+	(shimbun-decode-time): Use old timestamp format.
+
+	* sb-lump.el (shimbun-lump-lapse-seconds): Refactor.
+
 2022-04-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Drop Emacs 26 support

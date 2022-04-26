@@ -1,6 +1,6 @@
 ;;; sb-lump.el --- shimbun backend class to check all groups at once
 
-;; Copyright (C) 2001, 2002 Yuuichi Teranishi <teranisi@gohome.org>
+;; Copyright (C) 2001, 2002, 2022 Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;         Yuuichi Teranishi  <teranisi@gohome.org>
@@ -43,9 +43,7 @@
       shimbun-lump-check-interval))
 
 (defun shimbun-lump-lapse-seconds (time)
-  (let ((now (current-time)))
-    (+ (* (- (car now) (car time)) 65536)
-       (- (nth 1 now) (nth 1 time)))))
+  (time-to-seconds (time-since time)))
 
 (defun shimbun-lump-check-p (shimbun)
   (or (null (shimbun-lump-last-check-internal shimbun))

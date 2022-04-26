@@ -1,6 +1,6 @@
 ;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp
 
-;; Copyright (C) 2001-2007, 2009-2011, 2017, 2019
+;; Copyright (C) 2001-2007, 2009-2011, 2017, 2019, 2022
 ;; Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>
 
 ;; Author: Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>,
@@ -520,7 +520,7 @@ If URL begins with `http://', FOLDER is ignored."
   "Run `shimbun-make-date-string' and fix a day if needed.
 Optional ADJ is the number of days that adjust the day of month."
   (save-match-data
-    (let ((ctime (current-time))
+    (let ((ctime (time-convert nil 'list))
 	  (date (shimbun-make-date-string year month day time timezone))
 	  (system-time-locale "C")
 	  ms ls)

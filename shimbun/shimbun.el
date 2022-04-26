@@ -523,7 +523,7 @@ Generated article have a multipart/related content-type."
    entity
    (apply 'format "===shimbun_%d_%d_%d_%d==="
 	  (cl-incf shimbun-multipart-entity-counter)
-	  (current-time))))
+	  (time-convert nil 'list))))
 
 (defun shimbun-make-multipart-entity (&optional type cid)
   (luna-make-entity 'shimbun-multipart-entity :type type :cid cid))
@@ -1313,7 +1313,7 @@ zone."
 (defun shimbun-time-parse-string (string)
   "Parse the time-string STRING into the Emacs style (HIGH LOW) time."
   (let ((x (nreverse (append (timezone-fix-time string nil nil) nil))))
-    (apply 'encode-time (nconc (cdr x) (list (car x))))))
+    (time-convert (apply 'encode-time (nconc (cdr x) (list (car x)))) 'list)))
 
 (defun shimbun-decode-time (&optional specified-time specified-zone)
   "Decode a time value as (SEC MINUTE HOUR DAY MONTH YEAR DOW DST ZONE).
@@ -1326,7 +1326,7 @@ the following form returns the present time of Japan, wherever you are.
 (shimbun-decode-time nil 32400)"
   (if specified-zone
       (let* ((tz (- (car (current-time-zone)) specified-zone))
-	     (ct (or specified-time (current-time)))
+	     (ct (time-convert (or specified-time (current-time)) 'list))
 	     (ms (car ct))
 	     (ls (- (cadr ct) tz)))
 	(cond ((< ls 0)
