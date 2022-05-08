@@ -210,8 +210,8 @@ It is useful to bind this variable with `let', but do not set it globally.")
 (defun w3m-form-p (obj)
   "Return t if OBJ is a form object."
   (and (vectorp obj)
-       (symbolp (aref 0 obj))
-       (eq (aref 0 obj) 'w3m-form-object)))
+       (symbolp (aref obj 0))
+       (eq (aref obj 0) 'w3m-form-object)))
 
 (defun w3m-form-set-method (form method)
   (aset form 1 (if (stringp method)
