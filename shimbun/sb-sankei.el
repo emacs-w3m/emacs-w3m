@@ -1,6 +1,6 @@
 ;;; sb-sankei.el --- shimbun backend for the Sankei News
 
-;; Copyright (C) 2003-2011, 2013-2019, 2021 Katsumi Yamaoka
+;; Copyright (C) 2003-2011, 2013-2019, 2021, 2022 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -126,80 +126,134 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 
 (defun shimbun-sankei-get-headers (shimbun range)
   "Get headers for the group that SHIMBUN specifies in RANGE."
-  (let ((group (shimbun-current-group-internal shimbun))
-	nd url id st ids date tem subject names headers)
-    (goto-char (point-min))
-    (while (re-search-forward
-	    "\"website_url\":\"\\([^\"]+-\\([0-9A-Z]\\{26\\}\\)[^\"]*\\)"
-	    nil t)
-      (setq nd (match-end 0)
-	    url (match-string 1)
-	    id (match-string 2))
-      (when (and (search-backward (concat "{\"_id\":\"" id "\"") nil t)
-		 (progn
-		   (setq st (match-beginning 0))
-		   (or (ignore-errors (setq nd (scan-sexps st 1)))
-		       (progn (goto-char nd) nil))))
-	(setq id (concat "<" id "."
-			 (mapconcat #'identity
-				    (nreverse (split-string group "\\."))
-				    ".")
-			 "%" shimbun-sankei-top-level-domain ">"))
-	(if (or (member id ids)
-		(progn (push id ids)
-		       (shimbun-search-id shimbun id)))
-	    (goto-char nd)
-	  (save-restriction
-	    (narrow-to-region (goto-char st) nd)
-	    (setq date (decode-time ;; Default to the current time.
-			(and (re-search-forward "\"display_date\":\"\
+  (let ((group (shimbun-current-group-internal shimbun)))
+    (if (string-equal "top" group)
+	(shimbun-sankei-get-headers-top shimbun range group)
+      (let (nd url id st ids date tem subject names headers)
+	(goto-char (point-min))
+	(while (re-search-forward
+		"\"website_url\":\"\\([^\"]+-\\([0-9A-Z]\\{26\\}\\)[^\"]*\\)"
+		nil t)
+	  (setq nd (match-end 0)
+		url (match-string 1)
+		id (match-string 2))
+	  (when (and (search-backward (concat "{\"_id\":\"" id "\"") nil t)
+		     (progn
+		       (setq st (match-beginning 0))
+		       (or (ignore-errors (setq nd (scan-sexps st 1)))
+			   (progn (goto-char nd) nil))))
+	    (setq id (concat "<" id "."
+			     (mapconcat #'identity
+					(nreverse (split-string group "\\."))
+					".")
+			     "%" shimbun-sankei-top-level-domain ">"))
+	    (if (or (member id ids)
+		    (progn (push id ids)
+			   (shimbun-search-id shimbun id)))
+		(goto-char nd)
+	      (save-restriction
+		(narrow-to-region (goto-char st) nd)
+		(setq date (decode-time ;; Default to the current time.
+			    (and (re-search-forward "\"display_date\":\"\
 \\(20[2-9][0-9]-[01][0-9]-[0-3][0-9]T[0-5][0-9]:[0-5][0-9]:[^\"]+\\)" nil t)
-			     (ignore-errors
-			       (date-to-time (match-string 1))))))
-	    (goto-char st)
-	    (when (re-search-forward "\"headlines\":{\"basic\":\\(\"\\)" nil t)
-	      (setq subject (condition-case nil
-				(replace-regexp-in-string
-				 "\\`[\t 　]+\\|[\t 　]+\\'" ""
-				 (read (nth 2 (match-data))))
-			      (error "(failed to fetch subject)")))
-	      (goto-char st)
-	      (setq names nil)
-	      (when (and (re-search-forward "\"taxonomy\":\\({\\)" nil t)
-			 (setq tem (ignore-errors
-				     (scan-sexps (match-beginning 1) 1))))
-		(save-restriction
-		  (narrow-to-region (match-beginning 1) tem)
-		  (while (re-search-forward "\"name\":\"\\([^\"]+\\)\"" nil t)
-		    (push (match-string 1) names))))
-	      (when (or (not names)
-			(not (setq
-			      tem
-			      (cdr (assoc
+				 (ignore-errors
+				   (date-to-time (match-string 1))))))
+		(goto-char st)
+		(when (re-search-forward "\"headlines\":{\"basic\":\\(\"\\)"
+					 nil t)
+		  (setq subject (condition-case nil
+				    (replace-regexp-in-string
+				     "\\`[\t 　]+\\|[\t 　]+\\'" ""
+				     (read (nth 2 (match-data))))
+				  (error "(failed to fetch subject)")))
+		  (goto-char st)
+		  (setq names nil)
+		  (when (and (re-search-forward "\"taxonomy\":\\({\\)" nil t)
+			     (setq tem (ignore-errors
+					 (scan-sexps (match-beginning 1) 1))))
+		    (save-restriction
+		      (narrow-to-region (match-beginning 1) tem)
+		      (while (re-search-forward "\"name\":\"\\([^\"]+\\)\""
+						nil t)
+			(push (match-string 1) names))))
+		  (when (or (not names)
+			    (not (setq
+				  tem
+				  (cdr
+				   (assoc
 				    group
 				    '(("column.editorial" . "主張")
 				      ("column.seiron" . "正論")
 				      ("column.sankeisyo" . "産経抄")
 				      ("column.naniwa" . "浪速風")
 				      ("west.essay" . "朝晴れエッセー"))))))
-			(member tem names))
-		(push (shimbun-create-header
-		       0 subject
-		       (concat shimbun-sankei-server-name
-			       (if names
-				   (concat " (" (mapconcat #'identity
-							   (last names 2)
-							   " ")
-					   ")")
-				 ""))
-		       (shimbun-make-date-string
-			(nth 5 date) (nth 4 date) (nth 3 date)
-			(format "%02d:%02d:%02d"
-				(nth 2 date) (nth 1 date) (nth 0 date)))
-		       id "" 0 0
-		       (shimbun-expand-url url shimbun-sankei-url))
-		      headers)))
-	    (goto-char nd)))))
+			    (member tem names))
+		    (push (shimbun-create-header
+			   0 subject
+			   (concat shimbun-sankei-server-name
+				   (if names
+				       (concat " (" (mapconcat #'identity
+							       (last names 2)
+							       " ")
+					       ")")
+				     ""))
+			   (shimbun-make-date-string
+			    (nth 5 date) (nth 4 date) (nth 3 date)
+			    (format "%02d:%02d:%02d"
+				    (nth 2 date) (nth 1 date) (nth 0 date)))
+			   id "" 0 0
+			   (shimbun-expand-url url shimbun-sankei-url))
+			  headers)))
+		(goto-char nd)))))
+	(shimbun-sort-headers headers)))))
+
+(defun shimbun-sankei-get-headers-top (shimbun range group)
+  "Get headers for the \"top\" group of SHIMBUN in RANGE."
+  (let ((name (cdr (assoc group '(("top" . "トップ")))))
+	url id ids nd subject date headers)
+    (goto-char (point-min))
+    (while (re-search-forward "<div[^>]* class=[^>]*[ \"]order-1[ \"]" nil t)
+      (when (shimbun-end-of-tag "div")
+	(narrow-to-region (goto-char (match-beginning 2)) (match-end 2))
+	(when (re-search-forward "<a[^>]* href=\"\\(/article/[0-9]\\{8\\}-\
+\\([0-9A-Z]\\{26\\}\\)/\\)" nil t)
+	  (setq url (match-string 1)
+		id (concat "<" (match-string 2) "."
+			   (mapconcat #'identity
+				      (nreverse (split-string group "\\."))
+				      ".")
+			   "%" shimbun-sankei-top-level-domain ">"))
+	  (unless (or (member id ids)
+		      (progn (push id ids)
+			     (shimbun-search-id shimbun id)))
+	    (when (shimbun-end-of-tag "a")
+	      (goto-char (match-beginning 2))
+	      (setq nd (match-end 2))
+	      (when (re-search-forward
+		     "\\(?:[^>]*<[^>]*>\\)*[\t\n ]*\\([^<]+\\)" nd t)
+		(setq subject (replace-regexp-in-string "[\t\n ]+\\'" ""
+							(match-string 1)))
+		(goto-char (point-min))
+		(when (and (re-search-forward "<time[^>]* dateTime=\"\
+\\(20[2-9][0-9]-[01][0-9]-[0-3][0-9]T\
+[012][0-9]:[0-5][0-9]:[0-5][0-9]\\(?:\\.[0-9]+\\)Z\\)" nil t)
+			   (ignore-errors
+			     (setq date (decode-time (date-to-time
+						      (match-string 1))))))
+		  (push (shimbun-create-header
+			 0 subject
+			 (if name
+			     (concat shimbun-sankei-server-name " (" name ")")
+			   shimbun-sankei-server-name)
+			 (shimbun-make-date-string
+			  (nth 5 date) (nth 4 date) (nth 3 date)
+			  (apply #'format "%02d:%02d:%02d"
+				 (last (nreverse date) 3)))
+			 id "" 0 0
+			 (shimbun-expand-url url shimbun-sankei-url))
+			headers)))))))
+      (goto-char (point-max))
+      (widen))
     (shimbun-sort-headers headers)))
 
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-sankei)
