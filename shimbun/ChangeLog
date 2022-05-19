@@ -1,3 +1,10 @@
+2022-05-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Work for the "top" group again
+
+	* sb-sankei.el (shimbun-sankei-get-headers-top): New function.
+	(shimbun-sankei-get-headers): Use it on the "top" group.
+
 2022-04-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Work for Emacs 29.1 that implemented new timestamp format

@@ -1,5 +1,6 @@
 *~
 *.elc
+#*#
 /Makefile
 /autom4te.cache
 /confdefs.h
