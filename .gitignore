@@ -1,6 +1,6 @@
 *~
 *.elc
-/#*#
+\#*#
 /Makefile
 /autom4te.cache
 /confdefs.h
@@ -11,12 +11,10 @@
 /emacs-w3m-*.tar.gz
 /w3m-kwds.el
 /w3m-load.el
-/doc/#*#
 /doc/Makefile
 /doc/emacs-w3m*.dvi
 /doc/emacs-w3m*.info
 /doc/emacs-w3m*.info-[0-9]*
 /doc/missfont.log
 /doc/version.texi
-/shimbun/#*#
 /shimbun/shimbun-servers.el
