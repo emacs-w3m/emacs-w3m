@@ -1,6 +1,6 @@
 ;;; w3m-mail.el --- an interface to mail-user-agent for sending web pages
 
-;; Copyright (C) 2006, 2009, 2010, 2013, 2019 TSUCHIYA Masatoshi
+;; Copyright (C) 2006, 2009, 2010, 2013, 2019, 2022 TSUCHIYA Masatoshi
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -330,7 +330,7 @@ The optional HEADERS is a list in which each element is a cons of the
 symbol of a header name and a string.  Here is an example to use this
 function:
 
-(w3m-mail '((To . \"foo@bar\") (Subject . \"The emacs-w3m home page\")))"
+(w3m-mail \\='((To . \"foo@bar\") (Subject . \"The emacs-w3m home page\")))"
   (interactive (unless (eq major-mode 'w3m-mode)
 		 (error "`%s' must be invoked from an emacs-w3m buffer"
 			this-command)))

@@ -118,8 +118,8 @@ to the session (session-group) number.
 
 There is a legacy terminology problem that needs to be addressed
 here.  The documentation and symbol names currently confuse
-'sessions', 'buffers`, and 'session-groups'.  A 'session-group'
-is identical to a 'session' that has more than one 'buffer'.")
+`sessions', `buffers', and `session-groups'.  A `session-group'
+is identical to a `session' that has more than one `buffer'.")
 
 (defcustom w3m-session-file
   (expand-file-name ".sessions" w3m-profile-directory)

@@ -1785,7 +1785,7 @@ sending referers which will disclose your private informations, as
 follows:
 
 (setq w3m-add-referer
-      '(\"\\\\`https?:\"
+      \\='(\"\\\\`https?:\"
 	. \"\\\\`https?://\\\\(?:[^./]+\\\\.\\\\)*example\\\\.net/\"))
 "
   :group 'w3m
@@ -9922,7 +9922,7 @@ histories and forms."
 This is the primitive function of `w3m'.
 
 If the second argument RELOAD is non-nil, reload a content of URL.
-Except that if it is 'redisplay, re-display the page without reloading.
+Except that if it is \\='redisplay, re-display the page without reloading.
 The third argument CHARSET specifies a charset to be used for decoding
 a content.
 The fourth argument POST-DATA should be a string or a cons cell.

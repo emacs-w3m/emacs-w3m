@@ -1,3 +1,9 @@
+2022-06-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Fix unquoted single quotation marks in docstrings
+
+	* w3m-dtree.el, w3m-mail.el, w3m-session.el, w3m.el
+
 2022-05-06  Thierry Volpiatto  <thievol@posteo.net>
 
 	* w3m-form.el (w3m-form-p): Correct argument order in call to aref
