@@ -1,6 +1,6 @@
 ;; mew-shimbun.el --- View shimbun contents with Mew
 
-;; Copyright (C) 2001-2007, 2010, 2016, 2017, 2019
+;; Copyright (C) 2001-2007, 2010, 2016, 2017, 2019, 2022
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -120,8 +120,8 @@ Show below expire,
 
 (defcustom mew-shimbun-db-length nil
   "Max length of mew-shimbun database.
-If nil, same 'mew-lisp-max-length'.
-If integer, all server.group limit 'integer'.
+If nil, same `mew-lisp-max-length'.
+If integer, all server.group limit `integer'.
 If alist, each cell has shimbun folder names and their max length,
 show below example,
 
@@ -163,13 +163,13 @@ show below example,
   :type 'character)
 
 (defcustom mew-shimbun-use-unseen nil
-  "If non-nil, SHIMBUN folder support the 'unseen' mark."
+  "If non-nil, SHIMBUN folder support the `unseen' mark."
   :group 'shimbun
   :group 'mew-shimbun
   :type 'boolean)
 
 (defcustom mew-shimbun-use-unseen-cache-save nil
-  "If non-nin, save '.mew-cache' whenever remove the 'unseen' mark."
+  "If non-nin, save \".mew-cache\" whenever removing the `unseen' mark."
   :group 'shimbun
   :group 'mew-shimbun
   :type 'boolean)
@@ -449,8 +449,8 @@ If called with '\\[universal-argument]', goto folder to have a few new messages.
 ;;;###autoload
 (defun mew-shimbun-re-retrieve (&optional args)
   "Re-retrieve this message.
-If called with '\\[universal-argument]', re-retrieve messages marked with
-'mew-shimbun-mark-re-retrieve'."
+If called with `\\[universal-argument]', re-retrieve messages marked with
+`mew-shimbun-mark-re-retrieve'."
   (interactive "P")
   (when (mew-summary-exclusive-p)
     (mew-summary-only
@@ -954,7 +954,7 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
 
 ;;; Unseen
 (defun mew-shimbun-unseen-remove-advice ()
-  "Remove 'unseen' mark."
+  "Remove `unseen' mark."
   (let ((fld (mew-summary-folder-name)))
     (when (mew-shimbun-folder-p fld)
       (let* ((vfld (mew-summary-folder-name 'ext))

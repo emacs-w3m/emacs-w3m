@@ -94,7 +94,7 @@ WordPress, and TypePad.")
       headers))))
 
 (defun sb-rss-blogs-guess-type-from-rss ()
-  "Analyze 'generator' tag in RSS feed for known CMS."
+  "Analyze `generator' tag in RSS feed for known CMS."
   (save-excursion
     (goto-char (point-min))
     (when (or (re-search-forward
@@ -112,7 +112,7 @@ WordPress, and TypePad.")
 	  nil))))))
 
 (defun shimbun-rss-blogs-guess-type-from-html ()
-  "Analyze 'generator' tag in HTML page for known CMS."
+  "Analyze `generator' tag in HTML page for known CMS."
   (save-excursion
     (goto-char (point-min))
     (if (re-search-forward "<[ \t]*meta.*name=[\"']generator[\"'].*$" nil t)

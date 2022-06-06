@@ -52,7 +52,7 @@
 
 (defvar shimbun-slashdot-comment-display "flat"
   "Display type of comments.
-Can be 'flat', 'thread', or 'nested'.")
+Can be \"flat\", \"thread\", or \"nested\".")
 
 (defvar shimbun-slashdot-regexp-section-id-subject
   "<\\s-*h3\\s-+class=\"story\"[^\0]*?<a [^>]*?href=\"\

@@ -1,6 +1,7 @@
 ;;; nnshimbun.el --- interfacing with web newspapers
 
-;; Copyright (C) 2000-2012, 2016-2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000-2012, 2016-2019, 2022
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          ARISAWA Akihiro    <ari@mbf.sphere.ne.jp>,
@@ -140,7 +141,7 @@ the value of `gnus-level-default-subscribed' will be used."
  :type list
  :function nnshimbun-find-group-parameters
  :function-document "\
-Return nnshimbun GROUP's group parameters as a plist."
+Return nnshimbun GROUP\\='s group parameters as a plist."
  :variable nnshimbun-group-parameters-alist
  :variable-default nil
  :variable-document "\
@@ -148,7 +149,7 @@ Alist of nnshimbun group parameters.
 Each element should be a cons of a regexp matching group names and a
 plist which contains keyword-value pairs, like the following:
 
-'(\"\\\\`nnshimbun\\\\+asahi:\" index-range all prefetch-articles off
+\\='(\"\\\\`nnshimbun\\\\+asahi:\" index-range all prefetch-articles off
   encapsulate-images on expiry-wait 6)
 
 `index-range' specifies the number of indices that should be checked
