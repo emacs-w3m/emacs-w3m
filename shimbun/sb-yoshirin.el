@@ -1,6 +1,6 @@
 ;;; sb-yoshirin.el --- shimbun backend for Yoshinori Kobayashi Official Site
 
-;; Copyright (C) 2015, 2016, 2021 Katsumi Yamaoka
+;; Copyright (C) 2015, 2016, 2021, 2022 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -239,6 +239,23 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAADFBMVEUAAAD///9fX1/d3d1
 
 (defun shimbun-yoshirin-make-contents (shimbun header)
   "Make an html article."
+  (let ((date (shimbun-header-date header)))
+    (when (and (if (string-match " 00:00 " date)
+		   (or (re-search-forward "\"dateModified\":\"\\([^\"]+\\)"
+					  nil t)
+		       (re-search-forward "\"datePublished\":\"\\([^\"]+\\)"
+					  nil t))
+		 (re-search-forward "\"dateModified\":\"\\([^\"]+\\)"
+				    nil t))
+	       (ignore-errors
+		 (setq date (decode-time (date-to-time (match-string 1)))
+		       date (shimbun-header-set-date
+			     header
+			     (shimbun-make-date-string
+			      (nth 5 date) (nth 4 date) (nth 3 date)
+			      (apply #'format "%02d:%02d:%02d"
+				     (last (nreverse date) 3)))))))
+      (shimbun-header-set-date header date)))
   (when (and (re-search-forward "\
 <div\\(?:[\t\n\r ]+[^\t\n\r >]+\\)*[\t\n\r ]+class=\"entry\"" nil t)
 	     (shimbun-end-of-tag "div"))
