@@ -1,3 +1,8 @@
+2022-07-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-japanese-hankaku-region-1):
+	Replace hankaku tilde with swung dash.
+
 2022-06-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Fix unquoted single quotation marks in docstrings

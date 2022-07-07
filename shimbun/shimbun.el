@@ -1664,6 +1664,13 @@ buffer."
 				"<p>")
 	    (replace-match (concat "\\9 " (match-string 10))))
 	  (goto-char (match-end 9)))))
+      ;; Replace hankaku tilde with swung dash.
+      (goto-char start)
+      (while (search-forward
+	      (eval-when-compile (string (make-char 'ascii '126)))
+	      nil t)
+	(replace-match
+	 (eval-when-compile (string (make-char 'unicode 0 32 83)))))
       (goto-char start)
       (let ((regexp
 	     (if (eq w3m-output-coding-system 'utf-8)
