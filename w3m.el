@@ -54,9 +54,6 @@
 (require 'w3m-util)
 (require 'w3m-proc)
 
-(defvar w3m-use-tab-line)
-(defvar tab-line-exclude-modes) ;; 27.1
-
 ;; `w3m-use-tab-line' refers to this variable.
 (eval-and-compile
   (defcustom w3m-use-tab t
@@ -76,10 +73,11 @@ See also `w3m-use-tab-line' and `w3m-use-tab-menubar'."
 	       ;; or `w3m-use-tab-line' has already been set.
 	       (if (and value w3m-use-tab-line)
 		   (progn
-		     (require 'tab-line nil t)
-		     (when (boundp 'tab-line-exclude-modes)
-		       (add-to-list 'tab-line-exclude-modes 'w3m-mode)))
+		     (require 'tab-line)
+		     (add-to-list 'tab-line-exclude-modes 'w3m-mode))
 		 (when (boundp 'tab-line-exclude-modes)
+		   ;; tab-line.elc has already been loaded
+		   ;; or `tab-line-exclude-modes' has already been set.
 		   (setq tab-line-exclude-modes
 			 (delq 'w3m-mode tab-line-exclude-modes)))))))))
 
@@ -91,14 +89,14 @@ See also `w3m-use-tab-line' and `w3m-use-tab-menubar'."
   :type 'hook)
 
 (eval-and-compile
-  (defcustom w3m-use-tab-line (boundp 'tab-line-format)
+  (defcustom w3m-use-tab-line t
     "Use `tab-line-format' instead of `header-line-format' to display tabs.
 See also `w3m-use-tab'."
     :group 'w3m
     :type 'boolean
     :set (lambda (symbol value)
 	   (prog1
-	       (setq value (and (boundp 'tab-line-format) value))
+	       value
 	     (if (boundp symbol)
 		 (unless (equal (symbol-value symbol) value)
 		   (custom-set-default symbol value)
@@ -131,8 +129,7 @@ See also `w3m-use-tab'."
 	     (if (and value w3m-use-tab)
 		 (progn
 		   (require 'tab-line)
-		   (when (boundp 'tab-line-exclude-modes)
-		     (add-to-list 'tab-line-exclude-modes 'w3m-mode)))
+		   (add-to-list 'tab-line-exclude-modes 'w3m-mode))
 	       (when (boundp 'tab-line-exclude-modes)
 		 (setq tab-line-exclude-modes
 		       (delq 'w3m-mode tab-line-exclude-modes))))))))
@@ -10267,7 +10264,7 @@ When called interactively, variables `w3m-user-agent' and
 
 (defun w3m-restore-tab-line ()
   "Restore tab-line if it is broken."
-  (and w3m-use-tab w3m-use-tab-line (boundp 'tab-line-format)
+  (and w3m-use-tab w3m-use-tab-line
        (not (equal tab-line-format '(:eval (w3m-tab-line))))
        (setq tab-line-format '(:eval (w3m-tab-line)))))
 
@@ -11877,9 +11874,8 @@ Refer to variable `w3m-display-mode' for details."
 	    w3m-pop-up-frames (caddr vals))))
   (if (and w3m-use-tab w3m-use-tab-line)
       (progn
-	(require 'tab-line nil t)
-	(when (boundp 'tab-line-exclude-modes)
-	  (add-to-list 'tab-line-exclude-modes 'w3m-mode)))
+	(require 'tab-line)
+	(add-to-list 'tab-line-exclude-modes 'w3m-mode))
     (when (boundp 'tab-line-exclude-modes)
       (setq tab-line-exclude-modes
 	    (delq 'w3m-mode tab-line-exclude-modes)))))

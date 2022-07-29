@@ -1,3 +1,11 @@
+2022-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Simplify tab-line stuff
+
+	* w3m.el (w3m-use-tab, w3m-use-tab-line, w3m-restore-tab-line)
+	(w3m-display-mode): Simplify them as tab-line-format is always existent
+	and tab-line.el provides tab-line-exclude-modes.
+
 2022-07-21  Michael Heerdegen  <michael_heerdegen@web.de>
 
 	* w3m-search.el (w3m-search-engine-alist): Update wikipedia search urls
