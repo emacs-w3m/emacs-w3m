@@ -1,3 +1,7 @@
+2022-08-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-fontify-anchors): Warn suspicious links (as shr does).
+
 2022-07-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Simplify tab-line stuff

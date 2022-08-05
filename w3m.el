@@ -3504,7 +3504,7 @@ external `convert' program respectively."
 (defun w3m-fontify-anchors ()
   "Fontify anchor tags in the buffer which contains halfdump."
   (let ((help (w3m-make-help-echo w3m-balloon-help))
-	prenames start end bhhref first)
+	prenames start end bhhref first warning)
     (goto-char (point-min))
     (while (re-search-forward "<_id[ \t\r\f\n]+" nil t)
       (setq start (match-beginning 0))
@@ -3540,6 +3540,16 @@ external `convert' program respectively."
 	    (setq end (match-beginning 0))
 	    (delete-region (match-beginning 1) (match-end 1))
 	    (setq href (w3m-expand-url href))
+	    (setq warning
+		  (and (fboundp 'textsec-suspicious-p) ;; Emacs >= 29.1
+		       (or (textsec-suspicious-p href 'url)
+			   (and
+			    (prog2
+				(goto-char start)
+				(re-search-forward "https?:[^\t\n \"<>]+" end t)
+			      (goto-char end))
+			    (textsec-suspicious-p (cons href (match-string 0))
+						  'link)))))
 	    (unless (or (w3m-url-local-p href)
 			(let ((case-fold-search t))
 			  (string-match "\\`mailto:" href)))
@@ -3551,9 +3561,11 @@ external `convert' program respectively."
 				       "#" tmp))
 			   (w3m-url-transfer-encode-string href))))
 	    (setq hseq (or (and (null hseq) 0) (abs hseq)))
-	    (w3m-add-face-property start end (if (w3m-arrived-p href)
-						 'w3m-arrived-anchor
-					       'w3m-anchor))
+	    (w3m-add-face-property
+	     start end
+	     (cond (warning 'textsec-suspicious)
+		   ((w3m-arrived-p href) 'w3m-arrived-anchor)
+		   (t 'w3m-anchor)))
 	    (if title
 		(progn
 		  (setq title (w3m-decode-entities-string title))
@@ -3569,6 +3581,13 @@ external `convert' program respectively."
 					   'w3m-anchor-sequence hseq
 					   'help-echo help
 					   'keymap w3m-link-map))
+	    (when warning
+	      (insert
+	       (if (display-graphic-p)
+		   (propertize "⚠️" 'help-echo warning)
+		 (propertize "▲!" 'help-echo warning
+			     'face
+			     '(:background "Yellow" :foreground "Black")))))
 	    (and (w3m-handle-non-anchor-buttons) (not first)
 		 ;; Add a widget so `forward-button' and `widget-forward'
 		 ;; work from outside of rendered area."
