@@ -241,14 +241,20 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAADFBMVEUAAAD///9fX1/d3d1
   "Make an html article."
   (let ((date (shimbun-header-date header)))
     (when (and (if (string-match " 00:00 " date)
-		   (or (re-search-forward "\"dateModified\":\"\\([^\"]+\\)"
-					  nil t)
-		       (re-search-forward "\"datePublished\":\"\\([^\"]+\\)"
-					  nil t))
-		 (re-search-forward "\"dateModified\":\"\\([^\"]+\\)"
-				    nil t))
+		   (or (re-search-forward
+			"\"dateModified\":\"\\([^\"]+\\)[0-9][0-9]:[0-9][0-9]"
+			nil t)
+		       (re-search-forward
+			"\"datePublished\":\"\\([^\"]+\\)[0-9][0-9]:[0-9][0-9]"
+			nil t))
+		 (re-search-forward
+		  "\"dateModified\":\"\\([^\"]+\\)[0-9][0-9]:[0-9][0-9]"
+		  nil t))
 	       (ignore-errors
-		 (setq date (decode-time (date-to-time (match-string 1)))
+		 ;; The TZ seems to mistakenly be set in the site,
+		 ;; so we try fixing it.
+		 (setq date (decode-time (date-to-time
+					  (concat (match-string 1) "00:00")))
 		       date (shimbun-header-set-date
 			     header
 			     (shimbun-make-date-string

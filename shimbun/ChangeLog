@@ -1,3 +1,8 @@
+2022-08-09  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-yoshirin.el (shimbun-yoshirin-make-contents): Fix TZ in date that
+	seems to mistakenly be set to +09:00 (tho it's in GMT) in the site.
+
 2022-07-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-japanese-hankaku-region-1):
