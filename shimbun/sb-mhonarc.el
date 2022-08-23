@@ -1,8 +1,8 @@
 ;;; sb-mhonarc.el --- shimbun backend class for mhonarc
 
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2009
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2009, 2022
 ;; Yuuichi Teranishi <teranisi@gohome.org>
-;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2009
+;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2009, 2022
 ;; Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -243,7 +243,7 @@
 		    (push (cons (match-string 1)
 				(shimbun-mime-encode-string
 				 (buffer-substring (match-end 0)
-						   (point-at-eol))))
+						   (line-end-position))))
 			  alist)))
 		(forward-line 1))
 	      (delete-region (point-min) (point-max)))

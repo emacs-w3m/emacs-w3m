@@ -1,3 +1,9 @@
+2022-08-23  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* nnshimbun.el, sb-fml.el, sb-geocrawler.el, sb-mhonarc.el:
+	* sb-wired-jp.el: Use line-beginning-position and line-end-position
+	instead of point-at-bol and point-at-eol marked obsolete in Emacs 29.1.
+
 2022-08-09  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-yoshirin.el (shimbun-yoshirin-make-contents): Fix TZ in date that

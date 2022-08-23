@@ -1,6 +1,6 @@
 ;;; sb-geocrawler.el --- shimbun backend for geocrawler.com.
 
-;; Copyright (C) 2002, 2003, 2005, 2017, 2019
+;; Copyright (C) 2002, 2003, 2005, 2017, 2019, 2022
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -115,7 +115,7 @@
 			    "http://www.geocrawler.com/mail/msg_raw.php3?msg_id="
 			    (match-string 1)))
 			  (id (concat "<" (match-string 1) "@geocrawler.com>"))
-			  (eol (point-at-eol)))
+			  (eol (line-end-position)))
 		      (when (shimbun-search-id shimbun id)
 			(throw 'stop nil))
 		      (push (shimbun-make-header

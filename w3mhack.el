@@ -1,6 +1,6 @@
 ;;; w3mhack.el --- a hack to setup the environment for building w3m
 
-;; Copyright (C) 2001-2010, 2012, 2013, 2015, 2017, 2019-2021
+;; Copyright (C) 2001-2010, 2012, 2013, 2015, 2017, 2019-2022
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
@@ -423,7 +423,7 @@ otherwise, insert URL-TITLE followed by URL in parentheses."
 	      (setq start (match-beginning 0)
 		    texinfo-command-end (point)
 		    filename (texinfo-parse-line-arg))
-	      (delete-region start (point-at-bol 2))
+	      (delete-region start (line-beginning-position 2))
 	      (message "Reading included file: %s" filename)
 	      (save-excursion
 		(save-restriction
@@ -434,8 +434,9 @@ otherwise, insert URL-TITLE followed by URL in parentheses."
 		  ;; Remove `@setfilename' line from included file, if any,
 		  ;; so @setfilename command not duplicated.
 		  (if (re-search-forward "^@setfilename"
-					 (point-at-eol 100) t)
-		      (delete-region (point-at-bol 1) (point-at-bol 2)))))))
+					 (line-end-position 100) t)
+		      (delete-region (line-beginning-position 1)
+				     (line-beginning-position 2)))))))
 	  ;; Remove ignored areas.
 	  (goto-char (point-min))
 	  (while (re-search-forward "^@ignore[\t\r ]*$" nil t)

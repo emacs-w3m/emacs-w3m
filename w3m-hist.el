@@ -1,6 +1,6 @@
 ;;; w3m-hist.el --- the history management system for emacs-w3m
 
-;; Copyright (C) 2001-2012, 2019-2021 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2012, 2019-2022 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: w3m, WWW, hypermedia
@@ -637,8 +637,8 @@ position.  Naturally, those should be treated as buffer-local."
 		  ((get-text-property (1-(point)) 'w3m-image)
 		   (goto-char (1- (point))))
 		  ((setq pos (previous-single-property-change
-			      (point) 'w3m-image nil (point-at-bol)))
-		   (unless (= pos (point-at-bol))
+			      (point) 'w3m-image nil (line-beginning-position)))
+		   (unless (= pos (line-beginning-position))
 		     (goto-char (1- pos)))))
 	(setq pos (current-column))
 	(move-to-column column)
@@ -646,7 +646,8 @@ position.  Naturally, those should be treated as buffer-local."
 	      column pos))
       (w3m-history-add-properties
        (list :window-start (window-start)
-	     :position (cons (count-lines (point-min) (point-at-bol)) column)
+	     :position (cons (count-lines (point-min) (line-beginning-position))
+			     column)
 	     :window-hscroll hscroll)))
     (when (w3m-interactive-p)
       (message "The current cursor position saved"))))

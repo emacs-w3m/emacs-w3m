@@ -222,9 +222,11 @@ PROMPT-WITH-DEFAULT instead of string PROMPT."
 	  (if (region-active-p)
 	      (buffer-substring (region-beginning) (region-end))
 	    (unless (and (eq major-mode 'w3m-mode)
-			 (listp (get-text-property (point-at-bol) 'face))
+			 (listp (get-text-property (line-beginning-position)
+						   'face))
 			 (memq 'w3m-header-line-title
-			       (get-text-property (point-at-bol) 'face)))
+			       (get-text-property (line-beginning-position)
+						  'face)))
 	      (thing-at-point w3m-search-thing-at-point-arg))))
 	initial)
     (when default

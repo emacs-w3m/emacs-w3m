@@ -605,7 +605,7 @@ allowed for each string."
 		  (search-forward id nil t)) ; We find the ID.
 	;; And the id is in the fourth field.
 	(if (not (and (search-backward "\t" nil t 4)
-		      (not (search-backward "\t" (point-at-bol) t))))
+		      (not (search-backward "\t" (line-beginning-position) t))))
 	    (forward-line 1)
 	  (forward-line 0)
 	  (setq found t)))
@@ -614,7 +614,7 @@ allowed for each string."
 	(setq id (concat "X-Nnshimbun-Id: " id))
 	(while (and (not found)
 		    (search-forward id nil t))
-	  (if (not (search-backward "\t" (point-at-bol) t 8))
+	  (if (not (search-backward "\t" (line-beginning-position) t 8))
 	      (forward-line 1)
 	    (forward-line 0)
 	    (setq found t))))
@@ -624,7 +624,7 @@ allowed for each string."
 ;; This function is defined as the alternative of `nnheader-parse-nov'
 ;; in order to keep the compatibility between T-gnus and Gnus.
 (defun nnshimbun-parse-nov ()
-  (let ((eol (point-at-eol)))
+  (let ((eol (line-end-position)))
     (let ((number  (nnheader-nov-read-integer))
 	  (subject (nnheader-nov-field))
 	  (from    (nnheader-nov-field))
@@ -707,7 +707,7 @@ article to be expired.  The optional fourth argument FORCE is ignored."
 	(while expirable
 	  (setq article (pop expirable))
 	  (when (and (nnheader-find-nov-line article)
-		     (setq end (point-at-eol))
+		     (setq end (line-end-position))
 		     (not (= (point-max) (1+ end))))
 	    (setq time (and (search-forward "\t" end t)
 			    (search-forward "\t" end t)
@@ -785,7 +785,7 @@ Other files in the directory are also deleted."
 	    (while (and (not found)
 			(search-forward url nil t)
 			(looking-at "[?\t]"))
-	      (if (not (search-backward "\t" (point-at-bol) t 7))
+	      (if (not (search-backward "\t" (line-beginning-position) t 7))
 		  (forward-line 1)
 		(forward-line 0)
 		(setq found t))))
@@ -907,7 +907,7 @@ Are you sure you want to make %d groups for nnshimbun+%s:? "
 		       gnus-level-default-subscribed
 		       (or (gnus-group-group-level) gnus-level-killed))
 		      (gnus-group-update-group-line)
-		      (delete-region (point-at-bol)
+		      (delete-region (line-beginning-position)
 				     (progn (forward-line 1) (point))))
 		    (gnus-group-insert-group-line-info group)
 		    (forward-line -1))

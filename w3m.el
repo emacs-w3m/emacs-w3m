@@ -340,7 +340,7 @@ Not to be confused with `emacs-w3m-version'.")
 	  (when (re-search-forward "options +" nil t)
 	    (setq w3m-compile-options
 		  (or (split-string (buffer-substring (match-end 0)
-						      (point-at-eol))
+						      (line-end-position))
 				    ",")
 		      (list nil)))
 	    (when (member "m17n" w3m-compile-options)
@@ -4360,7 +4360,7 @@ If optional KEEP-PROPERTIES is non-nil, text property is reserved."
     ;; that one at the beginning of the buffer though it is unwillingness.
     (goto-char (point-min))
     (skip-chars-forward "\t\n 　")
-    (delete-region (point-min) (point-at-bol))
+    (delete-region (point-min) (line-beginning-position))
 
     (w3m-header-line-insert)
     (put-text-property (point-min) (point-max)
@@ -7759,7 +7759,7 @@ of the url currently displayed.  The browser is defined in
 (defun w3m-highlight-current-anchor-1 (seq)
   "Highlight an anchor in the line if the anchor sequence is the same as SEQ.
 Return t if highlighting is successful."
-  (let ((limit (point-at-eol))
+  (let ((limit (line-end-position))
 	ov beg pos pseq)
     (save-excursion
       (beginning-of-line)
@@ -9599,8 +9599,8 @@ The value will be held in the `w3m-current-position' variable.  This
 function is designed as the hook function which is registered to
 `pre-command-hook' by `w3m-buffer-setup'."
   (setq w3m-current-position (list (point)
-				   (copy-marker (point-at-bol))
-				   (copy-marker (point-at-eol)))))
+				   (copy-marker (line-beginning-position))
+				   (copy-marker (line-end-position)))))
 
 (defun w3m-check-current-position ()
   "Run `w3m-after-cursor-move-hook' after invoking a command.
@@ -11078,7 +11078,7 @@ It does manage history position data as well."
       (while (progn
 	       (setq start (point))
 	       ;; Extend href anchor.
-	       (put-text-property (point-at-bol) start
+	       (put-text-property (line-beginning-position) start
 				  'w3m-href-anchor
 				  (get-text-property start 'w3m-href-anchor))
 	       (re-search-forward " (\\(?:[0-9]+ \\)*[0-9]+)$" nil t))
@@ -11457,7 +11457,7 @@ The following command keys are available:
   (w3m-select-buffer-show-this-line))
 
 (defmacro w3m-select-buffer-current-buffer ()
-  '(get-text-property (point-at-bol) 'w3m-select-buffer))
+  '(get-text-property (line-beginning-position) 'w3m-select-buffer))
 
 (defun w3m-select-buffer-show-this-line (&optional interactive-p)
   "Show the buffer on the current menu line or scroll it up."

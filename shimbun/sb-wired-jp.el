@@ -1,6 +1,6 @@
 ;;; sb-wired-jp.el --- shimbun backend for Hotwired Japan
 
-;; Copyright (C) 2005, 2006 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2005, 2006, 2022 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 ;; Keywords: news
@@ -90,7 +90,7 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAQBAMAAACigOGCAAAABGdBTUEAALGPC/xhBQAAADB
 	       (buffer-substring (point)
 				 (if (search-forward "</a>" nil t)
 				     (match-beginning 0)
-				   (point-at-eol)))
+				   (line-end-position)))
 	       (format "%s (%s)"
 		       (shimbun-server-name shimbun)
 		       (shimbun-current-group shimbun))

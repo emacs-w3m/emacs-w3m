@@ -2025,10 +2025,12 @@ textarea")))))
 `w3m-show-form-hint' uses this function."
   (unless (or (get-text-property (point) 'w3m-form-expanded)
 	      (< (next-single-property-change
-		  (point-at-bol) 'w3m-form-expanded nil (point-at-eol))
-		 (point-at-eol))
-	      (and (eq (char-after (point-at-bol)) ?\])
-		   (get-text-property (max (1- (point-at-bol)) (point-min))
+		  (line-beginning-position) 'w3m-form-expanded nil
+		  (line-end-position))
+		 (line-end-position))
+	      (and (eq (char-after (line-beginning-position)) ?\])
+		   (get-text-property (max (1- (line-beginning-position))
+					   (point-min))
 				      'w3m-form-expanded)))
     (let ((pt (text-property-not-all (point-min) (point-max)
 				     'w3m-form-expanded nil)))

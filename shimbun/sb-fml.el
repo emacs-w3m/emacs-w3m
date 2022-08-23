@@ -1,8 +1,8 @@
 ;;; sb-fml.el --- shimbun backend class for fml archiver.
 
-;; Copyright (C) 2001-2004, 2009, 2010, 2019
+;; Copyright (C) 2001-2004, 2009, 2010, 2019, 2022
 ;; Akihiro Arisawa <ari@mbf.sphere.ne.jp>
-;; Copyright (C) 2001-2004, 2009, 2010, 2019
+;; Copyright (C) 2001-2004, 2009, 2010, 2019, 2022
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -95,10 +95,10 @@
 	(delete-region (point-min) (point))
       (throw 'stop nil))
     (if (search-forward "</PRE>" nil t)
-	(delete-region (point-at-bol) (point-max))
+	(delete-region (line-beginning-position) (point-max))
       (throw 'stop nil))
     (if (search-backward "</SPAN>" nil t)
-	(delete-region (point-at-bol) (point-at-eol))
+	(delete-region (line-beginning-position) (line-end-position))
       (throw 'stop nil))
     (save-restriction
       (narrow-to-region (point-min) (point))

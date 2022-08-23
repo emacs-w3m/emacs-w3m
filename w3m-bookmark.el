@@ -1,6 +1,6 @@
 ;;; w3m-bookmark.el --- Functions to operate bookmark file of w3m
 
-;; Copyright (C) 2001-2003, 2005-2012, 2017, 2019-2021
+;; Copyright (C) 2001-2003, 2005-2012, 2017, 2019-2022
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -205,7 +205,7 @@ file exists, otherwise nil."
 		     (point)
 		     (if (search-forward "</h2>" nil t)
 			 (match-beginning 0)
-		       (point-at-eol)))
+		       (line-end-position)))
 		    nil)
 	      sections)))
     (nreverse sections)))
@@ -432,7 +432,7 @@ With prefix, ask for a new url instead of the present one."
 
 (defun w3m-bookmark-current-number ()
   "Return the ordinal number of the current bookmark entry."
-  (let ((x (car (get-text-property (point-at-eol) 'w3m-name-anchor))))
+  (let ((x (car (get-text-property (line-end-position) 'w3m-name-anchor))))
     (and x
 	 (string-match "\\`w3mbk[0-9]+\\.[0-9]+\\.\\([0-9]+\\)\\'" x)
 	 (string-to-number (match-string 1 x)))))
@@ -458,13 +458,13 @@ With prefix argument, kill that many entries from point."
     (let ((i 0))
       (while (search-forward "\n<li>" nil t)
 	(when (memq (cl-incf i) entries)
-	  (let ((beg (point-at-bol))
+	  (let ((beg (line-beginning-position))
 		(end (progn
 		       (search-forward w3m-bookmark-section-delimiter)
 		       (match-beginning 0))))
 	    (delete-region (goto-char beg)
 			   (if (search-forward "\n<li>" end t)
-			       (point-at-bol)
+			       (line-beginning-position)
 			     end))
 	    (goto-char (1- beg))))))
     (w3m-bookmark-save-buffer)))
@@ -505,7 +505,7 @@ With prefix argument, kill that many entries from point."
       .
       ([,(w3m-make-menu-item "このエントリを消去" "Kill Current Entry")
 	w3m-bookmark-kill-entry
-	(text-property-not-all (point-at-bol) (point-at-eol)
+	(text-property-not-all (line-beginning-position) (line-end-position)
 			       'w3m-href-anchor nil)]
        [,(w3m-make-menu-item "もとに戻す" "Undo")
 	w3m-bookmark-undo t]
