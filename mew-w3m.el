@@ -1,6 +1,6 @@
 ;;; mew-w3m.el --- View Text/Html content with w3m in Mew -*- lexical-binding: t -*-
 
-;; Copyright (C) 2001-2006, 2008-2010, 2019, 2021
+;; Copyright (C) 2001-2006, 2008-2010, 2019, 2021, 2022
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Shun-ichi GOTO  <gotoh@taiyo.co.jp>,
@@ -283,7 +283,11 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
       (setq execute (nth 4 args)))
     (if (and cache (or execute (<= end begin)))
 	;; 'C-cC-e' + Old Mew
-	(apply 'mew-mime-text/html (list cache begin end params execute))
+	;; FIXME: silence Emacs 29's byte compiler that issues the callargs
+	;; warning (`mew-mime-text/html' seems to have never been accepting
+	;; five arguments).
+	(let ((args (list cache begin end params execute)))
+	  (apply #'mew-mime-text/html args))
       (save-excursion
 	;; search Xref: Header in SHIMBUN article
 	(when cache (set-buffer cache))

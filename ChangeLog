@@ -1,3 +1,12 @@
+2022-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Silence the byte compiler
+
+	* w3mhack.el (w3mhack-generate-load-file): Use loaddefs-gen.el rather
+	than autoload.el that has been marked obsolete in Emacs 29.
+	* mew-w3m.el (mew-mime-text/html-w3m): Silence Emacs 29's byte compiler.
+	([emacs-w3m:13880]).
+
 2022-08-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m-bookmark.el, w3m-form.el, w3m-hist.el, w3m-search.el, w3m.el:
