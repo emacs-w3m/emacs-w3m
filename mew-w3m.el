@@ -284,8 +284,8 @@ The variable `mew-w3m-region-cite-mark' specifies the citation mark."
     (if (and cache (or execute (<= end begin)))
 	;; 'C-cC-e' + Old Mew
 	;; FIXME: silence Emacs 29's byte compiler that issues the callargs
-	;; warning (`mew-mime-text/html' seems to have never been accepting
-	;; five arguments).
+	;; warning (the current version of `mew-mime-text/html' does not
+	;; accept five arguments).
 	(let ((args (list cache begin end params execute)))
 	  (apply #'mew-mime-text/html args))
       (save-excursion
