@@ -1,3 +1,7 @@
+2022-10-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* aclocal.m4, configure.ac: Use `grep -E' instead of egrep.
+
 2022-09-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Silence the byte compiler

@@ -150,9 +150,9 @@ AC_DEFUN(AC_ADD_LOAD_PATH,
 	ADDITIONAL_LOAD_PATH="${withval}"
       else
 	if test x"$USER" != xroot -a x"$HOME" != x -a -f "$HOME"/.emacs; then
-          ADDITIONAL_LOAD_PATH=`\'${EMACS}\' -batch -l \'$HOME/.emacs\' -l w3mhack.el NONE -f w3mhack-load-path 2>/dev/null | \'${EGREP}\' -v \'^$\'`
+          ADDITIONAL_LOAD_PATH=`\'${EMACS}\' -batch -l \'$HOME/.emacs\' -l w3mhack.el NONE -f w3mhack-load-path 2>/dev/null | ${EGREP} -v \'^$\'`
         else
-          ADDITIONAL_LOAD_PATH=`\'${EMACS}\' -batch -l w3mhack.el NONE -f w3mhack-load-path 2>/dev/null | \'${EGREP}\' -v \'^$\'`
+          ADDITIONAL_LOAD_PATH=`\'${EMACS}\' -batch -l w3mhack.el NONE -f w3mhack-load-path 2>/dev/null | ${EGREP} -v \'^$\'`
         fi
       fi
       AC_MSG_RESULT(${ADDITIONAL_LOAD_PATH})],
@@ -167,7 +167,7 @@ AC_DEFUN(AC_ADD_LOAD_PATH,
         ADDITIONAL_LOAD_PATH="${ADDITIONAL_LOAD_PATH}:`pwd`/attic"
       fi
     fi])
-  retval=`eval "'${EMACS}' ${VANILLA_FLAG} -batch -l w3mhack.el '${ADDITIONAL_LOAD_PATH}' -f w3mhack-print-status 2>/dev/null | '${EGREP}' -v '^$'"`
+  retval=`eval "'${EMACS}' ${VANILLA_FLAG} -batch -l w3mhack.el '${ADDITIONAL_LOAD_PATH}' -f w3mhack-print-status 2>/dev/null | ${EGREP} -v '^$'"`
   if test x"$retval" != xOK; then
     AC_MSG_ERROR([Process couldn't proceed.  See the above messages.])
   fi
