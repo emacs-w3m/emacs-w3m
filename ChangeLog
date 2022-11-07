@@ -1,3 +1,9 @@
+2022-11-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Work for pages commpressed by brotli reported by chipschap (issue #112)
+
+	* w3m.el (w3m-decoder-alist, w3m-encoding-alist): Add brotli.
+
 2022-10-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* aclocal.m4, configure.ac: Use `grep -E' instead of egrep.

@@ -1269,7 +1269,8 @@ Each element is a list which consists of the following data:
 		    (list (expand-file-name "libexec/w3m" prefix)
 			  (expand-file-name "lib/w3m" prefix)))))
 	     (w3m-which-command "inflate")))
-      nil))
+      nil)
+    (br "brotli" ("-d")))
   "Alist of encoding types, decoder commands, and arguments."
   :group 'w3m
   :type '(repeat
@@ -2161,7 +2162,8 @@ other than ISO 10646.")
 			     (cdr elem)))
 		   '((gzip . ("gzip" "x-gzip" "compress" "x-compress"))
 		     (bzip . ("x-bzip" "bzip" "bzip2"))
-		     (deflate . ("x-deflate" "deflate"))))))
+		     (deflate . ("x-deflate" "deflate"))
+		     (br . ("br"))))))
   "Alist of content encoding types and decoder symbols.
 Decoders are specified by `w3m-decoder-alist' (which see).")
 
