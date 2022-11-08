@@ -1,6 +1,14 @@
+2022-11-08  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Remove let-binding of inhibit-point-motion-hooks that's been obsoleted
+
+	* w3m-bug.el (report-emacs-w3m-bug):
+	* w3m.el (w3m-horizontal-scroll, w3m-horizontal-recenter)
+	(w3m-end-of-line): Remove let-binding of inhibit-point-motion-hooks.
+
 2022-11-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
-	Work for pages commpressed by brotli reported by chipschap (issue #112)
+	Work for pages compressed by brotli reported by chipschap (issue #112)
 
 	* w3m.el (w3m-decoder-alist, w3m-encoding-alist): Add brotli.
 

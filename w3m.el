@@ -9281,11 +9281,10 @@ should be a number.  This function is a subroutine called by the
 commands `w3m-scroll-left', `w3m-scroll-right', `w3m-shift-left' and
 `w3m-shift-right'."
   (setq w3m-horizontal-scroll-done t)
-  (let ((inhibit-point-motion-hooks t))
-    (set-window-hscroll nil
-			(max 0
-			     (+ (window-hscroll)
-				(if (eq direction 'left) ncol (- ncol)))))))
+  (set-window-hscroll nil
+		      (max 0
+			   (+ (window-hscroll)
+			      (if (eq direction 'left) ncol (- ncol))))))
 
 (defun w3m-horizontal-recenter (&optional arg)
   "Recenter horizontally.  With ARG, put the point on the column ARG.
@@ -9308,7 +9307,6 @@ window's hscroll."
 	     (if (>= arg 0)
 		 (max (- (current-column) arg) 0)
 	       (let* ((home (point))
-		      (inhibit-point-motion-hooks t)
 		      (maxcolumn (prog2
 				     (end-of-line)
 				     (1- (current-column))
@@ -9353,8 +9351,7 @@ It makes the ends of upper and lower three lines visible.  If
 	  (when (listp arg)
 	    (setq arg (car arg)))
 	  (forward-line (1- (or arg 1)))
-	  (let ((inhibit-point-motion-hooks t)
-		home)
+	  (let (home)
 	    (end-of-line)
 	    (setq home (point)
 		  arg (current-column))
