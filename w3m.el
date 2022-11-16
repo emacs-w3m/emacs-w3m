@@ -3503,27 +3503,30 @@ external `convert' program respectively."
 	(error nil))
     (and w3m-handle-non-anchor-buttons t)))
 
+(defface w3m-unsafe-url-warning
+  '((t (:foreground "Black" :background "Yellow")))
+  "Face used to highlight the unsafe url warning string."
+  :group 'w3m-face)
+
 (defun w3m-unsafe-url-warning-default-function ()
   "Return an emoji or a propertized string used to warn unsafe url."
   (if (display-graphic-p)
       "⚠️"
     (eval-when-compile
-      (propertize "▲!" 'face '(:background "Yellow" :foreground "Black")))))
+      (propertize "▲!" 'face 'w3m-unsafe-url-warning))))
 
 (defcustom w3m-unsafe-url-warning #'w3m-unsafe-url-warning-default-function
   "String displayed besides a link of which the url looks unsafe.
 The value may be a string (including a propertized string, or an emoji)
 or a function that takes no argument and returns a string."
   :group 'w3m
-  :type `(radio (string :value "▲!")
-		function)
-  ;; FIXME: Text properties of the string should be fully customizable.
+  :type '(radio (string :value "▲!")
+		(function :value #'w3m-unsafe-url-warning-default-function))
   :set (lambda (symbol value)
 	 (custom-set-default
 	  symbol
 	  (if (stringp value)
-	      (propertize value
-			  'face '(:background "Yellow" :foreground "Black"))
+	      (propertize value 'face 'w3m-unsafe-url-warning)
 	    value))))
 
 (defun w3m-fontify-anchors ()
@@ -3616,8 +3619,7 @@ or a function that takes no argument and returns a string."
 			(error
 			  (propertize
 			   "▲!" 'help-echo warning
-			   'face '
-			   (:background "Yellow" :foreground "Black"))))))
+			   'face 'w3m-unsafe-url-warning)))))
 	    (and (w3m-handle-non-anchor-buttons) (not first)
 		 ;; Add a widget so `forward-button' and `widget-forward'
 		 ;; work from outside of rendered area."

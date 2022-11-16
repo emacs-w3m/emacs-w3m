@@ -3,7 +3,7 @@
 	Make unsafe url warning text customizable (issue #115)
 
 	* w3m.el (w3m-unsafe-url-warning-default-function): New function.
-	(w3m-unsafe-url-warning): New user option.
+	(w3m-unsafe-url-warning): New user option and face.
 	(w3m-fontify-anchors): Use them.
 
 2022-11-08  Katsumi Yamaoka  <yamaoka@jpl.org>
