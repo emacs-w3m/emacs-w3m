@@ -1,3 +1,10 @@
+2022-11-17  Tatsuya Kinoshita  <tats@debian.org>
+
+	Avoid non-lexbind dotimes (PR#116)
+
+	* w3m-util.el (w3m-puny-encode1): Avoid non-lexbind dotimes.
+	cf. <https://git.savannah.gnu.org/cgit/emacs.git/commit/?id=c6c9dfc8670f5698634a8d5853853056ff928974>
+
 2022-11-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Make unsafe url warning text customizable (issue #115)
