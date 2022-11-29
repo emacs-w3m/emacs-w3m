@@ -1,3 +1,9 @@
+2022-11-29  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Support Emacs 30
+
+	* aclocal.m4 (AC_PATH_EMACS): Support Emacs 30.
+
 2022-11-17  Tatsuya Kinoshita  <tats@debian.org>
 
 	Avoid non-lexbind dotimes (PR#116)
