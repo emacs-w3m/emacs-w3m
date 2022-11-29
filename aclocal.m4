@@ -62,9 +62,7 @@ AC_DEFUN(AC_PATH_EMACS,
   case "${flavor}" in
   "")
     flavor=unknown;;
-  Emacs\ 2[[7-9]]\.*)
-    EMACS_FLAVOR=emacs;;
-  Emacs\ 3[[0-9]]\.*)
+  Emacs\ 2[[7-9]]\.*|Emacs\ 3[[0-9]]\.*)
     EMACS_FLAVOR=emacs;;
   *)
     EMACS_FLAVOR=unsupported;;
