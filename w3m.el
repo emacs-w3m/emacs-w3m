@@ -53,6 +53,7 @@
 (require 'cl-lib) ;; cl-decf, cl-incf, cl-labels, cl-remove-if
 (require 'w3m-util)
 (require 'w3m-proc)
+(require 'tab-line) ;; tab-line-exclude-modes
 
 ;; `w3m-use-tab-line' refers to this variable.
 (eval-and-compile
@@ -72,14 +73,9 @@ See also `w3m-use-tab-line' and `w3m-use-tab-menubar'."
 	       ;; w3m.elc has already been loaded
 	       ;; or `w3m-use-tab-line' has already been set.
 	       (if (and value w3m-use-tab-line)
-		   (progn
-		     (require 'tab-line)
-		     (add-to-list 'tab-line-exclude-modes 'w3m-mode))
-		 (when (boundp 'tab-line-exclude-modes)
-		   ;; tab-line.elc has already been loaded
-		   ;; or `tab-line-exclude-modes' has already been set.
-		   (setq tab-line-exclude-modes
-			 (delq 'w3m-mode tab-line-exclude-modes)))))))))
+		   (add-to-list 'tab-line-exclude-modes 'w3m-mode)
+		 (setq tab-line-exclude-modes
+		       (delq 'w3m-mode tab-line-exclude-modes))))))))
 
 ;; Why the two variable `w3m-select-buffer-hook' and `w3m-use-tab-line'
 ;; are here is because w3m-ems.el uses.
@@ -88,6 +84,7 @@ See also `w3m-use-tab-line' and `w3m-use-tab-menubar'."
   :group 'w3m
   :type 'hook)
 
+(require 'w3m-fb) ;; The following section references `w3m-fb-mode'.
 (eval-and-compile
   (defcustom w3m-use-tab-line t
     "Use `tab-line-format' instead of `header-line-format' to display tabs.
@@ -127,19 +124,15 @@ See also `w3m-use-tab'."
 			       (select-window (cdr cur)))))))))
 	       (custom-set-default symbol value))
 	     (if (and value w3m-use-tab)
-		 (progn
-		   (require 'tab-line)
-		   (add-to-list 'tab-line-exclude-modes 'w3m-mode))
-	       (when (boundp 'tab-line-exclude-modes)
-		 (setq tab-line-exclude-modes
-		       (delq 'w3m-mode tab-line-exclude-modes))))))))
+		 (add-to-list 'tab-line-exclude-modes 'w3m-mode)
+	       (setq tab-line-exclude-modes
+		     (delq 'w3m-mode tab-line-exclude-modes)))))))
 
 (eval-and-compile (require 'w3m-ems))
 
 (add-hook 'w3m-select-buffer-hook #'w3m-set-buffer-seen)
 
 (require 'bookmark-w3m)
-(require 'w3m-fb)
 (require 'w3m-hist)
 (require 'timezone)
 (require 'image-mode)
@@ -11921,12 +11914,9 @@ Refer to variable `w3m-display-mode' for details."
 	    w3m-pop-up-windows (cadr vals)
 	    w3m-pop-up-frames (caddr vals))))
   (if (and w3m-use-tab w3m-use-tab-line)
-      (progn
-	(require 'tab-line)
-	(add-to-list 'tab-line-exclude-modes 'w3m-mode))
-    (when (boundp 'tab-line-exclude-modes)
-      (setq tab-line-exclude-modes
-	    (delq 'w3m-mode tab-line-exclude-modes)))))
+      (add-to-list 'tab-line-exclude-modes 'w3m-mode)
+    (setq tab-line-exclude-modes
+	  (delq 'w3m-mode tab-line-exclude-modes))))
 
 (defcustom w3m-display-mode (pcase (list (and w3m-use-tab t)
 					 (and w3m-pop-up-windows t)

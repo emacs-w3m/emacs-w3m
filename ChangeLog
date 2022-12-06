@@ -1,3 +1,10 @@
+2022-12-07  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Silence warnings when compiling w3m.el individually ([emacs-w3m:13914])
+
+	* w3m.el (toplevel): Always require tab-line for tab-line-exclude-modes;
+	require w3m-fb-mode before it is referenced.
+
 2022-11-29  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Support Emacs 30
