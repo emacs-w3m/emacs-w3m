@@ -1,6 +1,6 @@
 ;;; w3m.el --- an Emacs interface to w3m -*- lexical-binding: t -*-
 
-;; Copyright (C) 2000-2022 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000-2023 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -4866,14 +4866,12 @@ BUFFER is nil, all contents will be inserted in the current buffer."
 	      ;; dynamically-generated pages.
 	      (string-match "^\\(?:last-modified\\|etag\\):" head))))))))
 
-(defun w3m-read-file-name (&optional prompt dir default-filename mustmatch initial)
-  "Prompt the user for a file-path name, and returns that value.
-
-This is basically a wrapper for the emacs-native function
-`read-file-name'.  If PROMPT is nil, use default string 'Save to'.
-If DIR is nil, use `w3m-default-save-directory'.  DEFAULT-FILENAME,
-MUSTMATCH, and INITIAL are as documented for function
-`read-file-name'."
+(defun w3m-read-file-name (&optional prompt
+				     dir default-filename mustmatch initial)
+  "Prompt the user for a file name, and return the value.
+This is a wrapper for `read-file-name'; the arguments are passed to it
+except that PROMPT defaults to the string \"Save to: \", and DIR defaults
+to the value of `w3m-default-save-directory'."
   (unless prompt
     (setq prompt (if (and initial (not (string-equal initial "")))
 		     (format "Save to (%s): " initial)

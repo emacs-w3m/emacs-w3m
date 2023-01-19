@@ -1,6 +1,6 @@
 ;;; sb-wikimedia.el --- shimbun backend for Wikimedia Mailing list
 
-;; Copyright (C) 2004, 2005, 2007, 2019
+;; Copyright (C) 2004, 2005, 2007, 2019, 2023
 ;; Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 
 ;; Author: Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
@@ -132,7 +132,7 @@
 	  (setq func (shimbun-wikimedia-date-function-select shimbun))
 	  (setq date-string (match-string-no-properties 1))
 	  (setq date (funcall func date-string))
-	  (unless (eq "" date)
+	  (unless (equal "" date)
 	    (shimbun-header-set-date header date))))
       (delete-region (point-min) end)
       (delete-region (search-forward "<!--endarticle-->") (point-max))

@@ -1,6 +1,6 @@
 ;;; w3m-dtree.el --- The add-on program to display local directory tree.
 
-;; Copyright (C) 2001-2003, 2005-2007, 2009, 2017, 2019, 2022
+;; Copyright (C) 2001-2003, 2005-2007, 2009, 2017, 2019, 2022, 2023
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Hideyuki SHIRAI    <shirai@meadowy.org>,
@@ -49,7 +49,7 @@
 (defcustom w3m-dtree-indent-strings ["|-" "+-" "|  " "   "]
   "Vector of strings to be used for indentation with w3m-dtree.
 
-If use default value or choice 'ASCII', display like this,
+If use default value or choice `ASCII', display like this,
 /home/shirai/work/emacs-w3m/
  |-CVS/
  |-icons/
