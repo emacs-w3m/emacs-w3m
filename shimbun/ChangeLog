@@ -1,3 +1,7 @@
+2023-01-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-login): Fix the way to parse forms.
+
 2022-08-23  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnshimbun.el, sb-fml.el, sb-geocrawler.el, sb-mhonarc.el:

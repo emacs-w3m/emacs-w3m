@@ -1,6 +1,6 @@
 ;;; sb-sankei.el --- shimbun backend for the Sankei News
 
-;; Copyright (C) 2003-2011, 2013-2019, 2021, 2022 Katsumi Yamaoka
+;; Copyright (C) 2003-2011, 2013-2019, 2021-2023 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -660,7 +660,7 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
     (w3m-arrived-setup)
     (let ((cache (buffer-live-p w3m-cache-buffer))
 	  (w3m-message-silent t)
-	  w3m-clear-display-while-reading next form action handler)
+	  w3m-clear-display-while-reading next forms form action handler)
       (condition-case err
 	  (with-temp-buffer
 	    (w3m-process-with-wait-handler
@@ -679,9 +679,14 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
 		(setq next (match-string-no-properties 1))
 		(w3m-process-with-wait-handler
 		  (w3m-retrieve-and-render next t nil nil nil handler))))
-	    (setq form (car w3m-current-forms))
-	    (if (not (string-match "login\\.php\\'"
-				   (setq action (w3m-form-action form))))
+	    (setq forms w3m-current-forms)
+	    (while forms
+	      (setq form (car forms)
+		    forms (cdr forms)
+		    action (w3m-form-action form))
+	      (unless (and action (string-match "login\\.php\\'" action))
+		(setq form nil)))
+	    (if (not form)
 		(when interactive-p (message "Failed to login"))
 	      (setq form (w3m-form-make-form-data form))
 	      (while (string-match "\
