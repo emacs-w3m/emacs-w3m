@@ -559,7 +559,7 @@ allowed for each string."
     (while (progn
 	     (forward-line 0)
 	     (> (point) start))
-      (backward-delete-char 1)
+      (delete-char -1)
       (insert " "))
     (forward-line 1)))
 

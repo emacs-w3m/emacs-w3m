@@ -3255,7 +3255,7 @@ non-nil, control chars will be represented with ^ as `cat -v' does."
 		  (insert "  ")
 		  (funcall print-fn (car element))
 		  (insert "\n"))
-		(backward-delete-char 1)
+		(delete-char -1)
 		(insert ")\n "))
 	    (funcall print-fn element)
 	    (insert "\n")))
