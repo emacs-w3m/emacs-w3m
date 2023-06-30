@@ -1,6 +1,6 @@
 ;;; nnshimbun.el --- interfacing with web newspapers
 
-;; Copyright (C) 2000-2012, 2016-2019, 2022
+;; Copyright (C) 2000-2012, 2016-2019, 2022, 2023
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -66,6 +66,7 @@
 (declare-function gnus-group-short-name "gnus" (group))
 (declare-function gnus-group-update-group-line "gnus-group")
 (declare-function gnus-kill-ephemeral-group "gnus" (group))
+(declare-function gnus-summary-article-header "gnus-sum" (&optional number))
 (declare-function gnus-summary-refer-article "gnus-sum" (message-id))
 (declare-function message-make-date "message" (&optional now))
 (declare-function parse-time-string "parse-time" (string))
@@ -355,11 +356,11 @@ If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
   (require 'bytecomp)
   (defalias 'nnshimbun-replace-date-header
     (byte-compile
-     '(lambda (article header)
-	"Replace ARTICLE's date header with HEADER."
-	(let ((x (gnus-summary-article-header article)))
-	  (when x
-	    (setf (mail-header-date x) (shimbun-header-date header)))))))
+     (lambda (article header)
+       "Replace ARTICLE's date header with HEADER."
+       (let ((x (gnus-summary-article-header article)))
+	 (when x
+	   (setf (mail-header-date x) (shimbun-header-date header)))))))
   (funcall 'nnshimbun-replace-date-header article header))
 
 (defun nnshimbun-request-article-1 (article &optional group server to-buffer)
