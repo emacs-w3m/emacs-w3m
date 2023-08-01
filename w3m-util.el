@@ -1392,11 +1392,6 @@ the function cell of FUNCs rather than their value cell.
     (apply 'widget-convert (widget-type widget)
 	   (eval (car (widget-get widget :args))))))
 
-(defmacro w3m-easy-menu-add (menu &optional map)
-  "Run `easy-menu-add' (obsolete since 28.1) on Emacs 27."
-  (if (= emacs-major-version 27)
-      `(easy-menu-add ,menu ,map)))
-
 ;;; Punycode RFC 3492:
 
 (defconst w3m-puny-code-regex "xn--\\([-0-9a-zA-z]+\\)")

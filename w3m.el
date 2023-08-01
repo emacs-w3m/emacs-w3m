@@ -235,8 +235,6 @@ See also `w3m-use-tab'."
 (declare-function image-scroll-down "image-mode" (&optional n))
 (declare-function image-scroll-up "image-mode" (&optional n))
 (declare-function quit-window "window" (&optional kill window))
-(declare-function rfc2368-parse-mailto-url "rfc2368" (mailto-url)) ;; Emacs=27
-(declare-function rfc6068-parse-mailto-url "rfc6068" (mailto-url)) ;; Emacs>=28
 (declare-function w3m-search-escape-query-string "w3m-search"
 		  (str &optional coding))
 (declare-function widget-convert-button "wid-edit" (type from to &rest args))
@@ -2420,10 +2418,9 @@ nil value means it has not been initialized.")
 	     (when (memq 'xbm types) '(("image/x-xbm" . xbm)))
 	     (when (memq 'xpm types) '(("image/x-xpm" . xpm)))))))
   "Alist of content types and image types defined as the Emacs features.
-The content types not listed in this variable, like image/webp on Emacs
-28 and olders, might be able to display if image-converter.el and some
-converter program are available, or ImageMagick is built-in in Emacs or
-installed.")
+The content types not listed in this variable might be able to display
+if image-converter.el and some converter program are available, or
+ImageMagick is built-in in Emacs or installed.")
 
 (defconst w3m-toolbar-buttons
   '("back" "parent" "forward" "reload" "open" "home" "search" "image"
@@ -3661,8 +3658,7 @@ or a function that takes no argument and returns a string."
       (require 'easymenu)
       (easy-menu-define
 	w3m-mode-menu w3m-mode-map
-	"w3m menu item" w3m-menubar)
-      (w3m-easy-menu-add w3m-mode-menu))
+	"w3m menu item" w3m-menubar))
     (let ((map (make-sparse-keymap)))
       (easy-menu-define
 	w3m-rmouse-menu map
@@ -6096,7 +6092,7 @@ be displayed especially in shimbun articles."
 		 ((member "contents" rel) (setq w3m-contents-url href))))))
 	   ;; <base> ought to be absolute but if not then absolutize for
 	   ;; w3m-current-base-url.  Helps bad <base href="/foo/bar/"> seen
-	   ;; from from archive.org circa 2015.
+	   ;; from archive.org circa 2015.
 	   ((string= tag "base")
 	    (w3m-parse-attributes (href)
 	      (when (< 0 (length href))
@@ -8777,8 +8773,7 @@ See also `w3m-quit'."
 	    w3m-info-like-map
 	  w3m-lynx-like-map)))
 
-(when (and (fboundp #'text-scale-adjust)
-	   (not (where-is-internal #'w3m-text-scale-adjust w3m-mode-map)))
+(unless (where-is-internal #'w3m-text-scale-adjust w3m-mode-map)
   (define-key w3m-mode-map [remap text-scale-adjust] #'w3m-text-scale-adjust))
 
 (defun w3m-text-scale-adjust (inc)
@@ -9445,6 +9440,7 @@ not already exist."
 	       (kill-buffer))))
 	  (bury-buffer))))))
 
+(autoload 'rfc6068-parse-mailto-url "rfc6068")
 (defun w3m-goto-mailto-url (url &optional post-data)
   (let ((before (nreverse (buffer-list)))
 	comp info body buffers buffer function)
@@ -9459,10 +9455,7 @@ not already exist."
 	(unless (and (setq comp (get mail-user-agent 'composefunc))
 		     (functionp comp))
 	  (error "No mail composing function for `%s'" mail-user-agent))
-	(setq info (if (require 'rfc6068 nil t)
-		       (rfc6068-parse-mailto-url url)
-		     (require 'rfc2368)
-		     (rfc2368-parse-mailto-url url))
+	(setq info (rfc6068-parse-mailto-url url)
 	      body (assoc "Body" info)
 	      info (delq body info)
 	      body (delq nil (list (cdr body))))

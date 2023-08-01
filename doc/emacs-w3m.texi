@@ -8,7 +8,7 @@
 @synindex pg cp
 
 @copying
-Copyright @copyright{} 2000-2020 @w{TSUCHIYA Masatoshi}
+Copyright @copyright{} 2000-2023 @w{TSUCHIYA Masatoshi}
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -212,8 +212,8 @@ you're not that lucky, read on to learn how to install emacs-w3m.
 @section What version of Emacs can be used?
 @cindex Possible Emacs versions
 
-Now emacs-w3m will work with Emacs 26, 27, and hopefully 28 (not
-released yet, though).  XEmacs support has been dropped.
+Now emacs-w3m will work with Emacs 28, 29, and hopefully 30 (not
+released yet, though).
 
 @node You Need w3m
 @section Using w3m: the reason why emacs-w3m is fast
@@ -3908,8 +3908,8 @@ information, see @ref{Introduction}.
 @item
 Q. Which emacs versions are supported?
 
-Now emacs-w3m will work with Emacs 26, 27, and hopefully 28 (not
-released yet, though).  XEmacs support has been dropped.
+Now emacs-w3m will work with Emacs 28, 29, and hopefully 30 (not
+released yet, though).
 
 @item
 Q. Which w3m versions are supported?

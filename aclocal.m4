@@ -62,7 +62,7 @@ AC_DEFUN(AC_PATH_EMACS,
   case "${flavor}" in
   "")
     flavor=unknown;;
-  Emacs\ 2[[7-9]]\.*|Emacs\ 3[[0-9]]\.*)
+  Emacs\ 2[[89]]\.*|Emacs\ 3[[0-9]]\.*)
     EMACS_FLAVOR=emacs;;
   *)
     EMACS_FLAVOR=unsupported;;
@@ -73,7 +73,7 @@ AC_DEFUN(AC_PATH_EMACS,
     exit 1
   else
     if test ${EMACS_FLAVOR} = unsupported; then
-      AC_MSG_ERROR(${flavor} is not supported.)
+      AC_MSG_ERROR(emacs-w3m does not support ${flavor}[[,]] sorry.)
       exit 1
     fi
   fi])

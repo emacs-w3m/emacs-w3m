@@ -1,6 +1,7 @@
 ;;; w3m-ems.el --- GNU Emacs stuff for emacs-w3m -*- lexical-binding: t -*-
 
-;; Copyright (C) 2001-2013, 2016-2020 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2013, 2016-2020, 2023
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
 ;;          TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -674,10 +675,9 @@ otherwise works in all the emacs-w3m buffers."
 	    (setq header-line-format nil)))
       (setq format 'header-line-format
 	    mouse2 [header-line mouse-2])
-      (when (and (boundp 'tab-line-format)
-		 (or (equal '(:eval (w3m-tab-line)) tab-line-format)
-		     (string-match "w3m-header-line-"
-				   (prin1-to-string tab-line-format))))
+      (when (or (equal '(:eval (w3m-tab-line)) tab-line-format)
+		(string-match "w3m-header-line-"
+			      (prin1-to-string tab-line-format)))
 	(setq tab-line-format nil)))
     (set
      format
@@ -1196,7 +1196,7 @@ italic font in the modeline."
   (interactive "P")
   (when (or (image-type-available-p 'xpm)
 	    (image-type-available-p 'png))
-    ;; FIXME: Is this comment true even in Emacs in 2019? -ky
+    ;; FIXME: Is this comment true even in Emacs in 2023? -ky
     ;; Prefer xpm icons rather than png icons since Emacs doesn't display
     ;; background colors of icon images other than xpm images transparently
     ;; in the mode line.

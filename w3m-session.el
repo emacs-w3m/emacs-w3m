@@ -1,6 +1,6 @@
 ;;; w3m-session.el --- Functions to operate session of w3m
 
-;; Copyright (C) 2001-2003, 2005-2013, 2017-2022
+;; Copyright (C) 2001-2003, 2005-2013, 2017-2023
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Author: Hideyuki SHIRAI <shirai@meadowy.org>
@@ -1002,7 +1002,6 @@ that session.  In that case delete the buffer entry."
   "Setup w3m session items in menubar."
   (unless (lookup-key w3m-mode-map [menu-bar Session])
     (easy-menu-define w3m-session-menu w3m-mode-map "" '("Session"))
-    (w3m-easy-menu-add w3m-session-menu)
     (add-hook 'menu-bar-update-hook 'w3m-session-menubar-update)))
 
 (defvar w3m-session-menu-items-pre nil)
