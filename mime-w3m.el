@@ -171,14 +171,14 @@ by way of `post-command-hook'."
 				       'text-rendered-by-mime-w3m t)))
 	(error (message "%s" err))))))
 
-(let (current-load-list)
-  (defadvice mime-display-message
-      (after add-emacs-w3m-functions-to-pre/post-command-hook activate compile)
-    "Advised by emacs-w3m.
-Add some emacs-w3m utility functions to pre/post-command-hook."
-    (when (featurep 'w3m)
-      (add-hook 'pre-command-hook 'w3m-store-current-position nil t)
-      (add-hook 'post-command-hook 'mime-w3m-check-current-position nil t))))
+(advice-add
+ 'mime-display-message :after
+ ;; Add some emacs-w3m utility functions to pre/post-command-hook.
+ (lambda (&rest _)
+   (when (featurep 'w3m)
+     (add-hook 'pre-command-hook 'w3m-store-current-position nil t)
+     (add-hook 'post-command-hook 'mime-w3m-check-current-position nil t)))
+ '((name . add-emacs-w3m-functions-to-pre/post-command-hook)))
 
 (defun mime-w3m-check-current-position ()
   "Run `mime-w3m-after-cursor-move-hook' if the cursor has been moved."
@@ -200,16 +200,18 @@ Add some emacs-w3m utility functions to pre/post-command-hook."
       (w3m-insert-string (mime-entity-content entity))
       (mime-entity-type/subtype entity))))
 
-(eval
- (quote
-  (defadvice kill-new (before strip-keymap-properties-from-kill activate)
-    "Advised by emacs-w3m.
-Strip `keymap' or `local-map' properties from a killed string."
-    (if (text-property-any 0 (length (ad-get-arg 0))
-			   'text-rendered-by-mime-w3m t (ad-get-arg 0))
-	(remove-text-properties 0 (length (ad-get-arg 0))
-				'(keymap nil local-map nil)
-				(ad-get-arg 0))))))
+(advice-add
+ 'kill-new :filter-args
+ ;; Strip `keymap' or `local-map' properties from a killed string.
+ (lambda (args)
+   (let ((str (car args)))
+     (if (text-property-any 0 (length str) 'text-rendered-by-mime-w3m t str)
+	 (progn
+	   (remove-text-properties 0 (length str) '(keymap nil local-map nil)
+				   str)
+	   (cons str (cdr args)))
+       args)))
+ '((name . strip-keymap-properties-from-kill)))
 
 (mime-w3m-insinuate)
 

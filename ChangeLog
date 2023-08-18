@@ -1,3 +1,8 @@
+2023-08-18  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mime-w3m.el (mime-display-message, kill-new): Use advice-add instead
+	of defadvice that's been marked obsolete in Emacs 30.
+
 2022-12-07  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Silence warnings when compiling w3m.el individually ([emacs-w3m:13914])
