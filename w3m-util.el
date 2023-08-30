@@ -1,6 +1,6 @@
 ;;; w3m-util.el --- Utility macros and functions for emacs-w3m
 
-;; Copyright (C) 2001-2014, 2016-2022 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2014, 2016-20231 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -617,8 +617,7 @@ This function will be added to `after-make-frame-functions' to run."
 (defun w3m-delete-w3m-initial-frames (frame)
   "Delete FRAME from `w3m-initial-frames', the buffer-local variable.
 It is done when the FRAME in which emacs-w3m is running is deleted.
-This function is added to `delete-frame-functions' or merged into
-the `delete-frame' function using `defadvice'."
+Use this function with the `delete-frame-functions' hook."
   (save-current-buffer
     (dolist (buffer (w3m-list-buffers t))
       (set-buffer buffer)
