@@ -977,22 +977,28 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
   (interactive)
   (when (and mew-shimbun-use-unseen mew-shimbun-use-unseen-cache-save)
     ;; "C-cC-q"
-    (defadvice mew-kill-buffer (before shimbun-cache-save activate)
-      (let* ((buf (or buf (current-buffer)))
-	     (fld (if (bufferp buf) (buffer-name buf) buf)))
-	(when (and (get-buffer buf) (mew-shimbun-folder-p fld))
-	  (with-current-buffer buf
-	    (unless (mew-summary-folder-dir-newp)
-	      (mew-summary-folder-cache-save))))))
+    (advice-add
+     'mew-kill-buffer :before
+     (lambda (&rest _)
+       (let* ((buf (or buf (current-buffer)))
+	      (fld (if (bufferp buf) (buffer-name buf) buf)))
+	 (when (and (get-buffer buf) (mew-shimbun-folder-p fld))
+	   (with-current-buffer buf
+	     (unless (mew-summary-folder-dir-newp)
+	       (mew-summary-folder-cache-save))))))
+     '((name . shimbun-cache-save)))
 
     ;; "Q" or exit Emacs
-    (defadvice mew-mark-clean-up (before shimbun-cache-save activate)
-      (save-current-buffer
-	(dolist (fld mew-buffers)
-	  (when (and (get-buffer fld) (mew-shimbun-folder-p fld))
-	    (set-buffer fld)
-	    (unless (mew-summary-folder-dir-newp)
-	      (mew-summary-folder-cache-save))))))
+    (advice-add
+     'mew-mark-clean-up :before
+     (lambda (&rest _)
+       (save-current-buffer
+	 (dolist (fld mew-buffers)
+	   (when (and (get-buffer fld) (mew-shimbun-folder-p fld))
+	     (set-buffer fld)
+	     (unless (mew-summary-folder-dir-newp)
+	       (mew-summary-folder-cache-save))))))
+     '((name . shimbun-cache-save)))
     ))
 
 ;;; unseen setup
