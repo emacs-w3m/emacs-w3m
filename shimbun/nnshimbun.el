@@ -352,15 +352,17 @@ If FULL-NAME-P is non-nil, it assumes that GROUP is a full name."
 (defun nnshimbun-replace-date-header (article header)
   ;; This function definition should be replaced with the proper one
   ;; when it is called at the first time.
-  (require 'gnus-sum)
-  (require 'bytecomp)
-  (defalias 'nnshimbun-replace-date-header
-    (byte-compile
-     (lambda (article header)
-       "Replace ARTICLE's date header with HEADER."
-       (let ((x (gnus-summary-article-header article)))
-	 (when x
-	   (setf (mail-header-date x) (shimbun-header-date header)))))))
+  (let ((fn (lambda (article header)
+	      "Replace ARTICLE's date header with HEADER."
+	      (let ((x (gnus-summary-article-header article)))
+		(when x
+		  (setf (mail-header-date x) (shimbun-header-date header)))))))
+    (defalias 'nnshimbun-replace-date-header
+      (if (byte-code-function-p fn)
+	  fn
+	(require 'gnus-sum)
+	(require 'bytecomp)
+	(byte-compile fn))))
   (funcall 'nnshimbun-replace-date-header article header))
 
 (defun nnshimbun-request-article-1 (article &optional group server to-buffer)
