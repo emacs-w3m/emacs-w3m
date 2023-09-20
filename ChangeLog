@@ -1,3 +1,8 @@
+2023-09-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3mhack.el (w3mhack-insert-git-revision, w3mhack-generate-load-file):
+	Fix so to generate emacs-w3m-git-revision on Emacs 29 and up as well.
+
 2023-08-18  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mime-w3m.el (mime-display-message, kill-new): Use advice-add instead
