@@ -1784,15 +1784,14 @@ follows:
 	  (const :tag "Always send referers" t)
 	  (const :tag "Send referers when accessing the same server" lambda)
 	  (cons :tag "Send referers when URI matches"
-		(list :inline t :format "%v"
-		      (radio :indent 2 :sample-face underline
-			     :tag "Allow"
-			     (regexp :format "%t: %v")
-			     (const :tag "Don't allow all" nil))
-		      (radio :indent 2 :sample-face underline
-			     :tag "Don't allow"
-			     (regexp :format "%t: %v")
-			     (const :tag "Allow all" nil))))
+		(radio :indent 2 :sample-face underline
+		       :tag "Allow"
+		       (regexp :format "%t: %v")
+		       (const :tag "Don't allow all" nil))
+		(radio :indent 2 :sample-face underline
+		       :tag "Don't allow"
+		       (regexp :format "%t: %v")
+		       (const :tag "Allow all" nil)))
 	  (function :tag "Function that takes two arguments" :format
 		    "Send referers when this function returns non-nil\n%v\
 (Note: this function takes two argumants URL and REFERER)\n")))
@@ -1808,7 +1807,7 @@ timestamp with the `-t' option."
   "Coding system for PUNY coding. if nil, don't use PUNY code."
   :group 'w3m
   :type '(radio (coding-system :tag "UTF-16BE with no signature")
-		(const "Don't use" nil)))
+		(const :format "Don't use" nil)))
 
 (defcustom w3m-uri-replace-alist
   '(("\\`gg:" w3m-search-uri-replace "google")

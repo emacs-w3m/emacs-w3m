@@ -1,3 +1,7 @@
+2023-09-21  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-add-referer, w3m-puny-utf-16be): Fix custom types.
+
 2023-09-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3mhack.el (w3mhack-insert-git-revision, w3mhack-generate-load-file):
