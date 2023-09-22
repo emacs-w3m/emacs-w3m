@@ -979,8 +979,8 @@ If called with '\\[universal-argument]', re-retrieve messages in the region."
     ;; "C-cC-q"
     (advice-add
      'mew-kill-buffer :before
-     (lambda (&rest _)
-       (let* ((buf (or buf (current-buffer)))
+     (lambda (&rest args)
+       (let* ((buf (or (car args) (current-buffer)))
 	      (fld (if (bufferp buf) (buffer-name buf) buf)))
 	 (when (and (get-buffer buf) (mew-shimbun-folder-p fld))
 	   (with-current-buffer buf

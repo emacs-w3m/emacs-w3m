@@ -1,3 +1,7 @@
+2023-09-22  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* mew-shimbun.el (mew-shimbun-unseen-setup): Fix advice.
+
 2023-09-11  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* nnshimbun.el (nnshimbun-replace-date-header): Compile it if and only
