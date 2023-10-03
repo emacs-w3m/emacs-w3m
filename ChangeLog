@@ -1,3 +1,7 @@
+2023-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-fontify-anchors): Improve the way to find unsafe links.
+
 2023-09-21  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-add-referer, w3m-puny-utf-16be): Fix custom types.

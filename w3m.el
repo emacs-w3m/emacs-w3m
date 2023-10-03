@@ -3560,13 +3560,18 @@ or a function that takes no argument and returns a string."
 	    (setq warning
 		  (and (fboundp 'textsec-suspicious-p) ;; Emacs >= 29.1
 		       (or (textsec-suspicious-p href 'url)
-			   (and
-			    (prog2
-				(goto-char start)
-				(re-search-forward "https?:[^\t\n \"<>]+" end t)
-			      (goto-char end))
-			    (textsec-suspicious-p (cons href (match-string 0))
-						  'link)))))
+			   (let (caption)
+			     (goto-char start)
+			     (while (< (point) end)
+			       (if (looking-at
+				    "[^<]*\\(https?:[^\t\n \"<>\\]+\\)")
+				   (progn
+				     (setq caption (match-string 1))
+				     (goto-char end))
+				 (search-forward ">" end 'move)))
+			     (and caption
+				  (textsec-suspicious-p (cons href caption)
+							'link))))))
 	    (unless (or (w3m-url-local-p href)
 			(let ((case-fold-search t))
 			  (string-match "\\`mailto:" href)))
