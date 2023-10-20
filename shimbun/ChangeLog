@@ -1,3 +1,8 @@
+2023-10-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-get-headers-top): Merge it to
+	shimbun-sankei-get-headers.  This fixes almost groups to work.
+
 2023-09-22  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* mew-shimbun.el (mew-shimbun-unseen-setup): Fix advice.
