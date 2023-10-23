@@ -1,4 +1,4 @@
-;;; sb-m17n.el --- shimbun backend for m17n.org
+;;; sb-m17n.el --- shimbun backend for m17n.org -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2003, 2006, 2009, 2019
 ;; Akihiro Arisawa <ari@mbf.sphere.ne.jp>

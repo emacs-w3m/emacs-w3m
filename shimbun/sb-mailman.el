@@ -1,4 +1,4 @@
-;;; sb-mailman.el --- shimbun backend class for mailman archiver
+;;; sb-mailman.el --- shimbun backend class for mailman archiver -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2002, 2003, 2019 NAKAJIMA Mikio <minakaji@namazu.org>
 ;; Copyright (C) 2002, 2008, 2019 Katsumi Yamaoka <yamaoka@jpl.org>

@@ -1,4 +1,4 @@
-;;; sb-airs.el --- shimbun backend for lists.airs.net
+;;; sb-airs.el --- shimbun backend for lists.airs.net -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2003, 2005, 2007, 2019
 ;; Yuuichi Teranishi <teranisi@gohome.org>

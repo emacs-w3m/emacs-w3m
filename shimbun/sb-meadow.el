@@ -1,4 +1,4 @@
-;;; sb-meadow.el --- shimbun backend for meadow-ml
+;;; sb-meadow.el --- shimbun backend for meadow-ml -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2004, 2019 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 ;; Copyright (C) 2001-2004, 2019 Yuuichi Teranishi <teranisi@gohome.org>

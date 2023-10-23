@@ -1,4 +1,4 @@
-;;; sb-digiko.el --- shimbun backend for digiko-ML.
+;;; sb-digiko.el --- shimbun backend for digiko-ML -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2004, 2007, 2019 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 

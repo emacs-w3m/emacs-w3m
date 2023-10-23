@@ -1,4 +1,4 @@
-;; mew-shimbun.el --- View shimbun contents with Mew
+;; mew-shimbun.el --- View shimbun contents with Mew -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2007, 2010, 2016, 2017, 2019, 2022
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

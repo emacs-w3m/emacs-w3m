@@ -1,4 +1,4 @@
-;;; sb-linuxce-jp.el --- shimbun backend for linuxce-jp ML
+;;; sb-linuxce-jp.el --- shimbun backend for linuxce-jp ML -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

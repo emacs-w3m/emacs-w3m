@@ -1,4 +1,4 @@
-;;; w3m-session.el --- Functions to operate session of w3m
+;;; w3m-session.el --- Functions to operate session of w3m -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2003, 2005-2013, 2017-2023
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

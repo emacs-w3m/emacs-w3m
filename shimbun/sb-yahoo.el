@@ -1,4 +1,4 @@
-;;; sb-yahoo.el --- shimbun backend for news.yahoo.co.jp -*- coding: utf-8 -*-
+;;; sb-yahoo.el --- shimbun backend for news.yahoo.co.jp -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2003, 2005-2007, 2009, 2010, 2019 Kazuyoshi KOREEDA
 

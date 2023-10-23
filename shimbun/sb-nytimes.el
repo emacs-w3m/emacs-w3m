@@ -1,4 +1,4 @@
-;;; sb-nytimes.el --- shimbun backend for The New York Times
+;;; sb-nytimes.el --- shimbun backend for The New York Times -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2007-2010, 2019 Katsumi Yamaoka
 

@@ -1,4 +1,4 @@
-;;; sb-yomiuri.el --- shimbun backend for www.yomiuri.co.jp
+;;; sb-yomiuri.el --- shimbun backend for www.yomiuri.co.jp -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2008, 2017, 2019, 2020
 

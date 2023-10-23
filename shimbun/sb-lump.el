@@ -1,4 +1,4 @@
-;;; sb-lump.el --- shimbun backend class to check all groups at once
+;;; sb-lump.el --- shimbun backend class to check all groups at once -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001, 2002, 2022 Yuuichi Teranishi <teranisi@gohome.org>
 

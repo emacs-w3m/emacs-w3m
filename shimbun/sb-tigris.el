@@ -1,4 +1,4 @@
-;;; sb-tigris.el --- shimbun backend for tigris.org ML
+;;; sb-tigris.el --- shimbun backend for tigris.org ML -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2005, 2007, 2009, 2017, 2019
 ;; Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>

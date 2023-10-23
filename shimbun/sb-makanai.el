@@ -1,4 +1,4 @@
-;;; sb-makanai.el --- shimbun backend for www.makanai.com -*- coding: utf-8 -*-
+;;; sb-makanai.el --- shimbun backend for www.makanai.com -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006
 ;; MIYOSHI Masanori <miyoshi@meadowy.org>

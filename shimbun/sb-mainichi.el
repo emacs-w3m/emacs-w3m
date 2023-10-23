@@ -1,4 +1,4 @@
-;;; sb-mainichi.el --- shimbun backend for Mainichi jp
+;;; sb-mainichi.el --- shimbun backend for Mainichi jp -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2009, 2011-2013, 2015-2019, 2021
 ;; Koichiro Ohba <koichiro@meadowy.org>

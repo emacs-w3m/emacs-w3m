@@ -1,4 +1,4 @@
-;;; sb-aljazeera.el --- Al Jazeera shimbun backend
+;;; sb-aljazeera.el --- Al Jazeera shimbun backend -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2007, 2008 David Hansen
 

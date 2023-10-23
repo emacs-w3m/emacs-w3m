@@ -1,4 +1,4 @@
-;;; sb-savannah.el --- shimbun backend for gnu list archives on savannah
+;;; sb-savannah.el --- shimbun backend for gnu list archives on savannah -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2002, 2003, 2005, 2019 Yoichi NAKAYAMA <yoichi@FreeBSD.org>
 

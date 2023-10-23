@@ -1,4 +1,4 @@
-;;; bookmark-w3m.el --- bridging between emacs's bookmark.el and emacs-w3m
+;;; bookmark-w3m.el --- bridging between emacs's bookmark.el and emacs-w3m -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2010, 2019 Masatake YAMATO
 ;;

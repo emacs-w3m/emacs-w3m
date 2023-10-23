@@ -1,4 +1,4 @@
-;;; sb-debian-jp.el --- shimbun backend for debian.or.jp
+;;; sb-debian-jp.el --- shimbun backend for debian.or.jp -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2003, 2019 OHASHI Akira <bg66@koka-in.org>
 

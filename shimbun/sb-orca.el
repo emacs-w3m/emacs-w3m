@@ -1,4 +1,4 @@
-;;; sb-orca.el --- shimbun backend for www.orca.med.or.jp ML archive
+;;; sb-orca.el --- shimbun backend for www.orca.med.or.jp ML archive -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2002, 2003, 2005, 2019
 ;; Masamichi Goudge M.D. <Matanuki@Goudge.org>

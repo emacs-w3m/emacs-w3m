@@ -1,4 +1,4 @@
-;;; w3m-search.el --- functions convenient to access web search engines
+;;; w3m-search.el --- functions convenient to access web search engines -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001--2012, 2017-2020, 2022
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

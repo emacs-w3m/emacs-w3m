@@ -1,4 +1,4 @@
-;;; sb-yoshirin.el --- shimbun backend for Yoshinori Kobayashi Official Site
+;;; sb-yoshirin.el --- shimbun backend for Yoshinori Kobayashi Official Site -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2015, 2016, 2021, 2022 Katsumi Yamaoka
 

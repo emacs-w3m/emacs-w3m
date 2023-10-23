@@ -1,4 +1,4 @@
-;;; sb-hash.el --- shimbun backend for contents hashing -*- coding: utf-8 -*-
+;;; sb-hash.el --- shimbun backend for contents hashing -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2006, 2009 Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 

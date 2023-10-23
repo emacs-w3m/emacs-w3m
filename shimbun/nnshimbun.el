@@ -1,4 +1,4 @@
-;;; nnshimbun.el --- interfacing with web newspapers
+;;; nnshimbun.el --- interfacing with web newspapers -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2000-2012, 2016-2019, 2022, 2023
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

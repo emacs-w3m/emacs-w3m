@@ -1,4 +1,4 @@
-;;; sb-javaconf.el --- shimbun backend class for java-conference archive.
+;;; sb-javaconf.el --- shimbun backend class for java-conference archive -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2004, 2007, 2019 ABE Yasushi <yasushi@stbbs.net>
 

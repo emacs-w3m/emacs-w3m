@@ -1,4 +1,4 @@
-;;; sb-chise.el --- shimbun backend for chise.org
+;;; sb-chise.el --- shimbun backend for chise.org -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2012 Katsumi Yamaoka
 

@@ -1,4 +1,4 @@
-;;; sb-yahoo-auctions.el --- shimbun backend for Yahoo! AUCTIONS
+;;; sb-yahoo-auctions.el --- shimbun backend for Yahoo! AUCTIONS -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2005, 2006, 2008, 2011, 2013, 2019
 ;; ARISAWA Akihiro <ari@mbf.sphere.ne.jp>

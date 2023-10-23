@@ -1,4 +1,4 @@
-;;; sb-pocketgames.el --- shimbun backend class for www.pocketgames.jp.
+;;; sb-pocketgames.el --- shimbun backend class for www.pocketgames.jp -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2003-2005, 2008, 2019 NAKAJIMA Mikio <minakaji@namazu.org>
 

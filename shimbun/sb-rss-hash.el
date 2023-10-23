@@ -1,4 +1,4 @@
-;;; sb-rss-hash.el --- shimbun backend for rss description -*- coding: utf-8 -*-
+;;; sb-rss-hash.el --- shimbun backend for rss description -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2006, 2009, 2011 Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 

@@ -1,4 +1,4 @@
-;;; sb-debugmagazin-de.el --- de-bug.de shimbun backend
+;;; sb-debugmagazin-de.el --- de-bug.de shimbun backend -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2008, 2009 David Engster
 

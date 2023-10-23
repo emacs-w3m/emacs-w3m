@@ -1,4 +1,4 @@
-;;; sb-opentechpress-jp.el --- shimbun backend for japan.linux.com -*- coding: utf-8 -*-
+;;; sb-opentechpress-jp.el --- shimbun backend for japan.linux.com -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2006, 2007, 2009, 2010, 2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

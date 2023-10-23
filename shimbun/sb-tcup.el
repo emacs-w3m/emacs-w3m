@@ -1,4 +1,4 @@
-;;; sb-tcup.el --- shimbun backend for www.tcup.com
+;;; sb-tcup.el --- shimbun backend for www.tcup.com -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001, 2002, 2005, 2019, 2022
 ;; Yuuichi Teranishi <teranisi@gohome.org>

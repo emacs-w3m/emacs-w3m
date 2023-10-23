@@ -1,4 +1,4 @@
-;;; sb-sueddeutsche-de.el --- sueddeutsche.de shimbun backend
+;;; sb-sueddeutsche-de.el --- sueddeutsche.de shimbun backend -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2008-2010, 2019 David Engster
 

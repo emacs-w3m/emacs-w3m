@@ -1,4 +1,4 @@
-;;; sb-asahi-mytown.el --- mytown.asahi.com
+;;; sb-asahi-mytown.el --- mytown.asahi.com -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2003, 2004, 2005, 2006, 2007 Katsumi Yamaoka
 

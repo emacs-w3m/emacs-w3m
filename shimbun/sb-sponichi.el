@@ -1,4 +1,4 @@
-;;; sb-sponichi.el --- shimbun backend for www.sponichi.co.jp -*- coding: utf-8 -*-
+;;; sb-sponichi.el --- shimbun backend for www.sponichi.co.jp -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001, 2002, 2003 Tatsuya Ichikawa
 ;; Copyright (C) 2001, 2002, 2003 Yuuichi Teranishi <teranisi@gohome.org>

@@ -1,4 +1,4 @@
-;;; sb-cgi-board.el --- Shimbun backend for CGI_Board bulletin board systems
+;;; sb-cgi-board.el --- Shimbun backend for CGI_Board bulletin board systems -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2004, 2006, 2009, 2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

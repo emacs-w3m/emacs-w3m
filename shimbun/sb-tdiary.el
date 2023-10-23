@@ -1,4 +1,4 @@
-;;; sb-tdiary.el --- shimbun backend for tDiary
+;;; sb-tdiary.el --- shimbun backend for tDiary -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2003-2005, 2007, 2019 OHASHI Akira <bg66@koka-in.org>
 

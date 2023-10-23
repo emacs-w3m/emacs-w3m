@@ -1,4 +1,4 @@
-;;; sb-atom-hash.el --- shimbun backend for atom content -*- coding: utf-8 -*-
+;;; sb-atom-hash.el --- shimbun backend for atom content -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2006-2009, 2011, 2019 Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 

@@ -1,4 +1,4 @@
-;;; sb-rakuten.el --- shimbun backend for rakuten diary
+;;; sb-rakuten.el --- shimbun backend for rakuten diary -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2003, 2004, 2006, 2019 NAKAJIMA Mikio <minakaji@namazu.org>
 

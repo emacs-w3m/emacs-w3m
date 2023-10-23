@@ -1,4 +1,4 @@
-;;; sb-ibm-dev.el --- shimbun backend for www-6.ibm.com/ja/developerworks
+;;; sb-ibm-dev.el --- shimbun backend for www-6.ibm.com/ja/developerworks -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001, 2003, 2005, 2007, 2010, 2019
 ;; NAKAJIMA Mikio <minakaji@namazu.org>

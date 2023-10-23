@@ -1,4 +1,4 @@
-;;; sb-mailarc.el --- shimbun backend class for mailarc
+;;; sb-mailarc.el --- shimbun backend class for mailarc -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2002, 2003  Free Software Foundation, Inc.
 

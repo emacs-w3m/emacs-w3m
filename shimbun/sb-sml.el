@@ -1,4 +1,4 @@
-;;; sb-sml.el --- shimbun backend for Smalltalkers' Salon Mailing List archive
+;;; sb-sml.el --- shimbun backend for Smalltalkers' Salon Mailing List archive -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2003-2005, 2019 NAKAJIMA Mikio <minakaji@namazu.org>
 

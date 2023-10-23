@@ -1,4 +1,4 @@
-;;; sb-arch-bluegate.el --- shimbun backend for arch.bluegate.org
+;;; sb-arch-bluegate.el --- shimbun backend for arch.bluegate.org -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2005 Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 

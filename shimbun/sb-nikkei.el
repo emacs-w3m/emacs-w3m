@@ -1,4 +1,4 @@
-;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp
+;;; sb-nikkei.el --- shimbun backend for nikkei.co.jp -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2007, 2009-2011, 2017, 2019, 2022
 ;; Kazuyoshi KOREEDA <Koreeda.Kazuyoshi@jp.panasonic.com>

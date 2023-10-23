@@ -1,4 +1,4 @@
-;;; sb-wikimedia.el --- shimbun backend for Wikimedia Mailing list
+;;; sb-wikimedia.el --- shimbun backend for Wikimedia Mailing list -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2004, 2005, 2007, 2019, 2023
 ;; Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>

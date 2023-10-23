@@ -1,4 +1,4 @@
-;;; sb-cnet.el --- shimbun backend for CNET
+;;; sb-cnet.el --- shimbun backend for CNET -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2004, 2006, 2009, 2010, 2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

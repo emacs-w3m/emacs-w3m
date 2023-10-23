@@ -1,4 +1,4 @@
-;;; w3m-form.el --- Stuffs to handle <form> tag
+;;; w3m-form.el --- Stuffs to handle <form> tag -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2014, 2017, 2019, 2022
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

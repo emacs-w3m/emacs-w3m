@@ -1,4 +1,4 @@
-;;; sb-wiki.el --- shimbun backend for wiki
+;;; sb-wiki.el --- shimbun backend for wiki -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2003, 2004, 2006, 2019 NAKAJIMA Mikio <minakaji@namazu.org>
 

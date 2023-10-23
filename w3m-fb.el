@@ -1,4 +1,4 @@
-;;; w3m-fb.el --- frame-local buffers support for emacs-w3m
+;;; w3m-fb.el --- frame-local buffers support for emacs-w3m -*- lexical-binding: nil -*-
 
 ;;; Copyright (C) 2005, 2006, 2018, 2019 Matthew P. Hodges
 

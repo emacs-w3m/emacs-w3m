@@ -1,4 +1,4 @@
-;;; w3m-tabmenu.el --- Functions for TAB menu browsing
+;;; w3m-tabmenu.el --- Functions for TAB menu browsing -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2007, 2009, 2011-2012, 2019, 2020, 2023
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

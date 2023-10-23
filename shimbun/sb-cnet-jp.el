@@ -1,4 +1,4 @@
-;;; sb-cnet-jp.el --- shimbun backend for CNET Japan -*- coding: utf-8 -*-
+;;; sb-cnet-jp.el --- shimbun backend for CNET Japan -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2003-2007, 2010, 2019 NAKAJIMA Mikio <minakaji@namazu.org>
 

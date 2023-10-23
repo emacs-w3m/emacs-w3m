@@ -1,4 +1,4 @@
-;;; sb-lotusex.el --- shimbun backend for http://tsuruo.dominohosting.biz
+;;; sb-lotusex.el --- shimbun backend for http://tsuruo.dominohosting.biz -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2003, 2004, 2019 NAKAJIMA Mikio <minakaji@namazu.org>
 

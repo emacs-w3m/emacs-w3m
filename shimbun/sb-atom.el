@@ -1,4 +1,4 @@
-;;; sb-atom.el --- shimbun backend for ATOM (Rich Site Summary).
+;;; sb-atom.el --- shimbun backend for ATOM (Rich Site Summary) -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2006, 2008-2011,2019 Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 

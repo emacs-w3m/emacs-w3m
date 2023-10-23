@@ -1,4 +1,4 @@
-;;; sb-emacs-w3m.el --- shimbun backend for emacs-w3m ml
+;;; sb-emacs-w3m.el --- shimbun backend for emacs-w3m ml -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2004, 2019 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 

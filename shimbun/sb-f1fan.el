@@ -1,4 +1,4 @@
-;;; sb-f1fan.el --- shimbun backend for www.ksky.ne.jp/~tahara/f1/  -*- coding: utf-8 -*-
+;;; sb-f1fan.el --- shimbun backend for www.ksky.ne.jp/~tahara/f1/ -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005
 ;; MIYOSHI Masanori <miyoshi@meadowy.org>

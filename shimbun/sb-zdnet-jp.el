@@ -1,4 +1,4 @@
-;;; sb-zdnet-jp.el --- shimbun backend for ZDNet Japan -*- coding: utf-8 -*-
+;;; sb-zdnet-jp.el --- shimbun backend for ZDNet Japan -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2005, 2006, 2019 Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 

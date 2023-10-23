@@ -1,4 +1,4 @@
-;;; sb-tdiary-ml.el --- shimbun backend for www.tDiary.org
+;;; sb-tdiary-ml.el --- shimbun backend for www.tDiary.org -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2003, 2007 Koichiro Ohba  <koichiro@meadowy.org>
 

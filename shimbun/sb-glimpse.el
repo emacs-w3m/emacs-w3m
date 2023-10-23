@@ -1,4 +1,4 @@
-;;; sb-glimpse.el --- shimbun backend class for Glimpse archive
+;;; sb-glimpse.el --- shimbun backend class for Glimpse archive -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2003, 2019 Akihiro Arisawa <ari@mbf.sphere.ne.jp>
 

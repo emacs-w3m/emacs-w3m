@@ -1,4 +1,4 @@
-;;; sb-wincefan.el --- shimbun backend for WindowsCE FAN
+;;; sb-wincefan.el --- shimbun backend for WindowsCE FAN -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2003-2005, 2019 NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 

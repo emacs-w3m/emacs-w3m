@@ -1,4 +1,4 @@
-;;; sb-rss.el --- shimbun backend for RSS (Rich Site Summary).
+;;; sb-rss.el --- shimbun backend for RSS (Rich Site Summary) -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2003-2011, 2013, 2019, 2020
 ;; Koichiro Ohba <koichiro@meadowy.org>

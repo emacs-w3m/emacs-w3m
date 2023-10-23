@@ -1,4 +1,4 @@
-;;; shimbun.el --- interfacing with web newspapers
+;;; shimbun.el --- interfacing with web newspapers -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2014, 2017-2019, 2021, 2022
 ;; Yuuichi Teranishi <teranisi@gohome.org>

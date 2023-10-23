@@ -1,4 +1,4 @@
-;;; sb-w3m-dev.el --- shimbun backend for w3m-dev
+;;; sb-w3m-dev.el --- shimbun backend for w3m-dev -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001 NAKAJIMA Mikio
 ;; Copyright (C) 2005 Tsuyoshi CHO

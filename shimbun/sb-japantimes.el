@@ -1,4 +1,4 @@
-;;; sb-japantimes.el --- shimbun backend for www.japantimes.co.jp
+;;; sb-japantimes.el --- shimbun backend for www.japantimes.co.jp -*- lexical-binding: nil -*-
 
 ;; Author: Hidetaka Iwai <tyuyu@mb6.seikyou.ne.jp>,
 ;;         KASUGA Toru <gen@qb3.so-net.ne.jp>

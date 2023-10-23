@@ -1,4 +1,4 @@
-;;; sb-itmedia.el --- shimbun backend for ITmedia -*- coding: utf-8 -*-
+;;; sb-itmedia.el --- shimbun backend for ITmedia -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2004-2011, 2013, 2019 Yuuichi Teranishi <teranisi@gohome.org>
 

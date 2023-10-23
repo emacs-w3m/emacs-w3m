@@ -1,4 +1,4 @@
-;;; sb-toshiba.el --- shimbun backend for TOSHIBA Linux users ML
+;;; sb-toshiba.el --- shimbun backend for TOSHIBA Linux users ML -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001, 2005, 2019 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

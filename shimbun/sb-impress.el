@@ -1,4 +1,4 @@
-;;; sb-impress.el --- shimbun backend for www.watch.impress.co.jp
+;;; sb-impress.el --- shimbun backend for www.watch.impress.co.jp -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2006, 2008, 2009, 2019
 ;; Yuuichi Teranishi <teranisi@gohome.org>

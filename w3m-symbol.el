@@ -1,4 +1,4 @@
-;;; w3m-symbol.el --- Stuffs to replace symbols for emacs-w3m
+;;; w3m-symbol.el --- Stuffs to replace symbols for emacs-w3m -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2002-2007, 2009, 2017, 2019
 ;; ARISAWA Akihiro <ari@mbf.sphere.ne.jp>

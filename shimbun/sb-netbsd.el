@@ -1,4 +1,4 @@
-;;; sb-netbsd.el --- shimbun backend for netbsd.org
+;;; sb-netbsd.el --- shimbun backend for netbsd.org -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2003, 2019 Yuuichi Teranishi <teranisi@gohome.org>
 

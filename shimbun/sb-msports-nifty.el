@@ -1,4 +1,4 @@
-;;; sb-msports-nifty.el --- shimbun backend for motorsports.nifty.com
+;;; sb-msports-nifty.el --- shimbun backend for motorsports.nifty.com -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2004, 2005, 2006 MIYOSHI Masanori <miyoshi@meadowy.org>
 

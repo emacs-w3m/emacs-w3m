@@ -1,4 +1,4 @@
-;;; sb-nikkansports.el --- shimbun backend for www.nikkansports.com
+;;; sb-nikkansports.el --- shimbun backend for www.nikkansports.com -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2005, 2007, 2008, 2017, 2019
 ;; MIYOSHI Masanori <miyoshi@meadowy.org>

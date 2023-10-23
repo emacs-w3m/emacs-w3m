@@ -1,4 +1,4 @@
-;;; sb-mew.el --- shimbun backend for mew.org
+;;; sb-mew.el --- shimbun backend for mew.org -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001, 2002, 2005, 2019 Yuuichi Teranishi <teranisi@gohome.org>
 ;; Copyright (C) 2001, 2002, 2005, 2019 Akihiro Arisawa   <ari@mbf.sphere.ne.jp>

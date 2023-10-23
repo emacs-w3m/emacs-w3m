@@ -1,4 +1,4 @@
-;;; sb-infoshop.el --- infoshop shimbun backend
+;;; sb-infoshop.el --- infoshop shimbun backend -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2005-2007, 2019 David Hansen
 

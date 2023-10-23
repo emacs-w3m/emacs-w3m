@@ -1,4 +1,4 @@
-;;; sb-excite.el --- shimbun backend for excite
+;;; sb-excite.el --- shimbun backend for excite -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2004, 2005, 2006, 2010 Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 

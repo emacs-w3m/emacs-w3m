@@ -1,4 +1,4 @@
-;;; w3m-dtree.el --- The add-on program to display local directory tree.
+;;; w3m-dtree.el --- The add-on program to display local directory tree -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2003, 2005-2007, 2009, 2017, 2019, 2022, 2023
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

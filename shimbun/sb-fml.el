@@ -1,4 +1,4 @@
-;;; sb-fml.el --- shimbun backend class for fml archiver.
+;;; sb-fml.el --- shimbun backend class for fml archiver -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2004, 2009, 2010, 2019, 2022
 ;; Akihiro Arisawa <ari@mbf.sphere.ne.jp>

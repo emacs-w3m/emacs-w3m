@@ -1,4 +1,4 @@
-;;; sb-the-onion.el --- The Onion shimbun backend
+;;; sb-the-onion.el --- The Onion shimbun backend -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2006 David Hansen
 

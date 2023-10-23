@@ -1,4 +1,4 @@
-;;; sb-slashdot-jp.el --- shimbun backend for slashdot.jp
+;;; sb-slashdot-jp.el --- shimbun backend for slashdot.jp -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2003-2007, 2010, 2017, 2019
 ;; NAKAJIMA Mikio <minakaji@namazu.org>

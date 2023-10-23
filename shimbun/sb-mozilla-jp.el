@@ -1,4 +1,4 @@
-;;; sb-moz-users.el --- shimbun backend for moz-users
+;;; sb-moz-users.el --- shimbun backend for moz-users -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2003 NAKAJIMA Mikio <minakaji@namazu.org>
 

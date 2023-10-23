@@ -1,4 +1,4 @@
-;;; w3m-save.el --- Save the page to the local files
+;;; w3m-save.el --- Save the page to the local files -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2015-2017, 2019, 2020 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

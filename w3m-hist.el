@@ -1,4 +1,4 @@
-;;; w3m-hist.el --- the history management system for emacs-w3m
+;;; w3m-hist.el --- the history management system for emacs-w3m -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2012, 2019-2022 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

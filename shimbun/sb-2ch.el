@@ -1,4 +1,4 @@
-;;; sb-2ch.el --- shimbun backend for 2ch.net
+;;; sb-2ch.el --- shimbun backend for 2ch.net -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2005, 2019 (not 1)
 

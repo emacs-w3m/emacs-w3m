@@ -1,4 +1,4 @@
-;;; sb-fau.el --- Freie ArbeiterInnen Union shimbun backend
+;;; sb-fau.el --- Freie ArbeiterInnen Union shimbun backend -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2005-2007, 2019 David Hansen
 

@@ -1,4 +1,4 @@
-;;; sb-vinelinux.el --- shimbun backend class for vinelinux web site.
+;;; sb-vinelinux.el --- shimbun backend class for vinelinux web site -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2006, 2009
 ;; NAKAJIMA Mikio <minakaji@namazu.org>

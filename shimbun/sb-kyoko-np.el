@@ -1,4 +1,4 @@
-;;; sb-kyoko-np.el --- shimbun backend for Kyoko Shimbun News
+;;; sb-kyoko-np.el --- shimbun backend for Kyoko Shimbun News -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2015, 2018 Katsumi Yamaoka
 

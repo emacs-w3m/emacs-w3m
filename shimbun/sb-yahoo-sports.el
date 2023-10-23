@@ -1,4 +1,4 @@
-;;; sb-yahoo-sports.el --- shimbun backend for sports.yahoo.co.jp -*- coding: utf-8 -*-
+;;; sb-yahoo-sports.el --- shimbun backend for sports.yahoo.co.jp -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2005
 ;; MIYOSHI Masanori <miyoshi@meadowy.org>

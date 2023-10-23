@@ -1,4 +1,4 @@
-;;; w3m-mail.el --- an interface to mail-user-agent for sending web pages
+;;; w3m-mail.el --- an interface to mail-user-agent for sending web pages -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2006, 2009, 2010, 2013, 2019, 2022 TSUCHIYA Masatoshi
 

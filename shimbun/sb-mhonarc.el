@@ -1,4 +1,4 @@
-;;; sb-mhonarc.el --- shimbun backend class for mhonarc
+;;; sb-mhonarc.el --- shimbun backend class for mhonarc -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2007, 2009, 2022
 ;; Yuuichi Teranishi <teranisi@gohome.org>

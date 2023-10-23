@@ -1,4 +1,4 @@
-;;; sb-x51.el --- shimbun backend for x51.org
+;;; sb-x51.el --- shimbun backend for x51.org -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2004-2006, 2010, 2019 Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 

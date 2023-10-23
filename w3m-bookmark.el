@@ -1,4 +1,4 @@
-;;; w3m-bookmark.el --- Functions to operate bookmark file of w3m
+;;; w3m-bookmark.el --- Functions to operate bookmark file of w3m -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2003, 2005-2012, 2017, 2019-2023
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

@@ -1,4 +1,4 @@
-;;; sb-ruby.el --- shimbun backend class for ruby ML archiver.
+;;; sb-ruby.el --- shimbun backend class for ruby ML archiver -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2003, 2005, 2009, 2019
 ;; NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>

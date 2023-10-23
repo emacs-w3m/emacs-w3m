@@ -1,4 +1,4 @@
-;;; sb-msdn.el --- shimbun backend for MSDN
+;;; sb-msdn.el --- shimbun backend for MSDN -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2004, 2005, 2006 Yoichi NAKAYAMA <yoichi@geiin.org>
 

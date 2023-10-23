@@ -1,4 +1,4 @@
-;;; sb-wired-jp.el --- shimbun backend for Hotwired Japan
+;;; sb-wired-jp.el --- shimbun backend for Hotwired Japan -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2005, 2006, 2022 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 

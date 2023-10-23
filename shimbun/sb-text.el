@@ -1,4 +1,4 @@
-;;; sb-text.el -- shimbun backend class for text content
+;;; sb-text.el -- shimbun backend class for text content -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001, 2002, 2003, 2004, 2005, 2009
 ;; Yuuichi Teranishi <teranisi@gohome.org>

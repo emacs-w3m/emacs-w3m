@@ -1,4 +1,4 @@
-;;; w3m-perldoc.el --- The add-on program to view Perl documents.
+;;; w3m-perldoc.el --- The add-on program to view Perl documents -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2005, 2007, 2017, 2019
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

@@ -1,4 +1,4 @@
-;;; sb-kantei.el --- shimbun backend for kantei blog backnumber
+;;; sb-kantei.el --- shimbun backend for kantei blog backnumber -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2012, 2019 Yuuichi Teranishi <teranisi@gohome.org>
 

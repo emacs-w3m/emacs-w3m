@@ -1,4 +1,4 @@
-;;; sb-engadget-ja.el --- shimbun backend for japanese.engadget.com
+;;; sb-engadget-ja.el --- shimbun backend for japanese.engadget.com -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2005, 2006, 2007 Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 

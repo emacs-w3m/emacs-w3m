@@ -1,4 +1,4 @@
-;;; sb-cnn-jp.el --- shimbun backend for CNN Japan
+;;; sb-cnn-jp.el --- shimbun backend for CNN Japan -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2003-2005, 2008, 2019 Tsuyoshi CHO <Tsuyoshi.CHO@Gmail.com>
 

@@ -1,4 +1,4 @@
-;;; sb-marc-aims.el --- shimbun backend for marc.theaimsgroup.com.
+;;; sb-marc-aims.el --- shimbun backend for marc.theaimsgroup.com -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2002, 2003, 2005, 2017, 2019
 ;; NOKUBI Takatsugu <knok@daionet.gr.jp>

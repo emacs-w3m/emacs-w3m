@@ -1,4 +1,4 @@
-;;; sb-jpo.el --- shimbun backend for http://www.jpo.go.jp
+;;; sb-jpo.el --- shimbun backend for http://www.jpo.go.jp -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2003-2005, 2019 NAKAJIMA Mikio <minakaji@namazu.org>
 

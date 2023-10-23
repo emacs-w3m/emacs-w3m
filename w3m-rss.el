@@ -1,4 +1,4 @@
-;;; w3m-rss.el --- RSS functions
+;;; w3m-rss.el --- RSS functions -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2004, 2005, 2012, 2019, 2020
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>

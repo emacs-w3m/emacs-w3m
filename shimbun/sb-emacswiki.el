@@ -1,4 +1,4 @@
-;;; sb-emacswiki.el --- emacswiki shimbun backend
+;;; sb-emacswiki.el --- emacswiki shimbun backend -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2004, 2005, 2019 David Hansen
 

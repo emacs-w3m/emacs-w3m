@@ -1,4 +1,4 @@
-;;; sb-tech-on.el --- shimbun backend for Tech-On! -*- coding: utf-8 -*-
+;;; sb-tech-on.el --- shimbun backend for Tech-On! -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2007-2011, 2019 Katsumi Yamaoka
 

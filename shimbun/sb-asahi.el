@@ -1,4 +1,4 @@
-;;; sb-asahi.el --- shimbun backend for asahi.com
+;;; sb-asahi.el --- shimbun backend for asahi.com -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2001-2011, 2013-2021 Yuuichi Teranishi <teranisi@gohome.org>
 

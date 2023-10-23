@@ -1,4 +1,4 @@
-;;; sb-bbc.el --- shimbun backend for BBC UK
+;;; sb-bbc.el --- shimbun backend for BBC UK -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2003, 2004, 2005, 2006, 2007
 ;; Koichiro Ohba <koichiro@meadowy.org>

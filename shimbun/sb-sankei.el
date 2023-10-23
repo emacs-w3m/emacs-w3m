@@ -1,4 +1,4 @@
-;;; sb-sankei.el --- shimbun backend for the Sankei News
+;;; sb-sankei.el --- shimbun backend for the Sankei News -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2003-2011, 2013-2019, 2021-2023 Katsumi Yamaoka
 
