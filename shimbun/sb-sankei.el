@@ -127,15 +127,108 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 (defun shimbun-sankei-get-headers (shimbun range)
   "Get headers for the group that SHIMBUN specifies in RANGE."
   (let ((group (shimbun-current-group-internal shimbun))
-	url id ids nd subject date names tem headers)
-    (goto-char (point-min))
-    (while (re-search-forward "<div[^>]* class=[^>]*[ \"]order-1[ \"]" nil t)
-      (when (shimbun-end-of-tag "div")
-	(narrow-to-region (goto-char (match-beginning 2)) (match-end 2))
-	(when (re-search-forward "<a[^>]* href=\"\\(/article/[0-9]\\{8\\}-\
+	regexp)
+    (if (member group '("column.sankeisyo"))
+	(shimbun-sankei-get-headers-ranking shimbun range group)
+      ;; Ignore articles of which the title does not match this regexp.
+      (let ((regexp (cdr (assoc group '(("column.editorial" . "\\`【主張】")
+					("column.seiron" . "\\`【正論】")
+					("column.naniwa" . "\\`【浪速風】")
+					("west.essay" . "\
+・[1１]?[0-9０-９]月[1-3１-３]?[0-9０-９]日\\'")))))
+	    url id ids nd subject date names headers)
+	(goto-char (point-min))
+	(while (re-search-forward "<div[^>]* class=[^>]*[ \"]order-1[ \"]"
+				  nil t)
+	  (when (shimbun-end-of-tag "div")
+	    (narrow-to-region (goto-char (match-beginning 2)) (match-end 2))
+	    (when (re-search-forward "<a[^>]* href=\"\\(/article/[0-9]\\{8\\}-\
 \\([0-9A-Z]\\{26\\}\\)/\\)" nil t)
+	      (setq url (match-string 1)
+		    id (concat "<" (match-string 2) "."
+			       (mapconcat #'identity
+					  (nreverse (split-string group "\\."))
+					  ".")
+			       "%" shimbun-sankei-top-level-domain ">"))
+	      (unless (or (member id ids)
+			  (progn (push id ids)
+				 (shimbun-search-id shimbun id)))
+		(when (shimbun-end-of-tag "a")
+		  (goto-char (match-beginning 2))
+		  (setq nd (match-end 2))
+		  (when (and (re-search-forward
+			      "\\(?:[^>]*<[^>]*>\\)*[\t\n ]*\\([^<]+\\)" nd t)
+			     (progn
+			       (setq subject (replace-regexp-in-string
+					      "[\t\n ]+\\'" ""
+					      (match-string 1)))
+			       (or (not regexp)
+				   (string-match regexp subject))))
+		    (goto-char (point-min))
+		    (when (and (re-search-forward "<time[^>]* dateTime=\"\
+\\(20[2-9][0-9]-[01][0-9]-[0-3][0-9]T\
+[012][0-9]:[0-5][0-9]:[0-5][0-9]\\(?:\\.[0-9]+\\)?Z\\)" nil t)
+			       (ignore-errors
+				 (setq date (decode-time (date-to-time
+							  (match-string 1))))))
+		      (setq names nil)
+		      (while (re-search-forward
+			      "<a[\t\n ]href=\"/[^\"]+/\"[^>]+>\\([^<]+\\)</a>"
+			      nil t)
+			(setq names
+			      (nconc names
+				     (split-string (match-string 1)
+						   "[ \f\t\n\r\v・]+" t))))
+		      (unless names
+			(setq names
+			      (if (equal group "top")
+				  '("トップ")
+				(list (cadr
+				       (assoc group
+					      shimbun-sankei-group-table))))))
+		      (push (shimbun-create-header
+			     0 subject
+			     (concat shimbun-sankei-server-name
+				     (if names
+					 (concat " (" (mapconcat #'identity
+								 (last names 2)
+								 " ")
+						 ")")
+				       ""))
+			     (shimbun-make-date-string
+			      (nth 5 date) (nth 4 date) (nth 3 date)
+			      (apply #'format "%02d:%02d:%02d"
+				     (last (nreverse date) 3)))
+			     id "" 0 0
+			     (shimbun-expand-url url shimbun-sankei-url))
+			    headers)))))))
+	  (goto-char (point-max))
+	  (widen))
+	(shimbun-sort-headers headers)))))
+
+(defun shimbun-sankei-get-headers-ranking (shimbun range group)
+  "Get headers for the GROUP that SHIMBUN specifies in RANGE.
+This function looks for the articles in only the ranking block."
+  ;; Ignore articles of which the title does not match this regexp.
+  (let ((regexp (cdr (assoc group '(("column.sankeisyo" . "\\`【産経抄】")))))
+	subject url date id ids name headers)
+    (goto-char (point-min))
+    (while (re-search-forward "<li[^>]* class=[^>]*[ \"]ranking__item[ \"]"
+			      nil t)
+      (when (shimbun-end-of-tag "li")
+	(narrow-to-region (goto-char (match-beginning 2)) (match-end 2))
+	(when (and (re-search-forward "<a[^>]* href=\
+\"\\(\\(?:https://www\\.sankei\\.com\\)?/article/\
+\\(20[2-9][0-9]\\)\\([01][0-9]\\)\\([0-3][0-9]\\)-\
+\\([0-9A-Z]\\{26\\}\\)/\\)" nil t)
+		   (progn
+		     (goto-char (1+ (match-beginning 0)))
+		     (save-match-data
+		       (w3m-parse-attributes (title)
+			 (string-match regexp (setq subject title))))))
 	  (setq url (match-string 1)
-		id (concat "<" (match-string 2) "."
+		date (list (match-string 2) (match-string 3) (match-string 4))
+		id (concat "<" (match-string 5) "."
 			   (mapconcat #'identity
 				      (nreverse (split-string group "\\."))
 				      ".")
@@ -143,53 +236,19 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 	  (unless (or (member id ids)
 		      (progn (push id ids)
 			     (shimbun-search-id shimbun id)))
-	    (when (shimbun-end-of-tag "a")
-	      (goto-char (match-beginning 2))
-	      (setq nd (match-end 2))
-	      (when (re-search-forward
-		     "\\(?:[^>]*<[^>]*>\\)*[\t\n ]*\\([^<]+\\)" nd t)
-		(setq subject (replace-regexp-in-string "[\t\n ]+\\'" ""
-							(match-string 1)))
-		(goto-char (point-min))
-		(when (and (re-search-forward "<time[^>]* dateTime=\"\
-\\(20[2-9][0-9]-[01][0-9]-[0-3][0-9]T\
-[012][0-9]:[0-5][0-9]:[0-5][0-9]\\(?:\\.[0-9]+\\)?Z\\)" nil t)
-			   (ignore-errors
-			     (setq date (decode-time (date-to-time
-						      (match-string 1))))))
-		  (setq names nil)
-		  (while (re-search-forward
-			  "<a[\t\n ]href=\"/[^\"]+/\"[^>]+>\\([^<]+\\)</a>"
-			  nil t)
-		    (setq names (nconc names
-				       (split-string (match-string 1) "・"))))
-		  (unless names
-		    (setq names (cdr
-				 (assoc group
-					'(("column.editorial" "主張")
-					  ("column.seiron" "正論")
-					  ("column.sankeisyo" "産経抄")
-					  ("column.naniwa" "浪速風")
-					  ("top" "トップ")
-					  ("west.essay" "朝晴れエッセー"))))))
-		  (push (shimbun-create-header
-			 0 subject
-			 (concat shimbun-sankei-server-name
-				 (if names
-				     (concat " (" (mapconcat #'identity
-							     (last names 2)
-							     " ")
-					     ")")
-				   ""))
-			 (shimbun-make-date-string
-			  (nth 5 date) (nth 4 date) (nth 3 date)
-			  (apply #'format "%02d:%02d:%02d"
-				 (last (nreverse date) 3)))
-			 id "" 0 0
-			 (shimbun-expand-url url shimbun-sankei-url))
-			headers)))))))
-      (goto-char (point-max))
-      (widen))
+	    (setq name (cadr (assoc group shimbun-sankei-group-table)))
+	    (push (shimbun-create-header
+		   0 subject
+		   (concat shimbun-sankei-server-name " (" name ")")
+		   (shimbun-make-date-string
+		    (string-to-number (car date))
+		    (string-to-number (cadr date))
+		    (string-to-number (caddr date)))
+		   id "" 0 0
+		   (shimbun-expand-url url shimbun-sankei-url))
+		  headers)))
+	(goto-char (point-max))
+	(widen)))
     (shimbun-sort-headers headers)))
 
 (luna-define-method shimbun-clear-contents :around ((shimbun shimbun-sankei)
