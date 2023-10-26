@@ -135,7 +135,7 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 					("column.seiron" . "\\`【正論】")
 					("column.naniwa" . "\\`【浪速風】")
 					("west.essay" . "\
-・[1１]?[0-9０-９]月[1-3１-３]?[0-9０-９]日\\'")))))
+・[1１]?[0-9０-９]月[1-3１-３]?[0-9０-９]日\\'\\|[年月]間賞")))))
 	    url id ids nd subject date names headers)
 	(goto-char (point-min))
 	(while (re-search-forward "<div[^>]* class=[^>]*[ \"]order-1[ \"]"
@@ -190,9 +190,11 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 			     0 subject
 			     (concat shimbun-sankei-server-name
 				     (if names
-					 (concat " (" (mapconcat #'identity
-								 (last names 2)
-								 " ")
+					 (concat " ("
+						 (mapconcat #'identity
+							    ;;(last names 2)
+							    names
+							    " ")
 						 ")")
 				       ""))
 			     (shimbun-make-date-string
