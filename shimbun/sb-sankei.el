@@ -1,6 +1,6 @@
 ;;; sb-sankei.el --- shimbun backend for the Sankei News -*- lexical-binding: nil -*-
 
-;; Copyright (C) 2003-2011, 2013-2019, 2021-2023 Katsumi Yamaoka
+;; Copyright (C) 2003-2011, 2013-2019, 2021-2024 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -131,10 +131,11 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
     (if (member group '("column.sankeisyo"))
 	(shimbun-sankei-get-headers-ranking shimbun range group)
       ;; Ignore articles of which the title does not match this regexp.
-      (let ((regexp (cdr (assoc group '(("column.editorial" . "\\`【主張】")
-					("column.seiron" . "\\`【正論】")
-					("column.naniwa" . "\\`【浪速風】")
-					("west.essay" . "\
+      (let ((regexp (cdr (assoc group
+				'(("column.editorial" . "\\`＜主張＞")
+				  ("column.seiron" . "\\`＜正論＞")
+				  ("column.naniwa" . "\\`[〈＜]浪速風[〉＞]")
+				  ("west.essay" . "\
 ・[1１]?[0-9０-９]月[1-3１-３]?[0-9０-９]日\\'\\|[年月]間賞")))))
 	    url id ids nd subject date names headers)
 	(goto-char (point-min))
@@ -212,7 +213,7 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
   "Get headers for the GROUP that SHIMBUN specifies in RANGE.
 This function looks for the articles in only the ranking block."
   ;; Ignore articles of which the title does not match this regexp.
-  (let ((regexp (cdr (assoc group '(("column.sankeisyo" . "\\`【産経抄】")))))
+  (let ((regexp (cdr (assoc group '(("column.sankeisyo" . "\\`＜産経抄＞")))))
 	subject url date id ids name headers)
     (goto-char (point-min))
     (while (re-search-forward "<li[^>]* class=[^>]*[ \"]ranking__item[ \"]"
