@@ -161,10 +161,15 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 			      "\\(?:[^>]*<[^>]*>\\)*[\t\n ]*\\([^<]+\\)" nd t)
 			     (progn
 			       (setq subject (replace-regexp-in-string
-					      "[\t\n ]+\\'" ""
+					      "[\t\n 　]+\\'" ""
 					      (match-string 1)))
 			       (or (not regexp)
 				   (string-match regexp subject))))
+		    ;; Add the author's name to the subject string if possible.
+		    (goto-char (point-min))
+		    (when (re-search-forward "[\t\n ]class=\"subheadline\"\
+[^>]*>[\t\n ]*\\([^<]+\\)</" nil t)
+		      (setq subject (concat subject " " (match-string 1))))
 		    (goto-char (point-min))
 		    (when (and (re-search-forward "<time[^>]* dateTime=\"\
 \\(20[2-9][0-9]-[01][0-9]-[0-3][0-9]T\
@@ -651,8 +656,8 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
       (dolist (cookie w3m-cookies)
 	(when (or (string-match "\\.sankei\\..+log\\(?:in\\|out\\)"
 				(w3m-cookie-url cookie))
-		  (and (equal "AKA_A2" (w3m-cookie-name cookie))
-		       (equal "sankei.com" (w3m-cookie-domain cookie))))
+		  (and (string-match "\\`SAML_IDP" (w3m-cookie-name cookie))
+		       (equal "id.sankei.jp" (w3m-cookie-domain cookie))))
 	  (setq w3m-cookies (delq cookie w3m-cookies)))))
     (require 'w3m-form)
     (w3m-arrived-setup)
@@ -774,8 +779,8 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
 		 (let ((cookies w3m-cookies) cookie expiry)
 		   (while cookies
 		     (setq cookie (pop cookies))
-		     (and (equal "AKA_A2" (w3m-cookie-name cookie))
-			  (equal "sankei.com" (w3m-cookie-domain cookie))
+		     (and (string-match "\\`SAML_IDP" (w3m-cookie-name cookie))
+			  (equal "id.sankei.jp" (w3m-cookie-domain cookie))
 			  (setq cookies nil
 				expiry (w3m-cookie-expires cookie))))
 		   (or (not expiry)

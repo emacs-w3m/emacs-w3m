@@ -1,3 +1,10 @@
+2024-02-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-get-headers):
+	Add author's name to subject if possible.
+	(shimbun-sankei-login, shimbun-sankei-keep-login):
+	Update cookies handling.
+
 2024-02-05  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-get-headers-ranking)
