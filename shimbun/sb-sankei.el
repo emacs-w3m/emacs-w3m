@@ -131,13 +131,16 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
     (if (member group '("column.sankeisyo"))
 	(shimbun-sankei-get-headers-ranking shimbun range group)
       ;; Ignore articles of which the title does not match this regexp.
-      (let ((regexp (cdr (assoc group
-				'(("column.editorial" . "\\`＜主張＞")
-				  ("column.seiron" . "\\`＜正論＞")
-				  ("column.naniwa" . "\\`[〈＜]浪速風[〉＞]")
-				  ("west.essay"
-				   . "\\`[〈＜]朝晴れエッセー[〉＞]")))))
+      (let ((subj-re (cdr (assoc group
+				 '(("column.editorial" . "主張")
+				   ("column.seiron" . "正論")
+				   ("column.naniwa" . "浪速風")
+				   ("west.essay" . "朝晴れエッセー")))))
 	    url id ids nd subject date names headers)
+	(when subj-re
+	  (setq subj-re (format
+			 "\\`\\(?:[〈＜]\\|&lt;\\)%s\\(?:[〉＞]\\|&gt;\\)"
+			 subj-re)))
 	(goto-char (point-min))
 	(while (re-search-forward "<div[^>]* class=[^>]*[ \"]order-1[ \"]"
 				  nil t)
@@ -163,8 +166,8 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 			       (setq subject (replace-regexp-in-string
 					      "[\t\n 　]+\\'" ""
 					      (match-string 1)))
-			       (or (not regexp)
-				   (string-match regexp subject))))
+			       (or (not subj-re)
+				   (string-match subj-re subject))))
 		    ;; Add the author's name to the subject string if possible.
 		    (goto-char (point-min))
 		    (when (re-search-forward "[\t\n ]class=\"subheadline\"\
