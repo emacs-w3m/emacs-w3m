@@ -1,6 +1,6 @@
 ;;; shimbun.el --- interfacing with web newspapers -*- lexical-binding: nil -*-
 
-;; Copyright (C) 2001-2014, 2017-2019, 2021, 2022
+;; Copyright (C) 2001-2014, 2017-2019, 2021, 2022, 2024
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -666,7 +666,7 @@ image parts, and returns an alist of URLs and image entities."
 		     (let ((spc "\t\n\f\r "))
 		       (concat "[" spc "]+"
 			       ;; 1. replaceable part
-			       "\\(src[" spc "]*=[" spc "]*"
+			       "\\(src\\(?:set\\)?[" spc "]*=[" spc "]*"
 			       "\\(?:\""
 			       ;; 2. url quoted with \"
 			       "\\([^\"]+\\)"

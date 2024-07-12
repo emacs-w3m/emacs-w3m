@@ -1,3 +1,7 @@
+2024-07-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-mime-replace-image-tags): Allow srcset in img.
+
 2024-02-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-login, shimbun-sankei-keep-login):
