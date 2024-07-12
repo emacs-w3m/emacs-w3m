@@ -1,3 +1,7 @@
+2024-07-12  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m-filter.el (w3m-filter-regard-srcset=-as-src=): New filter.
+
 2023-10-03  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-fontify-anchors): Improve the way to find unsafe links.

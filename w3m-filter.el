@@ -1,6 +1,6 @@
 ;;; w3m-filter.el --- filtering utility of advertisements on WEB sites -*- lexical-binding: nil -*-
 
-;; Copyright (C) 2001-2008, 2012-2015, 2017-2021
+;; Copyright (C) 2001-2008, 2012-2015, 2017-2021, 2024
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>
@@ -136,7 +136,12 @@
      ("Prefer a lazy image specified with data-src= in img tags"
       "img タグ内の data-src= で指定される遅延画像を優先します")
      ""
-     w3m-filter-prefer-lazy-images))
+     w3m-filter-prefer-lazy-images)
+    (t
+     ("Regard srcset= as src= in img tags"
+      "img タグ内の srcset= を src= として扱います")
+     ""
+     w3m-filter-regard-srcset=-as-src=))
   "List of filter configurations applied to web contents.
 Each filter configuration consists of the following form:
 
@@ -1492,5 +1497,13 @@ This function replaces that of src= with it."
 	  (forward-char 4)
 	  (insert " " data-src)))
       (goto-char nd))))
+
+(defun w3m-filter-regard-srcset=-as-src= (url)
+  "Regard srcset= as src= in img tags."
+  (goto-char (point-min))
+  (let ((case-fold-search t))
+    (while (re-search-forward
+	    "\\(<img[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*src\\)set=" nil t)
+      (replace-match "\\1="))))
 
 ;;; w3m-filter.el ends here
