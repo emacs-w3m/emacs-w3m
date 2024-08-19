@@ -603,6 +603,7 @@ src=\"[^\"]+/\\([0-9A-Z]\\{26\\}\\)\\.[^\"]+\"" nd t))
 
 (autoload 'password-cache-add "password-cache")
 (autoload 'password-read-from-cache "password-cache")
+(autoload 'timezone-make-date-arpa-standard "timezone")
 
 (defun shimbun-sankei-login (&optional name password interactive-p)
   "Login to special.sankei.com with NAME and PASSWORD.
@@ -657,8 +658,9 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
     (w3m-cookie-setup)
     (let ((case-fold-search t))
       (dolist (cookie w3m-cookies)
-	(when (or (string-match "\\.sankei\\..+log\\(?:in\\|out\\)"
-				(w3m-cookie-url cookie))
+	(when (or (string-match
+		   "\\.sankei\\.\\(?:com\\|.+log\\(?:in\\|out\\)\\)"
+		   (w3m-cookie-url cookie))
 		  (and (equal "AKA_A2" (w3m-cookie-name cookie))
 		       (equal "sankei.com" (w3m-cookie-domain cookie))))
 	  (setq w3m-cookies (delq cookie w3m-cookies)))))
@@ -738,7 +740,7 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
   (w3m-cookie-setup)
   (let ((case-fold-search t))
     (dolist (cookie w3m-cookies)
-      (when (or (string-match "\\.sankei\\..+log\\(?:in\\|out\\)"
+      (when (or (string-match "\\.sankei\\.\\(?:com\\|.+log\\(?:in\\|out\\)\\)"
 			      (w3m-cookie-url cookie))
 		(and (equal "AKA_A2" (w3m-cookie-name cookie))
 		     (equal "sankei.com" (w3m-cookie-domain cookie))))
@@ -787,7 +789,11 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
 			  (setq cookies nil
 				expiry (w3m-cookie-expires cookie))))
 		   (or (not expiry)
-		       (not (setq expiry (ignore-errors (date-to-time expiry))))
+		       (not (setq expiry
+				  (ignore-errors
+				    (date-to-time
+				     (timezone-make-date-arpa-standard
+				      expiry)))))
 		       (> (time-to-seconds (time-since expiry)) -60)))))
     (shimbun-sankei-login shimbun-sankei-login-name
 			  shimbun-sankei-login-password

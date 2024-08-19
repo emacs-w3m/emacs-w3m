@@ -1,3 +1,9 @@
+2024-08-19  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-login, shimbun-sankei-logout):
+	Update regexp matching a url.
+	(shimbun-sankei-keep-login): Allow new expiry time format.
+
 2024-07-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-mime-replace-image-tags): Allow srcset in img.
