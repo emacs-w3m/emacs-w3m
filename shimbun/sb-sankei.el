@@ -188,23 +188,28 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 			      (nconc names
 				     (split-string (match-string 1)
 						   "[ \f\t\n\r\v・]+" t))))
+		      (and names
+			   (setq names
+				 (replace-regexp-in-string
+				  "\\`[\t 　]+" ""
+				  (mapconcat #'identity
+					     ;;(last names 2)
+					     names
+					     " ")))
+			   ;; Ignore too long attributes.
+			   (when (string-match "[、。]" names)
+			     (setq names nil)))
 		      (unless names
 			(setq names
 			      (if (equal group "top")
-				  '("トップ")
-				(list (cadr
-				       (assoc group
-					      shimbun-sankei-group-table))))))
+				  "トップ"
+				(cadr (assoc group
+					     shimbun-sankei-group-table)))))
 		      (push (shimbun-create-header
 			     0 subject
 			     (concat shimbun-sankei-server-name
 				     (if names
-					 (concat " ("
-						 (mapconcat #'identity
-							    ;;(last names 2)
-							    names
-							    " ")
-						 ")")
+					 (concat " (" names ")")
 				       ""))
 			     (shimbun-make-date-string
 			      (nth 5 date) (nth 4 date) (nth 3 date)
@@ -271,8 +276,13 @@ This function looks for the articles in only the ranking block."
   (if (zerop (buffer-size))
       (insert "お探しのページは見つかりませんでした。<br>\n"
 	      "ページが削除されたか移動した可能性があります。\n")
-    (let (author restrictions st nd tem headline ids simgs id caption img
+    (let (headline author restrictions st nd tem ids simgs id caption img
 		 contents eimgs maxwidth fn)
+      (goto-char (point-min))
+      (when (re-search-forward
+	     "[\t\n ]class=\"article-subheadline\"[^>]*>[\t\n ]*\\([^<]+\\)"
+	     nil t)
+	(setq headline (match-string 1)))
       (goto-char (point-min))
       (when (or (and (re-search-forward "<a[\t\n ]+\\(?:[^\t\n >]+[\t\n ]+\\)*\
 \\(?:class=\"gtm-click author-name\"\\|href=\"/author/\
@@ -307,16 +317,17 @@ class=\"restrictions\"" nil t)
 	    (delete-region (match-beginning 0)
 			   (scan-sexps (match-beginning 1) 1))))
 	(setq nd (prog1 (marker-position nd) (set-marker nd nil)))
-	(goto-char nd)
-	(when (and (re-search-backward ",\"headlines\":{\"basic\":\\(\"\\)"
-				       st t)
-		   (progn
-		     (setq tem (ignore-errors
-				 (replace-regexp-in-string
-				  "\\`[\t 　]+\\|[\t 　]+\\'" ""
-				  (read (nth 2 (match-data))))))
-		     (not (zerop (length tem)))))
-	  (setq headline tem))
+	(unless headline
+	  (goto-char nd)
+	  (when (and (re-search-backward ",\"headlines\":{\"basic\":\\(\"\\)"
+					 st t)
+		     (progn
+		       (setq tem (ignore-errors
+				   (replace-regexp-in-string
+				    "\\`[\t 　]+\\|[\t 　]+\\'" ""
+				    (read (nth 2 (match-data))))))
+		       (not (zerop (length tem)))))
+	    (setq headline tem)))
 	(goto-char st)
 	(when (re-search-forward ",\"content_elements\":\\(\\[\\)" nd t)
 	  (ignore-errors

@@ -6249,21 +6249,17 @@ There are some famous mailing list manager (or archiver).
 
 @itemize @bullet
 @item Mailman
-@noindent
 The GNU Mailing List Manager, formerly called as @samp{pipermail}.  See
 @uref{http://www.gnu.org/software/mailman/index.html} for detail.
 
 @item MHonArc
-@noindent
 See @uref{http://www.oac.uci.edu/indiv/ehood/mhonarc.html} for detail.
 
 @item fml
-@noindent
 fml mailing list server/manager.  See
 @uref{http://www.fml.org/software/fml/} for detail.
 
 @item mailarc
-@noindent
 See @uref{http://cvs.namazu.org/mailarc/} for detail.
 @end itemize
 

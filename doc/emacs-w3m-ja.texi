@@ -6273,7 +6273,6 @@ HTML の記事だけでなく、@samp{text/plain} 形式の記事が生成され
 
 @itemize @bullet
 @item Mailman
-@noindent
 The GNU Mailing List Manager. 以前は @samp{pipermail} と呼ばれていました。
 詳細は @uref{http://www.gnu.org/software/mailman/index.html} をご覧くだ
 さい。

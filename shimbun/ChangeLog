@@ -1,3 +1,9 @@
+2024-08-27  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-get-headers): Ignore too long group
+	attributes.
+	(shimbun-sankei-clear-contents): Add subheading to the article.
+
 2024-08-19  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-login, shimbun-sankei-logout):
