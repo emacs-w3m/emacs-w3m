@@ -55,7 +55,7 @@
 (require 'w3m-proc)
 (require 'tab-line) ;; tab-line-exclude-modes
 
-;; `w3m-use-tab-line' refers to this variable.
+;; `w3m-use-tab-line' refers this variable.
 (eval-and-compile
   (defcustom w3m-use-tab t
     "Use emacs-w3m in \"Tabbed\" display mode.
