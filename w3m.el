@@ -1,6 +1,6 @@
 ;;; w3m.el --- an Emacs interface to w3m -*- lexical-binding: t -*-
 
-;; Copyright (C) 2000-2023 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000-2024 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -1004,7 +1004,7 @@ of the original request method."
      (:foreground "blue" :bold t :underline t))
     (((class color) (background dark))
      (:foreground "cyan" :bold t :underline t))
-    (t (:bold t) (:underline t)))
+    (t :weight bold :underline t))
   "Face used for displaying anchors."
   :group 'w3m-face)
 
@@ -1013,7 +1013,7 @@ of the original request method."
      (:foreground "navy" :bold t :underline t))
     (((class color) (background dark))
      (:foreground "LightSkyBlue" :bold t :underline t))
-    (t (:bold t) (:underline t)))
+    (t :weight bold :underline t))
   "Face used for displaying anchors which have already arrived."
   :group 'w3m-face)
 
