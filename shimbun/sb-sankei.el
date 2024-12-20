@@ -667,14 +667,15 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
     (require 'w3m-cookie)
     ;; Delete old login/out cookies.
     (w3m-cookie-setup)
-    (let ((case-fold-search t))
+    (let ((case-fold-search t) name)
       (dolist (cookie w3m-cookies)
-	(when (or (string-match
-		   "\\.sankei\\.\\(?:com\\|.+log\\(?:in\\|out\\)\\)"
-		   (w3m-cookie-url cookie))
-		  (and (equal "AKA_A2" (w3m-cookie-name cookie))
-		       (equal "sankei.com" (w3m-cookie-domain cookie))))
-	  (setq w3m-cookies (delq cookie w3m-cookies)))))
+	(and (string-match "\\`sankei\\.\\|\\.sankei\\."
+			   (or (w3m-cookie-domain cookie) ""))
+	     (or (and (equal "_ee" (setq name (w3m-cookie-name cookie)))
+		      (string-match "\\`member\\.[0-9]+\\."
+				    (or (w3m-cookie-value cookie) "")))
+		 (equal "bm_sz" name))
+	     (setq w3m-cookies (delq cookie w3m-cookies)))))
     (require 'w3m-form)
     (w3m-arrived-setup)
     (let ((cache (buffer-live-p w3m-cache-buffer))
@@ -749,13 +750,15 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
   (require 'w3m-cookie)
   ;; Delete old login/out cookies.
   (w3m-cookie-setup)
-  (let ((case-fold-search t))
-    (dolist (cookie w3m-cookies)
-      (when (or (string-match "\\.sankei\\.\\(?:com\\|.+log\\(?:in\\|out\\)\\)"
-			      (w3m-cookie-url cookie))
-		(and (equal "AKA_A2" (w3m-cookie-name cookie))
-		     (equal "sankei.com" (w3m-cookie-domain cookie))))
-	(setq w3m-cookies (delq cookie w3m-cookies)))))
+    (let ((case-fold-search t) name)
+      (dolist (cookie w3m-cookies)
+	(and (string-match "\\`sankei\\.\\|\\.sankei\\."
+			   (or (w3m-cookie-domain cookie) ""))
+	     (or (and (equal "_ee" (setq name (w3m-cookie-name cookie)))
+		      (string-match "\\`member\\.[0-9]+\\."
+				    (or (w3m-cookie-value cookie) "")))
+		 (equal "bm_sz" name))
+	     (setq w3m-cookies (delq cookie w3m-cookies)))))
   (require 'w3m-form)
   (w3m-arrived-setup)
   (let ((cache (buffer-live-p w3m-cache-buffer))
@@ -792,13 +795,22 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
 	     w3m-use-form
 	     shimbun-sankei-login-name shimbun-sankei-login-password
 	     (or force
-		 (let ((cookies w3m-cookies) cookie expiry)
+		 (let ((cookies w3m-cookies) cookie member expiry)
 		   (while cookies
 		     (setq cookie (pop cookies))
-		     (and (equal "AKA_A2" (w3m-cookie-name cookie))
-			  (equal "sankei.com" (w3m-cookie-domain cookie))
-			  (setq cookies nil
-				expiry (w3m-cookie-expires cookie))))
+		     (when (string-match "\\`sankei\\.\\|\\.sankei\\."
+					 (or (w3m-cookie-domain cookie) ""))
+		       (or member
+			   (and (equal "_ee" (w3m-cookie-name cookie))
+				(setq member
+				      (string-match
+				       "\\`member\\.[0-9]+\\."
+				       (or (w3m-cookie-value cookie) "")))))
+		       (or expiry
+			   (and (equal "bm_sz" (w3m-cookie-name cookie))
+				(setq expiry (w3m-cookie-expires cookie))))
+		       (and member expiry
+			    (setq cookies nil))))
 		   (or (not expiry)
 		       (not (setq expiry
 				  (ignore-errors

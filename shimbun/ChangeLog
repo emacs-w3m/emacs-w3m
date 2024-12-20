@@ -1,3 +1,8 @@
+2024-12-20  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-login, shimbun-sankei-logout)
+	(shimbun-sankei-keep-login): Change the way to see whether be logged in.
+
 2024-08-27  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-get-headers): Ignore too long group
