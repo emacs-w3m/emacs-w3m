@@ -811,13 +811,14 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
 				(setq expiry (w3m-cookie-expires cookie))))
 		       (and member expiry
 			    (setq cookies nil))))
-		   (or (not expiry)
-		       (not (setq expiry
-				  (ignore-errors
-				    (date-to-time
-				     (timezone-make-date-arpa-standard
-				      expiry)))))
-		       (> (time-to-seconds (time-since expiry)) -60)))))
+		   (not (and member expiry
+			     (setq expiry
+				   (ignore-errors
+				     (date-to-time
+				      (timezone-make-date-arpa-standard
+				       expiry))))
+			     (<= (time-to-seconds (time-since expiry))
+				 -60))))))
     (shimbun-sankei-login shimbun-sankei-login-name
 			  shimbun-sankei-login-password
 			  t)))
