@@ -1,6 +1,6 @@
 ;;; w3m-ems.el --- GNU Emacs stuff for emacs-w3m -*- lexical-binding: t -*-
 
-;; Copyright (C) 2001-2013, 2016-2020, 2023
+;; Copyright (C) 2001-2013, 2016-2020, 2023, 2025
 ;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: Yuuichi Teranishi  <teranisi@gohome.org>,
@@ -720,9 +720,6 @@ otherwise works in all the emacs-w3m buffers."
 	     (propertize " "
 			 'display (list 'space :width (* (window-width) 8))
 			 'face 'w3m-header-line-background)))))))
-
-(define-obsolete-function-alias
-  'w3m-setup-header-line 'w3m-setup-tab-line "27.1")
 
 (defun w3m-force-window-update (&optional window)
   "Force redisplay of WINDOW which defaults to the selected window."

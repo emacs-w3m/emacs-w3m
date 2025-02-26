@@ -31,7 +31,7 @@
    Check whether your system meets the following requirements before
    installing emacs-w3m.
 
-   Now emacs-w3m will work with Emacs 28, 29, and hopefully 30 (not
+   Now emacs-w3m will work with Emacs 29, 30, and hopefully 31 (not
    released yet, though).
 
    Emacs-w3m requires the latest version of w3m (version 0.3.1 and

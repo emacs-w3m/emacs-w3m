@@ -1,6 +1,6 @@
 ;;; w3m.el --- an Emacs interface to w3m -*- lexical-binding: t -*-
 
-;; Copyright (C) 2000-2024 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000-2025 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -1541,10 +1541,6 @@ If it is nil, also the favicon won't be shown in the mode-line even if
 	       (w3m-initialize-graphic-icons))))
   :group 'w3m
   :type 'boolean)
-
-(define-obsolete-variable-alias
-  'w3m-show-graphic-icons-in-header-line 'w3m-show-graphic-icons-in-tab-line
-  "27.1")
 
 (defcustom w3m-show-graphic-icons-in-tab-line t
   "Non-nil means show graphic status indicators in the tab-line.
@@ -3558,20 +3554,19 @@ or a function that takes no argument and returns a string."
 	    (delete-region (match-beginning 1) (match-end 1))
 	    (setq href (w3m-expand-url href))
 	    (setq warning
-		  (and (fboundp 'textsec-suspicious-p) ;; Emacs >= 29.1
-		       (or (textsec-suspicious-p href 'url)
-			   (let (caption)
-			     (goto-char start)
-			     (while (< (point) end)
-			       (if (looking-at
-				    "[^<]*\\(https?:[^\t\n \"<>\\]+\\)")
-				   (progn
-				     (setq caption (match-string 1))
-				     (goto-char end))
-				 (search-forward ">" end 'move)))
-			     (and caption
-				  (textsec-suspicious-p (cons href caption)
-							'link))))))
+		  (or (textsec-suspicious-p href 'url)
+		      (let (caption)
+			(goto-char start)
+			(while (< (point) end)
+			  (if (looking-at
+			       "[^<]*\\(https?:[^\t\n \"<>\\]+\\)")
+			      (progn
+				(setq caption (match-string 1))
+				(goto-char end))
+			    (search-forward ">" end 'move)))
+			(and caption
+			     (textsec-suspicious-p (cons href caption)
+						   'link)))))
 	    (unless (or (w3m-url-local-p href)
 			(let ((case-fold-search t))
 			  (string-match "\\`mailto:" href)))

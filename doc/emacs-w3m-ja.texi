@@ -9,7 +9,7 @@
 @synindex pg cp
 
 @copying
-Copyright @copyright{} 2000-2023 @w{TSUCHIYA Masatoshi}
+Copyright @copyright{} 2000-2025 @w{TSUCHIYA Masatoshi}
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -233,8 +233,7 @@ Emacs-w3m Functions
 @section どんなバージョンの Emacs で使えるの?
 @cindex Possible Emacs versions
 
-現在 emacs-w3m は Emacs 28、29、そしてうまくいけば 30 (まだリリースされ
-ていませんが) で動作するでしょう。
+現在 emacs-w3m は Emacs 29、30、そしてうまくいけば 31 で動作するでしょう。
 
 @node You Need w3m
 @section w3m を使います: emacs-w3m が速いわけ
@@ -3969,8 +3968,7 @@ w3m を Emacs 上で動かすインターフェースプログラムです。Ema
 @item
 Q. 動作する Emacs は?
 
-現在 emacs-w3m は Emacs 28、29、そしてうまくいけば 30 (まだリリースされ
-ていませんが) で動作するでしょう。
+現在 emacs-w3m は Emacs 29、30、そしてうまくいけば 31 で動作するでしょう。
 
 @item
 Q. 動作する w3m は?

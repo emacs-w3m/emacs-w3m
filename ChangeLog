@@ -1,3 +1,17 @@
+2025-02-26  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Drop Emacs 28 support
+
+	* NEWS, NEWS.ja, README, README.ja, aclocal.m4, doc/emacs-w3m-ja.texi:
+	* doc/emacs-w3m.texi: Bump up supported Emacs versions.
+
+	* w3mhack.el (w3mhack-generate-load-file): Drop Emacs=<28 support.
+
+	* w3m.el (w3m-fontify-anchors): Trust that textsec-suspicious-p exists.
+
+	* w3m-ems.el (w3m-setup-header-line):
+	* w3m.el (w3m-show-graphic-icons-in-header-line): Delete old aliases.
+
 2024-12-20  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-anchor, w3m-arrived-anchor): Modernize face definitions.
