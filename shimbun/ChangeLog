@@ -1,3 +1,8 @@
+2025-03-05  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-get-headers)
+	(shimbun-sankei-get-headers-ranking): Improve regexps.
+
 2024-12-25  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-login, shimbun-sankei-logout):
