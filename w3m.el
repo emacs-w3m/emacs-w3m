@@ -8370,8 +8370,8 @@ as if the folder command of MH performs with the -pack option."
 (defun w3m-delete-buffers (buffers &optional no-session)
   "Delete emacs-w3m buffers.
 The optional `no-session' makes this function do not save the session."
-  (and buffers (not no-session)
-       (w3m-session-deleted-save buffers))
+  (when (and buffers (not no-session))
+    (w3m-session-deleted-save buffers))
   (dolist (buffer buffers)
     (w3m-process-stop buffer)
     (w3m-idle-images-show-unqueue buffer)
@@ -8380,7 +8380,8 @@ The optional `no-session' makes this function do not save the session."
       (w3m-form-kill-buffer buffer)))
   (run-hooks 'w3m-delete-buffer-hook)
   (w3m-session-crash-recovery-save)
-  (w3m-select-buffer-update)
+  (unless no-session
+    (w3m-select-buffer-update))
   (w3m-force-window-update))
 
 (defvar w3m-ctl-c-map nil
