@@ -8367,9 +8367,10 @@ as if the folder command of MH performs with the -pack option."
     (when bufs
       (w3m-delete-buffers bufs))))
 
-(defun w3m-delete-buffers (buffers)
-  "Delete emacs-w3m buffers."
-  (and buffers
+(defun w3m-delete-buffers (buffers &optional no-session)
+  "Delete emacs-w3m buffers.
+The optional `no-session' makes this function do not save the session."
+  (and buffers (not no-session)
        (w3m-session-deleted-save buffers))
   (dolist (buffer buffers)
     (w3m-process-stop buffer)

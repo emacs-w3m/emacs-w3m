@@ -1,3 +1,8 @@
+2025-05-02  Andrés Ramírez  <rrandresf@gmail.com>
+
+	* w3m.el (w3m-delete-buffers): Add the optional argument `no-session'
+	that makes the function do not save the session.
+
 2025-05-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* w3m.el (w3m-delete-buffers): Refactor.
