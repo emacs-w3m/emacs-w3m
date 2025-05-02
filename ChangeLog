@@ -1,3 +1,7 @@
+2025-05-02  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* w3m.el (w3m-delete-buffers): Refactor.
+
 2025-02-26  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Drop Emacs 28 support

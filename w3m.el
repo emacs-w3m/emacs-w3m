@@ -8369,16 +8369,14 @@ as if the folder command of MH performs with the -pack option."
 
 (defun w3m-delete-buffers (buffers)
   "Delete emacs-w3m buffers."
-  (let (buffer)
-    (when buffers
-      (w3m-session-deleted-save buffers))
-    (while buffers
-      (setq buffer (pop buffers))
-      (w3m-process-stop buffer)
-      (w3m-idle-images-show-unqueue buffer)
-      (kill-buffer buffer)
-      (when w3m-use-form
-	(w3m-form-kill-buffer buffer))))
+  (and buffers
+       (w3m-session-deleted-save buffers))
+  (dolist (buffer buffers)
+    (w3m-process-stop buffer)
+    (w3m-idle-images-show-unqueue buffer)
+    (kill-buffer buffer)
+    (when w3m-use-form
+      (w3m-form-kill-buffer buffer)))
   (run-hooks 'w3m-delete-buffer-hook)
   (w3m-session-crash-recovery-save)
   (w3m-select-buffer-update)
