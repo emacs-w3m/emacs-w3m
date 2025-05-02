@@ -2750,7 +2750,7 @@
 	(install-ja): Work for path names containing whitespace.
 	[emacs-w3m:12530]
 
-2015-10-13  Bruno F$(D+1(Blix Rezende Ribeiro  <oitofelix@gnu.org>
+2015-10-13  Bruno Félix Rezende Ribeiro  <oitofelix@gnu.org>
 
 	* w3m-form.el (w3m-form-make-form-data): Protect against empty token.
 	[emacs-w3m:12517]
@@ -5296,7 +5296,7 @@
 
 	* w3m-ems.el (w3m-create-image): Use it.
 	(w3m-initialize-graphic-icons): Check if xpm is available.  Reported by
-	Diego 'Flameeyes' Petten,Ar(B <flameeyes@gmail.com>.
+	Diego 'Flameeyes' Pettenò <flameeyes@gmail.com>.
 
 	* w3m-filter.el (w3m-filter-wikipedia): Improve regexp.
 
@@ -14666,7 +14666,6 @@
 
 
 Local Variables:
-coding: iso-2022-7bit
 fill-column: 79
 indent-tabs-mode: t
 End:
