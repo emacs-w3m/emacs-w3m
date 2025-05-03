@@ -8379,9 +8379,9 @@ The optional `no-session' makes this function do not save the session."
     (when w3m-use-form
       (w3m-form-kill-buffer buffer)))
   (run-hooks 'w3m-delete-buffer-hook)
-  (w3m-session-crash-recovery-save)
   (unless no-session
-    (w3m-select-buffer-update))
+    (w3m-session-crash-recovery-save))
+  (w3m-select-buffer-update)
   (w3m-force-window-update))
 
 (defvar w3m-ctl-c-map nil
