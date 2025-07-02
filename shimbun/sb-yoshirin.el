@@ -1,6 +1,6 @@
 ;;; sb-yoshirin.el --- shimbun backend for Yoshinori Kobayashi Official Site -*- lexical-binding: nil -*-
 
-;; Copyright (C) 2015, 2016, 2021, 2022 Katsumi Yamaoka
+;; Copyright (C) 2015, 2016, 2021, 2022, 2025 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka <yamaoka@jpl.org>
 ;; Keywords: news
@@ -241,20 +241,14 @@ Face: iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAADFBMVEUAAAD///9fX1/d3d1
   "Make an html article."
   (let ((date (shimbun-header-date header)))
     (when (and (if (string-match " 00:00 " date)
-		   (or (re-search-forward
-			"\"dateModified\":\"\\([^\"]+\\)[0-9][0-9]:[0-9][0-9]"
-			nil t)
-		       (re-search-forward
-			"\"datePublished\":\"\\([^\"]+\\)[0-9][0-9]:[0-9][0-9]"
-			nil t))
-		 (re-search-forward
-		  "\"dateModified\":\"\\([^\"]+\\)[0-9][0-9]:[0-9][0-9]"
-		  nil t))
+		   (or (re-search-forward "\"dateModified\":\"\\([^\"]+\\)"
+					  nil t)
+		       (re-search-forward "\"datePublished\":\"\\([^\"]+\\)"
+					  nil t))
+		 (re-search-forward "\"dateModified\":\"\\([^\"]+\\)"
+				    nil t))
 	       (ignore-errors
-		 ;; The TZ seems to mistakenly be set in the site,
-		 ;; so we try fixing it.
-		 (setq date (decode-time (date-to-time
-					  (concat (match-string 1) "00:00")))
+		 (setq date (decode-time (date-to-time (match-string 1)))
 		       date (shimbun-header-set-date
 			     header
 			     (shimbun-make-date-string
