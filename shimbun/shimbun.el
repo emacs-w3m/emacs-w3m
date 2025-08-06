@@ -1,6 +1,6 @@
 ;;; shimbun.el --- interfacing with web newspapers -*- lexical-binding: nil -*-
 
-;; Copyright (C) 2001-2014, 2017-2019, 2021, 2022, 2024
+;; Copyright (C) 2001-2014, 2017-2019, 2021, 2022, 2024, 2025
 ;; Yuuichi Teranishi <teranisi@gohome.org>
 
 ;; Author: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
@@ -1763,7 +1763,7 @@ This is a wrapper for `xml-parse-region', which will resort to
 using `libxml-parse-xml-region' if available, since it is much
 faster."
   ;; FIXME: work around a kind of malformed xml.
-  ;; (Mainichi used unquoted "Q&A" in an xml form.)
+  ;; (Mainichi used unquoted "Q&A", and unquoted "<...>" in an xml form.)
   (save-excursion
     (goto-char (point-min))
     (while (search-forward "<" nil t)
@@ -1771,7 +1771,10 @@ faster."
 	(when (and (eq (char-after) ?&)
 		   (not (looking-at xml-entity-or-char-ref-re)))
 	  (delete-char 1)
-	  (insert "＆")))))
+	  (insert "＆"))))
+    (goto-char (point-min))
+    (while (re-search-forward "<\\([^>]*\\cj[^>]*\\)>" nil t)
+      (replace-match "&lt;\\1&gt;")))
   (if (libxml-available-p)
       (save-excursion
 	(goto-char (point-min))

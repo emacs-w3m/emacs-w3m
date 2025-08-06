@@ -1,3 +1,7 @@
+2025-08-06  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* shimbun.el (shimbun-xml-parse-buffer): Work around malformed xml.
+
 2025-07-02  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-yoshirin.el (shimbun-yoshirin-make-contents): The hack that fixes
