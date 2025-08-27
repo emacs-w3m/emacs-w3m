@@ -835,7 +835,7 @@ has to initially exist between the end position of the closing-tag and
 the previous tag as follows:
 
 <!-- foo <bar ...<baz ...>...> -->
-                              ^^^
+			      ^^^
 If INCLUDE-WHITESPACE is non-nil, include leading and trailing
 whitespace.  Return the end-point and set the match-data #0, #1, #2,
 and #3 as follows (\"___\" shows whitespace):
