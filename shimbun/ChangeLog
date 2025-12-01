@@ -1,3 +1,8 @@
+2025-12-01  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-login): Protect against no response
+	(because of the site maintaining or other).
+
 2025-08-06  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* shimbun.el (shimbun-xml-parse-buffer): Work around malformed xml.

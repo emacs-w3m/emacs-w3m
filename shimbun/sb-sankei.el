@@ -721,8 +721,10 @@ You should set `w3m-use-cookies' and `w3m-use-form' to non-nil"))
 	      (w3m-process-with-wait-handler
 		(w3m-retrieve-and-render action t nil form nil handler))
 	      (setq form (car w3m-current-forms))
-	      (if (not (string-match "login\\'"
-				     (setq action (w3m-form-action form))))
+	      (if (not (and form
+			    (string-match
+			     "login\\'"
+			     (setq action (w3m-form-action form)))))
 		  (when interactive-p (message "Failed to login"))
 		(setq form (w3m-form-make-form-data form))
 		(w3m-process-with-wait-handler
