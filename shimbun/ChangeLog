@@ -1,3 +1,9 @@
+2025-12-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-yoshirin.el: Renew according to the site major change.
+	See `shimbun-yoshirin-group-table' for the available groups.
+	`shimbun-yoshirin-x-face-alist' will be filled up later.
+
 2025-12-01  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-login): Protect against no response
