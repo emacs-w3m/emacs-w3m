@@ -133,7 +133,7 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
       ;; Ignore articles of which the title does not match this regexp.
       (let ((subj-re (cdr (assoc group
 				 '(("column.editorial" . "主張")
-				   ;;("column.seiron" . "正論")
+				   ("column.seiron" . "正論")
 				   ("column.naniwa" . "浪速風")
 				   ("west.essay" . "朝晴れエッセー")))))
 	    url id ids nd subject date names headers)

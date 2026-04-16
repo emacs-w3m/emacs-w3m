@@ -1,3 +1,7 @@
+2026-04-16  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-get-headers): Revert last change.
+
 2026-04-08  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-get-headers): Get all articles in seiron.
