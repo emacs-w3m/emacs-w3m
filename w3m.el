@@ -1,6 +1,6 @@
 ;;; w3m.el --- an Emacs interface to w3m -*- lexical-binding: t -*-
 
-;; Copyright (C) 2000-2025 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2000-2026 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -7704,6 +7704,14 @@ of the url currently displayed.  The browser is defined in
 
 (defvar message-truncate-lines)
 
+(defcustom w3m-print-this-url-truncate-lines t
+  "Whether to hold the URL shown on anchor movement to one echo-area line.
+Anchor movement shows the URL under point without being asked to, so
+truncating it keeps the echo area from growing as the cursor passes over
+long links.  Set to nil to see such URLs in full."
+  :group 'w3m
+  :type 'boolean)
+
 (defun w3m-print-this-url (&optional interactive-p)
   "Display the url under point in the echo area and put it into `kill-ring'."
   (interactive (list t))
@@ -7727,7 +7735,8 @@ of the url currently displayed.  The browser is defined in
 		   (w3m-anchor-title)
 		 (w3m-anchor-title (point))))
 	(message-truncate-lines (or message-truncate-lines
-				    (not interactive-p))))
+				    (and (not interactive-p)
+					 w3m-print-this-url-truncate-lines))))
     (when (or url interactive-p)
       (and url interactive-p (kill-new (w3m-url-encode-string-2 url)))
       (setq url (or (w3m-url-readable-string url)

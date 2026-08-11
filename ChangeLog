@@ -1,3 +1,9 @@
+2026-08-04  Mark Diekhans  <markd@kermodei.com>
+
+	* w3m.el (w3m-print-this-url-truncate-lines): New user option.
+	(w3m-print-this-url): Use it; make let-bound message-truncate-lines
+	customiizable ([emacs-w3m:13952]).
+
 2025-05-02  Andrés Ramírez  <rrandresf@gmail.com>
 
 	* w3m.el (w3m-delete-buffers): Add the optional argument `no-session'
