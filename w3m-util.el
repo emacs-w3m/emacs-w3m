@@ -1,6 +1,7 @@
 ;;; w3m-util.el --- Utility macros and functions for emacs-w3m -*- lexical-binding: nil -*-
 
-;; Copyright (C) 2001-2014, 2016-20231 TSUCHIYA Masatoshi <tsuchiya@namazu.org>
+;; Copyright (C) 2001-2014, 2016-2022, 2026
+;; TSUCHIYA Masatoshi <tsuchiya@namazu.org>
 
 ;; Authors: TSUCHIYA Masatoshi <tsuchiya@namazu.org>,
 ;;          Shun-ichi GOTO     <gotoh@taiyo.co.jp>,
@@ -625,6 +626,30 @@ Use this function with the `delete-frame-functions' hook."
 
 (add-hook 'delete-frame-functions 'w3m-delete-w3m-initial-frames)
 
+(defun w3m-close-tab-bars (buffer)
+  "Close tab bars associated with BUFFER."
+  (when tab-bar-mode
+    (when (bufferp buffer)
+      (setq buffer (buffer-name buffer)))
+    (let ((oframe (selected-frame))
+	  num nums name)
+      (dolist (frame (frame-list))
+	(select-frame frame)
+	(setq num 1
+	      nums nil)
+	;; tab = ((current-tab (name . "A")...) (tab (name . "B")...)...)
+	(dolist (tab (tab-bar-tabs))
+	  (when (and (setq name (assq 'name tab))
+		     (string-equal (cdr name) buffer))
+	    (push num nums))
+	  (setq num (1+ num)))
+	(when nums
+	  (let ((tab-bar-close-last-tab-choice #'ignore))
+	    (dolist (num nums)
+	      (tab-bar-close-tab num)))))
+      (when (frame-live-p oframe)
+	(select-frame oframe)))))
+
 (defun w3m-delete-frames-and-windows (&optional exception)
   "Delete all frames and windows related to emacs-w3m buffers.
 If EXCEPTION is a buffer, a window or a frame, it and related visible
@@ -633,14 +658,16 @@ objects will not be deleted:
 
 1. The sole frame in the display device.
 2. Frames created not for emacs-w3m sessions.
-3. Frames showing not only emacs-w3m sessions but also other windows.\
+3. Frames showing not only emacs-w3m sessions but also other windows.
+4. Frames of which tab-bar holds buffers not for emacs-w3m.\
 "
   (let ((buffers (delq exception (w3m-list-buffers t)))
 	buffer windows window frame one-window-p flag)
     (save-current-buffer
       (while buffers
-	(setq buffer (pop buffers)
-	      windows (delq exception
+	(setq buffer (pop buffers))
+	(w3m-close-tab-bars buffer)
+	(setq windows (delq exception
 			    (get-buffer-window-list buffer 'no-minibuf t)))
 	(set-buffer buffer)
 	(while windows

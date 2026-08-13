@@ -1,3 +1,10 @@
+2026-08-13  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Close tab bars assoc with w3m buffers to be killed (issue #122)
+
+	* w3m-util.el (w3m-close-tab-bars): New function.
+	(w3m-delete-frames-and-windows): use it.
+
 2026-08-04  Mark Diekhans  <markd@kermodei.com>
 
 	* w3m.el (w3m-print-this-url-truncate-lines): New user option.
