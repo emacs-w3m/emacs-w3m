@@ -1,3 +1,10 @@
+2025-08-25  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	Drop Emacs 29 support
+
+	* NEWS, NEWS.ja, README, README.ja, aclocal.m4, doc/emacs-w3m-ja.texi:
+	* doc/emacs-w3m.texi: Bump up supported Emacs versions.
+
 2026-08-13  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	Close tab bars assoc with w3m buffers to be killed (issue #122)
