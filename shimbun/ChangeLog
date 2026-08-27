@@ -1,3 +1,7 @@
+2026-08-28  Katsumi Yamaoka  <yamaoka@jpl.org>
+
+	* sb-sankei.el (shimbun-sankei-get-headers): Update regexp.
+
 2026-04-16  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* sb-sankei.el (shimbun-sankei-get-headers): Revert last change.

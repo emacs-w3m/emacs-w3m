@@ -147,7 +147,8 @@ To use this, set both `w3m-use-cookies' and `w3m-use-form' to t."
 				  nil t)
 	  (when (shimbun-end-of-tag "div")
 	    (narrow-to-region (goto-char (match-beginning 2)) (match-end 2))
-	    (when (re-search-forward "<a[^>]* href=\"\\(/article/[0-9]\\{8\\}-\
+	    (when (re-search-forward "<a[^>]* href=\
+\"\\(\\(?:https://www\\.sankei\\.com\\)?/article/[0-9]\\{8\\}-\
 \\([0-9A-Z]\\{26\\}\\)/\\)" nil t)
 	      (setq url (match-string 1)
 		    id (concat "<" (match-string 2) "."
